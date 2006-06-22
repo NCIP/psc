@@ -1,0 +1,68 @@
+<project name="caBIG Study Calendar" default="compile">
+    <property name="src-dir.main"      value="src"/>
+    <property name="src-dir.unit-test" value="test/unit"/>
+
+    <property name="build-dir.main"      value="web/WEB-INF/classes"/>
+    <property name="build-dir.unit-test" value="build/test-classes"/>
+
+    <path id="cp.main">
+        <pathelement location="${build-dir.main}"/>
+        <fileset dir="web/WEB-INF/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.unit-test">
+        <path refid="cp.main"/>
+        <pathelement location="${build-dir.unit-test}"/>
+        <fileset dir="test/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <target name="init" depends="default-properties">
+        <mkdir dir="${build-dir.main}"/>
+        <mkdir dir="${build-dir.unit-test}"/>
+    </target>
+
+    <target name="default-properties">
+        <property name="test.failfast" value="true"/>
+    </target>
+
+    <target name="compile" description="Compile all java source" depends="init">
+        <javac destdir="${build-dir.main}" classpathref="cp.main" 
+               debug="true" source="1.5">
+            <src path="${src-dir.main}"/>
+        </javac>
+        <javac destdir="${build-dir.unit-test}" classpathref="cp.unit-test"
+               debug="true" source="1.5">
+            <src path="${src-dir.unit-test}"/>
+        </javac>
+    </target>
+
+    <target name="test.unit.select-all">
+        <fileset dir="${src-dir.unit-test}" id="unit-test.files">
+            <include name="**/*Test.java"/>
+        </fileset>
+    </target>
+
+    <target name="test.unit.select-database">
+        <fileset dir="${src-dir.unit-test}" id="test.unit.files">
+            <include name="**/dao/**/*Test.java"/>
+        </fileset>
+    </target>
+
+    <target name="test.unit" description="Run unit tests" depends="compile, test.unit.select-all">
+        <junit haltonfailure="${test.failfast}" fork="true" forkmode="once" dir="${basedir}">
+            <classpath refid="cp.unit-test"/>
+            <jvmarg value="-Xmx256m"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+            <formatter type="plain" usefile="false"/>
+            <formatter type="xml" usefile="true"/>
+            <batchtest todir="${build-dir.unit-test}/junit">
+                <fileset refid="test.unit.files"/>
+            </batchtest>
+        </junit>
+    </target>
+
+</project>
