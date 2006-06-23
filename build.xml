@@ -41,18 +41,15 @@
     </target>
 
     <target name="test.unit.select-all">
-        <fileset dir="${src-dir.unit-test}" id="unit-test.files">
-            <include name="**/*Test.java"/>
-        </fileset>
+        <property name="unit-test.pattern" value="**/*Test.java"/>
     </target>
 
     <target name="test.unit.select-database">
-        <fileset dir="${src-dir.unit-test}" id="test.unit.files">
-            <include name="**/dao/**/*Test.java"/>
-        </fileset>
+        <property name="unit-test.pattern" value="**/dao/**/*Test.java"/>
     </target>
 
     <target name="test.unit" description="Run unit tests" depends="compile, test.unit.select-all">
+        <echo>Executing unit tests: ${unit-test.pattern}</echo>
         <junit haltonfailure="${test.failfast}" fork="true" forkmode="once" dir="${basedir}">
             <classpath refid="cp.unit-test"/>
             <jvmarg value="-Xmx256m"/>
@@ -60,7 +57,9 @@
             <formatter type="plain" usefile="false"/>
             <formatter type="xml" usefile="true"/>
             <batchtest todir="${build-dir.unit-test}/junit">
-                <fileset refid="test.unit.files"/>
+                <fileset dir="${src-dir.unit-test}">
+                    <include name="${unit-test.pattern}"/>
+                </fileset>
             </batchtest>
         </junit>
     </target>
