@@ -23,10 +23,23 @@
     <target name="init" depends="default-properties">
         <mkdir dir="${build-dir.main}"/>
         <mkdir dir="${build-dir.unit-test}"/>
+        
+        <property name="config.database.file" value="db/${config.database}.properties"/>
+        <fail message="Database not configured (could not read ${config.database.file}.).  See db/readme.txt.">
+            <condition>
+                <not><available file="${config.database.file}"/></not>
+            </condition>
+        </fail>
     </target>
 
     <target name="default-properties">
         <property name="test.failfast" value="true"/>
+        <property name="config.database" value="studycalendar"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="build"/>
+        <delete dir="${build-dir.main}"/>
     </target>
 
     <target name="compile" description="Compile all java source" depends="init">
@@ -39,6 +52,8 @@
             <src path="${src-dir.unit-test}"/>
         </javac>
     </target>
+    
+    <!-- TEST SETUP & EXECUTION -->
 
     <target name="test.unit.select-all">
         <property name="unit-test.pattern" value="**/*Test.java"/>
@@ -63,5 +78,46 @@
             </batchtest>
         </junit>
     </target>
+    
+    <target name="create-hsqldb">
+        <echo>TODO: set up Schemamule</echo>
+    </target>
+    
+    <target name="emma">
+        <echo>TODO: set up Emma</echo>
+    </target>
+
+    <!-- CRUISE CONTROL BUILDS -->
+    
+    <target name="oracle">
+        <property name="config.database" value="oracle"/>
+    </target>
+    <target name="postgresql">
+        <property name="config.database" value="postgresql"/>
+    </target>
+    <target name="hsqldb">
+        <property name="config.database" value="hsqldb"/>
+    </target>
+    
+    <target name="cruise.properties">
+        <!-- overrides properties set in default-properties -->
+        <property name="test.failfast" value="false"/>
+    </target>
+
+    <target name="cruise.exec" depends="clean, emma, test.unit"/>
+    
+    <target name="cruise.artifacts">
+        <mkdir dir="build/artifacts"/>
+        <echo>TODO: copy artifacts</echo>
+    </target>
+
+    <target name="cruisecontrol-full" description="CruiseControl build for all unit tests against HSQLDB"
+        depends="cruise.properties, hsqldb, create-hsqldb, cruise.exec, cruise.artifacts"/>
+
+    <target name="cruisecontrol-oracle" description="CruiseControl build for db-only unit tests against Oracle"
+        depends="cruise.properties, oracle, cruise.exec"/>
+
+    <target name="cruisecontrol-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
+        depends="cruise.properties, postgresql, cruise.exec"/>
 
 </project>
