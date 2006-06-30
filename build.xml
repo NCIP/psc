@@ -1,12 +1,24 @@
 <project name="caBIG Study Calendar" default="compile">
+
+    <!-- PROPERTIES AND PATHS -->
     <property name="src-dir.main"      value="src"/>
     <property name="src-dir.unit-test" value="test/unit"/>
 
     <property name="build-dir.main"      value="web/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="build/test-classes"/>
 
-    <path id="cp.main">
+    <property name="metrics-dir"  value="build/metrics"/>
+    <property name="coverage-dir" value="${metrics-dir}/coverage"/>
+
+    <property name="war-name" value="studycalendar.war"/>
+
+    <!-- emma needs this -->
+    <path id="cp.compiled-source">
         <pathelement location="${build-dir.main}"/>
+    </path>
+
+    <path id="cp.main">
+        <path refid="cp.compiled-source"/>
         <fileset dir="web/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
@@ -20,10 +32,22 @@
         </fileset>
     </path>
 
+    <!-- TASK LIBRARIES -->
+
+    <path id="cp.emma">
+        <pathelement location="test/lib/emma.jar"/>
+        <pathelement location="test/lib/emma_ant.jar"/>
+    </path>
+
+    <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
+
+    <!-- TARGETS -->
+
     <target name="init" depends="default-properties">
         <mkdir dir="${build-dir.main}"/>
         <mkdir dir="${build-dir.unit-test}"/>
-        
+        <mkdir dir="${metrics-dir}"/>
+
         <property name="config.database.file" value="db/${config.database}.properties"/>
         <fail message="Database not configured (could not read ${config.database.file}.).  See db/readme.txt.">
             <condition>
@@ -40,9 +64,14 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="${build-dir.main}"/>
+        <delete dir="dist"/>
     </target>
 
-    <target name="compile" description="Compile all java source" depends="init">
+    <target name="resources" description="Copy resources into classpath" depends="init">
+        <copy file="db/${config.database}.properties" tofile="${build-dir.main}/datasource.properties"/>
+    </target>
+
+    <target name="compile" description="Compile all java source" depends="resources">
         <javac destdir="${build-dir.main}" classpathref="cp.main" 
                debug="true" source="1.5">
             <src path="${src-dir.main}"/>
@@ -65,10 +94,24 @@
 
     <target name="test.unit" description="Run unit tests" depends="compile, test.unit.select-all">
         <echo>Executing unit tests: ${unit-test.pattern}</echo>
+
+        <emma enabled="${emma.enabled}">
+<!-- Hibernate (I think because of a Spring classloader issue (TODO: we should check that this is still true))
+     can't find hbm files from another part of the classpath, so we must use fullcopy to the instrumentation dir -->
+            <instr instrpathref="cp.compiled-source" destdir="${out.instrumented.dir}"
+                    metadatafile="${coverage-dir}/metadata.emma" merge="true" mode="fullcopy"/>
+        </emma>
+
+        <mkdir dir="${build-dir.unit-test}/junit"/>
         <junit haltonfailure="${test.failfast}" fork="true" forkmode="once" dir="${basedir}">
-            <classpath refid="cp.unit-test"/>
-            <jvmarg value="-Xmx256m"/>
-            <jvmarg value="-Djava.awt.headless=true"/>
+            <classpath>
+                <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
+                <pathelement location="${out.instrumented.dir}/classes"/>
+                <path refid="cp.unit-test"/>
+                <path refid="cp.emma"/>
+            </classpath>
+            <jvmarg value="-Demma.coverage.out.file=${coverage-dir}/coverage.emma"/>
+            <jvmarg value="-Demma.coverage.out.merge=false"/>
             <formatter type="plain" usefile="false"/>
             <formatter type="xml" usefile="true"/>
             <batchtest todir="${build-dir.unit-test}/junit">
@@ -77,14 +120,43 @@
                 </fileset>
             </batchtest>
         </junit>
+
+        <emma enabled="${emma.enabled}">
+            <merge outfile="${coverage-dir}/session.emma">
+                <fileset dir="${coverage-dir}" includes="*.emma"/>
+            </merge>
+
+            <report sourcepath="src">
+                <fileset dir="${coverage-dir}">
+                    <include name="session.emma"/>
+                </fileset>
+                <txt outfile="${coverage-dir}/coverage.txt"/>
+                <html outfile="${coverage-dir}/coverage.html"/>
+                <xml outfile="${coverage-dir}/coverage.xml"/>
+            </report>
+        </emma>
     </target>
     
     <target name="create-hsqldb">
         <echo>TODO: set up Schemamule</echo>
     </target>
-    
-    <target name="emma">
-        <echo>TODO: set up Emma</echo>
+
+    <!-- CODE METRICS TARGETS -->
+
+    <target name="emma" depends="init" description="enables EMMA code coverage recording during the build (i.e. during tests)">
+        <property name="emma.enabled" value="true"/>
+        <!-- EMMA instrumented classes output directory; must only exist if EMMA is enabled -->
+        <property name="out.instrumented.dir" value="${coverage-dir}/instrumented-classes"/>
+        <mkdir dir="${out.instrumented.dir}"/>
+    </target>
+
+    <!-- ARTIFACT CREATION -->
+
+    <target name="war" depends="test.unit" description="creates a deployable WAR file">
+        <mkdir dir="dist"/>
+        <war basedir="web" destfile="dist/${war-name}" webxml="web/WEB-INF/web.xml">
+            <exclude name="WEB-INF/web.xml"/>
+        </war>
     </target>
 
     <!-- CRUISE CONTROL BUILDS -->
