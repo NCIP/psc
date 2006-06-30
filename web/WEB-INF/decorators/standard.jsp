@@ -6,7 +6,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>caBIG&tm; Study Calendar Module - <decorator:title/></title>
+    <title>caBIG Study Calendar Module - <decorator:title/></title>
     <tags:stylesheetLink name="common"/>
     <tags:javascriptLink name="common"/>
     <decorator:head/>
