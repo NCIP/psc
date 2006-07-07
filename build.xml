@@ -188,8 +188,13 @@
     <target name="cruise.exec" depends="clean, emma, test.unit"/>
     
     <target name="cruise.artifacts">
-        <mkdir dir="build/artifacts"/>
-        <echo>TODO: copy artifacts</echo>
+        <property name="cruise.artifacts-dir" value="build/artifacts"/>
+        <mkdir dir="${cruise.artifacts-dir}"/>
+        <copy todir="${cruise.artifacts-dir}">
+            <fileset dir="${coverage-dir}">
+                <include name="coverage.*"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="cruisecontrol-full" description="CruiseControl build for all unit tests against HSQLDB"
