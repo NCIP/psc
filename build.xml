@@ -54,6 +54,7 @@
                 <not><available file="${config.database.file}"/></not>
             </condition>
         </fail>
+        <property file="${config.database.file}"/>
     </target>
 
     <target name="default-properties">
@@ -68,7 +69,7 @@
     </target>
 
     <target name="resources" description="Copy resources into classpath" depends="init">
-        <copy file="db/${config.database}.properties" tofile="${build-dir.main}/datasource.properties"/>
+        <copy file="${config.database.file}" tofile="${build-dir.main}/datasource.properties"/>
     </target>
 
     <target name="compile" description="Compile all java source" depends="resources">
@@ -136,9 +137,17 @@
             </report>
         </emma>
     </target>
-    
+
+    <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
     <target name="create-hsqldb">
-        <echo>TODO: set up Schemamule</echo>
+        <echo>TODO: set up Schemamule (or maybe not -- Bering may obviate it)</echo>
+        <propertyfile file="db/hsqldb.properties">
+            <entry key="datasource.url"      value="jdbc:hsqldb:res:/hsqldb/study_calendar"/>
+            <entry key="datasource.username" value="sa"/>
+            <entry key="datasource.password" value=""/>
+            <entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>
+            <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
+        </propertyfile>
     </target>
 
     <!-- CODE METRICS TARGETS -->
