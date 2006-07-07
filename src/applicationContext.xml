@@ -5,7 +5,7 @@
     <bean id="dataSourceTemplate" abstract="true" class="org.apache.commons.dbcp.BasicDataSource">
         <!-- TODO: filter this file to choose Oracle or Postgres -->
         <property name="driverClassName">
-            <value>org.postgresql.Driver</value>
+            <value>${datasource.driver}</value>
         </property>
         <property name="maxActive">
             <value>5</value>
@@ -65,8 +65,7 @@
     <bean id="hibernateProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
         <property name="properties">
             <props>
-                <!-- TODO: filter to configure -->
-                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.dialect">${datasource.dialect}</prop>
                 <prop key="hibernate.query.substitutions">true 1, false 0, yes 'Y', no 'N'</prop>
                 <prop key="hibernate.jdbc.batch_size">30</prop>
             </props>
