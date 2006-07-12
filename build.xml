@@ -17,6 +17,12 @@
         <pathelement location="${build-dir.main}"/>
     </path>
 
+    <path id="cp.jdbc">
+        <fileset dir="db/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <path id="cp.main">
         <path refid="cp.compiled-source"/>
         <fileset dir="web/WEB-INF/lib">
@@ -40,6 +46,16 @@
     </path>
 
     <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
+
+    <path id="cp.bering">
+        <path refid="cp.compiled-source"/>
+        <path refid="cp.jdbc"/>
+        <fileset dir="tools/bering">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
     <!-- TARGETS -->
 
@@ -84,6 +100,14 @@
     </target>
     
     <!-- TEST SETUP & EXECUTION -->
+
+    <target name="migrate" description="migrate database schema" depends="compile">
+        <migrate classpathRef="cp.bering"
+                 driver="${datasource.driver}"
+                 url="${datasource.url}"
+                 userid="${datasource.username}"
+                 password="${datasource.password}"/>
+    </target>
 
     <target name="test.unit.select-all">
         <property name="unit-test.pattern" value="**/*Test.java"/>
