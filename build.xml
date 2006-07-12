@@ -71,6 +71,7 @@
             </condition>
         </fail>
         <property file="${config.database.file}"/>
+        <echo>All database ops for this build will use ${datasource.url}</echo>
     </target>
 
     <target name="default-properties">
@@ -163,15 +164,40 @@
     </target>
 
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
-    <target name="create-hsqldb">
-        <echo>TODO: set up Schemamule (or maybe not -- Bering may obviate it)</echo>
+    <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
+        <property name="hsqldb-dir" value="hsqldb"/>
+        <property name="hsqldb-jar" value="test/lib/sc-hsqldb.jar"/>
+        <property name="create-hsqldb.temp-url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/study_calendar"/>
+        <delete file="${hsqldb-jar}"/>
+
         <propertyfile file="db/hsqldb.properties">
-            <entry key="datasource.url"      value="jdbc:hsqldb:res:/hsqldb/study_calendar"/>
+            <entry key="datasource.url"      value="jdbc:hsqldb:res:/${hsqldb-dir}/study_calendar"/>
             <entry key="datasource.username" value="sa"/>
             <entry key="datasource.password" value=""/>
             <entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
         </propertyfile>
+
+        <mkdir dir="${hsqldb-dir}"/>
+        <ant antfile="${basedir}/build.xml">
+            <property name="datasource.url" value="${create-hsqldb.temp-url}"/>
+            <target name="hsqldb"/>
+            <target name="migrate"/>
+        </ant>
+
+        <sql driver="org.hsqldb.jdbcDriver" url="${create-hsqldb.temp-url}"
+            userid="sa" password="" classpathref="test.cfjava.libs" autocommit="true">
+            <!-- database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
+                released and the tests can reopen it -->
+            SHUTDOWN SCRIPT;
+        </sql>
+
+        <jar file="${hsqldb-jar}">
+            <fileset dir="${basedir}">
+                <include name="${hsqldb-dir}/**/*"/>
+            </fileset>
+        </jar>
+        <delete dir="${hsqldb-dir}"/>
     </target>
 
     <!-- CODE METRICS TARGETS -->
