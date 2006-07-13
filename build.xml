@@ -32,8 +32,12 @@
 
     <path id="cp.unit-test">
         <path refid="cp.main"/>
+        <path refid="cp.jdbc"/>
         <pathelement location="${build-dir.unit-test}"/>
         <fileset dir="test/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="tools/j2ee-api">
             <include name="**/*.jar"/>
         </fileset>
     </path>
@@ -87,6 +91,16 @@
 
     <target name="resources" description="Copy resources into classpath" depends="init">
         <copy file="${config.database.file}" tofile="${build-dir.main}/datasource.properties"/>
+        <copy todir="${build-dir.main}">
+            <fileset dir="${src-dir.main}">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+        <copy todir="${build-dir.unit-test}">
+            <fileset dir="${src-dir.unit-test}">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="compile" description="Compile all java source" depends="resources">
