@@ -23,8 +23,15 @@
         </fileset>
     </path>
 
+    <path id="cp.j2ee">
+        <fileset dir="tools/j2ee-api">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <path id="cp.main">
         <path refid="cp.compiled-source"/>
+        <path refid="cp.j2ee"/>
         <fileset dir="web/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
@@ -33,11 +40,9 @@
     <path id="cp.unit-test">
         <path refid="cp.main"/>
         <path refid="cp.jdbc"/>
+        <path refid="cp.j2ee"/>
         <pathelement location="${build-dir.unit-test}"/>
         <fileset dir="test/lib">
-            <include name="**/*.jar"/>
-        </fileset>
-        <fileset dir="tools/j2ee-api">
             <include name="**/*.jar"/>
         </fileset>
     </path>
@@ -116,7 +121,7 @@
     
     <!-- TEST SETUP & EXECUTION -->
 
-    <target name="migrate" description="migrate database schema" depends="compile">
+    <target name="migrate" description="migrate database schema" depends="init">
         <migrate classpathRef="cp.bering"
                  driver="${datasource.driver}"
                  url="${datasource.url}"
@@ -249,25 +254,30 @@
         <property name="test.failfast" value="false"/>
     </target>
 
-    <target name="cruise.exec" depends="clean, emma, test.unit"/>
-    
+    <target name="cruise.exec" depends="clean, test.unit"/>
+
+    <target name="cruise.exec.db" depends="migrate, test.unit.select-database, cruise.exec"/>
+
     <target name="cruise.artifacts">
         <property name="cruise.artifacts-dir" value="build/artifacts"/>
-        <mkdir dir="${cruise.artifacts-dir}"/>
-        <copy todir="${cruise.artifacts-dir}">
+        <mkdir dir="${cruise.artifacts-dir}/emma"/>
+        <copy todir="${cruise.artifacts-dir}/emma">
             <fileset dir="${coverage-dir}">
-                <include name="coverage.*"/>
+                <exclude name="instrumented-classes/**/*"/>
+                <exclude name="instrumented-classes"/>
+                <exclude name="*.emma"/>
             </fileset>
         </copy>
+        <symlink link="${cruise.artifacts-dir}/emma/index.html" resource="coverage.html" failonerror="false"/>
     </target>
 
     <target name="cruisecontrol-full" description="CruiseControl build for all unit tests against HSQLDB"
-        depends="cruise.properties, hsqldb, create-hsqldb, cruise.exec, cruise.artifacts"/>
+        depends="cruise.properties, create-hsqldb, hsqldb, emma, cruise.exec, cruise.artifacts"/>
 
     <target name="cruisecontrol-oracle" description="CruiseControl build for db-only unit tests against Oracle"
-        depends="cruise.properties, oracle, cruise.exec"/>
+        depends="cruise.properties, oracle, cruise.exec.db"/>
 
     <target name="cruisecontrol-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
-        depends="cruise.properties, postgresql, cruise.exec"/>
+        depends="cruise.properties, postgresql, cruise.exec.db"/>
 
 </project>
