@@ -12,6 +12,7 @@
         <property name="annotatedClasses">
             <list>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Arm</value>
             </list>
         </property>
     </bean>

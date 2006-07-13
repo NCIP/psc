@@ -3,4 +3,17 @@
         id="1"
         version="0"
         name="First Study"/>
+
+    <ARMS
+        id="2"
+        version="0"
+        index="1"
+        name="Dexter"
+        study_id="1"/>
+    <ARMS
+        id="3"
+        version="0"
+        index="0"
+        name="Sinister"
+        study_id="1"/>
 </dataset>

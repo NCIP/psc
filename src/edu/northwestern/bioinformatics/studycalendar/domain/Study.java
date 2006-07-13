@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import org.hibernate.annotations.IndexColumn;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +13,7 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Entity
-@Table(name="studies")
+@Table (name = "studies")
 public class Study extends AbstractDomainObject {
     private String name;
     private List<Arm> arms = new ArrayList<Arm>();
@@ -28,7 +31,8 @@ public class Study extends AbstractDomainObject {
         this.name = name;
     }
 
-    @Transient // TODO
+    @OneToMany (mappedBy = "study")
+    @IndexColumn (name = "index", base = 0)
     public List<Arm> getArms() {
         return arms;
     }
