@@ -3,7 +3,6 @@
 
 <beans>
     <bean id="dataSourceTemplate" abstract="true" class="org.apache.commons.dbcp.BasicDataSource">
-        <!-- TODO: filter this file to choose Oracle or Postgres -->
         <property name="driverClassName">
             <value>${datasource.driver}</value>
         </property>
@@ -26,7 +25,7 @@
             <value>true</value>
         </property>
         <property name="validationQuery">
-            <value>select 1</value>
+            <value>SELECT 1 FROM bering_version</value>
         </property>
         <property name="testWhileIdle">
             <value>true</value>

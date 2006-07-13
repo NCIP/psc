@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This applicationContext contains the definition of the DAOs
+-->
+
+<beans>
+    <!-- HIBERNATE CONFIGURATION -->
+
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+        <property name="annotatedClasses">
+            <list>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- TODO: use this -->
+    <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
+        <property name="singleSession"><value>true</value></property>
+    </bean>
+
+    <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+        <property name="checkWriteOperations"><value>false</value></property>
+        <property name="sessionFactory"><ref bean="sessionFactory"/></property>
+    </bean>
+
+    <bean id="daoTemplate" abstract="true">
+        <property name="hibernateTemplate"><ref local="hibernateTemplate"/></property>
+    </bean>
+
+    <!-- ACTUAL DAOS -->
+
+    <bean id="studyDao" parent="daoTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao">
+    </bean>
+</beans>
