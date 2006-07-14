@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 /**
  * @author Rhett Sutphin
  */
-public class DaoTestCase extends DbTestCase {
+public abstract class DaoTestCase extends DbTestCase {
     private static ApplicationContext applicationContext = null;
     protected final Log log = LogFactory.getLog(getClass());
 
