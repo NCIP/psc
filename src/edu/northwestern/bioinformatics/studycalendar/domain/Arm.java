@@ -5,6 +5,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Basic;
+import javax.persistence.Column;
 
 /**
  * @author Rhett Sutphin
@@ -34,6 +36,8 @@ public class Arm extends AbstractDomainObject {
         this.study = study;
     }
 
+    @Basic
+    @Column (name = "num")
     public Integer getNumber() {
         return number;
     }

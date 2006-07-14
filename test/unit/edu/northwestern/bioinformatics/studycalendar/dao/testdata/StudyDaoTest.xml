@@ -7,13 +7,13 @@
     <ARMS
         id="2"
         version="0"
-        index="1"
+        num="2"
         name="Dexter"
         study_id="1"/>
     <ARMS
         id="3"
         version="0"
-        index="0"
+        num="1"
         name="Sinister"
         study_id="1"/>
 </dataset>
