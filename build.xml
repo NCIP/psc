@@ -151,7 +151,7 @@
         </emma>
 
         <mkdir dir="${build-dir.unit-test}/junit"/>
-        <junit haltonfailure="${test.failfast}" fork="true" forkmode="once" dir="${basedir}">
+        <junit haltonfailure="${test.failfast}" failureproperty="test.unit.failed" fork="true" forkmode="once" dir="${basedir}">
             <classpath>
                 <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
                 <pathelement location="${out.instrumented.dir}/classes"/>
@@ -183,6 +183,8 @@
                 <xml outfile="${coverage-dir}/coverage.xml"/>
             </report>
         </emma>
+
+        <fail if="test.unit.failed">One or more unit tests failed.  See above or set test.failfast=true.</fail>
     </target>
 
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
