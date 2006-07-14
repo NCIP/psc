@@ -4,7 +4,7 @@ class CreateArms extends edu.northwestern.bioinformatics.bering.Migration {
             t.addColumn('version', 'integer', nullable:false)
             t.addColumn('name', 'string', nullable:false)
             t.addColumn('study_id', 'integer', nullable:false)
-            t.addColumn('index', 'integer', nullable:false)
+            t.addColumn('number', 'integer', nullable:false)
         }
     }
 

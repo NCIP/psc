@@ -13,13 +13,8 @@ import javax.persistence.Transient;
 @Table (name = "arms")
 public class Arm extends AbstractDomainObject {
     private Study study;
-    private Integer index;
+    private Integer number;
     private String name;
-
-    @Transient
-    public Integer getNumber() {
-        return getIndex() == null ? null : getIndex() + 1;
-    }
 
     public String getName() {
         return name;
@@ -39,11 +34,11 @@ public class Arm extends AbstractDomainObject {
         this.study = study;
     }
 
-    private Integer getIndex() {
-        return index;
+    public Integer getNumber() {
+        return number;
     }
 
-    private void setIndex(Integer index) {
-        this.index = index;
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 }
