@@ -7,6 +7,7 @@
     <property name="build-dir.main"      value="web/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="build/test-classes"/>
 
+    <property name="api-dir"  value="build/api"/>
     <property name="metrics-dir"  value="build/metrics"/>
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
 
@@ -54,7 +55,15 @@
         <pathelement location="test/lib/emma_ant.jar"/>
     </path>
 
+    <path id="cp.bering">
+        <path refid="cp.compiled-source"/>
+        <fileset dir="lib-build">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
+    <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
     <path id="cp.bering">
         <path refid="cp.compiled-source"/>
@@ -118,7 +127,17 @@
             <src path="${src-dir.unit-test}"/>
         </javac>
     </target>
-    
+
+    <target name="api" description="Create javadoc for application code API (i.e. domain objects and DAOs)" depends="init">
+        <mkdir dir="${api-dir}"/>
+        <javadoc destdir="${api-dir}" classpathref="cp.main" source="1.5">
+            <fileset dir="${src-dir.main}">
+                <include name="**/dao/**/*.java"/>
+                <include name="**/domain/**/*.java"/>
+            </fileset>
+        </javadoc>
+    </target>
+
     <!-- TEST SETUP & EXECUTION -->
 
     <target name="migrate" description="migrate database schema" depends="init">
