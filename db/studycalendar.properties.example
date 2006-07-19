@@ -6,7 +6,7 @@ datasource.password=
 ## DB-specific config:  uncomment the block for the database you are using
 
 #### PostgreSQL
-# datasource.dialect=org.hibernate.dialect.PostgreSQLDialect
+# datasource.dialect=edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ImprovedPostgreSQLDialect
 # datasource.driver=org.postgresql.Driver
 
 #### HSQLDB

@@ -11,18 +11,18 @@ public class StudyDaoTest extends DaoTestCase {
     private StudyDao dao = (StudyDao) getApplicationContext().getBean("studyDao");
 
     public void testGetById() throws Exception {
-        Study study = dao.getById(1);
+        Study study = dao.getById(100);
         assertNotNull("Study 1 not found", study);
         assertEquals("Wrong name", "First Study", study.getName());
     }
 
     public void testLoadingArms() throws Exception {
-        Study study = dao.getById(1);
+        Study study = dao.getById(100);
         assertNotNull("Study 1 not found", study);
 
         assertEquals("Wrong number of arms", 2, study.getArms().size());
-        assertArm("Wrong arm 0", 3, 1, "Sinister", study.getArms().get(0));
-        assertArm("Wrong arm 1", 2, 2, "Dexter", study.getArms().get(1));
+        assertArm("Wrong arm 0", 201, 1, "Sinister", study.getArms().get(0));
+        assertArm("Wrong arm 1", 200, 2, "Dexter", study.getArms().get(1));
 
         assertSame("Arm <=> Study relationship not bidirectional on load", study, study.getArms().get(0).getStudy());
     }
