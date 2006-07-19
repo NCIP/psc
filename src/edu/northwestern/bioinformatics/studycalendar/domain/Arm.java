@@ -20,7 +20,7 @@ import javax.persistence.FetchType;
 @Table (name = "arms")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequenceName", value="seq_arms_id")
+        @Parameter(name="sequence", value="seq_arms_id")
     }
 )
 public class Arm extends AbstractDomainObject {
