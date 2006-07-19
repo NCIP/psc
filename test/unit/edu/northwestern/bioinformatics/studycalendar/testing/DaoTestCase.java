@@ -29,7 +29,6 @@ public abstract class DaoTestCase extends DbTestCase {
 
     protected void tearDown() throws Exception {
         endSession();
-        findOpenSessionInViewInterceptor().setFlushModeName("FLUSH_NEVER");
         super.tearDown();
     }
 
