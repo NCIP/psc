@@ -5,6 +5,8 @@ import javax.persistence.Version;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 
 /**
  * @author Rhett Sutphin
@@ -14,7 +16,7 @@ public abstract class AbstractDomainObject {
     private Integer id;
     private Integer version;
 
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ")
     public Integer getId() {
         return id;
     }

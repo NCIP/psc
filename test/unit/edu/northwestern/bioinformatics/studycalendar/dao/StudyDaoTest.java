@@ -22,9 +22,34 @@ public class StudyDaoTest extends DaoTestCase {
 
         assertEquals("Wrong number of arms", 2, study.getArms().size());
         assertArm("Wrong arm 0", 3, 1, "Sinister", study.getArms().get(0));
-        assertArm("Wrong arm 0", 2, 2, "Dexter", study.getArms().get(1));
+        assertArm("Wrong arm 1", 2, 2, "Dexter", study.getArms().get(1));
 
         assertSame("Arm <=> Study relationship not bidirectional on load", study, study.getArms().get(0).getStudy());
+    }
+
+    public void testSaveNewStudy() throws Exception {
+        Integer savedId;
+        {
+            Study study = new Study();
+            study.setName("New study");
+            study.addArm(new Arm());
+            study.getArms().get(0).setName("First Arm");
+            dao.save(study);
+            savedId = study.getId();
+            assertNotNull("The saved study didn't get an id", savedId);
+        }
+
+        interruptSession();
+
+        {
+            Study loaded = dao.getById(savedId);
+            assertNotNull("Could not reload study with id " + savedId);
+            assertEquals("Wrong name", "New study", loaded.getName());
+            // TODO: cascade saving arms
+            // assertEquals("Wrong number of arms", 1, loaded.getArms().size());
+            // assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
+            // assertEquals("Wrong number for arm 0", (Integer) 1, loaded.getArms().get(0).getNumber());
+        }
     }
 
     private static void assertArm(

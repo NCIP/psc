@@ -6,13 +6,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.Basic;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
 
 /**
  * @author Rhett Sutphin
  */
 @Entity
 @Table (name = "arms")
+@SequenceGenerator(
+    name = "SEQ",
+    sequenceName = "seq_arms_id"
+)
 public class Arm extends AbstractDomainObject {
     private Study study;
     private Integer number;

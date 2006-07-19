@@ -10,4 +10,8 @@ public class StudyDao extends HibernateDaoSupport {
     public Study getById(int id) {
         return (Study) getHibernateTemplate().get(Study.class, id);
     }
+
+    public void save(Study study) {
+        getHibernateTemplate().saveOrUpdate(study);
+    }
 }

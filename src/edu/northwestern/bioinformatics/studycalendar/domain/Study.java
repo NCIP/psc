@@ -2,10 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.IndexColumn;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +16,10 @@ import java.util.List;
  */
 @Entity
 @Table (name = "studies")
+@SequenceGenerator(
+    name = "SEQ",
+    sequenceName = "seq_studies_id"
+)
 public class Study extends AbstractDomainObject {
     private String name;
     private List<Arm> arms = new ArrayList<Arm>();
