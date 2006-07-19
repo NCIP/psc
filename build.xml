@@ -55,15 +55,7 @@
         <pathelement location="test/lib/emma_ant.jar"/>
     </path>
 
-    <path id="cp.bering">
-        <path refid="cp.compiled-source"/>
-        <fileset dir="lib-build">
-            <include name="**/*.jar"/>
-        </fileset>
-    </path>
-
     <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
-    <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
     <path id="cp.bering">
         <path refid="cp.compiled-source"/>
