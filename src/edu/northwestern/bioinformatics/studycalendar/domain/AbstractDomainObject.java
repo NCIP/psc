@@ -16,7 +16,7 @@ public abstract class AbstractDomainObject {
     private Integer id;
     private Integer version;
 
-    @Id @GeneratedValue(strategy = GenerationType.AUTO, generator = "SEQ")
+    @Id @GeneratedValue(generator = "id-generator")
     public Integer getId() {
         return id;
     }

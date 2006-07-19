@@ -1,5 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
@@ -15,9 +18,10 @@ import javax.persistence.FetchType;
  */
 @Entity
 @Table (name = "arms")
-@SequenceGenerator(
-    name = "SEQ",
-    sequenceName = "seq_arms_id"
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequenceName", value="seq_arms_id")
+    }
 )
 public class Arm extends AbstractDomainObject {
     private Study study;

@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -16,9 +18,10 @@ import java.util.List;
  */
 @Entity
 @Table (name = "studies")
-@SequenceGenerator(
-    name = "SEQ",
-    sequenceName = "seq_studies_id"
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequenceName", value="seq_studies_id")
+    }
 )
 public class Study extends AbstractDomainObject {
     private String name;
