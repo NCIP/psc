@@ -96,7 +96,7 @@
     </target>
 
     <target name="resources" description="Copy resources into classpath" depends="init">
-        <copy file="${config.database.file}" tofile="${build-dir.main}/datasource.properties"/>
+        <copy file="${config.database.file}" tofile="${build-dir.main}/datasource.properties" overwrite="true"/>
         <copy todir="${build-dir.main}">
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
@@ -110,7 +110,7 @@
     </target>
 
     <target name="compile" description="Compile all java source" depends="resources">
-        <javac destdir="${build-dir.main}" classpathref="cp.main" 
+        <javac destdir="${build-dir.main}" classpathref="cp.main"
                debug="true" source="1.5">
             <src path="${src-dir.main}"/>
         </javac>
@@ -254,7 +254,7 @@
     </target>
 
     <!-- CRUISE CONTROL BUILDS -->
-    
+
     <target name="oracle">
         <property name="config.database" value="oracle"/>
     </target>
@@ -264,7 +264,7 @@
     <target name="hsqldb">
         <property name="config.database" value="hsqldb"/>
     </target>
-    
+
     <target name="cruise.properties">
         <!-- overrides properties set in default-properties -->
         <property name="test.failfast" value="false"/>
@@ -295,5 +295,81 @@
 
     <target name="cruisecontrol-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
         depends="cruise.properties, postgresql, cruise.exec.db"/>
+
+    <!-- TOMCAT DEPLOYMENT -->
+
+    <target name="tomcat.init" depends="compile">
+        <property name="tomcat.config-file" value="tools/tomcat/tomcat.properties"/>
+        <fail message="Tomcat manager not configured (could not read ${tomcat.config-file}).">
+            <condition>
+                <not><available file="${tomcat.config-file}"/></not>
+            </condition>
+        </fail>
+        <property file="${tomcat.config-file}"/>
+
+        <property name="tomcat.context-file" value="${basedir}/tools/tomcat/context.xml"/>
+
+        <taskdef file="tools/tomcat/tomcatTasks.properties">
+            <classpath>
+                <fileset dir="tools/tomcat">
+                    <include name="lib/*.jar"/>
+                </fileset>
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="tomcat.create-context" depends="tomcat.init">
+        <echo file="${tomcat.context-file}">&lt;Context path="${tomcat.deploy-path}" docBase="${basedir}/web" debug="9"/&gt;</echo>
+    </target>
+
+    <target name="tomcat.deploy" depends="tomcat.init, tomcat.create-context">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            config="${tomcat.context-file}"
+            path="${tomcat.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.undeploy" depends="tomcat.init">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${tomcat.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.redeploy" depends="tomcat.undeploy, tomcat.deploy"/>
+
+    <target name="tomcat.reload" depends="tomcat.init">
+        <reload url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${tomcat.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.start" depends="tomcat.init">
+        <start url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${tomcat.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.stop" depends="tomcat.init">
+        <stop url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${tomcat.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.list" depends="tomcat.init">
+        <list url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            />
+    </target>
 
 </project>
