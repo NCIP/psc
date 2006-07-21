@@ -17,4 +17,16 @@
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
     <bean name="/welcome" id="welcomeController" class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
+	<bean name="/login" id="loginController" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController">
+		<property name="sessionForm"><value>true</value></property>
+        <property name="commandName"><value>loginCredentials</value></property>
+        <property name="commandClass"><value>edu.northwestern.bioinformatics.studycalendar.web.security.LoginCredentials</value></property>
+
+		<property name="formView">
+			<value>login</value>
+		</property>
+		<property name="successView">
+			<value>testuserdetails</value>
+		</property>
+	</bean>
 </beans>
