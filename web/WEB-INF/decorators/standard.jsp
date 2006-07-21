@@ -9,6 +9,7 @@
     <title>caBIG Study Calendar Module - <decorator:title/></title>
     <tags:stylesheetLink name="debug"/>
     <tags:stylesheetLink name="common"/>
+    <tags:javascriptLink name="prototype"/>
     <tags:javascriptLink name="common"/>
     <decorator:head/>
   </head>
