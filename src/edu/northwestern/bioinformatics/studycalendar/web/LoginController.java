@@ -20,7 +20,7 @@ public class LoginController extends SimpleFormController {
 	
 	static final Logger log = Logger.getLogger(LoginController.class.getName());
 	static AuthenticationManager authMgr = null;
-	public static final String CSM_STUDYCAL_CONTEXT_NAME = "csm_ri";
+	public static final String CSM_STUDYCAL_CONTEXT_NAME = "study_calendar";
 	
     public LoginController() {
     }
