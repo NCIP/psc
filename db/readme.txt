@@ -27,3 +27,10 @@ Running unit tests with HSQLDB
 Note that you do not need to manually create a properties file in order to run the unit tests with
 HSQLDB.  The `create-hsqldb` task will build an hsqldb.properties file matching the in-memory
 database it generates.
+
+Running with Oracle
+-------------------
+If you wish to use Oracle, please add the Oracle JDBC driver and its dependencies to db/lib before
+running. (Oracle's license prevents us from redistributing the JDBC driver, but you can download it
+from them for free.)  As of this writing, the JARs you need are ojdbc14.jar and
+jakarta-oro-2.0.8.jar, though another version will probably work fine.
