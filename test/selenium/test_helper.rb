@@ -19,7 +19,7 @@ module StudyCalendar
     protected
     def open(relative_url)
       @browser.open("/studycalendar#{relative_url}")
-      documenter.document_step "Start at URL #{relative_url}"
+      documenter.document_step "Start at relative URL \"#{relative_url}\""
     end
     
     def document_comment(comment)
@@ -53,8 +53,14 @@ module StudyCalendar
       @browser.wait_for_page_to_load(timeout)
     end
 
-    def type(locator, value)
+    def type(locator, value, options = {})
       @browser.type(locator, value)
+      documenter.document_step "Under \"#{locator_to_label(locator, options)}\" type \"#{value}\""
+    end
+    
+    def check(name, value, options = {})
+      @browser.check("name=#{name} value=#{value}")
+      documenter.document_step "Under \"#{locator_to_label(name, options)}\" select \"#{value.capitalize}\""
     end
 
     def click_button_with_text(text)
@@ -63,6 +69,11 @@ module StudyCalendar
 
     def click_link_with_text(text)
       @browser.click("xpath=//a[child::text()='#{text}']")
+    end
+    
+    private
+    def locator_to_label(locator, options = {})
+      options[:label] || locator.split("-").join(" ").capitalize
     end
   end
 end

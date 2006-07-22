@@ -113,6 +113,7 @@ module Test
               suite_name = match[2]
               test_name = match[1]
               @suite_documents[suite_name] << @current_test_document
+              @current_test_document = nil
             end
           end
           
@@ -156,6 +157,7 @@ module Test
               output_document "#{"=" * suite_title.length}"
               output_document
               output_document @suite_documents[suite_name].join("\n\n")
+              
             end
           end
           
