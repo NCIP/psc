@@ -4,11 +4,12 @@ import junit.framework.TestCase;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public abstract class ControllerTestCase extends TestCase {
+public abstract class ControllerTestCase extends StudyCalendarTestCase {
     protected MockHttpServletRequest request;
     protected MockHttpServletResponse response;
     protected MockServletContext servletContext;
