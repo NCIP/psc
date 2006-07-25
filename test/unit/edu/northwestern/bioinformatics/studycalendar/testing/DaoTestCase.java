@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
+import edu.nwu.bioinformatics.commons.StringUtils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,8 +9,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ColumnMapRowMapper;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
+import java.sql.SQLException;
+import java.sql.ResultSet;
 
 /**
  * @author Rhett Sutphin
@@ -80,5 +88,44 @@ public abstract class DaoTestCase extends DbTestCase {
             }
             return applicationContext;
         }
+    }
+
+    protected final void dumpResults(String sql) {
+        List<Map<String, String>> rows = new JdbcTemplate(getDataSource()).query(
+            sql,
+            new ColumnMapRowMapper() {
+                protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
+                    Object value = super.getColumnValue(rs, index);
+                    return value == null ? "null" : value.toString();
+                }
+            }
+        );
+        StringBuffer dump = new StringBuffer(sql).append('\n');
+        if (rows.size() > 0) {
+            Map<String, Integer> colWidths = new HashMap<String, Integer>();
+            for (String colName : rows.get(0).keySet()) {
+                colWidths.put(colName, colName.length());
+                for (Map<String, String> row : rows) {
+                    colWidths.put(colName, Math.max(colWidths.get(colName), row.get(colName).length()));
+                }
+            }
+
+            for (String colName : rows.get(0).keySet()) {
+                StringUtils.appendWithPadding(colName, colWidths.get(colName), false, dump);
+                dump.append("   ");
+            }
+            dump.append('\n');
+
+            for (Map<String, String> row : rows) {
+                for (String colName : row.keySet()) {
+                    StringUtils.appendWithPadding(row.get(colName), colWidths.get(colName), false, dump);
+                    dump.append(" | ");
+                }
+                dump.append('\n');
+            }
+        }
+        dump.append("  ").append(rows.size()).append(" row").append(rows.size() != 1 ? "s\n" : "\n");
+
+        System.out.print(dump);
     }
 }
