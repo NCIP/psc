@@ -33,7 +33,7 @@ public class StudyDaoTest extends DaoTestCase {
             Study study = new Study();
             study.setName("New study");
             study.addArm(new Arm());
-            study.getArms().get(0).setName("First Arm");
+            study.getArms().get(0).setName("First arm");
             dao.save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);
@@ -46,9 +46,8 @@ public class StudyDaoTest extends DaoTestCase {
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong name", "New study", loaded.getName());
             // TODO: cascade saving arms
-            // assertEquals("Wrong number of arms", 1, loaded.getArms().size());
-            // assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
-            // assertEquals("Wrong number for arm 0", (Integer) 1, loaded.getArms().get(0).getNumber());
+             assertEquals("Wrong number of arms", 1, loaded.getArms().size());
+             assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
         }
     }
 
