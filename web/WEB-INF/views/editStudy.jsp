@@ -6,12 +6,6 @@
     <title>${action} Study</title>
     <tags:javascriptLink name="scriptaculous/scriptaculous"/>
     <script type="text/javascript">
-        /*
-        <div class="row arm-name added-arm">
-            <div class="label"><label for="arm-name-2">Arm 3 name</label></div>
-            <div class="value"><input type="text" id="arm-name-2" name="armName[2]"/></div>
-        </div>
-        */
         function addArmName() {
             var group = $('arm-names-group');
             var added_arms = $$('.added-arm');
@@ -23,7 +17,7 @@
                     Builder.node('label', {'for': newInputId}, "Arm " + newNum + " name")
                 ]),
                 Builder.node('div', {className:'value'}, [
-                    Builder.node('input', {type:'text', id:newInputId, name:"armName[" + newIdx + "]"})
+                    Builder.node('input', {type:'text', id:newInputId, name:"armNames[" + newIdx + "]"})
                 ])
             ]);
             newRow.style.display = "none";
@@ -103,7 +97,7 @@
 <body>
 <h1>${action} Study</h1>
 
-<form action="<c:url value=""/>" method="post">
+<form action="<c:url value="/pages/newStudy"/>" method="post">
     <div class="row">
         <div class="label">
             <label for="study-name">Study name</label>
@@ -125,11 +119,11 @@
     <div id="arm-names-group" style="display: none">
         <div class="row arm-name">
             <div class="label"><label for="arm-name-0">Arm 1 name</label></div>
-            <div class="value"><input type="text" id="arm-name-0" name="armName[0]"/></div>
+            <div class="value"><input type="text" id="arm-name-0" name="armNames[0]"/></div>
         </div>
         <div class="row arm-name">
             <div class="label"><label for="arm-name-1">Arm 2 name</label></div>
-            <div class="value"><input type="text" id="arm-name-1" name="armName[1]"/></div>
+            <div class="value"><input type="text" id="arm-name-1" name="armNames[1]"/></div>
         </div>
         <div class="row" id="arm-names-group-buttons">
             <div class="value submit">
