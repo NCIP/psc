@@ -5,6 +5,8 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
 import javax.persistence.Basic;
 import javax.persistence.SequenceGenerator;
@@ -42,6 +44,8 @@ public class Activity extends AbstractDomainObject {
         this.description = description;
     }
 
+    @ManyToOne
+    @JoinColumn (name = "activity_type_id")
     public ActivityType getType() {
         return type;
     }
