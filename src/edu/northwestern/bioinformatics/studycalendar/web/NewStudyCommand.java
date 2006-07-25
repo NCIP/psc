@@ -21,7 +21,7 @@ public class NewStudyCommand {
             for (String armName : getArmNames()) {
                 Arm arm = new Arm();
                 arm.setName(armName);
-                study.getArms().add(arm);
+                study.addArm(arm);
             }
         }
         return study;

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import junit.framework.TestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 import java.util.List;
 import java.util.Arrays;
@@ -35,7 +36,9 @@ public class NewStudyCommandTest extends TestCase {
         assertNotNull("Study is null", actual);
         assertEquals(expectedStudyName, actual.getName());
         for (int i = 0; i < expectedArmNames.size(); i++) {
-            assertEquals("Wrong arm name at index " + i, expectedArmNames.get(i), actual.getArms().get(i).getName());
+            Arm actualArm = actual.getArms().get(i);
+            assertEquals("Wrong arm name at index " + i, expectedArmNames.get(i), actualArm.getName());
+            assertSame("Relationship not bidirectional at arm " + i, actual, actualArm.getStudy());
         }
     }
     
