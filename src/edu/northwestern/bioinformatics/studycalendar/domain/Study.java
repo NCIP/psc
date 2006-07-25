@@ -41,7 +41,6 @@ public class Study extends AbstractDomainObject {
     }
 
     @OneToMany (mappedBy = "study")
-    @IndexColumn (name = "num", base = 1)
     public List<Arm> getArms() {
         return arms;
     }

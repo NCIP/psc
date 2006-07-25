@@ -25,7 +25,6 @@ import javax.persistence.FetchType;
 )
 public class Arm extends AbstractDomainObject {
     private Study study;
-    private Integer number;
     private String name;
 
     public String getName() {
@@ -44,15 +43,5 @@ public class Arm extends AbstractDomainObject {
 
     public void setStudy(Study study) {
         this.study = study;
-    }
-
-    @Basic
-    @Column (name = "num")
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
     }
 }

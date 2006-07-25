@@ -21,8 +21,8 @@ public class StudyDaoTest extends DaoTestCase {
         assertNotNull("Study 1 not found", study);
 
         assertEquals("Wrong number of arms", 2, study.getArms().size());
-        assertArm("Wrong arm 0", 201, 1, "Sinister", study.getArms().get(0));
-        assertArm("Wrong arm 1", 200, 2, "Dexter", study.getArms().get(1));
+        assertArm("Wrong arm 0", 200, "Dexter", study.getArms().get(0));
+        assertArm("Wrong arm 1", 201, "Sinister", study.getArms().get(1));
 
         assertSame("Arm <=> Study relationship not bidirectional on load", study, study.getArms().get(0).getStudy());
     }
@@ -53,10 +53,9 @@ public class StudyDaoTest extends DaoTestCase {
     }
 
     private static void assertArm(
-        String message, Integer expectedId, Integer expectedNumber, String expectedName, Arm actualArm
+        String message, Integer expectedId, String expectedName, Arm actualArm
     ) {
         assertEquals(message + ": wrong id", expectedId, actualArm.getId());
-        assertEquals(message + ": wrong number", expectedNumber, actualArm.getNumber());
         assertEquals(message + ": wrong name", expectedName, actualArm.getName());
     }
 }
