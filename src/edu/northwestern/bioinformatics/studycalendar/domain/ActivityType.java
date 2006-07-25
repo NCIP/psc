@@ -15,16 +15,14 @@ import javax.persistence.FetchType;
  * @author Jaron Sampson
  */
 @Entity
-@Table (name = "activities")
+@Table (name = "activity_types")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class Activity extends AbstractDomainObject {
+public class ActivityType extends AbstractDomainObject {
     private String name;
-    private String description;
-    private ActivityType type;
 
     public String getName() {
         return name;
@@ -33,21 +31,4 @@ public class Activity extends AbstractDomainObject {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public ActivityType getType() {
-        return type;
-    }
-
-    public void setType(ActivityType type) {
-        this.type = type;
-    }
-    
 }
