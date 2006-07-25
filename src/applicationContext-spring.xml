@@ -10,4 +10,6 @@
         <property name="location"><value>classpath:datasource.properties</value></property>
     </bean>
 
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
 </beans>

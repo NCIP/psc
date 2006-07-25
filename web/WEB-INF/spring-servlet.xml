@@ -14,11 +14,15 @@
         </property>
     </bean>
 
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
-    <bean name="/welcome" id="welcomeController" class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
+    <bean name="/welcome" id="welcomeController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
 
-    <bean name="/newStudy" id="newStudyController" class="edu.northwestern.bioinformatics.studycalendar.web.NewStudyController"/>
+    <bean name="/newStudy" id="newStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewStudyController"/>
 
 	<bean name="/login" id="loginController" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController">
 		<property name="sessionForm"><value>true</value></property>
