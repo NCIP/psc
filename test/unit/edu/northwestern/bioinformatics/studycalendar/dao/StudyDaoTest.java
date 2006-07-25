@@ -45,9 +45,8 @@ public class StudyDaoTest extends DaoTestCase {
             Study loaded = dao.getById(savedId);
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong name", "New study", loaded.getName());
-            // TODO: cascade saving arms
-             assertEquals("Wrong number of arms", 1, loaded.getArms().size());
-             assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
+            assertEquals("Wrong number of arms", 1, loaded.getArms().size());
+            assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
         }
     }
 
