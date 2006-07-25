@@ -11,7 +11,7 @@ import org.easymock.classextension.EasyMock;
 /**
  * @author Rhett Sutphin
  */
-public class StudyCalendarTestCase extends TestCase {
+public abstract class StudyCalendarTestCase extends TestCase {
     protected Set<Object> mocks = new HashSet<Object>();
 
     ////// MOCK REGISTRATION AND HANDLING
