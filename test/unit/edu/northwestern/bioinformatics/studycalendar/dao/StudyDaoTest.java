@@ -4,6 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
@@ -25,6 +27,12 @@ public class StudyDaoTest extends DaoTestCase {
         assertArm("Wrong arm 1", 201, "Sinister", study.getArms().get(1));
 
         assertSame("Arm <=> Study relationship not bidirectional on load", study, study.getArms().get(0).getStudy());
+    }
+
+    public void testGetAll() throws Exception {
+        List<Study> actual = dao.getAll();
+        assertEquals(1, actual.size());
+        assertEquals("Wrong study found", 100, (int) actual.get(0).getId());
     }
 
     public void testSaveNewStudy() throws Exception {

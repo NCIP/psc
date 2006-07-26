@@ -21,6 +21,9 @@
     <bean name="/welcome" id="welcomeController"
           class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
 
+    <bean name="/studyList" id="studyListController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
+
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewStudyController"/>
 
