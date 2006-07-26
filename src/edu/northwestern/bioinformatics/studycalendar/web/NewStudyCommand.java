@@ -23,6 +23,10 @@ public class NewStudyCommand {
                 arm.setName(armName);
                 study.addArm(arm);
             }
+        } else {
+            Arm singleArm = new Arm();
+            singleArm.setName(getStudyName());
+            study.addArm(singleArm);
         }
         return study;
     }

@@ -20,7 +20,8 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertEquals(expectedStudyName, actual.getName());
-        assertEquals("Should have no arms", 0, actual.getArms().size());
+        assertEquals("Should have one arm", 1, actual.getArms().size());
+        assertEquals("Should have one arm named after study", expectedStudyName, actual.getArms().get(0).getName());
     }
 
     public void testCreateStudyWithArms() throws Exception {
@@ -54,6 +55,7 @@ public class NewStudyCommandTest extends TestCase {
         Study actual = command.createStudy();
         assertNotNull("Study is null", actual);
         assertEquals(expectedStudyName, actual.getName());
-        assertEquals("Should be no arms", 0, actual.getArms().size());
+        assertEquals("Should have one arm", 1, actual.getArms().size());
+        assertEquals("Should have one arm named after study", expectedStudyName, actual.getArms().get(0).getName());
     }
 }
