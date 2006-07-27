@@ -39,4 +39,7 @@
     <bean id="studyDao" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao">
     </bean>
+    <bean id="activityDao" parent="daoTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao">
+    </bean>
 </beans>

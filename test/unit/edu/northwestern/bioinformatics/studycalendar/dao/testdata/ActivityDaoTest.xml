@@ -1,0 +1,8 @@
+<dataset>
+    <ACTIVITIES
+        id="100"
+        version="0"
+        name="Screening Activity"
+        description="Decription of screening activity."
+        activity_type_id="6"/>
+</dataset>

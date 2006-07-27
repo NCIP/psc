@@ -3,6 +3,7 @@ class CreateActivities extends edu.northwestern.bioinformatics.bering.Migration 
         createTable('activities') { t ->
             t.addColumn('version', 'integer', nullable:false)
             t.addColumn('name', 'string', nullable:false)
+            t.addColumn('descripton', 'string', nullable:false)
             t.addColumn('activity_type_id', 'integer', nullable:false)
         }
         
