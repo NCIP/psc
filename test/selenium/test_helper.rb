@@ -62,9 +62,15 @@ module StudyCalendar
       @browser.check("name=#{name} value=#{value}")
       documenter.document_step "Under \"#{locator_to_label(name, options)}\" select \"#{value.capitalize}\""
     end
-
-    def click_button_with_text(text)
-      @browser.click("xpath=//input[@type='submit' and @value='#{text}']")
+    
+    def click(name, value, options = {})
+      @browser.click("name=#{name} value=#{value}")
+      documenter.document_step "Under \"#{locator_to_label(name, options)}\" click \"#{value.capitalize}\""
+    end
+    
+    def click_button_with_text(text, input_type='submit')
+      @browser.click("xpath=//input[@type='#{input_type}' and @value='#{text}']")
+      documenter.document_step "Click \"#{text}\" button"
     end
 
     def click_link_with_text(text)

@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 class CreateStudyTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   
-  def test_create_single_arm_study
+  def test_create_no_arm_study
     open "/pages/newStudy"
     type "study-name", "Vioxx Study"
     document_comment "Cannot proceed because form submission is not implemented yet."
@@ -11,10 +11,22 @@ class CreateStudyTest < Test::Unit::TestCase
   
   def test_create_multiple_arm_study
     open "/pages/newStudy"
+    wait_for_page_to_load
     type "study-name", "Vioxx Study"
-    check("arms", "yes", :label => "Multiple arms?")
+    click("arms", "yes", :label => "Multiple arms?")
     document_comment "Input fields for the names of arms 1 and 2 should appear, as well as buttons for adding and removing arms"
-  end  
+    type "arm-name-0", "A"
+    type "arm-name-1", "B"
+    click_button_with_text "Add arm", "button"
+    type "arm-name-2", "C"
+    click_button_with_text "Add arm", "button"
+    type "arm-name-3", "D"
+    click_button_with_text "Remove last arm", "button"
+    @browser.wait_for_condition("$('arm-name-3') == null", 10000)
+    click_button_with_text "Create"
+    wait_for_page_to_load
+    
+  end
 end
 
 __END__
