@@ -15,6 +15,12 @@ public class ActivityDaoTest extends DaoTestCase {
         Activity activity = dao.getById(100);
         assertNotNull("Screening Activity not found", activity);
         assertEquals("Wrong name", "Screening Activity", activity.getName());
+        assertEquals("Wrong description", "Decription of screening activity.", activity.getDescription());
+    }
+
+    public void testGetActivityTypeName() throws Exception {
+        Activity activity = dao.getById(100);
+        assertEquals("Wrong activity type name", "Screening", activity.getType().getName());
     }
 
 }

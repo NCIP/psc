@@ -5,4 +5,9 @@
         name="Screening Activity"
         description="Decription of screening activity."
         activity_type_id="6"/>
+        
+    <ACTIVITY_TYPES
+    	id="6"
+    	version="0"
+    	name="Screening"/>
 </dataset>
