@@ -4,7 +4,7 @@
 <html>
 <head>
     <title>${action} Study</title>
-    <tags:javascriptLink name="scriptaculous/scriptaculous"/>
+    <tags:includeScriptaculous/>
     <script type="text/javascript">
         function addArmName() {
             var group = $('arm-names-group');
