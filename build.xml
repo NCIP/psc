@@ -58,7 +58,6 @@
     <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
 
     <path id="cp.bering">
-        <path refid="cp.compiled-source"/>
         <path refid="cp.jdbc"/>
         <fileset dir="tools/bering">
             <include name="**/*.jar"/>
