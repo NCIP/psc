@@ -9,10 +9,18 @@
     <!-- HIBERNATE CONFIGURATION -->
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+        <!-- typedefs have to be defined before they are referenced -->
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
+            </list>
+        </property>
         <property name="annotatedClasses">
             <list>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Arm</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Duration</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Period</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</value>
             </list>
@@ -36,9 +44,8 @@
 
     <!-- ACTUAL DAOS -->
 
-    <bean id="studyDao" parent="daoTemplate"
-          class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao">
-    </bean>
+    <bean id="studyDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao"/>
+    <bean id="armDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ArmDao"/>
     <bean id="activityDao" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao">
     </bean>

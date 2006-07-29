@@ -17,7 +17,7 @@ public class StudyTest extends TestCase {
         Arm arm = new Arm();
         study.addArm(arm);
         assertEquals("Wrong number of arms", 1, study.getArms().size());
-        assertSame("Wrong arm present", study.getArms().get(0), arm);
+        assertSame("Wrong arm present", arm, study.getArms().get(0));
         assertSame("Bidirectional relationship not maintained", study, arm.getStudy());
     }
 }

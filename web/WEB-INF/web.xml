@@ -52,9 +52,4 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-
-	<taglib>
-		<taglib-uri>/spring</taglib-uri>
-		<taglib-location>/WEB-INF/spring.tld</taglib-location>
-	</taglib>
 </web-app>
