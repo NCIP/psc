@@ -252,6 +252,13 @@
         </war>
     </target>
 
+	<target name="war.notests" depends="compile" description="creates a deployable WAR file">
+        <mkdir dir="dist"/>
+        <war basedir="web" destfile="dist/${war-name}" webxml="web/WEB-INF/web.xml">
+            <exclude name="WEB-INF/web.xml"/>
+        </war>
+    </target>
+
     <!-- CRUISE CONTROL BUILDS -->
 
     <target name="oracle">
