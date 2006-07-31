@@ -31,7 +31,7 @@ module Test
             if (suite.respond_to?(:documenter=))
               suite.documenter = self
             else
-              puts "Suite does not respond to documenter=, #{suite}, #{suite.class}"
+              $stderr.puts "Suite does not respond to documenter=, #{suite}, #{suite.class}"
             end
             @output_level = output_level
             @io = io
