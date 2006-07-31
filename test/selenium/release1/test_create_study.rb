@@ -6,7 +6,11 @@ class CreateStudyTest < Test::Unit::TestCase
   def test_create_no_arm_study
     open "/pages/newStudy"
     type "study-name", "Vioxx Study"
-    document_comment "Cannot proceed because form submission is not implemented yet."
+    click_button_with_text "Create"
+    wait_for_page_to_load
+
+    assert_page_contains "Study: Vioxx Study"
+    assert_page_does_not_contain "Arms:"
   end
   
   def test_create_multiple_arm_study
@@ -23,9 +27,12 @@ class CreateStudyTest < Test::Unit::TestCase
     type "arm-name-3", "D"
     click_button_with_text "Remove last arm", "button"
     @browser.wait_for_condition("$('arm-name-3') == null", 10000)
+    
     click_button_with_text "Create"
     wait_for_page_to_load
-    
+    assert_page_contains "Study: Vioxx Study"
+    assert_page_contains "Arms: A B C"
+    assert_page_does_not_contain "D"
   end
 end
 

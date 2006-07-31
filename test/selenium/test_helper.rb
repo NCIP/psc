@@ -27,7 +27,11 @@ module StudyCalendar
     end
     
     def documenter
-      Test::Unit::UI::DocumentGeneration::TestRunner.documenter
+      unless @documenter
+        @documenter = Test::Unit::UI::DocumentGeneration::TestRunner.documenter
+        @documenter = StdoutDocumenter.new unless @documenter
+      end
+      @documenter
     end
 
     class Field
@@ -77,11 +81,35 @@ module StudyCalendar
       @browser.click("xpath=//a[child::text()='#{text}']")
     end
     
+    #### ASSERTIONS
+    
+    def assert_page_contains(text)
+      assert @browser.is_text_present(text), "\"#{text}\" is not on the page"
+      documenter.document_step "Check that \"#{text}\" appears somewhere in the page"
+    end
+    
+    def assert_page_does_not_contain(text)
+      assert !@browser.is_text_present(text), "\"#{text}\" is on the page"
+      documenter.document_step "Check that \"#{text}\" does not appear somewhere in the page"
+    end
+    
     private
     def locator_to_label(locator, options = {})
       options[:label] || locator.split("-").join(" ").capitalize
     end
   end
+  
+  private
+  class StdoutDocumenter
+    def document_step(str)
+      puts "   Step: #{str}"
+    end
+    
+    def document_comment(str)
+      puts "Comment: #{str}"
+    end
+  end
+  
 end
 
 require File.dirname(__FILE__) + '/document_generation'
