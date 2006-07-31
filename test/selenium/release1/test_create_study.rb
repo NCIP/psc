@@ -26,13 +26,13 @@ class CreateStudyTest < Test::Unit::TestCase
     click_button_with_text "Add arm", "button"
     type "arm-name-3", "D"
     click_button_with_text "Remove last arm", "button"
-    @browser.wait_for_condition("$('arm-name-3') == null", 10000)
+    @browser.wait_for_condition("selenium.browserbot.getCurrentWindow().eval(\"$('arm-name-3') == null\")", 10000)
     
     click_button_with_text "Create"
     wait_for_page_to_load
     assert_page_contains "Study: Vioxx Study"
     assert_page_contains "Arms: A B C"
-    assert_page_does_not_contain "D"
+    assert_page_does_not_contain "Arms: A B C D"
   end
 end
 
