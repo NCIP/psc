@@ -7,6 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -15,6 +16,7 @@ import java.util.Collections;
 
 /**
  * @author Moses Hohman
+ * @author Rhett Sutphin
  */
 public class NewPeriodController extends SimpleFormController {
     private ArmDao armDao;
@@ -54,6 +56,7 @@ public class NewPeriodController extends SimpleFormController {
         armDao.save(arm);
     }
 
+    @Required
     public void setArmDao(ArmDao armDao) {
         this.armDao = armDao;
     }
