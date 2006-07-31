@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 
 import java.util.List;
 
@@ -20,7 +21,32 @@ public class ActivityDaoTest extends DaoTestCase {
 
     public void testGetActivityTypeName() throws Exception {
         Activity activity = dao.getById(100);
-        assertEquals("Wrong activity type name", "Screening", activity.getType().getName());
+        assertEquals("Wrong activity type name", "screening", activity.getType().getName());
     }
 
+    
+/*    public void testSaveNewActivity() throws Exception {
+        Integer savedId;
+        {
+            Activity activity = new Activity();
+            activity.setName("Give drug");
+            activity.setDescription("Administer aspirin");
+            activity.setType(new ActivityType());
+           // activity.getType().setId(3);
+            activity.getType().setName("treatment");
+            dao.save(activity);
+            savedId = activity.getId();
+            assertNotNull("The saved activity didn't get an id", savedId);
+        }
+
+        interruptSession();
+
+        {
+            Activity loaded = dao.getById(savedId);
+            assertNotNull("Could not reload activity with id " + savedId, loaded);
+            assertEquals("Wrong name", "Give drug", loaded.getName());
+            assertEquals("Wrong name for activity type", "treatment", loaded.getType().getName());
+        }
+    }
+    */
 }

@@ -44,5 +44,15 @@
     </div>
 </form>
 
+<h1>Activity Types</h1>
+<table>
+    <c:forEach items="${activityTypes}" var="type">
+        <tr>
+            <td>${type.name}</td>
+        </tr>
+    </c:forEach>
+</table>
+
+
 </body>
 </html>

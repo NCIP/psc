@@ -8,15 +8,19 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collection;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 
 /**
  * @author Jaron Sampson
  */
 public class NewActivityController extends SimpleFormController {
     private ActivityDao activityDao;
+    private ActivityTypeDao activityTypeDao;
 
     public NewActivityController() {
         setCommandClass(NewActivityCommand.class);
@@ -38,6 +42,9 @@ public class NewActivityController extends SimpleFormController {
 
         Map<String, Object> model = errors.getModel();
         model.put("activity", activity);
+        Collection<ActivityType> activityTypes = activityTypeDao.getAll();
+        model.put("activityTypes", activityTypes);
+        
         return new ModelAndView(getSuccessView(), model);
     }
 
@@ -46,5 +53,10 @@ public class NewActivityController extends SimpleFormController {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    @Required
+    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
+        this.activityTypeDao = activityTypeDao;
     }
 }

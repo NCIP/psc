@@ -1,0 +1,11 @@
+<dataset>
+		<ACTIVITY_TYPES
+    	id="6"
+    	version="0"
+    	name="screening"/>
+
+		<ACTIVITY_TYPES
+    	id="7"
+    	version="0"
+    	name="early detection"/>
+</dataset>
