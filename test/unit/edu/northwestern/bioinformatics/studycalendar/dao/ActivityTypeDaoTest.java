@@ -12,7 +12,7 @@ public class ActivityTypeDaoTest extends DaoTestCase {
     private ActivityTypeDao dao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
 
     public void testGetById() {
-        ActivityType type = dao.getById(7);
+        ActivityType type = dao.getById(-6);
         assertNotNull("activity type not found", type);
         assertEquals("wrong name", "early detection", type.getName());
     }
@@ -39,7 +39,7 @@ public class ActivityTypeDaoTest extends DaoTestCase {
     public void testGetAll() throws Exception {
         List<ActivityType> actual = dao.getAll();
         assertEquals(2, actual.size());
-        assertEquals("Wrong order", 6, (int) actual.get(0).getId());
+        assertEquals("Wrong order", -7, (int) actual.get(0).getId());
         assertEquals("Wrong order", "early detection", actual.get(1).getName());
     }
 
