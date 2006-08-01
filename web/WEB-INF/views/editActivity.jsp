@@ -23,39 +23,39 @@
 <body>
 <h1>${action} Activity</h1>
 
-<form action="<c:url value="/pages/newActivity"/>" method="post">
+<form:form action="studycalendar/pages/${action}Activity" method="post">
     <div class="row">
         <div class="label">
-            <form:label path="name">Activity name</form:label>
+            <form:label path="activityName">Activity name</form:label>
         </div>
         <div class="value">
-            <form:input path="name"/>
+            <form:input path="activityName"/>
         </div>
     </div>
     <div class="row">
         <div class="label">
-            <form:label path="description">Activity description</form:label>
+            <form:label path="activityDescription">Activity description</form:label>
         </div>
         <div class="value">
-            <form:input path="descrtiption"/>
+            <form:input path="activityDescription"/>
         </div>
     </div>
     <div class="row">
-        <div class="value submit">
+        <div class="label">
+            <form:label path="activityTypeId">Activity type</form:label>
+        </div>
+        <div class="value">
+            <form:select path="activityTypeId">
+            	<form:options items="${activityTypes}" itemLabel="name" itemValue="id"/>
+            </form:select>
+        </div>
+	</div>    
+    <div class="row">
+        <div class="submit">
             <input type="submit" value="Create"/>
         </div>
     </div>
-</form>
-
-<h1>Activity Types</h1>
-<table>
-    <c:forEach items="${activityTypes}" var="type">
-        <tr>
-            <td>${type.name}</td>
-        </tr>
-    </c:forEach>
-</table>
-
+</form:form>
 
 </body>
 </html>
