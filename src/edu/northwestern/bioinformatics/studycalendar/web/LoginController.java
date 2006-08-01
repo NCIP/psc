@@ -42,8 +42,7 @@ public class LoginController extends SimpleFormController {
             log.debug("The user was denied access to the study calendar application." + ex);
         }
         if (loginSuccess) {
-            TestUserDetails testUserDetails = new TestUserDetails();
-            return new ModelAndView(getSuccessView(),"testuserdetails",testUserDetails);
+            return new ModelAndView(getSuccessView());
         } else {
             // have to add an error page or redirect to login page with error msg
             loginCredentials = new LoginCredentials();
@@ -69,6 +68,7 @@ public class LoginController extends SimpleFormController {
                 }
             }
         }
+        log.debug("AuthenticationManager Class||"+authMgr);
         return authMgr;
     }
 }
