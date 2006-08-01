@@ -22,8 +22,8 @@
 </head>
 <body>
 <h1>${action} Activity</h1>
-
-<form:form action="studycalendar/pages/${action}Activity" method="post">
+<c:url value="/pages/newActivity" var="formAction"/>
+<form:form action="${formAction}" method="post">
     <div class="row">
         <div class="label">
             <form:label path="activityName">Activity name</form:label>

@@ -47,6 +47,11 @@ public class NewActivityController extends SimpleFormController {
         return new ModelAndView(getSuccessView(), model);
     }
 
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+    	NewActivityCommand command = new NewActivityCommand(activityTypeDao);
+    	return command;
+    }
+    
     ////// CONFIGURATION
 
     @Required

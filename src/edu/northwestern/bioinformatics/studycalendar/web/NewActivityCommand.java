@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 
 /**
  * @author Jaron Sampson
@@ -10,15 +11,17 @@ public class NewActivityCommand {
     private String activityName;
     private String activityDescription;
     private Integer activityTypeId;
+    private ActivityTypeDao activityTypeDao;
+    
+    public NewActivityCommand(ActivityTypeDao activityTypeDao) {
+    	this.activityTypeDao = activityTypeDao;
+    }
 
     public Activity createActivity() {
         Activity activity = new Activity();
-//TODO: Get the activity type
-        ActivityType activityType = new ActivityType();
-//        
         activity.setName(getActivityName());
         activity.setDescription(getActivityDescription());
-        activity.setType(activityType);        
+        activity.setType(activityTypeDao.getById(activityTypeId));        
         return activity;
     }
 
