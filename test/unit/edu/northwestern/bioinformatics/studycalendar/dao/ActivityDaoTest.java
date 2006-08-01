@@ -11,6 +11,7 @@ import java.util.List;
  */
 public class ActivityDaoTest extends DaoTestCase {
     private ActivityDao dao = (ActivityDao) getApplicationContext().getBean("activityDao");
+    private ActivityTypeDao activityTypeDao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
 
     public void testGetById() throws Exception {
         Activity activity = dao.getById(100);
@@ -25,15 +26,13 @@ public class ActivityDaoTest extends DaoTestCase {
     }
 
     
-/*    public void testSaveNewActivity() throws Exception {
+	public void testSaveNewActivity() throws Exception {
         Integer savedId;
         {
             Activity activity = new Activity();
             activity.setName("Give drug");
             activity.setDescription("Administer aspirin");
-            activity.setType(new ActivityType());
-           // activity.getType().setId(3);
-            activity.getType().setName("treatment");
+            activity.setType(activityTypeDao.getById(5));
             dao.save(activity);
             savedId = activity.getId();
             assertNotNull("The saved activity didn't get an id", savedId);
@@ -45,8 +44,7 @@ public class ActivityDaoTest extends DaoTestCase {
             Activity loaded = dao.getById(savedId);
             assertNotNull("Could not reload activity with id " + savedId, loaded);
             assertEquals("Wrong name", "Give drug", loaded.getName());
-            assertEquals("Wrong name for activity type", "treatment", loaded.getType().getName());
+            assertEquals("Wrong name for activity type", "prevention", loaded.getType().getName());
         }
     }
-    */
 }

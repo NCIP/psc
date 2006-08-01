@@ -17,6 +17,7 @@ public class ActivityTypeDaoTest extends DaoTestCase {
         assertEquals("wrong name", "early detection", type.getName());
     }
 
+/* Don't need this yet
     public void testSaveActivityType() throws Exception {
         Integer savedId;
         {
@@ -35,6 +36,7 @@ public class ActivityTypeDaoTest extends DaoTestCase {
             assertEquals("Wrong name", "Test activity type", loaded.getName());
         }
     }
+*/
     
     public void testGetAll() throws Exception {
         List<ActivityType> actual = dao.getAll();

@@ -9,14 +9,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 public class NewActivityCommand {
     private String activityName;
     private String activityDescription;
-//    private String activityTypeName;
+    private Integer activityTypeId;
 
     public Activity createActivity() {
         Activity activity = new Activity();
 //TODO: Get the activity type
         ActivityType activityType = new ActivityType();
-        activityType.setName("Frank");
-        activityType.setId(20);
 //        
         activity.setName(getActivityName());
         activity.setDescription(getActivityDescription());
@@ -44,13 +42,11 @@ public class NewActivityCommand {
         this.activityDescription = activityDescription;
     }
 
-/*    
-    public Integer getActivityTypeName() {
-    	return activityTypeName;
+    public Integer getActivityTypeId() {
+    	return activityTypeId;
     } 
 
-    public Integer setActivityTypeName(String activityType) {
-    	this.setActivityTypeName = activityType;
+    public void setActivityTypeId(Integer id) {
+    	this.activityTypeId = id;
     } 
-*/
 }

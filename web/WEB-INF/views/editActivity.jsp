@@ -1,6 +1,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+
 <html>
 <head>
     <title>${action} Activity</title>
@@ -23,18 +26,18 @@
 <form action="<c:url value="/pages/newActivity"/>" method="post">
     <div class="row">
         <div class="label">
-            <label for="activity-name">Activity name</label>
+            <form:label path="name">Activity name</form:label>
         </div>
         <div class="value">
-            <input type="text" id="activity-name" name="activityName"/>
+            <form:input path="name"/>
         </div>
     </div>
     <div class="row">
         <div class="label">
-            <label for="activity-description">Activity description</label>
+            <form:label path="description">Activity description</form:label>
         </div>
         <div class="value">
-            <input type="text" id="activity-description" name="activityDescription"/>
+            <form:input path="descrtiption"/>
         </div>
     </div>
     <div class="row">

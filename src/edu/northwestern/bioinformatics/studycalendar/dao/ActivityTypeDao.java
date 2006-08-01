@@ -13,10 +13,13 @@ public class ActivityTypeDao extends HibernateDaoSupport {
         return (ActivityType) getHibernateTemplate().get(ActivityType.class, id);
     }
 
+/* We don't need this yet.
+
     public void save(ActivityType type) {
         getHibernateTemplate().saveOrUpdate(type);
     }
-
+*/
+    
     public List<ActivityType> getAll() {
         return getHibernateTemplate().find("from ActivityType");
     }

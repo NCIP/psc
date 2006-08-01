@@ -7,7 +7,17 @@
         activity_type_id="6"/>
         
     <ACTIVITY_TYPES
+    	id="5"
+    	version="0"
+    	name="prevention"/>
+
+    <ACTIVITY_TYPES
     	id="6"
     	version="0"
     	name="screening"/>
+
+	<ACTIVITY_TYPES
+    	id="7"
+    	version="0"
+    	name="early detection"/>
 </dataset>

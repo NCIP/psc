@@ -29,7 +29,9 @@ public class NewActivityController extends SimpleFormController {
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
+        Collection<ActivityType> activityTypes = activityTypeDao.getAll();
         Map<String, Object> refdata = new HashMap<String, Object>();
+        refdata.put("activityTypes", activityTypes);
         refdata.put("action", "New");
         return refdata;
     }
@@ -41,10 +43,7 @@ public class NewActivityController extends SimpleFormController {
         activityDao.save(activity);
 
         Map<String, Object> model = errors.getModel();
-        model.put("activity", activity);
-        Collection<ActivityType> activityTypes = activityTypeDao.getAll();
-        model.put("activityTypes", activityTypes);
-        
+        model.put("activity", activity);        
         return new ModelAndView(getSuccessView(), model);
     }
 
