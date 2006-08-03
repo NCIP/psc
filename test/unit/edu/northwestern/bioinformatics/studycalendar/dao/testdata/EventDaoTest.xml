@@ -14,7 +14,7 @@
         id="-200"
         version="0"
         name="CT"
-        description=""
+        description="Not blank"
         activity_type_id="6"/>
     <ACTIVITY_TYPES
         id="6"
