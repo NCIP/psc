@@ -14,14 +14,14 @@
         id="-1001"
         version="0"
         name="-1001"
-        description=""
+        description="Not blank"
         activity_type_id="4"
         />
     <ACTIVITIES
         id="-1002"
         version="0"
         name="-1002"
-        description=""
+        description="Not blank"
         activity_type_id="5"
         />
 
