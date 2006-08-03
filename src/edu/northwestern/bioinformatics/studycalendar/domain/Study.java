@@ -11,6 +11,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,10 +29,23 @@ public class Study extends AbstractDomainObject {
     private String name;
     private List<Arm> arms = new ArrayList<Arm>();
 
+    ////// LOGIC
+
     public void addArm(Arm arm) {
         arms.add(arm);
         arm.setStudy(this);
     }
+
+    @Transient
+    public int getLengthInDays() {
+        int len = 0;
+        for (Arm arm : arms) {
+            len = Math.max(len, arm.getLengthInDays());
+        }
+        return len;
+    }
+
+    ////// BEAN PROPERTIES
 
     public String getName() {
         return name;

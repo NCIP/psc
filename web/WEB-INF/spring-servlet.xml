@@ -36,6 +36,9 @@
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewActivityController"/>
 
+    <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
+
     <bean name="/login" id="loginController" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController">
 		<property name="sessionForm"><value>true</value></property>
         <property name="commandName"><value>loginCredentials</value></property>

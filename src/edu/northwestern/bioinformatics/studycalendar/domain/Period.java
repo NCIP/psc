@@ -6,6 +6,7 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.apache.commons.lang.math.IntRange;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -48,6 +49,11 @@ public class Period extends AbstractDomainObject {
         event.setPeriod(this);
         if (getPlannedEvents() == null) setPlannedEvents(new TreeSet<PlannedEvent>());
         getPlannedEvents().add(event);
+    }
+
+    @Transient
+    public IntRange getDayRange() {
+        return new IntRange(getStartDay(), getEndDay());
     }
 
     @Transient

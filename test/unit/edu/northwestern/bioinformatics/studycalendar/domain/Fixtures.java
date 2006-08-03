@@ -33,5 +33,16 @@ public class Fixtures {
         return ACTIVITY_TYPES.get(id);
     }
 
+    public static Period createPeriod(String name, int startDay, Duration.Unit dUnit, int dQuantity, int repetitions) {
+        Period p = new Period();
+        p.setName(name);
+        p.setStartDay(startDay);
+        p.getDuration().setUnit(dUnit);
+        p.getDuration().setQuantity(dQuantity);
+        p.setRepetitions(repetitions);
+        return p;
+    }
+
+    // static class
     private Fixtures() { }
 }
