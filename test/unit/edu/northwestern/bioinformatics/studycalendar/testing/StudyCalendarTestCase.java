@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
+import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+
 import junit.framework.TestCase;
 
 import java.lang.reflect.Method;
@@ -11,7 +13,7 @@ import org.easymock.classextension.EasyMock;
 /**
  * @author Rhett Sutphin
  */
-public abstract class StudyCalendarTestCase extends TestCase {
+public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected Set<Object> mocks = new HashSet<Object>();
 
     ////// MOCK REGISTRATION AND HANDLING
