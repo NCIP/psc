@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.jboss.ws.handler.HandlerChainBaseImpl;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
@@ -12,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.OneToMany;
+import java.util.SortedSet;
 
 /**
  * @author Moses Hohman
@@ -31,6 +34,7 @@ public class Period extends AbstractDomainObject {
     private Integer startDay;
     private Duration duration;
     private int repetitions = DEFAULT_REPETITIONS;
+    private SortedSet<PlannedEvent> plannedEvents;
 
     public String getName() {
         return name;
@@ -79,6 +83,15 @@ public class Period extends AbstractDomainObject {
 
     public void setRepetitions(int repetitions) {
         this.repetitions = repetitions;
+    }
+
+    @OneToMany(mappedBy = "period")
+    public SortedSet<PlannedEvent> getPlannedEvents() {
+        return plannedEvents;
+    }
+
+    public void setPlannedEvents(SortedSet<PlannedEvent> plannedEvents) {
+        this.plannedEvents = plannedEvents;
     }
 
     @Transient

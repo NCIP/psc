@@ -10,9 +10,11 @@ import javax.persistence.Basic;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
+import java.util.Comparator;
 
 /**
  * @author Jaron Sampson
+ * @author Rhett Sutphin
  */
 @Entity
 @Table (name = "activity_types")
@@ -21,8 +23,18 @@ import javax.persistence.FetchType;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class ActivityType extends AbstractDomainObject {
+public class ActivityType extends AbstractDomainObject implements Comparable<ActivityType> {
+    private static final Comparator<ActivityType> NATURAL_ORDER = new ById<ActivityType>();
+
     private String name;
+
+    ////// LOGIC
+
+    public int compareTo(ActivityType o) {
+        return NATURAL_ORDER.compare(this, o);
+    }
+
+    ////// BEAN PROPERTIES
 
     public String getName() {
         return name;

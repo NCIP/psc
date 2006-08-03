@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -15,6 +17,7 @@ import javax.persistence.FetchType;
 
 /**
  * @author Jaron Sampson
+ * @author Rhett Sutphin
  */
 @Entity
 @Table (name = "activities")
@@ -23,10 +26,22 @@ import javax.persistence.FetchType;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class Activity extends AbstractDomainObject {
+public class Activity extends AbstractDomainObject implements Comparable<Activity> {
     private String name;
     private String description;
     private ActivityType type;
+
+    ///// LOGIC
+
+    public int compareTo(Activity o) {
+        // by type first
+        int typeDiff = getType().compareTo(o.getType());
+        if (typeDiff != 0) return typeDiff;
+        // then by name
+        return ComparisonUtils.nullSafeCompare(getName(), o.getName());
+    }
+
+    ///// BEAN PROPERTIES
 
     public String getName() {
         return name;
