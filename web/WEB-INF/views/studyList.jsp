@@ -6,10 +6,11 @@
 </head>
 <body>
 <h1>Existing Studies</h1>
+<p><a href="<c:url value="/pages/newStudy"/>">New study</a></p>
 <table>
     <c:forEach items="${studies}" var="study">
         <tr>
-            <td>${study.name}</td>
+            <td><a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">${study.name}</a></td>
         </tr>
     </c:forEach>
 </table>
