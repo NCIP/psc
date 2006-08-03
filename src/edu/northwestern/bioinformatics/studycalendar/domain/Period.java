@@ -6,7 +6,6 @@ import org.hibernate.annotations.Sort;
 import org.hibernate.annotations.SortType;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.jboss.ws.handler.HandlerChainBaseImpl;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
