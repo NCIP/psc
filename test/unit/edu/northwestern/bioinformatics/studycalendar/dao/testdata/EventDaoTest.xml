@@ -1,0 +1,32 @@
+<dataset>
+    <PERIODS
+        id="-300"
+        arm_id="2"
+        version="0"
+        start_day="1"
+        name="Drug administration"
+        duration_quantity="1"
+        duration_unit="week"
+        repetitions="1"
+        />
+
+    <ACTIVITIES
+        id="-200"
+        version="0"
+        name="CT"
+        description=""
+        activity_type_id="6"/>
+    <ACTIVITY_TYPES
+        id="6"
+        version="0"
+        name="screening"/>
+
+    <PLANNED_EVENTS
+        id="-12"
+        version="0"
+        period_id="-300"
+        activity_id="-200"
+        day="4"
+        />
+
+</dataset>

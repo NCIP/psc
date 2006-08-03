@@ -2,6 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.jboss.ws.handler.HandlerChainBaseImpl;
 
 import javax.persistence.AttributeOverride;
@@ -14,10 +18,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.OneToMany;
+import javax.persistence.FetchType;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Moses Hohman
+ * @author Rhett Sutphin
  */
 @Entity
 @Table (name = "periods")
@@ -36,6 +43,23 @@ public class Period extends AbstractDomainObject {
     private int repetitions = DEFAULT_REPETITIONS;
     private SortedSet<PlannedEvent> plannedEvents;
 
+    ////// LOGIC
+
+    public void addPlannedEvent(PlannedEvent event) {
+        event.setPeriod(this);
+        if (getPlannedEvents() == null) setPlannedEvents(new TreeSet<PlannedEvent>());
+        getPlannedEvents().add(event);
+    }
+
+    @Transient
+    public Integer getEndDay() {
+        if (startDay == null) return null;
+        if (getDuration().getQuantity() == null) return null;
+        return startDay + (getDuration().inDays() * repetitions) - 1;
+    }
+
+    ////// BEAN PROPERTIES
+
     public String getName() {
         return name;
     }
@@ -44,8 +68,8 @@ public class Period extends AbstractDomainObject {
         this.name = name;
     }
 
-    @ManyToOne
-    @JoinColumn (name = "arm_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "arm_id")
     public Arm getArm() {
         return arm;
     }
@@ -86,18 +110,13 @@ public class Period extends AbstractDomainObject {
     }
 
     @OneToMany(mappedBy = "period")
+    @Sort(type = SortType.NATURAL)
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public SortedSet<PlannedEvent> getPlannedEvents() {
         return plannedEvents;
     }
 
     public void setPlannedEvents(SortedSet<PlannedEvent> plannedEvents) {
         this.plannedEvents = plannedEvents;
-    }
-
-    @Transient
-    public Integer getEndDay() {
-        if (startDay == null) return null;
-        if (getDuration().getQuantity() == null) return null;
-        return startDay + (getDuration().inDays() * repetitions) - 1;
     }
 }
