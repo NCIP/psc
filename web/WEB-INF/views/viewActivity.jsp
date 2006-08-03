@@ -10,7 +10,7 @@
     Activity: ${activity.name}
 </p>
 <p>
-    Activity Name: ${activity.description}
+    Activity Description: ${activity.description}
 </p>
 <p>
     Activity Type: ${activity.type.name}

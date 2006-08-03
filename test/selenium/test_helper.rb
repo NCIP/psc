@@ -80,6 +80,11 @@ module StudyCalendar
     def click_link_with_text(text)
       @browser.click("xpath=//a[child::text()='#{text}']")
     end
+
+    def select_from_combobox(locator, optionLocator)
+      @browser.select(locator, optionLocator)
+      documenter.document_step "Under \"#{locator_to_label(locator)}\" select option where \"#{optionLocator}\""
+    end
     
     #### ASSERTIONS
     
