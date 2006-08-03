@@ -22,7 +22,7 @@
             ]);
             newRow.style.display = "none";
             group.insertBefore(newRow, $('arm-names-group-buttons'));
-            slideAndShow(newRow);
+            SC.slideAndShow(newRow);
         }
 
         function delLastArmName() {
@@ -30,7 +30,7 @@
             var added_arms = $$('.added-arm');
             if (added_arms.length < 1) return;
             var last_arm = added_arms[added_arms.length - 1];
-            slideAndHide(last_arm, {
+            SC.slideAndHide(last_arm, {
                 afterFinish: function() {
                     last_arm.remove();
                     controlLastDelButton();
@@ -47,33 +47,9 @@
             }
         }
 
-        function slideAndHide(element, options) {
-            var e = $(element);
-            new Effect.Parallel(
-                [
-                    new Effect.BlindUp(e, {sync:true}),
-                    new Effect.Fade(e, {sync:true})
-                ], $H(options).merge({
-                    duration:1.0
-                })
-            );
-        }
-
-        function slideAndShow(element, options) {
-            var e = $(element);
-            new Effect.Parallel(
-                [
-                    new Effect.BlindDown(e, {sync:true}),
-                    new Effect.Appear(e, {sync:true})
-                ], $H(options).merge({
-                    duration:1.0
-                })
-            );
-        }
-
         function registerHandlers() {
-            Event.observe('arms-yes', 'click', function() { slideAndShow('arm-names-group') });
-            Event.observe('arms-no',  'click', function() { slideAndHide('arm-names-group') });
+            Event.observe('arms-yes', 'click', function() { SC.slideAndShow('arm-names-group') });
+            Event.observe('arms-no',  'click', function() { SC.slideAndHide('arm-names-group') });
             Event.observe('add-arm-button', 'click', addArmName);
             Event.observe('add-arm-button', 'click', controlLastDelButton);
             Event.observe('del-arm-button', 'click', delLastArmName);
