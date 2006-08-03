@@ -59,8 +59,8 @@ public class Activity extends AbstractDomainObject implements Comparable<Activit
         this.description = description;
     }
 
-    @ManyToOne
-    @JoinColumn (name = "activity_type_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_type_id")
     public ActivityType getType() {
         return type;
     }
