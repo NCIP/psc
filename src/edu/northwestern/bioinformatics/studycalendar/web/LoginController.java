@@ -3,9 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-import edu.northwestern.bioinformatics.studycalendar.web.security.TestUserDetails;
-import edu.northwestern.bioinformatics.studycalendar.web.security.LoginCredentials;
-
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.exceptions.CSException;
@@ -23,11 +20,14 @@ public class LoginController extends SimpleFormController {
     public static final String CSM_STUDYCAL_CONTEXT_NAME = "study_calendar";
 
     public LoginController() {
+        setCommandClass(LoginCommand.class);
+        setFormView("login");
+        setSuccessView("studyList");
     }
 
     protected ModelAndView onSubmit(Object loginData) throws Exception{
 	
-        LoginCredentials loginCredentials = (LoginCredentials) loginData;
+        LoginCommand loginCredentials = (LoginCommand) loginData;
         log.debug("Login ID: " + loginCredentials.getUserId());
         log.debug("System Config file is: "
                 + System.getProperty("gov.nih.nci.security.configFile"));
@@ -45,7 +45,7 @@ public class LoginController extends SimpleFormController {
             return new ModelAndView(getSuccessView());
         } else {
             // have to add an error page or redirect to login page with error msg
-            loginCredentials = new LoginCredentials();
+            loginCredentials = new LoginCommand();
             return new ModelAndView(getFormView(), "loginCredentials", loginCredentials);
         }
     }
