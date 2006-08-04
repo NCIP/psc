@@ -28,13 +28,28 @@ public class LoginControllerTest extends ControllerTestCase {
         assertEquals("login", view.getViewName());
     }
 
-    public void testViewOnSubmit() throws Exception {
+   /* public void testViewOnSubmit() throws Exception {
         String userIdVal = "StudyCal1";
         String passwordVal = "StudyCal1";
         request.addParameter("userId", userIdVal);
         request.addParameter("password", passwordVal);
         ModelAndView mv = controller.handleRequest(request, response);
         assertEquals("login", mv.getViewName());
-    }
+    } */
+    
+   /* public void testBindOnCommand() throws Exception {
+        request.addParameter("userId", "StudyCal1");
+        request.addParameter("password", "StudyCal1");
+        
+        request.setMethod("POST");
+        
+        ModelAndView mv = controller.handleRequest(request, response);
+        
+        Object command = mv.getModel().get("command");
+        assertNotNull("command object " + mv.getModel(), command);
+
+        assertEquals("StudyCal1", ((LoginCredentials)command).getUserId());
+        assertEquals("StudyCal1", ((LoginCredentials)command).getPassword());
+    }*/
  
 }
