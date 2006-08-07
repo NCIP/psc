@@ -37,7 +37,7 @@
             <form:label path="password">Password</form:label>
         </div>
         <div class="value">
-            <form:input path="password"/>
+            <form:password path="password"/>
         </div>
     </div>
     <div class="row">
