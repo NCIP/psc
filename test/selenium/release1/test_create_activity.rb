@@ -1,5 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
+# author jaron sampson
 class CreateActivityTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   

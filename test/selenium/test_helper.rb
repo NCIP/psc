@@ -1,4 +1,4 @@
-require 'test/unit'
+direquire 'test/unit'
 require File.dirname(__FILE__) + '/../lib/selenium'
 
 module StudyCalendar
