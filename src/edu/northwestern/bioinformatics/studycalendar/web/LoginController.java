@@ -47,7 +47,7 @@ public class LoginController extends SimpleFormController {
         } else {
             // have to add an error page or redirect to login page with error msg
             loginCredentials = new LoginCommand();
-            return new ModelAndView(getFormView(), "loginCredentials", loginCredentials);
+            return new ModelAndView(new RedirectView(getFormView()));
         }
     }
 
