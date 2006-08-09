@@ -43,6 +43,8 @@
 </head>
 <body>
 <h1>Template for ${calendar.name}</h1>
+<a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
+
 <c:choose>
     <c:when test="${fn:length(study.arms) == 1}">
         <a href="<c:url value="/pages/newPeriod?id=${study.arms[0].id}"/>">Add a period to this template</a>

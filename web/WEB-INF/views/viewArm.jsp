@@ -15,5 +15,6 @@
             <display:column property="repetitions"/>
         </display:table>
         <a href="<c:url value="/pages/newPeriod?id=${arm.id}"/>">Add Period</a><br/>
+        <a href="<c:url value="/pages/calendarTemplate?id=${arm.study.id}"/>">View Template for ${arm.study.name}</a><br/>
   </body>
 </html>
