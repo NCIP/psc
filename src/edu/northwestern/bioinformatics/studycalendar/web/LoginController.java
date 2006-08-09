@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
@@ -42,7 +43,7 @@ public class LoginController extends SimpleFormController {
             log.debug("The user was denied access to the study calendar application." + ex);
         }
         if (loginSuccess) {
-            return new ModelAndView(getSuccessView());
+            return new ModelAndView(new RedirectView(getSuccessView()));
         } else {
             // have to add an error page or redirect to login page with error msg
             loginCredentials = new LoginCommand();
