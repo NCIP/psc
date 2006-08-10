@@ -15,6 +15,14 @@ Setting up CSM for Tomcat
 	* gov.nih.nci.security.configFile : is the name of the property which points to the fully qualified path for ApplicationSecurityConfig.xml
 	* java.security.auth.login.config : points to the JAAS config file
 
+	in case the entries are similar to: 
+		
+	gov.nih.nci.security.configFile=${catalina.home}/conf/ApplicationSecurityConfig.xml
+	java.security.auth.login.config=${catalina.home}/conf/csm_jaas.config
+
+	create an Environment Variable CATALINA_HOME, with value pointing to the Tomcat installation directory, if its not already present.
+
+
 7. create the following JAAS Realm in the server.xml file of Tomcat
 	  <Realm className="org.apache.catalina.realm.JAASRealm"                 
 	             appName="study_calendar"       
