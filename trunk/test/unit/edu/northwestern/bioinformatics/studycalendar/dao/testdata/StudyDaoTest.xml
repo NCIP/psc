@@ -1,0 +1,17 @@
+<dataset>
+    <STUDIES
+        id="100"
+        version="0"
+        name="First Study"/>
+
+    <ARMS
+        id="200"
+        version="0"
+        name="Dexter"
+        study_id="100"/>
+    <ARMS
+        id="201"
+        version="0"
+        name="Sinister"
+        study_id="100"/>
+</dataset>
