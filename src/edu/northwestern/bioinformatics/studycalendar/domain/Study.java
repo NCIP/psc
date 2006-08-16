@@ -28,10 +28,10 @@ import java.util.List;
 public class Study extends AbstractDomainObject {
     private String name;
     private List<Arm> arms = new ArrayList<Arm>();
-    private boolean complete;
+    private boolean completed;
     
     public Study() {
-    	setComplete(false);
+    	setCompleted(false);
     }
 
     ////// LOGIC
@@ -61,12 +61,12 @@ public class Study extends AbstractDomainObject {
         this.name = name;
     }
     
-    public boolean isComplete() {
-    	return complete;
+    public boolean isCompleted() {
+    	return completed;
     }
 
-    public void setComplete(boolean complete) {
-    	this.complete = complete;
+    public void setCompleted(boolean completed) {
+    	this.completed = completed;
     }
 
     @OneToMany (mappedBy = "study")

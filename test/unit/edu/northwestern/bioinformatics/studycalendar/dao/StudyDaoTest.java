@@ -57,6 +57,12 @@ public class StudyDaoTest extends DaoTestCase {
             assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
         }
     }
+    
+    public void testStudyCompleted() throws Exception {
+    	Study study = dao.getById(100);
+    	study.setCompleted(true);
+    	assertEquals("Could not mark study complete", true, study.isCompleted());
+    }
 
     private static void assertArm(
         String message, Integer expectedId, String expectedName, Arm actualArm

@@ -45,6 +45,7 @@
 <h1>Template for ${calendar.name}</h1>
 <a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
 
+<c:if test="${study.completed == false}">
 <c:choose>
     <c:when test="${fn:length(study.arms) == 1}">
         <a href="<c:url value="/pages/newPeriod?id=${study.arms[0].id}"/>">Add a period to this template</a>
@@ -57,6 +58,7 @@
         </ul>
     </c:otherwise>
 </c:choose>
+</c:if>
 
 <c:if test="${not empty calendar.weeks}">
     <table class="calendar">
@@ -87,6 +89,9 @@
             </c:forEach>
         </c:forEach>
     </table>
+</c:if>
+<c:if test="${study.completed == false}">
+	<p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete.</a></p>
 </c:if>
 </body>
 </html>

@@ -2,7 +2,8 @@
     <STUDIES
         id="1"
         version="0"
-        name="First Study"/>
+        name="First Study"
+        completed="false"/>
 
     <ARMS
         id="2"
