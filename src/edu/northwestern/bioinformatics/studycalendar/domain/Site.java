@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Rhett Sutphin
+ * @author Padmaja Vedula
  */
 @Entity
 @Table (name = "site")

@@ -23,8 +23,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * @author Moses Hohman
- * @author Rhett Sutphin
+ * @author Padmaja Vedula
  */
 @Entity
 @Table (name = "participant_identifier")
