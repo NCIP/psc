@@ -2,25 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-import org.apache.commons.lang.math.IntRange;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  * @author Padmaja Vedula
