@@ -5,13 +5,12 @@ class CreateCsm extends edu.northwestern.bioinformatics.bering.Migration {
             File input = new File(fileName)
             String content = input.text
             execute(content)
-        } else if (databaseMatches('postgresql')) {
+        } else {
+            // note that the PostgreSQL scripts work for HSQLDB, too
             String fileName = "db/migrate/001_release1/CSMPostgreSQL.sql"
             File input = new File(fileName)
             String content = input.text
             execute(content)
-        } else {
-            // TODO: need something for HSQLDB.  PostgreSQL script will probably work.
         }
     }
     
@@ -21,11 +20,10 @@ class CreateCsm extends edu.northwestern.bioinformatics.bering.Migration {
             File input = new File(fileName)
             String content = input.text
             execute(content)
-        } else if (databaseMatches('postgresql')) {
+        } else {
+            // note that the PostgreSQL scripts work for HSQLDB, too
             File input = new File("db/migrate/001_release1/CSMPostgreSQL-drop.sql")
             execute(input.text)
-        } else {
-            // TODO: need something for HSQLDB.  PostgreSQL script will probably work.
         }
     }
 }
