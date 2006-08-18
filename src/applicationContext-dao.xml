@@ -23,6 +23,11 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.ParticipantIdentifier</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment</value>	
             </list>
         </property>
     </bean>
@@ -51,4 +56,7 @@
     </bean>
     <bean id="eventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.EventDao"/>
     <bean id="periodDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao"/>
+
+    <bean id="siteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SiteDao"/>
+    <bean id="participantDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao"/>
 </beans>
