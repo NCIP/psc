@@ -61,6 +61,7 @@ public class ParticipantIdentifier extends AbstractDomainObject {
         this.site = site;
     }
 
+    @Column(name = "identifier_type")
     public String getType() {
         return type;
     }
