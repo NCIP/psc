@@ -11,6 +11,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,10 +28,11 @@ import java.util.Set;
 public class Participant extends AbstractDomainObject {
     private String firstName;
     private String lastName;
-    private String dateOfBirth;
+    private Date dateOfBirth;
     private String gender;
     private String socialSecurityNumber;
     private Set<ParticipantIdentifier> participantIdentifiers = new HashSet<ParticipantIdentifier>();
+    private Set<StudyParticipantAssignment> studyParticipantAssignments = new HashSet<StudyParticipantAssignment>();
 
     // business methods
     
@@ -40,9 +42,30 @@ public class Participant extends AbstractDomainObject {
     	participantIdentifiers.add(participantIdentifier);
     	participantIdentifier.setParticipant(this);
     }
+    public void addStudyParticipantAssignments(StudyParticipantAssignment studyParticipantAssignment){
+        getStudyParticipantAssignments().add(studyParticipantAssignment);
+        studyParticipantAssignment.setParticipant(this);
+    }
+    
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Site)) return false;
+        final Participant participant = (Participant) obj;
+        if (!this.getFirstName().equals(participant.getFirstName())) return false;
+        if (!this.getLastName().equals(participant.getLastName())) return false;
+        if (!this.getDateOfBirth().equals(participant.getDateOfBirth())) return false;
+        if (!this.getGender().equals(participant.getGender())) return false;
+        if (!this.getSocialSecurityNumber().equals(participant.getSocialSecurityNumber())) return false;
+        
+        return true;
+    }
+
+    public int hashCode() {
+        return this.getFirstName().hashCode();
+    }
 
     // bean methods
-
+    @Column(name = "first_name")
     public String getFirstName() {
         return firstName;
     }
@@ -50,7 +73,8 @@ public class Participant extends AbstractDomainObject {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-
+    
+    @Column(name = "last_name")
     public String getLastName() {
         return lastName;
     }
@@ -58,11 +82,13 @@ public class Participant extends AbstractDomainObject {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    public String getDateOfBirth() {
+    
+    @Column(name = "birth_date")
+    public Date getDateOfBirth() {
         return dateOfBirth;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
+    public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
     public String getGender() {
@@ -91,5 +117,14 @@ public class Participant extends AbstractDomainObject {
 
     public void setParticipantIdentifiers(Set<ParticipantIdentifier> participantIdentifiers) {
         this.participantIdentifiers = participantIdentifiers;
+    }
+    @OneToMany (mappedBy = "participant")
+    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<StudyParticipantAssignment> getStudyParticipantAssignments() {
+        return studyParticipantAssignments;
+    }
+    
+    public void setStudyParticipantAssignments(Set<StudyParticipantAssignment> studyParticipantAssignments) {
+        this.studyParticipantAssignments = studyParticipantAssignments;
     }
 }
