@@ -29,6 +29,9 @@ public class Study extends AbstractDomainObject {
     private String name;
     private List<Arm> arms = new ArrayList<Arm>();
     private boolean completed;
+    private List<StudySite> studySites = new ArrayList<StudySite>();
+    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+
     
     public Study() {
     	setCompleted(false);
@@ -78,4 +81,33 @@ public class Study extends AbstractDomainObject {
     public void setArms(List<Arm> arms) {
         this.arms = arms;
     }
+    
+    public void setStudySites(List<StudySite> studySites) {
+        this.studySites = studySites;
+    }
+
+    @OneToMany (mappedBy = "study",fetch = FetchType.EAGER)
+    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
+    
+    public void addStudySite(StudySite studySite){
+    
+        getStudySites().add(studySite);
+        
+        studySite.setStudy(this);
+        
+    }
+
+    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
+        this.studyParticipantAssignments = studyParticipantAssignments;
+    }
+
+    @OneToMany (mappedBy = "study")
+    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
+        return studyParticipantAssignments;
+    }
+
 }
