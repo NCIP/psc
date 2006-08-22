@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import javax.persistence.CascadeType;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -10,6 +12,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.FetchType;
 import javax.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.Cascade;
 
 /**
  * @author Padmaja Vedula
@@ -51,7 +55,7 @@ public class ParticipantIdentifier extends AbstractDomainObject {
         this.participant = participant;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade= {CascadeType.ALL})
     @JoinColumn(name = "site_id")
     public Site getSite() {
         return site;
