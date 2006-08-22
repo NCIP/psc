@@ -11,8 +11,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,8 +33,8 @@ public class Participant extends AbstractDomainObject {
     private Date dateOfBirth;
     private String gender;
     private String socialSecurityNumber;
-    private Set<ParticipantIdentifier> participantIdentifiers = new HashSet<ParticipantIdentifier>();
-    private Set<StudyParticipantAssignment> studyParticipantAssignments = new HashSet<StudyParticipantAssignment>();
+    private List<ParticipantIdentifier> participantIdentifiers = new ArrayList<ParticipantIdentifier>();
+    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
 
     // business methods
     
@@ -111,20 +113,20 @@ public class Participant extends AbstractDomainObject {
 
     @OneToMany (mappedBy = "participant")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<ParticipantIdentifier> getParticipantIdentifiers() {
+    public List<ParticipantIdentifier> getParticipantIdentifiers() {
         return participantIdentifiers;
     }
 
-    public void setParticipantIdentifiers(Set<ParticipantIdentifier> participantIdentifiers) {
+    public void setParticipantIdentifiers(List<ParticipantIdentifier> participantIdentifiers) {
         this.participantIdentifiers = participantIdentifiers;
     }
     @OneToMany (mappedBy = "participant")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<StudyParticipantAssignment> getStudyParticipantAssignments() {
+    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
         return studyParticipantAssignments;
     }
     
-    public void setStudyParticipantAssignments(Set<StudyParticipantAssignment> studyParticipantAssignments) {
+    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
         this.studyParticipantAssignments = studyParticipantAssignments;
     }
 }
