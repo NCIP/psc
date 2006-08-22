@@ -17,7 +17,7 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
-
+    
     <bean name="/welcome" id="welcomeController"
           class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
 
@@ -35,6 +35,12 @@
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewActivityController"/>
+            
+	<bean name="/createParticipant" id="newParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
+
+    <!-- <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>  -->        
 
     <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
