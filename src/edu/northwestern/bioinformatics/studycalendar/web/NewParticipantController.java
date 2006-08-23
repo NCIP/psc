@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
@@ -28,14 +29,14 @@ public class NewParticipantController extends SimpleFormController {
     public NewParticipantController() {
         setCommandClass(NewParticipantCommand.class);
         setFormView("createParticipant");
-        setSuccessView("login");
+        setSuccessView("assignParticipant");
     }
 
     protected void initBinder(HttpServletRequest request,
-    		ServletRequestDataBinder binder) throws Exception {
-    		binder.registerCustomEditor(Date.class, null, new CustomDateEditor(
-    		simpleDateFormat, false));
-    		super.initBinder(request, binder);
+		ServletRequestDataBinder binder) throws Exception {
+		binder.registerCustomEditor(Date.class, null, new CustomDateEditor(
+		simpleDateFormat, false));
+		super.initBinder(request, binder);
     }
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -57,7 +58,8 @@ public class NewParticipantController extends SimpleFormController {
 
         Map<String, Object> model = errors.getModel();
         model.put("participant", participant);
-        return new ModelAndView(getSuccessView(), model);
+        return new ModelAndView(new RedirectView(getSuccessView()), model);
+        //return new ModelAndView(new RedirectView(getSuccessView()), "newParticipant", participant);
     }
 
     ////// CONFIGURATION
