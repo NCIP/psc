@@ -39,9 +39,9 @@
 	<bean name="/createParticipant" id="newParticipantController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
 
-    <!-- <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>  -->        
-
+    <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/> 
+          
     <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
 
