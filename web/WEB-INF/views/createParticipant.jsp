@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title>${action} Study</title>
+    <title>${action} Participant</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
