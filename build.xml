@@ -6,6 +6,7 @@
 
     <property name="build-dir.main"      value="web/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="build/test-classes"/>
+    <property name="build-dir.webapp"    value="build/web"/>
 
     <property name="api-dir"  value="build/api"/>
     <property name="metrics-dir"  value="build/metrics"/>
@@ -48,6 +49,15 @@
         </fileset>
     </path>
 
+    <path id="cp.integrated-test">
+        <path refid="cp.main"/>
+        <path refid="cp.jdbc"/>
+        <path refid="cp.j2ee"/>
+        <fileset dir="test/infrastructure/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
     <!-- TASK LIBRARIES -->
 
     <path id="cp.emma">
@@ -67,6 +77,7 @@
     <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
 
     <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.unit-test"/>
+    <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="cp.integrated-test"/>
 
     <!-- TARGETS -->
 
@@ -93,6 +104,7 @@
     <target name="clean">
         <delete dir="build"/>
         <delete dir="${build-dir.main}"/>
+        <delete dir="${build-dir.webapp}"/>
         <delete dir="dist"/>
     </target>
 
@@ -101,6 +113,7 @@
         <copy todir="${build-dir.main}">
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
+                <include name="**/*.properties"/>
             </fileset>
         </copy>
         <copy todir="${build-dir.unit-test}">
@@ -118,6 +131,48 @@
         <javac destdir="${build-dir.unit-test}" classpathref="cp.unit-test"
                debug="true" source="1.5">
             <src path="${src-dir.unit-test}"/>
+        </javac>
+    </target>
+
+    <target name="selenium" description="Flag webapp deployment to include selenium infrastructure">
+        <property name="include-test-infrastructure" value="*"/>
+    </target>
+
+    <target name="webapp" description="Merge created application into deployment directory" depends="compile">
+        <!-- basic application - just copy from web directory -->
+        <copy todir="${build-dir.webapp}">
+            <fileset dir="web">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <antcall target="webapp.selenium"/>
+    </target>
+
+    <target name="webapp.selenium" if="include-test-infrastructure">
+        <property name="test-dir.infrastructure" value="test/infrastructure"/>
+        <copy todir="${build-dir.webapp}/WEB-INF/lib">
+            <fileset dir="${test-dir.infrastructure}/lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+        <xmltask source="web/WEB-INF/web.xml" dest="${build-dir.webapp}/WEB-INF/web.xml"
+                 failwithoutmatch="true">
+            <insert path="//:web-app" file="${test-dir.infrastructure}/conf/web.xml"/>
+        </xmltask>
+        <copy todir="${build-dir.webapp}/WEB-INF">
+            <fileset dir="${test-dir.infrastructure}/conf">
+                <include name="**/*.xml"/>
+                <exclude name="web.xml"/>
+            </fileset>
+        </copy>
+        <copy todir="${build-dir.webapp}/WEB-INF/classes/edu/northwestern/bioinformatics/studycalendar/test/data">
+            <fileset dir="test/selenium/testdata">
+                <include name="**/*.xml"/>
+            </fileset>
+        </copy>
+        <javac destdir="${build-dir.webapp}/WEB-INF/classes" classpathref="cp.integrated-test"
+               debug="true" source="1.5">
+            <src path="test/infrastructure/src"/>
         </javac>
     </target>
 
@@ -336,7 +391,7 @@
     </target>
 
     <target name="tomcat.create-context" depends="tomcat.init">
-        <echo file="${tomcat.context-file}">&lt;Context path="${tomcat.deploy-path}" docBase="${basedir}/web" debug="9"/&gt;</echo>
+        <echo file="${tomcat.context-file}">&lt;Context path="${tomcat.deploy-path}" docBase="${basedir}/${build-dir.webapp}" debug="9"/&gt;</echo>
     </target>
 
     <target name="tomcat.deploy" depends="tomcat.init, tomcat.create-context"
