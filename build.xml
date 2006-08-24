@@ -318,9 +318,9 @@
 
     <!-- ARTIFACT CREATION -->
 
-    <target name="war" depends="compile" description="creates a deployable WAR file">
+    <target name="war" depends="webapp" description="creates a deployable WAR file">
         <mkdir dir="dist"/>
-        <war basedir="web" destfile="dist/${war-name}" webxml="web/WEB-INF/web.xml">
+        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="web/WEB-INF/web.xml">
             <exclude name="WEB-INF/web.xml"/>
         </war>
     </target>
@@ -370,7 +370,7 @@
 
     <!-- TOMCAT DEPLOYMENT -->
 
-    <target name="tomcat.init" depends="compile">
+    <target name="tomcat.init" depends="webapp">
         <property name="tomcat.config-file" value="tools/tomcat/tomcat.properties"/>
         <fail message="Tomcat manager not configured (could not read ${tomcat.config-file}).">
             <condition>
