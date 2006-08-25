@@ -6,6 +6,13 @@
         description="Decription of screening activity."
         activity_type_id="6"/>
         
+    <ACTIVITIES
+        id="101"
+        version="0"
+        name="Treatment Activity"
+        description="Decription of treatment activity."
+        activity_type_id="5"/>
+
     <ACTIVITY_TYPES
     	id="5"
     	version="0"

@@ -47,4 +47,12 @@ public class ActivityDaoTest extends DaoTestCase {
             assertEquals("Wrong name for activity type", "prevention", loaded.getType().getName());
         }
     }
+
+	public void testGetAll() throws Exception {
+        List<Activity> actual = dao.getAll();
+        assertEquals(2, actual.size());
+        assertEquals("Wrong order", 100, (int) actual.get(0).getId());
+        assertEquals("Wrong order", "Treatment Activity", actual.get(1).getName());
+    }
+	
 }
