@@ -23,47 +23,31 @@ public class NewPlannedEventControllerTest extends ControllerTestCase {
     private NewPlannedEventController controller = new NewPlannedEventController();
     private PeriodDao periodDao;
     private ActivityDao activityDao;
+    private Period period;
     
     protected void setUp() throws Exception {
         super.setUp();
         periodDao = registerMockFor(PeriodDao.class);
         activityDao = registerMockFor(ActivityDao.class);
+        period = registerMockFor(Period.class);
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
     }
-    
-    //TODO: test for the period id parameter
-
-    //TODO: test reference data
-    
-
-    /*
-    public void testModelAndView() throws Exception {
-    	List<Activity> theList = new ArrayList<Activity>();
+        
+    public void testReferenceData() throws Exception { 	
+        List<Activity> theList = new ArrayList<Activity>();
         expect(activityDao.getAll()).andReturn(theList);
-        replayMocks();
-
+    	expect(periodDao.getById(42)).andReturn(period);
+    	expect(period.getEndDay()).andReturn(9);
+    	expect(period.getId()).andReturn(42);
+        replayMocks();	
+    	
+    	request.setMethod("GET");
+        request.addParameter("id", "42");
         ModelAndView mv = controller.handleRequest(request, response);
+        
+        assertEquals((Integer)42, (Integer)((Period) mv.getModel().get("period")).getId());
         verifyMocks();
-
-        assertSame("Activities list missing or wrong", theList, mv.getModel().get("activities"));
-
     }
-    */   
-    
-    /*
-    private NewPlannedEventCommand postAndReturnCommand() throws Exception {
-        request.setMethod("POST");
-        periodDao.save((Period) notNull());  // TODO: once there is validation, this won't happen
-        expectLastCall().atLeastOnce().asStub();
 
-        replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
-        verifyMocks();
-
-        Object command = mv.getModel().get("command");
-        assertNotNull("Command not present in model: " + mv.getModel(), command);
-        return (NewPlannedEventCommand) command;
-    }
-*/
 }
