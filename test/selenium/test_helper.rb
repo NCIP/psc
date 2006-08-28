@@ -18,7 +18,7 @@ module StudyCalendar
 
     protected
     def open(relative_url)
-      @browser.open("/studycalendar#{relative_url}")
+      request relative_url
       documenter.document_step "Start at relative URL \"#{relative_url}\""
     end
     
@@ -47,6 +47,11 @@ module StudyCalendar
 
     def into(field)
       Field.new(field, @browser)
+    end
+
+    def testdata(*names)
+      request "/test/load/#{names.join ','}"
+      documenter.document_step "Load test data sets: #{names.join ', '}"
     end
 
     def dump_body_text
@@ -101,6 +106,10 @@ module StudyCalendar
     private
     def locator_to_label(locator, options = {})
       options[:label] || locator.split("-").join(" ").capitalize
+    end
+
+    def request(relative_url)
+      @browser.open("/studycalendar#{relative_url}")
     end
   end
   

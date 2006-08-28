@@ -4,6 +4,8 @@ class CreateStudyTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   
   def test_create_no_arm_study
+    testdata 'empty'
+
     open "/pages/newStudy"
     type "study-name", "Vioxx Study"
     click_button_with_text "Create"
@@ -14,6 +16,8 @@ class CreateStudyTest < Test::Unit::TestCase
   end
   
   def test_create_multiple_arm_study
+    testdata 'empty'
+
     open "/pages/newStudy"
     wait_for_page_to_load
     type "study-name", "Vioxx Study"
