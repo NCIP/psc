@@ -22,7 +22,7 @@ public class DisplayCalendarTemplateController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int id = ServletRequestUtils.getIntParameter(request, "id");
         Study study = studyDao.getById(id);
-        CalendarTemplate template = new CalendarTemplate(study);
+        CalendarTemplate template = new CalendarTemplate(study.getPlannedSchedule());
         ModelAndView mv = new ModelAndView("calendarTemplate");
         mv.addObject("calendar", template);
         mv.addObject("study", study);

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
 import org.apache.commons.lang.math.IntRange;
 
 import java.util.Collection;
@@ -18,14 +18,14 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 public class CalendarTemplate {
-    private Study study;
+    private PlannedSchedule schedule;
     private List<Week> weeks;
     private Map<String, Integer> armClasses;
     private Map<String, Integer> periodClasses;
 
-    public CalendarTemplate(Study study) {
-        this.study = study;
-        int weekCount = (int) Math.ceil(study.getLengthInDays() / 7.0);
+    public CalendarTemplate(PlannedSchedule schedule) {
+        this.schedule = schedule;
+        int weekCount = (int) Math.ceil(schedule.getLengthInDays() / 7.0);
         weeks = new LinkedList<Week>();
         while (weeks.size() < weekCount) {
             weeks.add(new Week(weeks.size() * 7 + 1));
@@ -36,7 +36,7 @@ public class CalendarTemplate {
     }
 
     public String getName() {
-        return study.getName();
+        return schedule.getStudy().getName();
     }
 
     public List<Week> getWeeks() {
@@ -82,7 +82,7 @@ public class CalendarTemplate {
         public Week(int startDay) {
             range = new IntRange(startDay, startDay + 6);
             arms = new LinkedList<WeekOfArm>();
-            for (Arm arm : study.getArms()) {
+            for (Arm arm : schedule.getArms()) {
                 if (arm.getDayRange().overlapsRange(range)) {
                     arms.add(new WeekOfArm(arm, range));
                 }

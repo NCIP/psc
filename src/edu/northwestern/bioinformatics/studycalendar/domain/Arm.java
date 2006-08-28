@@ -26,7 +26,7 @@ import java.util.Set;
     }
 )
 public class Arm extends AbstractDomainObject {
-    private Study study;
+    private PlannedSchedule plannedSchedule;
     private String name;
     private Set<Period> periods = new HashSet<Period>();
 
@@ -62,13 +62,13 @@ public class Arm extends AbstractDomainObject {
     }
 
     @ManyToOne
-    @JoinColumn (name = "study_id")
-    public Study getStudy() {
-        return study;
+    @JoinColumn (name = "planned_schedule_id")
+    public PlannedSchedule getPlannedSchedule() {
+        return plannedSchedule;
     }
 
-    public void setStudy(Study study) {
-        this.study = study;
+    public void setPlannedSchedule(PlannedSchedule plannedSchedule) {
+        this.plannedSchedule = plannedSchedule;
     }
 
     @OneToMany (mappedBy = "arm")

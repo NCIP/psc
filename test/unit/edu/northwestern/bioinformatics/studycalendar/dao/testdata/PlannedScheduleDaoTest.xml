@@ -1,0 +1,19 @@
+<dataset>
+    <STUDIES id="-150" version="0" name="Study"/>
+    <PLANNED_SCHEDULES
+        id="-100"
+        version="0"
+        study_id="-150"
+        />
+
+    <ARMS
+        id="-200"
+        version="0"
+        name="Dexter"
+        planned_schedule_id="-100"/>
+    <ARMS
+        id="-199"
+        version="0"
+        name="Sinister"
+        planned_schedule_id="-100"/>
+</dataset>

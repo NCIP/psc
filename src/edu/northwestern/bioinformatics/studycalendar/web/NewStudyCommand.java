@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -17,16 +18,18 @@ public class NewStudyCommand {
     public Study createStudy() {
         Study study = new Study();
         study.setName(getStudyName());
+        PlannedSchedule schedule = new PlannedSchedule();
+        study.setPlannedSchedule(schedule);
         if (getArms()) {
             for (String armName : getArmNames()) {
                 Arm arm = new Arm();
                 arm.setName(armName);
-                study.addArm(arm);
+                schedule.addArm(arm);
             }
         } else {
             Arm singleArm = new Arm();
             singleArm.setName(getStudyName());
-            study.addArm(singleArm);
+            schedule.addArm(singleArm);
         }
         return study;
     }

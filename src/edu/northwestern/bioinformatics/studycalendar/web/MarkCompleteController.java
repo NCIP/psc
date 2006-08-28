@@ -38,7 +38,7 @@ public class MarkCompleteController extends SimpleFormController {
         MarkCompleteCommand command = (MarkCompleteCommand) oCommand;
         Study study = studyDao.getById(command.getStudyId());
         if("true".equals(command.getCompleted())) {
-        	study.setCompleted(true);
+        	study.getPlannedSchedule().setComplete(true);
             studyDao.save(study);
         }
         // TODO: transaction

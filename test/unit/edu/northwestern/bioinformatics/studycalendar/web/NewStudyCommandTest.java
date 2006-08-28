@@ -20,8 +20,9 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertEquals(expectedStudyName, actual.getName());
-        assertEquals("Should have one arm", 1, actual.getArms().size());
-        assertEquals("Should have one arm named after study", expectedStudyName, actual.getArms().get(0).getName());
+        assertNotNull("Shoudl have schedule", actual.getPlannedSchedule());
+        assertEquals("Should have one arm", 1, actual.getPlannedSchedule().getArms().size());
+        assertEquals("Should have one arm named after study", expectedStudyName, actual.getPlannedSchedule().getArms().get(0).getName());
     }
 
     public void testCreateStudyWithArms() throws Exception {
@@ -35,11 +36,12 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertNotNull("Study is null", actual);
+        assertNotNull("Schedule is null", actual.getPlannedSchedule());
         assertEquals(expectedStudyName, actual.getName());
         for (int i = 0; i < expectedArmNames.size(); i++) {
-            Arm actualArm = actual.getArms().get(i);
+            Arm actualArm = actual.getPlannedSchedule().getArms().get(i);
             assertEquals("Wrong arm name at index " + i, expectedArmNames.get(i), actualArm.getName());
-            assertSame("Relationship not bidirectional at arm " + i, actual, actualArm.getStudy());
+            assertSame("Relationship not bidirectional at arm " + i, actual.getPlannedSchedule(), actualArm.getPlannedSchedule());
         }
     }
     
@@ -54,8 +56,9 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertNotNull("Study is null", actual);
+        assertNotNull("Schedule is null", actual.getPlannedSchedule());
         assertEquals(expectedStudyName, actual.getName());
-        assertEquals("Should have one arm", 1, actual.getArms().size());
-        assertEquals("Should have one arm named after study", expectedStudyName, actual.getArms().get(0).getName());
+        assertEquals("Should have one arm", 1, actual.getPlannedSchedule().getArms().size());
+        assertEquals("Should have one arm named after study", expectedStudyName, actual.getPlannedSchedule().getArms().get(0).getName());
     }
 }
