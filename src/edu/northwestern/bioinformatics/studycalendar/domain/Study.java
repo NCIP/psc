@@ -50,6 +50,9 @@ public class Study extends AbstractDomainObject {
 
     public void setPlannedSchedule(PlannedSchedule plannedSchedule) {
         this.plannedSchedule = plannedSchedule;
+        if (plannedSchedule != null && plannedSchedule.getStudy() != this) {
+            plannedSchedule.setStudy(this);
+        }
     }
 
     public void setStudySites(List<StudySite> studySites) {

@@ -7,14 +7,15 @@
 </head>
 <body>
 <h1>View study</h1>
+<p>TODO: get rid of this page -- go straight to the template.</p>
 <p>A new study has been created.</p>
 <p>
     Study: ${study.name}
 </p>
-<c:if test="${fn:length(study.arms) != 1}">
+<c:if test="${fn:length(study.plannedSchedule.arms) != 1}">
 <p>
     Arms: <br>
-    <c:forEach items="${study.arms}" var="arm">${arm.name}<br></c:forEach>
+    <c:forEach items="${study.plannedSchedule.arms}" var="arm">${arm.name}<br /></c:forEach>
 </p>
 </c:if>
 <a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">View the template for ${study.name}</a><br>

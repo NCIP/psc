@@ -22,6 +22,19 @@ public class PlannedScheduleTest extends StudyCalendarTestCase {
         assertSame("Bidirectional relationship not maintained", schedule, arm.getPlannedSchedule());
     }
 
+    public void testSetStudy() throws Exception {
+        Study study = new Study();
+        schedule.setStudy(study);
+        assertSame("Bidirectional relationship not maintained", study.getPlannedSchedule(), schedule);
+    }
+    
+    public void testSetStudyWhenAlreadySet() throws Exception {
+        Study study = new Study();
+        study.setPlannedSchedule(schedule);
+        schedule.setStudy(study); // we are really checking for an infinite loop on this call
+        assertSame("Bidirectional relationship not maintained", study.getPlannedSchedule(), schedule);
+    }
+
     public void testLength() throws Exception {
         Arm a1 = registerMockFor(Arm.class);
         expect(a1.getLengthInDays()).andReturn(45);

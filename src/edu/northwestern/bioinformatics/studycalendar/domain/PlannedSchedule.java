@@ -4,6 +4,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.validator.NotNull;
 
 import javax.persistence.Transient;
 import javax.persistence.OneToMany;
@@ -66,12 +67,15 @@ public class PlannedSchedule extends AbstractDomainObject {
     }
 
     @OneToOne
-    @JoinColumn (name = "study_id")
+    @JoinColumn (name = "study_id", nullable = false)
     public Study getStudy() {
         return study;
     }
 
     public void setStudy(Study study) {
+        if (study != null && study.getPlannedSchedule() != this) {
+            study.setPlannedSchedule(this);
+        }
         this.study = study;
     }
 

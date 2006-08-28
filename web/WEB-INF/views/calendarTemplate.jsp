@@ -45,14 +45,14 @@
 <h1>Template for ${calendar.name}</h1>
 <a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
 
-<c:if test="${study.completed == false}">
+<c:if test="${not study.plannedSchedule.complete}">
 <c:choose>
-    <c:when test="${fn:length(study.arms) == 1}">
-        <a href="<c:url value="/pages/newPeriod?id=${study.arms[0].id}"/>">Add a period to this template</a>
+    <c:when test="${fn:length(study.plannedSchedule.arms) == 1}">
+        <a href="<c:url value="/pages/newPeriod?id=${study.plannedSchedule.arms[0].id}"/>">Add a period to this template</a>
     </c:when>
     <c:otherwise>
         <ul>
-        <c:forEach items="${study.arms}" var="arm">
+        <c:forEach items="${study.plannedSchedule.arms}" var="arm">
             <li><a href="<c:url value="/pages/newPeriod?id=${arm.id}"/>">Add a period to arm ${arm.name}</a></li>
         </c:forEach>
         </ul>
@@ -90,8 +90,8 @@
         </c:forEach>
     </table>
 </c:if>
-<c:if test="${study.completed == false}">
-	<p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete.</a></p>
+<c:if test="${not study.plannedSchedule.complete}">
+    <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
 </c:if>
 </body>
 </html>

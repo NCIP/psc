@@ -20,7 +20,8 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertEquals(expectedStudyName, actual.getName());
-        assertNotNull("Shoudl have schedule", actual.getPlannedSchedule());
+        assertNotNull("Should have schedule", actual.getPlannedSchedule());
+        assertSame("Study <-> schedule relationship not bidirectional", actual, actual.getPlannedSchedule().getStudy());
         assertEquals("Should have one arm", 1, actual.getPlannedSchedule().getArms().size());
         assertEquals("Should have one arm named after study", expectedStudyName, actual.getPlannedSchedule().getArms().get(0).getName());
     }
