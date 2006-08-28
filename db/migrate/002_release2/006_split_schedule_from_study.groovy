@@ -37,7 +37,7 @@ class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.
 
     void down() {
         // reverse change to studies
-        addColumn('studies', 'completed');
+        addColumn('studies', 'completed', 'boolean');
         if (databaseMatches('postgresql')) {
             execute('UPDATE studies SET completed=ps.complete FROM planned_schedules ps INNER JOIN studies s ON ps.study_id=s.id');
         } else {
