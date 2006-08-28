@@ -14,7 +14,7 @@ class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.
                 INSERT INTO planned_schedules (id, study_id, version, complete)
                     SELECT seq_planned_schedules_id.nextval, id, 0, completed FROM studies""");
         } else {
-            execute('INSERT INTO planned_schedules (study_id, version) SELECT id, 0 FROM studies');
+            execute('INSERT INTO planned_schedules (study_id, version, complete) SELECT id, 0, completed FROM studies');
         }
         // constrain
         execute('ALTER TABLE planned_schedules ADD CONSTRAINT fk_plan_sched_study FOREIGN KEY (study_id) REFERENCES studies');
@@ -39,9 +39,9 @@ class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.
         // reverse change to studies
         addColumn('studies', 'completed', 'boolean');
         if (databaseMatches('postgresql')) {
-            execute('UPDATE studies SET completed=ps.complete FROM planned_schedules ps INNER JOIN studies s ON ps.study_id=s.id');
+            execute('UPDATE studies SET completed=ps.complete FROM planned_schedules ps INNER JOIN studies s ON ps.study_id=s.id WHERE s.id=studies.id');
         } else {
-            execute('UPDATE studies SET completed=(SELECT ps.complete FROM planned_schedules ps INNER JOIN studies s ON ps.study_id=s.id)');
+            execute('UPDATE studies SET completed=(SELECT ps.complete FROM planned_schedules ps INNER JOIN studies s ON ps.study_id=s.id WHERE s.id=studies.id)');
         }
 
         // reverse change to arms
