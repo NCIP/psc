@@ -4,6 +4,6 @@ class ModifyStudy extends edu.northwestern.bioinformatics.bering.Migration {
     }
 
     void down() {
-        execute('ALTER TABLE DROP COLUMN person_id')
+        execute('ALTER TABLE participants DROP COLUMN person_id')
     }
 }
