@@ -26,7 +26,7 @@ import org.hibernate.annotations.Parameter;
  @Table (name = "study_sites")
  @GenericGenerator(name="id-generator", strategy = "native",
      parameters = {
-         @Parameter(name="sequence", value="study_sites_id_seq")
+         @Parameter(name="sequence", value="seq_study_sites_id")
      }
  )
 
