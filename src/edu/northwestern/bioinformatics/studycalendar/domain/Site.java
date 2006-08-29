@@ -23,7 +23,7 @@ import javax.persistence.Table;
 @Table (name = "sites")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="sites_id_seq")
+        @Parameter(name="sequence", value="seq_sites_id")
     }
 )
 public class Site extends AbstractDomainObject {
