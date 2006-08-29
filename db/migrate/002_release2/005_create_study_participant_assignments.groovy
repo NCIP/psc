@@ -1,7 +1,6 @@
 class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.bering.Migration {
-
     void up() {
-        createTable('study_participant_assignments') { t ->
+        createTable('participant_assignments') { t ->
             t.addColumn('study_id', 'integer', nullable:false)
             t.addColumn('study_site_id', 'integer', nullable:false)
             t.addColumn('participant_id', 'integer', nullable:false)
@@ -11,6 +10,7 @@ class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.
     }
 
     void down() {
-        dropTable('study_participant_assignments')
+        dropTable('participant_assignments')
     }
+
 }
