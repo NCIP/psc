@@ -64,7 +64,7 @@ public class ParticipantDaoTest extends DaoTestCase {
         participant.setFirstName("John");
         participant.setDateOfBirth(new Date());
         participant.setGender("Male");
-        participant.setPersonId("276-99-8970");
+//        participant.setPersonId("276-99-8970");
         
         
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
@@ -99,7 +99,7 @@ public class ParticipantDaoTest extends DaoTestCase {
             participant.setLastName("Someone");
             participant.setGender("Male");
             participant.setDateOfBirth(new Date());
-            participant.setPersonId("123-45-6789");
+//            participant.setPersonId("123-45-6789");
             
             dao.save(participant);
             savedId = participant.getId();
