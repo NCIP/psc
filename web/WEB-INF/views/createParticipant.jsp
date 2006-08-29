@@ -60,10 +60,10 @@
 	</div>
 	<div class="row">
         <div class="label">
-            <form:label path="socialSecurityNumber">Social Security Number</form:label>
+            <form:label path="personId">Person Id</form:label>
         </div>
         <div class="value">
-            <form:input path="socialSecurityNumber"/>
+            <form:input path="personId"/>
         </div>
 	</div>      
     <div class="row">
