@@ -13,18 +13,19 @@ public class NewParticipantCommand {
     private String lastName;
     private Date dateOfBirth;
     private String gender;
-    private String socialSecurityNumber;
-	
+    private String personId;
+    	
 	public Participant createParticipant() {
 		Participant participant = new Participant();
 		participant.setFirstName(getFirstName());
 		participant.setLastName(getLastName());
 		participant.setDateOfBirth(getDateOfBirth());
 		participant.setGender(getGender());
-		participant.setSocialSecurityNumber(getSocialSecurityNumber());        
+		participant.setPersonId(getPersonId());        
         return participant;
     }
 
+	
 	public Date getDateOfBirth() {
 		return dateOfBirth;
 	}
@@ -57,12 +58,12 @@ public class NewParticipantCommand {
 		this.lastName = lastName;
 	}
 
-	public String getSocialSecurityNumber() {
-		return socialSecurityNumber;
+	public String getPersonId() {
+		return personId;
 	}
 
-	public void setSocialSecurityNumber(String socialSecurityNumber) {
-		this.socialSecurityNumber = socialSecurityNumber;
+	public void setPersonId(String personId) {
+		this.personId = personId;
 	}
 
 }
