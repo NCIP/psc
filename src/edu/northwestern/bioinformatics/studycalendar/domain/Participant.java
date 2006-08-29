@@ -32,7 +32,7 @@ public class Participant extends AbstractDomainObject {
     private String lastName;
     private Date dateOfBirth;
     private String gender;
-    private String socialSecurityNumber;
+    private String personId;
     private List<ParticipantIdentifier> participantIdentifiers = new ArrayList<ParticipantIdentifier>();
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
 
@@ -57,7 +57,7 @@ public class Participant extends AbstractDomainObject {
         if (!this.getLastName().equals(participant.getLastName())) return false;
         if (!this.getDateOfBirth().equals(participant.getDateOfBirth())) return false;
         if (!this.getGender().equals(participant.getGender())) return false;
-        if (!this.getSocialSecurityNumber().equals(participant.getSocialSecurityNumber())) return false;
+        if (!this.getPersonId().equals(participant.getPersonId())) return false;
         
         return true;
     }
@@ -101,13 +101,13 @@ public class Participant extends AbstractDomainObject {
         this.gender = gender;
     }
     
-    @Column(name = "social_security_number", unique = true, nullable = false)
-    public String getSocialSecurityNumber() {
-        return socialSecurityNumber;
+    @Column(name = "person_id", unique = true, nullable = false)
+    public String getPersonId() {
+        return personId;
     }
 
-    public void setSocialSecurityNumber(String socialSecurityNumber) {
-        this.socialSecurityNumber = socialSecurityNumber;
+    public void setPersonId(String personId) {
+        this.personId = personId;
     }
     
 
