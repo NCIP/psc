@@ -8,7 +8,7 @@ import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * @author Rhett Sutphin
+ * @author Padmaja Vedula
  */
 public class LoginControllerTest extends ControllerTestCase {
     private LoginController controller;

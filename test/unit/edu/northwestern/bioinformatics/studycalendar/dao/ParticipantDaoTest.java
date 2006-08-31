@@ -22,9 +22,7 @@ import org.springframework.context.ApplicationContext;
  * @author Padmaja Vedula
  */
 public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
-    //private ParticipantDao dao = (ParticipantDao) getApplicationContext().getBean("participantDao");
-    private static ApplicationContext applicationContext = null;
-    
+       
     public void testGetAll() throws Exception {
         List<Participant> actual = getDao().getAll();
         assertEquals("Wrong size", new Integer(1), new Integer(actual.size()));
