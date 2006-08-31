@@ -19,53 +19,32 @@ import org.hibernate.Session;
 import org.springframework.context.ApplicationContext;
 
 /**
- * @author Rhett Sutphin
+ * @author Padmaja Vedula
  */
-public class ParticipantDaoTest extends DaoTestCase {
-    private ParticipantDao dao = (ParticipantDao) getApplicationContext().getBean("participantDao");
+public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
+    //private ParticipantDao dao = (ParticipantDao) getApplicationContext().getBean("participantDao");
     private static ApplicationContext applicationContext = null;
     
-
     public void testGetAll() throws Exception {
-
-        List<Participant> actual = dao.getAll();
-        
-        System.out.println("Size is " + actual.size());
-        
-        for (int i=0;i<actual.size();i++) {
-            Participant s1 = actual.get(i);
-            System.out.println(s1.getLastName());
-        }
-
+        List<Participant> actual = getDao().getAll();
+        assertEquals("Wrong size", new Integer(1), new Integer(actual.size()));
+        Participant participant = actual.get(0);
+        assertEquals("Wrong last name", "Scott", participant.getLastName());
+    }
+    
+    public void testGetById() throws Exception {
+        Participant participant = getDao().getById(-100);
+        assertNotNull("Participant not found", participant);
+        assertEquals("Wrong last name", "Scott", participant.getLastName());
     }
 
     public void testSaveStudyPartAssignments() throws Exception {
     	Integer savedId;
         StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
-        Study study = new Study();
-        study.setName("New study");
-        studyDao.save(study);
-        
+        Study study = studyDao.getById(-2001);
         SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
-        Site site = new Site();
-        site.setName("New Site");
-        
-        StudySite studySite = new StudySite();
-        studySite.setSite(site);
-        studySite.setStudy(study);
-        studySite.setStudyIdentifier("study_identifier");
-        ArrayList studySites = new ArrayList();
-        studySites.add(studySite);
-        site.setStudySites(studySites);
-        siteDao.save(site);
-        
-        Participant participant = new Participant();
-        participant.setLastName("Smith");
-        participant.setFirstName("John");
-        participant.setDateOfBirth(new Date());
-        participant.setGender("Male");
-        participant.setPersonId("276-99-8970");
-        
+        Site site = siteDao.getById(-1001);
+        Participant participant = getDao().getById(-100);
         
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
@@ -75,19 +54,16 @@ public class ParticipantDaoTest extends DaoTestCase {
 
         participant.addStudyParticipantAssignments(spa);
         
-        dao.save(participant);
+        getDao().save(participant);
         savedId = participant.getId();
-        assertNotNull("The saved participant id", savedId);
-    
+            
         interruptSession();
 
-    
-        Participant loaded = dao.getById(savedId);
-        assertNotNull("Could not reload participant id " + savedId, loaded);
-        assertEquals("Wrong study", "New study", loaded.getStudyParticipantAssignments().get(0).getStudy().getName());
- 
-
-    }
+        Participant loaded = getDao().getById(savedId);
+        assertNotNull("The saved participant id doesnt match" + new Integer(-100), loaded);
+        assertEquals("Wrong study", "New Study", loaded.getStudyParticipantAssignments().get(0).getStudy().getName());
+        assertEquals("Wrong study site", "study_identifier1", loaded.getStudyParticipantAssignments().get(0).getStudySite().getStudyIdentifier());
+     }
     
    
     public void testSaveNewParticipant() throws Exception {
@@ -100,7 +76,7 @@ public class ParticipantDaoTest extends DaoTestCase {
             participant.setDateOfBirth(new Date());
             participant.setPersonId("123-45-6789");
             
-            dao.save(participant);
+            getDao().save(participant);
             savedId = participant.getId();
             assertNotNull("The saved participant id", savedId);
         }
@@ -108,7 +84,7 @@ public class ParticipantDaoTest extends DaoTestCase {
         interruptSession();
 
         {
-            Participant loaded = dao.getById(savedId);
+            Participant loaded = getDao().getById(savedId);
             assertNotNull("Could not reload participant id " + savedId, loaded);
             assertEquals("Wrong firstname", "Jeff", loaded.getFirstName());
             assertEquals("Wrong lastname", "Someone", loaded.getLastName());
@@ -116,6 +92,5 @@ public class ParticipantDaoTest extends DaoTestCase {
         
         }
     }
-
     
 }
