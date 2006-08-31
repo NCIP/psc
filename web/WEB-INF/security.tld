@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib
+PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
+"web-jsptaglib_1_1.dtd"> 
+<taglib>
+<tlibversion>1.0</tlibversion>
+<jspversion>1.2</jspversion> 
+
+<tag>
+    <name>secureOperation</name> 
+    <tagclass>edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.SecureOperation</tagclass>
+    <body-content>JSP</body-content>
+
+    <attribute>
+	<name>element</name>
+	<required>true</required>
+	<rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+    <attribute>
+	<name>operation</name>
+	<required>true</required>
+	<rtexprvalue>true</rtexprvalue>
+    </attribute>
+
+</tag>
+</taglib>
