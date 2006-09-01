@@ -7,6 +7,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.exceptions.CSException;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LocalUser;
 
 import org.apache.log4j.Logger;
 
@@ -19,6 +20,7 @@ public class LoginController extends SimpleFormController {
     static final Logger log = Logger.getLogger(LoginController.class.getName());
     static AuthenticationManager authMgr = null;
     public static final String CSM_STUDYCAL_CONTEXT_NAME = "study_calendar";
+
 
     public LoginController() {
         setCommandClass(LoginCommand.class);
@@ -43,6 +45,7 @@ public class LoginController extends SimpleFormController {
             log.debug("The user was denied access to the study calendar application." + ex);
         }
         if (loginSuccess) {
+        	LocalUser.init(loginCredentials.getUserId());
             return new ModelAndView(new RedirectView(getSuccessView()));
         } else {
             // have to add an error page or redirect to login page with error msg
