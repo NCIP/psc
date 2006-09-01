@@ -8,7 +8,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN"
 
 <tag>
     <name>secureOperation</name> 
-    <tagclass>edu.northwestern.bioinformatics.studycalendar.web.accesscontrol.SecureOperation</tagclass>
+    <tagclass>edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecureOperation</tagclass>
     <body-content>JSP</body-content>
 
     <attribute>
