@@ -44,7 +44,7 @@ public class NewParticipantController extends SimpleFormController {
         //can be probably loaded from a properties file ??
         Map<String, String> genders = new HashMap<String, String>();
         genders.put("Female", "Female");
-        genders.put("male", "male");
+        genders.put("Male", "Male");
         refdata.put("genders", genders);
         refdata.put("action", "New");
         return refdata;
@@ -53,8 +53,7 @@ public class NewParticipantController extends SimpleFormController {
     protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
     	NewParticipantCommand participantCommand = (NewParticipantCommand) oCommand;
     	Participant participant = participantCommand.createParticipant();
-    	System.out.println("new participant name : " + participant.getFirstName());
-        participantDao.save(participant);
+    	participantDao.save(participant);
 
         Map<String, Object> model = errors.getModel();
         model.put("participant", participant);
