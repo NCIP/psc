@@ -21,7 +21,7 @@ public class NewStudyController extends SimpleFormController {
     public NewStudyController() {
         setCommandClass(NewStudyCommand.class);
         setFormView("editStudy");
-        setSuccessView("viewStudy");
+        setSuccessView("redirectToCalendarTemplate");
         setBindOnNewForm(true);
     }
 
@@ -37,9 +37,7 @@ public class NewStudyController extends SimpleFormController {
         // TODO: transaction
         studyDao.save(study);
 
-        Map<String, Object> model = errors.getModel();
-        model.put("study", study);
-        return new ModelAndView(getSuccessView(), model);
+        return new ModelAndView(getSuccessView(), "id", study.getId());
     }
 
     ////// CONFIGURATION
