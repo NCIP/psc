@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.accesscontrol;
 
-import java.io.IOException;
-import java.util.Date;
 import javax.servlet.jsp.*;
 import javax.servlet.jsp.tagext.*;
 import gov.nih.nci.security.*;
