@@ -46,18 +46,21 @@
 <a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
 
 <c:if test="${not study.plannedSchedule.complete}">
-<c:choose>
-    <c:when test="${fn:length(study.plannedSchedule.arms) == 1}">
-        <a href="<c:url value="/pages/newPeriod?id=${study.plannedSchedule.arms[0].id}"/>">Add a period to this template</a>
-    </c:when>
-    <c:otherwise>
-        <ul>
-        <c:forEach items="${study.plannedSchedule.arms}" var="arm">
-            <li><a href="<c:url value="/pages/newPeriod?id=${arm.id}"/>">Add a period to arm ${arm.name}</a></li>
-        </c:forEach>
-        </ul>
-    </c:otherwise>
-</c:choose>
+    <c:forEach items="${study.plannedSchedule.epochs}" var="epoch">
+        <c:choose>
+            <c:when test="${fn:length(epoch.arms) == 1}">
+                <p><a href="<c:url value="/pages/newPeriod?id=${epoch.arms[0].id}"/>">Add a period epoch ${epoch.name}</a></p>
+            </c:when>
+            <c:otherwise>
+                <p>Epoch ${epoch.name}:</p>
+                <ul>
+                <c:forEach items="${epoch.arms}" var="arm">
+                    <li><a href="<c:url value="/pages/newPeriod?id=${arm.id}"/>">Add a period to arm ${arm.name}</a></li>
+                </c:forEach>
+                </ul>
+            </c:otherwise>
+        </c:choose>
+    </c:forEach>
 </c:if>
 
 <c:if test="${not empty calendar.weeks}">
