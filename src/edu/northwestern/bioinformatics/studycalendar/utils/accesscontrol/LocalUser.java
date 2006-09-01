@@ -1,5 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
+/**
+ * @author Padmaja Vedula
+ */
+
 public class LocalUser {
     private static final ThreadLocal<String> threadLocal = new ThreadLocal<String>();
 

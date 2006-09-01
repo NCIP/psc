@@ -5,10 +5,13 @@ import gov.nih.nci.security.SecurityServiceProvider;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+
+/**
+ * @author Padmaja Vedula
+ */
 
 public class SecureOperation extends TagSupport {
     private static Log log = LogFactory.getLog(SecureOperation.class);
@@ -34,7 +37,6 @@ public class SecureOperation extends TagSupport {
 
     public int doStartTag() throws JspTagException {
         AuthorizationManager authorizationManager = null;
-        //ThreadLocal tlData = new ThreadLocal();
 
         String userName = LocalUser.getInstance();
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
