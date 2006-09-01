@@ -82,11 +82,12 @@ public class CalendarTemplate {
         public Week(int startDay) {
             range = new IntRange(startDay, startDay + 6);
             arms = new LinkedList<WeekOfArm>();
-            for (Arm arm : schedule.getArms()) {
-                if (arm.getDayRange().overlapsRange(range)) {
-                    arms.add(new WeekOfArm(arm, range));
-                }
-            }
+            // TODO:
+//            for (Arm arm : schedule.getArms()) {
+//                if (arm.getDayRange().overlapsRange(range)) {
+//                    arms.add(new WeekOfArm(arm, range));
+//                }
+//            }
         }
 
         public List<WeekOfArm> getArms() {

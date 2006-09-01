@@ -14,12 +14,12 @@ public class PlannedScheduleTest extends StudyCalendarTestCase {
         schedule = new PlannedSchedule();
     }
 
-    public void testAddArm() throws Exception {
-        Arm arm = new Arm();
-        schedule.addArm(arm);
-        assertEquals("Wrong number of arms", 1, schedule.getArms().size());
-        assertSame("Wrong arm present", arm, schedule.getArms().get(0));
-        assertSame("Bidirectional relationship not maintained", schedule, arm.getPlannedSchedule());
+    public void testAddEpoch() throws Exception {
+        Epoch epoch = new Epoch();
+        schedule.addEpoch(epoch);
+        assertEquals("Wrong number of epochs", 1, schedule.getEpochs().size());
+        assertSame("Wrong epoch present", epoch, schedule.getEpochs().get(0));
+        assertSame("Bidirectional relationship not maintained", schedule, epoch.getPlannedSchedule());
     }
 
     public void testSetStudy() throws Exception {
@@ -36,18 +36,18 @@ public class PlannedScheduleTest extends StudyCalendarTestCase {
     }
 
     public void testLength() throws Exception {
-        Arm a1 = registerMockFor(Arm.class);
-        expect(a1.getLengthInDays()).andReturn(45);
-        a1.setPlannedSchedule(schedule);
+        Epoch e1 = registerMockFor(Epoch.class);
+        expect(e1.getLengthInDays()).andReturn(45);
+        e1.setPlannedSchedule(schedule);
 
-        Arm a2 = registerMockFor(Arm.class);
-        expect(a2.getLengthInDays()).andReturn(13);
-        a2.setPlannedSchedule(schedule);
+        Epoch e2 = registerMockFor(Epoch.class);
+        expect(e2.getLengthInDays()).andReturn(13);
+        e2.setPlannedSchedule(schedule);
 
         replayMocks();
 
-        schedule.addArm(a1);
-        schedule.addArm(a2);
+        schedule.addEpoch(e1);
+        schedule.addEpoch(e2);
         assertEquals(45, schedule.getLengthInDays());
         verifyMocks();
     }

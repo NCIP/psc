@@ -4,16 +4,15 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.validator.NotNull;
 
-import javax.persistence.Transient;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.List;
+import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -27,21 +26,21 @@ import java.util.ArrayList;
 )
 public class PlannedSchedule extends AbstractDomainObject {
     private Study study;
-    private List<Arm> arms = new ArrayList<Arm>();
+    private List<Epoch> epochs = new ArrayList<Epoch>();
     private boolean complete;
 
     ////// LOGIC
 
-    public void addArm(Arm arm) {
-        arms.add(arm);
-        arm.setPlannedSchedule(this);
+    public void addEpoch(Epoch epoch) {
+        epochs.add(epoch);
+        epoch.setPlannedSchedule(this);
     }
 
     @Transient
     public int getLengthInDays() {
         int len = 0;
-        for (Arm arm : arms) {
-            len = Math.max(len, arm.getLengthInDays());
+        for (Epoch epoch : epochs) {
+            len = Math.max(len, epoch.getLengthInDays());
         }
         return len;
     }
@@ -49,21 +48,21 @@ public class PlannedSchedule extends AbstractDomainObject {
     ////// BEAN PROPERTIES
 
     public boolean isComplete() {
-    	return complete;
+        return complete;
     }
 
     public void setComplete(boolean complete) {
-    	this.complete = complete;
+        this.complete = complete;
     }
 
     @OneToMany (mappedBy = "plannedSchedule")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<Arm> getArms() {
-        return arms;
+    public List<Epoch> getEpochs() {
+        return epochs;
     }
 
-    public void setArms(List<Arm> arms) {
-        this.arms = arms;
+    public void setEpochs(List<Epoch> epochs) {
+        this.epochs = epochs;
     }
 
     @OneToOne

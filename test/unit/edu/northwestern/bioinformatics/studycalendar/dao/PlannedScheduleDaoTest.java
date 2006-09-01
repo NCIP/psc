@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 /**
@@ -17,15 +17,15 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
         assertEquals("Wrong study", Integer.valueOf(-150), sched.getStudy().getId());
     }
 
-    public void testLoadingArms() throws Exception {
+    public void testLoadingEpochs() throws Exception {
         PlannedSchedule schedule = dao.getById(-100);
         assertNotNull("Schedule not found", schedule);
 
-        assertEquals("Wrong number of arms", 2, schedule.getArms().size());
-        assertArm("Wrong arm 0", -200, "Dexter", schedule.getArms().get(0));
-        assertArm("Wrong arm 1", -199, "Sinister", schedule.getArms().get(1));
+        assertEquals("Wrong number of epochs", 2, schedule.getEpochs().size());
+        assertEpoch("Wrong epoch 0", -200, "Dexter", schedule.getEpochs().get(0));
+        assertEpoch("Wrong epoch 1", -199, "Sinister", schedule.getEpochs().get(1));
 
-        assertSame("Arm <=> Study relationship not bidirectional on load", schedule, schedule.getArms().get(0).getPlannedSchedule());
+        assertSame("Epoch <=> Schedule relationship not bidirectional on load", schedule, schedule.getEpochs().get(0).getPlannedSchedule());
     }
 
     public void testSaveNewSchedule() throws Exception {
@@ -33,8 +33,8 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
         {
             PlannedSchedule sched = new PlannedSchedule();
             sched.setStudy(studyDao.getById(-150));
-            sched.addArm(new Arm());
-            sched.getArms().get(0).setName("First arm");
+            sched.addEpoch(new Epoch());
+            sched.getEpochs().get(0).setName("First epoch");
             dao.save(sched);
             savedId = sched.getId();
             assertNotNull("The saved sched didn't get an id", savedId);
@@ -45,8 +45,8 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
         {
             PlannedSchedule loaded = dao.getById(savedId);
             assertNotNull("Could not reload study with id " + savedId, loaded);
-            assertEquals("Wrong number of arms", 1, loaded.getArms().size());
-            assertEquals("Wrong name for arm 0", "First arm", loaded.getArms().get(0).getName());
+            assertEquals("Wrong number of arms", 1, loaded.getEpochs().size());
+            assertEquals("Wrong name for arm 0", "First epoch", loaded.getEpochs().get(0).getName());
         }
     }
 
@@ -57,10 +57,10 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
         assertEquals("Could not mark sched complete", true, sched.isComplete());
     }
 
-    private static void assertArm(
-        String message, Integer expectedId, String expectedName, Arm actualArm
+    private static void assertEpoch(
+        String message, Integer expectedId, String expectedName, Epoch actualEpoch
     ) {
-        assertEquals(message + ": wrong id", expectedId, actualArm.getId());
-        assertEquals(message + ": wrong name", expectedName, actualArm.getName());
+        assertEquals(message + ": wrong id", expectedId, actualEpoch.getId());
+        assertEquals(message + ": wrong name", expectedName, actualEpoch.getName());
     }
 }

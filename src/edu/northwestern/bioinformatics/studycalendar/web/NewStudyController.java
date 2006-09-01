@@ -22,6 +22,7 @@ public class NewStudyController extends SimpleFormController {
         setCommandClass(NewStudyCommand.class);
         setFormView("editStudy");
         setSuccessView("viewStudy");
+        setBindOnNewForm(true);
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {

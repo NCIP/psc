@@ -12,6 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.FetchType;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,7 +27,7 @@ import java.util.Set;
     }
 )
 public class Arm extends AbstractDomainObject {
-    private PlannedSchedule plannedSchedule;
+    private Epoch epoch;
     private String name;
     private Set<Period> periods = new HashSet<Period>();
 
@@ -61,14 +62,14 @@ public class Arm extends AbstractDomainObject {
         this.name = name;
     }
 
-    @ManyToOne
-    @JoinColumn (name = "planned_schedule_id")
-    public PlannedSchedule getPlannedSchedule() {
-        return plannedSchedule;
+    @ManyToOne (fetch = FetchType.LAZY)
+    @JoinColumn (name = "epoch_id", nullable = false)
+    public Epoch getEpoch() {
+        return epoch;
     }
 
-    public void setPlannedSchedule(PlannedSchedule plannedSchedule) {
-        this.plannedSchedule = plannedSchedule;
+    public void setEpoch(Epoch epoch) {
+        this.epoch = epoch;
     }
 
     @OneToMany (mappedBy = "arm")

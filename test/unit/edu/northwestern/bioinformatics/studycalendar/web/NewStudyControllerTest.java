@@ -44,9 +44,14 @@ public class NewStudyControllerTest extends ControllerTestCase {
     }
 
     public void testBindHasArms() throws Exception {
-        request.addParameter("arms", "yes");
+        request.addParameter("arms[0]", "yes");
+        request.addParameter("arms[1]", "no");
+        request.addParameter("arms[2]", "yes");
         NewStudyCommand command = postAndReturnCommand();
-        assertTrue(command.getArms());
+
+        assertTrue(command.getArms().get(0));
+        assertFalse(command.getArms().get(1));
+        assertTrue(command.getArms().get(2));
     }
 
     public void testBindStudyName() throws Exception {
@@ -56,14 +61,30 @@ public class NewStudyControllerTest extends ControllerTestCase {
         assertEquals(studyName, command.getStudyName());
     }
 
-    public void testBindArmNames() throws Exception {
-        List<String> names = Arrays.asList("The arm", "An arm");
-        request.addParameter("armNames[0]", names.get(0));
-        request.addParameter("armNames[1]", names.get(1));
+    public void testBindEpochNames() throws Exception {
+        List<String> names = Arrays.asList("Eocene", "Holocene");
+        request.addParameter("epochNames[0]", names.get(0));
+        request.addParameter("epochNames[1]", names.get(1));
 
         NewStudyCommand command = postAndReturnCommand();
-        assertEquals(names.get(0), command.getArmNames().get(0));
-        assertEquals(names.get(1), command.getArmNames().get(1));
+        assertEquals(2, command.getEpochNames().size());
+        assertEquals(names.get(0), command.getEpochNames().get(0));
+        assertEquals(names.get(1), command.getEpochNames().get(1));
+    }
+
+    public void testBindArmNames() throws Exception {
+        List<String> names = Arrays.asList("The arm", "An arm");
+        request.addParameter("armNames[1][0]", names.get(0));
+        request.addParameter("armNames[1][1]", names.get(1));
+
+        NewStudyCommand command = postAndReturnCommand();
+        List<List<String>> actualArmNames = command.getArmNames();
+        assertEquals(0, actualArmNames.get(0).size());
+        assertEquals(2, actualArmNames.get(1).size());
+        Object s = actualArmNames.get(1).get(0);
+        System.err.println(s.getClass().getName());
+        assertEquals(names.get(0), s);
+        assertEquals(names.get(1), actualArmNames.get(1).get(1));
     }
 
     private NewStudyCommand postAndReturnCommand() throws Exception {
