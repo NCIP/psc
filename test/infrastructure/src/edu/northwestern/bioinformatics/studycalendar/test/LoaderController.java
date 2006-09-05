@@ -8,6 +8,7 @@ import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.dbunit.DatabaseUnitException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -22,6 +23,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.sql.SQLException;
 
 /**
  * @author Rhett Sutphin
@@ -66,6 +68,14 @@ public class LoaderController implements Controller {
         }
 
         public void load() throws Exception {
+            try {
+                executeLoad();
+            } catch (Exception e) {
+                error("Load failed due to exception", e);
+            }
+        }
+
+        private void executeLoad() throws IOException, SQLException, DatabaseUnitException {
             log("Opening connection");
             IDatabaseConnection conn = new DatabaseConnection(dataSource.getConnection());
 
@@ -112,8 +122,24 @@ public class LoaderController implements Controller {
         }
 
         private void error(String message) throws IOException {
-            log.error(message);
+            error(message, null);
+        }
+
+        private void error(String message, Exception e) throws IOException {
+            if (e == null) {
+                log.error(message);
+            } else {
+                log.error(message, e);
+            }
+
             out.write("ERROR " + message + '\n');
+            if (e != null) {
+                out.write("      " + e.getMessage() + '\n');
+                for (StackTraceElement element : e.getStackTrace()) {
+                    out.write("        " + element + '\n');
+                }
+            }
+
             out.flush();
         }
     }
