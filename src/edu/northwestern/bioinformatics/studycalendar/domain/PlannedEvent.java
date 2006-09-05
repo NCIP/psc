@@ -8,6 +8,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.FetchType;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -34,6 +36,16 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
         return getActivity().compareTo(other.getActivity());
     }
 
+    public List<Integer> getDaysInArm() {
+        int dayInArm = getPeriod().getStartDay() + getDay() - 1;
+        List<Integer> days = new ArrayList<Integer>();
+        while (days.size() < getPeriod().getRepetitions()) {
+            days.add(dayInArm);
+            dayInArm += getPeriod().getDuration().inDays();
+        }
+        return days;
+    }
+
     ////// BEAN PROPERTIES
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -54,6 +66,9 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
 
     public void setPeriod(Period period) {
         this.period = period;
+        if (!period.getPlannedEvents().contains(this)) {
+            period.addPlannedEvent(this);
+        }
     }
 
     public Integer getDay() {

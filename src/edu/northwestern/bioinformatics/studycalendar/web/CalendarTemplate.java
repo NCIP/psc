@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import org.apache.commons.lang.math.IntRange;
 
 import java.util.Collection;
@@ -11,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.SortedSet;
 
 /**
  * It may be worthwhile to use this as a true domain object later.  (Although maybe not.)
@@ -22,16 +22,16 @@ import java.util.SortedSet;
  */
 public class CalendarTemplate {
     private PlannedSchedule schedule;
-    private List<Week> weeks;
+    private List<CalendarEpoch> epochs;
     private Map<String, Integer> armClasses;
     private Map<String, Integer> periodClasses;
 
     public CalendarTemplate(PlannedSchedule schedule) {
         this.schedule = schedule;
-        int weekCount = (int) Math.ceil(schedule.getLengthInDays() / 7.0);
-        weeks = new LinkedList<Week>();
-        while (weeks.size() < weekCount) {
-            weeks.add(new Week(weeks.size() * 7 + 1));
+
+        epochs = new LinkedList<CalendarEpoch>();
+        for (Epoch epoch : schedule.getEpochs()) {
+            epochs.add(new CalendarEpoch(epoch));
         }
 
         armClasses = new HashMap<String, Integer>();
@@ -42,8 +42,8 @@ public class CalendarTemplate {
         return schedule.getStudy().getName();
     }
 
-    public List<Week> getWeeks() {
-        return weeks;
+    public List<CalendarEpoch> getEpochs() {
+        return epochs;
     }
 
     private String getArmClass(Arm arm) {
@@ -78,23 +78,50 @@ public class CalendarTemplate {
         }
     }
 
+    public class CalendarEpoch {
+        private Epoch epoch;
+        private List<Week> weeks;
+
+        public CalendarEpoch(Epoch epoch) {
+            this.epoch = epoch;
+
+            int weekCount = (int) Math.ceil(epoch.getLengthInDays() / 7.0);
+            weeks = new LinkedList<Week>();
+            while (weeks.size() < weekCount) {
+                weeks.add(new Week(weeks.size() * 7 + 1, epoch.getArms()));
+            }
+        }
+
+        public String getName() {
+            return epoch.getName();
+        }
+
+        public List<Week> getWeeks() {
+            return weeks;
+        }
+    }
+
     public class Week {
         private List<WeekOfArm> arms;
         private IntRange range;
 
-        public Week(int startDay) {
+        public Week(int startDay, List<Arm> srcArms) {
             range = new IntRange(startDay, startDay + 6);
             arms = new LinkedList<WeekOfArm>();
-            // TODO:
-//            for (Arm arm : schedule.getArms()) {
-//                if (arm.getDayRange().overlapsRange(range)) {
-//                    arms.add(new WeekOfArm(arm, range));
-//                }
-//            }
+            for (Arm arm : srcArms) {
+                if (arm.getDayRange().overlapsRange(range)) {
+                    arms.add(new WeekOfArm(arm, range));
+                }
+            }
         }
 
         public List<WeekOfArm> getArms() {
             return arms;
+        }
+
+        // for testing
+        IntRange getRange() {
+            return range;
         }
     }
 
@@ -136,13 +163,11 @@ public class CalendarTemplate {
                 if (period.getDayRange().containsInteger(dayNumber)) {
                     periods.add(new DayOfPeriod(period));
                 }
-            }
-            for (Period period : periodsOfArm) {
-            	SortedSet<PlannedEvent> events = period.getPlannedEvents();
-                for (PlannedEvent pe : events) {
-	                if (pe.getDay() == dayNumber) {
-	                    plannedEvents.add(pe);
-	                }
+
+                for (PlannedEvent pe : period.getPlannedEvents()) {
+                    if (pe.getDaysInArm().contains(dayNumber)) {
+                        plannedEvents.add(pe);
+                    }
                 }
             }
         }

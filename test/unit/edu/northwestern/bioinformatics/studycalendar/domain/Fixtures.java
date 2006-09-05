@@ -33,6 +33,10 @@ public class Fixtures {
         return ACTIVITY_TYPES.get(id);
     }
 
+    public static Period createPeriod(String name, int startDay, int dayCount, int repetitions) {
+        return createPeriod(name, startDay, Duration.Unit.day, dayCount, repetitions);
+    }
+
     public static Period createPeriod(String name, int startDay, Duration.Unit dUnit, int dQuantity, int repetitions) {
         Period p = new Period();
         p.setName(name);
@@ -41,6 +45,28 @@ public class Fixtures {
         p.getDuration().setQuantity(dQuantity);
         p.setRepetitions(repetitions);
         return p;
+    }
+
+    public static PlannedEvent createPlannedEvent(String activityName, int day) {
+        PlannedEvent event = new PlannedEvent();
+        Activity activity = createNamedInstance(activityName, Activity.class);
+        activity.setType(getActivityType(9));
+        event.setActivity(activity);
+        event.setDay(day);
+        return event;
+    }
+
+    public static Epoch createEpoch(String name, String... armNames) {
+        Epoch epoch = new Epoch();
+        epoch.setName(name);
+        if (armNames.length == 0) {
+            epoch.addArm(createNamedInstance(name, Arm.class));
+        } else {
+            for (String armName : armNames) {
+                epoch.addArm(createNamedInstance(armName, Arm.class));
+            }
+        }
+        return epoch;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {

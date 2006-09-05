@@ -43,12 +43,15 @@ public class Period extends AbstractDomainObject implements Named {
     private int repetitions = DEFAULT_REPETITIONS;
     private SortedSet<PlannedEvent> plannedEvents;
 
+    public Period() {
+        plannedEvents = new TreeSet<PlannedEvent>();
+    }
+
     ////// LOGIC
 
     public void addPlannedEvent(PlannedEvent event) {
-        event.setPeriod(this);
-        if (getPlannedEvents() == null) setPlannedEvents(new TreeSet<PlannedEvent>());
         getPlannedEvents().add(event);
+        event.setPeriod(this);
     }
 
     @Transient
