@@ -23,7 +23,7 @@ import java.util.Comparator;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class ActivityType extends AbstractDomainObject implements Comparable<ActivityType> {
+public class ActivityType extends AbstractDomainObject implements Comparable<ActivityType>, Named {
     private static final Comparator<ActivityType> NATURAL_ORDER = new ById<ActivityType>();
 
     private String name;

@@ -24,7 +24,7 @@ import java.util.ArrayList;
         @Parameter(name="sequence", value="seq_epochs_id")
     }
 )
-public class Epoch extends AbstractDomainObject {
+public class Epoch extends AbstractDomainObject implements Named {
     private PlannedSchedule plannedSchedule;
     private List<Arm> arms = new ArrayList<Arm>();
     private String name;

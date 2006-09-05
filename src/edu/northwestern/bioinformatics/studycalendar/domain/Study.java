@@ -26,7 +26,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_studies_id")
     }
 )
-public class Study extends AbstractDomainObject {
+public class Study extends AbstractDomainObject implements Named {
     private String name;
     private PlannedSchedule plannedSchedule;
     private List<StudySite> studySites = new ArrayList<StudySite>();

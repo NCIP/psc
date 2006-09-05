@@ -33,7 +33,7 @@ import java.util.TreeSet;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends AbstractDomainObject {
+public class Period extends AbstractDomainObject implements Named {
     public static final int DEFAULT_REPETITIONS = 1;
 
     private String name;

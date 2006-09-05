@@ -26,7 +26,7 @@ import javax.persistence.FetchType;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class Activity extends AbstractDomainObject implements Comparable<Activity> {
+public class Activity extends AbstractDomainObject implements Comparable<Activity>, Named {
     private String name;
     private String description;
     private ActivityType type;

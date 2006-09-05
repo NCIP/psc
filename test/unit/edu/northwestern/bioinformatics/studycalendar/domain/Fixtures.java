@@ -43,6 +43,18 @@ public class Fixtures {
         return p;
     }
 
+    public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
+        try {
+            T instance = clazz.newInstance();
+            instance.setName(name);
+            return instance;
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Creating domain obj of class " + clazz.getName() + " failed", e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Creating domain obj of class " + clazz.getName() + " failed", e);
+        }
+    }
+
     // static class
     private Fixtures() { }
 }

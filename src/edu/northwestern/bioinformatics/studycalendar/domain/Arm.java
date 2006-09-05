@@ -26,7 +26,7 @@ import java.util.Set;
         @Parameter(name="sequence", value="seq_arms_id")
     }
 )
-public class Arm extends AbstractDomainObject {
+public class Arm extends AbstractDomainObject implements Named {
     private Epoch epoch;
     private String name;
     private Set<Period> periods = new HashSet<Period>();
