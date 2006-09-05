@@ -9,9 +9,9 @@ public class PeriodTest extends TestCase {
     private Period period = new Period();
 
     public void testDurationNeverNull() {
-        Period period = new Period();
-        period.setDuration(null);
-        assertNotNull(period.getDuration());
+        Period p = new Period();
+        p.setDuration(null);
+        assertNotNull(p.getDuration());
     }
 
     public void testEndDay() {
@@ -24,15 +24,15 @@ public class PeriodTest extends TestCase {
     }
 
     public void testAddPlannedEventMaintainsBidirectionality() throws Exception {
-        PlannedEvent e = new PlannedEvent();
+        PlannedEvent e = Fixtures.createPlannedEvent("Any", 5);
         assertNull(e.getPeriod());
         period.addPlannedEvent(e);
         assertSame(period, e.getPeriod());
     }
 
     public void testAddPlannedEventAdds() throws Exception {
-        assertNull(period.getPlannedEvents());
-        PlannedEvent e = new PlannedEvent();
+        assertEquals(0, period.getPlannedEvents().size());
+        PlannedEvent e = Fixtures.createPlannedEvent("Any", 5);
         period.addPlannedEvent(e);
 
         assertEquals(1, period.getPlannedEvents().size());
