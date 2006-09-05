@@ -49,7 +49,7 @@
     <c:forEach items="${study.plannedSchedule.epochs}" var="epoch">
         <c:choose>
             <c:when test="${fn:length(epoch.arms) == 1}">
-                <p><a href="<c:url value="/pages/newPeriod?id=${epoch.arms[0].id}"/>">Add a period epoch ${epoch.name}</a></p>
+                <p><a href="<c:url value="/pages/newPeriod?id=${epoch.arms[0].id}"/>">Add a period to epoch ${epoch.name}</a></p>
             </c:when>
             <c:otherwise>
                 <p>Epoch ${epoch.name}:</p>
@@ -84,16 +84,16 @@
                     <c:forEach items="${arm.days}" var="day">
                         <td>
                             <c:forEach items="${day.periods}" var="period">
-    	                        <div class="period ${period.cssClass}"><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></div>
-	                            <c:forEach items="${day.plannedEvents}" var="event">
-	    	                        <div class="period ${period.cssClass}">${event.activity.name}</div>	                            	
-	                            </c:forEach>
+                                <div class="period ${period.cssClass}"><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></div>
+                                <c:forEach items="${day.plannedEvents}" var="event">
+                                    <div class="period ${period.cssClass}">${event.activity.name}</div>
+                                </c:forEach>
                             </c:forEach>
                         </td>
-                    </c:forEach>            
+                    </c:forEach>
                 </tr>
             </c:forEach>
-			<tr><td>&nbsp;</td></tr>
+            <tr><td>&nbsp;</td></tr>
         </c:forEach>
     </table>
 </c:if>
