@@ -15,6 +15,7 @@ import javax.persistence.Transient;
 import javax.persistence.FetchType;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * @author Rhett Sutphin
@@ -29,7 +30,7 @@ import java.util.Set;
 public class Arm extends AbstractDomainObject implements Named {
     private Epoch epoch;
     private String name;
-    private Set<Period> periods = new HashSet<Period>();
+    private Set<Period> periods = new LinkedHashSet<Period>();
 
     // business methods
 
