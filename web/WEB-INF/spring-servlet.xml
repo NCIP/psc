@@ -59,4 +59,7 @@
     <bean name="/newPlannedEvent" id="NewPlannedEventController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewPlannedEventController"/>
 
+    <bean name="/flatCalendarTemplate" id="displayFlatCalendarTemplateController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayFlatCalendarTemplateController"/>
+
 </beans>

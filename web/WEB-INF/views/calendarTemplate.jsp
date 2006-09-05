@@ -37,7 +37,7 @@
             padding: 3px;
         }
         .period0 { background-color: red; }
-        .period1 { background-color: blue; }
+        .period1 { background-color: yellow; }
         .period2 { background-color: green; }
     </style>
 </head>
@@ -84,12 +84,16 @@
                     <c:forEach items="${arm.days}" var="day">
                         <td>
                             <c:forEach items="${day.periods}" var="period">
-                                <div class="period ${period.cssClass}">${period.name}</div>
+    	                        <div class="period ${period.cssClass}"><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></div>
+	                            <c:forEach items="${day.plannedEvents}" var="event">
+	    	                        <div class="period ${period.cssClass}">${event.activity.name}</div>	                            	
+	                            </c:forEach>
                             </c:forEach>
                         </td>
-                    </c:forEach>
+                    </c:forEach>            
                 </tr>
             </c:forEach>
+			<tr><td>&nbsp;</td></tr>
         </c:forEach>
     </table>
 </c:if>

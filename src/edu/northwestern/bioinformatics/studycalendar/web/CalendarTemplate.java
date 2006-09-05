@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
 import org.apache.commons.lang.math.IntRange;
 
@@ -10,12 +11,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.SortedSet;
 
 /**
  * It may be worthwhile to use this as a true domain object later.  (Although maybe not.)
  * For now, though, it is only used in the web tier.
  *
  * @author Rhett Sutphin
+ * @author Jaron Sampson
  */
 public class CalendarTemplate {
     private PlannedSchedule schedule;
@@ -124,18 +127,32 @@ public class CalendarTemplate {
 
     public class Day {
         List<DayOfPeriod> periods;
+        List<PlannedEvent> plannedEvents;
 
         public Day(int dayNumber, Collection<Period> periodsOfArm) {
             this.periods = new LinkedList<DayOfPeriod>();
+            this.plannedEvents = new LinkedList<PlannedEvent>();
             for (Period period : periodsOfArm) {
                 if (period.getDayRange().containsInteger(dayNumber)) {
                     periods.add(new DayOfPeriod(period));
+                }
+            }
+            for (Period period : periodsOfArm) {
+            	SortedSet<PlannedEvent> events = period.getPlannedEvents();
+                for (PlannedEvent pe : events) {
+	                if (pe.getDay() == dayNumber) {
+	                    plannedEvents.add(pe);
+	                }
                 }
             }
         }
 
         public List<DayOfPeriod> getPeriods() {
             return periods;
+        }
+
+        public List<PlannedEvent> getPlannedEvents() {
+            return plannedEvents;
         }
     }
 
@@ -152,6 +169,10 @@ public class CalendarTemplate {
 
         public String getName() {
             return period.getName();
+        }
+
+        public Integer getId() {
+            return period.getId();
         }
     }
 }
