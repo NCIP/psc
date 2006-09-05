@@ -8,6 +8,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.FetchType;
+import javax.persistence.Transient;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -36,6 +37,7 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
         return getActivity().compareTo(other.getActivity());
     }
 
+    @Transient
     public List<Integer> getDaysInArm() {
         int dayInArm = getPeriod().getStartDay() + getDay() - 1;
         List<Integer> days = new ArrayList<Integer>();
