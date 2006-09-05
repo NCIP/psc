@@ -4,8 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.database.DatabaseSequenceFilter;
 import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.FilteredDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.DatabaseUnitException;
@@ -90,7 +92,13 @@ public class LoaderController implements Controller {
             if (sets.size() == 0) {
                 error("No datasets found");
             } else {
-                CompositeDataSet dataset = new CompositeDataSet(sets.toArray(new IDataSet[sets.size()]));
+                CompositeDataSet source = new CompositeDataSet(sets.toArray(new IDataSet[sets.size()]));
+                log("Merged dataset contains tables " + Arrays.asList(source.getTableNames()));
+                log("Ordering tables to prevent foreign key conflicts");
+                DatabaseSequenceFilter filter = new DatabaseSequenceFilter(conn);
+                log(" - Filtered order is " + Arrays.asList(filter.getTableNames(source)));
+                FilteredDataSet dataset = new FilteredDataSet(filter, source);
+                log(" - Final order is " + Arrays.asList(dataset.getTableNames()));
 
                 log("Wiping all configured tables");
                 DatabaseOperation.DELETE_ALL.execute(conn, dataset);
