@@ -59,5 +59,4 @@
     <bean name="/newPlannedEvent" id="NewPlannedEventController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewPlannedEventController"/>
 
-
 </beans>

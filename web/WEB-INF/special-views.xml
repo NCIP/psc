@@ -7,4 +7,10 @@
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/calendarTemplate</value></property>
     </bean>
+
+    <!-- temporary -->
+    <bean id="redirectToGridCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/gridCalendarTemplate</value></property>
+    </bean>
 </beans>
