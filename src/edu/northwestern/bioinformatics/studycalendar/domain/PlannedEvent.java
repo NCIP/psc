@@ -68,9 +68,6 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
 
     public void setPeriod(Period period) {
         this.period = period;
-        if (!period.getPlannedEvents().contains(this)) {
-            period.addPlannedEvent(this);
-        }
     }
 
     public Integer getDay() {

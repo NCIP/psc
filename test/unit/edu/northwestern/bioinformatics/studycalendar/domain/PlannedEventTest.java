@@ -35,14 +35,6 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         assertNegative(e1.compareTo(e0));
     }
 
-    public void testSetPeriodMaintainsBidirRelationship() throws Exception {
-        Period p = new Period();
-        e0.setPeriod(p);
-        assertSame(p, e0.getPeriod());
-        assertEquals(1, p.getPlannedEvents().size());
-        assertSame(e0, p.getPlannedEvents().first());
-    }
-
     public void testDaysInArmSimple() throws Exception {
         changePeriod(1, 7, 1);
         assertDaysInArm(e0, 1);
@@ -51,8 +43,8 @@ public class PlannedEventTest extends StudyCalendarTestCase {
 
     private void changePeriod(int startDay, int dayCount, int repetitions) {
         Period p0 = Fixtures.createPeriod("P0", startDay, dayCount, repetitions);
-        e0.setPeriod(p0);
-        e1.setPeriod(p0);
+        p0.addPlannedEvent(e0);
+        p0.addPlannedEvent(e1);
     }
 
     public void testDaysInArmOffset() throws Exception {
