@@ -1,32 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.test;
 
-import org.dbunit.dataset.filter.SequenceTableFilter;
-import org.dbunit.dataset.DataSetException;
 import org.dbunit.database.IDatabaseConnection;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.filter.SequenceTableFilter;
 import org.jgrapht.DirectedGraph;
-import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.traverse.TopologicalOrderIterator;
 
-import java.sql.SQLException;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
+ * This is conceptually similar to dbunit's {@link org.dbunit.database.DatabaseSequenceFilter}
+ * (it works as a drop-in replacement, in fact).  The difference is that it uses a topological
+ * sort of a directed graph of the relationships instead of the iterative approach dbunit takes.
+ * This seems to work better.
+ * <p>
+ * Note that reordering will fail with an IllegalStateException if there are dependency loops
+ * in the given list of tables.  This may be correctable, if necessary.
+ *
  * @author Rhett Sutphin
  */
 public class ForeignKeySequenceFilter extends SequenceTableFilter {
-    private static final Log log = LogFactory.getLog(ForeignKeySequenceFilter.class);
-
     public ForeignKeySequenceFilter(IDatabaseConnection conn, String[] tableNames) throws SQLException {
         super(new Reorderer(conn, tableNames).newOrder());
     }
@@ -54,16 +58,15 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
 
             for (Set<String> set : inspector.stronglyConnectedSets()) {
                 if (set.size() > 1) {
-                    log.warn("Table set contains a circular FK dependency: " + set + ".  Order of these tables will be arbitrary.");
+                    throw new IllegalStateException(
+                        "Table set contains a circular FK dependency: " + set + ".  Cannot reorder.");
                 }
             }
 
             Iterator<String> topo
                 = new TopologicalOrderIterator<String, DefaultEdge>(graph);
             List<String> ordered = new ArrayList<String>(graph.vertexSet().size());
-            while (topo.hasNext()) {
-                ordered.add(topo.next());
-            }
+            while (topo.hasNext()) ordered.add(topo.next());
 
             return ordered.toArray(new String[ordered.size()]);
         }
@@ -83,17 +86,13 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
         }
 
         private Collection<String> getChildTableNames(String parent) throws SQLException {
-            ResultSet resultSet = metadata.getExportedKeys(null, conn.getSchema(), parent);
+            ResultSet rs = metadata.getExportedKeys(null, conn.getSchema(), parent);
             try {
-                Set<String> foreignTableSet = new HashSet<String>();
-
-                while (resultSet.next()) {
-                    foreignTableSet.add(resultSet.getString(7));
-                }
-
-                return foreignTableSet;
+                Set<String> children = new HashSet<String>();
+                while (rs.next()) children.add(rs.getString(7));
+                return children;
             } finally {
-                resultSet.close();
+                rs.close();
             }
         }
     }
