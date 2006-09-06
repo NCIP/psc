@@ -1,6 +1,5 @@
 function cookieValueHandler() {
     Cookies.set(this.name, this.value, 365)
-    alert(document.cookie)
     window.location.reload()
 }
 
