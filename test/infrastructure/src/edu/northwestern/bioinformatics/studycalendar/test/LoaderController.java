@@ -8,6 +8,7 @@ import org.dbunit.database.DatabaseSequenceFilter;
 import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.FilteredDataSet;
+import org.dbunit.dataset.filter.SequenceTableFilter;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.DatabaseUnitException;
@@ -70,16 +71,19 @@ public class LoaderController implements Controller {
         }
 
         public void load() throws Exception {
+            IDatabaseConnection conn = null;
             try {
-                executeLoad();
+                log("Opening connection");
+                conn = new DatabaseConnection(dataSource.getConnection());
+                executeLoad(conn);
             } catch (Exception e) {
                 error("Load failed due to exception", e);
+            } finally {
+                if (conn != null) conn.close();
             }
         }
 
-        private void executeLoad() throws IOException, SQLException, DatabaseUnitException {
-            log("Opening connection");
-            IDatabaseConnection conn = new DatabaseConnection(dataSource.getConnection());
+        private void executeLoad(IDatabaseConnection conn) throws IOException, SQLException, DatabaseUnitException {
 
             log("Creating merged dataset from " + names);
             List<IDataSet> sets = new ArrayList<IDataSet>();
@@ -95,10 +99,9 @@ public class LoaderController implements Controller {
                 CompositeDataSet source = new CompositeDataSet(sets.toArray(new IDataSet[sets.size()]));
                 log("Merged dataset contains tables " + Arrays.asList(source.getTableNames()));
                 log("Ordering tables to prevent foreign key conflicts");
-                DatabaseSequenceFilter filter = new DatabaseSequenceFilter(conn);
+                SequenceTableFilter filter = new ForeignKeySequenceFilter(conn);
                 log(" - Filtered order is " + Arrays.asList(filter.getTableNames(source)));
                 FilteredDataSet dataset = new FilteredDataSet(filter, source);
-                log(" - Final order is " + Arrays.asList(dataset.getTableNames()));
 
                 log("Wiping all configured tables");
                 DatabaseOperation.DELETE_ALL.execute(conn, dataset);

@@ -1,5 +1,7 @@
 <dataset>
     <studies/>
+    <epochs/>
+    <planned_schedules/>
     <arms/>
     <activities/>
     <participants/>
