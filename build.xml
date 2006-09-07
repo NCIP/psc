@@ -196,6 +196,7 @@
 
     <target name="migrate" description="migrate database schema" depends="init">
         <property name="migrate.version" value=""/>
+        <property name="bering.dialect" value=""/>
         <migrate classpathRef="cp.bering"
                  driver="${datasource.driver}"
                  dialect="${bering.dialect}"
