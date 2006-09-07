@@ -13,6 +13,7 @@
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
 
     <property name="war-name" value="studycalendar.war"/>
+    <property name="dbunit-dtd-filename" value="build/dbunit-sc.dtd"/>
 
     <!-- emma needs this -->
     <path id="cp.compiled-source">
@@ -150,6 +151,7 @@
     </target>
 
     <target name="webapp.selenium" if="include-test-infrastructure">
+        <antcall target="dbunit-dtd"/> <!-- "depends" doesn't obey the condition -->
         <property name="test-dir.infrastructure" value="test/infrastructure"/>
         <copy todir="${build-dir.webapp}/WEB-INF/lib">
             <fileset dir="${test-dir.infrastructure}/lib">
@@ -166,10 +168,13 @@
                 <exclude name="web.xml"/>
             </fileset>
         </copy>
-        <copy todir="${build-dir.webapp}/WEB-INF/classes/edu/northwestern/bioinformatics/studycalendar/test/data">
+        <copy todir="${build-dir.webapp}/WEB-INF/classes/edu/northwestern/bioinformatics/studycalendar/test/data" overwrite="true" verbose="true">
             <fileset dir="test/selenium/testdata">
                 <include name="**/*.xml"/>
             </fileset>
+            <filterset>
+                <filter token="DTD_PATH" value="${basedir}/${dbunit-dtd-filename}"/>
+            </filterset>
         </copy>
         <javac destdir="${build-dir.webapp}/WEB-INF/classes" classpathref="cp.integrated-test"
                debug="true" source="1.5">
@@ -209,7 +214,7 @@
             >
             <classpath refid="cp.unit-test"/>
             <export
-                dest="build/dbunit-sc.dtd"
+                dest="${dbunit-dtd-filename}"
                 format="dtd"/>
         </dbunit>
     </target>
