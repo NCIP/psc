@@ -1,3 +1,5 @@
+<!DOCTYPE dataset SYSTEM "@DTD_PATH@">
+
 <dataset>
     <studies/>
     <epochs/>
@@ -9,5 +11,5 @@
     <planned_events/>
     <sites/>
     <study_sites/>
-    <study_participant_assignments/>
+    <participant_assignments/>
 </dataset>

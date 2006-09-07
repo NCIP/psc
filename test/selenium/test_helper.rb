@@ -51,6 +51,8 @@ module StudyCalendar
 
     def testdata(*names)
       request "/test/load/#{names.join ','}"
+      wait_for_page_to_load(TEN_SECOND_TIMEOUT * 8)
+      assert !@browser.is_text_present("ERROR"), "Error loading test data"
       documenter.document_step "Load test data sets: #{names.join ', '}"
     end
 
