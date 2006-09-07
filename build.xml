@@ -198,6 +198,7 @@
         <property name="migrate.version" value=""/>
         <migrate classpathRef="cp.bering"
                  driver="${datasource.driver}"
+                 dialect="${bering.dialect}"
                  url="${datasource.url}"
                  userid="${datasource.username}"
                  password="${datasource.password}"

@@ -8,11 +8,14 @@ datasource.password=
 #### PostgreSQL
 # datasource.dialect=edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ImprovedPostgreSQLDialect
 # datasource.driver=org.postgresql.Driver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.PostgreSQL
 
 #### HSQLDB
 # datasource.dialect=org.hibernate.dialect.HSQLDialect
 # datasource.driver=org.hsqldb.jdbcDriver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.Generic
 
 #### Oracle
 # datasource.dialect=org.hibernate.dialect.Oracle9Dialect
 # datasource.driver=oracle.jdbc.OracleDriver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.Oracle
