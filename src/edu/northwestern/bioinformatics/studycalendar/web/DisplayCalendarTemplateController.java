@@ -27,8 +27,10 @@ public class DisplayCalendarTemplateController extends AbstractController {
         int id = ServletRequestUtils.getIntParameter(request, "id");
         Study study = studyDao.getById(id);
         CalendarTemplate template = new CalendarTemplate(study.getPlannedSchedule());
+        ListCalendarTemplate listTemplate = new ListCalendarTemplate(study.getPlannedSchedule());
         ModelAndView mv = new ModelAndView(selectViewName(request));
         mv.addObject("calendar", template);
+        mv.addObject("listTemplate", listTemplate);
         mv.addObject("study", study);
         return mv;
     }
