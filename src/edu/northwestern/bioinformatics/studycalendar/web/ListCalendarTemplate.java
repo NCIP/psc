@@ -58,29 +58,22 @@ public class ListCalendarTemplate {
     }
     
     public class Day {
-        List<DayOfPeriod> periods;
-        Collection<Arm> arms;
+
+        List<DayOfArm> arms;
         Integer dayNumber;
 
         public Day(int dayNumber, Collection<Arm> arms) {
-            this.periods = new LinkedList<DayOfPeriod>();
-            this.arms = arms;
+
+            this.arms = new LinkedList<DayOfArm>();
             this.dayNumber = dayNumber;
             
-            for (Arm arm : arms) {
-                for (Period period : arm.getPeriods()) {
-                    if (period.getDayRange().containsInteger(dayNumber)) {
-                        periods.add(new DayOfPeriod(period, dayNumber));
-                    }            	
-	            }
+            for (Arm arm : arms) {            	
+                this.arms.add(new DayOfArm(arm, dayNumber));
 	        }
         }
 
-        public List<DayOfPeriod> getPeriods() {
-            return periods;
-        }
             
-        public Collection<Arm> getArms() {
+        public List<DayOfArm> getArms() {
             return arms;
         }
         
@@ -89,6 +82,30 @@ public class ListCalendarTemplate {
         }
 
 
+    }
+    
+    public class DayOfArm {
+    	Arm arm;
+        List<DayOfPeriod> periods;
+        
+        public DayOfArm(Arm arm, Integer dayNumber) {
+            this.periods = new LinkedList<DayOfPeriod>();
+            this.arm = arm;
+            
+            for (Period period : arm.getPeriods()) {
+                if (period.getDayRange().containsInteger(dayNumber)) {
+                    periods.add(new DayOfPeriod(period, dayNumber));
+                }            	
+            }            
+        }
+        
+        public List<DayOfPeriod> getPeriods() {
+            return periods;
+        }
+        
+        public String getName() {
+            return arm.getName();
+        }
     }
 
     public class DayOfPeriod {

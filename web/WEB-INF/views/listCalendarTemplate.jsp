@@ -41,8 +41,18 @@
 	        <table border="1">
         	<tr><th colspan="2">Day number: ${day.dayNumber}</th></tr>
 	        	<c:forEach items="${day.arms}" var="arm">
-	        	<tr><td rowspan="${fn:length(day.periods)}">${arm.name}</td>
-		        <c:forEach items="${day.periods}" var="period" varStatus="periodStatus">
+	        	<tr>
+	        		<c:if test="${fn:length(arm.periods) == 0}">
+		        		<td>
+		        	</c:if>
+	        		<c:if test="${fn:length(arm.periods) > 0}">
+			        	<td rowspan="${fn:length(arm.periods)}">
+   		        	</c:if>			        	
+	        		Arm: ${arm.name}</td>
+	        	<c:if test="${fn:length(arm.periods) == 0}">
+	        		<td>Nothing scheduled.</td>
+	        	</c:if>
+		        <c:forEach items="${arm.periods}" var="period" varStatus="periodStatus">
 		        	<c:choose>
 			        	<c:when test="${periodStatus.first}">
 				        	<td>
