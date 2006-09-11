@@ -4,14 +4,14 @@
     <EPOCHS id="-1" version="0" planned_schedule_id="-1" name="Epoch"/>
 
     <ARMS
-        id="2"
+        id="-2"
         version="0"
         name="Treatment"
         epoch_id="-1"/>
 
     <PERIODS
-        id="1"
-        arm_id="2"
+        id="-1"
+        arm_id="-2"
         version="0"
         start_day="1"
         name="Pre-screening"
@@ -20,8 +20,8 @@
         repetitions="1"/>
 
     <PERIODS
-        id="2"
-        arm_id="2"
+        id="-2"
+        arm_id="-2"
         version="0"
         start_day="8"
         name="Treatment"

@@ -15,7 +15,7 @@ public class ArmDaoTest extends DaoTestCase {
     private ArmDao dao = (ArmDao) getApplicationContext().getBean("armDao");
 
     public void testGetByIdAndTheHibernateMapping() {
-        Arm arm = dao.getById(2);
+        Arm arm = dao.getById(-2);
         assertNotNull("arm not found", arm);
         assertEquals("name wrong", "Treatment", arm.getName());
         assertEquals("wrong number of periods", 2, arm.getPeriods().size());
@@ -40,7 +40,7 @@ public class ArmDaoTest extends DaoTestCase {
 
     public void testUpdateArm() throws Exception {
         {
-            Arm arm = dao.getById(2);
+            Arm arm = dao.getById(-2);
             Period newPeriod = new Period();
             newPeriod.setName("Checkup");
             newPeriod.setStartDay(1);
@@ -54,7 +54,7 @@ public class ArmDaoTest extends DaoTestCase {
         interruptSession();
 
         {
-            Arm loaded = dao.getById(2);
+            Arm loaded = dao.getById(-2);
             assertEquals("Wrong number of periods", 3, loaded.getPeriods().size());
             Map<String, Period> periodsByName = getPeriodsByName(loaded);
             assertTrue("Checkup period not found", periodsByName.containsKey("Checkup"));
