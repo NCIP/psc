@@ -69,9 +69,9 @@
                     createArmNameRow(0, newIdx, true),
                     createArmNameRow(1, newIdx, true),
                     Builder.node('div', {className:'row submit', id:'arms-' + newIdx + '-group-buttons'}, [
-                        Builder.node('input', {type:'button', id:'del-arm-button-' + newIdx, value:'Remove last arm'}),
+                        Builder.node('input', {type:'button', id:'add-arm-button-' + newIdx, value:'Add arm'}),
                         "\n",
-                        Builder.node('input', {type:'button', id:'add-arm-button-' + newIdx, value:'Add arm'})
+                        Builder.node('input', {type:'button', id:'del-arm-button-' + newIdx, value:'Remove last arm'})
                     ])
                 ])
             ]);
@@ -107,7 +107,7 @@
         }
 
         function delLastArmName(epochIndex) {
-            delLastItem('#arms-' + epochIndex +'-group .added-arm', controlLastArmDelButton)
+            delLastItem('#arms-' + epochIndex +'-group .added-arm', function() { controlLastArmDelButton(epochIndex) })
         }
 
         function controlLastEpochDelButton() {
@@ -136,9 +136,9 @@
             Event.observe('del-epoch-button', 'click', delLastEpoch);
         }
 
-        Event.observe(window, 'load', function() { registerInitialHandlers() });
+        Event.observe(window, 'load', registerInitialHandlers);
+        Event.observe(window, 'load', controlLastEpochDelButton);
         Event.observe(window, 'load', function() { controlLastArmDelButton(0) });
-        Event.observe(window, 'load', function() { controlLastEpochDelButton() });
     </script>
     <style type="text/css">
         form {
@@ -196,16 +196,16 @@
         <!-- Scriptaculous requires the display:none to be on the element directly. -->
         <div class="arms-group" id="arms-0-group" style="display: none">
             <div class="row arm-name">
-                <div class="label"><label for="arms-0-0">Arm 1</label></div>
-                <div class="value"><input type="text" id="arms-0-0" name="armNames[0][0]"/></div>
+                <div class="label"><label for="arm-name-0-0">Arm 1</label></div>
+                <div class="value"><input type="text" id="arm-name-0-0" name="armNames[0][0]"/></div>
             </div>
             <div class="row arm-name">
-                <div class="label"><label for="arms-0-1">Arm 2</label></div>
-                <div class="value"><input type="text" id="arms-0-1" name="armNames[0][1]"/></div>
+                <div class="label"><label for="arm-name-0-1">Arm 2</label></div>
+                <div class="value"><input type="text" id="arm-name-0-1" name="armNames[0][1]"/></div>
             </div>
             <div class="row submit" id="arms-0-group-buttons">
-                <input type="button" id="del-arm-button-0" value="Remove last arm"/>
                 <input type="button" id="add-arm-button-0" value="Add arm"/>
+                <input type="button" id="del-arm-button-0" value="Remove last arm"/>
             </div>
         </div>
     </div>
@@ -237,7 +237,7 @@
     </div--%>
     <div class="row" id="form-submit-row">
         <div class="value submit">
-            <input type="button" id="add-epoch-button" value="Add Epoch"/>
+            <input type="button" id="add-epoch-button" value="Add epoch"/>
             <input type="button" id="del-epoch-button" value="Remove last epoch"/>
             <input type="submit" class="submit" value="Create"/>
         </div>
