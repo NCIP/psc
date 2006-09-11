@@ -2,6 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="../security.tld" prefix="security" %> 
 
 <html>
 <head>
@@ -108,8 +109,10 @@
         </table>
     </c:forEach>
 </c:if>
+<security:secureOperation element="ApproveStudyCalendarTemplate" operation="ACCESS">
 <c:if test="${not study.plannedSchedule.complete}">
     <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
 </c:if>
+</security:secureOperation>
 </body>
 </html>
