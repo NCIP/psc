@@ -7,12 +7,14 @@ class CreateStudyTest < Test::Unit::TestCase
     testdata 'empty'
 
     open "/pages/newStudy"
-    type "study-name", "Vioxx Study"
+    type "study-name", "Confidential study"
+    type "epoch-name-0", "Treatment"
     click_button_with_text "Create"
     wait_for_page_to_load
 
-    assert_page_contains "Study: Vioxx Study"
-    assert_page_does_not_contain "Arms:"
+    assert_page_contains "Template for Confidential study"
+    assert_page_contains "Treatment"
+    assert_page_contains "Add a period to epoch Treatment"
   end
   
   def test_create_multiple_arm_study
@@ -20,23 +22,26 @@ class CreateStudyTest < Test::Unit::TestCase
 
     open "/pages/newStudy"
     wait_for_page_to_load
-    type "study-name", "Vioxx Study"
-    click("arms", "yes", :label => "Multiple arms?")
-    document_comment "Input fields for the names of arms 1 and 2 should appear, as well as buttons for adding and removing arms"
-    type "arm-name-0", "A"
-    type "arm-name-1", "B"
+    type "study-name", "Confidential study"
+    type "epoch-name-0", "Treatment"
+    click("arms[0]", "true", :label => "Multiple arms for epoch 1?")
+    document_comment "Input fields for the names of arms 1 and 2 of epoch 1 should appear, as well as buttons for adding and removing arms"
+    type "arm-name-0-0", "A"
+    type "arm-name-0-1", "B"
     click_button_with_text "Add arm", "button"
-    type "arm-name-2", "C"
+    type "arm-name-0-2", "C"
     click_button_with_text "Add arm", "button"
-    type "arm-name-3", "D"
+    type "arm-name-0-3", "D"
     click_button_with_text "Remove last arm", "button"
-    @browser.wait_for_condition("selenium.browserbot.getCurrentWindow().eval(\"$('arm-name-3') == null\")", 10000)
+    @browser.wait_for_condition("selenium.browserbot.getCurrentWindow().eval(\"$('arm-name-0-3') == null\")", 10000)
     
     click_button_with_text "Create"
     wait_for_page_to_load
-    assert_page_contains "Study: Vioxx Study"
-    assert_page_contains "Arms: A B C"
-    assert_page_does_not_contain "Arms: A B C D"
+    assert_page_contains "Template for Confidential study"
+    assert_page_contains "Add a period to arm A"
+    assert_page_contains "Add a period to arm B"
+    assert_page_contains "Add a period to arm C"
+    assert_page_does_not_contain "Add a period to arm D"
   end
 end
 
