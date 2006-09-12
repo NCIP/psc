@@ -20,8 +20,19 @@
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
-    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	    <property name="interceptors">
+            <list>
+                <ref bean="loginCheckInterceptor"/>
+                <ref bean="URLAccessCheckInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
+    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
+        
     <bean name="/welcome" id="welcomeController"
           class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
 
@@ -48,10 +59,6 @@
 
     <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
-
-    <bean name="/login" id="loginController" autowire="byName" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController">
-        <property name="sessionForm"><value>true</value></property>
-    </bean>
 
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.MarkCompleteController"/>
