@@ -22,7 +22,7 @@
 </head>
 <body>
 <h1>Please enter your userid and password</h1>
-<c:url value="/pages/login" var="formAction"/>
+<c:url value="/public/login" var="formAction"/>
 <form:form action="${formAction}" method="post">
     <div class="row">
         <div class="label">
