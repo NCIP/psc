@@ -23,7 +23,6 @@ import java.sql.ResultSet;
  * @author Rhett Sutphin
  */
 public abstract class DaoTestCase extends DbTestCase {
-    private static ApplicationContext applicationContext = null;
     protected final Log log = LogFactory.getLog(getClass());
 
     protected MockHttpServletRequest request = new MockHttpServletRequest();
@@ -82,12 +81,7 @@ public abstract class DaoTestCase extends DbTestCase {
     }
 
     public ApplicationContext getApplicationContext() {
-        synchronized (DaoTestCase.class) {
-            if (applicationContext == null) {
-                applicationContext = ContextTools.createDeployedApplicationContext();
-            }
-            return applicationContext;
-        }
+        return StudyCalendarTestCase.getDeployedApplicationContext();
     }
 
     protected final void dumpResults(String sql) {
