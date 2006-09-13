@@ -7,6 +7,8 @@ datasource.password=
 
 #### PostgreSQL
 # datasource.dialect=edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ImprovedPostgreSQLDialect
+# # Needed since UPT doesn't have our custom dialect
+# datasource.dialect.upt=org.hibernate.dialect.PostgreSQLDialect
 # datasource.driver=org.postgresql.Driver
 # bering.dialect=edu.northwestern.bioinformatics.bering.dialect.PostgreSQL
 

@@ -29,7 +29,7 @@
 				</authorization-provider-class>
 				<hibernate-config-file>
 					<!-- Fully qualified file path -->
-					<<config_directory_base>>/studycal.hibernate.cfg.xml
+					@tomcat.security.dir@/studycal.hibernate.cfg.xml
 				</hibernate-config-file>
 			</authorization>
 		</application>
@@ -57,7 +57,7 @@
 				</authorization-provider-class>
 		        <hibernate-config-file>
 					<!-- Fully qualified file path -->
-					<<config_directory_base>>/studycal.hibernate.cfg.xml
+					@tomcat.security.dir@/studycal.hibernate.cfg.xml
 		        </hibernate-config-file>
 	      	</authorization>
 	   	</application>

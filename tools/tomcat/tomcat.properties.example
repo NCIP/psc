@@ -5,3 +5,5 @@ tomcat.manager.url=http://${tomcat.server}:8080/manager
 #   with the manager role
 tomcat.username=
 tomcat.password=
+# The path to your tomcat install
+catalina.home=/path/to/tomcat/root

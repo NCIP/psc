@@ -455,6 +455,61 @@
             />
     </target>
 
+    <target name="tomcat.security" depends="tomcat.init" description="Automatically copies global (CSM/UPT) configuration files to Tomcat.">
+        <fail message="Could not locate Tomcat.  Please set the catalina.home property (tools/tomcat/tomcat.properties is a good place to do this).">
+            <condition>
+                <not><isset property="catalina.home"/></not>
+            </condition>
+        </fail>
+        <property name="catalina.home" value="PLEASE SET catalina.home EXTERNALLY"/>
+        <echo>Configuring CSM and UPT for the Tomcat instance in ${catalina.home}</echo>
+
+        <property name="tomcat.security.dir" value="${catalina.home}/conf/cabig"/>
+        <!-- default UPT dialect to same as SC's, if not already set -->
+        <property name="datasource.dialect.upt" value="${datasource.dialect}"/>
+        <mkdir dir="${tomcat.security.dir}"/>
+        <copy todir="${tomcat.security.dir}" overwrite="true">
+            <filterset>
+                <filtersfile file="${config.database.file}"/>
+                <filter token="tomcat.security.dir" value="${tomcat.security.dir}"/>
+                <filter token="datasource.dialect.upt" value="${datasource.dialect.upt}"/>
+            </filterset>
+            <fileset dir="conf/upt">
+                <include name="ApplicationSecurityConfig.xml"/>
+                <include name="studycal.hibernate.cfg.xml"/>
+                <include name="csm_jaas.config"/>
+            </fileset>
+        </copy>
+
+        <echo taskname="todo">
+===== MANUAL STEPS =====
+========================
+The automatic portion of the security setup is complete.  If you have not
+done so already, please perform the following manual actions.
+
+* In ${catalina.home}/conf/catalina.properties, add two lines:
+  gov.nih.nci.security.configFile=${tomcat.security.dir}/ApplicationSecurityConfig.xml
+  java.security.auth.login.config=${tomcat.security.dir}/csm_jaas.config
+
+* In ${catalina.home}/conf/server.xml, add these two elements as
+  children of the Engine named "Catalina":
+  &lt;Realm className="org.apache.catalina.realm.JAASRealm"
+            appName="csm_upt"
+            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
+            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"
+            debug="99"/&gt;
+  &lt;Realm className="org.apache.catalina.realm.JAASRealm"
+            appName="study_calendar"
+            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
+            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"
+            debug="99"/&gt;
+
+* Execute ${basedir}/conf/upt/uptdata_studycal.sql
+  against your target database (${datasource.url}).
+========= END ==========
+===== MANUAL STEPS =====</echo>
+    </target>
+
     <target name="reports-junit">
             <!-- junitreport -->
             <junitreport todir="${build-dir.unit-test}/junit">
