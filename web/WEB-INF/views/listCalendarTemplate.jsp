@@ -57,7 +57,7 @@
 		        	<c:choose>
 			        	<c:when test="${periodStatus.first}">
 				        	<td>
-				        	<h4>${period.name}</h4>
+				        	<h4><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></h4>
 				        	<c:forEach items="${period.plannedEvents}" var="event">
 				        		${event.activity.name}
 				        	</c:forEach>
@@ -65,7 +65,7 @@
 				        </c:when>
 				        <c:otherwise>
 				        	<tr><td>
-				        	<h4>${period.name}</h4>
+				        	<h4><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></h4>
 				        	<c:forEach items="${period.plannedEvents}" var="event">
 				        		${event.activity.name}
 				        	</c:forEach>
