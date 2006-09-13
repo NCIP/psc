@@ -18,4 +18,7 @@
     <bean id="publicHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
    
     <bean name="/login" id="loginController" autowire="byName" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
+
+    <bean name="/error" id="errorController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
 </beans>

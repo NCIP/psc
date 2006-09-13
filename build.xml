@@ -115,6 +115,7 @@
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
                 <include name="**/*.properties"/>
+                <include name="**/*.ftl"/>
             </fileset>
         </copy>
         <copy todir="${build-dir.unit-test}">

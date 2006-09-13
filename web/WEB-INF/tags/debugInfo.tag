@@ -6,10 +6,10 @@
 <!-- TODO: make this dependent on some application setting (i.e., replace "true" in the next line with a condition) -->
 <c:if test="${true or force}">
     <div id="debug">
-        <h1>Request duration</h1>
+        <!--h1>Request duration</h1>
         <p>
         ${__debug_requestStartTimestamp.elapsedTime} ms
-        </p>
+        </p-->
 
         <h1>Submitted info</h1>
         <h2>Request parameters</h2>
