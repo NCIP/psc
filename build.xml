@@ -454,41 +454,41 @@
             password="${tomcat.password}"
             />
     </target>
-	
-	<target name="reports-junit">
-			<!-- junitreport -->
-			<junitreport todir="${build-dir.unit-test}/junit">
-				<fileset dir="${build-dir.unit-test}/junit">
-					<include name="TEST-*.xml"/>
-				</fileset>
-				<report format="frames" todir="${build-dir.unit-test}/junit/summary"/>
-				<report format="noframes" todir="${build-dir.unit-test}/junit/summary"/>
-			</junitreport>
 
-			<!-- junitdocreport -->
-			<taskdef name="junitDocReport" classname="edu.duke.cabig.catrip.test.report.ant.JUnitDocReport">
-				 <classpath>
-	                <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
-	                <pathelement location="${out.instrumented.dir}/classes"/>
-	                <path refid="cp.unit-test"/>
-	                <path refid="cp.emma"/>
-	            </classpath>
-			</taskdef>
+    <target name="reports-junit">
+            <!-- junitreport -->
+            <junitreport todir="${build-dir.unit-test}/junit">
+                <fileset dir="${build-dir.unit-test}/junit">
+                    <include name="TEST-*.xml"/>
+                </fileset>
+                <report format="frames" todir="${build-dir.unit-test}/junit/summary"/>
+                <report format="noframes" todir="${build-dir.unit-test}/junit/summary"/>
+            </junitreport>
 
-			<junitDocReport format="html" useTestType="true" destfile="${build-dir.unit-test}/junit/summary/junitDocReport.html">
-				<junitResults>
-					<fileset dir="${build-dir.unit-test}/junit">
-						<include name="*.xml"/>
-					</fileset>
-				</junitResults>
-				<junitDocs>
-	                <fileset dir="${src-dir.unit-test}">
-	                    <include name="${unit-test.pattern}"/>
-	                </fileset>
-				</junitDocs>
-			</junitDocReport>
-		</target>
+            <!-- junitdocreport -->
+            <taskdef name="junitDocReport" classname="edu.duke.cabig.catrip.test.report.ant.JUnitDocReport">
+                 <classpath>
+                    <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
+                    <pathelement location="${out.instrumented.dir}/classes"/>
+                    <path refid="cp.unit-test"/>
+                    <path refid="cp.emma"/>
+                </classpath>
+            </taskdef>
 
-		<target name="reports" depends="reports-junit"/>
+            <junitDocReport format="html" useTestType="true" destfile="${build-dir.unit-test}/junit/summary/junitDocReport.html">
+                <junitResults>
+                    <fileset dir="${build-dir.unit-test}/junit">
+                        <include name="*.xml"/>
+                    </fileset>
+                </junitResults>
+                <junitDocs>
+                    <fileset dir="${src-dir.unit-test}">
+                        <include name="${unit-test.pattern}"/>
+                    </fileset>
+                </junitDocs>
+            </junitDocReport>
+        </target>
+
+        <target name="reports" depends="reports-junit"/>
 
 </project>
