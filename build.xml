@@ -329,7 +329,7 @@
 
     <target name="war" depends="webapp" description="creates a deployable WAR file">
         <mkdir dir="dist"/>
-        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="web/WEB-INF/web.xml">
+        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
             <exclude name="WEB-INF/web.xml"/>
         </war>
     </target>
