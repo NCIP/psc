@@ -1,26 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Sort;
-import org.hibernate.annotations.SortType;
+import org.apache.commons.lang.math.IntRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.apache.commons.lang.math.IntRange;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Moses Hohman
@@ -41,10 +40,10 @@ public class Period extends AbstractDomainObject implements Named {
     private Integer startDay;
     private Duration duration;
     private int repetitions = DEFAULT_REPETITIONS;
-    private SortedSet<PlannedEvent> plannedEvents;
+    private List<PlannedEvent> plannedEvents;
 
     public Period() {
-        plannedEvents = new TreeSet<PlannedEvent>();
+        plannedEvents = new LinkedList<PlannedEvent>();
     }
 
     ////// LOGIC
@@ -118,13 +117,12 @@ public class Period extends AbstractDomainObject implements Named {
     }
 
     @OneToMany(mappedBy = "period")
-    @Sort(type = SortType.NATURAL)
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public SortedSet<PlannedEvent> getPlannedEvents() {
+    public List<PlannedEvent> getPlannedEvents() {
         return plannedEvents;
     }
 
-    public void setPlannedEvents(SortedSet<PlannedEvent> plannedEvents) {
+    public void setPlannedEvents(List<PlannedEvent> plannedEvents) {
         this.plannedEvents = plannedEvents;
     }
 }

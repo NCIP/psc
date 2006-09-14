@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -29,7 +30,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         Period loaded = getDao().getById(-100);
 
         assertNotNull("Test period not found", loaded);
-        Set<PlannedEvent> loadedEvents = loaded.getPlannedEvents();
+        List<PlannedEvent> loadedEvents = loaded.getPlannedEvents();
         assertEquals("Wrong number of planned events", 3, loadedEvents.size());
         Iterator<PlannedEvent> iterator = loadedEvents.iterator();
         assertTrue(iterator.hasNext());

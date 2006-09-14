@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.SortedSet;
+import java.util.List;
 
 
 /**
@@ -62,7 +63,7 @@ public class NewPlannedEventController extends SimpleFormController {
         command.setPeriod(period);
         Activity activity = activityDao.getById(command.getActivityId());
         command.setActivity(activity);
-        SortedSet<PlannedEvent> plannedEvents;
+        List<PlannedEvent> plannedEvents;
         plannedEvents = period.getPlannedEvents();
         plannedEvents.add(command);
         periodDao.save(period);
