@@ -23,13 +23,18 @@ public class URLAccessCheckInterceptor extends HandlerInterceptorAdapter {
 	private static Log log = LogFactory.getLog(URLAccessCheckInterceptor.class);
 	private static final String ACCESS_OPERATION = "ACCESS";
 	private static final String APPLICATION_CONTEXT_STRING = "study_calendar";
+	private ApplicationSecurityManager applicationSecurityManager
+	= new ApplicationSecurityManager();
 
 	public boolean preHandle(HttpServletRequest request,
 							HttpServletResponse response,
 							Object handler) throws Exception {
-		String userName = (String) LocalUser.getInstance();
+		String userName = applicationSecurityManager.getUser(request);
 		if (userName != null) {
-			if (log.isDebugEnabled()) log.debug("request url " + request.getRequestURI() + " username in interceptor " + userName);
+			if (log.isDebugEnabled()) {
+				log.debug("request url " + request.getRequestURI() + " username in interceptor " + userName);
+				log.debug("session id: " + request.getSession().getId());
+			}
 			AuthorizationManager authorizationManager = null;
 
             authorizationManager = SecurityServiceProvider.getAuthorizationManager(APPLICATION_CONTEXT_STRING);

@@ -19,18 +19,21 @@ import edu.northwestern.bioinformatics.studycalendar.web.LoginCommand;
 
 public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
 	private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
-
+    private ApplicationSecurityManager applicationSecurityManager
+             = new ApplicationSecurityManager();
+    
 	public boolean preHandle(HttpServletRequest request,
 							HttpServletResponse response,
 							Object handler) throws Exception {
-		String userName = (String) LocalUser.getInstance();
+		String userName = applicationSecurityManager.getUser(request);
 		if (userName == null) {
-			if (log.isDebugEnabled()) log.debug("request path " + request.getPathInfo() + " request url " + request.getRequestURI() + " username in interceptor " + userName);
+			if (log.isDebugEnabled()) {
+				log.debug("request path " + request.getPathInfo() + " request url " + request.getRequestURI() + " username in interceptor " + userName);
+				log.debug("session id: " + request.getSession().getId());
+			}
+			
 			ModelAndView mv = new ModelAndView("login", "command", new LoginCommand());
-			//ModelAndView mv = new ModelAndView(new RedirectView("login", true));
 			throw new ModelAndViewDefiningException(mv);
-			//response.sendRedirect("login");
-			//return false;
 			
 		}
 		return true;
