@@ -109,6 +109,14 @@ INSERT INTO public.csm_protection_element
   (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
 VALUES(18,'/studycalendar/public/login','login page url','/studycalendar/public/login','/studycalendar/public/login',null,2,'9/7/2006');
 
+INSERT INTO public.csm_protection_element
+  (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
+VALUES(19,'CreateParticipantLink','link for create participant page','CreateParticipantLink','CreateParticipantLink',null,2,'9/14/2006');
+
+INSERT INTO public.csm_protection_element
+  (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
+VALUES(20,'AssignParticipantLink','link to assign participant to a study','AssignParticipantLink','AssignParticipantLink',null,2,'9/14/2006');
+
 COMMIT;
 INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
@@ -244,7 +252,6 @@ INSERT INTO public.csm_user_pe
 VALUES(2,2,2,null);
 
 COMMIT;
-
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
 VALUES(45,1,18,null);
@@ -264,34 +271,6 @@ VALUES(48,1,11,null);
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
 VALUES(49,1,16,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(63,6,10,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(64,6,11,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(65,6,15,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(66,6,18,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(67,7,18,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(68,7,15,null);
-
-INSERT INTO public.csm_pg_pe
-  (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(69,7,11,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
@@ -324,5 +303,33 @@ VALUES(76,3,7,null);
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
 VALUES(77,3,13,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(78,3,12,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(79,3,15,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(80,3,11,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(81,3,3,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(82,3,16,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(89,6,17,null);
+
+INSERT INTO public.csm_pg_pe
+  (pg_pe_id,protection_group_id,protection_element_id,update_date)
+VALUES(90,6,15,null);
 
 COMMIT;
