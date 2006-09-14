@@ -13,7 +13,7 @@ public class StudyDaoTest extends DaoTestCase {
     private StudyDao dao = (StudyDao) getApplicationContext().getBean("studyDao");
 
     public void testGetById() throws Exception {
-        Study study = dao.getById(100);
+        Study study = dao.getById(-100);
         assertNotNull("Study 1 not found", study);
         assertEquals("Wrong name", "First Study", study.getName());
     }
@@ -21,7 +21,7 @@ public class StudyDaoTest extends DaoTestCase {
     public void testGetAll() throws Exception {
         List<Study> actual = dao.getAll();
         assertEquals(1, actual.size());
-        assertEquals("Wrong study found", 100, (int) actual.get(0).getId());
+        assertEquals("Wrong study found", -100, (int) actual.get(0).getId());
     }
 
     public void testSaveNewStudy() throws Exception {

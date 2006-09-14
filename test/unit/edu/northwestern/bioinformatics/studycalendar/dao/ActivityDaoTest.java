@@ -14,25 +14,25 @@ public class ActivityDaoTest extends DaoTestCase {
     private ActivityTypeDao activityTypeDao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
 
     public void testGetById() throws Exception {
-        Activity activity = dao.getById(100);
+        Activity activity = dao.getById(-100);
         assertNotNull("Screening Activity not found", activity);
         assertEquals("Wrong name", "Screening Activity", activity.getName());
         assertEquals("Wrong description", "Decription of screening activity.", activity.getDescription());
     }
 
     public void testGetActivityTypeName() throws Exception {
-        Activity activity = dao.getById(100);
+        Activity activity = dao.getById(-100);
         assertEquals("Wrong activity type name", "screening", activity.getType().getName());
     }
 
     
-	public void testSaveNewActivity() throws Exception {
+    public void testSaveNewActivity() throws Exception {
         Integer savedId;
         {
             Activity activity = new Activity();
             activity.setName("Give drug");
             activity.setDescription("Administer aspirin");
-            activity.setType(activityTypeDao.getById(5));
+            activity.setType(activityTypeDao.getById(-5));
             dao.save(activity);
             savedId = activity.getId();
             assertNotNull("The saved activity didn't get an id", savedId);
@@ -48,11 +48,11 @@ public class ActivityDaoTest extends DaoTestCase {
         }
     }
 
-	public void testGetAll() throws Exception {
+    public void testGetAll() throws Exception {
         List<Activity> actual = dao.getAll();
         assertEquals(2, actual.size());
-        assertEquals("Wrong order", 100, (int) actual.get(0).getId());
+        assertEquals("Wrong order", -100, (int) actual.get(0).getId());
         assertEquals("Wrong order", "Treatment Activity", actual.get(1).getName());
     }
-	
+
 }
