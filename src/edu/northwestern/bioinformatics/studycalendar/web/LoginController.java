@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.exceptions.CSException;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LocalUser;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 import org.apache.log4j.Logger;
 
@@ -26,17 +26,18 @@ public class LoginController extends SimpleFormController {
     static final Logger log = Logger.getLogger(LoginController.class.getName());
     static AuthenticationManager authMgr = null;
     public static final String CSM_STUDYCAL_CONTEXT_NAME = "study_calendar";
+    private ApplicationSecurityManager applicationSecurityManager 
+    = new ApplicationSecurityManager();
 
 
     public LoginController() {
         setCommandClass(LoginCommand.class);
         setFormView("login");
-        //setSuccessView("/pages/studyList");
+        setSuccessView("/pages/studyList");
         setBindOnNewForm(true);
-        // LocalUser.release(); // will be moved to logout later
     }
     
-    protected ModelAndView onSubmit(Object loginData) throws Exception{
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object loginData, BindException errors) throws Exception{
 	
         LoginCommand loginCredentials = (LoginCommand) loginData;
         log.debug("Login ID: " + loginCredentials.getUserId());
@@ -53,9 +54,9 @@ public class LoginController extends SimpleFormController {
             log.debug("The user was denied access to the study calendar application." + ex);
         }
         if (loginSuccess) {
-        	LocalUser.init(loginCredentials.getUserId());
-        	log.debug("Login successful : "+loginCredentials.getUserId());
-            return new ModelAndView(new RedirectView("/pages/studyList", true));
+        	applicationSecurityManager.setUser(request, loginCredentials.getUserId());
+        	log.debug("Login successful : " + loginCredentials.getUserId() + "session id: " + request.getSession().getId());
+            return new ModelAndView(new RedirectView(getSuccessView(), true));
         } else {
             // have to add an error page or redirect to login page with error msg
             loginCredentials = new LoginCommand();
