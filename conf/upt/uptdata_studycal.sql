@@ -134,6 +134,10 @@ INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
 VALUES(3,'studycrdn_NewStudy','group having access to create new study, epochs, arms, periods and activities',2,0,'9/7/2006',null);
 
+INSERT INTO public.csm_protection_group
+  (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
+VALUES(8,'superuser','has access rights for all the protection elements, for testing purposes alone',2,0,'9/14/2006',null);
+
 COMMIT;
 INSERT INTO public.csm_role
   (role_id,role_name,role_description,application_id,active_flag,update_date)
@@ -151,6 +155,10 @@ INSERT INTO public.csm_role
   (role_id,role_name,role_description,application_id,active_flag,update_date)
 VALUES(5,'RESEARCH_ASSOCIATE','clinical research associate',2,1,'9/7/2006');
 
+INSERT INTO public.csm_role
+  (role_id,role_name,role_description,application_id,active_flag,update_date)
+VALUES(6,'SUPERUSER','super user for this application for testing purposes',2,1,'9/14/2006');
+
 COMMIT;
 INSERT INTO public.csm_role_privilege
   (role_privilege_id,role_id,privilege_id,update_date)
@@ -167,6 +175,34 @@ VALUES(10,4,2,null);
 INSERT INTO public.csm_role_privilege
   (role_privilege_id,role_id,privilege_id,update_date)
 VALUES(11,5,2,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(12,6,7,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(13,6,6,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(14,6,5,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(15,6,3,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(16,6,2,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(17,6,4,null);
+
+INSERT INTO public.csm_role_privilege
+  (role_privilege_id,role_id,privilege_id,update_date)
+VALUES(18,6,1,null);
 
 COMMIT;
 INSERT INTO public.csm_user
@@ -209,6 +245,10 @@ INSERT INTO public.csm_user
   (user_id,login_name,first_name,last_name,organization,department,title,phone_number,password,email_id,start_date,end_date,update_date)
 VALUES(2,'sc_systemadmin','STUDYCAL_SYSTEMADMIN','STUDYCAL_SYSTEMADMIN','','','','','systemadmin','',null,null,'9/12/2006');
 
+INSERT INTO public.csm_user
+  (user_id,login_name,first_name,last_name,organization,department,title,phone_number,password,email_id,start_date,end_date,update_date)
+VALUES(11,'superuser','super','superuser','','','','','superuser','',null,null,'9/14/2006');
+
 COMMIT;
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
@@ -242,6 +282,10 @@ INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
 VALUES(8,10,null,4,6,'9/7/2006');
 
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(9,11,null,6,8,'9/14/2006');
+
 COMMIT;
 INSERT INTO public.csm_user_pe
   (user_protection_element_id,protection_element_id,user_id,update_date)
@@ -252,6 +296,7 @@ INSERT INTO public.csm_user_pe
 VALUES(2,2,2,null);
 
 COMMIT;
+
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
 VALUES(45,1,18,null);
