@@ -15,11 +15,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Moses Hohman
@@ -117,6 +117,7 @@ public class Period extends AbstractDomainObject implements Named {
     }
 
     @OneToMany(mappedBy = "period")
+    @OrderBy // order by ID for testing consistency
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<PlannedEvent> getPlannedEvents() {
         return plannedEvents;
