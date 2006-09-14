@@ -34,11 +34,11 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         assertEquals("Wrong number of planned events", 3, loadedEvents.size());
         Iterator<PlannedEvent> iterator = loadedEvents.iterator();
         assertTrue(iterator.hasNext());
-        assertEquals("Wrong first event", new Integer(-2002), iterator.next().getId());
+        assertEquals("Wrong first event", new Integer(-2003), iterator.next().getId());
         assertTrue(iterator.hasNext());
-        assertEquals("Wrong second event", new Integer(-2001), iterator.next().getId());
+        assertEquals("Wrong second event", new Integer(-2002), iterator.next().getId());
         assertTrue(iterator.hasNext());
-        assertEquals("Wrong third event", new Integer(-2003), iterator.next().getId());
+        assertEquals("Wrong third event", new Integer(-2001), iterator.next().getId());
     }
 
     public void testAddEvent() throws Exception {
@@ -66,13 +66,13 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
 
             Iterator<PlannedEvent> iterator = reloaded.getPlannedEvents().iterator();
             assertTrue(iterator.hasNext());
-            assertEquals("Wrong first event", new Integer(-2002), iterator.next().getId());
+            assertEquals("Wrong first event", new Integer(-2003), iterator.next().getId());
             assertTrue(iterator.hasNext());
-            assertEquals("Wrong second event", new Integer(-2001), iterator.next().getId());
+            assertEquals("Wrong second event", new Integer(-2002), iterator.next().getId());
             assertTrue(iterator.hasNext());
-            assertEquals("Wrong (new) third event", newEventId, iterator.next().getId());
+            assertEquals("Wrong 3rd event", new Integer(-2001), iterator.next().getId());
             assertTrue(iterator.hasNext());
-            assertEquals("Wrong fourth event", new Integer(-2003), iterator.next().getId());
+            assertEquals("Wrong (new) 4th event", newEventId, iterator.next().getId());
         }
     }
 }
