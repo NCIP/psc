@@ -1,12 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.*;
+import org.easymock.classextension.EasyMock;
+import org.easymock.ArgumentsMatcher;
+import org.easymock.IArgumentMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -20,6 +27,7 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
     private ApplicationContext applicationContext;
     private OpenSessionInViewInterceptor interceptor;
     private FilterChain filterChain;
+    private WebRequestMatcher webRequestMatcher = new WebRequestMatcher();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -28,6 +36,8 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
         expect(applicationContext.getBean("openSessionInViewInterceptor")).andReturn(interceptor);
         filterChain = registerMockFor(FilterChain.class);
+        // put a parameter on request for use by WebRequestMatcher
+        request.addParameter("Salutation", "Friends, Romans, Countrymen");
 
         filter = new OpenSessionInViewInterceptorFilter();
         MockFilterConfig filterConfig = new MockFilterConfig(servletContext);
@@ -35,10 +45,10 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
     }
 
     public void testBasicBehavior() throws Exception {
-        expect(interceptor.preHandle(request, response, null)).andReturn(true);
+        interceptor.preHandle(webRequest());
         filterChain.doFilter(request, response);
-        interceptor.postHandle(request, response, null, null);
-        interceptor.afterCompletion(request, response, null, null);
+        interceptor.postHandle(webRequest(), (ModelMap) isNull());
+        interceptor.afterCompletion(webRequest(), (Exception) isNull());
 
         doFilter();
     }
@@ -46,11 +56,11 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
     public void testExceptionInFilterChainBehavior() throws Exception {
         ServletException exception = new ServletException("Uh oh");
 
-        expect(interceptor.preHandle(request, response, null)).andReturn(true);
+        interceptor.preHandle(webRequest());
         filterChain.doFilter(request, response);
         expectLastCall().andThrow(exception);
         // postHandle should not be called
-        interceptor.afterCompletion(request, response, null, null);
+        interceptor.afterCompletion(webRequest(), (Exception) isNull());
 
         try {
             doFilter();
@@ -63,11 +73,11 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
     public void testExceptionInPostHandleBehavior() throws Exception {
         DataAccessException exception = new PermissionDeniedDataAccessException("Uh oh", null);
 
-        expect(interceptor.preHandle(request, response, null)).andReturn(true);
+        interceptor.preHandle(webRequest());
         filterChain.doFilter(request, response);
-        interceptor.postHandle(request, response, null, null);
+        interceptor.postHandle(webRequest(), (ModelMap) isNull());
         expectLastCall().andThrow(exception);
-        interceptor.afterCompletion(request, response, null, null);
+        interceptor.afterCompletion(webRequest(), (Exception) isNull());
 
         try {
             doFilter();
@@ -76,19 +86,27 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
             assertEquals(exception, dae);
         }
     }
-    
-    public void testIfNotHandled() throws Exception {
-        expect(interceptor.preHandle(request, response, null)).andReturn(false);
-        filterChain.doFilter(request, response);
-        interceptor.postHandle(request, response, null, null);
-        // after completion should not be called
-
-        doFilter();
-    }
 
     private void doFilter() throws IOException, ServletException {
         replayMocks();
         filter.doFilter(request, response, filterChain);
         verifyMocks();
+    }
+
+    private WebRequest webRequest() {
+        reportMatcher(webRequestMatcher);
+        return null;
+    }
+
+    private class WebRequestMatcher implements IArgumentMatcher {
+        public boolean matches(Object argument) {
+            if (!(argument instanceof ServletWebRequest)) return false;
+            ServletWebRequest actual = (ServletWebRequest) argument;
+            return actual.getParameterMap().equals(request.getParameterMap());
+        }
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append("wraps ").append(request.toString());
+        }
     }
 }

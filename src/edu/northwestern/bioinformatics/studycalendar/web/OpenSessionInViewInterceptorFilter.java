@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.ContextRetainingFilterAdapter;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,14 +37,13 @@ public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAd
     ) throws IOException, ServletException {
         OpenSessionInViewInterceptor interceptor
             = (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor");
-        boolean handled = interceptor.preHandle((HttpServletRequest) request, (HttpServletResponse) response, null);
+        WebRequest webRequest = new ServletWebRequest((HttpServletRequest) request);
+        interceptor.preHandle(webRequest);
         try {
             chain.doFilter(request, response);
-            interceptor.postHandle((HttpServletRequest) request, (HttpServletResponse) response, null, null);
+            interceptor.postHandle(webRequest, null);
         } finally {
-            if (handled) {
-                interceptor.afterCompletion((HttpServletRequest) request, (HttpServletResponse) response, null, null);
-            }
+            interceptor.afterCompletion(webRequest, null);
         }
     }
 }
