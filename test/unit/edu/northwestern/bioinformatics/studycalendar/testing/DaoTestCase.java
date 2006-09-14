@@ -11,6 +11,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -27,6 +29,7 @@ public abstract class DaoTestCase extends DbTestCase {
 
     protected MockHttpServletRequest request = new MockHttpServletRequest();
     protected MockHttpServletResponse response = new MockHttpServletResponse();
+    protected WebRequest webRequest = new ServletWebRequest(request);
     private boolean shouldFlush = true;
 
     protected void setUp() throws Exception {
@@ -53,16 +56,16 @@ public abstract class DaoTestCase extends DbTestCase {
 
     private void beginSession() {
         log.info("-- beginning DaoTestCase interceptor session --");
-        findOpenSessionInViewInterceptor().preHandle(request, response, null);
+        findOpenSessionInViewInterceptor().preHandle(webRequest);
     }
 
     private void endSession() {
         log.info("--    ending DaoTestCase interceptor session --");
         OpenSessionInViewInterceptor interceptor = findOpenSessionInViewInterceptor();
         if (shouldFlush) {
-            interceptor.postHandle(request, response, null, null);
+            interceptor.postHandle(webRequest, null);
         }
-        interceptor.afterCompletion(request, response, null, null);
+        interceptor.afterCompletion(webRequest, null);
     }
 
     protected void interruptSession() {
