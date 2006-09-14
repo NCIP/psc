@@ -38,8 +38,9 @@ public class SecureOperation extends TagSupport {
     public int doStartTag() throws JspTagException {
         AuthorizationManager authorizationManager = null;
 
-        String userName = LocalUser.getInstance();
+        String userName = (String) pageContext.getSession().getAttribute(ApplicationSecurityManager.USER);
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
+        
         try {
             authorizationManager = SecurityServiceProvider.getAuthorizationManager("study_calendar");
         } catch (Exception e) {
