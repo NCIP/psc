@@ -107,7 +107,6 @@ public class NewStudyControllerTest extends ControllerTestCase {
         assertEquals(0, actualArmNames.get(0).size());
         assertEquals(2, actualArmNames.get(1).size());
         Object s = actualArmNames.get(1).get(0);
-        System.err.println(s.getClass().getName());
         assertEquals(names.get(0), s);
         assertEquals(names.get(1), actualArmNames.get(1).get(1));
     }
