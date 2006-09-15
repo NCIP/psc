@@ -93,6 +93,7 @@ module StudyCalendar
       documenter.document_step "Under \"#{locator_to_label(locator)}\" select option where \"#{optionLocator}\""
     end
     
+    
     #### ASSERTIONS
     
     def assert_page_contains(text)
@@ -104,6 +105,16 @@ module StudyCalendar
       assert !@browser.is_text_present(text), "\"#{text}\" is on the page"
       documenter.document_step "Check that \"#{text}\" does not appear somewhere in the page"
     end
+
+    def assert_element_exists(locator)
+      assert @browser.is_element_present(locator), "Element \"#{locator}\" is not on the page"
+      documenter.document_step "Check that \"#{locator_to_label(locator)}\" is an element on the page"
+	end
+
+    def assert_element_does_not_exist(locator)
+      assert !@browser.is_element_present(locator), "Element \"#{locator}\" is not on the page"
+      documenter.document_step "Check that \"#{locator_to_label(locator)}\" is not an element on the page"
+	end
     
     private
     def locator_to_label(locator, options = {})
