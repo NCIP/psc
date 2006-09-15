@@ -154,20 +154,12 @@ public class CalendarTemplate {
 
     public class Day {
         List<DayOfPeriod> periods;
-        List<PlannedEvent> plannedEvents;
 
         public Day(int dayNumber, Collection<Period> periodsOfArm) {
             this.periods = new LinkedList<DayOfPeriod>();
-            this.plannedEvents = new LinkedList<PlannedEvent>();
             for (Period period : periodsOfArm) {
                 if (period.getDayRange().containsInteger(dayNumber)) {
-                    periods.add(new DayOfPeriod(period));
-                }
-
-                for (PlannedEvent pe : period.getPlannedEvents()) {
-                    if (pe.getDaysInArm().contains(dayNumber)) {
-                        plannedEvents.add(pe);
-                    }
+                    periods.add(new DayOfPeriod(period, dayNumber));
                 }
             }
         }
@@ -175,17 +167,21 @@ public class CalendarTemplate {
         public List<DayOfPeriod> getPeriods() {
             return periods;
         }
-
-        public List<PlannedEvent> getPlannedEvents() {
-            return plannedEvents;
-        }
     }
 
     public class DayOfPeriod {
         private Period period;
+        List<PlannedEvent> plannedEvents;
 
-        public DayOfPeriod(Period period) {
+        public DayOfPeriod(Period period, int dayNumber) {
             this.period = period;
+            this.plannedEvents = new LinkedList<PlannedEvent>();
+
+            for (PlannedEvent pe : period.getPlannedEvents()) {
+                if (pe.getDaysInArm().contains(dayNumber)) {
+                    plannedEvents.add(pe);
+                }
+            }
         }
 
         public String getCssClass() {
@@ -198,6 +194,10 @@ public class CalendarTemplate {
 
         public Integer getId() {
             return period.getId();
+        }
+
+        public List<PlannedEvent> getPlannedEvents() {
+            return plannedEvents;
         }
     }
 }

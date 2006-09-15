@@ -113,8 +113,7 @@ public class CalendarTemplateTest extends CoreTestCase {
         initTemplate();
 
         CalendarTemplate.Day e1_d6 = template.getEpochs().get(0).getWeeks().get(0).getArms().get(0).getDays().get(5);
-        assertEquals(2, e1_d6.getPlannedEvents().size());
-        assertEquals("A0", e1_d6.getPlannedEvents().get(0).getActivity().getName());
-        assertEquals("A1", e1_d6.getPlannedEvents().get(1).getActivity().getName());
+        assertEquals("A0", e1_d6.getPeriods().get(0).getPlannedEvents().get(0).getActivity().getName());
+        assertEquals("A1", e1_d6.getPeriods().get(1).getPlannedEvents().get(0).getActivity().getName());
     }
 }

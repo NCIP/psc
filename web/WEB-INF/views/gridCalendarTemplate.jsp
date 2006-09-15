@@ -36,12 +36,12 @@
 
         .period {
             background-color: #666;
-            color: white;
+            color: black;
             padding: 3px;
         }
-        .period0 { background-color: red; }
-        .period1 { background-color: yellow; }
-        .period2 { background-color: green; }
+        .period0 { background-color: #f99; }
+        .period1 { background-color: #ff9; }
+        .period2 { background-color: #9f9; }
     </style>
     <tags:javascriptLink name="calendar-template"/>
 </head>
@@ -96,7 +96,7 @@
                             <td>
                                 <c:forEach items="${day.periods}" var="period">
                                     <div class="period ${period.cssClass}"><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></div>
-                                    <c:forEach items="${day.plannedEvents}" var="event">
+                                    <c:forEach items="${period.plannedEvents}" var="event">
                                         <div class="period ${period.cssClass}">${event.activity.name}</div>
                                     </c:forEach>
                                 </c:forEach>
