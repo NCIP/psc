@@ -84,6 +84,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         assertEquals(period, model.get("period"));
         assertEquals(activities, model.get("activities"));
+        assertNotNull(model.get("activitiesById"));
         assertEquals(period.getArm().getEpoch().getPlannedSchedule().getStudy(), model.get("study"));
     }
 }

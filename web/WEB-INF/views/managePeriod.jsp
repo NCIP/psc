@@ -153,7 +153,7 @@
     </tr>
     <c:forEach items="${command.grid}" var="entry">
     <tr class="input-row">
-        <th class="activity">NAME for id=${entry.key}</th>
+        <th class="activity">${activitiesById[entry.key].name}</th>
         <c:forEach items="${entry.value}" var="count" varStatus="cStatus">
             <td><form:input path="grid[${entry.key}][${cStatus.index}]" size="2"/></td>
         </c:forEach>
