@@ -117,26 +117,30 @@ INSERT INTO public.csm_protection_element
   (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
 VALUES(20,'AssignParticipantLink','link to assign participant to a study','AssignParticipantLink','AssignParticipantLink',null,2,'9/14/2006');
 
+INSERT INTO public.csm_protection_element
+  (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
+VALUES(21,'CreateEpochLink','link to create epoch','CreateEpochLink','CreateEpochLink',null,2,'9/14/2006');
+
+INSERT INTO public.csm_protection_element
+  (protection_element_id,protection_element_name,protection_element_description,object_id,attribute,protection_element_type_id,application_id,update_date)
+VALUES(22,'/studycalendar/pages/markComplete','url for mark template complete','/studycalendar/pages/markComplete','/studycalendar/pages/markComplete',null,2,'9/14/2006');
+
 COMMIT;
 INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
-VALUES(1,'StudyAdmin_Template','group having access rights to approve template',2,0,'9/7/2006',null);
+VALUES(9,'BaseAccess','group of features which all users have access to',2,0,'9/14/2006',null);
 
 INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
-VALUES(6,'participantcrdn_createParticipant','group having access to create and assign participant',2,0,'9/7/2006',null);
+VALUES(10,'CreateStudyAccess','access to create study, epochs, arms and associate periods to arms',2,0,'9/14/2006',null);
 
 INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
-VALUES(7,'researchassoc_ViewCalendar','group with access to view calendar',2,0,'9/7/2006',null);
+VALUES(11,'MarkTemplatCompleteAccess','access to mark template complete',2,0,'9/14/2006',null);
 
 INSERT INTO public.csm_protection_group
   (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
-VALUES(3,'studycrdn_NewStudy','group having access to create new study, epochs, arms, periods and activities',2,0,'9/7/2006',null);
-
-INSERT INTO public.csm_protection_group
-  (protection_group_id,protection_group_name,protection_group_description,application_id,large_element_count_flag,update_date,parent_protection_group_id)
-VALUES(8,'superuser','has access rights for all the protection elements, for testing purposes alone',2,0,'9/14/2006',null);
+VALUES(12,'ParticipantAssignmentAccess','access to create and assign participants',2,0,'9/14/2006',null);
 
 COMMIT;
 INSERT INTO public.csm_role
@@ -252,39 +256,75 @@ VALUES(11,'superuser','super','superuser','','','','','superuser','',null,null,'
 COMMIT;
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(1,7,null,2,1,'8/30/2006');
+VALUES(11,5,null,5,9,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(2,8,null,2,1,'9/7/2006');
+VALUES(12,6,null,5,9,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(3,3,null,3,3,'9/7/2006');
+VALUES(13,7,null,2,9,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(4,4,null,3,3,'9/7/2006');
+VALUES(14,7,null,2,11,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(5,5,null,5,7,'9/7/2006');
+VALUES(15,8,null,2,9,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(6,6,null,5,7,'9/7/2006');
+VALUES(16,8,null,2,11,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(7,9,null,4,6,'9/7/2006');
+VALUES(17,3,null,3,9,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(8,10,null,4,6,'9/7/2006');
+VALUES(18,3,null,3,10,'9/14/2006');
 
 INSERT INTO public.csm_user_group_role_pg
   (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
-VALUES(9,11,null,6,8,'9/14/2006');
+VALUES(19,4,null,3,9,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(20,4,null,2,10,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(21,9,null,4,12,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(22,9,null,4,9,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(23,10,null,4,9,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(24,10,null,4,12,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(25,11,null,6,9,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(26,11,null,6,10,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(27,11,null,6,11,'9/15/2006');
+
+INSERT INTO public.csm_user_group_role_pg
+  (user_group_role_pg_id,user_id,group_id,role_id,protection_group_id,update_date)
+VALUES(28,11,null,6,12,'9/15/2006');
 
 COMMIT;
 INSERT INTO public.csm_user_pe
@@ -299,82 +339,93 @@ COMMIT;
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(45,1,18,null);
+VALUES(123,9,18,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(46,1,15,null);
+VALUES(124,9,16,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(47,1,8,null);
+VALUES(125,9,15,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(48,1,11,null);
+VALUES(126,9,11,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(49,1,16,null);
+VALUES(127,10,6,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(70,3,9,null);
+VALUES(128,10,3,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(71,3,14,null);
+VALUES(129,10,7,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(72,3,5,null);
+VALUES(130,10,13,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(73,3,4,null);
+VALUES(131,10,14,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(74,3,18,null);
+VALUES(132,10,21,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(75,3,6,null);
+VALUES(133,10,4,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(76,3,7,null);
+VALUES(134,10,5,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(77,3,13,null);
+VALUES(135,10,12,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(78,3,12,null);
+VALUES(136,10,9,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(79,3,15,null);
+VALUES(137,11,8,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(80,3,11,null);
+VALUES(138,11,22,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(81,3,3,null);
+VALUES(139,12,19,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(82,3,16,null);
+VALUES(140,12,20,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(89,6,17,null);
+VALUES(141,12,10,null);
 
 INSERT INTO public.csm_pg_pe
   (pg_pe_id,protection_group_id,protection_element_id,update_date)
-VALUES(90,6,15,null);
+VALUES(142,12,17,null);
 
 COMMIT;
+
+select setval('csm_applicati_application__seq', 2);
+select setval('csm_privilege_privilege_id_seq', 7);
+select setval('csm_protectio_protection_e_seq', 22);
+select setval('csm_protectio_protection_g_seq', 12);
+select setval('csm_role_role_id_seq', 6);
+select setval('csm_role_priv_seq', 18);
+select setval('csm_user_user_id_seq', 11);
+select setval('csm_user_grou_user_group_r_seq', 28);
+select setval('csm_user_pe_user_protectio_seq', 2);
+select setval('csm_pg_pe_id_seq', 142);
