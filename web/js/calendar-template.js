@@ -1,5 +1,6 @@
-function cookieValueHandler() {
-    Cookies.set(this.name, this.value, 365)
+function cookieValueHandler(event) {
+    var src = Event.element(event)
+    Cookies.set(src.name, src.value, 365)
     window.location.reload()
 }
 
