@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
  * @author Jaron Sampson
  */
 public class NewActivityCommand {
+    private Integer returnToPeriodId;
     private String activityName;
     private String activityDescription;
     private Integer activityTypeId;
@@ -51,5 +52,13 @@ public class NewActivityCommand {
 
     public void setActivityTypeId(Integer id) {
     	this.activityTypeId = id;
-    } 
+    }
+
+    public Integer getReturnToPeriodId() {
+        return returnToPeriodId;
+    }
+
+    public void setReturnToPeriodId(Integer returnToPeriodId) {
+        this.returnToPeriodId = returnToPeriodId;
+    }
 }

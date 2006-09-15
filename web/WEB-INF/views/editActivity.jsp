@@ -55,6 +55,7 @@
             <input type="submit" value="Create"/>
         </div>
     </div>
+    <form:hidden path="returnToPeriodId"/>
 </form:form>
 
 </body>

@@ -8,9 +8,8 @@
         <property name="url"><value>/pages/calendarTemplate</value></property>
     </bean>
 
-    <!-- temporary -->
-    <bean id="redirectToGridCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
+    <bean id="redirectToManagePeriod" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/gridCalendarTemplate</value></property>
+        <property name="url"><value>/pages/managePeriod</value></property>
     </bean>
 </beans>

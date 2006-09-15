@@ -178,11 +178,11 @@
 <div id="activities-input">
     <label>Activities:
     <select id="add-activity">
-        <c:forEach items="${activities}" var="activity"><option value="${activity.id}">${activity.name}</option></c:forEach>
+        <c:forEach items="${activities}" var="activity"><option value="${activity.id}" <c:if test="${param.newActivityId == activity.id}">selected="selected"</c:if>>${activity.name}</option></c:forEach>
     </select>
     </label>
     <input type="button" id="add-activity-button" value="Add to period"/>
-    <a id="newActivityLink" href="<c:url value="/pages/newActivity"/>">Create new activity</a>
+    <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
 </div>
 
 

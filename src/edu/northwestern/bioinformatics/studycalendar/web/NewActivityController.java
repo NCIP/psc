@@ -4,6 +4,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class NewActivityController extends SimpleFormController {
 
     public NewActivityController() {
         setCommandClass(NewActivityCommand.class);
+        setBindOnNewForm(true);
         setFormView("editActivity");
         setSuccessView("viewActivity");
     }
@@ -42,14 +44,19 @@ public class NewActivityController extends SimpleFormController {
         // TODO: transaction
         activityDao.save(activity);
 
-        Map<String, Object> model = errors.getModel();
-        model.put("activity", activity);        
-        return new ModelAndView(getSuccessView(), model);
+        if (command.getReturnToPeriodId() == null) {
+            Map<String, Object> model = errors.getModel();
+            model.put("activity", activity);
+            return new ModelAndView(getSuccessView(), model);
+        } else {
+            ModelMap model = new ModelMap("id", command.getReturnToPeriodId())
+                .addObject("newActivityId", activity.getId());
+            return new ModelAndView("redirectToManagePeriod", model);
+        }
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	NewActivityCommand command = new NewActivityCommand(activityTypeDao);
-    	return command;
+        return new NewActivityCommand(activityTypeDao);
     }
     
     ////// CONFIGURATION
