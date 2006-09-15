@@ -15,9 +15,9 @@ public class DurationTest extends TestCase {
     }
 
     public void testInDays() {
-        assertNull("not null when quantity null", new Duration(null, day).inDays());
-        assertNull("not null when unit null", new Duration(1, null).inDays());
-        assertEquals(new Integer(35), new Duration(5, week).inDays());
+        assertNull("not null when quantity null", new Duration(null, day).getDays());
+        assertNull("not null when unit null", new Duration(1, null).getDays());
+        assertEquals(new Integer(35), new Duration(5, week).getDays());
     }
 
     public void testQuantityCannotBeNegative() {

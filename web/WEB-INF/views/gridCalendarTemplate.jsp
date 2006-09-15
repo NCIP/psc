@@ -95,7 +95,7 @@
                         <c:forEach items="${arm.days}" var="day">
                             <td>
                                 <c:forEach items="${day.periods}" var="period">
-                                    <div class="period ${period.cssClass}"><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></div>
+                                    <div class="period ${period.cssClass}"><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></div>
                                     <c:forEach items="${day.plannedEvents}" var="event">
                                         <div class="period ${period.cssClass}">${event.activity.name}</div>
                                     </c:forEach>

@@ -62,7 +62,7 @@ public class Period extends AbstractDomainObject implements Named {
     public Integer getEndDay() {
         if (startDay == null) return null;
         if (getDuration().getQuantity() == null) return null;
-        return startDay + (getDuration().inDays() * repetitions) - 1;
+        return startDay + (getDuration().getDays() * repetitions) - 1;
     }
 
     ////// BEAN PROPERTIES

@@ -40,7 +40,8 @@ public class ManagePeriodEventsController extends AbstractFormController {
         List<Activity> activities = activityDao.getAll();
         Map<String, Object> model = errors.getModel();
         model.put("activities", activities);
-        return new ModelAndView("editPeriod", model);
+        ControllerTools.addHierarchyToModel(((ManagePeriodEventsCommand) errors.getTarget()).getPeriod(), model);
+        return new ModelAndView("managePeriod", model);
     }
 
     protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {

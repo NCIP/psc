@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public class ManagePeriodEventsCommand {
      */
     private Map<Integer, List<Integer>> createGrid(Period src) {
         Map<Integer, List<Integer>> newGrid = new ExpandingMap<Integer, List<Integer>>(
-            new GridFiller(src.getDuration().inDays()),
+            new GridFiller(src.getDuration().getDays()),
             new TreeMap<Integer, List<Integer>>());
         for (PlannedEvent event : src.getPlannedEvents()) {
             int index = event.getDay() - 1;

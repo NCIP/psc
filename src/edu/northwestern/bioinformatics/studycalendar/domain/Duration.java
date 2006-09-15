@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Embeddable;
+import javax.persistence.Transient;
 
 /**
  * @author Moses Hohman
@@ -36,7 +37,8 @@ public class Duration {
         setUnit(unit);
     }
 
-    public Integer inDays() {
+    @Transient
+    public Integer getDays() {
         if (unit == null || quantity == null) return null;
         return quantity * unit.inDays();
     }

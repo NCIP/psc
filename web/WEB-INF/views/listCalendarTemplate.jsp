@@ -39,45 +39,45 @@
     <c:forEach items="${listTemplate.epochs}" var="epoch">
         <h2>${epoch.name}</h2>
         <c:forEach items="${epoch.days}" var="day">
-	        <table border="1">
-        	<tr><th colspan="2">Day number: ${day.dayNumber}</th></tr>
-	        	<c:forEach items="${day.arms}" var="arm">
-	        	<tr>
-	        		<c:if test="${fn:length(arm.periods) == 0}">
-		        		<td>
-		        	</c:if>
-	        		<c:if test="${fn:length(arm.periods) > 0}">
-			        	<td rowspan="${fn:length(arm.periods)}">
-   		        	</c:if>			        	
-	        		Arm: ${arm.name}</td>
-	        	<c:if test="${fn:length(arm.periods) == 0}">
-	        		<td>Nothing scheduled.</td>
-	        	</c:if>
-		        <c:forEach items="${arm.periods}" var="period" varStatus="periodStatus">
-		        	<c:choose>
-			        	<c:when test="${periodStatus.first}">
-				        	<td>
-				        	<h4><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></h4>
-				        	<c:forEach items="${period.plannedEvents}" var="event">
-				        		${event.activity.name}
-				        	</c:forEach>
-				        	</td></tr>
-				        </c:when>
-				        <c:otherwise>
-				        	<tr><td>
-				        	<h4><a href="<c:url value="/pages/newPlannedEvent?id=${period.id}"/>">${period.name}</a></h4>
-				        	<c:forEach items="${period.plannedEvents}" var="event">
-				        		${event.activity.name}
-				        	</c:forEach>
-				        	</td></tr>
-				        </c:otherwise>
-			        </c:choose>       		
-		    	</c:forEach>
-		    	</tr>
-		    </c:forEach>
-	    	</tr>
-	    	</table>
-    	</c:forEach>
+            <table border="1">
+            <tr><th colspan="2">Day number: ${day.dayNumber}</th></tr>
+                <c:forEach items="${day.arms}" var="arm">
+                <tr>
+                    <c:if test="${fn:length(arm.periods) == 0}">
+                        <td>
+                    </c:if>
+                    <c:if test="${fn:length(arm.periods) > 0}">
+                        <td rowspan="${fn:length(arm.periods)}">
+                       </c:if>
+                    Arm: ${arm.name}</td>
+                <c:if test="${fn:length(arm.periods) == 0}">
+                    <td>Nothing scheduled.</td>
+                </c:if>
+                <c:forEach items="${arm.periods}" var="period" varStatus="periodStatus">
+                    <c:choose>
+                        <c:when test="${periodStatus.first}">
+                            <td>
+                            <h4><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></h4>
+                            <c:forEach items="${period.plannedEvents}" var="event">
+                                ${event.activity.name}
+                            </c:forEach>
+                            </td></tr>
+                        </c:when>
+                        <c:otherwise>
+                            <tr><td>
+                            <h4><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></h4>
+                            <c:forEach items="${period.plannedEvents}" var="event">
+                                ${event.activity.name}
+                            </c:forEach>
+                            </td></tr>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+                </tr>
+            </c:forEach>
+            </tr>
+            </table>
+        </c:forEach>
     </c:forEach>
 <security:secureOperation element="ApproveStudyCalendarTemplate" operation="ACCESS">    
 <c:if test="${not study.plannedSchedule.complete}">

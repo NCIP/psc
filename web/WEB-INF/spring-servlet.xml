@@ -21,7 +21,7 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-	    <property name="interceptors">
+        <property name="interceptors">
             <list>
                 <ref bean="loginCheckInterceptor"/>
                 <ref bean="URLAccessCheckInterceptor"/>
@@ -65,5 +65,8 @@
 
     <bean name="/newPlannedEvent" id="NewPlannedEventController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewPlannedEventController"/>
+
+    <bean name="/managePeriod" id="managePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
 
 </beans>

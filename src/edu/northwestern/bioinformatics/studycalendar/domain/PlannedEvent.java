@@ -43,7 +43,7 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
         List<Integer> days = new ArrayList<Integer>();
         while (days.size() < getPeriod().getRepetitions()) {
             days.add(dayInArm);
-            dayInArm += getPeriod().getDuration().inDays();
+            dayInArm += getPeriod().getDuration().getDays();
         }
         return days;
     }
