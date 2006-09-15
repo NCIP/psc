@@ -106,14 +106,20 @@ module StudyCalendar
       documenter.document_step "Check that \"#{text}\" does not appear somewhere in the page"
     end
 
-    def assert_element_exists(locator)
+    def assert_element_exists(locator, suppressDocumentation = false)
       assert @browser.is_element_present(locator), "Element \"#{locator}\" is not on the page"
-      documenter.document_step "Check that \"#{locator_to_label(locator)}\" is an element on the page"
+      if !suppressDocumentation
+      	documenter.document_step "Check that \"#{locator_to_label(locator)}\" is an element on the page"
+      end
 	end
 
     def assert_element_does_not_exist(locator)
       assert !@browser.is_element_present(locator), "Element \"#{locator}\" is not on the page"
       documenter.document_step "Check that \"#{locator_to_label(locator)}\" is not an element on the page"
+	end
+	
+	def assert_element_is_equal_to(locator, text)
+	  
 	end
     
     private
