@@ -20,6 +20,15 @@ class CreateStudyAddedTest < Test::Unit::TestCase
 		
 		assert_page_contains("Template for Confidential study A")
 		assert_page_contains("Mark this template complete")
+		
+		click("selectedCalendarView", "list")
+		assert_page_contains("Template for Confidential study A")
+		assert_page_contains("Mark this template complete")
+		
+		
+		click("selectedCalendarView", "grid")
+		assert_page_contains("Template for Confidential study A")
+		assert_page_contains("Mark this template complete")
 	end
 	
 	
@@ -37,6 +46,15 @@ class CreateStudyAddedTest < Test::Unit::TestCase
 		open "/pages/calendarTemplate?id=-1"
 		wait_for_page_to_load
 		
+		assert_page_contains("Template for Confidential study A")
+		assert_page_does_not_contain("Mark this template complete")
+		
+		click("selectedCalendarView", "list")
+		assert_page_contains("Template for Confidential study A")
+		assert_page_does_not_contain("Mark this template complete")
+		
+		
+		click("selectedCalendarView", "grid")
 		assert_page_contains("Template for Confidential study A")
 		assert_page_does_not_contain("Mark this template complete")
 	end
