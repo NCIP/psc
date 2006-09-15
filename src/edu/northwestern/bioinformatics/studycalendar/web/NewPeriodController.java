@@ -40,9 +40,9 @@ public class NewPeriodController extends SimpleFormController {
     }
 
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
-        doSubmitAction(command);
-        Map<String, ? extends Object> model = Collections.singletonMap("id", command.getArmId());
-        return new ModelAndView(new RedirectView("/pages/viewArm", true), model);
+        Arm arm = doSubmitAction(command);
+        return new ModelAndView("redirectToCalendarTemplate", "id",
+            arm.getEpoch().getPlannedSchedule().getStudy().getId());
     }
 
     @Override
@@ -50,10 +50,11 @@ public class NewPeriodController extends SimpleFormController {
         doSubmitAction((NewPeriodCommand) command);
     }
 
-    private void doSubmitAction(NewPeriodCommand command) throws Exception {
+    private Arm doSubmitAction(NewPeriodCommand command) throws Exception {
         Arm arm = armDao.getById(command.getArmId());
         arm.addPeriod(command);
         armDao.save(arm);
+        return arm;
     }
 
     @Required
