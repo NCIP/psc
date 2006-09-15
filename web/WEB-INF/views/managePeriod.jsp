@@ -117,6 +117,19 @@
             border: 1px solid #666;
         }
 
+        a#newActivityLink {
+            padding-left: 2em
+        }
+
+        #activities-input label {
+            font-weight: bold;
+        }
+
+        #activities-input {
+            margin: 1em 0;
+            background-color: #ddd;
+            padding: 0.5em;
+        }
     </style>
 </head>
 <body>
@@ -162,18 +175,20 @@
     </tbody>
 </table>
 
-<p>
+<div id="activities-input">
+    <label>Activities:
     <select id="add-activity">
         <c:forEach items="${activities}" var="activity"><option value="${activity.id}">${activity.name}</option></c:forEach>
     </select>
-    <input type="button" id="add-activity-button" value="Add another activity"/>
-    <a href="<c:url value="/pages/newActivity"/>">Create new activity</a>
-</p>
-
-
-<div class="submit">
-    <input type="submit" value="Save Changes"/>
+    </label>
+    <input type="button" id="add-activity-button" value="Add to period"/>
+    <a id="newActivityLink" href="<c:url value="/pages/newActivity"/>">Create new activity</a>
 </div>
+
+
+<p class="submit">
+    <input type="submit" value="Save Changes"/>
+</p>
 </form:form>
 
 </body>
