@@ -33,9 +33,6 @@
 
     <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
         
-    <bean name="/welcome" id="welcomeController"
-          class="edu.northwestern.bioinformatics.studycalendar.web.WelcomeController"/>
-
     <bean name="/studyList" id="studyListController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 

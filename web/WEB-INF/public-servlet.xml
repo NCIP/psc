@@ -19,6 +19,11 @@
    
     <bean name="/login" id="loginController" autowire="byName" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
 
+    <bean name="/welcome" id="welcomeController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>welcome</value></property>
+    </bean>
+
     <bean name="/error" id="errorController"
           class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
 </beans>
