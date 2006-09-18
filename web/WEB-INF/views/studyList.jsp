@@ -6,7 +6,9 @@
 </head>
 <body>
 <h1>Existing Studies</h1>
-<p><a href="<c:url value="/pages/newStudy"/>">New study</a></p>
+<security:secureOperation element="CreateStudyLink" operation="ACCESS">
+<p><a href="<c:url value="/pages/newStudy"/>">New Study</a></p>
+</security:secureOperation>
 <table>
     <c:forEach items="${studies}" var="study">
         <tr>

@@ -22,7 +22,7 @@
 </head>
 <body>
 <h1>${action} Participant</h1>
-<c:url value="/pages/createParticipant" var="formAction"/>
+<c:url value="/pages/createParticipant?id=${studyId}" var="formAction"/>
 <form:form action="${formAction}" method="post">
     <div class="row">
         <div class="label">

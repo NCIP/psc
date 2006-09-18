@@ -23,32 +23,24 @@
 <body>
 <h1>${action} Participant</h1>
 <p>
-	Participant : ${participant.firstName} ${participant.lastName}
+	Study : ${study.name}
 </p>	
-<c:url value="/pages/assignParticipant" var="formAction"/>
+<c:url value="/pages/assignParticipant?id=${study.id}" var="formAction"/>
 
 <form:form action="${formAction}" method="post">
-<input name="participantId" type="hidden" value="${participant.id}"/>
+<input type="hidden" name="studyId" value="${study.id}"/>
+<input type="hidden" name="studySiteId" value="${studySite.id}"/>
 	<div class="row">
         <div class="label">
-            <form:label path="studySiteId">Site</form:label>
+            <form:label path="participantId">Participant</form:label>
         </div>
         <div class="value">
-            <form:select path="studySiteId">
-            	<form:options items="${studySites}" itemLabel="studyIdentifier" itemValue="id"/>
+            <form:select path="participantId">
+            	<form:options items="${participants}" itemLabel="firstName" itemValue="id"/>
             </form:select>
         </div>
 	</div>
-	<div class="row">
-        <div class="label">
-            <form:label path="studyId">Study</form:label>
-        </div>
-        <div class="value">
-            <form:select path="studyId">
-            	<form:options items="${studies}" itemLabel="name" itemValue="id"/>
-            </form:select>
-        </div>
-	</div>
+	<p><a href="<c:url value="/pages/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
 	<div class="row">
         <div class="label">
             <form:label path="dateOfEnrollment">Date of Enrollment (mm/dd/yyyy)</form:label>
