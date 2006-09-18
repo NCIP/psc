@@ -26,15 +26,21 @@
         </fileset>
     </path>
 
-    <path id="cp.j2ee">
-        <fileset dir="tools/j2ee-api">
+    <path id="cp.tomcat.common">
+        <fileset dir="tools/tomcat/lib/common">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.tomcat.server">
+        <fileset dir="tools/tomcat/lib/server">
             <include name="**/*.jar"/>
         </fileset>
     </path>
 
     <path id="cp.main">
         <path refid="cp.compiled-source"/>
-        <path refid="cp.j2ee"/>
+        <path refid="cp.tomcat.common"/>
         <fileset dir="web/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
@@ -43,7 +49,7 @@
     <path id="cp.unit-test">
         <path refid="cp.main"/>
         <path refid="cp.jdbc"/>
-        <path refid="cp.j2ee"/>
+        <path refid="cp.tomcat.common"/>
         <pathelement location="${build-dir.unit-test}"/>
         <fileset dir="test/lib">
             <include name="**/*.jar"/>
@@ -53,7 +59,7 @@
     <path id="cp.integrated-test">
         <path refid="cp.main"/>
         <path refid="cp.jdbc"/>
-        <path refid="cp.j2ee"/>
+        <path refid="cp.tomcat.common"/>
         <fileset dir="test/infrastructure/lib">
             <include name="**/*.jar"/>
         </fileset>
@@ -392,9 +398,8 @@
 
         <taskdef file="tools/tomcat/tomcatTasks.properties">
             <classpath>
-                <fileset dir="tools/tomcat">
-                    <include name="lib/*.jar"/>
-                </fileset>
+                <path refid="cp.tomcat.common"/>
+                <path refid="cp.tomcat.server"/>
             </classpath>
         </taskdef>
     </target>
@@ -510,7 +515,7 @@ done so already, please perform the following manual actions.
 ===== MANUAL STEPS =====</echo>
     </target>
 
-    <target name="reports-junit">
+    <target name="test.unit.report">
             <!-- junitreport -->
             <junitreport todir="${build-dir.unit-test}/junit">
                 <fileset dir="${build-dir.unit-test}/junit">
@@ -544,6 +549,6 @@ done so already, please perform the following manual actions.
             </junitDocReport>
         </target>
 
-        <target name="reports" depends="reports-junit"/>
+        <target name="reports" depends="test.unit.report"/>
 
 </project>
