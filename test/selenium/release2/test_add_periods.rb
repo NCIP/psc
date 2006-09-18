@@ -160,7 +160,7 @@ class AddingPeriodsTest < Test::Unit::TestCase
     click("selectedCalendarView", "list")
     ('8'..'64').to_a.each { |value| assert_element_exists("epoch-0-arm-0-day-" + value + "-period-0", true)}
     document_comment "Check that Epoch 0 arm 0 day 8-64 period 0 are elements on the page"
-    assert_element_does_not_exist "epoch-0-arm-0-day-8-period-0"
+    assert_element_does_not_exist "epoch-0-arm-0-day-7-period-0"
   end  
       
 end
