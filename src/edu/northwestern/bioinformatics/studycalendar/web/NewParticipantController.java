@@ -35,10 +35,10 @@ public class NewParticipantController extends SimpleFormController {
     }
 
     protected void initBinder(HttpServletRequest request,
-		ServletRequestDataBinder binder) throws Exception {
-		binder.registerCustomEditor(Date.class, null, new CustomDateEditor(
-		simpleDateFormat, false));
-		super.initBinder(request, binder);
+        ServletRequestDataBinder binder) throws Exception {
+        binder.registerCustomEditor(Date.class, null, new CustomDateEditor(
+        simpleDateFormat, false));
+        super.initBinder(request, binder);
     }
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -54,9 +54,9 @@ public class NewParticipantController extends SimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-    	NewParticipantCommand participantCommand = (NewParticipantCommand) oCommand;
-    	Participant participant = participantCommand.createParticipant();
-    	participantDao.save(participant);
+        NewParticipantCommand participantCommand = (NewParticipantCommand) oCommand;
+        Participant participant = participantCommand.createParticipant();
+        participantDao.save(participant);
 
         Map<String, Object> model = errors.getModel();
         model.put("participant", participant);

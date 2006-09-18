@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Arrays;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,16 +25,22 @@ public class NewStudyControllerTest extends ControllerTestCase {
     private NewStudyCommand command;
     private Study study;
     private StudyDao studyDao;
+    private StudySiteDao studySiteDao;
+    private SiteDao siteDao;
 
     protected void setUp() throws Exception {
         super.setUp();
         request.setMethod("GET");
         studyDao = registerMockFor(StudyDao.class);
+        studySiteDao = registerMockFor(StudySiteDao.class);
+        siteDao = registerMockFor(SiteDao.class);
         study = new Study();
         command = new TestCommand();
 
         controller = new TestController();
         controller.setStudyDao(studyDao);
+        controller.setSiteDao(siteDao);
+        controller.setStudySiteDao(studySiteDao);
     }
 
     public void testReferenceData() throws Exception {
@@ -54,6 +64,8 @@ public class NewStudyControllerTest extends ControllerTestCase {
     public void testIdInModelOnGoodSubmit() throws Exception {
         study.setId(14);
         studyDao.save(study);
+        expect(siteDao.getDefaultSite()).andReturn(new Site());
+        studySiteDao.save((StudySite) notNull());
         replayMocks();
 
         request.addParameter("studyName", "Study of other things");

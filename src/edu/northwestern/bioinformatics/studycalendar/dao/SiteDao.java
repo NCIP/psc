@@ -18,6 +18,11 @@ public class SiteDao extends HibernateDaoSupport {
         return (Site) getHibernateTemplate().get(Site.class, new Integer(id));
     }
 
+    public Site getDefaultSite() {
+        List<Site> results = getHibernateTemplate().find("from Site where name=?", Site.DEFAULT_SITE_NAME);
+        return results.size() == 0 ? null : results.get(0);
+    }
+
     public void save(Site site) {
         getHibernateTemplate().saveOrUpdate(site);
     }

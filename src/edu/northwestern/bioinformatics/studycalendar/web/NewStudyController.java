@@ -10,13 +10,20 @@ import java.util.Map;
 import java.util.HashMap;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 
 /**
  * @author Rhett Sutphin
  */
 public class NewStudyController extends SimpleFormController {
     private StudyDao studyDao;
+    private SiteDao siteDao;
+    private StudySiteDao studySiteDao;
 
     public NewStudyController() {
         setCommandClass(NewStudyCommand.class);
@@ -37,6 +44,13 @@ public class NewStudyController extends SimpleFormController {
         // TODO: transaction
         studyDao.save(study);
 
+        //// XXX: TEMPORARY until there's an interface for setting up sites & assigning studies to them
+        StudySite ss = new StudySite();
+        ss.setStudy(study);
+        ss.setStudyIdentifier(Site.DEFAULT_SITE_NAME);
+        ss.setSite(siteDao.getDefaultSite());
+        studySiteDao.save(ss);
+
         return new ModelAndView(getSuccessView(), "id", study.getId());
     }
 
@@ -45,5 +59,15 @@ public class NewStudyController extends SimpleFormController {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setStudySiteDao(StudySiteDao studySiteDao) {
+        this.studySiteDao = studySiteDao;
     }
 }

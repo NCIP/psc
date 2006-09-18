@@ -27,9 +27,11 @@ import javax.persistence.Table;
     }
 )
 public class Site extends AbstractDomainObject {
+    public static final String DEFAULT_SITE_NAME = "default";
+
     private String name;
     private List<StudySite> studySites = new ArrayList<StudySite>();
-    
+
     ////// BEAN PROPERTIES
 
     public String getName() {
