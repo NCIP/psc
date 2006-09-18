@@ -1,17 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -36,7 +42,7 @@ public class AssignParticipantController extends SimpleFormController {
     public AssignParticipantController() {
         setCommandClass(AssignParticipantCommand.class);
         setFormView("assignParticipant");
-        setSuccessView("confirmAssignment");
+        setSuccessView("calendarTemplate");
     }
 
     protected void initBinder(HttpServletRequest request,
@@ -48,24 +54,21 @@ public class AssignParticipantController extends SimpleFormController {
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
-        Collection<StudySite> studySites = studySiteDao.getAll();
-        Collection<Study> studies = studyDao.getAll();
-        refdata.put("studySites", studySites);
-        refdata.put("studies", studies);
+        Collection<Participant> participants = participantDao.getAll();
+        StudySite studySite = studySiteDao.getById(1);
+        refdata.put("studySite", studySite);
+        refdata.put("study", studyDao.getById(ServletRequestUtils.getIntParameter(httpServletRequest, "id")));
+        refdata.put("participants", participants);
         refdata.put("action", "Assign");
         return refdata;
     }
 
-    protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignParticipantCommand assignCommand = (AssignParticipantCommand) oCommand;
-    	System.out.println("new study site name : " + assignCommand.getStudySiteId());
     	Participant participant = assignCommand.assignParticipant();
-    	
-        participantDao.save(participant);
-
-        Map<String, Object> model = errors.getModel();
-        model.put("participant", participant);
-        return new ModelAndView(getSuccessView(), model);
+    	participantDao.save(participant);
+       
+        return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
     }
     
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

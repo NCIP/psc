@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 
@@ -25,15 +26,16 @@ public class AssignParticipantCommand {
 	 private StudySiteDao studySiteDao;
 	 
 	 public Participant assignParticipant() {
-		Participant participant = new Participant(); 
-		List<StudyParticipantAssignment> assignments = new ArrayList<StudyParticipantAssignment>();
+		Participant participant = participantDao.getById(getParticipantId());
+							
 		StudyParticipantAssignment studyParticipantAssignment = new StudyParticipantAssignment();
 		studyParticipantAssignment.setStudy(studyDao.getById(getStudyId()));
 		studyParticipantAssignment.setStudySite(studySiteDao.getById(getStudySiteId()));
-		studyParticipantAssignment.setParticipant(participantDao.getById(getParticipantId()));
+		studyParticipantAssignment.setParticipant(participant);
 		studyParticipantAssignment.setDateOfEnrollment(this.getDateOfEnrollment());
-		assignments.add(studyParticipantAssignment);
-		participant.setStudyParticipantAssignments(assignments);
+			
+		participant.addStudyParticipantAssignments(studyParticipantAssignment);
+				
 	    return participant;
 	}
 	    

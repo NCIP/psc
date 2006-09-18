@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.ModelAndView;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,17 +49,18 @@ public class NewParticipantController extends SimpleFormController {
         genders.put("Male", "Male");
         refdata.put("genders", genders);
         refdata.put("action", "New");
+        refdata.put("studyId", ServletRequestUtils.getIntParameter(httpServletRequest, "id"));
         return refdata;
     }
 
-    protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	NewParticipantCommand participantCommand = (NewParticipantCommand) oCommand;
     	Participant participant = participantCommand.createParticipant();
     	participantDao.save(participant);
 
         Map<String, Object> model = errors.getModel();
         model.put("participant", participant);
-        return new ModelAndView(new RedirectView(getSuccessView()), model);
+        return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
         //return new ModelAndView(new RedirectView(getSuccessView()), "newParticipant", participant);
     }
 
