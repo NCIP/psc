@@ -55,9 +55,10 @@ public class AssignParticipantController extends SimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Collection<Participant> participants = participantDao.getAll();
-        StudySite studySite = studySiteDao.getById(1);
-        refdata.put("studySite", studySite);
-        refdata.put("study", studyDao.getById(ServletRequestUtils.getIntParameter(httpServletRequest, "id")));
+        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
+        // TODO: for now, there's just a single default site for each study
+        refdata.put("studySite", study.getStudySites().get(0));
+        refdata.put("study", study);
         refdata.put("participants", participants);
         refdata.put("action", "Assign");
         return refdata;
