@@ -73,14 +73,14 @@
 <ol>
     <li>Log in using <kbd>superuser</kbd> as both the username and password.</li>
     <li>Click "New study" to begin the process of creating a new study.</li>
-    <li>You can name the study, create epochs (screening, treatment, follow-up, etc…), and add arms
+    <li>You can name the study, create epochs (screening, treatment, follow-up, etc...), and add arms
         to the study from this page.</li>
-    <li>The next page is the "Template page." You’ll come back to this now and then. You’ll want to
+    <li>The next page is the "Template page." You'll come back to this now and then. You'll want to
         add some periods to the arms of your study in order to make this more interesting.</li>
-    <li>When you’ve finished creating your periods, go ahead and select one from the template in
+    <li>When you've finished creating your periods, go ahead and select one from the template in
         order to add activities to it. Add some activities by selecting it from the drop box,
         clicking the Add button, and specifying how times you would like that activity to occur on
-        any day within the period. If you don’t see the activity that you want, feel free to create
+        any day within the period. If you don't see the activity that you want, feel free to create
         a new one.</li>
     <li>The "Mark this template as complete" link is a way to make a note that the template has been
         reviewed and is both correct and complete.</li>
