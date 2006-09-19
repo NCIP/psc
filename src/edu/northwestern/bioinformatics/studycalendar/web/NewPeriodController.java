@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -12,7 +11,6 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collections;
 
 /**
  * @author Moses Hohman
@@ -42,7 +40,7 @@ public class NewPeriodController extends SimpleFormController {
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
         Arm arm = doSubmitAction(command);
         return new ModelAndView("redirectToCalendarTemplate", "id",
-            arm.getEpoch().getPlannedSchedule().getStudy().getId());
+            arm.getEpoch().getPlannedCalendar().getStudy().getId());
     }
 
     @Override

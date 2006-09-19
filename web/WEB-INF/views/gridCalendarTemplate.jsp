@@ -49,8 +49,8 @@
 <h1>Template for ${calendar.name}</h1>
 <a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
 
-<c:if test="${not study.plannedSchedule.complete}">
-    <c:forEach items="${study.plannedSchedule.epochs}" var="epoch">
+<c:if test="${not study.plannedCalendar.complete}">
+    <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">
         <c:choose>
             <c:when test="${fn:length(epoch.arms) < 1}">
                 <p class="error">This study is broken -- it has no arms at all</p>
@@ -110,12 +110,12 @@
     </c:forEach>
 </c:if>
 <security:secureOperation element="ApproveStudyCalendarTemplate" operation="ACCESS">
-<c:if test="${not study.plannedSchedule.complete}">
+<c:if test="${not study.plannedCalendar.complete}">
     <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
 </c:if>
 </security:secureOperation>
 <security:secureOperation element="AssignParticipantLink" operation="ACCESS">    
-<c:if test="${study.plannedSchedule.complete}">
+<c:if test="${study.plannedCalendar.complete}">
     <p><a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>.</p>
 </c:if>
 </security:secureOperation>

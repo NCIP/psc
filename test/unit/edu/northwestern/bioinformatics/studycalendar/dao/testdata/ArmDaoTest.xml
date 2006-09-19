@@ -1,7 +1,7 @@
 <dataset>
     <STUDIES id="-1" version="0" name="Study"/>
-    <PLANNED_SCHEDULES id="-1" version="0" study_id="-1"/>
-    <EPOCHS id="-1" version="0" planned_schedule_id="-1" name="Epoch"/>
+    <PLANNED_CALENDARS id="-1" version="0" study_id="-1"/>
+    <EPOCHS id="-1" version="0" planned_calendar_id="-1" name="Epoch"/>
 
     <ARMS
         id="-2"

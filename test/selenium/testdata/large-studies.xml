@@ -11,14 +11,14 @@
         id="-2"
         name="Hepatocellular Cancer Study J"
         />
-    <planned_schedules
+    <planned_calendars
         id="-1"
         study_id="-2"
         />
 
     <epochs
         id="-21"
-        planned_schedule_id="-1"
+        planned_calendar_id="-1"
         name="ECT Level 1"
         />
     <arms
@@ -185,7 +185,7 @@
 
     <epochs
         id="-22"
-        planned_schedule_id="-1"
+        planned_calendar_id="-1"
         name="ECT Level 1, AC Drug"
         />
     <arms
@@ -429,14 +429,14 @@
         id="-3"
         name="Hepatocellular Cancer Study R"
         />
-    <planned_schedules
+    <planned_calendars
         id="-2"
         study_id="-3"
         />
 
     <epochs
         id="-30"
-        planned_schedule_id="-2"
+        planned_calendar_id="-2"
         name="Detection 1"
         />
     <arms
@@ -538,7 +538,7 @@
 
     <epochs
         id="-31"
-        planned_schedule_id="-2"
+        planned_calendar_id="-2"
         name="Detection 1"
         />
     <arms

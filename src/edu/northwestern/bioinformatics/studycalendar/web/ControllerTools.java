@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 
 import java.util.Map;
 
@@ -30,12 +30,12 @@ public class ControllerTools {
 
     public static void addHierarchyToModel(Epoch epoch, Map<String, Object> model) {
         model.put("epoch", epoch);
-        addHierarchyToModel(epoch.getPlannedSchedule(), model);
+        addHierarchyToModel(epoch.getPlannedCalendar(), model);
     }
 
-    public static void addHierarchyToModel(PlannedSchedule plannedSchedule, Map<String, Object> model) {
-        model.put("plannedSchedule", plannedSchedule);
-        model.put("study", plannedSchedule.getStudy());
+    public static void addHierarchyToModel(PlannedCalendar plannedCalendar, Map<String, Object> model) {
+        model.put("plannedCalendar", plannedCalendar);
+        model.put("study", plannedCalendar.getStudy());
     }
 
     private ControllerTools() { }

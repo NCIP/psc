@@ -1,6 +1,6 @@
 <dataset>
     <STUDIES id="-150" version="0" name="Study"/>
-    <PLANNED_SCHEDULES
+    <PLANNED_CALENDARS
         id="-100"
         version="0"
         study_id="-150"
@@ -10,10 +10,10 @@
         id="-200"
         version="0"
         name="Dexter"
-        planned_schedule_id="-100"/>
+        planned_calendar_id="-100"/>
     <EPOCHS
         id="-199"
         version="0"
         name="Sinister"
-        planned_schedule_id="-100"/>
+        planned_calendar_id="-100"/>
 </dataset>

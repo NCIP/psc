@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 import java.util.Iterator;
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class CalendarTemplateTest extends CoreTestCase {
     private CalendarTemplate template;
-    private PlannedSchedule schedule;
+    private PlannedCalendar calendar;
 
     /*
         BASE TEST STRUCTURE:
@@ -37,36 +37,36 @@ public class CalendarTemplateTest extends CoreTestCase {
     */
     protected void setUp() throws Exception {
         super.setUp();
-        schedule = new PlannedSchedule();
-        schedule.addEpoch(createEpoch("E1"));
-        schedule.addEpoch(createEpoch("E2", "X", "Y"));
-        schedule.addEpoch(createEpoch("E3"));
+        calendar = new PlannedCalendar();
+        calendar.addEpoch(createEpoch("E1"));
+        calendar.addEpoch(createEpoch("E2", "X", "Y"));
+        calendar.addEpoch(createEpoch("E3"));
 
-        Arm e1 = schedule.getEpochs().get(0).getArms().get(0);
+        Arm e1 = calendar.getEpochs().get(0).getArms().get(0);
         e1.addPeriod(createPeriod("1P0", 1, 7, 3));
         e1.addPeriod(createPeriod("1P1", 4, 7, 3));
 
-        Arm e2x = schedule.getEpochs().get(1).getArms().get(0);
+        Arm e2x = calendar.getEpochs().get(1).getArms().get(0);
         e2x.addPeriod(createPeriod("2xP0",  8, 14, 2));
         e2x.addPeriod(createPeriod("2xP1", 15, 21, 1));
 
-        Arm e2y = schedule.getEpochs().get(1).getArms().get(1);
+        Arm e2y = calendar.getEpochs().get(1).getArms().get(1);
         e2y.addPeriod(createPeriod("2yP0",  1, 21, 1));
         e2y.addPeriod(createPeriod("2yP1", 22, 21, 1));
 
-        Arm e3 = schedule.getEpochs().get(2).getArms().get(0);
+        Arm e3 = calendar.getEpochs().get(2).getArms().get(0);
         e3.addPeriod(createPeriod("3P0", 1, 365, 6));
 
         initTemplate();
     }
 
     private void initTemplate() {
-        template = new CalendarTemplate(schedule);
+        template = new CalendarTemplate(calendar);
     }
 
     public void testName() throws Exception {
         String expectedName = "The Study";
-        schedule.setStudy(createNamedInstance(expectedName, Study.class));
+        calendar.setStudy(createNamedInstance(expectedName, Study.class));
         initTemplate();
 
         assertEquals(expectedName, template.getName());
@@ -102,7 +102,7 @@ public class CalendarTemplateTest extends CoreTestCase {
     }
 
     public void testPlannedEvents() throws Exception {
-        Epoch e1 = schedule.getEpochs().get(0);
+        Epoch e1 = calendar.getEpochs().get(0);
         Iterator<Period> e1p = e1.getArms().get(0).getPeriods().iterator();
         Period e1p0 = e1p.next();
         Period e1p1 = e1p.next();

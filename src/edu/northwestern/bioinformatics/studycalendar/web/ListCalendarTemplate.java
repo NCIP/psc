@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 
 import java.util.List;
@@ -16,19 +16,19 @@ import java.util.LinkedList;
  */
 
 public class ListCalendarTemplate {
-    private PlannedSchedule schedule;
+    private PlannedCalendar calendar;
     private List<CalendarEpoch> epochs;
     
-    public ListCalendarTemplate(PlannedSchedule schedule) {
-        this.schedule = schedule;
+    public ListCalendarTemplate(PlannedCalendar calendar) {
+        this.calendar = calendar;
         epochs = new LinkedList<CalendarEpoch>();
-        for (Epoch epoch : schedule.getEpochs()) {
+        for (Epoch epoch : calendar.getEpochs()) {
             epochs.add(new CalendarEpoch(epoch));
         }
     }
 
     public String getName() {
-        return schedule.getStudy().getName();
+        return calendar.getStudy().getName();
     }
     
     public List<CalendarEpoch> getEpochs() {

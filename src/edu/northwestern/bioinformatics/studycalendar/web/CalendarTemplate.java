@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import org.apache.commons.lang.math.IntRange;
 
@@ -21,16 +21,16 @@ import java.util.HashMap;
  * @author Jaron Sampson
  */
 public class CalendarTemplate {
-    private PlannedSchedule schedule;
+    private PlannedCalendar calendar;
     private List<CalendarEpoch> epochs;
     private Map<String, Integer> armClasses;
     private Map<String, Integer> periodClasses;
 
-    public CalendarTemplate(PlannedSchedule schedule) {
-        this.schedule = schedule;
+    public CalendarTemplate(PlannedCalendar calendar) {
+        this.calendar = calendar;
 
         epochs = new LinkedList<CalendarEpoch>();
-        for (Epoch epoch : schedule.getEpochs()) {
+        for (Epoch epoch : calendar.getEpochs()) {
             epochs.add(new CalendarEpoch(epoch));
         }
 
@@ -39,7 +39,7 @@ public class CalendarTemplate {
     }
 
     public String getName() {
-        return schedule.getStudy().getName();
+        return calendar.getStudy().getName();
     }
 
     public List<CalendarEpoch> getEpochs() {

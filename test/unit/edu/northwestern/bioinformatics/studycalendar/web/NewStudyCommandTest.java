@@ -23,9 +23,9 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertEquals(expectedStudyName, actual.getName());
-        assertNotNull("Should have schedule", actual.getPlannedSchedule());
-        assertSame("Study <-> schedule relationship not bidirectional", actual, actual.getPlannedSchedule().getStudy());
-        List<Epoch> actualEpochs = actual.getPlannedSchedule().getEpochs();
+        assertNotNull("Should have schedule", actual.getPlannedCalendar());
+        assertSame("Study <-> schedule relationship not bidirectional", actual, actual.getPlannedCalendar().getStudy());
+        List<Epoch> actualEpochs = actual.getPlannedCalendar().getEpochs();
         assertEquals("Should have one epoch", 1, actualEpochs.size());
         assertNoArmEpoch(actualEpochs.get(0), expectedEpochName);
     }
@@ -43,11 +43,11 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertNotNull("Study is null", actual);
-        assertNotNull("Schedule is null", actual.getPlannedSchedule());
+        assertNotNull("Schedule is null", actual.getPlannedCalendar());
         assertEquals(expectedStudyName, actual.getName());
 
-        assertEquals("Should have one epoch", 1, actual.getPlannedSchedule().getEpochs().size());
-        assertMultipleArmEpoch(actual.getPlannedSchedule().getEpochs().get(0),
+        assertEquals("Should have one epoch", 1, actual.getPlannedCalendar().getEpochs().size());
+        assertMultipleArmEpoch(actual.getPlannedCalendar().getEpochs().get(0),
             expectedEpochName, expectedArmNames);
     }
 
@@ -61,9 +61,9 @@ public class NewStudyCommandTest extends TestCase {
 
         Study actual = command.createStudy();
         assertEquals(expectedStudyName, actual.getName());
-        assertNotNull("Should have schedule", actual.getPlannedSchedule());
-        assertSame("Study <-> schedule relationship not bidirectional", actual, actual.getPlannedSchedule().getStudy());
-        List<Epoch> actualEpochs = actual.getPlannedSchedule().getEpochs();
+        assertNotNull("Should have schedule", actual.getPlannedCalendar());
+        assertSame("Study <-> schedule relationship not bidirectional", actual, actual.getPlannedCalendar().getStudy());
+        List<Epoch> actualEpochs = actual.getPlannedCalendar().getEpochs();
         assertEquals("Should have one epoch", 1, actualEpochs.size());
         assertNoArmEpoch(actualEpochs.get(0), expectedEpochName);
     }
@@ -82,8 +82,8 @@ public class NewStudyCommandTest extends TestCase {
         ((List) command.getArmNames().get(1)).addAll(expectedEoceneArmNames);
 
         Study actual = command.createStudy();
-        assertNotNull("No schedule", actual.getPlannedSchedule());
-        List<Epoch> actualEpochs = actual.getPlannedSchedule().getEpochs();
+        assertNotNull("No schedule", actual.getPlannedCalendar());
+        List<Epoch> actualEpochs = actual.getPlannedCalendar().getEpochs();
         assertEquals("Wrong number of epochs", expectedEpochNames.size(), actualEpochs.size());
 
         assertNoArmEpoch(actualEpochs.get(0), expectedEpochNames.get(0));

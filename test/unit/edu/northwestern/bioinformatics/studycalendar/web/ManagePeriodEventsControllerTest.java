@@ -6,9 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static org.easymock.classextension.EasyMock.expect;
-import org.springframework.ui.ModelMap;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -27,9 +26,9 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         Study parent = Fixtures.createNamedInstance("Root", Study.class);
-        parent.setPlannedSchedule(new PlannedSchedule());
-        parent.getPlannedSchedule().addEpoch(Fixtures.createEpoch("Holocene", "Middle"));
-        parent.getPlannedSchedule().getEpochs().get(0).getArms().get(0).addPeriod(period);
+        parent.setPlannedCalendar(new PlannedCalendar());
+        parent.getPlannedCalendar().addEpoch(Fixtures.createEpoch("Holocene", "Middle"));
+        parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
 
         periodDao = registerMockFor(PeriodDao.class);
         activityDao = registerMockFor(ActivityDao.class);
@@ -85,6 +84,6 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         assertEquals(period, model.get("period"));
         assertEquals(activities, model.get("activities"));
         assertNotNull(model.get("activitiesById"));
-        assertEquals(period.getArm().getEpoch().getPlannedSchedule().getStudy(), model.get("study"));
+        assertEquals(period.getArm().getEpoch().getPlannedCalendar().getStudy(), model.get("study"));
     }
 }

@@ -25,7 +25,7 @@ import java.util.ArrayList;
     }
 )
 public class Epoch extends AbstractDomainObject implements Named {
-    private PlannedSchedule plannedSchedule;
+    private PlannedCalendar plannedCalendar;
     private List<Arm> arms = new ArrayList<Arm>();
     private String name;
 
@@ -58,13 +58,13 @@ public class Epoch extends AbstractDomainObject implements Named {
     }
 
     @ManyToOne
-    @JoinColumn (name = "planned_schedule_id")
-    public PlannedSchedule getPlannedSchedule() {
-        return plannedSchedule;
+    @JoinColumn (name = "planned_calendar_id")
+    public PlannedCalendar getPlannedCalendar() {
+        return plannedCalendar;
     }
 
-    public void setPlannedSchedule(PlannedSchedule plannedSchedule) {
-        this.plannedSchedule = plannedSchedule;
+    public void setPlannedCalendar(PlannedCalendar plannedCalendar) {
+        this.plannedCalendar = plannedCalendar;
     }
 
     public String getName() {

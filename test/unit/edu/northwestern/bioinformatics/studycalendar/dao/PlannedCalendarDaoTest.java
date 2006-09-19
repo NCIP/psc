@@ -1,37 +1,37 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 /**
  * @author Rhett Sutphin
  */
-public class PlannedScheduleDaoTest extends DaoTestCase {
-    private PlannedScheduleDao dao = (PlannedScheduleDao) getApplicationContext().getBean("plannedScheduleDao");
+public class PlannedCalendarDaoTest extends DaoTestCase {
+    private PlannedCalendarDao dao = (PlannedCalendarDao) getApplicationContext().getBean("plannedCalendarDao");
     private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
 
     public void testGetById() throws Exception {
-        PlannedSchedule sched = dao.getById(-100);
+        PlannedCalendar sched = dao.getById(-100);
         assertNotNull("Schedule not found", sched);
         assertEquals("Wrong study", Integer.valueOf(-150), sched.getStudy().getId());
     }
 
     public void testLoadingEpochs() throws Exception {
-        PlannedSchedule schedule = dao.getById(-100);
-        assertNotNull("Schedule not found", schedule);
+        PlannedCalendar calendar = dao.getById(-100);
+        assertNotNull("Schedule not found", calendar);
 
-        assertEquals("Wrong number of epochs", 2, schedule.getEpochs().size());
-        assertEpoch("Wrong epoch 0", -200, "Dexter", schedule.getEpochs().get(0));
-        assertEpoch("Wrong epoch 1", -199, "Sinister", schedule.getEpochs().get(1));
+        assertEquals("Wrong number of epochs", 2, calendar.getEpochs().size());
+        assertEpoch("Wrong epoch 0", -200, "Dexter", calendar.getEpochs().get(0));
+        assertEpoch("Wrong epoch 1", -199, "Sinister", calendar.getEpochs().get(1));
 
-        assertSame("Epoch <=> Schedule relationship not bidirectional on load", schedule, schedule.getEpochs().get(0).getPlannedSchedule());
+        assertSame("Epoch <=> Schedule relationship not bidirectional on load", calendar, calendar.getEpochs().get(0).getPlannedCalendar());
     }
 
     public void testSaveNewSchedule() throws Exception {
         Integer savedId;
         {
-            PlannedSchedule sched = new PlannedSchedule();
+            PlannedCalendar sched = new PlannedCalendar();
             sched.setStudy(studyDao.getById(-150));
             sched.addEpoch(new Epoch());
             sched.getEpochs().get(0).setName("First epoch");
@@ -43,7 +43,7 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
         interruptSession();
 
         {
-            PlannedSchedule loaded = dao.getById(savedId);
+            PlannedCalendar loaded = dao.getById(savedId);
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong number of arms", 1, loaded.getEpochs().size());
             assertEquals("Wrong name for arm 0", "First epoch", loaded.getEpochs().get(0).getName());
@@ -51,7 +51,7 @@ public class PlannedScheduleDaoTest extends DaoTestCase {
     }
 
     public void testScheduleCompleted() throws Exception {
-        PlannedSchedule sched = dao.getById(-100);
+        PlannedCalendar sched = dao.getById(-100);
         // TODO: why is this in the DAO test?
         sched.setComplete(true);
         assertEquals("Could not mark sched complete", true, sched.isComplete());

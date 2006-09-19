@@ -7,14 +7,14 @@
         id="-1"
         name="Confidential study A"
         />
-    <planned_schedules
+    <planned_calendars
         id="-1"
         study_id="-1"
         />
 
     <epochs
         id="-10"
-        planned_schedule_id="-1"
+        planned_calendar_id="-1"
         name="Remission Induction Chemotherapy"
         />
     <arms
@@ -49,7 +49,7 @@
 
     <epochs
         id="-11"
-        planned_schedule_id="-1"
+        planned_calendar_id="-1"
         name="Complete Remission, Induction Failure, Relapse, and Early Termination"
         />
     <arms

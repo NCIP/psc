@@ -18,13 +18,13 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "planned_schedules")
+@Table (name = "planned_calendars")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_planned_schedules_id")
+        @Parameter(name="sequence", value="seq_planned_calendars_id")
     }
 )
-public class PlannedSchedule extends AbstractDomainObject {
+public class PlannedCalendar extends AbstractDomainObject {
     private Study study;
     private List<Epoch> epochs = new ArrayList<Epoch>();
     private boolean complete;
@@ -33,7 +33,7 @@ public class PlannedSchedule extends AbstractDomainObject {
 
     public void addEpoch(Epoch epoch) {
         epochs.add(epoch);
-        epoch.setPlannedSchedule(this);
+        epoch.setPlannedCalendar(this);
     }
 
     @Transient
@@ -55,7 +55,7 @@ public class PlannedSchedule extends AbstractDomainObject {
         this.complete = complete;
     }
 
-    @OneToMany (mappedBy = "plannedSchedule")
+    @OneToMany (mappedBy = "plannedCalendar")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<Epoch> getEpochs() {
         return epochs;
@@ -72,8 +72,8 @@ public class PlannedSchedule extends AbstractDomainObject {
     }
 
     public void setStudy(Study study) {
-        if (study != null && study.getPlannedSchedule() != this) {
-            study.setPlannedSchedule(this);
+        if (study != null && study.getPlannedCalendar() != this) {
+            study.setPlannedCalendar(this);
         }
         this.study = study;
     }

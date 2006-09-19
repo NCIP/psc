@@ -28,7 +28,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ParticipantIdentifier</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>
 
                 <value>edu.northwestern.bioinformatics.studycalendar.utils.configuration.ConfigurationEntry</value>
@@ -56,7 +56,7 @@
     <!-- ACTUAL DAOS -->
 
     <bean id="studyDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao"/>
-    <bean id="plannedScheduleDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedScheduleDao"/>
+    <bean id="plannedCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao"/>
     <bean id="activityTypeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao"/>
     <bean id="armDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ArmDao"/>
     <bean id="activityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao"/>

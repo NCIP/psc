@@ -10,7 +10,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collection;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -38,7 +37,7 @@ public class MarkCompleteController extends SimpleFormController {
         MarkCompleteCommand command = (MarkCompleteCommand) oCommand;
         Study study = studyDao.getById(command.getStudyId());
         if("true".equals(command.getCompleted())) {
-        	study.getPlannedSchedule().setComplete(true);
+        	study.getPlannedCalendar().setComplete(true);
             studyDao.save(study);
         }
         // TODO: transaction

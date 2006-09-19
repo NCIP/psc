@@ -2,12 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedSchedule;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 
 import java.util.List;
-import java.util.LinkedList;
 import java.util.ArrayList;
 
 /**
@@ -40,8 +39,8 @@ public class NewStudyCommand {
     public Study createStudy() {
         Study study = new Study();
         study.setName(getStudyName());
-        PlannedSchedule schedule = new PlannedSchedule();
-        study.setPlannedSchedule(schedule);
+        PlannedCalendar calendar = new PlannedCalendar();
+        study.setPlannedCalendar(calendar);
 
         for (int i = 0; i < getEpochNames().size(); i++) {
             String epochName = getEpochNames().get(i);
@@ -62,7 +61,7 @@ public class NewStudyCommand {
                 e.addArm(singleArm);
             }
 
-            schedule.addEpoch(e);
+            calendar.addEpoch(e);
         }
 
         return study;

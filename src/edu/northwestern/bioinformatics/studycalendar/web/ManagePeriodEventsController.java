@@ -61,7 +61,7 @@ public class ManagePeriodEventsController extends AbstractFormController {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
         command.apply();
         periodDao.save(command.getPeriod());
-        return new ModelAndView("redirectToCalendarTemplate", "id", command.getPeriod().getArm().getEpoch().getPlannedSchedule().getStudy().getId());
+        return new ModelAndView("redirectToCalendarTemplate", "id", command.getPeriod().getArm().getEpoch().getPlannedCalendar().getStudy().getId());
     }
 
     ////// CONFIGURATION
