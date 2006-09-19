@@ -1,4 +1,5 @@
-The release 2 Study Calendar UML domain model contains domain objects that are needed to implement the following use cases:
+The release 2 Study Calendar UML domain model contains domain objects that are needed to implement the use cases listed below. Whereever appropriate,
+these domain objects were derived from the domain objects defined in the BRIDG and CTOM object models.  
 
 1. Create Study: Implementation of this use case would require using the "Study" domain object.
 2. Create New Calendar Template: Implementation of this use case would require using the "Study", "PlannedSchedule", "Epoch", "Arm", Period" and Duration domain    objects.
