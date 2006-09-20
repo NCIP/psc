@@ -17,7 +17,8 @@
     
     <bean id="publicHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
    
-    <bean name="/login" id="loginController" autowire="byName" class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
+    <bean name="/login" id="loginController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
 
     <bean name="/welcome" id="welcomeController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">

@@ -3,6 +3,11 @@
 <beans>
     <!-- Redirect views -->
 
+    <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/public/login</value></property>
+    </bean>
+
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/calendarTemplate</value></property>
