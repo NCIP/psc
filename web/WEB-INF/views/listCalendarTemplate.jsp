@@ -36,12 +36,12 @@
 
 <tags:selectCalendarView/>
 
-    <c:forEach items="${listTemplate.epochs}" var="epoch">
+    <c:forEach items="${listTemplate.epochs}" var="epoch" varStatus="epochStatus">
         <h2>${epoch.name}</h2>
-        <c:forEach items="${epoch.days}" var="day">
+        <c:forEach items="${epoch.days}" var="day" varStatus="dayStatus">
             <table border="1">
             <tr><th colspan="2">Day number: ${day.dayNumber}</th></tr>
-                <c:forEach items="${day.arms}" var="arm">
+                <c:forEach items="${day.arms}" var="arm"  varStatus="armStatus">
                 <tr>
                     <c:if test="${fn:length(arm.periods) == 0}">
                         <td>
@@ -51,23 +51,23 @@
                        </c:if>
                     Arm: ${arm.name}</td>
                 <c:if test="${fn:length(arm.periods) == 0}">
-                    <td>Nothing scheduled.</td>
+                    <td id="epoch-${epochStatus.index}-arm-${armStatus.index}-day-${dayStatus.index + 1}-period-null" >Nothing scheduled.</td>
                 </c:if>
                 <c:forEach items="${arm.periods}" var="period" varStatus="periodStatus">
                     <c:choose>
                         <c:when test="${periodStatus.first}">
-                            <td>
+                            <td id="epoch-${epochStatus.index}-arm-${armStatus.index}-day-${dayStatus.index + 1}-period-${periodStatus.index}">
                             <h4><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></h4>
                             <c:forEach items="${period.plannedEvents}" var="event">
-                                ${event.activity.name}
+                                ${event.activity.name}<br>
                             </c:forEach>
                             </td></tr>
                         </c:when>
                         <c:otherwise>
-                            <tr><td>
+                            <tr><td id="epoch-${epochStatus.index}-arm-${armStatus.index}-day-${dayStatus.index + 1}-period-${periodStatus.index}>
                             <h4><a href="<c:url value="/pages/managePeriod?id=${period.id}"/>">${period.name}</a></h4>
                             <c:forEach items="${period.plannedEvents}" var="event">
-                                ${event.activity.name}
+                                ${event.activity.name}<br>
                             </c:forEach>
                             </td></tr>
                         </c:otherwise>
