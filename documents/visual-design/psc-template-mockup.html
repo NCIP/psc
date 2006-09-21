@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <title>Calendar template combined mockup</title>
+    <style>
+    body {
+      font-family: Verdana, sans-serif;
+    }
+    
+    .clearer {
+      clear: both;
+    }
+    
+    #calendar {
+      position: relative;
+      height: 13em;
+    }
+    .epoch {
+      float: left;
+      width: 30%;
+      height: 100%;
+      border: 2px solid #666;
+      border-right-width: 0;
+    }
+    .epoch.last {
+      border-right-width: 2px;
+    }
+    .epoch h3, #selected-arm h3 {
+      margin-top: 0;
+      padding: 4px;
+      font-family: sans-serif;
+      color: white;
+      background-color: #999;
+    }
+    .arms a {
+      display: block;
+      text-decoration: none;
+      border: 0 solid #ccc;
+      border-width: 1px 0;
+      margin: 4px 0;
+      padding: 3px;
+      color: #444;
+    }
+    .arms a:hover {
+      background-color: #ccc !important;
+      color: #000;
+    }
+    .arms a.selected {
+      background-color: #ddd;
+    }
+    
+    #selected-arm {
+      border: 2px solid #666;
+      margin: 1em 0;
+    }
+    table.periods, table.periods td, table.periods th {
+      border-collapse: collapse;
+      border: 1px solid #666;
+      margin: 1em auto;
+    }
+    table.periods td, table.periods th {
+      width: 2em;
+    }
+    table.periods th {
+      padding: 2px;
+    }
+    table.periods td {
+      padding: 0;
+    }
+    table.periods a {
+      display: block;
+      text-decoration: none;
+      background-color: #ddd;
+      margin: 0;
+      padding: 2px;
+    }
+    table.periods a:hover {
+      background-color: #ccc;
+    }
+    
+    
+    .day {
+      margin: 1em;
+      position: relative;
+    }
+    .day h4 {
+      float: left;
+      margin: 0;
+    }
+    .day ul {
+      margin-left: 4em;
+    }
+    .day ul li {
+      list-style-type: none;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Template for ECOG 5551234</h1>
+    <p>Select an arm (or a no-arm epoch) to view its events and set up periods.</p>
+    <div id="calendar">
+      <div class="epoch" id="epoch0">
+        <h3>Screening</h3>
+        <div class="arms">
+          <a href="#">Screening</a>
+        </div>
+      </div>
+      <div class="epoch" id="epoch1">
+        <h3>Treatment</h3>
+        <div class="arms">
+          <a href="#">A</a>
+          <a href="#" class="selected">B</a>
+          <a href="#">C</a>
+          <a href="#">D</a>
+          <a href="#">E</a>
+        </div>
+      </div>
+      <div class="epoch last" id="epoch2">
+        <h3>Follow up</h3>
+        <div class="arms">
+          <a href="#">Follow up</a>
+        </div>
+      </div>
+    </div>
+    <div style="clear:both"></div>
+    <div id="selected-arm">
+      <h3>Treatment: B</h3>
+      <table class="periods">
+        <tr>
+          <th>Day</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
+          <th>6</th>
+          <th>7</th>
+          <th>8</th>
+          <th>9</th>
+          <th>10</th>
+          <th>11</th>
+          <th>12</th>
+          <th>13</th>
+          <th>14</th>
+        </tr>
+        <tr>
+          <th>P1</th>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+        </tr>
+        <tr>
+          <th>P2</th>
+          <td colspan="2" class="empty"></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+        </tr>
+        <tr>
+          <th>P3</th>
+          <td colspan="1" class="empty"></td>
+          <td colspan="1" class="repetition"><a href="javascript:alert('Manage Period P3')">&nbsp;</a></td>
+          <td colspan="12" class="empty"></td>
+        </tr>
+      </table>
+      
+      <div class="day">
+        <h4>Day 1</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
+        </ul>
+        <div class="clearer"></div>
+      </div>
+      <div class="clearer"></div>
+      <div class="day">
+        <h4>Day 2</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P3')">Questionnaire</a></li>
+        </ul>
+      </div>
+      <div class="clearer"></div>
+      <div class="day">
+        <h4>Day 3</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+        </ul>
+      </div>
+      <div class="day">
+        <h4>Day 7</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+        </ul>
+      </div>
+      <div class="clearer"></div>
+      <div class="clearer"></div>
+      <div class="day">
+        <h4>Day 8</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
+        </ul>
+      </div>
+      <div class="clearer"></div>
+      <div class="day">
+        <h4>Day 11</h4>
+        <ul>
+          <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+        </ul>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>
