@@ -52,10 +52,13 @@
       border: 2px solid #666;
       margin: 1em 0;
     }
+    table.periods {
+      overflow: scroll;
+    }
     table.periods, table.periods td, table.periods th {
       border-collapse: collapse;
       border: 1px solid #666;
-      margin: 1em auto;
+      margin: 1em;
     }
     table.periods td, table.periods th {
       width: 2em;
@@ -99,23 +102,23 @@
     <p>Select an arm (or a no-arm epoch) to view its events and set up periods.</p>
     <div id="calendar">
       <div class="epoch" id="epoch0">
-        <h3>Screening</h3>
+        <h3 title="Epoch Screening has no arms">Screening</h3>
         <div class="arms">
           <a href="#">Screening</a>
         </div>
       </div>
       <div class="epoch" id="epoch1">
-        <h3>Treatment</h3>
+        <h3 title="Epoch Treatment has 5 arms">Treatment</h3>
         <div class="arms">
-          <a href="#">A</a>
-          <a href="#" class="selected">B</a>
-          <a href="#">C</a>
-          <a href="#">D</a>
-          <a href="#">E</a>
+          <a href="#" title="View arm A">A</a>
+          <a href="#" title="View arm B" class="selected">B</a>
+          <a href="#" title="View arm C">C</a>
+          <a href="#" title="View arm D">D</a>
+          <a href="#" title="View arm E">E</a>
         </div>
       </div>
       <div class="epoch last" id="epoch2">
-        <h3>Follow up</h3>
+        <h3 title="Epoch Follow up has no arms">Follow up</h3>
         <div class="arms">
           <a href="#">Follow up</a>
         </div>
@@ -141,9 +144,25 @@
           <th>12</th>
           <th>13</th>
           <th>14</th>
+          <th>15</th>
+          <th>16</th>
+          <th>17</th>
+          <th>18</th>
+          <th>19</th>
+          <th>20</th>
+          <th>21</th>
+          <th>22</th>
+          <th>23</th>
+          <th>24</th>
+          <th>25</th>
+          <th>26</th>
+          <th>27</th>
+          <th>28</th>
         </tr>
         <tr>
           <th>P1</th>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
           <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
           <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
         </tr>
@@ -153,17 +172,119 @@
           <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
           <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
           <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="2" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
         </tr>
         <tr>
           <th>P3</th>
           <td colspan="1" class="empty"></td>
           <td colspan="1" class="repetition"><a href="javascript:alert('Manage Period P3')">&nbsp;</a></td>
-          <td colspan="12" class="empty"></td>
+          <td colspan="26" class="empty"></td>
+        </tr>
+      </table>
+      
+        <div class="day">
+          <h4>Day 1</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
+          </ul>
+          <div class="clearer"></div>
+        </div>
+        <div class="clearer"></div>
+        <div class="day">
+          <h4>Day 2</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P3')">Questionnaire</a></li>
+          </ul>
+        </div>
+        <div class="clearer"></div>
+        <div class="day">
+          <h4>Day 3</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+          </ul>
+        </div>
+        <div class="day">
+          <h4>Day 7</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+          </ul>
+        </div>
+        <div class="clearer"></div>
+        <div class="clearer"></div>
+        <div class="day">
+          <h4>Day 8</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
+          </ul>
+        </div>
+        <div class="clearer"></div>
+        <div class="day">
+          <h4>Day 11</h4>
+          <ul>
+            <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
+          </ul>
+        </div>
+        <div class="clearer"></div>
+      
+      
+      <table class="periods">
+        <tr>
+          <th>Day</th>
+          <th>29</th>
+          <th>30</th>
+          <th>31</th>
+          <th>32</th>
+          <th>33</th>
+          <th>34</th>
+          <th>35</th>
+          <th>36</th>
+          <th>37</th>
+          <th>38</th>
+          <th>39</th>
+          <th>40</th>
+          <th>41</th>
+          <th>42</th>
+          <th>43</th>
+          <th>44</th>
+          <th>45</th>
+          <th>46</th>
+          <th>47</th>
+          <th>48</th>
+          <th>49</th>
+          <th>50</th>
+          <th>51</th>
+          <th>52</th>
+          <th>53</th>
+          <th>54</th>
+          <th>55</th>
+          <th>56</th>
+        </tr>
+        <tr>
+          <th>P1</th>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+        </tr>
+        <tr>
+          <th>P2</th>
+          <td colspan="2" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td colspan="14" class="empty"></td>
+        </tr>
+        <tr>
+          <th>P3</th>
+          <td colspan="28" class="empty"></td>
         </tr>
       </table>
       
       <div class="day">
-        <h4>Day 1</h4>
+        <h4>Day 29</h4>
         <ul>
           <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
         </ul>
@@ -171,20 +292,13 @@
       </div>
       <div class="clearer"></div>
       <div class="day">
-        <h4>Day 2</h4>
-        <ul>
-          <li><a href="javascript:alert('Manage Period P3')">Questionnaire</a></li>
-        </ul>
-      </div>
-      <div class="clearer"></div>
-      <div class="day">
-        <h4>Day 3</h4>
+        <h4>Day 31</h4>
         <ul>
           <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
         </ul>
       </div>
       <div class="day">
-        <h4>Day 7</h4>
+        <h4>Day 35</h4>
         <ul>
           <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
         </ul>
@@ -192,14 +306,14 @@
       <div class="clearer"></div>
       <div class="clearer"></div>
       <div class="day">
-        <h4>Day 8</h4>
+        <h4>Day 36</h4>
         <ul>
           <li><a href="javascript:alert('Manage Period P1')">Infusion</a></li>
         </ul>
       </div>
       <div class="clearer"></div>
       <div class="day">
-        <h4>Day 11</h4>
+        <h4>Day 39</h4>
         <ul>
           <li><a href="javascript:alert('Manage Period P2')">CBC</a></li>
         </ul>
