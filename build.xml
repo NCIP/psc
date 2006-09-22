@@ -300,6 +300,7 @@
             <entry key="datasource.username" value="sa"/>
             <entry key="datasource.password" value=""/>
             <entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>
+            <entry key="bering.dialect"      value="edu.northwestern.bioinformatics.bering.dialect.Hsqldb"/>
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
         </propertyfile>
 
