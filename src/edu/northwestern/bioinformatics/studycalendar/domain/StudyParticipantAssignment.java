@@ -32,7 +32,7 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     public void setStudySite(StudySite studySite) {
         this.studySite = studySite;
     }
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_site_id")
     public StudySite getStudySite() {
@@ -52,9 +52,35 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     public void setStartDateEpoch(Date startDateEpoch) {
         this.startDateEpoch = startDateEpoch;
     }
-    
+
     @Column(name = "first_epoch_stdate")
     public Date getStartDateEpoch() {
         return startDateEpoch;
+    }
+
+    ////// OBJECT METHODS
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final StudyParticipantAssignment that = (StudyParticipantAssignment) o;
+
+        if (startDateEpoch != null ? !startDateEpoch.equals(that.startDateEpoch) : that.startDateEpoch != null)
+            return false;
+        if (studySite != null ? !studySite.equals(that.studySite) : that.studySite != null)
+            return false;
+        // Participant#equals calls this method, so we can't use it here
+        if (!AbstractDomainObject.equalById(participant, that.participant)) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (studySite != null ? studySite.hashCode() : 0);
+        result = 29 * result + (participant != null ? participant.hashCode() : 0);
+        result = 29 * result + (startDateEpoch != null ? startDateEpoch.hashCode() : 0);
+        return result;
     }
 }

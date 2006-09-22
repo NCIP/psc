@@ -29,6 +29,11 @@ public class Fixtures {
         ACTIVITY_TYPES.put(t.getId(), t);
     }
 
+    public static <T extends AbstractDomainObject> T setId(Integer id, T target) {
+        target.setId(id);
+        return target;
+    }
+
     public static ActivityType getActivityType(int id) {
         return ACTIVITY_TYPES.get(id);
     }
@@ -67,6 +72,20 @@ public class Fixtures {
             }
         }
         return epoch;
+    }
+
+    public static StudySite createStudySite(Study study, Site site) {
+        StudySite studySite = new StudySite();
+        if (study != null) study.addStudySite(studySite);
+        studySite.setSite(site);
+        return studySite;
+    }
+
+    public static Participant createParticipant(String firstName, String lastName) {
+        Participant p = new Participant();
+        p.setFirstName(firstName);
+        p.setLastName(lastName);
+        return p;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {

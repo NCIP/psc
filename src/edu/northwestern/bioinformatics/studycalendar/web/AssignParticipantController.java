@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 public class AssignParticipantController extends SimpleFormController {
     private ParticipantDao participantDao;
+    private ParticipantService participantService;
     private StudyDao studyDao;
     private StudySiteDao studySiteDao;
     private String pattern = "MM/dd/yyyy";
@@ -36,7 +38,6 @@ public class AssignParticipantController extends SimpleFormController {
     public AssignParticipantController() {
         setCommandClass(AssignParticipantCommand.class);
         setFormView("assignParticipant");
-        setSuccessView("calendarTemplate");
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -57,17 +58,16 @@ public class AssignParticipantController extends SimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        AssignParticipantCommand assignCommand = (AssignParticipantCommand) oCommand;
-        Participant participant = assignCommand.assignParticipant();
-        participantDao.save(participant);
-
-        return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
+        AssignParticipantCommand command = (AssignParticipantCommand) oCommand;
+        command.assignParticipant();
+        return new ModelAndView("redirectToCalendarTemplate", "id", ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         AssignParticipantCommand command = new AssignParticipantCommand();
         command.setParticipantDao(participantDao);
         command.setStudySiteDao(studySiteDao);
+        command.setParticipantService(participantService);
         return command;
     }
 
@@ -88,4 +88,8 @@ public class AssignParticipantController extends SimpleFormController {
         this.studyDao = studyDao;
     }
 
+    @Required
+    public void setParticipantService(ParticipantService participantService) {
+        this.participantService = participantService;
+    }
 }

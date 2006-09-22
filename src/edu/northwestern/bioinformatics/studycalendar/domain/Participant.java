@@ -39,31 +39,14 @@ public class Participant extends AbstractDomainObject {
     // The participant identifier could be the Medical Record No based on the site 
 
     public void addParicipantIdentifier(ParticipantIdentifier participantIdentifier) {
-    	participantIdentifiers.add(participantIdentifier);
-    	participantIdentifier.setParticipant(this);
+        participantIdentifiers.add(participantIdentifier);
+        participantIdentifier.setParticipant(this);
     }
-    public void addStudyParticipantAssignments(StudyParticipantAssignment studyParticipantAssignment){
+    public void addStudyAssignment(StudyParticipantAssignment studyParticipantAssignment){
         getStudyParticipantAssignments().add(studyParticipantAssignment);
         studyParticipantAssignment.setParticipant(this);
     }
     
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Site)) return false;
-        final Participant participant = (Participant) obj;
-        if (!this.getFirstName().equals(participant.getFirstName())) return false;
-        if (!this.getLastName().equals(participant.getLastName())) return false;
-        if (!this.getDateOfBirth().equals(participant.getDateOfBirth())) return false;
-        if (!this.getGender().equals(participant.getGender())) return false;
-        if (!this.getPersonId().equals(participant.getPersonId())) return false;
-        
-        return true;
-    }
-
-    public int hashCode() {
-        return this.getFirstName().hashCode();
-    }
-
     // bean methods
     @Column(name = "first_name")
     public String getFirstName() {
@@ -108,7 +91,6 @@ public class Participant extends AbstractDomainObject {
         this.personId = personId;
     }
     
-
     @OneToMany (mappedBy = "participant")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<ParticipantIdentifier> getParticipantIdentifiers() {
@@ -126,5 +108,37 @@ public class Participant extends AbstractDomainObject {
     
     public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
         this.studyParticipantAssignments = studyParticipantAssignments;
+    }
+
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        final Participant that = (Participant) o;
+
+        if (dateOfBirth != null ? !dateOfBirth.equals(that.dateOfBirth) : that.dateOfBirth != null)
+            return false;
+        if (firstName != null ? !firstName.equals(that.firstName) : that.firstName != null)
+            return false;
+        if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
+        if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
+        if (participantIdentifiers != null ? !participantIdentifiers.equals(that.participantIdentifiers) : that.participantIdentifiers != null)
+            return false;
+        if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
+        if (studyParticipantAssignments != null ? !studyParticipantAssignments.equals(that.studyParticipantAssignments) : that.studyParticipantAssignments != null)
+            return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (firstName != null ? firstName.hashCode() : 0);
+        result = 29 * result + (lastName != null ? lastName.hashCode() : 0);
+        result = 29 * result + (dateOfBirth != null ? dateOfBirth.hashCode() : 0);
+        result = 29 * result + (gender != null ? gender.hashCode() : 0);
+        result = 29 * result + (personId != null ? personId.hashCode() : 0);
+        return result;
     }
 }

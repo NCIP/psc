@@ -26,7 +26,7 @@ import javax.persistence.Table;
         @Parameter(name="sequence", value="seq_sites_id")
     }
 )
-public class Site extends AbstractDomainObject {
+public class Site extends AbstractDomainObject implements Named {
     public static final String DEFAULT_SITE_NAME = "default";
 
     private String name;

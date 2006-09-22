@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Date;
 
@@ -20,18 +21,19 @@ public class AssignParticipantCommand {
     private Date startDateEpoch;
     private ParticipantDao participantDao;
     private StudySiteDao studySiteDao;
+    private ParticipantService participantService;
 
-    public Participant assignParticipant() {
-        Participant participant = participantDao.getById(getParticipantId());
+    public StudySite getStudySite() {
+        return studySiteDao.getById(getStudySiteId());
+    }
 
-        StudyParticipantAssignment studyParticipantAssignment = new StudyParticipantAssignment();
-        studyParticipantAssignment.setStudySite(studySiteDao.getById(getStudySiteId()));
-        studyParticipantAssignment.setParticipant(participant);
-        studyParticipantAssignment.setStartDateEpoch(this.getStartDateEpoch());
+    public Participant getParticipant() {
+        return participantDao.getById(getParticipantId());
+    }
 
-        participant.addStudyParticipantAssignments(studyParticipantAssignment);
-
-        return participant;
+    public void assignParticipant() {
+        participantService.assignParticipant(
+            getParticipant(), getStudySite(), getStartDateEpoch());
     }
 
     ////// CONFIGURATION
@@ -42,6 +44,10 @@ public class AssignParticipantCommand {
 
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
+    }
+
+    public void setParticipantService(ParticipantService participantService) {
+        this.participantService = participantService;
     }
 
     ////// BOUND PROPERTIES
@@ -58,7 +64,6 @@ public class AssignParticipantCommand {
         return participantId;
     }
 
-
     public void setParticipantId(Integer participantId) {
         this.participantId = participantId;
     }
@@ -67,19 +72,15 @@ public class AssignParticipantCommand {
         return studyId;
     }
 
-
     public void setStudyId(Integer studyId) {
         this.studyId = studyId;
     }
-
 
     public Integer getStudySiteId() {
         return studySiteId;
     }
 
-
     public void setStudySiteId(Integer studySiteId) {
         this.studySiteId = studySiteId;
     }
-
 }
