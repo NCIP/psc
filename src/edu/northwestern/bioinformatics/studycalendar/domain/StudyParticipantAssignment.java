@@ -27,7 +27,7 @@ import org.hibernate.annotations.Parameter;
 public class StudyParticipantAssignment extends AbstractDomainObject {
     private StudySite studySite;
     private Participant participant;
-    private Date dateOfEnrollment;
+    private Date startDateEpoch;
 
     public void setStudySite(StudySite studySite) {
         this.studySite = studySite;
@@ -49,12 +49,12 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
         return participant;
     }
 
-    public void setDateOfEnrollment(Date enrollmentDate) {
-        this.dateOfEnrollment = enrollmentDate;
+    public void setStartDateEpoch(Date startDateEpoch) {
+        this.startDateEpoch = startDateEpoch;
     }
     
-    @Column(name = "date_of_enrollment")
-    public Date getDateOfEnrollment() {
-        return dateOfEnrollment;
+    @Column(name = "first_epoch_stdate")
+    public Date getStartDateEpoch() {
+        return startDateEpoch;
     }
 }
