@@ -42,12 +42,12 @@
     <p><a href="<c:url value="/pages/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
     <div class="row">
         <div class="label">
-            <form:label path="dateOfEnrollment">Date of Enrollment (mm/dd/yyyy)</form:label>
+            <form:label path="startDateEpoch">Start Date of First Epoch (mm/dd/yyyy)</form:label>
         </div>
         <div class="value">
-            <form:input path="dateOfEnrollment"/>
+            <form:input path="startDateEpoch"/>
         </div>
-    </div>
+	</div>
     <div class="row">
         <div class="submit">
             <input type="submit" value="Assign"/>
