@@ -25,22 +25,10 @@ import org.hibernate.annotations.Parameter;
      }
  ) 
 public class StudyParticipantAssignment extends AbstractDomainObject {
-    private Study study;
     private StudySite studySite;
     private Participant participant;
     private Date dateOfEnrollment;
-    public StudyParticipantAssignment() {
-    }
 
-    public void setStudy(Study study) {
-        this.study = study;
-    }
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "study_id")
-    public Study getStudy() {
-        return study;
-    }
-    
     public void setStudySite(StudySite studySite) {
         this.studySite = studySite;
     }

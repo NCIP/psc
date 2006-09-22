@@ -27,7 +27,6 @@ public class Study extends AbstractDomainObject implements Named {
     private String name;
     private PlannedCalendar plannedCalendar;
     private List<StudySite> studySites = new ArrayList<StudySite>();
-    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
 
     ////// BEAN PROPERTIES
 
@@ -66,15 +65,4 @@ public class Study extends AbstractDomainObject implements Named {
         getStudySites().add(studySite);
         studySite.setStudy(this);
     }
-
-    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
-        this.studyParticipantAssignments = studyParticipantAssignments;
-    }
-
-    @OneToMany (mappedBy = "study")
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
-        return studyParticipantAssignments;
-    }
-
 }

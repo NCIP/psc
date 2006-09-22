@@ -37,16 +37,13 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
     }
 
     public void testSaveStudyPartAssignments() throws Exception {
-    	Integer savedId;
-        StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
-        Study study = studyDao.getById(-2001);
+        Integer savedId;
         SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
         Site site = siteDao.getById(-1001);
         Participant participant = getDao().getById(-100);
         
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
-        spa.setStudy(study);
         spa.setStudySite(site.getStudySites().get(0));
         spa.setDateOfEnrollment(new Date());
 
@@ -59,7 +56,6 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
 
         Participant loaded = getDao().getById(savedId);
         assertNotNull("The saved participant id doesnt match" + new Integer(-100), loaded);
-        assertEquals("Wrong study", "New Study", loaded.getStudyParticipantAssignments().get(0).getStudy().getName());
         assertEquals("Wrong study site", "study_identifier1", loaded.getStudyParticipantAssignments().get(0).getStudySite().getStudyIdentifier());
      }
     
