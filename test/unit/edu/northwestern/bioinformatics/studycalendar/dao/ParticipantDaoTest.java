@@ -45,7 +45,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
         spa.setStudySite(site.getStudySites().get(0));
-        spa.setDateOfEnrollment(new Date());
+        spa.setStartDateEpoch(new Date());
 
         participant.addStudyParticipantAssignments(spa);
         
