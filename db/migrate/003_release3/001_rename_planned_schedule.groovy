@@ -5,19 +5,11 @@ class RenamePlannedSchedule extends edu.northwestern.bioinformatics.bering.Migra
             execute("RENAME seq_planned_schedules_id TO seq_planned_calendars_id");
         }
 
-        if (databaseMatches('hsqldb')) {
-            execute("ALTER TABLE epochs ALTER COLUMN planned_schedule_id RENAME TO planned_calendar_id");
-        } else {
-            execute("ALTER TABLE epochs RENAME COLUMN planned_schedule_id TO planned_calendar_id");
-        }
+        renameColumn("epochs", "planned_schedule_id", "planned_calendar_id");
     }
 
     void down() {
-        if (databaseMatches('hsqldb')) {
-            execute("ALTER TABLE epochs ALTER COLUMN planned_calendar_id RENAME TO planned_schedule_id");
-        } else {
-            execute("ALTER TABLE epochs RENAME COLUMN planned_calendar_id TO planned_schedule_id");
-        }
+        renameColumn("epochs", "planned_calendar_id", "planned_schedule_id");
 
         if (databaseMatches('oracle')) {
             execute("RENAME seq_planned_calendars_id TO seq_planned_schedules_id");
