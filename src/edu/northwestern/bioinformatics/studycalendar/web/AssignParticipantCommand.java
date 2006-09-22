@@ -17,7 +17,7 @@ public class AssignParticipantCommand {
     private Integer studyId;
     private Integer studySiteId;
     private Integer participantId;
-    private Date dateOfEnrollment;
+    private Date startDateEpoch;
     private ParticipantDao participantDao;
     private StudySiteDao studySiteDao;
 
@@ -27,7 +27,7 @@ public class AssignParticipantCommand {
         StudyParticipantAssignment studyParticipantAssignment = new StudyParticipantAssignment();
         studyParticipantAssignment.setStudySite(studySiteDao.getById(getStudySiteId()));
         studyParticipantAssignment.setParticipant(participant);
-        studyParticipantAssignment.setDateOfEnrollment(this.getDateOfEnrollment());
+        studyParticipantAssignment.setStartDateEpoch(this.getStartDateEpoch());
 
         participant.addStudyParticipantAssignments(studyParticipantAssignment);
 
@@ -46,12 +46,12 @@ public class AssignParticipantCommand {
 
     ////// BOUND PROPERTIES
 
-    public Date getDateOfEnrollment() {
-        return dateOfEnrollment;
+    public Date getStartDateEpoch() {
+        return startDateEpoch;
     }
 
-    public void setDateOfEnrollment(Date dateOfEnrollment) {
-        this.dateOfEnrollment = dateOfEnrollment;
+    public void setStartDateEpoch(Date startDateEpoch) {
+        this.startDateEpoch = startDateEpoch;
     }
 
     public Integer getParticipantId() {
