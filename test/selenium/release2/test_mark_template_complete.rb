@@ -6,6 +6,7 @@ class CreateStudyAddedTest < Test::Unit::TestCase
 	def test_mark_template_complete_no
 		testdata 'empty', 'some-activities', 'one-study'
 		
+		login
 		open "/pages/calendarTemplate?id=-1"
 		wait_for_page_to_load
 		
@@ -35,6 +36,7 @@ class CreateStudyAddedTest < Test::Unit::TestCase
 	def test_mark_template_complete_yes
 		testdata 'empty', 'some-activities', 'one-study'
 	
+		login
 		open "/pages/calendarTemplate?id=-1"
 		wait_for_page_to_load
 		

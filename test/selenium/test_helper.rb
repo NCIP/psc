@@ -121,6 +121,15 @@ module StudyCalendar
 	def assert_element_is_equal_to(locator, text)
 	  
 	end
+	
+	def login
+		open '/public/login'
+		wait_for_page_to_load
+		type "userId", "studycd_1"
+		type "password", "studycd_1"
+		click_button_with_text "Login" 
+		wait_for_page_to_load 
+	end
     
     private
     def locator_to_label(locator, options = {})
