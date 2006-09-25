@@ -2,8 +2,6 @@ body {
     font-family: sans-serif;
 }
 
-
-
 /****** SPECIAL TYPES */
 
 /*
@@ -26,11 +24,6 @@ div.row:after {
     height: 0 ;
     visibility: hidden ;
 }
-
-div.tableRow {
-	font-size: 11pt;
-}
-
 /* IE only */
 * html div.row { height: 1% }
 div.row div.label { font-weight: bold; float: left; margin-left: 0.5em }
