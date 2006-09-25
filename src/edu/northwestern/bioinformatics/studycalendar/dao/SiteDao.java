@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,7 +21,10 @@ public class SiteDao extends HibernateDaoSupport {
 
     public Site getDefaultSite() {
         List<Site> results = getHibernateTemplate().find("from Site where name=?", Site.DEFAULT_SITE_NAME);
-        return results.size() == 0 ? null : results.get(0);
+        if (results.size() == 0) {
+            throw new StudyCalendarError("No default site in database (should have a site named '" + Site.DEFAULT_SITE_NAME + "')");
+        }
+        return results.get(0);
     }
 
     public void save(Site site) {
