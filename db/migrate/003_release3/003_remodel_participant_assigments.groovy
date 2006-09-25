@@ -7,6 +7,6 @@ class RemodelParticipantAssignments extends edu.northwestern.bioinformatics.beri
     void down() {
         // Note that this is not a pure reversal, as it does not restore the existing (redundant) data
         // and therefore does not restore the NOT NULL & fk constraints.
-        addColumn("participant_assignments", "study_id");
+        addColumn("participant_assignments", "study_id", "integer");
     }
 }
