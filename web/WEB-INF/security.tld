@@ -6,7 +6,7 @@
     <tlibversion>1.0</tlibversion>
     <jspversion>1.2</jspversion>
     <shortname>security</shortname>
-    <uri>http://bioinformatics.northwestern.edu/taglib/studycalendar/security</uri>
+    <uri>http://bioinformatics.northwestern.edu/taglibs/studycalendar/security</uri>
 
     <tag>
         <name>secureOperation</name>

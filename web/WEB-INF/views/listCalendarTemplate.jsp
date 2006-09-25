@@ -2,7 +2,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="../security.tld" prefix="security" %> 
+<%@ taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %> 
 
 <html>
 <head>

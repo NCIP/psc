@@ -1,4 +1,4 @@
-<%@taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglib/studycalendar/security" %>
+<%@taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
