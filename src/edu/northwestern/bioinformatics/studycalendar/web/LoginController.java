@@ -7,18 +7,18 @@ import gov.nih.nci.security.exceptions.CSException;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.mvc.AbstractFormController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.beans.factory.annotation.Required;
-
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * @author Padmaja Vedula
+ * @author Jaron Sampson
  */
-public class LoginController extends SimpleFormController {
+public class LoginController extends AbstractFormController {
     private static final String DEFAULT_TARGET_VIEW = "/pages/studyList";
     private static final Logger log = Logger.getLogger(LoginController.class.getName());
 
@@ -26,13 +26,18 @@ public class LoginController extends SimpleFormController {
 
     public LoginController() {
         setCommandClass(LoginCommand.class);
-        setFormView("login");
         setBindOnNewForm(true);
     }
+    
+    protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
+        Map<String, Object> model = errors.getModel();
+        LoginCommand command = new LoginCommand();
+        model.put("command", command);
+        return new ModelAndView("login", model);
+    }
 
-    protected ModelAndView onSubmit(
-        HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors
-    ) throws Exception {
+    
+    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         LoginCommand loginCredentials = (LoginCommand) oCommand;
         log.debug("Login ID: " + loginCredentials.getUserId());
         log.debug("System Config file is: "
@@ -54,7 +59,7 @@ public class LoginController extends SimpleFormController {
             return new ModelAndView(getTargetView(request));
         } else {
             // have to add an error page or redirect to login page with error msg
-            return new ModelAndView(getFormView(), errors.getModel());
+            return new ModelAndView("login");
         }
     }
 
