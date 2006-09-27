@@ -121,7 +121,7 @@ public class ControlledVocabularyObjectType implements UserType, ParameterizedTy
     }
 
     protected Object getKeyObject(ResultSet rs, String colname) throws SQLException {
-        return rs.getObject(colname);
+        return rs.getInt(colname);
     }
 
     public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
