@@ -15,7 +15,7 @@
             </list>
         </property>
         <property name="namingStrategy">
-            <bean class="org.hibernate.cfg.ImprovedNamingStrategy"/>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StudyCalendarNamingStrategy"/>
         </property>
         <property name="annotatedClasses">
             <list>
