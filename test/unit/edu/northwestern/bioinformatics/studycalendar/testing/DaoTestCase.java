@@ -83,7 +83,7 @@ public abstract class DaoTestCase extends DbTestCase {
         return (DataSource) getApplicationContext().getBean("dataSource");
     }
 
-    public ApplicationContext getApplicationContext() {
+    public static ApplicationContext getApplicationContext() {
         return StudyCalendarTestCase.getDeployedApplicationContext();
     }
 

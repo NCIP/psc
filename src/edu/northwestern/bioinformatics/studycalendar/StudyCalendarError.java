@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar;
 
 /**
  * PSC-specific error for fatal problems.  In general these will be caused by unrecoverable
- * configuration errors.
+ * configuration errors or incorrect assumptions.
  *
  * @author Rhett Sutphin
  */
