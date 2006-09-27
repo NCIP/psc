@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static org.easymock.classextension.EasyMock.expect;
@@ -15,13 +17,16 @@ import java.util.Map;
 
 /**
  * @author Rhett Sutphin
+ * @author Jaron Sampson
  */
 public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private ManagePeriodEventsController controller = new ManagePeriodEventsController();
     private PeriodDao periodDao;
     private ActivityDao activityDao;
+    private ActivityTypeDao activityTypeDao;
     private Period period = Fixtures.createPeriod("7th", 10, 8, 4);
     private List<Activity> activities = new LinkedList<Activity>();
+    private List<ActivityType> activityTypes = new LinkedList<ActivityType>();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -32,14 +37,17 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         periodDao = registerMockFor(PeriodDao.class);
         activityDao = registerMockFor(ActivityDao.class);
+        activityTypeDao = registerMockFor(ActivityTypeDao.class);
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
+        controller.setActivityTypeDao(activityTypeDao);
 
         request.setMethod("GET");
         request.addParameter("id", "15");
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
+        expect(activityTypeDao.getAll()).andReturn(activityTypes).anyTimes();
     }
 
     public void testFormBackingObject() throws Exception {

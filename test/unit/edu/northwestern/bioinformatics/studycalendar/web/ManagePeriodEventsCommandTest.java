@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -13,10 +14,12 @@ import java.util.Map;
 
 /**
  * @author Rhett Sutphin
+ * @author Jaron Sampson
  */
 public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     private ManagePeriodEventsCommand command;
     private ActivityDao activityDao;
+    private ActivityTypeDao activityTypeDao;
     private Period period;
 
     protected void setUp() throws Exception {
@@ -124,7 +127,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     private void initCommand() {
-        command = new ManagePeriodEventsCommand(period, activityDao);
+        command = new ManagePeriodEventsCommand(period, activityDao, activityTypeDao);
     }
 
     private static PlannedEvent createPlannedEvent(int activityId, int day) {
