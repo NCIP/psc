@@ -50,9 +50,16 @@ public class ActivityDaoTest extends DaoTestCase {
 
     public void testGetAll() throws Exception {
         List<Activity> actual = dao.getAll();
-        assertEquals(2, actual.size());
-        assertEquals("Wrong order", -100, (int) actual.get(0).getId());
-        assertEquals("Wrong order", "Treatment Activity", actual.get(1).getName());
+        assertEquals(5, actual.size());
+    }
+
+    public void testGetAllSortOrder() throws Exception {
+        List<Activity> actual = dao.getAll();
+        assertEquals("Wrong order", -96, (int) actual.get(0).getId());
+        assertEquals("Wrong order", -98, (int) actual.get(1).getId());
+        assertEquals("Wrong order", -100, (int) actual.get(2).getId());
+        assertEquals("Wrong order", "Administer Drug A", (String) actual.get(3).getName());
+        assertEquals("Wrong order", "Administer Drug Z", (String) actual.get(4).getName());
     }
 
 }

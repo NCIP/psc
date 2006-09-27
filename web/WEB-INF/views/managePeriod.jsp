@@ -177,6 +177,9 @@
 
 <div id="activities-input">
     <label>Activities:
+    <select id="select-activity-type">
+        <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" \>${activityType.name}</option></c:forEach>
+    </select>
     <select id="add-activity">
         <c:forEach items="${activities}" var="activity"><option value="${activity.id}" <c:if test="${param.newActivityId == activity.id}">selected="selected"</c:if>>${activity.name}</option></c:forEach>
     </select>

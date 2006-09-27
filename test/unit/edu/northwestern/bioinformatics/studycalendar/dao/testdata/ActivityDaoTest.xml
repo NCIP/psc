@@ -9,9 +9,30 @@
     <ACTIVITIES
         id="-99"
         version="0"
-        name="Treatment Activity"
+        name="Administer Drug Z"
         description="Decription of treatment activity."
         activity_type_id="-5"/>
+        
+    <ACTIVITIES
+        id="-98"
+        version="0"
+        name="CT Screen"
+        description="Decription of screening activity."
+        activity_type_id="-6"/>
+        
+    <ACTIVITIES
+        id="-97"
+        version="0"
+        name="Administer Drug A"
+        description="Decription of treatment activity."
+        activity_type_id="-5"/>        
+
+    <ACTIVITIES
+        id="-96"
+        version="0"
+        name="Administer Drug Z"
+        description="Decription of treatment activity."
+        activity_type_id="-7"/>        
 
     <ACTIVITY_TYPES
     	id="-5"

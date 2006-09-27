@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 
 import java.util.List;
 import java.util.Map;
@@ -27,10 +28,12 @@ public class ManagePeriodEventsCommand {
      */
     private Map<Integer, List<Integer>> grid;
     private ActivityDao activityDao;
+    private ActivityTypeDao activityTypeDao;
 
-    public ManagePeriodEventsCommand(Period period, ActivityDao dao) {
+    public ManagePeriodEventsCommand(Period period, ActivityDao activityDao, ActivityTypeDao dao) {
         this.period = period;
-        this.activityDao = dao;
+        this.activityDao = activityDao;
+        this.activityTypeDao = activityTypeDao;
         grid = createGrid(period);
     }
 
