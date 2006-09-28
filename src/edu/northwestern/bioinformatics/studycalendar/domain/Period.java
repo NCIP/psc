@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+
 import org.apache.commons.lang.math.IntRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -32,7 +34,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends AbstractDomainObject implements Named {
+public class Period extends AbstractDomainObject implements Named, Comparable<Period> {
     public static final int DEFAULT_REPETITIONS = 1;
 
     private String name;
@@ -63,6 +65,24 @@ public class Period extends AbstractDomainObject implements Named {
         if (startDay == null) return null;
         if (getDuration().getQuantity() == null) return null;
         return startDay + (getDuration().getDays() * repetitions) - 1;
+    }
+
+    @Transient
+    public Duration getTotalDuration() {
+        return new Duration(getDuration().getQuantity() * getRepetitions(), getDuration().getUnit());
+    }
+
+    public int compareTo(Period other) {
+        int startCompare = ComparisonUtils.nullSafeCompare(getStartDay(), other.getStartDay());
+        if (startCompare != 0) return startCompare;
+
+        int lengthCompare = ComparisonUtils.nullSafeCompare(getTotalDuration(), other.getTotalDuration());
+        if (lengthCompare != 0) return lengthCompare;
+
+        int repCompare = ComparisonUtils.nullSafeCompare(getRepetitions(), other.getRepetitions());
+        if (repCompare != 0) return -1 * repCompare;
+
+        return ComparisonUtils.nullSafeCompare(getName(), other.getName());
     }
 
     ////// BEAN PROPERTIES

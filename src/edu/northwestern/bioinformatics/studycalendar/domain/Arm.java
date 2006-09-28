@@ -1,21 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import org.apache.commons.lang.math.IntRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.math.IntRange;
+import org.hibernate.annotations.Sort;
+import org.hibernate.annotations.SortType;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.persistence.FetchType;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.LinkedHashSet;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * @author Rhett Sutphin
@@ -30,7 +31,7 @@ import java.util.LinkedHashSet;
 public class Arm extends AbstractDomainObject implements Named {
     private Epoch epoch;
     private String name;
-    private Set<Period> periods = new LinkedHashSet<Period>();
+    private SortedSet<Period> periods = new TreeSet<Period>();
 
     // business methods
 
@@ -75,11 +76,12 @@ public class Arm extends AbstractDomainObject implements Named {
 
     @OneToMany (mappedBy = "arm")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<Period> getPeriods() {
+    @Sort (type = SortType.NATURAL)
+    public SortedSet<Period> getPeriods() {
         return periods;
     }
 
-    public void setPeriods(Set<Period> periods) {
+    public void setPeriods(SortedSet<Period> periods) {
         this.periods = periods;
     }
 }

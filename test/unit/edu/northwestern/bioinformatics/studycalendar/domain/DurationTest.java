@@ -2,12 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.week;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Duration.Unit.day;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import junit.framework.TestCase;
 
 /**
  * @author Moses Hohman
+ * @author Rhett Sutphin
  */
-public class DurationTest extends TestCase {
+public class DurationTest extends StudyCalendarTestCase {
     public void testToString() {
         assertEquals("null (null unit)s", new Duration().toString());
         assertEquals("5 days", new Duration(5, day).toString());
@@ -26,6 +28,18 @@ public class DurationTest extends TestCase {
             fail("Should have thrown IllegalArgumentException");
         } catch (IllegalArgumentException expected) {
         }
+    }
+
+    public void testNaturalOrderIsByLengthInDays() throws Exception {
+        Duration d1 = new Duration(4, Duration.Unit.week);
+        Duration d2 = new Duration(28, Duration.Unit.day);
+        Duration d3 = new Duration(17, Duration.Unit.day);
+
+        assertEquals(0, d1.compareTo(d2));
+        assertEquals(0, d2.compareTo(d1));
+        assertNegative(d3.compareTo(d1));
+        assertNegative(d3.compareTo(d2));
+        assertPositive(d2.compareTo(d3));
     }
 
     public void testEqualsTrueWhenEqual() {

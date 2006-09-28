@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+
 import org.hibernate.annotations.Type;
 
 import javax.persistence.Embeddable;
@@ -7,10 +9,10 @@ import javax.persistence.Transient;
 
 /**
  * @author Moses Hohman
+ * @author Rhett Sutphin
  */
-
 @Embeddable
-public class Duration {
+public class Duration implements Comparable<Duration> {
     public static enum Unit {
         day(1), week(7);
         private int inDays;
@@ -41,6 +43,10 @@ public class Duration {
     public Integer getDays() {
         if (unit == null || quantity == null) return null;
         return quantity * unit.inDays();
+    }
+
+    public int compareTo(Duration o) {
+        return ComparisonUtils.nullSafeCompare(this.getDays(), o.getDays()); 
     }
 
     // Bean methods
