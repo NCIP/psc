@@ -53,6 +53,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
             ScheduledCalendar calendar = new ScheduledCalendar();
             calendar.setAssignment(participant.getAssignments().get(0));
+            assertEquals(-2, (int) calendar.getAssignment().getId());
             Arm arm4 = armDao.getById(-4);
             Arm arm3 = armDao.getById(-3);
             calendar.addArm(arm4);
@@ -66,6 +67,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             event.setState(expectedState);
             calendar.addEvent(event);
 
+            assertNull(calendar.getId());
             getDao().save(calendar);
             assertNotNull("Saved calendar not assigned an ID", calendar.getId());
             savedId = calendar.getId();
@@ -74,7 +76,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         interruptSession();
 
         ScheduledCalendar reloaded = getDao().getById(savedId);
-        assertEquals("Wrong assignment", -1, (int) reloaded.getAssignment().getId());
+        assertEquals("Wrong assignment", -2, (int) reloaded.getAssignment().getId());
         assertEquals("Wrong number of arms", 3, reloaded.getArms().size());
         assertEquals("Wrong arm 0", -4, (int) reloaded.getArms().get(0).getId());
         assertEquals("Wrong arm 1", -3, (int) reloaded.getArms().get(1).getId());
