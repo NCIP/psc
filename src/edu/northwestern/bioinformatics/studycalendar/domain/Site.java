@@ -15,6 +15,7 @@ import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.OrderBy;
 
 /**
  * @author Padmaja Vedula
@@ -41,7 +42,7 @@ public class Site extends AbstractDomainObject implements Named {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Site)) return false;
@@ -57,8 +58,9 @@ public class Site extends AbstractDomainObject implements Named {
     public void setStudySites(List<StudySite> studySites) {
         this.studySites = studySites;
     }
-    
+
     @OneToMany (mappedBy = "site",fetch = FetchType.EAGER)
+    @OrderBy // order by ID for testing consistency
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySite> getStudySites() {
         return studySites;

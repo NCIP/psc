@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.OrderBy;
 
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.List;
 
 /**
  * @author Padmaja Vedula
+ * @author Rhett Sutphin
  */
 @Entity
 @Table
@@ -102,6 +104,7 @@ public class Participant extends AbstractDomainObject {
     }
 
     @OneToMany (mappedBy = "participant")
+    @OrderBy // order by ID for testing consistency
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudyParticipantAssignment> getAssignments() {
         return assignments;
