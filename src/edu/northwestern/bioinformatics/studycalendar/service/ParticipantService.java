@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 
@@ -20,7 +18,7 @@ public class ParticipantService {
         spa.setParticipant(participant);
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
-        participant.addStudyAssignment(spa);
+        participant.addAssignment(spa);
         participantDao.save(participant);
     }
 

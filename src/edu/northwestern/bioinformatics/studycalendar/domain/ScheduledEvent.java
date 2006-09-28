@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -15,13 +17,14 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "scheduled_events")
+@Table
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_scheduled_events_id")
     }
 )
 public class ScheduledEvent extends AbstractDomainObject {
+    private ScheduledCalendar scheduledCalendar;
     private PlannedEvent plannedEvent;
     private Date idealDate;
     private Date actualDate;
@@ -31,7 +34,15 @@ public class ScheduledEvent extends AbstractDomainObject {
     ////// BEAN PROPERTIES
 
     @ManyToOne
-    @JoinColumn (name = "planned_event_id")
+    public ScheduledCalendar getScheduledCalendar() {
+        return scheduledCalendar;
+    }
+
+    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
+        this.scheduledCalendar = scheduledCalendar;
+    }
+
+    @ManyToOne
     public PlannedEvent getPlannedEvent() {
         return plannedEvent;
     }
@@ -56,8 +67,8 @@ public class ScheduledEvent extends AbstractDomainObject {
         this.actualDate = actualDate;
     }
 
-    @Type(type="scheduledEventState")
-    @Column(name="scheduled_event_state_id")
+    @Type(type = "scheduledEventState")
+    @Column(name = "scheduled_event_state_id")
     public ScheduledEventState getState() {
         return state;
     }

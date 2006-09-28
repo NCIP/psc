@@ -43,7 +43,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setParticipant(participantExpectedSave);
         expectedAssignment.setStudySite(studySite);
 
-        participantExpectedSave.addStudyAssignment(expectedAssignment);
+        participantExpectedSave.addAssignment(expectedAssignment);
 
         participantDao.save(participantExpectedSave);
         replayMocks();
@@ -51,6 +51,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         service.assignParticipant(participantIn, studySite, startDate);
         verifyMocks();
 
-        assertEquals("Assignment not added to participant", 1, participantIn.getStudyParticipantAssignments().size());
+        assertEquals("Assignment not added to participant", 1, participantIn.getAssignments().size());
     }
 }

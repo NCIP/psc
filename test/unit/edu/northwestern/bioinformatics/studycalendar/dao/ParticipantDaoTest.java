@@ -36,7 +36,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         spa.setStudySite(site.getStudySites().get(0));
         spa.setStartDateEpoch(new Date());
 
-        participant.addStudyAssignment(spa);
+        participant.addAssignment(spa);
 
         getDao().save(participant);
         savedId = participant.getId();
@@ -45,7 +45,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
 
         Participant loaded = getDao().getById(savedId);
         assertNotNull("The saved participant id doesnt match" + new Integer(-100), loaded);
-        assertEquals("Wrong study site", "study_identifier1", loaded.getStudyParticipantAssignments().get(0).getStudySite().getStudyIdentifier());
+        assertEquals("Wrong study site", "study_identifier1", loaded.getAssignments().get(0).getStudySite().getStudyIdentifier());
      }
 
 

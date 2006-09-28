@@ -5,8 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.web.NewParticipantCommand;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Arrays;
 
 /**
  * @author Padmaja Vedula
@@ -24,6 +22,6 @@ public class NewParticipantCommandTest extends TestCase {
 
         Participant participant = command.createParticipant();
         assertEquals(expectedLastName, participant.getLastName());
-        assertEquals("should not have any assigments", 0, participant.getStudyParticipantAssignments().size());
+        assertEquals("should not have any assigments", 0, participant.getAssignments().size());
     }
 }

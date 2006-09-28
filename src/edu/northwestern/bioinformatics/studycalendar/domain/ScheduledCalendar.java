@@ -5,22 +5,24 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.annotations.CollectionId;
 import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.CascadeType;
 import javax.persistence.ManyToMany;
 import javax.persistence.JoinTable;
 import java.util.List;
+import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "scheduled_calendars")
+@Table
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_scheduled_calendars_id")
@@ -28,8 +30,21 @@ import java.util.List;
 )
 public class ScheduledCalendar extends AbstractDomainObject {
     private StudyParticipantAssignment assignment;
-    private List<Arm> arms;
-    private List<ScheduledEvent> events;
+    private List<Arm> arms = new LinkedList<Arm>();
+    private List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+
+    ////// BUSINESS METHODS
+
+    public void addEvent(ScheduledEvent event) {
+        getEvents().add(event);
+        event.setScheduledCalendar(this);
+    }
+
+    public void addArm(Arm arm) {
+        arms.add(arm);
+    }
+
+    ////// BEAN PROPERTIES
 
     @ManyToOne
     @JoinColumn(name = "assignment_id")
@@ -56,9 +71,9 @@ public class ScheduledCalendar extends AbstractDomainObject {
         this.arms = arms;
     }
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "scheduled_calendar_id")
+    @OneToMany(mappedBy = "scheduledCalendar")
     @OrderBy(clause="ideal_date")
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<ScheduledEvent> getEvents() {
         return events;
     }

@@ -19,7 +19,7 @@ import java.util.List;
  * @author Padmaja Vedula
  */
 @Entity
-@Table (name = "participants")
+@Table
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_participants_id")
@@ -32,7 +32,7 @@ public class Participant extends AbstractDomainObject {
     private String gender;
     private String personId;
     private List<ParticipantIdentifier> participantIdentifiers = new ArrayList<ParticipantIdentifier>();
-    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+    private List<StudyParticipantAssignment> assignments = new ArrayList<StudyParticipantAssignment>();
 
     // business methods
     
@@ -42,8 +42,8 @@ public class Participant extends AbstractDomainObject {
         participantIdentifiers.add(participantIdentifier);
         participantIdentifier.setParticipant(this);
     }
-    public void addStudyAssignment(StudyParticipantAssignment studyParticipantAssignment){
-        getStudyParticipantAssignments().add(studyParticipantAssignment);
+    public void addAssignment(StudyParticipantAssignment studyParticipantAssignment){
+        getAssignments().add(studyParticipantAssignment);
         studyParticipantAssignment.setParticipant(this);
     }
     
@@ -100,14 +100,15 @@ public class Participant extends AbstractDomainObject {
     public void setParticipantIdentifiers(List<ParticipantIdentifier> participantIdentifiers) {
         this.participantIdentifiers = participantIdentifiers;
     }
+
     @OneToMany (mappedBy = "participant")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
-        return studyParticipantAssignments;
+    public List<StudyParticipantAssignment> getAssignments() {
+        return assignments;
     }
     
-    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
-        this.studyParticipantAssignments = studyParticipantAssignments;
+    public void setAssignments(List<StudyParticipantAssignment> assignments) {
+        this.assignments = assignments;
     }
 
 
@@ -126,7 +127,7 @@ public class Participant extends AbstractDomainObject {
         if (participantIdentifiers != null ? !participantIdentifiers.equals(that.participantIdentifiers) : that.participantIdentifiers != null)
             return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
-        if (studyParticipantAssignments != null ? !studyParticipantAssignments.equals(that.studyParticipantAssignments) : that.studyParticipantAssignments != null)
+        if (assignments != null ? !assignments.equals(that.assignments) : that.assignments != null)
             return false;
 
         return true;

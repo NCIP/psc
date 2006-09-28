@@ -10,4 +10,8 @@ public class ScheduledCalendarDao extends HibernateDaoSupport {
     public ScheduledCalendar getById(int id) {
         return (ScheduledCalendar) getHibernateTemplate().get(ScheduledCalendar.class, id);
     }
+
+    public void save(ScheduledCalendar calendar) {
+        getHibernateTemplate().saveOrUpdate(calendar);
+    }
 }
