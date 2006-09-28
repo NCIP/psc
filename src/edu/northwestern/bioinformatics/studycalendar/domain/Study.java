@@ -28,6 +28,13 @@ public class Study extends AbstractDomainObject implements Named {
     private PlannedCalendar plannedCalendar;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
+    ////// BUSINESS METHODS
+
+    public void addStudySite(StudySite studySite){
+        getStudySites().add(studySite);
+        studySite.setStudy(this);
+    }
+    
     ////// BEAN PROPERTIES
 
     public String getName() {
@@ -59,10 +66,5 @@ public class Study extends AbstractDomainObject implements Named {
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySite> getStudySites() {
         return studySites;
-    }
-    
-    public void addStudySite(StudySite studySite){
-        getStudySites().add(studySite);
-        studySite.setStudy(this);
     }
 }

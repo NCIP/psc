@@ -1,16 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertSameDay;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertSameDay;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
+import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -18,16 +16,14 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledCalendarDaoTest extends DaoTestCase {
-    private ScheduledCalendarDao dao
-        = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
+public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalendarDao> {
     private ParticipantDao participantDao
         = (ParticipantDao) getApplicationContext().getBean("participantDao");
     private ArmDao armDao
         = (ArmDao) getApplicationContext().getBean("armDao");
 
     public void testGetById() throws Exception {
-        ScheduledCalendar cal = dao.getById(-20);
+        ScheduledCalendar cal = getDao().getById(-20);
 
         assertEquals("Wrong assignment", -1, (int) cal.getAssignment().getId());
 
@@ -70,14 +66,14 @@ public class ScheduledCalendarDaoTest extends DaoTestCase {
             event.setState(expectedState);
             calendar.addEvent(event);
 
-            dao.save(calendar);
+            getDao().save(calendar);
             assertNotNull("Saved calendar not assigned an ID", calendar.getId());
             savedId = calendar.getId();
         }
 
         interruptSession();
 
-        ScheduledCalendar reloaded = dao.getById(savedId);
+        ScheduledCalendar reloaded = getDao().getById(savedId);
         assertEquals("Wrong assignment", -1, (int) reloaded.getAssignment().getId());
         assertEquals("Wrong number of arms", 3, reloaded.getArms().size());
         assertEquals("Wrong arm 0", -4, (int) reloaded.getArms().get(0).getId());

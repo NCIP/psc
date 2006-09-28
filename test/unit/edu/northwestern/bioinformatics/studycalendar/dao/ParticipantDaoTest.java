@@ -3,6 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
 
 import java.util.Date;
 import java.util.List;
@@ -11,10 +15,11 @@ import java.util.List;
  * @author Padmaja Vedula
  */
 public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
+    private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
 
     public void testGetAll() throws Exception {
         List<Participant> actual = getDao().getAll();
-        assertEquals("Wrong size", new Integer(1), new Integer(actual.size()));
+        assertEquals("Wrong size", 1, actual.size());
         Participant participant = actual.get(0);
         assertEquals("Wrong last name", "Scott", participant.getLastName());
     }
@@ -25,28 +30,34 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         assertEquals("Wrong last name", "Scott", participant.getLastName());
     }
 
-    public void testSaveStudyPartAssignments() throws Exception {
-        Integer savedId;
-        SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
-        Site site = siteDao.getById(-1001);
-        Participant participant = getDao().getById(-100);
+    public void testSaveAssignment() throws Exception {
+        {
+            Site site = siteDao.getById(-1001);
+            StudySite studySite = site.getStudySites().get(0);
+            assertEquals("Wrong study site found in test setup", -3001, (int) studySite.getId());
+            Participant participant = getDao().getById(-100);
+            assertEquals("Participant should already have one assignment", 1, participant.getAssignments().size());
 
-        StudyParticipantAssignment spa = new StudyParticipantAssignment();
-        spa.setParticipant(participant);
-        spa.setStudySite(site.getStudySites().get(0));
-        spa.setStartDateEpoch(new Date());
+            StudyParticipantAssignment spa = new StudyParticipantAssignment();
+            spa.setParticipant(participant);
+            spa.setStudySite(studySite);
+            spa.setStartDateEpoch(new Date());
 
-        participant.addAssignment(spa);
+            participant.addAssignment(spa);
 
-        getDao().save(participant);
-        savedId = participant.getId();
+            getDao().save(participant);
+        }
 
         interruptSession();
 
-        Participant loaded = getDao().getById(savedId);
-        assertNotNull("The saved participant id doesnt match" + new Integer(-100), loaded);
-        assertEquals("Wrong study site", "study_identifier1", loaded.getAssignments().get(0).getStudySite().getStudyIdentifier());
-     }
+        Participant loaded = getDao().getById(-100);
+        assertNotNull("Participant reloading failed", loaded);
+        assertEquals("Assignment not saved", 2, loaded.getAssignments().size());
+        StudyParticipantAssignment newAssignment = loaded.getAssignments().get(1);
+        assertEquals("Wrong participant", -100, (int) newAssignment.getParticipant().getId());
+        assertEquals("Wrong study site", -3001, (int) newAssignment.getStudySite().getId());
+        assertSameDay("Wrong start date", new Date(), newAssignment.getStartDateEpoch());
+    }
 
 
     public void testSaveNewParticipant() throws Exception {
@@ -74,6 +85,15 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
             assertEquals("Wrong gender", "Male", loaded.getGender());
 
         }
+    }
+
+    public void testLoadScheduledCalendar() throws Exception {
+        Participant loaded = getDao().getById(-100);
+        StudyParticipantAssignment assignment = loaded.getAssignments().get(0);
+        ScheduledCalendar actualCalendar = assignment.getScheduledCalendar();
+        assertNotNull("Scheduled calendar not found", actualCalendar);
+        assertEquals("Wrong scheduled calendar found", -11, (int) actualCalendar.getId());
+        assertSame("Relationship not bidirectional", assignment, actualCalendar.getAssignment());
     }
 
 }

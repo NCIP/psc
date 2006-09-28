@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -28,6 +29,10 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     private StudySite studySite;
     private Participant participant;
     private Date startDateEpoch;
+
+    private ScheduledCalendar scheduledCalendar;
+
+    ////// BEAN PROPERTIES
 
     public void setStudySite(StudySite studySite) {
         this.studySite = studySite;
@@ -56,6 +61,18 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     @Column(name = "first_epoch_stdate")
     public Date getStartDateEpoch() {
         return startDateEpoch;
+    }
+
+    @OneToOne (mappedBy = "assignment")
+    public ScheduledCalendar getScheduledCalendar() {
+        return scheduledCalendar;
+    }
+
+    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
+        this.scheduledCalendar = scheduledCalendar;
+        if (scheduledCalendar != null) {
+            scheduledCalendar.setAssignment(this);
+        }
     }
 
     ////// OBJECT METHODS
