@@ -17,6 +17,7 @@
     <div id="body">
     <decorator:body/>
     </div>
+    <tags:logout/>
     <tags:debugInfo/>
   </body>
 </html>

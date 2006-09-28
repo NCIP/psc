@@ -2,7 +2,10 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-
+    <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+    </bean>
+    
    <bean id="loginViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass">
             <value>org.springframework.web.servlet.view.InternalResourceView</value>
@@ -27,4 +30,8 @@
 
     <bean name="/error" id="errorController"
           class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
+          
+    <bean name="/logout" id="logoutController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.LogoutController"/>
+          
 </beans>

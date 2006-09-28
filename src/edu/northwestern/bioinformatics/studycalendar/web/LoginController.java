@@ -7,6 +7,7 @@ import gov.nih.nci.security.exceptions.CSException;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.mvc.AbstractFormController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.beans.factory.annotation.Required;
@@ -30,6 +31,11 @@ public class LoginController extends AbstractFormController {
     }
     
     protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
+        String userName = ApplicationSecurityManager.getUser(request);
+        if (userName != null) {
+            log.debug("UserName: " + userName + "already logged in. Redirecting.");        	
+            throw new ModelAndViewDefiningException(new ModelAndView("redirectToStudyList"));
+        }
         Map<String, Object> model = errors.getModel();
         LoginCommand command = new LoginCommand();
         model.put("command", command);

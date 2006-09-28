@@ -7,6 +7,11 @@
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/public/login</value></property>
     </bean>
+    
+	<bean id="redirectToStudyList" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/studyList</value></property>
+    </bean>
 
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
