@@ -14,9 +14,9 @@ public class ParticipantDao extends HibernateDaoSupport {
     public void save(Participant participant) {
         getHibernateTemplate().saveOrUpdate(participant);
     }
+
     public List<Participant> getAll() {
         return getHibernateTemplate().find("from Participant");
     }
-
 }
 

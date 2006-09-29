@@ -13,6 +13,7 @@ import java.util.List;
 
 /**
  * @author Padmaja Vedula
+ * @author Rhett Sutphin
  */
 public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
@@ -58,7 +59,6 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         assertEquals("Wrong study site", -3001, (int) newAssignment.getStudySite().getId());
         assertSameDay("Wrong start date", new Date(), newAssignment.getStartDateEpoch());
     }
-
 
     public void testSaveNewParticipant() throws Exception {
         Integer savedId;
