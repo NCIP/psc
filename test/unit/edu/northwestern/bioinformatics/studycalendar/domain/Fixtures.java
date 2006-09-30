@@ -88,6 +88,12 @@ public class Fixtures {
         return p;
     }
 
+    public static ScheduledArm createScheduledArm(Arm arm) {
+        ScheduledArm scheduledArm = new ScheduledArm();
+        scheduledArm.setArm(arm);
+        return scheduledArm;
+    }
+
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();

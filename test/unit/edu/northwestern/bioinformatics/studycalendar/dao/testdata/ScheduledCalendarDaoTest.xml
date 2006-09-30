@@ -3,6 +3,7 @@
 
     <STUDIES id="-1" name="Foo"/>
     <STUDY_SITES id="-1" site_id="-1" study_id="-1" study_identifier="meaningless"/>
+    <SITES id="-1" name="DC"/>
 
     <PARTICIPANTS id="-1" first_name="Alice" last_name="Childress" birth_date="1960-01-01" gender="F" person_id="UNIVERSAL"/>
     <PARTICIPANT_ASSIGNMENTS id="-1" participant_id="-1" study_site_id="-1"
@@ -26,11 +27,13 @@
         />
 
     <SCHEDULED_ARMS
+        id="-21"
         arm_id="-3"
         scheduled_calendar_id="-20"
         list_index="1"
         />
     <SCHEDULED_ARMS
+        id="-22"
         arm_id="-4"
         scheduled_calendar_id="-20"
         list_index="0"
@@ -40,7 +43,7 @@
 
     <SCHEDULED_EVENTS
         id="-10"
-        scheduled_calendar_id="-20"
+        scheduled_arm_id="-22"
         planned_event_id="-6"
         scheduled_event_state_id="2"
         ideal_date="2006-10-31"

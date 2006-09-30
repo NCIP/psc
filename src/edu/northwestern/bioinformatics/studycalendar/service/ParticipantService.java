@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -37,7 +38,9 @@ public class ParticipantService {
             calendar = new ScheduledCalendar();
             assignment.setScheduledCalendar(calendar);
         }
-        calendar.addArm(arm);
+        ScheduledArm scheduledArm = new ScheduledArm();
+        scheduledArm.setArm(arm);
+        calendar.addArm(scheduledArm);
 
         for (Period period : arm.getPeriods()) {
             for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
@@ -48,13 +51,13 @@ public class ParticipantService {
                     event.setIdealDate(idealDate(armDay, startDate));
                     event.setActualDate(event.getIdealDate());
                     event.setPlannedEvent(plannedEvent);
-                    calendar.addEvent(event);
+                    scheduledArm.addEvent(event);
                 }
             }
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
-        Collections.sort(calendar.getEvents(), new Comparator<ScheduledEvent>() {
+        Collections.sort(scheduledArm.getEvents(), new Comparator<ScheduledEvent>() {
             public int compare(ScheduledEvent e1, ScheduledEvent e2) {
                 int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
                 if (dateCompare != 0) return dateCompare;

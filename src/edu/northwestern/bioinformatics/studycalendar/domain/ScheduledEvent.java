@@ -3,13 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
 import javax.persistence.Column;
 import java.util.Date;
 
@@ -24,7 +21,7 @@ import java.util.Date;
     }
 )
 public class ScheduledEvent extends AbstractDomainObject {
-    private ScheduledCalendar scheduledCalendar;
+    private ScheduledArm scheduledArm;
     private PlannedEvent plannedEvent;
     private Date idealDate;
     private Date actualDate;
@@ -34,12 +31,12 @@ public class ScheduledEvent extends AbstractDomainObject {
     ////// BEAN PROPERTIES
 
     @ManyToOne
-    public ScheduledCalendar getScheduledCalendar() {
-        return scheduledCalendar;
+    public ScheduledArm getScheduledArm() {
+        return scheduledArm;
     }
 
-    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
-        this.scheduledCalendar = scheduledCalendar;
+    public void setScheduledArm(ScheduledArm scheduledArm) {
+        this.scheduledArm = scheduledArm;
     }
 
     @ManyToOne

@@ -85,9 +85,9 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
         assertNotNull("Scheduled calendar not created", scheduledCalendar);
-        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getArms().size());
-        assertSame("Arm not added to scheduled arms", arm, scheduledCalendar.getArms().get(0));
-        List<ScheduledEvent> events = scheduledCalendar.getEvents();
+        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
+        assertSame("Arm not added to scheduled arms", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
+        List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
 
         assertNewlyScheduledEvent(2006, Calendar.APRIL,  1, 1, events.get(0));

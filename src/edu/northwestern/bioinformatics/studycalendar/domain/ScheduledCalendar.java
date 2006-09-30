@@ -1,22 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.IndexColumn;
-import org.hibernate.annotations.CollectionId;
-import org.hibernate.annotations.OrderBy;
+import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinTable;
-import java.util.List;
+import javax.persistence.Table;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -30,18 +26,11 @@ import java.util.LinkedList;
 )
 public class ScheduledCalendar extends AbstractDomainObject {
     private StudyParticipantAssignment assignment;
-    private List<Arm> arms = new LinkedList<Arm>();
-    private List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+    private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
 
-    ////// BUSINESS METHODS
-
-    public void addEvent(ScheduledEvent event) {
-        getEvents().add(event);
-        event.setScheduledCalendar(this);
-    }
-
-    public void addArm(Arm arm) {
-        arms.add(arm);
+    public void addArm(ScheduledArm arm) {
+        scheduledArms.add(arm);
+        arm.setScheduledCalendar(this);
     }
 
     ////// BEAN PROPERTIES
@@ -56,29 +45,17 @@ public class ScheduledCalendar extends AbstractDomainObject {
         this.assignment = assignment;
     }
 
-    @ManyToMany
-    @JoinTable(
-        name = "scheduled_arms",
-        joinColumns = {@JoinColumn(name = "scheduled_calendar_id")},
-        inverseJoinColumns = {@JoinColumn(name="arm_id")}
-    )
+    // This is annotated this way so that the IndexColumn will work with
+    // the bidirectional mapping.  See section 2.4.6.2.3 of the hibernate annotations docs.
+    @OneToMany
+    @JoinColumn(name="scheduled_calendar_id", nullable=false)
     @IndexColumn(name="list_index")
-    public List<Arm> getArms() {
-        return arms;
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
+    public List<ScheduledArm> getScheduledArms() {
+        return scheduledArms;
     }
 
-    public void setArms(List<Arm> arms) {
-        this.arms = arms;
-    }
-
-    @OneToMany(mappedBy = "scheduledCalendar")
-    @OrderBy(clause="ideal_date")
-    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<ScheduledEvent> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<ScheduledEvent> events) {
-        this.events = events;
+    public void setScheduledArms(List<ScheduledArm> arms) {
+        this.scheduledArms = arms;
     }
 }
