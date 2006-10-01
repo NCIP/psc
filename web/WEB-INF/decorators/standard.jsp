@@ -17,7 +17,9 @@
     <div id="body">
     <decorator:body/>
     </div>
-    <tags:logout/>
+    <div id="footmenu">
+        <tags:logout/>
+    </div>
     <tags:debugInfo/>
   </body>
 </html>
