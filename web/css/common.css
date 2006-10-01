@@ -28,3 +28,10 @@ div.row:after {
 * html div.row { height: 1% }
 div.row div.label { font-weight: bold; float: left; margin-left: 0.5em }
 div.row div.value { font-weight: normal; }
+
+#footmenu {
+    margin-top: 2em;
+    padding: 0.5em;
+    border-top: 1px solid #666;
+    text-align: right;
+}
