@@ -11,7 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import static org.easymock.EasyMock.expect;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -58,12 +60,16 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
     public void testParticipantAssignedOnSubmit() throws Exception {
         AssignParticipantCommand mockCommand = registerMockFor(AssignParticipantCommand.class);
         AssignParticipantController mockableController = new MockableCommandController(mockCommand);
+        StudyParticipantAssignment assignment = setId(14, new StudyParticipantAssignment());
 
-        mockCommand.assignParticipant();
+        expect(mockCommand.assignParticipant()).andReturn(assignment);
         replayMocks();
 
-        mockableController.handleRequest(request, response);
+        ModelAndView mv = mockableController.handleRequest(request, response);
         verifyMocks();
+
+        assertEquals("Wrong view", "redirectToSchedule", mv.getViewName());
+        assertEquals("Missing assignment ID", assignment.getId(), mv.getModel().get("assignment"));
     }
 
     public void testBindStartDate() throws Exception {

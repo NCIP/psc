@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Date;
@@ -32,8 +33,8 @@ public class AssignParticipantCommand {
         return participantDao.getById(getParticipantId());
     }
 
-    public void assignParticipant() {
-        participantService.assignParticipant(
+    public StudyParticipantAssignment assignParticipant() {
+        return participantService.assignParticipant(
             getParticipant(), getStudySite(), getArm(), getStartDate());
     }
 

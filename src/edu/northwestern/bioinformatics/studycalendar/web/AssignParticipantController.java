@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -68,8 +69,8 @@ public class AssignParticipantController extends SimpleFormController {
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignParticipantCommand command = (AssignParticipantCommand) oCommand;
-        command.assignParticipant();
-        return new ModelAndView("redirectToCalendarTemplate", "id", ServletRequestUtils.getIntParameter(request, "id"));
+        StudyParticipantAssignment assignment = command.assignParticipant();
+        return new ModelAndView("redirectToSchedule", "assignment", assignment.getId().intValue());
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

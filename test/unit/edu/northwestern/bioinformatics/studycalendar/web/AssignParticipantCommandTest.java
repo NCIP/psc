@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -46,13 +47,14 @@ public class AssignParticipantCommandTest extends StudyCalendarTestCase {
 
         Participant participant = setId(participantId, createParticipant("Fred", "Jones"));
         StudySite studySite = setId(studySiteId, createStudySite(null, null));
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
 
         expect(participantDao.getById(participantId)).andReturn(participant);
         expect(studySiteDao.getById(studySiteId)).andReturn(studySite);
-        participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate());
+        expect(participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate())).andReturn(assignment);
         replayMocks();
 
-        command.assignParticipant();
+        assertSame(assignment, command.assignParticipant());
         verifyMocks();
     }
 }

@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
@@ -62,14 +61,16 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
         replayMocks();
 
-        service.assignParticipant(participantIn, studySite, expectedArm, startDate);
+        StudyParticipantAssignment actualAssignment = service.assignParticipant(participantIn, studySite, expectedArm, startDate);
         verifyMocks();
 
+        assertNotNull("Assignment not returned", actualAssignment);
         assertEquals("Assignment not added to participant", 1, participantIn.getAssignments().size());
-        StudyParticipantAssignment assignment = participantIn.getAssignments().get(0);
-        assertNotNull(assignment.getScheduledCalendar());
-        assertEquals(1, assignment.getScheduledCalendar().getScheduledArms().size());
-        ScheduledArm scheduledArm = assignment.getScheduledCalendar().getScheduledArms().get(0);
+        assertEquals("Assignment not added to participant", actualAssignment, participantIn.getAssignments().get(0));
+
+        assertNotNull(actualAssignment.getScheduledCalendar());
+        assertEquals(1, actualAssignment.getScheduledCalendar().getScheduledArms().size());
+        ScheduledArm scheduledArm = actualAssignment.getScheduledCalendar().getScheduledArms().get(0);
         assertEquals(expectedArm, scheduledArm.getArm());
         assertPositive("No scheduled events", scheduledArm.getEvents().size());
     }
