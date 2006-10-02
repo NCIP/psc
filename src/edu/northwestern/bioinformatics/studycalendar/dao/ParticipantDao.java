@@ -6,9 +6,9 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 
 
-public class ParticipantDao extends HibernateDaoSupport {
-    public Participant getById(int id) {
-        return (Participant) getHibernateTemplate().get(Participant.class, new Integer(id));
+public class ParticipantDao extends StudyCalendarDao<Participant> {
+    public Class<Participant> domainClass() {
+        return Participant.class;
     }
 
     public void save(Participant participant) {

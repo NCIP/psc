@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class StudyDao extends HibernateDaoSupport {
-    public Study getById(int id) {
-        return (Study) getHibernateTemplate().get(Study.class, id);
+public class StudyDao extends StudyCalendarDao<Study> {
+    public Class<Study> domainClass() {
+        return Study.class;
     }
 
     public void save(Study study) {

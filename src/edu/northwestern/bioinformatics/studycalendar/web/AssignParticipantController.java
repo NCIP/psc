@@ -46,6 +46,8 @@ public class AssignParticipantController extends SimpleFormController {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
         ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
+        ControllerTools.registerDomainObjectEditor(binder, "studySite", studySiteDao);
+        ControllerTools.registerDomainObjectEditor(binder, "participant", participantDao);
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -75,8 +77,6 @@ public class AssignParticipantController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         AssignParticipantCommand command = new AssignParticipantCommand();
-        command.setParticipantDao(participantDao);
-        command.setStudySiteDao(studySiteDao);
         command.setParticipantService(participantService);
         return command;
     }

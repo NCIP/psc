@@ -65,6 +65,4 @@
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.DisplayScheduleController"/>
-
-
 </beans>

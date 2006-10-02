@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
@@ -15,38 +13,27 @@ import java.util.Date;
  * @author Padmaja Vedula
  */
 public class AssignParticipantCommand {
-    private Integer studyId;
-    private Integer studySiteId;
-    private Integer participantId;
+    private StudySite studySite;
+    private Participant participant;
     private Arm arm;
     private Date startDate;
 
-    private ParticipantDao participantDao;
-    private StudySiteDao studySiteDao;
     private ParticipantService participantService;
-
-    public StudySite getStudySite() {
-        return studySiteDao.getById(getStudySiteId());
-    }
-
-    public Participant getParticipant() {
-        return participantDao.getById(getParticipantId());
-    }
 
     public StudyParticipantAssignment assignParticipant() {
         return participantService.assignParticipant(
-            getParticipant(), getStudySite(), getArm(), getStartDate());
+            getParticipant(), getStudySite(), getEffectiveArm(), getStartDate());
+    }
+
+    private Arm getEffectiveArm() {
+        Arm effectiveArm = getArm();
+        if (effectiveArm == null) {
+            effectiveArm = getStudySite().getStudy().getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+        }
+        return effectiveArm;
     }
 
     ////// CONFIGURATION
-
-    public void setParticipantDao(ParticipantDao participantDao) {
-        this.participantDao = participantDao;
-    }
-
-    public void setStudySiteDao(StudySiteDao studySiteDao) {
-        this.studySiteDao = studySiteDao;
-    }
 
     public void setParticipantService(ParticipantService participantService) {
         this.participantService = participantService;
@@ -62,28 +49,20 @@ public class AssignParticipantCommand {
         this.startDate = startDate;
     }
 
-    public Integer getParticipantId() {
-        return participantId;
+    public StudySite getStudySite() {
+        return studySite;
     }
 
-    public void setParticipantId(Integer participantId) {
-        this.participantId = participantId;
+    public void setStudySite(StudySite studySite) {
+        this.studySite = studySite;
     }
 
-    public Integer getStudyId() {
-        return studyId;
+    public Participant getParticipant() {
+        return participant;
     }
 
-    public void setStudyId(Integer studyId) {
-        this.studyId = studyId;
-    }
-
-    public Integer getStudySiteId() {
-        return studySiteId;
-    }
-
-    public void setStudySiteId(Integer studySiteId) {
-        this.studySiteId = studySiteId;
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
     }
 
     public Arm getArm() {

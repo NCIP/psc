@@ -11,9 +11,9 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 /**
  * @author Padmaja Vedula
  */
-public class StudySiteDao extends HibernateDaoSupport {
-    public StudySite getById(int id) {
-        return (StudySite) getHibernateTemplate().get(StudySite.class, new Integer(id));
+public class StudySiteDao extends StudyCalendarDao<StudySite> {
+    public Class<StudySite> domainClass() {
+        return StudySite.class;
     }
 
     public void save(StudySite studySite) {

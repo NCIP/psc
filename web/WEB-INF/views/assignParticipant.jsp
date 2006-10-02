@@ -28,13 +28,13 @@
 
 <form:form method="post">
     <form:errors path="*"/>
-    <input type="hidden" name="studySiteId" value="${studySite.id}"/>
+    <input type="hidden" name="studySite" value="${studySite.id}"/>
     <div class="row">
         <div class="label">
-            <form:label path="participantId">Participant</form:label>
+            <form:label path="participant">Participant</form:label>
         </div>
         <div class="value">
-            <form:select path="participantId">
+            <form:select path="participant">
                 <form:options items="${participants}" itemLabel="fullName" itemValue="id"/>
             </form:select>
         </div>

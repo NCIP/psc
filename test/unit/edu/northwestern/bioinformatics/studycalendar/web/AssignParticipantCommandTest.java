@@ -19,38 +19,27 @@ import java.util.Date;
  */
 public class AssignParticipantCommandTest extends StudyCalendarTestCase {
     private AssignParticipantCommand command;
-    private ParticipantDao participantDao;
     private ParticipantService participantService;
-    private StudySiteDao studySiteDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        participantDao = registerMockFor(ParticipantDao.class);
-        studySiteDao = registerMockFor(StudySiteDao.class);
         participantService = registerMockFor(ParticipantService.class);
 
         command = new AssignParticipantCommand();
-        command.setParticipantDao(participantDao);
         command.setParticipantService(participantService);
-        command.setStudySiteDao(studySiteDao);
     }
 
     public void testAssignParticipant() throws Exception {
-        int participantId = 11;
-        int studySiteId = 14;
+        Participant participant = setId(11, createParticipant("Fred", "Jones"));
+        StudySite studySite = setId(14, createStudySite(null, null));
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
 
-        command.setParticipantId(participantId);
-        command.setStudySiteId(studySiteId);
+        command.setParticipant(participant);
+        command.setStudySite(studySite);
         command.setStartDate(new Date());
         command.setArm(setId(17, Fixtures.createNamedInstance("Worcestershire", Arm.class)));
 
-        Participant participant = setId(participantId, createParticipant("Fred", "Jones"));
-        StudySite studySite = setId(studySiteId, createStudySite(null, null));
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
-
-        expect(participantDao.getById(participantId)).andReturn(participant);
-        expect(studySiteDao.getById(studySiteId)).andReturn(studySite);
         expect(participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate())).andReturn(assignment);
         replayMocks();
 

@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.ServletRequestDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -36,9 +37,9 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        participantDao = registerMockFor(ParticipantDao.class);
-        studyDao = registerMockFor(StudyDao.class);
-        studySiteDao = registerMockFor(StudySiteDao.class);
+        participantDao = registerDaoMockFor(ParticipantDao.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
+        studySiteDao = registerDaoMockFor(StudySiteDao.class);
         armDao = registerDaoMockFor(ArmDao.class);
 
         controller = new AssignParticipantController();
@@ -148,6 +149,9 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
 
         protected Object formBackingObject(HttpServletRequest request) throws Exception {
             return command;
+        }
+
+        protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         }
     }
 }
