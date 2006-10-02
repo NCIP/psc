@@ -176,14 +176,13 @@
 </table>
 
 <div id="activities-input">
-    <label>Activities:
+    <label for="add-activity">Activities:</label>
     <select id="select-activity-type">
-        <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" \>${activityType.name}</option></c:forEach>
+        <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
     </select>
     <select id="add-activity">
-        <c:forEach items="${activities}" var="activity"><option value="${activity.id}" <c:if test="${param.newActivityId == activity.id}">selected="selected"</c:if>>${activity.name}</option></c:forEach>
+        <c:forEach items="${activities}" var="activity"><option value="${activity.id}" <c:if test="${selectedActivity.id == activity.id}">selected="selected"</c:if>>${activity.name}</option></c:forEach>
     </select>
-    </label>
     <input type="button" id="add-activity-button" value="Add to period"/>
     <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
 </div>

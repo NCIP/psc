@@ -54,7 +54,7 @@ public class NewActivityController extends SimpleFormController {
             return new ModelAndView(getSuccessView(), model);
         } else {
             ModelMap model = new ModelMap("id", command.getReturnToPeriodId())
-                .addObject("newActivityId", activity.getId());
+                .addObject("selectedActivity", activity.getId());
             return new ModelAndView("redirectToManagePeriod", model);
         }
     }

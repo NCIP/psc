@@ -42,14 +42,14 @@
     </div>
     <div class="row">
         <div class="label">
-            <form:label path="activityTypeId">Activity type</form:label>
+            <form:label path="activityType">Activity type</form:label>
         </div>
         <div class="value">
-            <form:select path="activityTypeId">
-            	<form:options items="${activityTypes}" itemLabel="name" itemValue="id"/>
+            <form:select path="activityType">
+                <form:options items="${activityTypes}" itemLabel="name" itemValue="id"/>
             </form:select>
         </div>
-	</div>    
+    </div>
     <div class="row">
         <div class="submit">
             <input type="submit" value="Create"/>

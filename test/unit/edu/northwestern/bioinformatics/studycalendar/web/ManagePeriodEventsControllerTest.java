@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static org.easymock.classextension.EasyMock.expect;
 
 import java.util.List;
@@ -21,14 +22,15 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private ManagePeriodEventsController controller = new ManagePeriodEventsController();
     private PeriodDao periodDao;
     private ActivityDao activityDao;
-    private Period period = Fixtures.createPeriod("7th", 10, 8, 4);
+    private Period period = createPeriod("7th", 10, 8, 4);
     private List<Activity> activities = new LinkedList<Activity>();
+    private ManagePeriodEventsCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
-        Study parent = Fixtures.createNamedInstance("Root", Study.class);
+        Study parent = createNamedInstance("Root", Study.class);
         parent.setPlannedCalendar(new PlannedCalendar());
-        parent.getPlannedCalendar().addEpoch(Fixtures.createEpoch("Holocene", "Middle"));
+        parent.getPlannedCalendar().addEpoch(createEpoch("Holocene", "Middle"));
         parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
 
         periodDao = registerMockFor(PeriodDao.class);
@@ -41,6 +43,8 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         request.addParameter("id", "15");
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
+
+        command = new ManagePeriodEventsCommand(period, activityDao);
     }
 
     public void testFormBackingObject() throws Exception {
@@ -86,5 +90,24 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         assertEquals(activities, model.get("activities"));
         assertNotNull(model.get("activitiesById"));
         assertEquals(period.getArm().getEpoch().getPlannedCalendar().getStudy(), model.get("study"));
+    }
+
+    public void testReferenceDataIncludesNewActivityIfParamPresent() throws Exception {
+        request.addParameter("selectedActivity", "43");
+        Activity expectedActivity = setId(43, new Activity());
+        expect(activityDao.getById(43)).andReturn(expectedActivity);
+        replayMocks();
+
+        Map<String, Object> refdata = controller.referenceData(request, command, null);
+        assertSame(expectedActivity, refdata.get("selectedActivity"));
+        verifyMocks();
+    }
+
+    public void testReferenceDataEmptyIfNoNewActivity() throws Exception {
+        request.removeParameter("selectedActivity");
+        replayMocks();
+
+        assertNotContains(controller.referenceData(request, command, null).keySet(), "selectedActivity");
+        verifyMocks();
     }
 }

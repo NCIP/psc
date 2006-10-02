@@ -49,7 +49,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
         assertEquals("redirectToManagePeriod", mv.getViewName());
         assertEquals(2, mv.getModel().size());
         assertEquals(14, mv.getModel().get("id"));
-        assertTrue(mv.getModel().containsKey("newActivityId"));
+        assertTrue(mv.getModel().containsKey("selectedActivity"));
     }
 
     public void testBindActivityType() throws Exception {
