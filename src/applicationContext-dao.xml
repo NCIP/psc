@@ -47,6 +47,8 @@
         <property name="flushModeName"><value>FLUSH_AUTO</value></property>
     </bean>
 
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" autowire="byName"/>
+
     <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
         <property name="checkWriteOperations"><value>true</value></property>
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>

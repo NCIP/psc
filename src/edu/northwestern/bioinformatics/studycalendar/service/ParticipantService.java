@@ -17,13 +17,16 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Rhett Sutphin
  */
+@Transactional
 public class ParticipantService {
     private ParticipantDao participantDao;
 
-    public void assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
+    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
         spa.setStudySite(study);
@@ -31,6 +34,7 @@ public class ParticipantService {
         participant.addAssignment(spa);
         scheduleArm(spa, armOfFirstEpoch, startDate);
         participantDao.save(participant);
+        return spa;
     }
 
     public void scheduleArm(StudyParticipantAssignment assignment, Arm arm, Date startDate) {
