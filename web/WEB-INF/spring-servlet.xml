@@ -66,5 +66,8 @@
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
 
+    <bean name="/schedule" id="displayScheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayScheduleController"/>
+
 
 </beans>

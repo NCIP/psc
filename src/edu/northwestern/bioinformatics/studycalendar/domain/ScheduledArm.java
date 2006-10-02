@@ -14,6 +14,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Date;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
@@ -59,6 +63,19 @@ public class ScheduledArm extends AbstractDomainObject {
         }
 
         return name.toString();
+    }
+
+    @Transient
+    public SortedMap<Date, List<ScheduledEvent>> getEventsByDate() {
+        SortedMap<Date, List<ScheduledEvent>> byDate = new TreeMap<Date, List<ScheduledEvent>>();
+        for (ScheduledEvent event : getEvents()) {
+            Date key = event.getActualDate();
+            if (!byDate.containsKey(key)) {
+                byDate.put(key, new LinkedList<ScheduledEvent>());
+            }
+            byDate.get(key).add(event);
+        }
+        return byDate;
     }
 
     ////// BEAN PROPERTIES

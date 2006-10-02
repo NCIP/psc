@@ -45,6 +45,11 @@ public class PlannedCalendar extends AbstractDomainObject {
         return len;
     }
 
+    @Transient
+    public String getName() {
+        return study == null ? null : study.getName();
+    }
+
     ////// BEAN PROPERTIES
 
     public boolean isComplete() {

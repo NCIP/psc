@@ -51,4 +51,11 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         assertEquals(45, calendar.getLengthInDays());
         verifyMocks();
     }
+    
+    public void testGetNameReturnsStudyName() throws Exception {
+        Study study = Fixtures.createNamedInstance("Protocol", Study.class);
+        study.setPlannedCalendar(calendar);
+
+        assertEquals("Protocol", calendar.getName());
+    }
 }
