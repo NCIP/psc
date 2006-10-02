@@ -60,9 +60,6 @@
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.MarkCompleteController"/>
 
-    <bean name="/newPlannedEvent" id="NewPlannedEventController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewPlannedEventController"/>
-
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
 
