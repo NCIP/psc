@@ -10,17 +10,17 @@ import java.lang.reflect.Method;
 /**
  * @author Rhett Sutphin
  */
-public class DaoBasedPropertyEditorTest extends StudyCalendarTestCase {
+public class DaoBasedEditorTest extends StudyCalendarTestCase {
     private static final Integer ID = 13;
     private static final TestObject OBJECT = new TestObject(ID);
 
     private StubDao stubDao;
-    private DaoBasedPropertyEditor editor;
+    private DaoBasedEditor editor;
 
     protected void setUp() throws Exception {
         super.setUp();
         stubDao = registerMockFor(StubDao.class, new Method[] { StubDao.class.getMethod("getById", Integer.TYPE) });
-        editor = new DaoBasedPropertyEditor(stubDao);
+        editor = new DaoBasedEditor(stubDao);
     }
 
     public void testSetAsTextWithValidId() throws Exception {
@@ -67,7 +67,7 @@ public class DaoBasedPropertyEditorTest extends StudyCalendarTestCase {
             assertEquals("This editor can't handle values without IDs", iae.getMessage());
         }
     }
-    
+
     public void testSetValueNull() throws Exception {
         replayMocks();
         editor.setValue(null);

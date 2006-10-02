@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedPropertyEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
 
 import java.util.Map;
 import java.beans.PropertyEditor;
@@ -27,7 +27,7 @@ public class ControllerTools {
     }
 
     public static void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao dao) {
-        binder.registerCustomEditor(dao.domainClass(), field, new DaoBasedPropertyEditor(dao));
+        binder.registerCustomEditor(dao.domainClass(), field, new DaoBasedEditor(dao));
     }
 
     public static void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {
