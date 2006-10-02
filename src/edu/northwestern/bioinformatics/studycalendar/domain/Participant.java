@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.OrderBy;
+import javax.persistence.Transient;
 
 
 import java.util.ArrayList;
@@ -40,13 +41,42 @@ public class Participant extends AbstractDomainObject {
     
     // The participant identifier could be the Medical Record No based on the site 
 
-    public void addParicipantIdentifier(ParticipantIdentifier participantIdentifier) {
+    public void addParticipantIdentifier(ParticipantIdentifier participantIdentifier) {
         participantIdentifiers.add(participantIdentifier);
         participantIdentifier.setParticipant(this);
     }
+
     public void addAssignment(StudyParticipantAssignment studyParticipantAssignment){
         getAssignments().add(studyParticipantAssignment);
         studyParticipantAssignment.setParticipant(this);
+    }
+
+    @Transient
+    public String getLastFirst() {
+        StringBuilder name = new StringBuilder();
+        boolean hasFirstName = getFirstName() != null;
+        if (getLastName() != null) {
+            name.append(getLastName());
+            if (hasFirstName) name.append(", ");
+        }
+        if (hasFirstName) {
+            name.append(getFirstName());
+        }
+        return name.toString();
+    }
+
+    @Transient
+    public String getFullName() {
+        StringBuilder name = new StringBuilder();
+        boolean hasLastName = getLastName() != null;
+        if (getFirstName() != null) {
+            name.append(getFirstName());
+            if (hasLastName) name.append(' ');
+        }
+        if (hasLastName) {
+            name.append(getLastName());
+        }
+        return name.toString();
     }
     
     // bean methods

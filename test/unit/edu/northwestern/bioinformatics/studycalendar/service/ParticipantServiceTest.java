@@ -14,11 +14,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -41,6 +45,9 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         StudySite studySite = createStudySite(study, site);
         Participant participantIn = createParticipant("Alice", "Childress");
         Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
+        Arm expectedArm = createEpoch("Treatment", "A", "B", "C").getArms().get(1);
+        expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
+        expectedArm.getPeriods().iterator().next().addPlannedEvent(createPlannedEvent("Any", 4));
 
         Participant participantExpectedSave = createParticipant("Alice", "Childress");
 
@@ -52,12 +59,19 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         participantExpectedSave.addAssignment(expectedAssignment);
 
         participantDao.save(participantExpectedSave);
+        expectLastCall().times(2);
         replayMocks();
 
-        service.assignParticipant(participantIn, studySite, startDate);
+        service.assignParticipant(participantIn, studySite, expectedArm, startDate);
         verifyMocks();
 
         assertEquals("Assignment not added to participant", 1, participantIn.getAssignments().size());
+        StudyParticipantAssignment assignment = participantIn.getAssignments().get(0);
+        assertNotNull(assignment.getScheduledCalendar());
+        assertEquals(1, assignment.getScheduledCalendar().getScheduledArms().size());
+        ScheduledArm scheduledArm = assignment.getScheduledCalendar().getScheduledArms().get(0);
+        assertEquals(expectedArm, scheduledArm.getArm());
+        assertPositive("No scheduled events", scheduledArm.getEvents().size());
     }
 
     public void testScheduleFirstArm() throws Exception {

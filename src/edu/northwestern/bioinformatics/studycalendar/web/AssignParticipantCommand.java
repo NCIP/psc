@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Date;
@@ -13,12 +13,13 @@ import java.util.Date;
 /**
  * @author Padmaja Vedula
  */
-
 public class AssignParticipantCommand {
     private Integer studyId;
     private Integer studySiteId;
     private Integer participantId;
-    private Date startDateEpoch;
+    private Arm arm;
+    private Date startDate;
+
     private ParticipantDao participantDao;
     private StudySiteDao studySiteDao;
     private ParticipantService participantService;
@@ -33,7 +34,7 @@ public class AssignParticipantCommand {
 
     public void assignParticipant() {
         participantService.assignParticipant(
-            getParticipant(), getStudySite(), getStartDateEpoch());
+            getParticipant(), getStudySite(), getArm(), getStartDate());
     }
 
     ////// CONFIGURATION
@@ -52,12 +53,12 @@ public class AssignParticipantCommand {
 
     ////// BOUND PROPERTIES
 
-    public Date getStartDateEpoch() {
-        return startDateEpoch;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setStartDateEpoch(Date startDateEpoch) {
-        this.startDateEpoch = startDateEpoch;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     public Integer getParticipantId() {
@@ -82,5 +83,13 @@ public class AssignParticipantCommand {
 
     public void setStudySiteId(Integer studySiteId) {
         this.studySiteId = studySiteId;
+    }
+
+    public Arm getArm() {
+        return arm;
+    }
+
+    public void setArm(Arm arm) {
+        this.arm = arm;
     }
 }

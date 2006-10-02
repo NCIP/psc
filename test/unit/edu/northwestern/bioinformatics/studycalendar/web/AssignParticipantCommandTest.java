@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -39,14 +41,15 @@ public class AssignParticipantCommandTest extends StudyCalendarTestCase {
 
         command.setParticipantId(participantId);
         command.setStudySiteId(studySiteId);
-        command.setStartDateEpoch(new Date());
+        command.setStartDate(new Date());
+        command.setArm(setId(17, Fixtures.createNamedInstance("Worcestershire", Arm.class)));
 
         Participant participant = setId(participantId, createParticipant("Fred", "Jones"));
         StudySite studySite = setId(studySiteId, createStudySite(null, null));
 
         expect(participantDao.getById(participantId)).andReturn(participant);
         expect(studySiteDao.getById(studySiteId)).andReturn(studySite);
-        participantService.assignParticipant(participant, studySite, command.getStartDateEpoch());
+        participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate());
         replayMocks();
 
         command.assignParticipant();

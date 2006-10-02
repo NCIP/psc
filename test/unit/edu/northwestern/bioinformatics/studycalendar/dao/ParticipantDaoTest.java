@@ -20,9 +20,9 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
 
     public void testGetAll() throws Exception {
         List<Participant> actual = getDao().getAll();
-        assertEquals("Wrong size", 1, actual.size());
-        Participant participant = actual.get(0);
-        assertEquals("Wrong last name", "Scott", participant.getLastName());
+        assertEquals("Wrong size", 2, actual.size());
+        assertEquals("Wrong first participant", "Ng", actual.get(0).getLastName());
+        assertEquals("Wrong second participant", "Scott", actual.get(1).getLastName());
     }
 
     public void testGetById() throws Exception {

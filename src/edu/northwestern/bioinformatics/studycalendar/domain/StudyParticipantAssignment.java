@@ -12,19 +12,21 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 
 /**
  * @author Ram Chilukuri
  */
- 
- @Entity
- @Table (name = "participant_assignments")
- @GenericGenerator(name="id-generator", strategy = "native",
-     parameters = {
-         @Parameter(name="sequence", value="seq_participant_assignments_id")
-     }
- ) 
+
+@Entity
+@Table (name = "participant_assignments")
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequence", value="seq_participant_assignments_id")
+    }
+)
 public class StudyParticipantAssignment extends AbstractDomainObject {
     private StudySite studySite;
     private Participant participant;
@@ -64,6 +66,7 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     }
 
     @OneToOne (mappedBy = "assignment")
+    @Cascade(value = CascadeType.ALL)
     public ScheduledCalendar getScheduledCalendar() {
         return scheduledCalendar;
     }

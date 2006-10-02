@@ -78,9 +78,13 @@ public class StudySite extends AbstractDomainObject {
          return true;
      }
 
-     public int hashCode() {
-         return getStudy().hashCode()+ getSite().hashCode();
-     }
+    public int hashCode() {
+        int result;
+        result = (site != null ? site.hashCode() : 0);
+        result = 29 * result + (study != null ? study.hashCode() : 0);
+        result = 29 * result + (studyParticipantAssignments != null ? studyParticipantAssignments.hashCode() : 0);
+        return result;
+    }
 
     public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
         this.studyParticipantAssignments = studyParticipantAssignments;

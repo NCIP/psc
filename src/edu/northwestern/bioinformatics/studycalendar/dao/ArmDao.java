@@ -5,10 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 /**
  * @author Moses Hohman
+ * @author Rhett Sutphin
  */
-public class ArmDao extends HibernateDaoSupport {
-    public Arm getById(int id) {
-        return (Arm) getHibernateTemplate().get(Arm.class, id);
+public class ArmDao extends StudyCalendarDao<Arm> {
+    public Class<Arm> domainClass() {
+        return Arm.class;
     }
 
     public void save(Arm arm) {

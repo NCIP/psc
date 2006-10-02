@@ -23,12 +23,13 @@ import java.util.Comparator;
 public class ParticipantService {
     private ParticipantDao participantDao;
 
-    public void assignParticipant(Participant participant, StudySite study, Date startDate) {
+    public void assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
         participant.addAssignment(spa);
+        scheduleArm(spa, armOfFirstEpoch, startDate);
         participantDao.save(participant);
     }
 

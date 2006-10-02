@@ -3,25 +3,27 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.Collections;
 
 /**
  * @author Padmaja Vedula
@@ -31,18 +33,18 @@ public class AssignParticipantController extends SimpleFormController {
     private ParticipantService participantService;
     private StudyDao studyDao;
     private StudySiteDao studySiteDao;
-    private String pattern = "MM/dd/yyyy";
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
+    private ArmDao armDao;
 
     public AssignParticipantController() {
         setCommandClass(AssignParticipantCommand.class);
         setFormView("assignParticipant");
+        setBindOnNewForm(true);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Date.class, null, new CustomDateEditor(simpleDateFormat, false));
         super.initBinder(request, binder);
+        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
+        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -53,7 +55,14 @@ public class AssignParticipantController extends SimpleFormController {
         refdata.put("studySite", study.getStudySites().get(0));
         refdata.put("study", study);
         refdata.put("participants", participants);
-        refdata.put("action", "Assign");
+        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
+        ControllerTools.addHierarchyToModel(epoch, refdata);
+        List<Arm> arms = epoch.getArms();
+        if (arms.size() > 1) {
+            refdata.put("arms", arms);
+        } else {
+            refdata.put("arms", Collections.emptyList());
+        }
         return refdata;
     }
 
@@ -86,6 +95,11 @@ public class AssignParticipantController extends SimpleFormController {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setArmDao(ArmDao armDao) {
+        this.armDao = armDao;
     }
 
     @Required

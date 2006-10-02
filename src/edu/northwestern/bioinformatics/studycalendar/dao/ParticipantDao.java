@@ -16,7 +16,7 @@ public class ParticipantDao extends HibernateDaoSupport {
     }
 
     public List<Participant> getAll() {
-        return getHibernateTemplate().find("from Participant");
+        return getHibernateTemplate().find("from Participant p order by p.lastName, p.firstName");
     }
 }
 

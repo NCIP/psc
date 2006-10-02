@@ -6,6 +6,13 @@
         birth_date="2006-01-02"
         gender="Female"
         person_id="123-45-6789"/>
+    <PARTICIPANTS
+        id="-101"
+        first_name="Ana"
+        last_name="Ng"
+        birth_date="2006-03-09"
+        gender="Female"
+        person_id="555-01-3456"/>
     <SITES
         id="-1001"
         name="New Site"/>

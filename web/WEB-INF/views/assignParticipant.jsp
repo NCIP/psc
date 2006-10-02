@@ -21,33 +21,47 @@
     </style>
 </head>
 <body>
-<h1>${action} Participant</h1>
+<h1>Assign Participant</h1>
 <p>
     Study: ${study.name}
 </p>
-<c:url value="/pages/assignParticipant?id=${study.id}" var="formAction"/>
 
-<form:form action="${formAction}" method="post">
-<input type="hidden" name="studySiteId" value="${studySite.id}"/>
+<form:form method="post">
+    <form:errors path="*"/>
+    <input type="hidden" name="studySiteId" value="${studySite.id}"/>
     <div class="row">
         <div class="label">
             <form:label path="participantId">Participant</form:label>
         </div>
         <div class="value">
             <form:select path="participantId">
-                <form:options items="${participants}" itemLabel="firstName" itemValue="id"/>
+                <form:options items="${participants}" itemLabel="fullName" itemValue="id"/>
             </form:select>
         </div>
     </div>
     <p><a href="<c:url value="/pages/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
+
+    <c:if test="${not empty arms}">
+        <div class="row">
+            <div class="label">
+                <form:label path="arm">Select arm for first epoch</form:label>
+            </div>
+            <div class="value">
+                <form:select path="arm">
+                    <form:options items="${arms}" itemLabel="name" itemValue="id"/>
+                </form:select>
+            </div>
+        </div>
+    </c:if>
+
     <div class="row">
         <div class="label">
-            <form:label path="startDateEpoch">Start Date of First Epoch (mm/dd/yyyy)</form:label>
+            <form:label path="startDate">Start date of first epoch (mm/dd/yyyy)</form:label>
         </div>
         <div class="value">
-            <form:input path="startDateEpoch"/>
+            <form:input path="startDate"/>
         </div>
-	</div>
+    </div>
     <div class="row">
         <div class="submit">
             <input type="submit" value="Assign"/>
