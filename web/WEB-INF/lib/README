@@ -6,4 +6,4 @@ jstl.jar and standard.jar       for standard taglib
 log4j-1.2.13.jar                for Spring
 postgresql-8.1-407.jdbc3.jar
 sitemesh-2.2.1.jar
-spring.jar                      2.0-rc3
+spring.jar                      2.0-rc4
