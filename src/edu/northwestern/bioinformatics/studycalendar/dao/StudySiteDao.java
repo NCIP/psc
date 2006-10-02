@@ -19,8 +19,4 @@ public class StudySiteDao extends HibernateDaoSupport {
     public void save(StudySite studySite) {
         getHibernateTemplate().saveOrUpdate(studySite);
     }
-
-    public List<StudySite> getAll() {
-        return getHibernateTemplate().find("from StudySite");
-    }
 }

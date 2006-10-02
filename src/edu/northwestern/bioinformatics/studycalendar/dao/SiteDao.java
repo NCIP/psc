@@ -26,12 +26,4 @@ public class SiteDao extends HibernateDaoSupport {
         }
         return results.get(0);
     }
-
-    public void save(Site site) {
-        getHibernateTemplate().saveOrUpdate(site);
-    }
-
-    public List<Site> getAll() {
-        return getHibernateTemplate().find("from Site");
-    }
 }
