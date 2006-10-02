@@ -12,9 +12,9 @@ public class PlannedEventTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         activity0 = new Activity();
-        activity0.setType(Fixtures.getActivityType(6));
+        activity0.setType(ActivityType.PROCEDURE);
         activity1 = new Activity();
-        activity1.setType(Fixtures.getActivityType(4));
+        activity1.setType(ActivityType.INTERVENTION);
 
         e0 = new PlannedEvent();
         e0.setDay(1);

@@ -11,28 +11,22 @@ import java.util.List;
  */
 public class ActivityDaoTest extends DaoTestCase {
     private ActivityDao dao = (ActivityDao) getApplicationContext().getBean("activityDao");
-    private ActivityTypeDao activityTypeDao = (ActivityTypeDao) getApplicationContext().getBean("activityTypeDao");
 
     public void testGetById() throws Exception {
         Activity activity = dao.getById(-100);
         assertNotNull("Screening Activity not found", activity);
         assertEquals("Wrong name", "Screening Activity", activity.getName());
-        assertEquals("Wrong description", "Decription of screening activity.", activity.getDescription());
+        assertEquals("Wrong description", "Description of screening activity", activity.getDescription());
+        assertEquals("Wrong type", ActivityType.INTERVENTION, activity.getType());
     }
 
-    public void testGetActivityTypeName() throws Exception {
-        Activity activity = dao.getById(-100);
-        assertEquals("Wrong activity type name", "screening", activity.getType().getName());
-    }
-
-    
     public void testSaveNewActivity() throws Exception {
         Integer savedId;
         {
             Activity activity = new Activity();
             activity.setName("Give drug");
             activity.setDescription("Administer aspirin");
-            activity.setType(activityTypeDao.getById(-5));
+            activity.setType(ActivityType.PROCEDURE);
             dao.save(activity);
             savedId = activity.getId();
             assertNotNull("The saved activity didn't get an id", savedId);
@@ -44,7 +38,7 @@ public class ActivityDaoTest extends DaoTestCase {
             Activity loaded = dao.getById(savedId);
             assertNotNull("Could not reload activity with id " + savedId, loaded);
             assertEquals("Wrong name", "Give drug", loaded.getName());
-            assertEquals("Wrong name for activity type", "prevention", loaded.getType().getName());
+            assertSame("Wrong name for activity type", ActivityType.PROCEDURE, loaded.getType());
         }
     }
 
@@ -58,8 +52,8 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong order", -96, (int) actual.get(0).getId());
         assertEquals("Wrong order", -98, (int) actual.get(1).getId());
         assertEquals("Wrong order", -100, (int) actual.get(2).getId());
-        assertEquals("Wrong order", "Administer Drug A", (String) actual.get(3).getName());
-        assertEquals("Wrong order", "Administer Drug Z", (String) actual.get(4).getName());
+        assertEquals("Wrong order", "Administer Drug A", actual.get(3).getName());
+        assertEquals("Wrong order", "Administer Drug Z", actual.get(4).getName());
     }
 
 }

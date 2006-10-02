@@ -4,6 +4,7 @@ import edu.nwu.bioinformatics.commons.ComparisonUtils;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -59,8 +60,8 @@ public class Activity extends AbstractDomainObject implements Comparable<Activit
         this.description = description;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activity_type_id")
+    @Type(type = "activityType")
+    @Column(name = "activity_type_id")
     public ActivityType getType() {
         return type;
     }

@@ -11,7 +11,7 @@ import java.util.TreeMap;
  *
  * @author Rhett Sutphin
  */
-public class AbstractControlledVocabularyObject {
+public class AbstractControlledVocabularyObject implements Comparable<AbstractControlledVocabularyObject> {
     private static Map<Class<? extends AbstractControlledVocabularyObject>, Map<Integer, ? extends AbstractControlledVocabularyObject>> BY_ID
         = new HashMap<Class<? extends AbstractControlledVocabularyObject>, Map<Integer, ? extends AbstractControlledVocabularyObject>>();
 
@@ -42,6 +42,10 @@ public class AbstractControlledVocabularyObject {
 
     protected static <T extends AbstractControlledVocabularyObject> Collection<T> values(Class<T> clazz) {
         return getByIdMap(clazz).values();
+    }
+
+    public int compareTo(AbstractControlledVocabularyObject o) {
+        return getId() - o.getId();
     }
 
     public final int getId() {

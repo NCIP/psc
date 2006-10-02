@@ -11,10 +11,10 @@ public class ActivityTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         a0 = new Activity();
-        a0.setType(Fixtures.getActivityType(4));
+        a0.setType(ActivityType.DISEASE_MEASURE);
         a0.setName("Activity 0");
         a1 = new Activity();
-        a1.setType(Fixtures.getActivityType(8));
+        a1.setType(ActivityType.OTHER);
         a1.setName("Activity 1");
     }
 

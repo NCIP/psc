@@ -16,9 +16,9 @@ public class ActivityDao extends HibernateDaoSupport {
     }
 
     public List<Activity> getAll() {
-    	List<Activity> sortedList = new LinkedList<Activity>();
-    	sortedList = getHibernateTemplate().find("from Activity");
-    	Collections.sort(sortedList);
+        List<Activity> sortedList;
+        sortedList = getHibernateTemplate().find("from Activity");
+        Collections.sort(sortedList);
         return sortedList;    
     }
 

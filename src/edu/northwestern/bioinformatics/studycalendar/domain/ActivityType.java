@@ -1,46 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.Basic;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import java.util.Comparator;
+import java.util.Collection;
 
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-@Entity
-@Table (name = "activity_types")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_activities_id")
-    }
-)
-public class ActivityType extends AbstractDomainObject implements Comparable<ActivityType>, Named {
-    private static final Comparator<ActivityType> NATURAL_ORDER = new ById<ActivityType>();
+public class ActivityType extends AbstractControlledVocabularyObject {
 
-    private String name;
+    public static final ActivityType DISEASE_MEASURE = new ActivityType(1, "Disease Measure");
+    public static final ActivityType INTERVENTION    = new ActivityType(2, "Intervention");
+    public static final ActivityType LAB_TEST        = new ActivityType(3, "Lab Test");
+    public static final ActivityType PROCEDURE       = new ActivityType(4, "Procedure");
+    public static final ActivityType OTHER           = new ActivityType(5, "Other");
 
-    ////// LOGIC
-
-    public int compareTo(ActivityType o) {
-        return NATURAL_ORDER.compare(this, o);
+    private ActivityType(int id, String name) {
+        super(id, name);
     }
 
-    ////// BEAN PROPERTIES
-
-    public String getName() {
-        return name;
+    public static ActivityType getById(int id) {
+        return getById(ActivityType.class, id);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public static Collection<ActivityType> values() {
+        return values(ActivityType.class);
     }
 }

@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -26,7 +26,6 @@ import java.util.LinkedHashMap;
 public class ManagePeriodEventsController extends AbstractFormController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
-    private ActivityTypeDao activityTypeDao;
 
     public ManagePeriodEventsController() {
         setBindOnNewForm(true);
@@ -35,7 +34,7 @@ public class ManagePeriodEventsController extends AbstractFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        return new ManagePeriodEventsCommand(periodDao.getById(id), activityDao, activityTypeDao);
+        return new ManagePeriodEventsCommand(periodDao.getById(id), activityDao);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -44,10 +43,9 @@ public class ManagePeriodEventsController extends AbstractFormController {
 
     protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
         List<Activity> activities = activityDao.getAll();
-        List<ActivityType> activityTypes = activityTypeDao.getAll();
         Map<Integer, Activity> activitiesById = DomainObjectTools.byId(activities);
         Map<String, Object> model = errors.getModel();
-        model.put("activityTypes", activityTypes);
+        model.put("activityTypes", ActivityType.values());
         model.put("activities", activities);
         model.put("activitiesById", activitiesById);
         ControllerTools.addHierarchyToModel(((ManagePeriodEventsCommand) errors.getTarget()).getPeriod(), model);
@@ -71,16 +69,14 @@ public class ManagePeriodEventsController extends AbstractFormController {
 
     ////// CONFIGURATION
 
+    @Required
     public void setPeriodDao(PeriodDao periodDao) {
         this.periodDao = periodDao;
     }
 
+    @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
     }
 
-    public void setActivityTypeDao(ActivityTypeDao activityTypeDao) {
-        this.activityTypeDao = activityTypeDao;
-    }
-    
 }

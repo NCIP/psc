@@ -11,4 +11,7 @@
     <typedef class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ControlledVocabularyObjectType" name="scheduledEventState">
         <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState</param>
     </typedef>
+    <typedef class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ControlledVocabularyObjectType" name="activityType">
+        <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</param>
+    </typedef>
 </hibernate-mapping>

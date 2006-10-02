@@ -15,11 +15,8 @@
         version="0"
         name="CT"
         description="Not blank"
-        activity_type_id="6"/>
-    <ACTIVITY_TYPES
-        id="6"
-        version="0"
-        name="screening"/>
+        activity_type_id="3"
+        />
 
     <PLANNED_EVENTS
         id="-12"

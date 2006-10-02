@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityTypeDao;
 
 /**
  * @author Jaron Sampson
@@ -11,24 +10,19 @@ public class NewActivityCommand {
     private Integer returnToPeriodId;
     private String activityName;
     private String activityDescription;
-    private Integer activityTypeId;
-    private ActivityTypeDao activityTypeDao;
-    
-    public NewActivityCommand(ActivityTypeDao activityTypeDao) {
-    	this.activityTypeDao = activityTypeDao;
-    }
+    private ActivityType activityType;
+
+    ////// LOGIC
 
     public Activity createActivity() {
         Activity activity = new Activity();
         activity.setName(getActivityName());
         activity.setDescription(getActivityDescription());
-        activity.setType(activityTypeDao.getById(activityTypeId));        
+        activity.setType(getActivityType());
         return activity;
     }
 
-    // TODO: validation
-    
-    
+    ////// BOUND PROPERTIES
 
     public String getActivityName() {
         return activityName;
@@ -46,12 +40,12 @@ public class NewActivityCommand {
         this.activityDescription = activityDescription;
     }
 
-    public Integer getActivityTypeId() {
-    	return activityTypeId;
-    } 
+    public ActivityType getActivityType() {
+        return activityType;
+    }
 
-    public void setActivityTypeId(Integer id) {
-    	this.activityTypeId = id;
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
     }
 
     public Integer getReturnToPeriodId() {

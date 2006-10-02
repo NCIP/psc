@@ -3,49 +3,34 @@
         id="-100"
         version="0"
         name="Screening Activity"
-        description="Decription of screening activity."
-        activity_type_id="-6"/>
+        description="Description of screening activity"
+        activity_type_id="2"/>
         
     <ACTIVITIES
         id="-99"
         version="0"
         name="Administer Drug Z"
-        description="Decription of treatment activity."
-        activity_type_id="-5"/>
+        description="Description of treatment activity"
+        activity_type_id="3"/>
         
     <ACTIVITIES
         id="-98"
         version="0"
         name="CT Screen"
-        description="Decription of screening activity."
-        activity_type_id="-6"/>
+        description="Description of screening activity"
+        activity_type_id="2"/>
         
     <ACTIVITIES
         id="-97"
         version="0"
         name="Administer Drug A"
-        description="Decription of treatment activity."
-        activity_type_id="-5"/>        
+        description="Description of treatment activity"
+        activity_type_id="3"/>
 
     <ACTIVITIES
         id="-96"
         version="0"
         name="Administer Drug Z"
-        description="Decription of treatment activity."
-        activity_type_id="-7"/>        
-
-    <ACTIVITY_TYPES
-    	id="-5"
-    	version="0"
-    	name="prevention"/>
-
-    <ACTIVITY_TYPES
-    	id="-6"
-    	version="0"
-    	name="screening"/>
-
-	<ACTIVITY_TYPES
-    	id="-7"
-    	version="0"
-    	name="early detection"/>
+        description="Description of treatment activity"
+        activity_type_id="1"/>
 </dataset>
