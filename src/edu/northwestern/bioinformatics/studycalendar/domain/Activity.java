@@ -69,5 +69,15 @@ public class Activity extends AbstractDomainObject implements Comparable<Activit
     public void setType(ActivityType type) {
         this.type = type;
     }
-    
+
+    ////// OBJECT METHODS
+
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[id=").append(getId())
+            .append("; name=").append(getName())
+            .append("; type=").append(getType())
+            .append(']')
+            .toString();
+    }
 }
