@@ -7,6 +7,15 @@
     <title>Set up Period ${period.name} of ${study.name}</title>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
+        var activitiesByType = { }
+        <c:forEach items="${activityTypes}" var="activityType">
+        activitiesByType[${activityType.id}] = []
+        </c:forEach>
+        <c:forEach items="${activities}" var="activity">
+        activitiesByType[${activity.type.id}].push({ name: '${activity.name}', id: ${activity.id} })
+        </c:forEach>
+        var initiallySelectedActivity = ${empty selectedActivity ? 0 : selectedActivity.id}
+
         function currentActivityCount() {
             return $$('.input-row').length;
         }
@@ -27,7 +36,11 @@
         }
 
         function selectedActivity() {
-            var selector = $('add-activity')
+            return selectedValue('add-activity')
+        }
+
+        function selectedValue(selectorName) {
+            var selector = $(selectorName)
             var selected = selector.options[selector.selectedIndex]
             return {
                 name: selected.text,
@@ -56,6 +69,18 @@
             SC.slideAndShow(rowId)
         }
 
+        function updateActivitySelector() {
+            var selector = $('add-activity')
+            selector.options.length = 0
+            var selectedTypeId = selectedValue('select-activity-type').id
+            var activities = activitiesByType[selectedTypeId]
+            activities.each(function(elt) {
+                var opt = new Option(elt.name, elt.id)
+                if (elt.id == initiallySelectedActivity) opt.selected = true
+                selector.options[selector.options.length] = opt
+            })
+        }
+
         function showEmptyMessage() {
             if (currentActivityCount() > 0) {
                 SC.slideAndHide('no-activities-message');
@@ -75,11 +100,13 @@
                 var input = cell.getElementsByTagName("INPUT")[0]
                 registerCellInputHandlers(input)
             });
-            Event.observe('add-activity-button', "click", addActivityRow)
+            Event.observe('add-activity-button', 'click', addActivityRow)
+            Event.observe('select-activity-type', 'change', updateActivitySelector)
         }
 
         Event.observe(window, "load", registerHandlers)
         Event.observe(window, "load", showEmptyMessage)
+        Event.observe(window, "load", updateActivitySelector)
     </script>
     <style type="text/css">
         #no-activities-message td {
@@ -181,7 +208,7 @@
         <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
     </select>
     <select id="add-activity">
-        <c:forEach items="${activities}" var="activity"><option value="${activity.id}" <c:if test="${selectedActivity.id == activity.id}">selected="selected"</c:if>>${activity.name}</option></c:forEach>
+        <option>Loading...</option>
     </select>
     <input type="button" id="add-activity-button" value="Add to period"/>
     <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
