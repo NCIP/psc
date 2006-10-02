@@ -32,4 +32,14 @@ public class ActivityTest extends StudyCalendarTestCase {
         assertNegative(a0.compareTo(a1));
         assertPositive(a1.compareTo(a0));
     }
+
+    public void testNaturalOrderByNameIsCaseInsensitive() throws Exception {
+        a1.setType(a0.getType());
+
+        a0.setName("calcium");
+        a1.setName("Ytterbium");
+
+        assertNegative(a0.compareTo(a1));
+        assertPositive(a1.compareTo(a0));
+    }
 }

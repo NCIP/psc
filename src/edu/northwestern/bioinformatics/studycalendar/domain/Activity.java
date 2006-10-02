@@ -39,7 +39,11 @@ public class Activity extends AbstractDomainObject implements Comparable<Activit
         int typeDiff = getType().compareTo(o.getType());
         if (typeDiff != 0) return typeDiff;
         // then by name
-        return ComparisonUtils.nullSafeCompare(getName(), o.getName());
+        return ComparisonUtils.nullSafeCompare(toLower(getName()), toLower(o.getName()));
+    }
+
+    private String toLower(String name) {
+        return name == null ? null : name.toLowerCase();
     }
 
     ///// BEAN PROPERTIES
