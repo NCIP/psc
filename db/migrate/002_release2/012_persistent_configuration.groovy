@@ -9,6 +9,6 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
     }
 
     void down() {
-        dropTable("configuration")
+        dropTable("configuration", primaryKey: false)
     }
 }
