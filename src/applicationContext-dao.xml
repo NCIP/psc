@@ -67,7 +67,7 @@
     <bean id="plannedCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao"/>
     <bean id="armDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ArmDao"/>
     <bean id="activityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao"/>
-    <bean id="eventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.EventDao"/>
+    <bean id="plannedEventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao"/>
     <bean id="periodDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao"/>
 
     <bean id="siteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SiteDao"/>

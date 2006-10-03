@@ -6,9 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 /**
  * @author Rhett Sutphin
  */
-public class PeriodDao extends HibernateDaoSupport {
-    public Period getById(int id) {
-        return (Period) getHibernateTemplate().get(Period.class, id);
+public class PeriodDao extends StudyCalendarDao<Period> {
+    public Class<Period> domainClass() {
+        return Period.class;
     }
 
     public void save(Period period) {

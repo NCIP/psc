@@ -14,9 +14,9 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 /**
  * @author
  */
-public class SiteDao extends HibernateDaoSupport {
-    public Site getById(int id) {
-        return (Site) getHibernateTemplate().get(Site.class, new Integer(id));
+public class SiteDao extends StudyCalendarDao<Site> {
+    public Class<Site> domainClass() {
+        return Site.class;
     }
 
     public Site getDefaultSite() {

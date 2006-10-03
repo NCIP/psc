@@ -1,14 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 
 /**
  * @author Rhett Sutphin
  */
-public class EventDaoTest extends ContextDaoTestCase<EventDao> {
+public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
     public void testGetById() throws Exception {
-        PlannedEvent loaded = getDao().getPlannedEventById(-12);
+        PlannedEvent loaded = getDao().getById(-12);
 
         assertEquals("Wrong id", -12, (int) loaded.getId());
         assertEquals("Wrong day number", new Integer(4), loaded.getDay());
@@ -19,7 +18,7 @@ public class EventDaoTest extends ContextDaoTestCase<EventDao> {
     }
 
     public void testPeriodBidirectional() throws Exception {
-        PlannedEvent loaded = getDao().getPlannedEventById(-12);
+        PlannedEvent loaded = getDao().getById(-12);
         assertTrue(loaded.getPeriod().getPlannedEvents().contains(loaded));
     }
 }

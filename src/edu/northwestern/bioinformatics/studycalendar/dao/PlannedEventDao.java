@@ -12,10 +12,8 @@ import java.util.Arrays;
 /**
  * @author Rhett Sutphin
  */
-public class EventDao extends HibernateDaoSupport {
-    private final Log log = LogFactory.getLog(getClass());
-
-    public PlannedEvent getPlannedEventById(int id) {
-        return (PlannedEvent) getHibernateTemplate().get(PlannedEvent.class, id);
+public class PlannedEventDao extends StudyCalendarDao<PlannedEvent> {
+    public Class<PlannedEvent> domainClass() {
+        return PlannedEvent.class;
     }
 }

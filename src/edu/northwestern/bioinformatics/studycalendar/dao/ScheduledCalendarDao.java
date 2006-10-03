@@ -6,9 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledCalendarDao extends HibernateDaoSupport {
-    public ScheduledCalendar getById(int id) {
-        return (ScheduledCalendar) getHibernateTemplate().get(ScheduledCalendar.class, id);
+public class ScheduledCalendarDao extends StudyCalendarDao<ScheduledCalendar> {
+    public Class<ScheduledCalendar> domainClass() {
+        return ScheduledCalendar.class;
     }
 
     public void save(ScheduledCalendar calendar) {

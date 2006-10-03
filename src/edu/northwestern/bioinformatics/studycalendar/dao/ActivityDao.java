@@ -10,16 +10,16 @@ import java.util.Collections;
 /**
  * @author Jaron Sampson
  */
-public class ActivityDao extends HibernateDaoSupport {
-    public Activity getById(int id) {
-        return (Activity) getHibernateTemplate().get(Activity.class, id);
+public class ActivityDao extends StudyCalendarDao<Activity> {
+    public Class<Activity> domainClass() {
+        return Activity.class;
     }
 
     public List<Activity> getAll() {
         List<Activity> sortedList;
         sortedList = getHibernateTemplate().find("from Activity");
         Collections.sort(sortedList);
-        return sortedList;    
+        return sortedList;
     }
 
     public void save(Activity activity) {
