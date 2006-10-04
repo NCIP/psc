@@ -9,26 +9,26 @@ import java.util.List;
 
 public class ParticipantCoordinatorCommand {
     private Integer studyId;
-    private List assignedUsers;
-    private List availableUsers;
+    private List<String> assignedCoordinators;
+    private List<String> availableCoordinators;
    
   
     ////// BOUND PROPERTIES
 
-    public List getAssignedUsers() {
-        return assignedUsers;
+    public List getAssignedCoordinators() {
+        return assignedCoordinators;
     }
 
-    public void setAssignedUsers(List assignedUsers) {
-        this.assignedUsers = assignedUsers;
+    public void setAssignedCoordinators(List assignedCoordinators) {
+        this.assignedCoordinators = assignedCoordinators;
     }
 
-    public List getAvailableUsers() {
-        return availableUsers;
+    public List getAvailableCoordinators() {
+        return availableCoordinators;
     }
 
-    public void setAvailableUsers(List availableUsers) {
-        this.availableUsers = availableUsers;
+    public void setAvailableCoordinators(List availableCoordinators) {
+        this.availableCoordinators = availableCoordinators;
     }
 
     public Integer getStudyId() {
