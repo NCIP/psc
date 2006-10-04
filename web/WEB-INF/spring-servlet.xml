@@ -62,6 +62,9 @@
 
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
+          
+    <bean name="/assignParticipantCoordinator" id="ParticipantCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.DisplayScheduleController"/>
