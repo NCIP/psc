@@ -50,6 +50,15 @@ public class PlannedCalendar extends AbstractDomainObject {
         return study == null ? null : study.getName();
     }
 
+    @Transient
+    public int getMaxArmCount() {
+        int max = 0;
+        for (Epoch epoch : epochs) {
+            max = Math.max(max, epoch.getArms().size());
+        }
+        return max;
+    }
+
     ////// BEAN PROPERTIES
 
     public boolean isComplete() {

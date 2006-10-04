@@ -45,6 +45,11 @@ public class Epoch extends AbstractDomainObject implements Named {
         return len;
     }
 
+    @Transient
+    public boolean isMultipleArms() {
+        return getArms().size() > 1;
+    }
+
     ////// BEAN PROPERTIES
 
     @OneToMany (mappedBy = "epoch")

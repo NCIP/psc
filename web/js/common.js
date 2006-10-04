@@ -26,6 +26,24 @@ SC.slideAndShow = function(element, options) {
     );
 }
 
+SC.registerHoverClass = function(element) {
+    // if an array of elements, invoke once each
+    if (elements.map) {
+        elements.map( SC.registerHoverClass )
+    } else {
+        Event.observe(element, "mouseover", SC.hoverOnFn(element));
+        Event.observe(element, "mouseout", SC.hoverOutFn(element))
+    }
+}
+
+SC.hoverOnFn = function(element) {
+    return function() { alert(element); Element.addClassName(element, "hover"); }
+}
+
+SC.hoverOutFn = function(element) {
+    return function() { Element.removeClassName(element, "hover") }
+}
+
 //////////// COOKIES
 
 /** Main fns based on http://www.quirksmode.org/js/cookies.html */

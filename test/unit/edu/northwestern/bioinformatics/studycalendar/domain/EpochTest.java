@@ -38,4 +38,10 @@ public class EpochTest extends StudyCalendarTestCase {
         assertEquals(45, epoch.getLengthInDays());
         verifyMocks();
     }
+    
+    public void testMultipleArms() throws Exception {
+        assertFalse(new Epoch().isMultipleArms());
+        assertFalse(Fixtures.createEpoch("Holocene").isMultipleArms());
+        assertTrue(Fixtures.createEpoch("Holocene", "A", "B").isMultipleArms());
+    }
 }

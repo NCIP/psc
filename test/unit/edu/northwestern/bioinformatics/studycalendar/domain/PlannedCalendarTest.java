@@ -58,4 +58,12 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
 
         assertEquals("Protocol", calendar.getName());
     }
+
+    public void testMaxArmCount() throws Exception {
+        calendar.addEpoch(Fixtures.createEpoch("E1"));
+        calendar.addEpoch(Fixtures.createEpoch("E2", "A", "B", "C"));
+        calendar.addEpoch(Fixtures.createEpoch("E3", "A", "B"));
+
+        assertEquals(3, calendar.getMaxArmCount());
+    }
 }

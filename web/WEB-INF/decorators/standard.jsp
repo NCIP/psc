@@ -1,5 +1,6 @@
 <%-- This is the standard decorator for all study calendar pages --%>
 <%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -11,6 +12,9 @@
     <tags:stylesheetLink name="common"/>
     <tags:javascriptLink name="prototype"/>
     <tags:javascriptLink name="common"/>
+    <style type="text/css" xml:space="preserve">
+        body { behavior: url('<c:url value="/css/csshover.htc"/>') }
+    </style>
     <decorator:head/>
   </head>
   <body>

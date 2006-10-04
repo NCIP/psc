@@ -12,6 +12,11 @@
         .section p {
             margin: 1em;
         }
+
+        .epochs-and-arms {
+            margin: 1em;
+        }
+
         h3 {
             margin: 0;
             padding: 4px;
@@ -24,17 +29,6 @@
             margin: 1em;
             position: relative;
         }
-        /* Automatically clear after each row
-           Based on http://www.positioniseverything.net/easyclearing.html */
-        .day:after {
-            display: block;
-            content: ' ';
-            clear: both ;
-            height: 0 ;
-            visibility: hidden ;
-        }
-        /* IE only */
-        * html .day { height: 1% }
         .day h4 {
             float: left;
             margin: 0;
@@ -60,6 +54,13 @@
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
+<div class="section">
+    <h3 title="TODO">Schedule next arm</h3>
+    <div class="content">
+        <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+    </div>
+</div>
+
 <div id="scheduled-arms" class="section">
     <h3>Arms scheduled</h3>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
@@ -70,17 +71,10 @@
     </ul>
 </div>
 
-<div class="section">
-    <h3 title="TODO">Schedule next arm</h3>
-    <div class="content" style="display: none">
-        TODO
-    </div>
-</div>
-
 <div id="selected-arm" class="section">
     <h3>${arm.name}</h3>
     <c:forEach items="${arm.eventsByDate}" var="entry">
-        <div class="day">
+        <div class="day autoclear">
             <h4><tags:formatDate value="${entry.key}"/></h4>
             <ul>
                 <c:forEach items="${entry.value}" var="event">
