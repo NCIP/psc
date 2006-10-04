@@ -8,7 +8,7 @@
 <body>
 <h1>Study Menu</h1>
 
-<security:secureOperation element="CreateStudyLink" operation="ACCESS">
+<security:secureOperation element="/studycalendar/pages/newStudy" operation="ACCESS">
 <p><a href="<c:url value="/pages/newStudy"/>">Create new study</a></p>
 </security:secureOperation>
 

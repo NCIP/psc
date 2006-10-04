@@ -80,7 +80,7 @@
         </c:forEach>
     </c:forEach>
   
-<security:secureOperation element="ApproveStudyCalendarTemplate" operation="ACCESS">    
+<security:secureOperation element="/studycalendar/pages/markComplete" operation="ACCESS">    
 <c:if test="${not study.plannedCalendar.complete}">
     <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
 </c:if>
@@ -90,7 +90,7 @@
     <p><a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>.</p>
 </c:if>
 </security:secureOperation>
-<security:secureOperation element="AssignParticipantLink" operation="ACCESS">    
+<security:secureOperation element="/studycalendar/pages/assignParticipant" operation="ACCESS">    
 <c:if test="${study.plannedCalendar.complete}">
     <p><a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>.</p>
 </c:if>
