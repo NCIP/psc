@@ -6,19 +6,51 @@
     <title>Study Menu</title>
 </head>
 <body>
-<h1>Study Menu</h1>
+<h1>Superuser View of Calendar Menu</h1>
 
-<security:secureOperation element="/studycalendar/pages/newStudy" operation="ACCESS">
-<p><a href="<c:url value="/pages/newStudy"/>">Create new study</a></p>
+<strong> New Template </strong>
+<security:secureOperation element="CreateStudyLink" operation="ACCESS">
+<p><a href="<c:url value="/pages/newStudy"/>">Create New Study Template</a></p>
 </security:secureOperation>
-
-<h2>Existing studies</h2>
-<table>
+<br>
+<br>
+<strong> Templates In Design </strong>
+<table cellpadding="5">
     <c:forEach items="${studies}" var="study">
+    	<c:if test="${not study.plannedCalendar.complete}">
+    	<tr>
+    		<td><a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">${study.name}</a></td>
+    	</tr>
+    	</c:if>
+    </c:forEach>
+</table>
+<br>
+<br>
+<strong> Completed Templates </strong>
+<table cellpadding="5">
+    <c:forEach items="${studies}" var="study">
+    	<c:if test="${study.plannedCalendar.complete}">
         <tr>
             <td><a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">${study.name}</a></td>
+        	<td>
+        		<a href="<c:url value="/pages/assignSite?id=${study.id}"/>">Assign Sites</a>
+        		<a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>
+        		<a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>
+        	</td>
         </tr>
+        </c:if>
     </c:forEach>
+</table>
+<br>
+<br>
+<strong> Administration </strong>
+<table cellpadding="5">
+        <tr>
+            <td><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></td>
+			<td><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Site Coordinators to Site</a></td>
+			<td><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Participant Coordinators to Site</a></td>
+			<td><a href="<c:url value="/pages/assignStudyTemplatesToParticipantCoordinator"/>">Assign Study Templates to Participant Coordinators</a></td>
+        </tr>
 </table>
 </body>
 </html>
