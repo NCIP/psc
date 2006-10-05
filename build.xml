@@ -502,16 +502,19 @@ done so already, please perform the following manual actions.
 
 * In ${catalina.home}/conf/server.xml, add these two elements as
   children of the Engine named "Catalina":
-  &lt;Realm className="org.apache.catalina.realm.JAASRealm"
-            appName="csm_upt"
-            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
-            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"
+  &lt;Context path="/demo" docBase="webapps/study_calendar.war" debug="0" privileged="true"&gt;
+  &lt;Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar" 
+            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"       
+            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role" 
             debug="99"/&gt;
-  &lt;Realm className="org.apache.catalina.realm.JAASRealm"
-            appName="study_calendar"
-            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
-            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"
-            debug="99"/&gt;
+  &lt;/Context&gt;
+        	
+  &lt;Context path="/demo" docBase="webapps/upt.war" debug="0" privileged="true"&gt;
+  &lt;Realm className="org.apache.catalina.realm.JAASRealm" appName="csm_upt"       
+            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"       
+            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role" 
+            debug="99"&gt;
+  &lt;/Context&gt;
 
 * Execute ${basedir}/conf/upt/uptdata_studycal.sql
   against your target database (${datasource.url}).
