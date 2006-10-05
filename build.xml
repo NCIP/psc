@@ -337,11 +337,19 @@
 
     <!-- ARTIFACT CREATION -->
 
-    <target name="war" depends="webapp" description="creates a deployable WAR file">
+    <target name="war" description="creates a deployable WAR file">
         <mkdir dir="dist"/>
+        <property name="webapp.context-file" value="dist/context.xml"/>
+        <property name="webapp.context.docBase" value="${war-name}"/>
+        <antcall target="webapp.create-context"/>
+        <antcall target="webapp"/>
         <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
             <exclude name="WEB-INF/web.xml"/>
+            <metainf dir="dist">
+                <include name="context.xml"/>
+            </metainf>
         </war>
+        <!--delete file="${webapp.context-file}"/-->
     </target>
 
     <!-- CRUISE CONTROL BUILDS -->
@@ -398,7 +406,7 @@
         </fail>
         <property file="${tomcat.config-file}"/>
 
-        <property name="tomcat.context-file" value="${basedir}/tools/tomcat/context.xml"/>
+        <property name="webapp.context-file" value="${basedir}/tools/tomcat/context.xml"/>
 
         <taskdef file="tools/tomcat/tomcatTasks.properties">
             <classpath>
@@ -408,16 +416,23 @@
         </taskdef>
     </target>
 
-    <target name="tomcat.create-context" depends="tomcat.init">
-        <echo file="${tomcat.context-file}">&lt;Context path="${tomcat.deploy-path}" docBase="${basedir}/${build-dir.webapp}" debug="9"/&gt;</echo>
+    <target name="webapp.create-context" depends="tomcat.init">
+        <property name="webapp.context.docBase" value="${basedir}/${build-dir.webapp}"/>
+        <echo file="${webapp.context-file}"><![CDATA[
+            <Context path="${tomcat.deploy-path}" docBase="${webapp.context.docBase}" debug="9">
+              <Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar"
+                        userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
+                        roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"/>
+            </Context>
+        ]]></echo>
     </target>
 
-    <target name="tomcat.deploy" depends="tomcat.init, tomcat.create-context"
+    <target name="tomcat.deploy" depends="tomcat.init, webapp.create-context"
             description="Deploy to local Tomcat install for development">
         <deploy url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"
-            config="${tomcat.context-file}"
+            config="${webapp.context-file}"
             path="${tomcat.deploy-path}"
             />
     </target>
@@ -499,22 +514,6 @@ done so already, please perform the following manual actions.
 * In ${catalina.home}/conf/catalina.properties, add two lines:
   gov.nih.nci.security.configFile=${tomcat.security.dir}/ApplicationSecurityConfig.xml
   java.security.auth.login.config=${tomcat.security.dir}/csm_jaas.config
-
-* In ${catalina.home}/conf/server.xml, add these two elements as
-  children of the Engine named "Catalina":
-  &lt;Context path="/demo" docBase="webapps/study_calendar.war" debug="0" privileged="true"&gt;
-  &lt;Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar" 
-            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"       
-            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role" 
-            debug="99"/&gt;
-  &lt;/Context&gt;
-        	
-  &lt;Context path="/demo" docBase="webapps/upt.war" debug="0" privileged="true"&gt;
-  &lt;Realm className="org.apache.catalina.realm.JAASRealm" appName="csm_upt"       
-            userClassNames="gov.nih.nci.security.authorization.domainobjects.User"       
-            roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role" 
-            debug="99"&gt;
-  &lt;/Context&gt;
 
 * Execute ${basedir}/conf/upt/uptdata_studycal.sql
   against your target database (${datasource.url}).
