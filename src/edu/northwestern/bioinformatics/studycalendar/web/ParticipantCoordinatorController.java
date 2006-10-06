@@ -46,7 +46,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        HashMap<String, List> userLists = authorizationManager.getUsers(GROUP_NAME, study.getClass().getName()+"."+study.getId());
+        Map<String, List> userLists = authorizationManager.getUsers(GROUP_NAME, study.getClass().getName()+"."+study.getId());
         refdata.put("study", study);
         refdata.put("assignedUsers", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS));
         refdata.put("availableUsers", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_USERS));
@@ -57,7 +57,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	ParticipantCoordinatorCommand assignCommand = (ParticipantCoordinatorCommand) oCommand;
     	Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
-        authorizationManager.assignProtectionElementsToUsers((ArrayList)assignCommand.getAssignedCoordinators(), assignedStudy.getClass().getName()+"."+assignedStudy.getId());
+        authorizationManager.assignProtectionElementsToUsers(assignCommand.getAssignedCoordinators(), assignedStudy.getClass().getName()+"."+assignedStudy.getId());
 
         return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
     }
