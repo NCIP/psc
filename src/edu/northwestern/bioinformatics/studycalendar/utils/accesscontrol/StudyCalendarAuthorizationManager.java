@@ -12,18 +12,28 @@ import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+
+/**
+ * @author Padmaja Vedula
+ */
 
 public class StudyCalendarAuthorizationManager {
     private static final String APPLICATION_CONTEXT_STRING = "study_calendar";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
+    
+    public StudyCalendarAuthorizationManager() {
+    	
+    }
        
-    public static void assignProtectionElementsToUsers(ArrayList userIds, String protectionElementObjectId) throws Exception
+    public void assignProtectionElementsToUsers(ArrayList userIds, String protectionElementObjectId) throws Exception
 	{
 		boolean protectionElementPresent = false;	
 		UserProvisioningManager provisioningManager = null;
@@ -65,7 +75,7 @@ public class StudyCalendarAuthorizationManager {
 		}
 	}
 						
-	public static HashMap getUsers(String groupName, String protectionElementObjectId) throws Exception {
+	public HashMap getUsers(String groupName, String protectionElementObjectId) throws Exception {
 		HashMap<String, List> usersMap = new HashMap<String, List>();
 		UserProvisioningManager provisioningManager = null;
 		ArrayList<User> usersForRequiredGroup = new ArrayList<User>(); 
@@ -101,7 +111,7 @@ public class StudyCalendarAuthorizationManager {
 	}
     
 	
-	private static HashMap getUserLists(ArrayList users, String protectionElementObjectId) throws Exception {
+	private HashMap getUserLists(ArrayList users, String protectionElementObjectId) throws Exception {
 		UserProvisioningManager provisioningManager = null;
 		
 		provisioningManager = getProvisioningManager();
@@ -124,14 +134,34 @@ public class StudyCalendarAuthorizationManager {
 		return userHashMap;
 	}
 	
-	private static UserProvisioningManager getProvisioningManager() throws Exception {
+	public UserProvisioningManager getProvisioningManager() throws Exception {
 		return SecurityServiceProvider.getUserProvisioningManager(APPLICATION_CONTEXT_STRING);
 		
 	}
 	
-    public static User getUserObject(String id) throws Exception {
+    public User getUserObject(String id) throws Exception {
     	User user = null;
       	user = getProvisioningManager().getUserById(id);
       	return user;
+    }
+    
+    public void createProtectionGroup(String newProtectionGroup, String parentPG) throws Exception {
+    	UserProvisioningManager provisioningManager = getProvisioningManager();
+    	
+    	if (parentPG != null) {
+    		ProtectionGroup parentGroupSearch = new ProtectionGroup();
+    		parentGroupSearch.setProtectionGroupName(parentPG);
+            SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(parentGroupSearch);
+    		List parentGroupList = provisioningManager.getObjects(protectionGroupSearchCriteria);
+    		
+    		if (parentGroupList.size() > 0) {
+    			ProtectionGroup parentProtectionGroup = (ProtectionGroup) parentGroupList.get(0);
+    			ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
+    			requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
+    			requiredProtectionGroup.setParentProtectionGroup(parentProtectionGroup);
+    			provisioningManager.createProtectionGroup(requiredProtectionGroup);
+    			System.out.println("newProtection group created " + requiredProtectionGroup.getProtectionGroupName());
+    		}
+    	}
     }
 }
