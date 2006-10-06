@@ -25,7 +25,6 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
  */
 
 public class StudyCalendarAuthorizationManager {
-    //private static final String APPLICATION_CONTEXT_STRING = "study_calendar";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
