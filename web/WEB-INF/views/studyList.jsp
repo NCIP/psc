@@ -3,12 +3,12 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>Study Menu</title>
+<title>Patient Study Calendar Menu</title>
 </head>
 <body>
-<h1>Superuser View of Calendar Menu</h1>
+<h1>Calendar Menu</h1>
 
-<strong> New Template </strong>
+<strong> Calendar Templates </strong>
 <security:secureOperation element="CreateStudyLink" operation="ACCESS">
 <p><a href="<c:url value="/pages/newStudy"/>">Create New Study Template</a></p>
 </security:secureOperation>
@@ -44,13 +44,9 @@
 <br>
 <br>
 <strong> Administration </strong>
-<table cellpadding="5">
-        <tr>
-            <td><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></td>
-			<td><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Site Coordinators to Site</a></td>
-			<td><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Participant Coordinators to Site</a></td>
-			<td><a href="<c:url value="/pages/assignStudyTemplatesToParticipantCoordinator"/>">Assign Study Templates to Participant Coordinators</a></td>
-        </tr>
-</table>
+            <div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
+			<div><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Site Coordinators to Site</a></div>
+			<div><a href="<c:url value="/pages/assignSiteCoordinatorsToSite"/>">Assign Participant Coordinators to Site</a></div>
+			<div><a href="<c:url value="/pages/assignStudyTemplatesToParticipantCoordinator"/>">Assign Study Templates to Participant Coordinators</a></div>
 </body>
 </html>
