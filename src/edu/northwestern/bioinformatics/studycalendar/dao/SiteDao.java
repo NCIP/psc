@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import java.util.HashSet;
@@ -12,8 +13,10 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 
 /**
- * @author
+ * @author Padmaja Vedula
+ * @author Rhett Sutphin
  */
+
 public class SiteDao extends StudyCalendarDao<Site> {
     public Class<Site> domainClass() {
         return Site.class;
@@ -26,4 +29,11 @@ public class SiteDao extends StudyCalendarDao<Site> {
         }
         return results.get(0);
     }
+    
+    public void save(Site site) {
+        getHibernateTemplate().saveOrUpdate(site);
+    }
+    
+    
+    
 }
