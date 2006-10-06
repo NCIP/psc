@@ -14,8 +14,6 @@
           factory-method="getAuthenticationManager">
         <constructor-arg><ref local="csmContextName"/></constructor-arg>
     </bean>
-    <bean id="studyCalendarAuthorizationManager"   class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager">
-		<constructor-arg><ref local="csmContextName"/></constructor-arg>
-	</bean>
+    <bean id="studyCalendarAuthorizationManager"   class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
 
 </beans>
