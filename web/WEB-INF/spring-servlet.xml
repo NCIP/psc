@@ -67,5 +67,5 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayScheduleController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
 </beans>
