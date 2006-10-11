@@ -30,7 +30,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.ParticipantIdentifier</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>

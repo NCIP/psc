@@ -34,17 +34,11 @@ public class Participant extends AbstractDomainObject {
     private Date dateOfBirth;
     private String gender;
     private String personId;
-    private List<ParticipantIdentifier> participantIdentifiers = new ArrayList<ParticipantIdentifier>();
     private List<StudyParticipantAssignment> assignments = new ArrayList<StudyParticipantAssignment>();
 
     // business methods
     
     // The participant identifier could be the Medical Record No based on the site 
-
-    public void addParticipantIdentifier(ParticipantIdentifier participantIdentifier) {
-        participantIdentifiers.add(participantIdentifier);
-        participantIdentifier.setParticipant(this);
-    }
 
     public void addAssignment(StudyParticipantAssignment studyParticipantAssignment){
         getAssignments().add(studyParticipantAssignment);
@@ -122,16 +116,6 @@ public class Participant extends AbstractDomainObject {
     public void setPersonId(String personId) {
         this.personId = personId;
     }
-    
-    @OneToMany (mappedBy = "participant")
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<ParticipantIdentifier> getParticipantIdentifiers() {
-        return participantIdentifiers;
-    }
-
-    public void setParticipantIdentifiers(List<ParticipantIdentifier> participantIdentifiers) {
-        this.participantIdentifiers = participantIdentifiers;
-    }
 
     @OneToMany (mappedBy = "participant")
     @OrderBy // order by ID for testing consistency
@@ -157,8 +141,6 @@ public class Participant extends AbstractDomainObject {
             return false;
         if (gender != null ? !gender.equals(that.gender) : that.gender != null) return false;
         if (lastName != null ? !lastName.equals(that.lastName) : that.lastName != null) return false;
-        if (participantIdentifiers != null ? !participantIdentifiers.equals(that.participantIdentifiers) : that.participantIdentifiers != null)
-            return false;
         if (personId != null ? !personId.equals(that.personId) : that.personId != null) return false;
         if (assignments != null ? !assignments.equals(that.assignments) : that.assignments != null)
             return false;

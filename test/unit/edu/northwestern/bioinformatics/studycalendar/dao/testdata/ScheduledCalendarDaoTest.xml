@@ -2,7 +2,7 @@
     <ACTIVITIES id="-100" name="Infusion" activity_type_id="2"/>
 
     <STUDIES id="-1" name="Foo"/>
-    <STUDY_SITES id="-1" site_id="-1" study_id="-1" study_identifier="meaningless"/>
+    <STUDY_SITES id="-1" site_id="-1" study_id="-1"/>
     <SITES id="-1" name="DC"/>
 
     <PARTICIPANTS id="-1" first_name="Alice" last_name="Childress" birth_date="1960-01-01" gender="F" person_id="UNIVERSAL"/>

@@ -47,7 +47,6 @@ public class NewStudyController extends SimpleFormController {
         //// XXX: TEMPORARY until there's an interface for setting up sites & assigning studies to them
         StudySite ss = new StudySite();
         ss.setStudy(study);
-        ss.setStudyIdentifier(Site.DEFAULT_SITE_NAME);
         ss.setSite(siteDao.getDefaultSite());
         studySiteDao.save(ss);
 

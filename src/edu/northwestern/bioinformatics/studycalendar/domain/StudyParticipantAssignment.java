@@ -28,6 +28,7 @@ import org.hibernate.annotations.CascadeType;
     }
 )
 public class StudyParticipantAssignment extends AbstractDomainObject {
+    private String studyId;
     private StudySite studySite;
     private Participant participant;
     private Date startDateEpoch;
@@ -76,6 +77,14 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
         if (scheduledCalendar != null) {
             scheduledCalendar.setAssignment(this);
         }
+    }
+
+    public String getStudyId() {
+        return studyId;
+    }
+
+    public void setStudyId(String studyId) {
+        this.studyId = studyId;
     }
 
     ////// OBJECT METHODS

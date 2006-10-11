@@ -18,5 +18,6 @@ public class StudyParticipantAssignmentDaoTest extends ContextDaoTestCase<StudyP
             assignment.getStartDateEpoch());
         assertEquals("Wrong participant", -20, (int) assignment.getParticipant().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
+        assertEquals("Wrong study id", "004-12", assignment.getStudyId());
     }
 }
