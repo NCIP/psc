@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -22,9 +22,10 @@ public class DisplayScheduleController implements Controller {
         StudyParticipantAssignment assignment = studyParticipantAssignmentDao.getById(assignmentId);
 
         ModelMap model = new ModelMap();
+        model.addObject("assignment", assignment);
         model.addObject("calendar", assignment.getScheduledCalendar());
-        model.addObject("participant", assignment.getScheduledCalendar().getAssignment().getParticipant());
-        model.addObject("plannedCalendar", assignment.getScheduledCalendar().getAssignment().getStudySite().getStudy().getPlannedCalendar());
+        model.addObject("participant", assignment.getParticipant());
+        model.addObject("plannedCalendar", assignment.getStudySite().getStudy().getPlannedCalendar());
         // TODO: this should default to the "current" arm
         model.addObject("arm", assignment.getScheduledCalendar().getScheduledArms().get(0));
 
