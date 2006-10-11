@@ -25,6 +25,7 @@ public class DisplayScheduleController implements Controller {
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("participant", assignment.getScheduledCalendar().getAssignment().getParticipant());
         model.addObject("plannedCalendar", assignment.getScheduledCalendar().getAssignment().getStudySite().getStudy().getPlannedCalendar());
+        // TODO: this should default to the "current" arm
         model.addObject("arm", assignment.getScheduledCalendar().getScheduledArms().get(0));
 
         return new ModelAndView("displaySchedule", model);

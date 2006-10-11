@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+
 /**
  * @author Rhett Sutphin
  */
@@ -72,8 +74,7 @@ public class Fixtures {
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(baseEvent);
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
-        event.setActualDate(DateUtils.createDate(year, month, day));
-        event.setState(ScheduledEventState.SCHEDULED);
+        event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
         return event;
     }
 

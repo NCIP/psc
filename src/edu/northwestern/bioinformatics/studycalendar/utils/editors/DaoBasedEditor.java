@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.editors;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
 import java.beans.PropertyEditorSupport;
@@ -22,10 +22,10 @@ public class DaoBasedEditor extends PropertyEditorSupport {
         if (value != null && !(dao.domainClass().isAssignableFrom(value.getClass()))) {
             throw new IllegalArgumentException("This editor only handles instances of " + dao.domainClass().getName());
         }
-        setValue((AbstractDomainObject) value);
+        setValue((DomainObject) value);
     }
 
-    private void setValue(AbstractDomainObject value) {
+    private void setValue(DomainObject value) {
         if (value != null && value.getId() == null) {
             throw new IllegalArgumentException("This editor can't handle values without IDs");
         }
@@ -34,7 +34,7 @@ public class DaoBasedEditor extends PropertyEditorSupport {
 
     @Override
     public String getAsText() {
-        AbstractDomainObject domainObj = (AbstractDomainObject) getValue();
+        DomainObject domainObj = (DomainObject) getValue();
         if (domainObj == null) {
             return null;
         } else {
@@ -44,7 +44,7 @@ public class DaoBasedEditor extends PropertyEditorSupport {
 
     @Override
     public void setAsText(String text) throws IllegalArgumentException {
-        AbstractDomainObject newValue;
+        DomainObject newValue;
         if (text == null) {
             newValue = null;
         } else {

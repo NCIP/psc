@@ -8,7 +8,7 @@ import java.util.Comparator;
  * @author Rhett Sutphin
  */
 public class AbstractDomainObjectTest extends StudyCalendarTestCase {
-    private Comparator<AbstractDomainObject> byIdComparator = new AbstractDomainObject.ById<AbstractDomainObject>();
+    private Comparator<AbstractDomainObject> byIdComparator = new DomainObject.ById<AbstractDomainObject>();
     private AbstractDomainObject o1, o2;
 
     protected void setUp() throws Exception {

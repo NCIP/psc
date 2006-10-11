@@ -12,9 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.Calendar;
@@ -122,9 +122,11 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         int expectedYear, int expectedMonth, int expectedDayOfMonth,
         int expectedPlannedEventId, ScheduledEvent actualEvent
     ) {
-        assertDayOfDate("Wrong ideal date", expectedYear, expectedMonth, expectedDayOfMonth, actualEvent.getIdealDate());
-        assertEquals("Actual and ideal not same", actualEvent.getIdealDate(), actualEvent.getActualDate());
-        assertEquals("Wrong initial state", ScheduledEventState.SCHEDULED, actualEvent.getState());
         assertEquals("Wrong associated planned event", expectedPlannedEventId, (int) actualEvent.getPlannedEvent().getId());
+        assertDayOfDate("Wrong ideal date", expectedYear, expectedMonth, expectedDayOfMonth, actualEvent.getIdealDate());
+        assertTrue("Wrong current state mode", actualEvent.getCurrentState() instanceof Scheduled);
+        Scheduled currentState = (Scheduled) actualEvent.getCurrentState();
+        assertEquals("Current and ideal date not same", actualEvent.getIdealDate(), currentState.getDate());
+        assertEquals("Wrong reason", "Initialized from template", currentState.getReason());
     }
 }

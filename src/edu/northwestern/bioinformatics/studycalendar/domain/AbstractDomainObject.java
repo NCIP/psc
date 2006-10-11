@@ -15,7 +15,7 @@ import java.util.Comparator;
  * @author Rhett Sutphin
  */
 @MappedSuperclass
-public abstract class AbstractDomainObject {
+public abstract class AbstractDomainObject implements DomainObject {
     private Integer id;
     private Integer version;
 
@@ -37,13 +37,7 @@ public abstract class AbstractDomainObject {
         this.version = version;
     }
 
-    public static class ById<T extends AbstractDomainObject> implements Comparator<T> {
-        public int compare(T o1, T o2) {
-            return ComparisonUtils.nullSafeCompare(o1.getId(), o2.getId());
-        }
-    }
-
-    public static <T extends AbstractDomainObject> boolean equalById(T t1, T t2) {
+    public static <T extends DomainObject> boolean equalById(T t1, T t2) {
         if (t1 == t2) return true;
         if (t1 == null) {
             // t2 must be non-null, so

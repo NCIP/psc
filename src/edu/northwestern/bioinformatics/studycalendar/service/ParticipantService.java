@@ -9,8 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -52,10 +53,9 @@ public class ParticipantService {
                 for (Integer armDay : plannedEvent.getDaysInArm()) {
                     // TODO: I think we might need to track which repetition an event is from
                     ScheduledEvent event = new ScheduledEvent();
-                    event.setState(ScheduledEventState.SCHEDULED);
                     event.setIdealDate(idealDate(armDay, startDate));
-                    event.setActualDate(event.getIdealDate());
                     event.setPlannedEvent(plannedEvent);
+                    event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
                     scheduledArm.addEvent(event);
                 }
             }

@@ -3,12 +3,26 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.IndexColumn;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.ManyToOne;
 import javax.persistence.Column;
+import javax.persistence.Transient;
+import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import java.util.Date;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 
 /**
  * @author Rhett Sutphin
@@ -24,9 +38,40 @@ public class ScheduledEvent extends AbstractDomainObject {
     private ScheduledArm scheduledArm;
     private PlannedEvent plannedEvent;
     private Date idealDate;
-    private Date actualDate;
-    private ScheduledEventState state;
     private String notes;
+    private ScheduledEventState currentState;
+    private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
+
+    ////// LOGIC
+
+    public void changeState(ScheduledEventState newState) {
+        if (getCurrentState() != null) previousStates.add(getCurrentState());
+        setCurrentState(newState);
+    }
+
+    @Transient
+    public List<ScheduledEventState> getAllStates() {
+        List<ScheduledEventState> all = new ArrayList<ScheduledEventState>(getPreviousStates());
+        if (getCurrentState() != null) all.add(getCurrentState());
+        return all;
+    }
+
+    @Transient
+    public Date getActualDate() {
+        Date actualDate = null;
+        List<ScheduledEventState> states = getAllStates();
+        Collections.reverse(states);
+        for (ScheduledEventState state : states) {
+            if (state instanceof DatedScheduledEventState) {
+                actualDate = ((DatedScheduledEventState) state).getDate();
+                break;
+            }
+        }
+        if (actualDate == null) {
+            actualDate = getIdealDate();
+        }
+        return actualDate;
+    }
 
     ////// BEAN PROPERTIES
 
@@ -48,30 +93,38 @@ public class ScheduledEvent extends AbstractDomainObject {
         this.plannedEvent = plannedEvent;
     }
 
+    @Type(type = "edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledEventStateType")
+    @Columns(columns = {
+        @Column(name = "current_state_mode_id"),
+        @Column(name = "current_state_reason"),
+        @Column(name = "current_state_date")
+    })
+    public ScheduledEventState getCurrentState() {
+        return currentState;
+    }
+
+    private void setCurrentState(ScheduledEventState currentState) {
+        this.currentState = currentState;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "scheduled_event_id")
+    @Cascade(CascadeType.ALL)
+    @IndexColumn(name = "list_index")
+    public List<ScheduledEventState> getPreviousStates() {
+        return previousStates;
+    }
+
+    public void setPreviousStates(List<ScheduledEventState> previousStates) {
+        this.previousStates = previousStates;
+    }
+
     public Date getIdealDate() {
         return idealDate;
     }
 
     public void setIdealDate(Date idealDate) {
         this.idealDate = idealDate;
-    }
-
-    public Date getActualDate() {
-        return actualDate;
-    }
-
-    public void setActualDate(Date actualDate) {
-        this.actualDate = actualDate;
-    }
-
-    @Type(type = "scheduledEventState")
-    @Column(name = "scheduled_event_state_id")
-    public ScheduledEventState getState() {
-        return state;
-    }
-
-    public void setState(ScheduledEventState state) {
-        this.state = state;
     }
 
     public String getNotes() {
