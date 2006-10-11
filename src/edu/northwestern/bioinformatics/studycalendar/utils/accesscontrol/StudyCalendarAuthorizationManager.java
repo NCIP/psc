@@ -262,14 +262,13 @@ public class StudyCalendarAuthorizationManager {
 		if (roleList.size() > 0) {
 			Role accessRole = (Role) roleList.get(0);
 			String[] roleIds = new String[] {accessRole.getId().toString()};
-			
-			
+
 			for (String userId : userIds)
 			{
 				provisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
 			}
 		}
-			
 	}
 }
-}
+
+
