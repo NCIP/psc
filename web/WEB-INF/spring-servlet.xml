@@ -70,4 +70,33 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
     <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.SelectScheduledArmController"/>
+
+    <bean name="/manageSites" id="manageSitesController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
+
+    <bean name="/assignSite" id="assignSiteController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName"><value>assignSite</value></property>
+    </bean>
+
+    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" 
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName"><value>assignSiteCoordinator</value></property>
+    </bean>
+
+    <bean name="/assignParticipantCoordinatorsToSite" id="assignParticipantCoordinatorsToSiteController" 
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName"><value>assignParticipantCoordinatorsToSite</value></property>
+    </bean>
+
+    <bean name="/assignTemplatesToParticipantCoordinators" id="assignTemplatesToParticipantCoordinatorsController" 
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
+    </bean>
+
+
+    <bean name="/createSite" id="createSiteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.CreateSiteController"/>
+
+
 </beans>

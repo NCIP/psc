@@ -29,6 +29,10 @@ public class SiteDao extends StudyCalendarDao<Site> {
         }
         return results.get(0);
     }
+
+    public List<Site> getAll() {
+        return getHibernateTemplate().find("from Site");
+    }    
     
     public void save(Site site) {
         getHibernateTemplate().saveOrUpdate(site);

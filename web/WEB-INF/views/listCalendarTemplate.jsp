@@ -12,7 +12,7 @@
 </head>
 <body>
 <h1>Template for ${calendar.name}</h1>
-<a href="<c:url value="/pages/studyList"/>">Select a different study</a>.<br>
+<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
 
 <c:if test="${not study.plannedCalendar.complete}">
     <c:forEach items="${study.plannedCalendar.epochs}" var="epoch">

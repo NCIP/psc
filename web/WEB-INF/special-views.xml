@@ -13,6 +13,11 @@
         <property name="url"><value>/pages/studyList</value></property>
     </bean>
 
+    <bean id="redirectToManageSites" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/manageSites</value></property>
+    </bean>
+
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/calendarTemplate</value></property>
