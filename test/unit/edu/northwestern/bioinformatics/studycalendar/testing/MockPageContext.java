@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Just like {@link org.springframework.mock.web.MockPageContext}, except it responds to
+ * {@link #getOut()} with an externally-configured {@link JspWriter}.
+ *
  * @author Rhett Sutphin
  */
 public class MockPageContext extends org.springframework.mock.web.MockPageContext {
