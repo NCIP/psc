@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
@@ -7,6 +7,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 
 /**

@@ -10,7 +10,7 @@
 
     <tag>
         <name>secureOperation</name>
-        <tagclass>edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecureOperation</tagclass>
+        <tagclass>edu.northwestern.bioinformatics.studycalendar.web.taglibs.security.SecureOperation</tagclass>
         <bodycontent>JSP</bodycontent>
 
         <attribute>
