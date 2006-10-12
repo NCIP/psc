@@ -19,15 +19,18 @@ public class ReplaceHtmlTest extends StudyCalendarTestCase {
     private ReplaceHtml tag;
     private JspWriter writer;
     private MockPageContext pageContext;
+    private BodyContent bodyContent;
 
     protected void setUp() throws Exception {
         super.setUp();
         tag = new ReplaceHtml();
         writer = registerMockFor(JspWriter.class);
         pageContext = new MockPageContext(writer);
+        bodyContent = registerMockFor(BodyContent.class);
 
         tag.setPageContext(pageContext);
         tag.setTargetElement(TARGET_ELEMENT);
+        tag.setBodyContent(bodyContent);
     }
 
     public void testStart() throws Exception {
@@ -37,11 +40,17 @@ public class ReplaceHtmlTest extends StudyCalendarTestCase {
     }
 
     public void testEnd() throws Exception {
-        BodyContent bodyContent = registerMockFor(BodyContent.class);
-        tag.setBodyContent(bodyContent);
-
         expect(bodyContent.getString()).andReturn("content");
         writer.write("Element.update(\"" + TARGET_ELEMENT + "\", \"content\")");
+
+        replayMocks();
+        assertEquals(Tag.EVAL_PAGE, tag.doEndTag());
+        verifyMocks();
+    }
+
+    public void testEndWithComplexContent() throws Exception {
+        expect(bodyContent.getString()).andReturn("<div id=\"foo\">\n  <strong>Bad</strong>\n</div>");
+        writer.write("Element.update(\"" + TARGET_ELEMENT + "\", \"<div id=\\\"foo\\\">\\n  <strong>Bad</strong>\\n</div>\")");
 
         replayMocks();
         assertEquals(Tag.EVAL_PAGE, tag.doEndTag());
