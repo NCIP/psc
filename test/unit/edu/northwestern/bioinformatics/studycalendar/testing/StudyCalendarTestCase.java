@@ -46,7 +46,7 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         return registered(EasyMock.createMock(forClass));
     }
 
-    protected <T> T registerMockFor(Class<T> forClass, Method[] methodsToMock) {
+    protected <T> T registerMockFor(Class<T> forClass, Method... methodsToMock) {
         return registered(EasyMock.createMock(forClass, methodsToMock));
     }
 

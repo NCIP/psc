@@ -19,7 +19,7 @@ public class DaoBasedEditorTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        stubDao = registerMockFor(StubDao.class, new Method[] { StubDao.class.getMethod("getById", Integer.TYPE) });
+        stubDao = registerMockFor(StubDao.class, StubDao.class.getMethod("getById", Integer.TYPE));
         editor = new DaoBasedEditor(stubDao);
     }
 
