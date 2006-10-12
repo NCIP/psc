@@ -13,7 +13,7 @@
             margin: 1em;
         }
 
-        .epochs-and-arms {
+        .epochs-and-arms, #next-arm-form {
             margin: 1em;
         }
 
@@ -49,15 +49,65 @@
             padding: 0.5em;
             border: 1px solid #aaa;
         }
+
+        #scheduled-arms a {
+            text-decoration: none;
+        }
+
+        #scheduled-arms ul li.selected {
+            color: white;
+            background-color: #999;
+        }
+
+        #scheduled-arms ul li.selected a {
+            color: white;
+        }
+
+        #next-arm-form {
+            float: right;
+            height: 100%;
+            width: 20%;
+        }
+
+        #next-arm-form .row .label {
+            width: 40%;
+            color: #666;
+        }
+
     </style>
+    <script type="text/javascript">
+        function registerSelectArmHandlers() {
+            $$('#scheduled-arms a').each(function(a) {
+                Event.observe(a, "click", function(e) {
+                    Event.stop(e)
+                    new Ajax.Request(a.href, { asynchronous: true })
+                })
+            })
+        }
+
+        function updateSelectedArm(armId) {
+            var sel = $$("#scheduled-arms li.selected")
+            if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+            Element.addClassName($("select-arm-" + armId), "selected")
+        }
+
+        Event.observe(window, "load", registerSelectArmHandlers);
+    </script>
 </head>
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
 <div class="section">
-    <h3 title="TODO">Schedule next arm</h3>
+    <h3>Schedule next arm</h3>
     <div class="content">
-        <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+        <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
+        <form id="next-arm-form" action="<c:url value="/pages/schedule/nextArm"/>">
+            <div class="row"><div class="label">Next arm</div> <div class="value"><span id="next-arm-name"></span></div></div>
+            <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+            <div class="row"><div class="label">Start date</div> <div class="value"><input type="text" name="startDate" size="10"/></div></div>
+            <div class="row"><div class="value"><input type="submit" value="Schedule next arm"/></div></div>
+        </form>
+        <tags:epochsAndArms plannedCalendar="${plannedCalendar}" widthPercent="75"/>
     </div>
 </div>
 
@@ -65,24 +115,16 @@
     <h3>Arms scheduled</h3>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
     <ul>
-    <c:forEach items="${calendar.scheduledArms}" var="arm">
-        <li><a href="<c:url value="/pages/schedule/arm/something"/>">${arm.name}</a></li>
+    <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
+        <li id="select-arm-${scheduledArm.id}" ${arm.id == scheduledArm.id ? 'class="selected"' : ''}>
+            <a href="<c:url value="/pages/schedule/select?arm=${scheduledArm.id}"/>">${scheduledArm.name}</a>
+        </li>
     </c:forEach>
     </ul>
 </div>
 
 <div id="selected-arm" class="section">
-    <h3>${arm.name}</h3>
-    <c:forEach items="${arm.eventsByDate}" var="entry">
-        <div class="day autoclear">
-            <h4><tags:formatDate value="${entry.key}"/></h4>
-            <ul>
-                <c:forEach items="${entry.value}" var="event">
-                    <li>${event.plannedEvent.activity.name}</li>
-                </c:forEach>
-            </ul>
-        </div>
-    </c:forEach>
+    <tags:scheduledArm arm="${arm}"/>
 </div>
 </body>
 </html>

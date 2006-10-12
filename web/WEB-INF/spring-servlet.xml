@@ -68,4 +68,6 @@
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
+    <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.SelectScheduledArmController"/>
 </beans>

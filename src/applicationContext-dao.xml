@@ -79,5 +79,6 @@
     <bean id="studySiteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao"/>
 
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>
+    <bean id="scheduledArmDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao"/>
 
 </beans>
