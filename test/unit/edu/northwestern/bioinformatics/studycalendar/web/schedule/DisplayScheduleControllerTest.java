@@ -51,7 +51,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
-        assertEquals("displaySchedule", mv.getViewName());
+        assertEquals("schedule/display", mv.getViewName());
 
         Map<String, Object> actualModel = mv.getModel();
 

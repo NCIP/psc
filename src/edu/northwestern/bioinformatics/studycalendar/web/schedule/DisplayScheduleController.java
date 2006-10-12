@@ -29,7 +29,7 @@ public class DisplayScheduleController implements Controller {
         // TODO: this should default to the "current" arm
         model.addObject("arm", assignment.getScheduledCalendar().getScheduledArms().get(0));
 
-        return new ModelAndView("displaySchedule", model);
+        return new ModelAndView("schedule/display", model);
     }
 
     ////// CONFIGURATION

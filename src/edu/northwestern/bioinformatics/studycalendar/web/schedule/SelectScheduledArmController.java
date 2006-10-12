@@ -24,7 +24,7 @@ public class SelectScheduledArmController implements Controller {
         int armId = ServletRequestUtils.getRequiredIntParameter(request, "arm");
         Map<String, Object> model = new ModelMap("arm", scheduledArmDao.getById(armId));
 
-        return new ModelAndView("ajax/selectScheduledArm", model);
+        return new ModelAndView("schedule/ajax/selectScheduledArm", model);
     }
 
     @Required
