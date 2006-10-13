@@ -7,7 +7,6 @@
 <html>
 <head>
     <title>Account Login</title>
-    <tags:javascriptLink name="scriptaculous/scriptaculous"/>
     <style type="text/css">
         div.label {
             width: 35%;
