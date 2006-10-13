@@ -4,4 +4,4 @@
 <jsgen:replaceHtml targetElement="selected-arm">
     <tags:scheduledArm arm="${arm}"/>
 </jsgen:replaceHtml>
-updateSelectedArm(${arm.id})
+Element.addClassName($("select-arm-${arm.id}"), "selected")

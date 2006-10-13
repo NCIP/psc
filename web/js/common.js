@@ -26,6 +26,11 @@ SC.slideAndShow = function(element, options) {
     );
 }
 
+SC.highlight = function(element, options) {
+    var e = $(element)
+    new Effect.Highlight(element, $H(options))
+}
+
 //////////// COOKIES
 
 /** Main fns based on http://www.quirksmode.org/js/cookies.html */
