@@ -16,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -44,8 +45,9 @@ public class ScheduleNextArmController extends AbstractCommandController {
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         ScheduleNextArmCommand command = (ScheduleNextArmCommand) oCommand;
-        command.schedule();
-        return new ModelAndView("ajax/scheduleNextArm", errors.getModel());
+        Map<String, Object> model = errors.getModel();
+        model.put("scheduledArm", command.schedule());
+        return new ModelAndView("schedule/ajax/scheduleNextArm", model);
     }
 
     /////// CONFIGURATION

@@ -70,6 +70,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
     <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.SelectScheduledArmController"/>
+    <bean name="/schedule/nextArm" id="ScheduleNextArmController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
 
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
@@ -94,9 +96,6 @@
       <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
     </bean>
 
-
     <bean name="/createSite" id="createSiteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.CreateSiteController"/>
-
-
 </beans>

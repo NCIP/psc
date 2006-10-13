@@ -64,11 +64,13 @@
         #scheduled-arms ul li {
             display: inline;
             padding: 0.2em 0.5em;
+            margin: 0 0.3em;
             border: 1px solid #aaa;
         }
 
         #scheduled-arms a {
             text-decoration: none;
+            color: black;
         }
 
         #scheduled-arms ul li.selected {
@@ -82,24 +84,27 @@
     </style>
     <script type="text/javascript">
         function registerSelectArmHandlers() {
-            $$('#scheduled-arms a').each(function(a) {
-                Event.observe(a, "click", function(e) {
-                    Event.stop(e)
-                    SC.slideAndHide('selected-arm', { afterFinish: function() {
-                        // deselect current
-                        var sel = $$("#scheduled-arms li.selected")
-                        if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+            $$('#scheduled-arms a').each(registerSelectArmHandler)
+        }
 
-                        new Ajax.Request(a.href, { asynchronous: true,
-                            onSuccess: function() {
-                                SC.slideAndShow('selected-arm')
-                            }, onFailure: function() {
-                                Element.update('selected-arm', "Loading failed")
-                                SC.slideAndShow('selected-arm')
-                            }
-                        });
-                    } });
-                })
+        function registerSelectArmHandler(a) {
+            var aElement = $(a)
+            Event.observe(aElement, "click", function(e) {
+                Event.stop(e)
+                SC.slideAndHide('selected-arm', { afterFinish: function() {
+                    // deselect current
+                    var sel = $$("#scheduled-arms li.selected")
+                    if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+
+                    new Ajax.Request(aElement.href, { asynchronous: true,
+                        onSuccess: function() {
+                            SC.slideAndShow('selected-arm')
+                        }, onFailure: function() {
+                            Element.update('selected-arm', "Loading failed")
+                            SC.slideAndShow('selected-arm')
+                        }
+                    });
+                } });
             })
         }
 
@@ -109,7 +114,7 @@
                     Event.stop(e)
                     $('next-arm-id').value = a.id.substring(4)
                     Element.update('next-arm-name', a.title)
-                    SC.highlight('next-arm-name')
+                    SC.highlight('next-arm-name', { restorecolor: "#ffffff" })
                     $('next-arm-button').disabled = false
                 })
             })
@@ -141,6 +146,7 @@
                 <div class="value"><span id="next-arm-name"></span></div>
             </div>
             <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+            <input type="hidden" name="calendar" value="${calendar.id}"/>
             <div class="row">
                 <div class="label"><label for="start-date-input">Start date</label></div>
                 <div class="value"><input type="text" name="startDate" id="start-date-input" size="10"/></div>
@@ -158,9 +164,7 @@
     <p class="tip">Select an arm to show its detailed schedule below.</p>
     <ul id="scheduled-arms-list">
     <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
-        <li id="select-arm-${scheduledArm.id}" ${arm.id == scheduledArm.id ? 'class="selected"' : ''}>
-            <a href="<c:url value="/pages/schedule/select?arm=${scheduledArm.id}"/>">${scheduledArm.name}</a>
-        </li>
+        <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
     </c:forEach>
     </ul>
 </div>
