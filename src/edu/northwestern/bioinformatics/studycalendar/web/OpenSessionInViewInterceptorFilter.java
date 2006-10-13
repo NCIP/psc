@@ -35,6 +35,7 @@ public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAd
     public void doFilter(
         ServletRequest request, ServletResponse response, FilterChain chain
     ) throws IOException, ServletException {
+        log.debug("Opening session for request");
         OpenSessionInViewInterceptor interceptor
             = (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor");
         WebRequest webRequest = new ServletWebRequest((HttpServletRequest) request);
@@ -44,6 +45,7 @@ public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAd
             interceptor.postHandle(webRequest, null);
         } finally {
             interceptor.afterCompletion(webRequest, null);
+            log.debug("Session closed");
         }
     }
 }
