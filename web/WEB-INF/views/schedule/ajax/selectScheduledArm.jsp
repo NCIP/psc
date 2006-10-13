@@ -4,4 +4,5 @@
 <jsgen:replaceHtml targetElement="selected-arm">
     <sched:scheduledArm arm="${arm}"/>
 </jsgen:replaceHtml>
-Element.addClassName($("select-arm-${arm.id}"), "selected")
+Element.addClassName("select-arm-${arm.id}", "selected")
+SC.slideAndShow('selected-arm-content')

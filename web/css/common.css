@@ -77,3 +77,7 @@ div.row div.value { font-weight: normal; }
 .arms a.selected {
     background-color: #ddd;
 }
+
+img.indicator {
+    visibility: hidden;
+}

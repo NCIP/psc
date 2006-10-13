@@ -68,13 +68,16 @@
             border: 1px solid #aaa;
         }
 
+        #scheduled-arms #scheduled-arms-indicator-item {
+            border-color: white;
+        }
+
         #scheduled-arms a {
             text-decoration: none;
             color: black;
         }
 
         #scheduled-arms ul li.selected {
-            color: white;
             background-color: #999;
         }
 
@@ -91,17 +94,20 @@
             var aElement = $(a)
             Event.observe(aElement, "click", function(e) {
                 Event.stop(e)
-                SC.slideAndHide('selected-arm', { afterFinish: function() {
+                $("scheduled-arms-indicator").reveal();
+                SC.slideAndHide('selected-arm-content', { afterFinish: function() {
                     // deselect current
                     var sel = $$("#scheduled-arms li.selected")
                     if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
 
                     new Ajax.Request(aElement.href, { asynchronous: true,
-                        onSuccess: function() {
-                            SC.slideAndShow('selected-arm')
-                        }, onFailure: function() {
-                            Element.update('selected-arm', "Loading failed")
-                            SC.slideAndShow('selected-arm')
+                        onComplete: function() {
+                            $("scheduled-arms-indicator").conceal()
+                        },
+                        onFailure: function() {
+                            Element.update('selected-arm-content', "Loading failed")
+                            Element.update('selected-arm-header', "Error")
+                            SC.slideAndShow('selected-arm-content')
                         }
                     });
                 } });
@@ -120,11 +126,18 @@
             })
 
             Event.observe('next-arm-form', "submit", function(e) {
+                $('next-arm-indicator').reveal()
                 var form = $('next-arm-form')
                 Event.stop(e)
                 new Ajax.Request(form.action, {
                     asynchronous: true,
-                    parameters: Form.serialize(form)
+                    parameters: Form.serialize(form),
+                    onComplete: function() {
+                        $('next-arm-indicator').conceal()
+                    },
+                    onFailure: function() {
+                        alert("TODO: need to handle errors")
+                    }
                 })
             })
         }
@@ -152,7 +165,7 @@
                 <div class="value"><input type="text" name="startDate" id="start-date-input" size="10"/></div>
             </div>
             <div class="row">
-                <div class="value"><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
+                <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
             </div>
         </form>
         <tags:epochsAndArms plannedCalendar="${plannedCalendar}" widthPercent="75"/>
@@ -163,6 +176,7 @@
     <h3>Arms scheduled</h3>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
     <ul id="scheduled-arms-list">
+        <li id="scheduled-arms-indicator-item"><tags:activityIndicator id="scheduled-arms-indicator"/></li>
     <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
         <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
     </c:forEach>
@@ -170,7 +184,7 @@
 </div>
 
 <div id="selected-arm" class="section">
-    <sched:scheduledArm arm="${arm}"/>
+    <sched:scheduledArm arm="${arm}" visible="true"/>
 </div>
 </body>
 </html>

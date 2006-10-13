@@ -65,3 +65,23 @@ var Cookies = {
         Cookies.add(name, value, days)
     }
 }
+
+////// PROTOTYPE EXTENSIONS
+
+Element.addMethods( {
+    // Like prototype's hide(), but uses the visibility CSS prop instead of display
+    conceal: function() {
+        for (var i = 0; i < arguments.length; i++) {
+          var element = $(arguments[i]);
+          element.style.visibility = 'hidden';
+        }
+    },
+
+    // Like prototype's show(), but uses the visibility CSS prop instead of display
+    reveal: function() {
+        for (var i = 0; i < arguments.length; i++) {
+          var element = $(arguments[i]);
+          element.style.visibility = 'visible';
+        }
+    }
+} );
