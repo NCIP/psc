@@ -7,13 +7,48 @@
     <jspversion>2.0</jspversion>
     <shortname>jsgen</shortname>
     <uri>http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator</uri>
+    <info>
+        A library modeled on the JavascriptGenerator mixin used by Ruby on Rails' RJS templates.
+        Each tag generates one or more JavaScript statements which modify the page in which they
+        are executed.  The generated scripts depend on the prototype.js JavaScript library.
+
+        The intended use is this:  a page will make an asynchronous request to a controller via
+        prototype.js' Ajax.Request object.  The controller will render a view with a content type
+        of text/javascript.  Ajax.Request will automatically interpret this view in the context
+        of the requesting page, thereby modifying the page.
+
+        The tags in this library make it easier to create the aforementioned javascript view,
+        particularly when making large changes.  The view will in most cases consist of
+        a mixture of these tags and manually-crafted javascript.
+
+        The "targetElement" attribute of each tag is the element's DOM id.
+    </info>
 
     <tag>
         <name>replaceHtml</name>
         <tagclass>edu.northwestern.bioinformatics.studycalendar.web.taglibs.jsgenerator.ReplaceHtml</tagclass>
-
+        <info>
+            Replaces the content of the target element with the body of the tag (HTML).
+        </info>
         <attribute>
             <name>targetElement</name>
+            <required>true</required>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>insertHtml</name>
+        <tagclass>edu.northwestern.bioinformatics.studycalendar.web.taglibs.jsgenerator.InsertHtml</tagclass>
+        <info>
+            Inserts the body of the tag (HTML) near the target element at the given position.
+            Position may be top, bottom, before, or after.
+        </info>
+        <attribute>
+            <name>targetElement</name>
+            <required>true</required>
+        </attribute>
+        <attribute>
+            <name>position</name>
             <required>true</required>
         </attribute>
     </tag>
