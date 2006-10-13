@@ -1,7 +1,7 @@
 <%@page contentType="text/javascript;charset=UTF-8"%>
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
-<%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
 <jsgen:replaceHtml targetElement="selected-arm">
-    <tags:scheduledArm arm="${arm}"/>
+    <sched:scheduledArm arm="${arm}"/>
 </jsgen:replaceHtml>
 Element.addClassName($("select-arm-${arm.id}"), "selected")

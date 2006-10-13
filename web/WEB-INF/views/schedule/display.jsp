@@ -1,6 +1,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
 <html>
 <head>
     <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
@@ -62,7 +63,7 @@
 
         #scheduled-arms ul li {
             display: inline;
-            padding: 0.5em;
+            padding: 0.2em 0.5em;
             border: 1px solid #aaa;
         }
 
@@ -155,7 +156,7 @@
 <div id="scheduled-arms" class="section">
     <h3>Arms scheduled</h3>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
-    <ul>
+    <ul id="scheduled-arms-list">
     <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
         <li id="select-arm-${scheduledArm.id}" ${arm.id == scheduledArm.id ? 'class="selected"' : ''}>
             <a href="<c:url value="/pages/schedule/select?arm=${scheduledArm.id}"/>">${scheduledArm.name}</a>
@@ -165,7 +166,7 @@
 </div>
 
 <div id="selected-arm" class="section">
-    <tags:scheduledArm arm="${arm}"/>
+    <sched:scheduledArm arm="${arm}"/>
 </div>
 </body>
 </html>
