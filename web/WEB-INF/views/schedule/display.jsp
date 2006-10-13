@@ -151,7 +151,7 @@
 
 <div class="section">
     <h3>Schedule next arm</h3>
-    <div class="content autoclear">
+    <div class="content">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
         <form id="next-arm-form" action="<c:url value="/pages/schedule/nextArm"/>">
             <div class="row">
