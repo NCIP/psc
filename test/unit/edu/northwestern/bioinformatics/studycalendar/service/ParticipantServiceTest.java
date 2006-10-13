@@ -95,13 +95,14 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1)));      // 8, 36
         p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18)));     // 25, 53
 
-        service.scheduleArm(assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1));
+        ScheduledArm returnedArm = service.scheduleArm(assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1));
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
         assertNotNull("Scheduled calendar not created", scheduledCalendar);
         assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
-        assertSame("Arm not added to scheduled arms", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
+        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
+        assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
         List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
 

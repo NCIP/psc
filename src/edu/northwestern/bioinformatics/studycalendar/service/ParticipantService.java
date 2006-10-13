@@ -38,7 +38,7 @@ public class ParticipantService {
         return spa;
     }
 
-    public void scheduleArm(StudyParticipantAssignment assignment, Arm arm, Date startDate) {
+    public ScheduledArm scheduleArm(StudyParticipantAssignment assignment, Arm arm, Date startDate) {
         ScheduledCalendar calendar = assignment.getScheduledCalendar();
         if (calendar == null) {
             calendar = new ScheduledCalendar();
@@ -72,6 +72,8 @@ public class ParticipantService {
         });
 
         participantDao.save(assignment.getParticipant());
+
+        return scheduledArm;
     }
 
     private Date idealDate(int armDay, Date startDate) {
