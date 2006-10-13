@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +23,7 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
 
     private ScheduleNextArmCommand command;
     private ScheduleNextArmController controller;
+    private static final ScheduledArm SCHEDULED_ARM = new ScheduledArm();
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -69,13 +71,20 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
         assertDayOfDate(2003, Calendar.AUGUST, 5, command.getStartDate());
     }
 
-    private void executeRequest() throws Exception {
-        command.schedule();
+    public void testScheduledArmInModel() throws Exception {
+        ModelAndView actual = executeRequest();
+        assertTrue("Missing scheduledArm", actual.getModel().containsKey("scheduledArm"));
+        assertSame(SCHEDULED_ARM, actual.getModel().get("scheduledArm"));
+    }
+
+    private ModelAndView executeRequest() throws Exception {
+        expect(command.schedule()).andReturn(SCHEDULED_ARM);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
         BindingResult result = (BindingResult) mv.getModel().get(BindingResult.MODEL_KEY_PREFIX + "command");
         assertEquals("There were errors in the request: " + result.getAllErrors(), 0, result.getErrorCount());
+        return mv;
     }
 }
