@@ -49,7 +49,13 @@ public class StudyCalendarAuthorizationManager {
 			newProtectionElement.setObjectId(protectionElementObjectId);
 			newProtectionElement.setProtectionElementName(protectionElementObjectId);
 			provisioningManager.createProtectionElement(newProtectionElement);
-			provisioningManager.setOwnerForProtectionElement(protectionElementObjectId, (String[])userIds.toArray());
+			
+			Object[] oUserIds = userIds.toArray();
+			String[] sUserIds = new String[oUserIds.length];
+			for(int itd=0; itd<sUserIds.length; ++itd) {
+				sUserIds[itd] = (String)oUserIds[itd];
+			}
+			provisioningManager.setOwnerForProtectionElement(protectionElementObjectId, sUserIds);
 		}
 		if (protectionElementPresent)
 		{
