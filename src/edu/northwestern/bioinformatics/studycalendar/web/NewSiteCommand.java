@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 
 
-public class CreateSiteCommand {
+public class NewSiteCommand {
     private String name;
 
     private SiteService siteService;

@@ -76,6 +76,9 @@
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
 
+    <bean name="/newSite" id="newSiteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController"/>
+
     <bean name="/assignSite" id="assignSiteController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName"><value>assignSite</value></property>
@@ -95,7 +98,4 @@
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
     </bean>
-
-    <bean name="/createSite" id="createSiteController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.CreateSiteController"/>
 </beans>

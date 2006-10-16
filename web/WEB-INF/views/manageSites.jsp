@@ -25,7 +25,7 @@
 
 <a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
 
-<p><a href="<c:url value="/pages/createSite"/>">Create New Site</a></p>
+<p><a href="<c:url value="/pages/newSite"/>">Create New Site</a></p>
 
 <table>
     <c:forEach items="${sites}" var="site">

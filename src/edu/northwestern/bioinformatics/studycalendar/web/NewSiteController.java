@@ -15,11 +15,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 
 
-public class CreateSiteController extends SimpleFormController {
+public class NewSiteController extends SimpleFormController {
     private SiteService siteService;
        
-    public CreateSiteController() {
-        setCommandClass(CreateSiteCommand.class);
+    public NewSiteController() {
+        setCommandClass(NewSiteCommand.class);
         setFormView("createSite");
         setBindOnNewForm(true);
     }
@@ -32,13 +32,13 @@ public class CreateSiteController extends SimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        CreateSiteCommand command = (CreateSiteCommand) oCommand;
+        NewSiteCommand command = (NewSiteCommand) oCommand;
         Site site = command.createSite();
         return new ModelAndView("redirectToManageSites");
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	CreateSiteCommand command = new CreateSiteCommand();
+    	NewSiteCommand command = new NewSiteCommand();
         command.setSiteService(siteService);
         return command;
     }
