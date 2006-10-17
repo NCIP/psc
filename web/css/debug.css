@@ -62,7 +62,7 @@
 
 #debug dd ul li {
     margin: 0.25em 0 ;
-    padding: 0em ;
+    padding: 0 ;
     list-style-type: circle ;
 }
 
