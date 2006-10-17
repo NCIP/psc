@@ -7,7 +7,7 @@
 
 <form:form method="post" id="login">
     <c:if test="${failed}">
-        <p class="error"> Bad username and/or password.  Please try again. </p>
+        <p class="error"> Incorrect username and/or password.  Please try again. </p>
     </c:if>
     <div class="row">
         <div class="label">
