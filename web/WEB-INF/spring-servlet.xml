@@ -37,16 +37,16 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 
     <bean name="/newStudy" id="newStudyController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewStudyController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
     <bean name="/viewArm" id="viewArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ViewArmController"/>
 
     <bean name="/newPeriod" id="newPeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewPeriodController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController"/>
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewActivityController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController"/>
 
     <bean name="/createParticipant" id="newParticipantController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
@@ -55,13 +55,13 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
 
     <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayCalendarTemplateController"/>
 
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.MarkCompleteController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController"/>
 
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController"/>
           
     <bean name="/assignParticipantCoordinator" id="ParticipantCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
