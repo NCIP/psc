@@ -180,7 +180,7 @@
                 <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
             </div>
         </form>
-        <tags:epochsAndArms plannedCalendar="${plannedCalendar}" widthPercent="75"/>
+        <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
     </div>
 </div>
 
