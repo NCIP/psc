@@ -9,7 +9,7 @@ SC.slideAndHide = function(element, options) {
             new Effect.BlindUp(e, {sync:true}),
             new Effect.Fade(e, {sync:true})
         ], $H(options).merge({
-            duration:1.0
+            duration: 1.0
         })
     );
 }
@@ -21,7 +21,7 @@ SC.slideAndShow = function(element, options) {
             new Effect.BlindDown(e, {sync:true}),
             new Effect.Appear(e, {sync:true})
         ], $H(options).merge({
-            duration:1.0
+            duration: 1.0
         })
     );
 }
@@ -29,6 +29,14 @@ SC.slideAndShow = function(element, options) {
 SC.highlight = function(element, options) {
     var e = $(element)
     new Effect.Highlight(element, $H(options))
+}
+
+SC.asyncSubmit = function(form, options) {
+    var f = $(form);
+    new Ajax.Request(f.action, $H(options).merge({
+        asynchronous: true,
+        parameters: Form.serialize(f)
+    }))
 }
 
 //////////// COOKIES

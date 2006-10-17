@@ -9,8 +9,10 @@
   <head>
     <title>caBIG Study Calendar Module - <decorator:title/></title>
     <tags:stylesheetLink name="debug"/>
+    <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="common"/>
     <tags:javascriptLink name="prototype"/>
+    <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="common"/>
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }

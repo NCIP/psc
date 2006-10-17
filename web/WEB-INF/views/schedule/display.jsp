@@ -11,6 +11,7 @@
             border: 2px solid #666;
             margin: 1em 0;
         }
+
         .section p {
             margin: 1em;
         }
@@ -46,13 +47,16 @@
             margin: 1em;
             position: relative;
         }
+
         .day h4 {
             float: left;
             margin: 0;
         }
+
         .day ul {
             margin-left: 4em;
         }
+
         .day ul li {
             list-style-type: none;
         }
@@ -61,11 +65,18 @@
             font-size: 80%;
         }
 
+        #scheduled-arms ul {
+            white-space: nowrap;
+            padding: 0;
+            margin: 0.5em 0;
+        }
+
         #scheduled-arms ul li {
             display: inline;
             padding: 0.2em 0.5em;
             margin: 0 0.3em;
             border: 1px solid #aaa;
+            white-space: nowrap;
         }
 
         #scheduled-arms #scheduled-arms-indicator-item {
@@ -127,11 +138,8 @@
 
             Event.observe('next-arm-form', "submit", function(e) {
                 $('next-arm-indicator').reveal()
-                var form = $('next-arm-form')
                 Event.stop(e)
-                new Ajax.Request(form.action, {
-                    asynchronous: true,
-                    parameters: Form.serialize(form),
+                SC.asyncSubmit('next-arm-form', {
                     onComplete: function() {
                         $('next-arm-indicator').conceal()
                     },

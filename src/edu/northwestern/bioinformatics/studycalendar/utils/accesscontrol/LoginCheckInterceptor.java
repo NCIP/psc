@@ -9,6 +9,10 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
+import java.util.HashMap;
+
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 
 /**
  * @author Padmaja Vedula
@@ -44,7 +48,12 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
 
             request.getSession().setAttribute(REQUESTED_URL_ATTRIBUTE, getFullPath(request));
 
-            throw new ModelAndViewDefiningException(new ModelAndView("redirectToLogin"));
+            Map<String, Object> model = new HashMap<String, Object>();
+            if (ControllerTools.isAjaxRequest(request)) {
+                log.debug("Ajax request intercepted");
+                model.put("ajax", " ");
+            }
+            throw new ModelAndViewDefiningException(new ModelAndView("redirectToLogin", model));
         }
         return true;
     }

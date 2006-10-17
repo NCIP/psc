@@ -13,6 +13,10 @@ h1, h2, h3, h4, h5, h6 {
     text-align: right;
 }
 
+.error {
+    color: #c03;
+}
+
 /****** SPECIAL TYPES */
 
 /*
@@ -80,4 +84,31 @@ div.row div.value { font-weight: normal; }
 
 img.indicator {
     visibility: hidden;
+}
+
+form#login div.label {
+    width: 35%;
+}
+form#login div.submit {
+    text-align: right;
+}
+form#login {
+    width: 20em;
+}
+
+/****** MODIFICATIONS TO lightbox.css STYLES */
+
+#lightbox {
+    background-color: #eee;
+    border: 2px outset black;
+}
+
+#lightbox h1 {
+    background-color: #000;
+    color: #fff;
+    padding: 0.5em 2em;
+}
+
+#lightbox-content {
+    margin: 1em 2em;
 }

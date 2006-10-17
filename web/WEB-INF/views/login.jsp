@@ -1,50 +1,32 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <html>
 <head>
-    <title>Account Login</title>
+    <title>Account login</title>
     <style type="text/css">
-        div.label {
-            width: 35%;
+        body {
+            background-color: #999;
         }
-        div.submit {
-            text-align: right;
+        div#body {
+            width: 24em;
+            border: 2px outset #000;
+            background-color: #fff;
+            padding: 0;
+            margin: 3em auto;
         }
-        form {
-            width: 20em;
+        h1 {
+            background-color: #000;
+            color: #fff;
+            padding: 0.5em 2em;
+            text-align: center;
+        }
+        form#login {
+            margin: 1em 2em;
         }
     </style>
 </head>
 <body>
-<h1>Please enter your userid and password</h1>
-<c:url value="/public/login" var="formAction"/>
-<form:form action="${formAction}" method="post">
-    <div class="row">
-        <div class="label">
-            <form:label path="userId">User Id</form:label>
-        </div>
-        <div class="value">
-            <form:input path="userId"/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="label">
-            <form:label path="password">Password</form:label>
-        </div>
-        <div class="value">
-            <form:password path="password"/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="submit">
-            <input type="submit" value="Login"/>
-        </div>
-    </div>
-</form:form>
-
+<h1>Please log in</h1>
+<tags:loginForm/>
 </body>
 </html>

@@ -1,45 +1,61 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import gov.nih.nci.security.AuthenticationManager;
+import gov.nih.nci.security.exceptions.CSException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 
 /**
  * @author Padmaja Vedula
- * Login Credentials class. 
+ * @author Rhett Sutphin
  */
-
 public class LoginCommand {
+    private static final Log log = LogFactory.getLog(LoginCommand.class);
 
-    private String userId;
+    private String username;
     private String password;
-    
-    public LoginCommand(){
+
+    private AuthenticationManager authenticationManager;
+
+    public LoginCommand(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 
-    /**
-     * @return Returns the password.
-     */
+    ////// LOGIC
+
+    public boolean login() {
+        // check login credentials using Authentication Manager of CSM
+        boolean loginSuccess = false;
+        try {
+            loginSuccess = authenticationManager.login(getUsername(), getPassword());
+        } catch (CSException ex) {
+            log.debug("Authentication failed for " + getUsername() + " with exception", ex);
+        }
+        
+        if (loginSuccess) {
+            log.debug("Login successful for " + getUsername());
+        } else {
+            log.debug("Log in failed for " + getUsername());
+        }
+        return loginSuccess;
+    }
+
+    ////// BOUND PROPERTIES
+
     public String getPassword() {
         return password;
     }
     
-    /**
-     * @param password 
-     */
     public void setPassword(String password) {
         this.password = password;
     }
     
-    /**
-     * @return Returns the userId.
-     */
-    public String getUserId() {
-        return userId;
+    public String getUsername() {
+        return username;
     }
 
-    /**
-     * 
-     * @param userId
-     */
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

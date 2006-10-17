@@ -25,6 +25,7 @@ public class LoginCheckInterceptorTest extends ControllerTestCase {
         } catch (ModelAndViewDefiningException e) {
             ModelAndView actual = e.getModelAndView();
             assertEquals("redirectToLogin", actual.getViewName());
+            assertEquals(0, actual.getModel().size());
         }
     }
 
@@ -44,5 +45,20 @@ public class LoginCheckInterceptorTest extends ControllerTestCase {
         String actualRequestUrl = (String) session.getAttribute(REQUESTED_URL_ATTRIBUTE);
         assertNotNull("Attribute missing", actualRequestUrl);
         assertEquals("http://server:123/app/path/to/request?id=9&name=nine", actualRequestUrl);
+    }
+
+    public void testRedirectFromAjax() throws Exception {
+        request.addHeader("X-Requested-With", "XMLHttpRequest");
+        ApplicationSecurityManager.removeUserSession(request);
+
+        try {
+            interceptor.preHandle(request, response, null);
+            fail("Exception not thrown");
+        } catch (ModelAndViewDefiningException e) {
+            ModelAndView actual = e.getModelAndView();
+            assertEquals("redirectToLogin", actual.getViewName());
+            assertEquals(1, actual.getModel().size());
+            assertTrue(actual.getModel().containsKey("ajax"));
+        }
     }
 }
