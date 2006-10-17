@@ -101,6 +101,7 @@ form#login {
 #lightbox {
     background-color: #eee;
     border: 2px outset black;
+    height: auto;
 }
 
 #lightbox h1 {
