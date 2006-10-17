@@ -39,7 +39,7 @@ public class StudyCalendarAuthorizationManager {
 	{
     	UserProvisioningManager provisioningManager = null;
     	boolean protectionElementPresent = false;	
-						
+			
 		try { 
 			provisioningManager = getProvisioningManager();
 			provisioningManager.getProtectionElement(protectionElementObjectId);
@@ -49,13 +49,7 @@ public class StudyCalendarAuthorizationManager {
 			newProtectionElement.setObjectId(protectionElementObjectId);
 			newProtectionElement.setProtectionElementName(protectionElementObjectId);
 			provisioningManager.createProtectionElement(newProtectionElement);
-			
-			Object[] oUserIds = userIds.toArray();
-			String[] sUserIds = new String[oUserIds.length];
-			for(int itd=0; itd<sUserIds.length; ++itd) {
-				sUserIds[itd] = (String)oUserIds[itd];
-			}
-			provisioningManager.setOwnerForProtectionElement(protectionElementObjectId, sUserIds);
+			provisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
 		}
 		if (protectionElementPresent)
 		{
@@ -96,6 +90,7 @@ public class StudyCalendarAuthorizationManager {
 		List<User> assignedUsers = new ArrayList<User>();
 		List<User> availableUsers = new ArrayList<User>();
 		provisioningManager = getProvisioningManager();
+		
 		for (User user : users)
 		{
 			String userName = user.getLoginName();
