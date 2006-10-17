@@ -5,8 +5,9 @@
     <h1>Session timed out</h1>
     <div id="lightbox-content">
         <p>
-            Your session has expired.  For security, please log in again
-            and then retry your last action.
+            Your session has expired.  Please log in again.
+            Once you've logged in, you may need to retry your
+            last action.
         </p>
         <tags:loginForm ajax="${true}"/>
     </div>
@@ -15,12 +16,10 @@ LB.Lightbox.activate()
 Event.observe('login', 'submit', function(e) {
     $('login-indicator').reveal()
     Event.stop(e);
-    // TODO: deactivate is up here because otherwise it interferes with showing the bad password message.
-    // Should figure out an alternative mechanism
-    LB.Lightbox.deactivate()
     SC.asyncSubmit('login', {
-        onComplete: function() {
+        onLoaded: function() {
             $('login-indicator').conceal()
+            LB.Lightbox.deactivate()
         },
         onFailure: function() {
             // TODO:
