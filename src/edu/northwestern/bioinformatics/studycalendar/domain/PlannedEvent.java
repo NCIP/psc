@@ -14,7 +14,8 @@ import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
- */
+ * @author Yufang Wang
+ *  */
 @Entity
 @Table (name = "planned_events")
 @GenericGenerator(name="id-generator", strategy = "native",
@@ -26,6 +27,7 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
     private Activity activity;
     private Period period;
     private Integer day;
+    private String details;
 
     ////// LOGIC
 
@@ -76,5 +78,13 @@ public class PlannedEvent extends AbstractDomainObject implements Comparable<Pla
 
     public void setDay(Integer day) {
         this.day = day;
+    }
+    
+    public String getDetails() {
+    	return details;
+    }
+    
+    public void setDetails(String details) {
+    	this.details = details;
     }
 }
