@@ -73,6 +73,25 @@ public class LoginControllerTest extends ControllerTestCase {
         assertEquals("login", actual.getViewName());
     }
 
+    public void testAjaxGet() throws Exception {
+        request.setParameter("ajax", " ");
+        request.setMethod("GET");
+        ModelAndView view = controller.handleRequest(request, response);
+        assertEquals("relogin", view.getViewName());
+    }
+    
+    public void testAjaxPostBadCredentials() throws Exception {
+        request.setParameter("ajax", " ");
+        expectLogin(false);
+
+        replayMocks();
+        ModelAndView actual = controller.handleRequest(request, response);
+        verifyMocks();
+
+        assertTrue("failed indicator missing", (Boolean) actual.getModel().get("failed"));
+        assertEquals("relogin", actual.getViewName());
+    }
+
     private void expectLogin(boolean success) throws CSException {
         expect(command.login()).andReturn(success);
     }
