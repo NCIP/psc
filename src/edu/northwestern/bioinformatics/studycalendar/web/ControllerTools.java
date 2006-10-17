@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * @author Rhett Sutphin
  */
@@ -53,6 +55,11 @@ public class ControllerTools {
     public static void addHierarchyToModel(PlannedCalendar plannedCalendar, Map<String, Object> model) {
         model.put("plannedCalendar", plannedCalendar);
         model.put("study", plannedCalendar.getStudy());
+    }
+
+    public static boolean isAjaxRequest(HttpServletRequest request) {
+        String header = request.getHeader("X-Requested-With");
+        return header != null && "XMLHttpRequest".equals(header);
     }
 
     private ControllerTools() { }
