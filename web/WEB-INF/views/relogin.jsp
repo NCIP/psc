@@ -15,6 +15,8 @@ LB.Lightbox.activate()
 Event.observe('login', 'submit', function(e) {
     $('login-indicator').reveal()
     Event.stop(e);
+    // TODO: deactivate is up here because otherwise it interferes with showing the bad password message.
+    // Should figure out an alternative mechanism
     LB.Lightbox.deactivate()
     SC.asyncSubmit('login', {
         onComplete: function() {

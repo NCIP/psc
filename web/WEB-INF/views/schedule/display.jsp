@@ -89,11 +89,15 @@
         }
 
         #scheduled-arms ul li.selected {
-            background-color: #999;
+            background-color: #999 !important;
         }
 
         #scheduled-arms ul li.selected a {
             color: white;
+        }
+
+        #scheduled-arms ul li:hover {
+            background-color: #ccc;
         }
     </style>
     <script type="text/javascript">
