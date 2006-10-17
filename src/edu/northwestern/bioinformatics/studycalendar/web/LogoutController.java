@@ -1,27 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import org.springframework.web.servlet.mvc.Controller;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 
 /**
  * @author Jaron Sampson
  */
- 
 public class LogoutController implements Controller {
-    private static final Logger log = Logger.getLogger(LoginController.class.getName());
+    private static final Log log = LogFactory.getLog(LoginController.class);
 
-    public LogoutController() {
-    }
-    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	String userName = ApplicationSecurityManager.getUser(request);	    
-    	log.info("UserName: " + userName + "logged out.");        		    
-	    ApplicationSecurityManager.removeUserSession(request);	
-	    return new ModelAndView("redirectToLogin");
+        String username = ApplicationSecurityManager.getUser(request);
+        ApplicationSecurityManager.removeUserSession(request);
+        log.debug("User " + username + "logged out.");
+        return new ModelAndView("redirectToLogin");
     }
 }
