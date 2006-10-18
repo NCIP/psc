@@ -270,6 +270,18 @@ public class StudyCalendarAuthorizationManager {
 			}
 		}
 	}
+    
+    public void removeProtectionGroupUsers(List<String> userIds, ProtectionGroup protectionGroup) throws Exception
+    {
+    	UserProvisioningManager provisioningManager = null;
+    	provisioningManager = getProvisioningManager();
+    	
+    	for (String userId : userIds)
+    	{
+    		provisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
+    	}
+    }
+    
 }
 
 
