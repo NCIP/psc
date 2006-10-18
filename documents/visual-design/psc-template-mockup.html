@@ -55,9 +55,10 @@
     table.periods {
       overflow: scroll;
     }
-    table.periods, table.periods td, table.periods th {
-      border-collapse: collapse;
-      border: 1px solid #666;
+    table.periods, table.periods tr, table.periods td, table.periods th {
+      /*border-collapse: collapse;*/
+      border-spacing: 0;
+      border: 0 solid #666;
       margin: 1em;
     }
     table.periods td, table.periods th {
@@ -65,22 +66,42 @@
     }
     table.periods th {
       padding: 2px;
+      border-right-width: 1px;
+    }
+    table.periods tr.resume th {
+      border-right-width: 0;
     }
     table.periods td {
       padding: 0;
+      border-width: 1px 1px 0 0;
+      text-align: center;
     }
     table.periods a {
-      display: block;
       text-decoration: none;
-      background-color: #ddd;
+      color: black;
       margin: 0;
       padding: 2px;
+      display: block;
     }
-    table.periods a:hover {
+    table.periods td.repetition:hover {
       background-color: #ccc;
     }
-    
-    
+
+    table.periods td.repetition {
+        background-color: #ddd;
+        border-right-width: 0;
+    }
+    table.periods td.empty {
+        background-color: #fff;
+        border-right-width: 0;
+    }
+    table.periods td.last {
+        border-right-width: 1px;
+    }
+    table.periods tr.last td {
+        border-bottom-width: 1px;
+    }
+
     .day {
       margin: 1em;
       position: relative;
@@ -127,7 +148,7 @@
     <div style="clear:both"></div>
     <div id="selected-arm">
       <h3>Treatment: B</h3>
-      <table class="periods">
+      <table class="periods" cellspacing="0">
         <tr>
           <th>Day</th>
           <th>1</th>
@@ -161,27 +182,71 @@
         </tr>
         <tr>
           <th>P1</th>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
         </tr>
         <tr>
           <th>P2</th>
-          <td colspan="2" class="empty"></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="2" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="empty">&nbsp;</td>
+          <td class="empty last">&nbsp;</td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+          <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
         </tr>
-        <tr>
+        <tr class="last">
           <th>P3</th>
-          <td colspan="1" class="empty"></td>
-          <td colspan="1" class="repetition"><a href="javascript:alert('Manage Period P3')">&nbsp;</a></td>
-          <td colspan="26" class="empty"></td>
+          <td class="empty last">&nbsp;</td>
+          <td class="repetition last"><a href="javascript:alert('Manage Period P3')">&times;</a></td>
+          <td colspan="26" class="empty last">&nbsp;</td>
         </tr>
       </table>
       
@@ -230,7 +295,7 @@
         <div class="clearer"></div>
       
       
-      <table class="periods">
+      <table class="periods" cellspacing="0">
         <tr>
           <th>Day</th>
           <th>29</th>
@@ -262,24 +327,71 @@
           <th>55</th>
           <th>56</th>
         </tr>
-        <tr>
-          <th>P1</th>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-          <td colspan="7" class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
-        </tr>
-        <tr>
+          <tr>
+            <th>P1</th>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P1')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P1')">&nbsp;</a></td>
+          </tr>
+        <tr class="resume">
           <th>P2</th>
-          <td colspan="2" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="4" class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
-          <td colspan="14" class="empty"></td>
+            <td class="repetition">&nbsp;</td>
+            <td class="repetition last">&nbsp;</td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition first"><a href="javascript:alert('Manage Period P2')">&times;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="repetition last"><a href="javascript:alert('Manage Period P2')">&nbsp;</a></td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty">&nbsp;</td>
+            <td class="empty last">&nbsp;</td>
         </tr>
-        <tr>
+        <tr class="last">
           <th>P3</th>
-          <td colspan="28" class="empty"></td>
+          <td colspan="28" class="empty last">&nbsp;</td>
         </tr>
       </table>
       
