@@ -30,7 +30,7 @@
 <table>
     <c:forEach items="${sites}" var="site">
         <tr>
-            <td>${site.name}</a></td>
+            <td>${site.name}  <a href="<c:url value="/pages/assignSiteCoordinator?id=${site.id}"/>">  Assign Site Coordinators to Site  </a></td>
         </tr>
     </c:forEach>
 </table>

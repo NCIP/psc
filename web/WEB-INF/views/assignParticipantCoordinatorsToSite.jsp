@@ -5,7 +5,7 @@
 </head>
 <body>
 <h1>Assign Participant Coordinator</h1>
-<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
+<div><a href="<c:url value="/pages/studyList"/>">Calendar Menu</a></div>
 
 <p>
 </p>
