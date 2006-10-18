@@ -17,6 +17,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 public class SiteService {
 	public static final String BASE_SITE_PG = "BaseSitePG";
 	public static final String SITE_COORDINATOR_ACCESS_ROLE = "SITE_COORDINATOR";
+	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
     private SiteDao siteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 
@@ -36,6 +37,18 @@ public class SiteService {
     
     public void assignSiteCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
     	authorizationManager.assignProtectionGroupsToUsers(userIds, site, SITE_COORDINATOR_ACCESS_ROLE);
+    }
+    
+    public void assignParticipantCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, site, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+    }
+    
+    public void removeSiteCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
+    	authorizationManager.removeProtectionGroupUsers(userIds, site);
+    }
+    
+    public void removeParticipantCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
+    	authorizationManager.removeProtectionGroupUsers(userIds, site);
     }
 
       ////// CONFIGURATION
