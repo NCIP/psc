@@ -27,7 +27,7 @@
 
 <form:form action="${formAction}" method="post">
 <input type="hidden" name="siteId" value="${site.id}"/>
-<input type="hidden" name="available" value="assign"/>
+<input type="hidden" name="assign" value="true"/>
     <div class="row">
         <div class="label">
             <form:label path="availableCoordinators">Available Site Coordinators</form:label>
@@ -47,7 +47,7 @@
 
 <form:form action="${formAction}" method="post">
 <input type="hidden" name="siteId" value="${site.id}"/>
-<input type="hidden" name="assign" value="remove"/>
+<input type="hidden" name="assign" value="false"/>
     <div class="row">
         <div class="label">
             <form:label path="assignedCoordinators">Assigned Site Coordinators</form:label>
