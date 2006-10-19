@@ -87,9 +87,8 @@
       <property name="viewName"><value>assignSite</value></property>
     </bean>
 
-    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" 
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName"><value>assignSiteCoordinator</value></property>
+    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteCoordinatorController">
     </bean>
 
     <bean name="/assignParticipantCoordinatorsToSite" id="assignParticipantCoordinatorsToSiteController" 
