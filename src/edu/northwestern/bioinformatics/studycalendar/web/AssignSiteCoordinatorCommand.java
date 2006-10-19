@@ -14,7 +14,12 @@ public class AssignSiteCoordinatorCommand {
     private String assign;
     private List<String> assignedCoordinators;
     private List<String> availableCoordinators;
-   
+    /*
+    public AssignSiteCoordinatorCommand() {
+    	assignedCoordinators = new ArrayList<String>();
+    	availableCoordinators = new ArrayList<String>();    	
+    }
+   */
   
     ////// BOUND PROPERTIES
 

@@ -21,8 +21,11 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.AuthenticationManager;
+import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import org.apache.log4j.Logger;
 
@@ -64,13 +67,16 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     	AssignSiteCoordinatorCommand assignCommand = (AssignSiteCoordinatorCommand) oCommand;
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
     	
-    	if("true".equals(assignCommand.getAssign())) {
+//    	if(assignCommand.getAssignedCoordinators().size() > 0) {
+    		//log.debug("+++ assigned coordinators size=" + assignCommand.getAssignedCoordinators().size());
+   // 	}
+        if("true".equals(assignCommand.getAssign())) {
     		
             log.debug("onSubmit:assign" + " siteId=" + assignedSite.getClass().getName()+"."+assignedSite.getId().toString());
             String ac = assignCommand.getAvailableCoordinators().toString();
             log.debug(ac);
+        	log.debug("+++ available coordinators size=" + assignCommand.getAvailableCoordinators().size());
             if(assignCommand.getAvailableCoordinators().size()>0) {
-            	log.debug("+++ available coordinators size=" + assignCommand.getAvailableCoordinators().size());
             	for(int i=0; i<assignCommand.getAvailableCoordinators().size(); ++i) {
             		log.debug("+++ available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
             	}
@@ -83,7 +89,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             		log.debug("+++ assigned coordinators i=" + i + ", " + assignCommand.getAssignedCoordinators().get(i));
             	}
             }
-            */
+          */  
             //if(assignCommand.getAvailableCoordinators().size()>0) {
             //log.debug("getAvailable=" + assignCommand.getAssign().toString());
             	authorizationManager.assignProtectionElementsToUsers(assignCommand.getAvailableCoordinators(), assignedSite.getClass().getName()+"."+assignedSite.getId());
@@ -104,9 +110,20 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             		log.debug("--- assigned coordinators i=" + i + ", " + assignCommand.getAssignedCoordinators().get(i));
             	}
             }
-            if(assignCommand.getAvailableCoordinators().size()>0) { */
-            	authorizationManager.assignProtectionElementsToUsers(assignCommand.getAvailableCoordinators(), assignedSite.getClass().getName()+"."+assignedSite.getId());	
-            //}
+            if(assignCommand.getAvailableCoordinators().size()>0) { 
+            
+            	authorizationManager.removeProtectionGroupUsers(assignedSite.getClass().getName()+"."+assignedSite.getId(), assignCommand.getAssignedCoordinators());	
+            
+            	//}
+            */
+           
+            UserProvisioningManager provisioningManager = null;
+        	provisioningManager = authorizationManager.getProvisioningManager();
+            for (String siteCoor : assignCommand.getAssignedCoordinators())
+        	{
+        		provisioningManager.removeUserFromProtectionGroup(assignedSite.getClass().getName()+"."+assignedSite.getId(), siteCoor);
+        	}
+        	
     	}
 
         return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
