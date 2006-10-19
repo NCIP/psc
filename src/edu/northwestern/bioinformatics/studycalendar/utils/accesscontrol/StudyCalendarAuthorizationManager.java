@@ -33,7 +33,7 @@ public class StudyCalendarAuthorizationManager {
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
-     
+       
   
     public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception
 	{
@@ -171,6 +171,30 @@ public class StudyCalendarAuthorizationManager {
 			}
 		}
 		return siteList;
+    }
+    
+    /**
+     * Method to retrieve a site protection group
+     * @param String site
+     * @return null or site Protection Group
+     * 
+     */
+    
+    public ProtectionGroup getSite(String name) throws Exception {
+    	UserProvisioningManager provisioningManager = null;
+    	provisioningManager = getProvisioningManager();	
+    	ProtectionGroup requiredProtectionGroup = null;
+    	
+		ProtectionGroup protectionGroupSearch = new ProtectionGroup();
+		protectionGroupSearch.setProtectionGroupName(name);
+	    SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroupSearch);
+		List<ProtectionGroup> protectionGroupList = provisioningManager.getObjects(protectionGroupSearchCriteria);
+			
+		if (protectionGroupList.size() > 0) {
+			requiredProtectionGroup = (ProtectionGroup) protectionGroupList.get(0);
+			
+		}
+		return requiredProtectionGroup;
     }
     
     public List getUsersForGroup(String groupName) throws Exception {
