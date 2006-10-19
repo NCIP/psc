@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +19,14 @@ public class SiteService {
 	public static final String BASE_SITE_PG = "BaseSitePG";
 	public static final String SITE_COORDINATOR_ACCESS_ROLE = "SITE_COORDINATOR";
 	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
+	public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
+	public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     private SiteDao siteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 
-    public Site createSite(Site site) {
+    public Site createSite(Site site) throws Exception {
         siteDao.save(site);
-        try {
-        	saveSiteProtectionGroup(site.getName());
-        } catch (Exception e) {
-        	e.printStackTrace();
-        }
+        saveSiteProtectionGroup(site.getName());
         return site;
     }
     
@@ -49,6 +48,22 @@ public class SiteService {
     
     public void removeParticipantCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
     	authorizationManager.removeProtectionGroupUsers(userIds, site);
+    }
+    
+    public Map getSiteCoordinatorLists(String siteProtectionGroupName) throws Exception {
+    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, siteProtectionGroupName);
+    }
+    
+    public Map getParticipantCoordinatorLists(String siteProtectionGroupName) throws Exception {
+    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, siteProtectionGroupName);
+    }
+    
+    public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
+    	return authorizationManager.getSite(siteName);
+    }
+    
+    public List getAllSiteProtectionGroups() throws Exception {
+    	return authorizationManager.getSites();
     }
 
       ////// CONFIGURATION
