@@ -4,12 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
  */
 public class ExpandingMapTest extends StudyCalendarTestCase {
-    private Map<String, String> internal = new LinkedHashMap<String, String>();
+    private SortedMap<String, String> internal = new TreeMap<String, String>();
     private ExpandingMap<String, String> map = new ExpandingMap<String, String>(new TestFiller(), internal);
 
     protected void setUp() throws Exception {

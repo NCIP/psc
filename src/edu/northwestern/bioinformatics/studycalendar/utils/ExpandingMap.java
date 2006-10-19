@@ -1,15 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
 import edu.nwu.bioinformatics.commons.DelegatingMap;
+import edu.nwu.bioinformatics.commons.DelegatingSortedMap;
+
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
  */
-public class ExpandingMap<K, V> extends DelegatingMap<K, V> {
-    private Map<K, V> delegate;
+public class ExpandingMap<K, V> extends DelegatingSortedMap<K, V> {
+    private SortedMap<K, V> delegate;
     private Filler<V> filler;
 
     public ExpandingMap() {
@@ -20,21 +25,23 @@ public class ExpandingMap<K, V> extends DelegatingMap<K, V> {
         this(filler, null);
     }
 
-    public ExpandingMap(Map<K, V> delegate) {
+    public ExpandingMap(SortedMap<K, V> delegate) {
         this(null, delegate);
     }
 
-    public ExpandingMap(Filler<V> filler, Map<K, V> delegate) {
-        this.delegate = delegate == null ? new HashMap<K, V>() : delegate;
+    public ExpandingMap(Filler<V> filler, SortedMap<K, V> delegate) {
+        this.delegate = delegate == null ? new TreeMap<K, V>() : delegate;
         this.filler = filler == null ? new NullFiller<V>() : filler;
     }
 
-    protected Map<K, V> getDelegateMap() {
+    @Override
+    protected SortedMap<K, V> getDelegateSortedMap() {
         return delegate;
     }
 
     ////// EXPANDING BEHAVIOR
 
+    @Override
     public V get(Object key) {
         if (!containsKey(key)) {
             getDelegateMap().put((K) key, filler.createNew(key));
@@ -57,6 +64,25 @@ public class ExpandingMap<K, V> extends DelegatingMap<K, V> {
 
         public V createNew(Object key) {
             return fill;
+        }
+    }
+
+    public static class ConstructorFiller<V> implements Filler<V> {
+        private Class<V> clazz;
+
+
+        public ConstructorFiller(Class<V> clazz) {
+            this.clazz = clazz;
+        }
+
+        public V createNew(Object key) {
+            try {
+                return clazz.newInstance();
+            } catch (InstantiationException e) {
+                throw new StudyCalendarSystemException("Could not instantiate " + clazz + ".  Does it have a public default constructor?", e);
+            } catch (IllegalAccessException e) {
+                throw new StudyCalendarSystemException("Could not instantiate " + clazz + ".  Does it have a public default constructor?", e);
+            }
         }
     }
 

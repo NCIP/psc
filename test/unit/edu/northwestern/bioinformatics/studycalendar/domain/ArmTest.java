@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import junit.framework.TestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 /**
  * @author Moses Hohman
@@ -17,18 +18,28 @@ public class ArmTest extends TestCase {
     }
 
     public void testLengthSimple() throws Exception {
-        Period single = Fixtures.createPeriod("", 3, Duration.Unit.day, 15, 3);
+        Period single = createPeriod("", 3, Duration.Unit.day, 15, 3);
         arm.addPeriod(single);
 
         assertEquals(47, arm.getLengthInDays());
     }
     
     public void testLengthWhenOverlapping() throws Exception {
-        Period zero = Fixtures.createPeriod("", 1, Duration.Unit.day, 30, 1);
-        Period one = Fixtures.createPeriod("", 17, Duration.Unit.day, 15, 1);
+        Period zero = createPeriod("", 1, Duration.Unit.day, 30, 1);
+        Period one = createPeriod("", 17, Duration.Unit.day, 15, 1);
         arm.addPeriod(zero);
         arm.addPeriod(one);
 
         assertEquals(31, arm.getLengthInDays());
+    }
+
+    public void testQualifiedNameZeroArmEpoch() throws Exception {
+        assertEquals("Epoch", createEpoch("Epoch").getArms().get(0).getQualifiedName());
+    }
+    
+    public void testQualifiedName() throws Exception {
+        Epoch epoch = createEpoch("Epoch", "A", "B");
+        assertEquals("Epoch: A", epoch.getArms().get(0).getQualifiedName());
+        assertEquals("Epoch: B", epoch.getArms().get(1).getQualifiedName());
     }
 }

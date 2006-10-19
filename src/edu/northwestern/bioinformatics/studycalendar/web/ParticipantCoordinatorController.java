@@ -34,7 +34,6 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     public ParticipantCoordinatorController() {
         setCommandClass(ParticipantCoordinatorCommand.class);
         setFormView("assignParticipantCoordinator");
-        setSuccessView("calendarTemplate");
     }
 
    
@@ -59,7 +58,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     	Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
         authorizationManager.assignProtectionElementsToUsers(assignCommand.getAssignedCoordinators(), assignedStudy.getClass().getName()+"."+assignedStudy.getId());
 
-        return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
+        return new ModelAndView("redirectToCalendarTemplate", "id", ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

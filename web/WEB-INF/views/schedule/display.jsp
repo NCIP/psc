@@ -6,24 +6,8 @@
 <head>
     <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
     <tags:includeScriptaculous/>
+    <tags:stylesheetLink name="main"/>
     <style type="text/css">
-        .section {
-            border: 2px solid #666;
-            margin: 1em 0;
-        }
-
-        .section p {
-            margin: 1em;
-        }
-
-        h3 {
-            margin: 0;
-            padding: 4px;
-            font-family: sans-serif;
-            color: white;
-            background-color: #999;
-        }
-
         .epochs-and-arms, #next-arm-form {
             margin: 1em;
         }
@@ -41,28 +25,6 @@
         #next-arm-form .row .label {
             width: 40%;
             color: #666;
-        }
-
-        .day {
-            margin: 1em;
-            position: relative;
-        }
-
-        .day h4 {
-            float: left;
-            margin: 0;
-        }
-
-        .day ul {
-            margin-left: 4em;
-        }
-
-        .day ul li {
-            list-style-type: none;
-        }
-
-        .tip {
-            font-size: 80%;
         }
 
         #scheduled-arms ul {
@@ -162,7 +124,7 @@
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
 <div class="section">
-    <h3>Schedule next arm</h3>
+    <h2>Schedule next arm</h2>
     <div class="content">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
         <form id="next-arm-form" action="<c:url value="/pages/schedule/nextArm"/>">
@@ -185,7 +147,7 @@
 </div>
 
 <div id="scheduled-arms" class="section">
-    <h3>Arms scheduled</h3>
+    <h2>Arms scheduled</h2>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
     <ul id="scheduled-arms-list">
         <li id="scheduled-arms-indicator-item"><tags:activityIndicator id="scheduled-arms-indicator"/></li>

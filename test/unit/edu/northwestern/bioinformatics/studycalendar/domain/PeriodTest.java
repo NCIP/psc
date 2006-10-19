@@ -68,4 +68,50 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertNegative(p2.compareTo(p1));
         assertPositive(p1.compareTo(p2));
     }
+
+    public void testIsFirstDayOfRep() throws Exception {
+        Period p1 = createPeriod("A", 1, 7, 8);
+        assertTrue(p1.isFirstDayOfRepetition(1));
+        assertTrue(p1.isFirstDayOfRepetition(8));
+        assertTrue(p1.isFirstDayOfRepetition(15));
+        assertTrue(p1.isFirstDayOfRepetition(50));
+        assertFalse("Out of range considered first day", p1.isFirstDayOfRepetition(57));
+        assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(2));
+        assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(9));
+    }
+    
+    public void testIsFirstDayOfRepNonOnePeriodStart() throws Exception {
+        Period p1 = createPeriod("B", 4, 5, 5);
+        assertTrue(p1.isFirstDayOfRepetition(4));
+        assertTrue(p1.isFirstDayOfRepetition(9));
+        assertTrue(p1.isFirstDayOfRepetition(14));
+        assertTrue(p1.isFirstDayOfRepetition(19));
+        assertTrue(p1.isFirstDayOfRepetition(24));
+        assertFalse("Out of range considered first day", p1.isFirstDayOfRepetition(29));
+        assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(5));
+        assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(10));
+    }
+
+    public void testIsLastDayOfRep() throws Exception {
+        Period p1 = createPeriod("A", 1, 7, 8);
+        assertTrue(p1.isLastDayOfRepetition(7));
+        assertTrue(p1.isLastDayOfRepetition(14));
+        assertTrue(p1.isLastDayOfRepetition(21));
+        assertTrue(p1.isLastDayOfRepetition(56));
+        assertFalse("Out of range considered last day", p1.isLastDayOfRepetition(63));
+        assertFalse("Second day considered last day", p1.isLastDayOfRepetition(2));
+        assertFalse("Second day considered last day", p1.isLastDayOfRepetition(9));
+    }
+    
+    public void testIsLastDayOfRepNonOnePeriodStart() throws Exception {
+        Period p1 = createPeriod("B", 4, 5, 5);
+        assertTrue(p1.isLastDayOfRepetition(8));
+        assertTrue(p1.isLastDayOfRepetition(13));
+        assertTrue(p1.isLastDayOfRepetition(18));
+        assertTrue(p1.isLastDayOfRepetition(23));
+        assertTrue(p1.isLastDayOfRepetition(28));
+        assertFalse("Out of range considered last day", p1.isLastDayOfRepetition(33));
+        assertFalse("Second day considered last day", p1.isLastDayOfRepetition(5));
+        assertFalse("Second day considered last day", p1.isLastDayOfRepetition(10));
+    }
 }

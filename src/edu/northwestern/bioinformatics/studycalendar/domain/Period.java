@@ -72,6 +72,18 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
         return new Duration(getDuration().getQuantity() * getRepetitions(), getDuration().getUnit());
     }
 
+    public boolean isFirstDayOfRepetition(int day) {
+        return getDayRange().containsInteger(day) && getRepetitionRelativeDay(day) == 1;
+    }
+
+    public boolean isLastDayOfRepetition(int day) {
+        return getDayRange().containsInteger(day) && getRepetitionRelativeDay(day) == getDuration().getDays();
+    }
+
+    private int getRepetitionRelativeDay(int day) {
+        return (day - getStartDay()) % getDuration().getDays() + 1;
+    }
+
     public int compareTo(Period other) {
         int startCompare = ComparisonUtils.nullSafeCompare(getStartDay(), other.getStartDay());
         if (startCompare != 0) return startCompare;

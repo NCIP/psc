@@ -41,6 +41,16 @@ public class Arm extends AbstractDomainObject implements Named {
     }
 
     @Transient
+    public String getQualifiedName() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(epoch.getName());
+        if (epoch.isMultipleArms()) {
+            sb.append(": ").append(getName());
+        }
+        return sb.toString();
+    }
+
+    @Transient
     public int getLengthInDays() {
         int len = 0;
         for (Period period : periods) {

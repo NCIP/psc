@@ -45,43 +45,6 @@ div.row div.label { font-weight: bold; float: left; margin-left: 0.5em }
 div.row div.value { font-weight: normal; }
 
 /***** STYLES FOR CALENDAR STRUCTURE COMPONENTS */
-.epochs-and-arms {
-    position: relative;
-}
-.epoch {
-    float: left;
-    height: 100%;
-    border: 1px solid #666;
-    border-right-width: 0;
-}
-.epoch.last {
-    border-right-width: 1px;
-}
-.epoch h4 {
-    margin: 0;
-    padding: 4px;
-    color: #666;
-    background-color: white;
-}
-.arms a {
-    display: block;
-    text-decoration: none;
-    border: 0 solid #ccc;
-    border-width: 1px 0;
-    margin: 4px 0;
-    padding: 3px;
-    color: #444;
-    /* for IE */
-    height: 1%;
-}
-.arms a:hover {
-    background-color: #ccc !important;
-    color: #000;
-}
-.arms a.selected {
-    background-color: #ddd;
-}
-
 img.indicator {
     visibility: hidden;
 }

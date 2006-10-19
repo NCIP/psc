@@ -36,6 +36,9 @@
     <bean name="/studyList" id="studyListController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 
+    <bean name="/template" id="displayTemplateController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController"/>
+
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
