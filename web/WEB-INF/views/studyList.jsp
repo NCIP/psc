@@ -19,7 +19,7 @@
     <c:forEach items="${studies}" var="study">
     	<c:if test="${not study.plannedCalendar.complete}">
     	<tr>
-    		<td><a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">${study.name}</a></td>
+    		<td><a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a></td>
     	</tr>
     	</c:if>
     </c:forEach>
@@ -31,7 +31,7 @@
     <c:forEach items="${studies}" var="study">
     	<c:if test="${study.plannedCalendar.complete}">
         <tr>
-            <td><a href="<c:url value="/pages/calendarTemplate?id=${study.id}"/>">${study.name}</a></td>
+            <td><a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a></td>
         	<td>
         		<a href="<c:url value="/pages/assignSite?id=${study.id}"/>">Assign Sites</a>
         		<a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>
