@@ -9,7 +9,7 @@ public class NewSiteCommand {
 
     private SiteService siteService;
 
-    public Site createSite() {
+    public Site createSite() throws Exception {
     	Site site = new Site();
     	site.setName(name);
         return siteService.createSite(site);
