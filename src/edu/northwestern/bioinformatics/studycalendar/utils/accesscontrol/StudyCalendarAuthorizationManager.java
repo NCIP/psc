@@ -252,29 +252,91 @@ public class StudyCalendarAuthorizationManager {
      */
     
     private Map getUserListsForProtectionGroup(List<User> users, String protectionGroupName) throws Exception {
-		UserProvisioningManager provisioningManager = null;
-		HashMap<String, List> userHashMap = new HashMap<String, List>();
-		List<User> assignedUsers = new ArrayList<User>();
-		List<User> availableUsers = new ArrayList<User>();
-		provisioningManager = getProvisioningManager();
-		for (User user : users)
-		{
-			String userName = user.getLoginName();
-			Set<ProtectionGroupRoleContext> pgRoleContext = provisioningManager.getProtectionGroupRoleContextForUser(userName);
-			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
-			for (ProtectionGroupRoleContext pgrc : pgRoleContextList)
-			{
-				if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
-					assignedUsers.add(user);
-				} else {
-					availableUsers.add(user);
-			    }
-			}
-		}
-		userHashMap.put(ASSIGNED_USERS, assignedUsers);
-		userHashMap.put(AVAILABLE_USERS, availableUsers);
-		return userHashMap;
-	}
+    	  
+
+    	UserProvisioningManager provisioningManager = null;
+    	  
+
+    	HashMap userHashMap = new HashMap();
+    	  
+
+    	List assignedUsers = new ArrayList();
+    	  
+
+    	List availableUsers = new ArrayList();
+    	  
+
+    	provisioningManager = getProvisioningManager();
+    	  
+
+    	for (User user : users)
+    	  
+
+    	{
+    	  
+
+
+    	String userId = user.getUserId().toString();
+    	  
+
+
+    	Set pgRoleContext = provisioningManager.getProtectionGroupRoleContextForUser(userId);
+    	  
+
+
+    	List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
+    	  
+
+
+    	for (ProtectionGroupRoleContext pgrc : pgRoleContextList)
+    	  
+
+
+    	{
+    	  
+
+
+
+    	if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
+    	  
+
+
+
+
+    	assignedUsers.add(user);
+    	  
+
+
+
+    	} else {
+    	  
+
+
+
+
+    	availableUsers.add(user);
+    	  
+
+
+    	    }
+    	  
+
+
+    	}
+    	  
+
+    	}
+    	  
+
+    	userHashMap.put(ASSIGNED_USERS, assignedUsers);
+    	  
+
+    	userHashMap.put(AVAILABLE_USERS, availableUsers);
+    	  
+
+    	return userHashMap;
+    	  
+    	}
     
     public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) throws Exception
 	{

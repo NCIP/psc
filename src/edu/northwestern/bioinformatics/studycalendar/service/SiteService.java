@@ -12,6 +12,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 /**
  * @author Padmaja Vedula
+ *
  */
 
 @Transactional
@@ -21,6 +22,9 @@ public class SiteService {
 	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
 	public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
 	public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
+    public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
+    public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
+	
     private SiteDao siteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 

@@ -22,11 +22,11 @@ import org.springframework.web.servlet.view.RedirectView;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,28 +37,28 @@ import org.apache.log4j.Logger;
 public class AssignSiteCoordinatorController extends SimpleFormController {
 	private static final String GROUP_NAME = "SITE_COORDINATOR";
 	private SiteDao siteDao;
-	private StudyCalendarAuthorizationManager authorizationManager;
+	private SiteService siteService;
     private static final Logger log = Logger.getLogger(AssignSiteCoordinatorController.class.getName());
 
     public AssignSiteCoordinatorController() {
         setCommandClass(AssignSiteCoordinatorCommand.class);
         setFormView("assignSiteCoordinator");
-        setSuccessView("assignSiteCoordinator");
+        setSuccessView("manageSites");
     }
     
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+/*    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         binder.registerCustomEditor(Set.class, "assignedCoordinators", new CustomCollectionEditor(Set.class));
         binder.registerCustomEditor(Set.class, "availableCoordinators", new CustomCollectionEditor(Set.class));
     } 
-
+*/
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData");
         Map<String, Object> refdata = new HashMap<String, Object>();
         Site site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List> userLists = authorizationManager.getUsers(GROUP_NAME, site.getClass().getName()+"."+site.getId());
+        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site.getClass().getName()+"."+site.getId());
         refdata.put("site", site);
-        refdata.put("assignedUsers", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS));
-        refdata.put("availableUsers", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_USERS));
+        refdata.put("assignedUsers", userLists.get(SiteService.ASSIGNED_USERS));
+        refdata.put("availableUsers", userLists.get(SiteService.AVAILABLE_USERS));
         refdata.put("action", "Assign");
         return refdata;
     }
@@ -67,9 +67,6 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     	AssignSiteCoordinatorCommand assignCommand = (AssignSiteCoordinatorCommand) oCommand;
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
     	
-//    	if(assignCommand.getAssignedCoordinators().size() > 0) {
-    		//log.debug("+++ assigned coordinators size=" + assignCommand.getAssignedCoordinators().size());
-   // 	}
         if("true".equals(assignCommand.getAssign())) {
     		
             log.debug("onSubmit:assign" + " siteId=" + assignedSite.getClass().getName()+"."+assignedSite.getId().toString());
@@ -81,19 +78,9 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             		log.debug("+++ available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
             	}
             }
-         
-            /*
-            if(assignCommand.getAssignedCoordinators().size()>0) {
-            	log.debug("+++ assigned coordinators size=" + assignCommand.getAssignedCoordinators().size());
-            	for(int i=0; i<assignCommand.getAssignedCoordinators().size(); ++i) {
-            		log.debug("+++ assigned coordinators i=" + i + ", " + assignCommand.getAssignedCoordinators().get(i));
-            	}
-            }
-          */  
-            //if(assignCommand.getAvailableCoordinators().size()>0) {
-            //log.debug("getAvailable=" + assignCommand.getAssign().toString());
-            	authorizationManager.assignProtectionElementsToUsers(assignCommand.getAvailableCoordinators(), assignedSite.getClass().getName()+"."+assignedSite.getId());
-            //}
+            ProtectionGroup pg = siteService.getSiteProtectionGroup(assignedSite.getClass().getName());
+            
+            siteService.assignSiteCoordinators(pg, assignCommand.getAvailableCoordinators());
         } else {
             log.debug("onSubmit:remove");
             /*
@@ -115,14 +102,14 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             	authorizationManager.removeProtectionGroupUsers(assignedSite.getClass().getName()+"."+assignedSite.getId(), assignCommand.getAssignedCoordinators());	
             
             	//}
-            */
-           
             UserProvisioningManager provisioningManager = null;
         	provisioningManager = authorizationManager.getProvisioningManager();
             for (String siteCoor : assignCommand.getAssignedCoordinators())
         	{
         		provisioningManager.removeUserFromProtectionGroup(assignedSite.getClass().getName()+"."+assignedSite.getId(), siteCoor);
         	}
+            */
+           
         	
     	}
 
@@ -144,8 +131,8 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
 
     
     @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 
 }
