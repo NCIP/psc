@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.FilterAdapter;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -14,7 +15,7 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public class UserInRequestFilter implements Filter {
+public class UserInRequestFilter extends FilterAdapter {
     public void init(FilterConfig filterConfig) throws ServletException { }
     public void destroy() { }
 

@@ -26,7 +26,7 @@ import java.io.IOException;
  * @see #getApplicationContext, #getServletContext
  * @author Rhett Sutphin
  */
-public abstract class ContextRetainingFilterAdapter implements Filter {
+public abstract class ContextRetainingFilterAdapter extends FilterAdapter {
     protected final Log log = LogFactory.getLog(getClass());
 
     private ServletContext servletContext;
@@ -43,11 +43,4 @@ public abstract class ContextRetainingFilterAdapter implements Filter {
         servletContext = filterConfig.getServletContext();
     }
 
-    public void doFilter(
-        ServletRequest request, ServletResponse response, FilterChain chain
-    ) throws IOException, ServletException {
-    }
-
-    public void destroy() {
-    }
 }
