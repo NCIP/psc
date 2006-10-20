@@ -17,4 +17,6 @@ public class DomainObjectTools {
         }
         return map;
     }
+
+    private DomainObjectTools() { }
 }
