@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -47,6 +49,12 @@ public class ExpandingMapTest extends StudyCalendarTestCase {
         assertEquals(null, def.get(15));
         assertTrue(def.containsKey(15));
         assertEquals(1, def.size());
+    }
+
+    public void testConstructorFiller() throws Exception {
+        Map<Integer, List> cons = new ExpandingMap<Integer, List>(new ExpandingMap.ConstructorFiller<List>(ArrayList.class));
+        assertNotNull(cons.get(8));
+        assertEquals(0, cons.get(17).size());
     }
 
     private static class TestFiller implements ExpandingMap.Filler<String> {

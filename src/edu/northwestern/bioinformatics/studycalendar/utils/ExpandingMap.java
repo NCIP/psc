@@ -68,10 +68,10 @@ public class ExpandingMap<K, V> extends DelegatingSortedMap<K, V> {
     }
 
     public static class ConstructorFiller<V> implements Filler<V> {
-        private Class<V> clazz;
+        private Class<? extends V> clazz;
 
 
-        public ConstructorFiller(Class<V> clazz) {
+        public ConstructorFiller(Class<? extends V> clazz) {
             this.clazz = clazz;
         }
 
