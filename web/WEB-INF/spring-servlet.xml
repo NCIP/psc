@@ -38,6 +38,12 @@
 
     <bean name="/template" id="displayTemplateController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController"/>
+    <bean name="/template/select" id="selectArmController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
+        <property name="parameterName"><value>arm</value></property>
+        <property name="viewName"><value>template/ajax/selectArm</value></property>
+        <property name="dao"><ref bean="armDao"/></property>
+    </bean>
 
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
@@ -72,7 +78,11 @@
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
     <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.SelectScheduledArmController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
+        <property name="parameterName"><value>arm</value></property>
+        <property name="viewName"><value>schedule/ajax/selectScheduledArm</value></property>
+        <property name="dao"><ref bean="scheduledArmDao"/></property>
+    </bean>
     <bean name="/schedule/nextArm" id="ScheduleNextArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
 

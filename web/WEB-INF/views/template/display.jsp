@@ -1,13 +1,20 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@page contentType="text/html;charset=UTF-8" language="java"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="templ" tagdir="/WEB-INF/tags/template" %>
 <html>
     <head>
         <title>Template for ${study.name}</title>
         <tags:stylesheetLink name="main"/>
+        <tags:includeScriptaculous/>
         <style type="text/css">
             .epochs-and-arms {
                 margin: 1em;
+            }
+
+            #epochs-indicator {
+                margin: 0.5em 0.5em 0 0;
+                float: left;
             }
 
             table.periods, table.periods tr, table.periods td, table.periods th {
@@ -69,6 +76,44 @@
                 margin: 0 3em 3em 5em;
             }
         </style>
+        <script type="text/javascript">
+            var lastRequest;
+
+            function registerSelectArmHandlers() {
+                $$('#epochs a').each(registerSelectArmHandler)
+            }
+
+            function registerSelectArmHandler(a) {
+                var aElement = $(a)
+                Event.observe(aElement, "click", function(e) {
+                    Event.stop(e)
+                    $("epochs-indicator").reveal();
+                    SC.slideAndHide('selected-arm-content', { afterFinish: function() {
+                        // deselect current
+                        var sel = $$("#epochs .selected")
+                        if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+
+                        var armId = aElement.id.substring(4)
+
+                        lastRequest = new Ajax.Request(
+                            '<c:url value="/pages/template/select"/>?arm=' + armId,
+                            {
+                                onComplete: function(req) {
+                                    $("epochs-indicator").conceal()
+                                },
+                                onFailure: function() {
+                                    Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
+                                    Element.update('selected-arm-header', "Error")
+                                    SC.slideAndShow('selected-arm-content')
+                                }
+                            }
+                        );
+                    } });
+                })
+            }
+
+            Event.observe(window, "load", registerSelectArmHandlers)
+        </script>
     </head>
     <body>
         <h1>Template for ${study.name}</h1>
@@ -79,48 +124,7 @@
         </div>
 
         <div id="selected-arm" class="section">
-            <h2>${arm.base.qualifiedName}</h2>
-
-            <c:forEach items="${arm.months}" var="month">
-                <table class="periods" cellspacing="0">
-                    <tr>
-                        <th class="row">Day</th>
-                        <c:forEach items="${month.periods[0].days}" var="day">
-                            <th class="column">${day.day.number}</th>
-                        </c:forEach>
-                    </tr>
-                    <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
-                        <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
-                            <th class="row">${period.name}</th>
-                            <c:forEach items="${period.days}" var="day" varStatus="dStatus">
-                            <c:choose>
-                                <c:when test="${day.inPeriod}">
-                                    <td class="repetition<c:if test="${day.lastDayOfRepetition}"> last</c:if>">
-                                        <a href="<c:url value="/pages/managePeriod?id=${day.id}"/>">${day['empty'] ? '&nbsp;' : '&times;'}</a>
-                                    </td>
-                                </c:when>
-                                <c:otherwise><td class="empty<c:if test="${dStatus.last}"> last</c:if>">&nbsp;</td></c:otherwise>
-                            </c:choose>
-                            </c:forEach>
-                        </tr>
-                    </c:forEach>
-                </table>
-
-                <div class="days">
-                <c:forEach items="${month.days}" var="entry">
-                    <c:if test="${not empty entry.value.events}">
-                        <div class="day autoclear">
-                            <h3>Day ${entry.key}</h3>
-                            <ul>
-                            <c:forEach items="${entry.value.events}" var="event">
-                                <li><a href="<c:url value="/pages/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a></li>
-                            </c:forEach>
-                            </ul>
-                        </div>
-                    </c:if>
-                </c:forEach>
-                </div>
-            </c:forEach>
+            <templ:arm arm="${arm}"/>
         </div>
 
     </body>
