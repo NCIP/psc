@@ -99,7 +99,6 @@ Element.addMethods( {
 // Adds an IE-like click() fn for other browsers
 if (HTMLElement && !HTMLElement.prototype.click) {
     HTMLElement.prototype.click = function() {
-        // this is based on the DOM 2 standard, but doesn't seem to work in Safari
         var evt = this.ownerDocument.createEvent('MouseEvents');
         // evt.initMouseEvent('click', true, true, this.ownerDocument.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
         evt.initEvent("click", true, true);
