@@ -1,9 +1,10 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
+<%@attribute name="visible" type="java.lang.Boolean" %>
 <h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>
 
-<div id="selected-arm-content">
+<div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
     <c:forEach items="${arm.months}" var="month">
         <table class="periods" cellspacing="0">
             <tr>
@@ -14,7 +15,7 @@
             </tr>
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
-                    <th class="row">${period.name}</th>
+                    <th class="row">${period.name}<c:if test="${empty period.name}">&nbsp;</c:if></th>
                     <c:forEach items="${period.days}" var="day" varStatus="dStatus">
                     <c:choose>
                         <c:when test="${day.inPeriod}">

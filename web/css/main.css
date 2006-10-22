@@ -60,22 +60,31 @@ h2 {
     color: #666;
     background-color: white;
 }
+
+.arms {
+    padding: 0;
+    margin: 0;
+}
 .arms a {
-    display: block;
     text-decoration: none;
+    color: #444;
+}
+.arms li {
+    display: block;
     border: 0 solid #ccc;
     border-width: 1px 0;
     margin: 4px 0;
     padding: 3px;
-    color: #444;
     /* for IE */
     height: 1%;
 }
-.arms a:hover {
+.arms li:hover {
     background-color: #ccc !important;
+}
+.arms li:hover a {
     color: #000;
 }
-.arms a.selected {
+.arms li.selected {
     background-color: #ddd;
 }
 

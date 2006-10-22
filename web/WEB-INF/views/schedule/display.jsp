@@ -7,6 +7,7 @@
     <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
+    <tags:javascriptLink name="main"/>
     <style type="text/css">
         .epochs-and-arms, #next-arm-form {
             margin: 1em;
@@ -14,6 +15,10 @@
 
         .epochs-and-arms {
             width: 75%;
+        }
+
+        #epochs-indicator {
+            display: none;
         }
 
         #next-arm-form {

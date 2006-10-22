@@ -4,5 +4,5 @@
 <jsgen:replaceHtml targetElement="selected-arm">
     <templ:arm arm="${arm}"/>
 </jsgen:replaceHtml>
-Element.addClassName("arm-${arm.base.id}", "selected")
+Element.addClassName("arm-${arm.base.id}-item", "selected")
 SC.slideAndShow('selected-arm-content')

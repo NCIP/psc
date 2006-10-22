@@ -7,6 +7,7 @@
         <title>Template for ${study.name}</title>
         <tags:stylesheetLink name="main"/>
         <tags:includeScriptaculous/>
+        <tags:javascriptLink name="main"/>
         <style type="text/css">
             .epochs-and-arms {
                 margin: 1em;
@@ -50,6 +51,8 @@
                 padding: 2px;
                 display: block;
                 color: #444;
+                /* For IE */
+                height: 1%;
             }
             table.periods a:hover {
                 color: #000;
@@ -124,7 +127,7 @@
         </div>
 
         <div id="selected-arm" class="section">
-            <templ:arm arm="${arm}"/>
+            <templ:arm arm="${arm}" visible="true"/>
         </div>
 
     </body>
