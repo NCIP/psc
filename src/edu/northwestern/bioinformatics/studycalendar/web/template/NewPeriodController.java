@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -39,8 +40,8 @@ public class NewPeriodController extends SimpleFormController {
 
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
         Arm arm = doSubmitAction(command);
-        return new ModelAndView("redirectToCalendarTemplate", "id",
-            arm.getEpoch().getPlannedCalendar().getStudy().getId());
+        Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
+        return ControllerTools.redirectToCalendarTemplate(studyId);
     }
 
     @Override

@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 
 /**
  * @author Rhett Sutphin
@@ -26,7 +27,6 @@ public class NewStudyController extends SimpleFormController {
     public NewStudyController() {
         setCommandClass(NewStudyCommand.class);
         setFormView("editStudy");
-        setSuccessView("redirectToCalendarTemplate");
         setBindOnNewForm(true);
     }
 
@@ -48,7 +48,7 @@ public class NewStudyController extends SimpleFormController {
         ss.setSite(siteDao.getDefaultSite());
         studySiteDao.save(ss);
 
-        return new ModelAndView(getSuccessView(), "id", study.getId());
+        return ControllerTools.redirectToCalendarTemplate(study.getId());
     }
 
     ////// CONFIGURATION

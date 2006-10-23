@@ -65,7 +65,8 @@ public class ManagePeriodEventsController extends SimpleFormController {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
         command.apply();
         periodDao.save(command.getPeriod());
-        return new ModelAndView("redirectToCalendarTemplate", "id", command.getPeriod().getArm().getEpoch().getPlannedCalendar().getStudy().getId());
+        Integer studyId = command.getPeriod().getArm().getEpoch().getPlannedCalendar().getStudy().getId();
+        return ControllerTools.redirectToCalendarTemplate(studyId);
     }
 
     ////// CONFIGURATION

@@ -75,7 +75,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
         Map<String, Object> model = controller.onSubmit(command, new BindException(command, "command")).getModel();
         verifyMocks();
 
-        assertEquals("New study's ID not in model", study.getId(), model.get("id"));
+        assertEquals("New study's ID not in model", study.getId(), model.get("study"));
         assertEquals("Something besides the id in the model: " + model, 1, model.size());
     }
 
