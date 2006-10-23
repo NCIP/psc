@@ -62,13 +62,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     }
 
     public void testArmRespectsSelectedArmParameter() throws Exception {
-        request.addParameter("selectedArm", e2b.getId().toString());
+        request.addParameter("arm", e2b.getId().toString());
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(e2b, ((ArmTemplate) actualModel.get("arm")).getBase());
     }
 
     public void testArmIgnoresSelectedArmParameterIfNotInStudy() throws Exception {
-        request.addParameter("selectedArm", "234");
+        request.addParameter("arm", "234");
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(e1, ((ArmTemplate) actualModel.get("arm")).getBase());
     }
