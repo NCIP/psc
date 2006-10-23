@@ -21,9 +21,10 @@ public class PlannedCalendarDaoTest extends DaoTestCase {
         PlannedCalendar calendar = dao.getById(-100);
         assertNotNull("Schedule not found", calendar);
 
-        assertEquals("Wrong number of epochs", 2, calendar.getEpochs().size());
+        assertEquals("Wrong number of epochs", 3, calendar.getEpochs().size());
         assertEpoch("Wrong epoch 0", -200, "Dexter", calendar.getEpochs().get(0));
-        assertEpoch("Wrong epoch 1", -199, "Sinister", calendar.getEpochs().get(1));
+        assertEpoch("Wrong epoch 1", -201, "Gripping", calendar.getEpochs().get(1));
+        assertEpoch("Wrong epoch 2", -199, "Sinister", calendar.getEpochs().get(2));
 
         assertSame("Epoch <=> Schedule relationship not bidirectional on load", calendar, calendar.getEpochs().get(0).getPlannedCalendar());
     }

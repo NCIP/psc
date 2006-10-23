@@ -8,12 +8,17 @@
 
     <EPOCHS
         id="-200"
-        version="0"
         name="Dexter"
+        list_index="0"
         planned_calendar_id="-100"/>
     <EPOCHS
         id="-199"
-        version="0"
         name="Sinister"
+        list_index="2"
+        planned_calendar_id="-100"/>
+    <EPOCHS
+        id="-201"
+        name="Gripping"
+        list_index="1"
         planned_calendar_id="-100"/>
 </dataset>

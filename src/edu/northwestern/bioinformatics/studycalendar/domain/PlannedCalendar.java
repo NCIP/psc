@@ -4,6 +4,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.IndexColumn;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -69,8 +70,12 @@ public class PlannedCalendar extends AbstractDomainObject {
         this.complete = complete;
     }
 
-    @OneToMany (mappedBy = "plannedCalendar")
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    // This is annotated this way so that the IndexColumn will work with
+    // the bidirectional mapping.  See section 2.4.6.2.3 of the hibernate annotations docs.
+    @OneToMany
+    @JoinColumn(name="planned_calendar_id", nullable=false)
+    @IndexColumn(name="list_index")
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<Epoch> getEpochs() {
         return epochs;
     }
