@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -64,7 +65,13 @@ public class ControllerTools {
     }
 
     public static ModelAndView redirectToCalendarTemplate(int studyId) {
-        return new ModelAndView("redirectToCalendarTemplate", "study", studyId);
+        return redirectToCalendarTemplate(studyId, null);
+    }
+
+    public static ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId) {
+        ModelMap model = new ModelMap("study", studyId);
+        if (selectedArmId != null) model.put("arm", selectedArmId);
+        return new ModelAndView("redirectToCalendarTemplate", model);
     }
 
     private ControllerTools() { }

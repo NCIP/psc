@@ -82,6 +82,8 @@
             li.arm, #epochs h4 {
                 position: relative;
             }
+            /* For IE */
+            * html #epochs h4 { height: 1px; }
             .controls {
                 font-family: Arial, sans-serif;
                 font-size: 7.5pt;
@@ -102,17 +104,13 @@
                 padding: 3px;
             }
             .controls a, .inplaceeditor-form a {
-                color: #309;
                 font-weight: normal;
                 text-decoration: none;
             }
             .controls a {
                 padding: 1px;
-                border: 1px dotted #309;
-                background-color: white;
-            }
-            .controls a:hover {
                 color: white !important;
+                border: 1px solid #309;
                 background-color: #309;
             }
         </style>

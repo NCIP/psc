@@ -28,7 +28,7 @@ public class NewPeriodController extends SimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("arm", armDao.getById(ServletRequestUtils.getIntParameter(request, "id")));
+        data.put("arm", armDao.getById(ServletRequestUtils.getIntParameter(request, "arm")));
         data.put("durationUnits", Duration.Unit.values());
         return data;
     }
@@ -41,12 +41,7 @@ public class NewPeriodController extends SimpleFormController {
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
         Arm arm = doSubmitAction(command);
         Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
-        return ControllerTools.redirectToCalendarTemplate(studyId);
-    }
-
-    @Override
-    protected void doSubmitAction(Object command) throws Exception {
-        doSubmitAction((NewPeriodCommand) command);
+        return ControllerTools.redirectToCalendarTemplate(studyId, arm.getId());
     }
 
     private Arm doSubmitAction(NewPeriodCommand command) throws Exception {

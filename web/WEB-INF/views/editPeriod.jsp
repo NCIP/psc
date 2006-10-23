@@ -11,7 +11,7 @@
 </head>
 <body>
     <h2>Add Period</h2>
-    <c:url value="/pages/newPeriod?id=${arm.id}" var="action"/>
+    <c:url value="/pages/newPeriod" var="action"/>
     <form:form action="${action}" method="post">
         <input type="hidden" name="armId" value="${arm.id}"/>
         <div class="row">
@@ -37,7 +37,6 @@
             <div class="value">
                 <form:input path="duration.quantity" size="3" maxlength="3"/>
                 <form:select path="duration.unit">
-                    <form:option value=""/>
                     <form:options items="${durationUnits}"/>
                 </form:select>
             </div>

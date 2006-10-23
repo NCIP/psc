@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 
 /**
@@ -22,15 +23,30 @@ public class DisplayTemplateController implements Controller {
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
+        Integer selectedArmId = ServletRequestUtils.getIntParameter(request, "arm");
+
         Study study = studyDao.getById(studyId);
-        PlannedCalendar calendar = study.getPlannedCalendar();
-        Arm arm = calendar.getEpochs().get(0).getArms().get(0);
+        Arm arm = selectArm(study, selectedArmId);
 
         ModelMap model = new ModelMap();
         ControllerTools.addHierarchyToModel(arm.getEpoch(), model);
         model.addObject("arm", new ArmTemplate(arm));
 
         return new ModelAndView("template/display", model);
+    }
+
+    private Arm selectArm(Study study, Integer selectedArmId) {
+        if (selectedArmId == null) return defaultArm(study);
+        for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
+            for (Arm arm : epoch.getArms()) {
+                if (arm.getId().equals(selectedArmId)) return arm;
+            }
+        }
+        return defaultArm(study);
+    }
+
+    private Arm defaultArm(Study study) {
+        return study.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
     }
 
     ////// CONFIGURATION
