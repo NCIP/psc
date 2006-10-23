@@ -4,7 +4,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
 <head>
-    <title>Set up Period ${period.name} of ${study.name}</title>
+    <title>Set up Period ${period.name} of ${arm.qualifiedName} in ${study.name}</title>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
         var activitiesByType = { }
@@ -160,7 +160,7 @@
     </style>
 </head>
 <body>
-<h1>Set up ${period.name} (period) of ${study.name}</h1>
+<h1>Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}</h1>
 
 <p>
     This period has ${period.duration.days} days and repeats ${period.repetitions} times.  It begins on
