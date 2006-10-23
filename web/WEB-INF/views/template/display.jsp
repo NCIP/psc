@@ -78,9 +78,38 @@
             .days {
                 margin: 0 3em 3em 5em;
             }
+
+            li.arm, #epochs h4 {
+                position: relative;
+            }
+            .controls {
+                font-size: 8pt;
+            }
+            div.arm-controls, div.epoch-controls {
+                position: absolute;
+                bottom: 2px;
+                right: 4px;
+                text-align: right;
+            }
+            span.study-controls {
+                margin-left: 4px;
+                padding: 2px;
+                border: 1px solid #aaa;
+            }
+
+            .controls a {
+                color: #309;
+                font-weight: normal;
+                text-decoration: none;
+            }
+            .controls a:hover {
+                color: white !important;
+                background-color: #309;
+            }
         </style>
         <script type="text/javascript">
             var lastRequest;
+            var selectedArmId = ${arm.base.id};
 
             function registerSelectArmHandlers() {
                 $$('#epochs a').each(registerSelectArmHandler)
@@ -97,29 +126,85 @@
                         if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
 
                         var armId = aElement.id.substring(4)
+                        selectedArmId = armId
 
                         lastRequest = new Ajax.Request(
                             '<c:url value="/pages/template/select"/>?arm=' + armId,
-                            {
-                                onComplete: function(req) {
-                                    $("epochs-indicator").conceal()
-                                },
-                                onFailure: function() {
-                                    Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
-                                    Element.update('selected-arm-header', "Error")
-                                    SC.slideAndShow('selected-arm-content')
-                                }
+                        {
+                            onComplete: function(req) {
+                                $("epochs-indicator").conceal()
+                            },
+                            onFailure: function() {
+                                Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
+                                Element.update('selected-arm-header', "Error")
+                                SC.slideAndShow('selected-arm-content')
                             }
-                        );
+                        }
+                            );
                     } });
                 })
             }
 
+            function createAllArmControls() {
+                $$('#epochs li.arm').each(createArmEditControls)
+            }
+
+            function createArmEditControls(armItem) {
+                var armA = armItem.getElementsByTagName("A")[0];
+                var armId = armA.id.substring(4)
+                var controlBox = Builder.node("div", {className: 'arm-controls controls'});
+                armItem.appendChild(controlBox)
+
+                var renameControl = createRenameControl('arm', armId)
+                controlBox.appendChild(renameControl);
+                SC.inPlaceEdit(armA, renameControl.href, {
+                    externalControl: renameControl.id,
+                    externalControlOnly: true,
+                    highlight: false,
+                    clickToEditText: armA.title
+                })
+            }
+
+            function createRenameControl(objectType, objectId) {
+                return Builder.node("a", {
+                    className: objectType + '-control',
+                    id: objectType + "-" + objectId + "-rename",
+                    href: '<c:url value="/pages/template/rename"/>' + '?' + objectType + '=' + objectId
+                }, "Rename")
+            }
+
+            function createStudyControls() {
+                var h1 = $$("h1")[0];
+                var controlBox = Builder.node("span", {className: 'study-controls controls'})
+                h1.appendChild(controlBox)
+
+                var renameControl = createRenameControl('study', ${study.id})
+                controlBox.appendChild(renameControl)
+                SC.inPlaceEdit("study-name", renameControl.href, { externalControl: renameControl.id })
+            }
+
+            function createAllEpochControls() {
+                $$("#epochs h4").each(createEpochControls)
+            }
+
+            function createEpochControls(epochH4) {
+                var controlBox = Builder.node("div", {className: 'epoch-controls controls'});
+                epochH4.appendChild(controlBox);
+
+                var epochId = epochH4.id.split('-')[1]
+                var renameControl = createRenameControl('epoch', epochId)
+                controlBox.appendChild(renameControl)
+                SC.inPlaceEdit('epoch-' + epochId + '-name', renameControl.href, {externalControl: renameControl.id})
+            }
+
             Event.observe(window, "load", registerSelectArmHandlers)
+            Event.observe(window, "load", createAllArmControls)
+            Event.observe(window, "load", createAllEpochControls)
+            Event.observe(window, "load", createStudyControls)
         </script>
     </head>
     <body>
-        <h1>Template for ${study.name}</h1>
+        <h1>Template for <span id="study-name">${study.name}</span></h1>
 
         <div id="epochs" class="section">
             <h2>Epochs and arms</h2>

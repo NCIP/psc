@@ -33,6 +33,7 @@
         <attribute>
             <name>targetElement</name>
             <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
     </tag>
 
@@ -46,6 +47,7 @@
         <attribute>
             <name>targetElement</name>
             <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
         </attribute>
         <attribute>
             <name>position</name>

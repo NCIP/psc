@@ -76,7 +76,7 @@ public class RenameCommandTest extends StudyCalendarTestCase {
         command.setEpoch(epoch);
         command.setArm(epoch.getArms().get(1));
 
-        doApply(3);
+        doApply();
         assertRenamed("Study", STUDY);
         assertRenamed("Epoch", epoch);
         assertName("Arm 0 should not be renamed", "A", epoch.getArms().get(0));
@@ -93,12 +93,7 @@ public class RenameCommandTest extends StudyCalendarTestCase {
     }
 
     private void doApply() {
-        doApply(1);
-    }
-
-    private void doApply(int saveCount) {
         studyDao.save(STUDY);
-        EasyMock.expectLastCall().times(saveCount);
         replayMocks();
         command.apply();
         verifyMocks();

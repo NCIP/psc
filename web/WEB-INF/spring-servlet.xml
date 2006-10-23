@@ -44,6 +44,8 @@
         <property name="viewName"><value>template/ajax/selectArm</value></property>
         <property name="dao"><ref bean="armDao"/></property>
     </bean>
+    <bean name="/template/rename" id="renameController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.RenameController"/>
 
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>

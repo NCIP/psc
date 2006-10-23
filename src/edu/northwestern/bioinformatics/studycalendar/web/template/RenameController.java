@@ -1,18 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.mvc.AbstractCommandController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractCommandController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.web.LiteralTextView;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 
 /**
  * @author Rhett Sutphin
@@ -41,7 +39,7 @@ public class RenameController extends AbstractCommandController {
     ) throws Exception {
         RenameCommand command = (RenameCommand) oCommand;
         command.apply();
-        return new ModelAndView(new LiteralTextView(command.getValue()));
+        return new ModelAndView("template/ajax/rename", errors.getModel());
     }
 
     ////// CONFIGURATION

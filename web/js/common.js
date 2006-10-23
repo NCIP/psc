@@ -1,35 +1,4 @@
-//////////// STUDY CALENDAR JS STYLES
-
 var SC = new Object();
-
-SC.slideAndHide = function(element, options) {
-    var e = $(element);
-    new Effect.Parallel(
-        [
-            new Effect.BlindUp(e, {sync:true}),
-            new Effect.Fade(e, {sync:true})
-        ], $H(options).merge({
-            duration: 1.0
-        })
-    );
-}
-
-SC.slideAndShow = function(element, options) {
-    var e = $(element);
-    new Effect.Parallel(
-        [
-            new Effect.BlindDown(e, {sync:true}),
-            new Effect.Appear(e, {sync:true})
-        ], $H(options).merge({
-            duration: 1.0
-        })
-    );
-}
-
-SC.highlight = function(element, options) {
-    var e = $(element)
-    new Effect.Highlight(element, $H(options))
-}
 
 SC.asyncSubmit = function(form, options) {
     var f = $(form);
@@ -39,7 +8,7 @@ SC.asyncSubmit = function(form, options) {
     }))
 }
 
-//////////// COOKIES
+////// COOKIES
 
 /** Main fns based on http://www.quirksmode.org/js/cookies.html */
 var Cookies = {
@@ -97,7 +66,7 @@ Element.addMethods( {
 ////// DOM EXTENSIONS
 
 // Adds an IE-like click() fn for other browsers
-if (HTMLElement && !HTMLElement.prototype.click) {
+if (!document.all && HTMLElement && !HTMLElement.prototype.click) {
     HTMLElement.prototype.click = function() {
         var evt = this.ownerDocument.createEvent('MouseEvents');
         // evt.initMouseEvent('click', true, true, this.ownerDocument.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);

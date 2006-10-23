@@ -25,17 +25,22 @@ public class RenameCommand {
     ////// LOGIC
 
     public void apply() {
+        if (getStudy() != null) rename(getStudy());
+        if (getEpoch() != null) renameEpoch();
+        if (getArm() != null) renameArm();
+        
+        studyDao.save(getTargetStudy());
+    }
+
+    public Study getTargetStudy() {
         if (getStudy() != null) {
-            rename(getStudy());
-            studyDao.save(getStudy());
-        }
-        if (getEpoch() != null) {
-            renameEpoch();
-            studyDao.save(getEpoch().getPlannedCalendar().getStudy());
-        }
-        if (getArm() != null) {
-            renameArm();
-            studyDao.save(getArm().getEpoch().getPlannedCalendar().getStudy());
+            return getStudy();
+        } else if (getEpoch() != null) {
+            return getEpoch().getPlannedCalendar().getStudy();
+        } else if (getArm() != null) {
+            return getArm().getEpoch().getPlannedCalendar().getStudy();
+        } else {
+            return null;
         }
     }
 
@@ -46,7 +51,9 @@ public class RenameCommand {
     private void renameEpoch() {
         rename(getEpoch());
         if (!getEpoch().isMultipleArms()) {
-            rename(getEpoch().getArms().get(0));
+            Arm soleArm = getEpoch().getArms().get(0);
+            rename(soleArm);
+            setArm(soleArm);
         }
     }
 
@@ -54,6 +61,7 @@ public class RenameCommand {
         rename(getArm());
         if (!getArm().getEpoch().isMultipleArms()) {
             rename(getArm().getEpoch());
+            setEpoch(getArm().getEpoch());
         }
     }
 
