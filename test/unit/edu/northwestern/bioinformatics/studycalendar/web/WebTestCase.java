@@ -9,7 +9,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 /**
  * @author Rhett Sutphin
  */
-public class WebTestCase extends StudyCalendarTestCase {
+public abstract class WebTestCase extends StudyCalendarTestCase {
     protected MockHttpServletRequest request;
     protected MockHttpServletResponse response;
     protected MockServletContext servletContext;
