@@ -39,8 +39,11 @@ SC.InPlaceEditor = Class.create()
 
 Object.extend(Object.extend(SC.InPlaceEditor.prototype, Ajax.InPlaceEditor.prototype), {
     initialize: function(element, url, options) {
-
-        Ajax.InPlaceEditor.prototype.initialize.call(this, element, url, Object.extend({ highlight: true }, options));
+        Ajax.InPlaceEditor.prototype.initialize.call(this,
+            element, url,
+            Object.extend({
+                highlight: true, okText: 'OK', cancelText: 'Cancel' 
+            }, options));
         // remove handlers from element, if requested
         if (options.externalControlOnly) {
             Event.stopObserving(this.element, 'click', this.onclickListener);

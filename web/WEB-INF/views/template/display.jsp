@@ -83,24 +83,33 @@
                 position: relative;
             }
             .controls {
-                font-size: 8pt;
+                font-family: Arial, sans-serif;
+                font-size: 7.5pt;
             }
             div.arm-controls, div.epoch-controls {
                 position: absolute;
-                bottom: 2px;
+                bottom: 4px;
                 right: 4px;
                 text-align: right;
             }
             span.study-controls {
                 margin-left: 4px;
-                padding: 2px;
-                border: 1px solid #aaa;
             }
 
-            .controls a {
+            .inplaceeditor-form a {
+                font-size: 11pt;
+                border: 1px solid #444;
+                padding: 3px;
+            }
+            .controls a, .inplaceeditor-form a {
                 color: #309;
                 font-weight: normal;
                 text-decoration: none;
+            }
+            .controls a {
+                padding: 1px;
+                border: 1px dotted #309;
+                background-color: white;
             }
             .controls a:hover {
                 color: white !important;
@@ -197,9 +206,13 @@
                 SC.inPlaceEdit('epoch-' + epochId + '-name', renameControl.href, {externalControl: renameControl.id})
             }
 
-            Event.observe(window, "load", registerSelectArmHandlers)
-            Event.observe(window, "load", createAllArmControls)
-            Event.observe(window, "load", createAllEpochControls)
+            function epochsAreaSetup() {
+                registerSelectArmHandlers()
+                createAllArmControls()
+                createAllEpochControls()
+            }
+
+            Event.observe(window, "load", epochsAreaSetup)
             Event.observe(window, "load", createStudyControls)
         </script>
     </head>
