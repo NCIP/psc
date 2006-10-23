@@ -38,7 +38,7 @@ public class ManagePeriodEventsController extends SimpleFormController {
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Integer.class, "grid", new CustomNumberEditor(Integer.class, true));
+        binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
     }
 
     protected Map<String, Object> referenceData(

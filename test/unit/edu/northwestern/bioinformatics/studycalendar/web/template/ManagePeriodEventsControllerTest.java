@@ -9,6 +9,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.web.bind.ServletRequestDataBinder;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -73,6 +76,19 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
             = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
         Integer actual = command.getGrid().get(7).get(4);
         assertNull("Value not bound", actual);
+    }
+
+    /**
+     * This test simulates the part of the action of the spring:bind tag (and the various form: tags
+     * that behave similarly).  It was broken in spring 2.0 rc4 and final.
+     * @throws Exception
+     */
+    public void testRetrievingGridUsingSpring() throws Exception {
+        command.getGrid().get(7).set(4, 8);
+        ServletRequestDataBinder binder = new ServletRequestDataBinder(command, "command");
+        controller.initBinder(request, binder);
+        binder.bind(request);
+        assertEquals("8", binder.getBindingResult().getFieldValue("grid[7][4]"));
     }
 
     public void testFormView() throws Exception {
