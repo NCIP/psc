@@ -4,7 +4,7 @@
 <c:if test="${not empty command.arm}">
     <jsgen:replaceHtml targetElement="arm-${command.arm.id}">${command.arm.name}</jsgen:replaceHtml>
     if (selectedArmId == ${command.arm.id}) {
-        <jsgen:replaceHtml targetElement="selected-arm-header">${command.arm.name}</jsgen:replaceHtml>
+        <jsgen:replaceHtml targetElement="selected-arm-header">${command.arm.qualifiedName}</jsgen:replaceHtml>
     }
 </c:if>
 <c:if test="${not empty command.epoch}">
