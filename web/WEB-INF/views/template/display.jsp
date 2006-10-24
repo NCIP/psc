@@ -2,6 +2,8 @@
 <%@page contentType="text/html;charset=UTF-8" language="java"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="templ" tagdir="/WEB-INF/tags/template" %>
+<%@ taglib prefix="security"
+           uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <html>
     <head>
         <title>Template for ${study.name}</title>
@@ -114,6 +116,9 @@
                 background-color: #309;
             }
         </style>
+        <c:if test="${not plannedCalendar.complete}">
+        <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}"/>"></script>
+        </c:if>
         <script type="text/javascript">
             var lastRequest;
             var selectedArmId = ${arm.base.id};
@@ -152,70 +157,38 @@
                 })
             }
 
-            function createAllArmControls() {
-                $$('#epochs li.arm').each(createArmEditControls)
-            }
-
-            function createArmEditControls(armItem) {
-                var armA = armItem.getElementsByTagName("A")[0];
-                var armId = armA.id.substring(4)
-                var controlBox = Builder.node("div", {className: 'arm-controls controls'});
-                armItem.appendChild(controlBox)
-
-                var renameControl = createRenameControl('arm', armId)
-                controlBox.appendChild(renameControl);
-                SC.inPlaceEdit(armA, renameControl.href, {
-                    externalControl: renameControl.id,
-                    externalControlOnly: true,
-                    highlight: false,
-                    clickToEditText: armA.title
-                })
-            }
-
-            function createRenameControl(objectType, objectId) {
-                return Builder.node("a", {
-                    className: objectType + '-control',
-                    id: objectType + "-" + objectId + "-rename",
-                    href: '<c:url value="/pages/template/rename"/>' + '?' + objectType + '=' + objectId
-                }, "Rename")
-            }
-
-            function createStudyControls() {
-                var h1 = $$("h1")[0];
-                var controlBox = Builder.node("span", {className: 'study-controls controls'})
-                h1.appendChild(controlBox)
-
-                var renameControl = createRenameControl('study', ${study.id})
-                controlBox.appendChild(renameControl)
-                SC.inPlaceEdit("study-name", renameControl.href, { externalControl: renameControl.id })
-            }
-
-            function createAllEpochControls() {
-                $$("#epochs h4").each(createEpochControls)
-            }
-
-            function createEpochControls(epochH4) {
-                var controlBox = Builder.node("div", {className: 'epoch-controls controls'});
-                epochH4.appendChild(controlBox);
-
-                var epochId = epochH4.id.split('-')[1]
-                var renameControl = createRenameControl('epoch', epochId)
-                controlBox.appendChild(renameControl)
-                SC.inPlaceEdit('epoch-' + epochId + '-name', renameControl.href, {externalControl: renameControl.id})
-            }
-
             function epochsAreaSetup() {
                 registerSelectArmHandlers()
+                <c:if test="${not plannedCalendar.complete}">
                 createAllArmControls()
                 createAllEpochControls()
+                </c:if>
             }
 
-            Event.observe(window, "load", epochsAreaSetup)
+            <c:if test="${not plannedCalendar.complete}">
             Event.observe(window, "load", createStudyControls)
+            </c:if>
+            Event.observe(window, "load", epochsAreaSetup)
         </script>
     </head>
     <body>
         <h1>Template for <span id="study-name">${study.name}</span></h1>
+
+        <security:secureOperation element="/studycalendar/pages/markComplete" operation="ACCESS">
+        <c:if test="${not study.plannedCalendar.complete}">
+            <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
+        </c:if>
+        </security:secureOperation>
+        <security:secureOperation element="/studycalendar/pages/assignParticipantCoordinator" operation="ACCESS">
+        <c:if test="${study.plannedCalendar.complete}">
+            <p><a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>.</p>
+        </c:if>
+        </security:secureOperation>
+        <security:secureOperation element="/studycalendar/pages/assignParticipant" operation="ACCESS">
+        <c:if test="${study.plannedCalendar.complete}">
+            <p><a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>.</p>
+        </c:if>
+        </security:secureOperation>
 
         <div id="epochs" class="section">
             <h2>Epochs and arms</h2>

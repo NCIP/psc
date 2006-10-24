@@ -46,6 +46,10 @@
     </bean>
     <bean name="/template/rename" id="renameController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.RenameController"/>
+    <bean name="/template/edit.js" id="editJsController"
+        class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>template/edit.js</value></property>
+    </bean>
 
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
