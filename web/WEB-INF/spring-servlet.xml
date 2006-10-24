@@ -69,9 +69,6 @@
     <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
 
-    <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayCalendarTemplateController"/>
-
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController"/>
 
