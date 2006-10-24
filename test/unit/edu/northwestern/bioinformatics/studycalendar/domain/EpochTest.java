@@ -44,4 +44,20 @@ public class EpochTest extends StudyCalendarTestCase {
         assertFalse(Fixtures.createEpoch("Holocene").isMultipleArms());
         assertTrue(Fixtures.createEpoch("Holocene", "A", "B").isMultipleArms());
     }
+
+    public void testCreateNoArms() throws Exception {
+        Epoch noArms = Epoch.create("Holocene");
+        assertEquals("Holocene", noArms.getName());
+        assertEquals("Wrong number of arms", 1, noArms.getArms().size());
+        assertEquals("Wrong name for sole arm", "Holocene", noArms.getArms().get(0).getName());
+    }
+    
+    public void testCreateMultipleArms() throws Exception {
+        Epoch armed = Epoch.create("Holocene", "H", "I", "J");
+        assertEquals("Holocene", armed.getName());
+        assertEquals("Wrong number of arms", 3, armed.getArms().size());
+        assertEquals("Wrong name for arm 0", "H", armed.getArms().get(0).getName());
+        assertEquals("Wrong name for arm 1", "I", armed.getArms().get(1).getName());
+        assertEquals("Wrong name for arm 2", "J", armed.getArms().get(2).getName());
+    }
 }

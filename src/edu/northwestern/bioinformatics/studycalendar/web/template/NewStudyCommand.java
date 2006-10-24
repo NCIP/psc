@@ -45,20 +45,11 @@ public class NewStudyCommand {
         for (int i = 0; i < getEpochNames().size(); i++) {
             String epochName = getEpochNames().get(i);
 
-            Epoch e = new Epoch();
-            e.setName(epochName);
-
+            Epoch e;
             if (hasMultipleArms(i)) {
-                for (int j = 0; j < armNames.get(i).size(); j++) {
-                    String armName = armNames.get(i).get(j);
-                    Arm arm = new Arm();
-                    arm.setName(armName);
-                    e.addArm(arm);
-                }
+                e = Epoch.create(epochName, armNames.get(i).toArray(new String[0]));
             } else {
-                Arm singleArm = new Arm();
-                singleArm.setName(epochName);
-                e.addArm(singleArm);
+                e = Epoch.create(epochName);
             }
 
             calendar.addEpoch(e);

@@ -31,6 +31,27 @@ public class Epoch extends AbstractDomainObject implements Named {
     private List<Arm> arms = new ArrayList<Arm>();
     private String name;
 
+    ////// FACTORY
+
+    public static Epoch create(String epochName, String... armNames) {
+        Epoch epoch = new Epoch();
+        epoch.setName(epochName);
+        if (armNames.length == 0) {
+            epoch.addNewArm(epochName);
+        } else {
+            for (String armName : armNames) {
+                epoch.addNewArm(armName);
+            }
+        }
+        return epoch;
+    }
+
+    private void addNewArm(String armName) {
+        Arm arm = new Arm();
+        arm.setName(armName);
+        addArm(arm);
+    }
+
     ////// LOGIC
 
     public void addArm(Arm arm) {

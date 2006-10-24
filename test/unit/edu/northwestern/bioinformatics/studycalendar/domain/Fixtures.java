@@ -36,17 +36,9 @@ public class Fixtures {
         return event;
     }
 
+    @Deprecated // use the factory on Epoch directly, instead
     public static Epoch createEpoch(String name, String... armNames) {
-        Epoch epoch = new Epoch();
-        epoch.setName(name);
-        if (armNames.length == 0) {
-            epoch.addArm(createNamedInstance(name, Arm.class));
-        } else {
-            for (String armName : armNames) {
-                epoch.addArm(createNamedInstance(armName, Arm.class));
-            }
-        }
-        return epoch;
+        return Epoch.create(name, armNames);
     }
 
     public static StudySite createStudySite(Study study, Site site) {
