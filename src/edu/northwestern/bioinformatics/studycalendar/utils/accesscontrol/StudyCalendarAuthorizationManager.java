@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import gov.nih.nci.security.SecurityServiceProvider;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -33,41 +32,40 @@ public class StudyCalendarAuthorizationManager {
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
-       
+    
+    private UserProvisioningManager userProvisioningManager;
   
     public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception
 	{
-    	UserProvisioningManager provisioningManager = null;
     	boolean protectionElementPresent = false;	
 			
 		try { 
-			provisioningManager = getProvisioningManager();
-			provisioningManager.getProtectionElement(protectionElementObjectId);
+			userProvisioningManager.getProtectionElement(protectionElementObjectId);
 			protectionElementPresent = true;
 		} catch (CSObjectNotFoundException ex){
 			ProtectionElement newProtectionElement = new ProtectionElement();
 			newProtectionElement.setObjectId(protectionElementObjectId);
 			newProtectionElement.setProtectionElementName(protectionElementObjectId);
-			provisioningManager.createProtectionElement(newProtectionElement);
-			provisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
+			userProvisioningManager.createProtectionElement(newProtectionElement);
+			userProvisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
 		}
 		if (protectionElementPresent)
 		{
 			if (log.isDebugEnabled()) {
-				log.debug(" The given Protection Element: " + provisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
+				log.debug(" The given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
 			}
 			for (String userId : userIds)
 			{
 				String userName = getUserObject(userId).getLoginName();
-				if (!(provisioningManager.checkOwnership((String)userName, protectionElementObjectId)))
+				if (!(userProvisioningManager.checkOwnership((String)userName, protectionElementObjectId)))
 				{
 					if (log.isDebugEnabled()) {
-						log.debug(" Given Protection Element: " + provisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is not owned by " + userName);
+						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is not owned by " + userName);
 					}
-					provisioningManager.setOwnerForProtectionElement((String)userName, protectionElementObjectId, provisioningManager.getProtectionElement(protectionElementObjectId).getAttribute());
+					userProvisioningManager.setOwnerForProtectionElement((String)userName, protectionElementObjectId, userProvisioningManager.getProtectionElement(protectionElementObjectId).getAttribute());
 				} else {
 					if (log.isDebugEnabled()) {
-						log.debug(" Given Protection Element: " + provisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is owned by " + userName);
+						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is owned by " + userName);
 					}
 				}
 			
@@ -85,16 +83,14 @@ public class StudyCalendarAuthorizationManager {
     
 	
 	private Map getUserListsForProtectionElement(List<User> users, String protectionElementObjectId) throws Exception {
-		UserProvisioningManager provisioningManager = null;
 		HashMap<String, List> userHashMap = new HashMap<String, List>();
 		List<User> assignedUsers = new ArrayList<User>();
 		List<User> availableUsers = new ArrayList<User>();
-		provisioningManager = getProvisioningManager();
 		
 		for (User user : users)
 		{
 			String userName = user.getLoginName();
-			if (provisioningManager.checkOwnership(userName, protectionElementObjectId))
+			if (userProvisioningManager.checkOwnership(userName, protectionElementObjectId))
 			{
 				assignedUsers.add(user);
 			} else {
@@ -106,34 +102,25 @@ public class StudyCalendarAuthorizationManager {
 		return userHashMap;
 	}
 	
-	public UserProvisioningManager getProvisioningManager() throws Exception {
-		return SecurityServiceProvider.getUserProvisioningManager(APPLICATION_CONTEXT_NAME);
-		
-	}
-	
     public User getUserObject(String id) throws Exception {
-    	UserProvisioningManager provisioningManager = null;
-    	provisioningManager = getProvisioningManager();
     	User user = null;
-      	user = provisioningManager.getUserById(id);
+      	user = userProvisioningManager.getUserById(id);
       	return user;
     }
     
     public void createProtectionGroup(String newProtectionGroup, String parentPG) throws Exception {
-    	UserProvisioningManager provisioningManager = null;
-    	provisioningManager = getProvisioningManager();
     	if (parentPG != null) {
     		ProtectionGroup parentGroupSearch = new ProtectionGroup();
     		parentGroupSearch.setProtectionGroupName(parentPG);
             SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(parentGroupSearch);
-    		List parentGroupList = provisioningManager.getObjects(protectionGroupSearchCriteria);
+    		List parentGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
     		
     		if (parentGroupList.size() > 0) {
     			ProtectionGroup parentProtectionGroup = (ProtectionGroup) parentGroupList.get(0);
     			ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
     			requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
     			requiredProtectionGroup.setParentProtectionGroup(parentProtectionGroup);
-    			provisioningManager.createProtectionGroup(requiredProtectionGroup);
+    			userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
     			if (log.isDebugEnabled()) {
 					log.debug("new protection group created " + newProtectionGroup);
 				}
@@ -147,20 +134,18 @@ public class StudyCalendarAuthorizationManager {
      */
     
     public List getSites() throws Exception {
-    	UserProvisioningManager provisioningManager = null;
-    	provisioningManager = getProvisioningManager();	
     	List<ProtectionGroup> siteList = new ArrayList<ProtectionGroup>() ;
     	
 		ProtectionGroup parentGroupSearch = new ProtectionGroup();
 		parentGroupSearch.setProtectionGroupName(BASE_SITE_PG);
 	    SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(parentGroupSearch);
-		List parentGroupList = provisioningManager.getObjects(protectionGroupSearchCriteria);
+		List parentGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
 			
 		if (parentGroupList.size() > 0) {
 			ProtectionGroup parentProtectionGroup = (ProtectionGroup) parentGroupList.get(0);
 			ProtectionGroup protectionGroup = new ProtectionGroup();
 	        SearchCriteria pgSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroup);
-			List<ProtectionGroup> pgList = provisioningManager.getObjects(pgSearchCriteria);
+			List<ProtectionGroup> pgList = userProvisioningManager.getObjects(pgSearchCriteria);
 			
 			if (pgList.size() > 0) {
 				for (ProtectionGroup requiredProtectionGroup : pgList) {
@@ -181,14 +166,12 @@ public class StudyCalendarAuthorizationManager {
      */
     
     public ProtectionGroup getSite(String name) throws Exception {
-    	UserProvisioningManager provisioningManager = null;
-    	provisioningManager = getProvisioningManager();	
     	ProtectionGroup requiredProtectionGroup = null;
     	
 		ProtectionGroup protectionGroupSearch = new ProtectionGroup();
 		protectionGroupSearch.setProtectionGroupName(name);
 	    SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(protectionGroupSearch);
-		List<ProtectionGroup> protectionGroupList = provisioningManager.getObjects(protectionGroupSearchCriteria);
+		List<ProtectionGroup> protectionGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
 			
 		if (protectionGroupList.size() > 0) {
 			requiredProtectionGroup = (ProtectionGroup) protectionGroupList.get(0);
@@ -198,18 +181,16 @@ public class StudyCalendarAuthorizationManager {
     }
     
     public List getUsersForGroup(String groupName) throws Exception {
-    	UserProvisioningManager provisioningManager = null;
 		List<User> usersForRequiredGroup = new ArrayList<User>(); 
-		provisioningManager = getProvisioningManager();
 		User user = new User();
         SearchCriteria userSearchCriteria = new UserSearchCriteria(user);
-		List<User> userList = provisioningManager.getObjects(userSearchCriteria);
+		List<User> userList = userProvisioningManager.getObjects(userSearchCriteria);
 		if (userList.size() > 0)
 		{
 			
 		   for (User requiredUser : userList) {
 			   try {
-				   Set groups = provisioningManager.getGroups(requiredUser.getUserId().toString());
+				   Set groups = userProvisioningManager.getGroups(requiredUser.getUserId().toString());
 				   Set<Group> userGroups = groups;
 				   if (userGroups.size() > 0) {	
 					   Group requiredGroup = (Group) userGroups.toArray()[0];
@@ -252,120 +233,60 @@ public class StudyCalendarAuthorizationManager {
      */
     
     private Map getUserListsForProtectionGroup(List<User> users, String protectionGroupName) throws Exception {
-    	  
-
-    	UserProvisioningManager provisioningManager = null;
-    	  
-
-    	HashMap userHashMap = new HashMap();
-    	  
-
-    	List assignedUsers = new ArrayList();
-    	  
-
-    	List availableUsers = new ArrayList();
-    	  
-
-    	provisioningManager = getProvisioningManager();
-    	  
-
-    	for (User user : users)
-    	  
-
-    	{
-    	  
-
-
-    	String userId = user.getUserId().toString();
-    	  
-
-
-    	Set pgRoleContext = provisioningManager.getProtectionGroupRoleContextForUser(userId);
-    	  
-
-
-    	List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
-    	  
-
-
-    	for (ProtectionGroupRoleContext pgrc : pgRoleContextList)
-    	  
-
-
-    	{
-    	  
-
-
-
-    	if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
-    	  
-
-
-
-
-    	assignedUsers.add(user);
-    	  
-
-
-
-    	} else {
-    	  
-
-
-
-
-    	availableUsers.add(user);
-    	  
-
-
-    	    }
-    	  
-
-
-    	}
-    	  
-
-    	}
-    	  
-
-    	userHashMap.put(ASSIGNED_USERS, assignedUsers);
-    	  
-
-    	userHashMap.put(AVAILABLE_USERS, availableUsers);
-    	  
-
-    	return userHashMap;
-    	  
-    	}
+		HashMap<String, List> userHashMap = new HashMap<String, List>();
+		List<User> assignedUsers = new ArrayList<User>();
+		List<User> availableUsers = new ArrayList<User>();
+		for (User user : users)
+		{
+			String userId = user.getUserId().toString();
+			Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
+			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
+			if (pgRoleContextList.size() != 0) {
+				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
+					if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
+						assignedUsers.add(user);
+					} else {
+						availableUsers.add(user);
+					}
+				}
+			} else 
+				availableUsers.add(user);
+		}
+		userHashMap.put(ASSIGNED_USERS, assignedUsers);
+		userHashMap.put(AVAILABLE_USERS, availableUsers);
+		return userHashMap;
+	}
     
     public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) throws Exception
 	{
-    	UserProvisioningManager provisioningManager = null;
-		provisioningManager = getProvisioningManager();
-		Role role = new Role();
+    	Role role = new Role();
 		role.setName(roleName);
 		SearchCriteria roleSearchCriteria = new RoleSearchCriteria(role);
-		List roleList = provisioningManager.getObjects(roleSearchCriteria);
+		List roleList = userProvisioningManager.getObjects(roleSearchCriteria);
 		if (roleList.size() > 0) {
 			Role accessRole = (Role) roleList.get(0);
 			String[] roleIds = new String[] {accessRole.getId().toString()};
 
 			for (String userId : userIds)
 			{
-				provisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+				userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
 			}
 		}
 	}
     
     public void removeProtectionGroupUsers(List<String> userIds, ProtectionGroup protectionGroup) throws Exception
     {
-    	UserProvisioningManager provisioningManager = null;
-    	provisioningManager = getProvisioningManager();
-    	
+	
     	for (String userId : userIds)
     	{
-    		provisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
+    		userProvisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
     	}
+    }
+    
+    ////// CONFIGURATION
+    
+    public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
+        this.userProvisioningManager = userProvisioningManager;
     }
     
 }
