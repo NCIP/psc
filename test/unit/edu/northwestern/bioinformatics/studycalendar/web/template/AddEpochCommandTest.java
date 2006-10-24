@@ -54,7 +54,7 @@ public class AddEpochCommandTest extends StudyCalendarTestCase {
         Map<String, Object> model = command.getModel();
         verifyMocks();
 
-        assertEquals(2, model.size());
+        assertEquals(1, model.size());
         assertContainsPair("Missing epoch", model, "epoch", e3);
     }
 }
