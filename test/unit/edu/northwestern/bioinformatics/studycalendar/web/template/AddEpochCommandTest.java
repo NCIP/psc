@@ -35,7 +35,7 @@ public class AddEpochCommandTest extends StudyCalendarTestCase {
 
         assertEquals(1, study.getPlannedCalendar().getEpochs().size());
         Epoch actualEpoch = study.getPlannedCalendar().getEpochs().get(0);
-        assertEquals("Wrong name on new epoch", "New Epoch", actualEpoch.getName());
+        assertEquals("Wrong name on new epoch", "New epoch", actualEpoch.getName());
         assertEquals("Epoch missing single arm", 1, actualEpoch.getArms().size());
     }
 
@@ -44,7 +44,7 @@ public class AddEpochCommandTest extends StudyCalendarTestCase {
         study.setPlannedCalendar(new PlannedCalendar());
         Epoch e1 = createEpoch("E1");
         Epoch e2 = createEpoch("E2");
-        Epoch e3 = createEpoch("New Epoch");
+        Epoch e3 = createEpoch("New epoch");
         study.getPlannedCalendar().addEpoch(e1);
         study.getPlannedCalendar().addEpoch(e2);
         study.getPlannedCalendar().addEpoch(e3);

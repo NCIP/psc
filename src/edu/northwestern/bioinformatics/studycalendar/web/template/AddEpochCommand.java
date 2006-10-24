@@ -24,7 +24,7 @@ public class AddEpochCommand extends AddToCommand {
     }
 
     protected void createAndAddNewChild() {
-        getStudy().getPlannedCalendar().addEpoch(Epoch.create("New Epoch"));
+        getStudy().getPlannedCalendar().addEpoch(Epoch.create("New epoch"));
     }
 
     protected String whatAdded() {
