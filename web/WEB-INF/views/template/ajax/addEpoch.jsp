@@ -5,7 +5,7 @@ var existingEpochs = $$('div.epoch')
 existingEpochs.each( function(elt) { elt.style.width = '<tags:epochWidth epoch="${epoch}"/>' } )
 var lastExisting = existingEpochs[existingEpochs.length - 1]
 Element.removeClassName(lastExisting, "last")
-<jsgen:insertHtml targetElement="epoch-${previousEpoch.id}" position="after">
+<jsgen:insertHtml targetElement="epochs-container" position="bottom">
     <tags:epoch epoch="${epoch}" selectedArm="${null}" last="${true}"/>
 </jsgen:insertHtml>
 SC.highlight("epoch-${epoch.id}")

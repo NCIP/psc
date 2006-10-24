@@ -192,7 +192,7 @@
 
         <div id="epochs" class="section">
             <h2>Epochs and arms</h2>
-            <tags:epochsAndArms plannedCalendar="${calendar}" selectedArm="${arm.base}"/>
+            <tags:epochsAndArms id="epochs-container" plannedCalendar="${calendar}" selectedArm="${arm.base}"/>
         </div>
 
         <div id="selected-arm" class="section">

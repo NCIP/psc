@@ -20,7 +20,6 @@ public class AddEpochCommand extends AddToCommand {
         Map<String, Object> model = super.getModel();
         List<Epoch> epochs = getStudy().getPlannedCalendar().getEpochs();
         model.put("epoch", epochs.get(epochs.size() - 1));
-        model.put("previousEpoch", epochs.get(epochs.size() - 2));
         return model;
     }
 

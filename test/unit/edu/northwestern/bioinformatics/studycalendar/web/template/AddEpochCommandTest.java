@@ -56,6 +56,5 @@ public class AddEpochCommandTest extends StudyCalendarTestCase {
 
         assertEquals(2, model.size());
         assertContainsPair("Missing epoch", model, "epoch", e3);
-        assertContainsPair("Missing prev epoch", model, "previousEpoch", e2);
     }
 }
