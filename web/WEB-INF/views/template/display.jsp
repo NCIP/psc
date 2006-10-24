@@ -111,6 +111,7 @@
             }
             .controls a {
                 padding: 1px;
+                margin: 0 2px;
                 color: white !important;
                 border: 1px solid #309;
                 background-color: #309;
@@ -151,8 +152,7 @@
                                 Element.update('selected-arm-header', "Error")
                                 SC.slideAndShow('selected-arm-content')
                             }
-                        }
-                            );
+                        });
                     } });
                 })
             }

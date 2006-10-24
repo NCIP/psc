@@ -8,6 +8,20 @@ SC.asyncSubmit = function(form, options) {
     }))
 }
 
+SC.asyncLink = function(anchor, options, indicator) {
+    var a = $(anchor)
+    Event.observe(a, "click", function(e) {
+        if (indicator) { $(indicator).reveal() }
+        Event.stop(e);
+        new Ajax.Request(a.href, $H(options).merge({
+            asynchronous: true,
+            onComplete: function() {
+                if (indicator) { $(indicator).conceal() }
+            }
+        }));
+    })
+}
+
 ////// COOKIES
 
 /** Main fns based on http://www.quirksmode.org/js/cookies.html */

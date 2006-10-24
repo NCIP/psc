@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <!--
     This applicationContext contains the definition of the DAOs
 -->
 
-<beans>
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    >
+
     <!-- HIBERNATE CONFIGURATION -->
 
     <bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
@@ -65,6 +71,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration"/>
 
     <!-- ACTUAL DAOS -->
+
+    <tx:annotation-driven proxy-target-class="true"/>
 
     <bean id="studyDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudyDao"/>
     <bean id="plannedCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao"/>
