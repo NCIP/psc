@@ -55,7 +55,8 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
         log.debug("referenceData");
         Map<String, Object> refdata = new HashMap<String, Object>();
         Site site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site.getClass().getName()+"."+site.getId());
+        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site.getName());
+        
         refdata.put("site", site);
         refdata.put("assignedUsers", userLists.get(SiteService.ASSIGNED_USERS));
         refdata.put("availableUsers", userLists.get(SiteService.AVAILABLE_USERS));
@@ -69,7 +70,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     	
         if("true".equals(assignCommand.getAssign())) {
     		
-            log.debug("onSubmit:assign" + " siteId=" + assignedSite.getClass().getName()+"."+assignedSite.getId().toString());
+            log.debug("onSubmit:assign" + " siteId=" + assignedSite.getName());
             String ac = assignCommand.getAvailableCoordinators().toString();
             log.debug(ac);
         	log.debug("+++ available coordinators size=" + assignCommand.getAvailableCoordinators().size());
@@ -78,7 +79,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             		log.debug("+++ available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
             	}
             }
-            ProtectionGroup pg = siteService.getSiteProtectionGroup(assignedSite.getClass().getName());
+            ProtectionGroup pg = siteService.getSiteProtectionGroup(assignedSite.getName());
             
             siteService.assignSiteCoordinators(pg, assignCommand.getAvailableCoordinators());
         } else {
