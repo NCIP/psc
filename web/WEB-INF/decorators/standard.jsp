@@ -10,9 +10,11 @@
     <title>caBIG Study Calendar Module - <decorator:title/></title>
     <tags:stylesheetLink name="debug"/>
     <tags:stylesheetLink name="lightbox"/>
+    <tags:stylesheetLink name="error-console"/>
     <tags:stylesheetLink name="common"/>
     <tags:javascriptLink name="prototype"/>
     <tags:javascriptLink name="lightbox"/>
+    <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
@@ -26,6 +28,7 @@
     <div id="footmenu">
         <tags:logout/>
     </div>
+    <tags:errorConsole/>
     <tags:debugInfo/>
   </body>
 </html>

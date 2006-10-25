@@ -1,0 +1,43 @@
+#error-console {
+    display: block; /* will be "none" */
+    position: fixed;
+    right: 16px;
+    top: 16px;
+
+    border: 2px #903 inset;
+    background-color: #903;
+    color: #eee;
+
+    padding: 4px;
+    font-size: 9pt
+}
+
+#error-console h1 {
+    font-size: 10pt;
+    margin: 2px 0;
+}
+
+#error-console ul {
+    padding: 0 0 0 1em;
+    margin: 0;
+}
+
+#error-console li {
+    list-style-type: square;
+}
+
+#error-console .links {
+    text-align: right;
+    font-size: 8pt;
+}
+
+#error-console .links a {
+    color: #ddd;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+}
+
+#error-console .links a:hover {
+    color: white;
+    border-color: white;
+}
