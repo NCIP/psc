@@ -43,7 +43,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     public AssignSiteCoordinatorController() {
         setCommandClass(AssignSiteCoordinatorCommand.class);
         setFormView("assignSiteCoordinator");
-        setSuccessView("manageSites");
+        setSuccessView("assignSiteCoordinator");
     }
     
 /*    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -67,6 +67,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignSiteCoordinatorCommand assignCommand = (AssignSiteCoordinatorCommand) oCommand;
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
+    	ProtectionGroup sitepg = siteService.getSiteProtectionGroup(assignedSite.getName()); 
     	
         if("true".equals(assignCommand.getAssign())) {
     		
@@ -79,39 +80,12 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             		log.debug("+++ available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
             	}
             }
-            ProtectionGroup pg = siteService.getSiteProtectionGroup(assignedSite.getName());
             
-            siteService.assignSiteCoordinators(pg, assignCommand.getAvailableCoordinators());
+            siteService.assignSiteCoordinators(sitepg, assignCommand.getAvailableCoordinators());
         } else {
             log.debug("onSubmit:remove");
-            /*
-            if(assignCommand.getAvailableCoordinators().size()>0) {
-                log.debug("--- available coordinators size=" + assignCommand.getAvailableCoordinators().size());
-            	for(int i=0; i<assignCommand.getAvailableCoordinators().size(); ++i) {
-            		log.debug("--- available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
-            	}
-            }
-           
-            if(assignCommand.getAssignedCoordinators().size()>0) {
-            	log.debug("--- assigned coordinators size=" + assignCommand.getAssignedCoordinators().size());
-            	for(int i=0; i<assignCommand.getAssignedCoordinators().size(); ++i) {
-            		log.debug("--- assigned coordinators i=" + i + ", " + assignCommand.getAssignedCoordinators().get(i));
-            	}
-            }
-            if(assignCommand.getAvailableCoordinators().size()>0) { 
-            
-            	authorizationManager.removeProtectionGroupUsers(assignedSite.getClass().getName()+"."+assignedSite.getId(), assignCommand.getAssignedCoordinators());	
-            
-            	//}
-            UserProvisioningManager provisioningManager = null;
-        	provisioningManager = authorizationManager.getProvisioningManager();
-            for (String siteCoor : assignCommand.getAssignedCoordinators())
-        	{
-        		provisioningManager.removeUserFromProtectionGroup(assignedSite.getClass().getName()+"."+assignedSite.getId(), siteCoor);
-        	}
-            */
-           
-        	
+             
+            siteService.removeSiteCoordinators(sitepg, assignCommand.getAssignedCoordinators());
     	}
 
         return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
