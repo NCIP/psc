@@ -13,12 +13,12 @@ SC.asyncLink = function(anchor, options, indicator) {
     Event.observe(a, "click", function(e) {
         if (indicator) { $(indicator).reveal() }
         Event.stop(e);
-        new Ajax.Request(a.href, $H(options).merge({
+        new Ajax.Request(a.href, Object.extend({
             asynchronous: true,
             onComplete: function() {
                 if (indicator) { $(indicator).conceal() }
             }
-        }));
+        }, options));
     })
 }
 

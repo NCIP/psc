@@ -140,19 +140,20 @@
 
                         var armId = aElement.id.substring(4)
                         selectedArmId = armId
+                        aElement.href = '<c:url value="/pages/template/select"/>?arm=' + armId
 
-                        lastRequest = new Ajax.Request(
-                            '<c:url value="/pages/template/select"/>?arm=' + armId,
-                        {
-                            onComplete: function(req) {
-                                $("epochs-indicator").conceal()
-                            },
-                            onFailure: function() {
-                                Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
-                                Element.update('selected-arm-header', "Error")
-                                SC.slideAndShow('selected-arm-content')
+                        lastRequest = new Ajax.Request(aElement.href,
+                            {
+                                onComplete: function(req) {
+                                    $("epochs-indicator").conceal()
+                                },
+                                onFailure: function() {
+                                    Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
+                                    Element.update('selected-arm-header', "Error")
+                                    SC.slideAndShow('selected-arm-content')
+                                }
                             }
-                        });
+                        );
                     } });
                 })
             }

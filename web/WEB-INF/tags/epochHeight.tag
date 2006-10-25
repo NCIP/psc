@@ -1,0 +1,1 @@
+<%@tag%><%@attribute name="plannedCalendar" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar"%>${2 + plannedCalendar.maxArmCount * 2}em

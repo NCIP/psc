@@ -20,18 +20,6 @@ function createArmControls(armItem) {
     })
 }
 
-function createRenameControl(objectType, objectId) {
-    return createControlAnchor("rename", "Rename", '<c:url value="/pages/template/rename"/>', objectType, objectId)
-}
-
-function createControlAnchor(controlName, text, baseHref, objectType, objectId) {
-    return Builder.node("a", {
-        className: objectType + '-control',
-        id: objectType + "-" + objectId + "-" + controlName,
-        href: baseHref + '?' + objectType + '=' + objectId
-    }, text)
-}
-
 function createStudyControls() {
     var h1 = $$("h1")[0];
     var studyId = ${param.study}
@@ -42,8 +30,8 @@ function createStudyControls() {
     controlBox.appendChild(renameControl)
     SC.inPlaceEdit("study-name", renameControl.href, { externalControl: renameControl.id })
 
-    var addEpochControl = createControlAnchor("add", "Add Epoch", '<c:url value="/pages/template/addTo"/>', 'study', studyId)
-    SC.asyncLink(addEpochControl, "epochs-indicator")
+    var addEpochControl = createAddControl("Add epoch", 'study', studyId)
+    SC.asyncLink(addEpochControl, {}, "epochs-indicator")
     controlBox.appendChild(addEpochControl)
 }
 
@@ -54,10 +42,30 @@ function createAllEpochControls() {
 function createEpochControls(epochH4) {
     var controlBox = Builder.node("div", {className: 'epoch-controls controls'});
     epochH4.appendChild(controlBox);
-
     var epochId = epochH4.id.split('-')[1]
+
     var renameControl = createRenameControl('epoch', epochId)
     controlBox.appendChild(renameControl)
     SC.inPlaceEdit('epoch-' + epochId + '-name', renameControl.href, {externalControl: renameControl.id})
+
+    var addArmControl = createAddControl("Add arm", 'epoch', epochId)
+    SC.asyncLink(addArmControl, {}, "epochs-indicator")
+    controlBox.appendChild(addArmControl)
+}
+
+function createRenameControl(objectType, objectId) {
+    return createControlAnchor("rename", "Rename", '<c:url value="/pages/template/rename"/>', objectType, objectId)
+}
+
+function createAddControl(text, objectType, objectId) {
+    return createControlAnchor("add", text, '<c:url value="/pages/template/addTo"/>', objectType, objectId)
+}
+
+function createControlAnchor(controlName, text, baseHref, objectType, objectId) {
+    return Builder.node("a", {
+        className: objectType + '-control',
+        id: objectType + "-" + objectId + "-" + controlName,
+        href: baseHref + '?' + objectType + '=' + objectId
+    }, text)
 }
 

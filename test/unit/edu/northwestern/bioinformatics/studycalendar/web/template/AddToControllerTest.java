@@ -34,6 +34,21 @@ public class AddToControllerTest extends ControllerTestCase {
         assertTrue("Wrong command type created", command instanceof AddEpochCommand);
     }
     
+    public void testCreateCommandArm() throws Exception {
+        request.addParameter("epoch", "77");
+        Object command = controller.getCommand(request);
+        assertTrue("Wrong command type created", command instanceof AddArmCommand);
+    }
+    
+    public void testCreateCommandInvalidParams() throws Exception {
+        try {
+            controller.getCommand(request);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("No command matches the given parameters", iae.getMessage());
+        }
+    }
+
     public void testHandle() throws Exception {
         final AddToCommand command = registerMockFor(AddToCommand.class);
         controller = new AddToController() {

@@ -28,9 +28,9 @@ public class AddToController extends AbstractCommandController {
         if (request.getParameter("study") != null) {
             return new AddEpochCommand(studyDao);
         } else if (request.getParameter("epoch") != null) {
-            throw new UnsupportedOperationException("Add arm not implemented yet");
+            return new AddArmCommand(studyDao);
         } else {
-            throw new UnsupportedOperationException("Add to that object is not supported");
+            throw new IllegalArgumentException("No command matches the given parameters");
         }
     }
 
