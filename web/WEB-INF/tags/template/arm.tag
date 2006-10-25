@@ -22,11 +22,11 @@
                     <c:forEach items="${period.days}" var="day" varStatus="dStatus">
                     <c:choose>
                         <c:when test="${day.inPeriod}">
-                            <td class="repetition<c:if test="${day.lastDayOfRepetition}"> last</c:if>">
+                            <td class="repetition<c:if test="${day.lastDayOfSpan}"> last</c:if>">
                                 <a href="<c:url value="/pages/managePeriod?id=${day.id}"/>">${day['empty'] ? '&nbsp;' : '&times;'}</a>
                             </td>
                         </c:when>
-                        <c:otherwise><td class="empty<c:if test="${dStatus.last}"> last</c:if>">&nbsp;</td></c:otherwise>
+                        <c:otherwise><td class="empty<c:if test="${dStatus.last || day.lastDayOfSpan}"> last</c:if>">&nbsp;</td></c:otherwise>
                     </c:choose>
                     </c:forEach>
                 </tr>

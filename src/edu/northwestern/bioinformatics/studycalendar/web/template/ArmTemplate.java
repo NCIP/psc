@@ -101,7 +101,7 @@ public class ArmTemplate {
         }
 
         public boolean isResume() {
-            return !getFirstDay().isFirstDayOfRepetition()
+            return !getFirstDay().isFirstDayOfSpan()
                 && getPeriod().getDayRange().containsInteger(getFirstDay().getDay().getNumber());
         }
 
@@ -156,12 +156,20 @@ public class ArmTemplate {
             }
         }
 
-        public boolean isFirstDayOfRepetition() {
-            return period.isFirstDayOfRepetition(day.getNumber());
+        public boolean isFirstDayOfSpan() {
+            if (isInPeriod()) {
+                return period.isFirstDayOfRepetition(day.getNumber());
+            } else {
+                return period.isLastDayOfRepetition(day.getNumber() - 1);
+            }
         }
 
-        public boolean isLastDayOfRepetition() {
-            return period.isLastDayOfRepetition(day.getNumber());
+        public boolean isLastDayOfSpan() {
+            if (isInPeriod()) {
+                return period.isLastDayOfRepetition(day.getNumber());
+            } else {
+                return period.isFirstDayOfRepetition(day.getNumber() + 1);
+            }
         }
 
         public boolean isInPeriod() {
