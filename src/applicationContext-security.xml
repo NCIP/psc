@@ -11,12 +11,13 @@
     </bean>
 
     <bean id="authenticationManager" class="gov.nih.nci.security.SecurityServiceProvider"
-          factory-method="getAuthenticationManager">
+          factory-method="getAuthenticationManager" lazy-init="true">
         <constructor-arg><ref local="csmContextName"/></constructor-arg>
     </bean>
 	<bean id="userProvisioningManager" class="gov.nih.nci.security.SecurityServiceProvider"
-          factory-method="getUserProvisioningManager">
+          factory-method="getUserProvisioningManager" lazy-init="true">
         <constructor-arg><ref local="csmContextName"/></constructor-arg>
     </bean>
-    <bean id="studyCalendarAuthorizationManager" autowire="byName" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
+    <bean id="studyCalendarAuthorizationManager" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
 </beans>

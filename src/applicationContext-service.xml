@@ -14,6 +14,6 @@
 
     <bean id="participantService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantService"/>
-    <bean id="siteService" autowire="byName"
+    <bean id="siteService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>     
 </beans>
