@@ -20,7 +20,7 @@
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
-    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
         <property name="interceptors">
             <list>
                 <ref bean="loginCheckInterceptor"/>
@@ -29,9 +29,9 @@
         </property>
     </bean>
     
-    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor" lazy-init="true"/>
 
-    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
+    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor" lazy-init="true"/>
         
     <bean name="/studyList" id="studyListController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
@@ -77,7 +77,7 @@
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController"/>
           
-    <bean name="/assignParticipantCoordinator" id="ParticipantCoordinatorController" autowire="byName"
+    <bean name="/assignParticipantCoordinator" id="ParticipantCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
@@ -94,7 +94,7 @@
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
 
-    <bean name="/newSite" id="newSiteController" autowire="byName"
+    <bean name="/newSite" id="newSiteController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController"/>
 
     <bean name="/assignSite" id="assignSiteController"
@@ -102,7 +102,7 @@
       <property name="viewName"><value>assignSite</value></property>
     </bean>
 
-    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName"
+    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteCoordinatorController">
     </bean>
 
