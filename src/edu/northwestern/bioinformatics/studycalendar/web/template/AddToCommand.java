@@ -1,33 +1,54 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.ui.ModelMap;
 
 /**
  * @author Rhett Sutphin
  */
-public abstract class AddToCommand {
-    private StudyDao studyDao;
-
-    public AddToCommand(StudyDao studyDao) {
-        this.studyDao = studyDao;
+public class AddToCommand extends ModalEditCommand {
+    protected Mode studyMode() {
+        return new AddEpoch();
     }
 
-    public void apply() {
-        createAndAddNewChild();
-        studyDao.save(toSave());
+    protected Mode epochMode() {
+        return new AddArm();
     }
 
-    public Map<String, Object> getModel() {
-        return new HashMap<String, Object>();
+    private class AddArm implements Mode {
+        public String getRelativeViewName() {
+            return "addArm";
+        }
+
+        public void performEdit() {
+            Arm arm = new Arm();
+            arm.setName("New arm");
+            getEpoch().addArm(arm);
+        }
+
+        public Map<String, Object> getModel() {
+            List<Arm> arms = getEpoch().getArms();
+            return new ModelMap("arm", arms.get(arms.size() - 1));
+        }
     }
 
-    protected abstract String whatAdded();
+    private class AddEpoch implements Mode {
+        public String getRelativeViewName() {
+            return "addEpoch";
+        }
 
-    protected abstract void createAndAddNewChild();
+        public Map<String, Object> getModel() {
+            List<Epoch> epochs = getStudy().getPlannedCalendar().getEpochs();
+            return new ModelMap("epoch", epochs.get(epochs.size() - 1));
+        }
 
-    protected abstract Study toSave();
+        public void performEdit() {
+            getStudy().getPlannedCalendar().addEpoch(Epoch.create("New epoch"));
+        }
+    }
 }

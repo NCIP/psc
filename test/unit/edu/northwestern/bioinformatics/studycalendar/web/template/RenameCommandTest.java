@@ -21,7 +21,8 @@ public class RenameCommandTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
-        command = new RenameCommand(studyDao);
+        command = new RenameCommand();
+        command.setStudyDao(studyDao);
         command.setValue(NEW_NAME);
     }
 
@@ -70,19 +71,6 @@ public class RenameCommandTest extends StudyCalendarTestCase {
         assertRenamed("Sole arm", epoch.getArms().get(0));
     }
     
-    public void testRenameAll() throws Exception {
-        Epoch epoch = createEpoch("E1", "A", "B");
-        command.setStudy(STUDY);
-        command.setEpoch(epoch);
-        command.setArm(epoch.getArms().get(1));
-
-        doApply();
-        assertRenamed("Study", STUDY);
-        assertRenamed("Epoch", epoch);
-        assertName("Arm 0 should not be renamed", "A", epoch.getArms().get(0));
-        assertRenamed("Arm", epoch.getArms().get(1));
-    }
-
     private static Epoch createEpoch(String epochName, String... armNames) {
         PlannedCalendar cal = new PlannedCalendar();
         cal.setStudy(STUDY);

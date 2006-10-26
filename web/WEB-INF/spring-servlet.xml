@@ -45,9 +45,13 @@
         <property name="dao"><ref bean="armDao"/></property>
     </bean>
     <bean name="/template/rename" id="renameController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.RenameController"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>renameCommand</value></property>
+    </bean>
     <bean name="/template/addTo" id="addToController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddToController"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addToTemplateCommand</value></property>
+    </bean>
     <bean name="/template/edit.js" id="editJsController"
         class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName"><value>template/edit.js</value></property>

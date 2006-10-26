@@ -36,6 +36,13 @@ public class Fixtures {
         return event;
     }
 
+    public static Study createSingleEpochStudy(String studyName, String epochName, String... armNames) {
+        Study study = createNamedInstance(studyName, Study.class);
+        study.setPlannedCalendar(new PlannedCalendar());
+        study.getPlannedCalendar().addEpoch(Epoch.create(epochName, armNames));
+        return study;
+    }
+
     @Deprecated // use the factory on Epoch directly, instead
     public static Epoch createEpoch(String name, String... armNames) {
         return Epoch.create(name, armNames);

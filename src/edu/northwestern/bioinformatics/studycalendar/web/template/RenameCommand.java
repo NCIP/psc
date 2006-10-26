@@ -6,64 +6,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 
+import java.util.Map;
+
 /**
  * @author Rhett Sutphin
  */
-public class RenameCommand {
+public class RenameCommand extends ModalEditCommand {
     private String value;
-
-    private Study study;
-    private Epoch epoch;
-    private Arm arm;
-
-    private StudyDao studyDao;
-
-    public RenameCommand(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    ////// LOGIC
-
-    public void apply() {
-        if (getStudy() != null) rename(getStudy());
-        if (getEpoch() != null) renameEpoch();
-        if (getArm() != null) renameArm();
-        
-        studyDao.save(getTargetStudy());
-    }
-
-    public Study getTargetStudy() {
-        if (getStudy() != null) {
-            return getStudy();
-        } else if (getEpoch() != null) {
-            return getEpoch().getPlannedCalendar().getStudy();
-        } else if (getArm() != null) {
-            return getArm().getEpoch().getPlannedCalendar().getStudy();
-        } else {
-            return null;
-        }
-    }
-
-    private void rename(Named named) {
-        named.setName(getValue());
-    }
-
-    private void renameEpoch() {
-        rename(getEpoch());
-        if (!getEpoch().isMultipleArms()) {
-            Arm soleArm = getEpoch().getArms().get(0);
-            rename(soleArm);
-            setArm(soleArm);
-        }
-    }
-
-    private void renameArm() {
-        rename(getArm());
-        if (!getArm().getEpoch().isMultipleArms()) {
-            rename(getArm().getEpoch());
-            setEpoch(getArm().getEpoch());
-        }
-    }
 
     ////// BOUND PROPERTIES
 
@@ -75,27 +24,58 @@ public class RenameCommand {
         this.value = value;
     }
 
-    public Study getStudy() {
-        return study;
+    ////// MODES
+
+    protected Mode studyMode() {
+        return new RenameStudy();
     }
 
-    public void setStudy(Study study) {
-        this.study = study;
+    protected Mode epochMode() {
+        return new RenameEpoch();
     }
 
-    public Epoch getEpoch() {
-        return epoch;
+    protected Mode armMode() {
+        return new RenameArm();
     }
 
-    public void setEpoch(Epoch epoch) {
-        this.epoch = epoch;
+    private abstract class RenameMode implements Mode {
+        public Map<String, Object> getModel() {
+            return null;
+        }
+
+        public String getRelativeViewName() {
+            return "rename";
+        }
+
+        protected final void rename(Named named) {
+            named.setName(getValue());
+        }
     }
 
-    public Arm getArm() {
-        return arm;
+    private class RenameStudy extends RenameMode {
+        public void performEdit() {
+            rename(getStudy());
+        }
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    private class RenameEpoch extends RenameMode {
+        public void performEdit() {
+            rename(getEpoch());
+            if (!getEpoch().isMultipleArms()) {
+                Arm soleArm = getEpoch().getArms().get(0);
+                rename(soleArm);
+                setArm(soleArm);
+            }
+        }
+    }
+
+    private class RenameArm extends RenameMode {
+        public void performEdit() {
+            rename(getArm());
+            if (!getArm().getEpoch().isMultipleArms()) {
+                rename(getArm().getEpoch());
+                setEpoch(getArm().getEpoch());
+            }
+        }
     }
 }

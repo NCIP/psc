@@ -1,8 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createEpoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
@@ -12,26 +10,15 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class AddEpochCommandTest extends StudyCalendarTestCase {
-    private AddEpochCommand command;
-    private StudyDao studyDao;
+public class AddToCommandTest extends StudyCalendarTestCase {
+    private AddToCommand command = new AddToCommand();
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        studyDao = registerDaoMockFor(StudyDao.class);
-        command = new AddEpochCommand(studyDao);
-    }
-
-    public void testApply() throws Exception {
+    public void testStudyModePerformEdit() throws Exception {
         Study study = new Study();
         study.setPlannedCalendar(new PlannedCalendar());
         command.setStudy(study);
 
-        studyDao.save(study);
-        replayMocks();
-
-        command.apply();
-        verifyMocks();
+        command.performEdit();
 
         assertEquals(1, study.getPlannedCalendar().getEpochs().size());
         Epoch actualEpoch = study.getPlannedCalendar().getEpochs().get(0);
@@ -39,22 +26,42 @@ public class AddEpochCommandTest extends StudyCalendarTestCase {
         assertEquals("Epoch missing single arm", 1, actualEpoch.getArms().size());
     }
 
-    public void testModel() throws Exception {
+    public void testStudyModeModel() throws Exception {
         Study study = new Study();
         study.setPlannedCalendar(new PlannedCalendar());
-        Epoch e1 = createEpoch("E1");
-        Epoch e2 = createEpoch("E2");
-        Epoch e3 = createEpoch("New epoch");
+        Epoch e1 = Epoch.create("E1");
+        Epoch e2 = Epoch.create("E2");
+        Epoch e3 = Epoch.create("New epoch");
         study.getPlannedCalendar().addEpoch(e1);
         study.getPlannedCalendar().addEpoch(e2);
         study.getPlannedCalendar().addEpoch(e3);
         command.setStudy(study);
 
-        replayMocks();
         Map<String, Object> model = command.getModel();
-        verifyMocks();
 
         assertEquals(1, model.size());
         assertContainsPair("Missing epoch", model, "epoch", e3);
+    }
+
+    public void testEpochModePerformEdit() throws Exception {
+        Study study = new Study();
+        study.setPlannedCalendar(new PlannedCalendar());
+        Epoch epoch = Epoch.create("Holocene", "A", "B");
+        study.getPlannedCalendar().addEpoch(epoch);
+        command.setEpoch(epoch);
+
+        command.performEdit();
+
+        assertEquals("New arm not added", 3, epoch.getArms().size());
+        assertEquals("Wrong name for new arm", "New arm", epoch.getArms().get(2).getName());
+    }
+    
+    public void testEpochModeModel() throws Exception {
+        Epoch epoch = Epoch.create("E", "A", "New arm");
+        command.setEpoch(epoch);
+
+        Map<String, Object> model = command.getModel();
+        assertEquals("Wrong number of model elements", 1, model.size());
+        assertEquals("Wrong arm", epoch.getArms().get(1), model.get("arm"));
     }
 }
