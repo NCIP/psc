@@ -1,1 +1,1 @@
-<%@tag%><%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%@attribute name="epoch" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.Epoch"%>${100 / fn:length(epoch.plannedCalendar.epochs) - 1}%
+<%@tag%><%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%><%@attribute name="epoch" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.Epoch"%>${100 / fn:length(epoch.plannedCalendar.epochs) - 2}%
