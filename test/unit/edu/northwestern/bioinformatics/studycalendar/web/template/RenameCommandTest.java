@@ -7,14 +7,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import org.easymock.classextension.EasyMock;
 
 /**
  * @author Rhett Sutphin
  */
 public class RenameCommandTest extends StudyCalendarTestCase {
     private static final String NEW_NAME = "new name";
-    private static final Study STUDY = new Study();
+    private Study study;
     private StudyDao studyDao;
     private RenameCommand command;
 
@@ -24,13 +23,15 @@ public class RenameCommandTest extends StudyCalendarTestCase {
         command = new RenameCommand();
         command.setStudyDao(studyDao);
         command.setValue(NEW_NAME);
+
+        study = Fixtures.createSingleEpochStudy("Study 1234", "E1");
     }
 
     public void testRenameStudy() throws Exception {
-        command.setStudy(STUDY);
+        command.setStudy(study);
 
         doApply();
-        assertRenamed("Study", STUDY);
+        assertRenamed("Study", study);
     }
 
     public void testRenameMultiArmEpoch() throws Exception {
@@ -71,17 +72,14 @@ public class RenameCommandTest extends StudyCalendarTestCase {
         assertRenamed("Sole arm", epoch.getArms().get(0));
     }
     
-    private static Epoch createEpoch(String epochName, String... armNames) {
-        PlannedCalendar cal = new PlannedCalendar();
-        cal.setStudy(STUDY);
-
-        Epoch epoch = Fixtures.createEpoch(epochName, armNames);
-        epoch.setPlannedCalendar(cal);
+    private Epoch createEpoch(String epochName, String... armNames) {
+        Epoch epoch = Epoch.create(epochName, armNames);
+        study.getPlannedCalendar().addEpoch(epoch);
         return epoch;
     }
 
     private void doApply() {
-        studyDao.save(STUDY);
+        studyDao.save(study);
         replayMocks();
         command.apply();
         verifyMocks();
