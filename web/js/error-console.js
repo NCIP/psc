@@ -4,6 +4,12 @@ EC.AjaxResponders = {
     onException: function(request, exception) {
         new Insertion.Top('error-console-errors', "<li>" + exception + "</li>")
         $('error-console').show()
+    },
+    onComplete: function(request, transport, json) {
+        if (request.responseIsFailure()) {
+            new Insertion.Top('error-console-errors', "<li>" + transport.status + " " + transport.statusText + "</li>")
+            $('error-console').show()
+        }
     }
 }
 
