@@ -86,7 +86,7 @@
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController"/>
           
-    <bean name="/assignParticipantCoordinator" id="ParticipantCoordinatorController" autowire="byName" lazy-init="true"
+    <bean name="/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
@@ -97,7 +97,7 @@
         <property name="viewName"><value>schedule/ajax/selectScheduledArm</value></property>
         <property name="dao"><ref bean="scheduledArmDao"/></property>
     </bean>
-    <bean name="/schedule/nextArm" id="ScheduleNextArmController" autowire="byName"
+    <bean name="/schedule/nextArm" id="scheduleNextArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
 
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
