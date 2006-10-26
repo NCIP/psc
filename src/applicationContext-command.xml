@@ -16,4 +16,6 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.AddToCommand"/>
     <bean id="deleteCommand" autowire="byName" scope="prototype"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteCommand"/>
+    <bean id="moveCommand" autowire="byName" scope="prototype"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.MoveCommand"/>
 </beans>

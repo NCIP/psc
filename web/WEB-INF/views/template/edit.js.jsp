@@ -11,7 +11,6 @@ function createArmControls(armItem) {
     armItem.appendChild(controlBox)
 
     var renameControl = createRenameControl('arm', armId)
-    controlBox.appendChild(renameControl);
     SC.inPlaceEdit(armA, renameControl.href, {
         externalControl: renameControl.id,
         externalControlOnly: true,
@@ -20,13 +19,35 @@ function createArmControls(armItem) {
     })
 
     var deleteControl = createDeleteControl('arm', armId)
-    controlBox.appendChild(deleteControl)
     Event.observe(deleteControl, "click", deleteHandler(function() {
             return "Are you sure you want to delete the arm '" + armA.textContent +
                 "'?  This will permanently remove it, all its periods, and its events.  " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
     ))
+
+    var moveUpControl   = createMoveControl(-1, '&#8910;', 'arm', armId)
+    SC.asyncLink(moveUpControl, {}, "epochs-indicator")
+    var moveDownControl = createMoveControl( 1, '&#8911;', 'arm', armId)
+    SC.asyncLink(moveDownControl, {}, "epochs-indicator")
+
+    controlBox.appendChild(moveUpControl)
+    controlBox.appendChild(renameControl)
+    controlBox.appendChild(deleteControl)
+    controlBox.appendChild(moveDownControl)
+
+    updateArmControlVisibility('arm-' + armId + '-item')
+}
+
+function updateArmControlVisibility(armItem) {
+    var thisArm = $(armItem)
+    var siblings = $A(thisArm.parentNode.getElementsByTagName("LI"))
+
+    updateMoveControlVisibility('arm', thisArm.id.split('-')[1], thisArm, siblings)
+}
+
+function updateAllArmsControlVisibility(epochId) {
+    $$('#epoch-' + epochId + '-arms li').each(updateArmControlVisibility)
 }
 
 function createStudyControls() {
@@ -36,7 +57,6 @@ function createStudyControls() {
     h1.appendChild(controlBox)
 
     var renameControl = createRenameControl('study', studyId)
-    controlBox.appendChild(renameControl)
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl.id, 
         clickToEditText: "Click to rename"
@@ -44,6 +64,8 @@ function createStudyControls() {
 
     var addEpochControl = createAddControl("Add epoch", 'study', studyId)
     SC.asyncLink(addEpochControl, {}, "epochs-indicator")
+
+    controlBox.appendChild(renameControl)
     controlBox.appendChild(addEpochControl)
 }
 
@@ -59,23 +81,44 @@ function createEpochControls(epochH4) {
 
     var addArmControl = createAddControl("Add arm", 'epoch', epochId)
     SC.asyncLink(addArmControl, {}, "epochs-indicator")
-    controlBox.appendChild(addArmControl)
 
     var renameControl = createRenameControl('epoch', epochId)
-    controlBox.appendChild(renameControl)
     SC.inPlaceEdit(epochName, renameControl.href, {
         externalControl: renameControl.id,
         clickToEditText: "Click to rename"
     })
 
     var deleteControl = createDeleteControl('epoch', epochId)
-    controlBox.appendChild(deleteControl)
     Event.observe(deleteControl, "click", deleteHandler(function() {
             return "Are you sure you want to delete the epoch '" + epochName.textContent +
                 "'?  This will permanently remove it, all its arms, its periods, and its events. " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
     ));
+
+    var moveUpControl   = createMoveControl(-1, '&#8826;', 'epoch', epochId)
+    SC.asyncLink(moveUpControl,   {}, "epochs-indicator")
+    var moveDownControl = createMoveControl( 1, '&#8827;', 'epoch', epochId)
+    SC.asyncLink(moveDownControl, {}, "epochs-indicator")
+
+    controlBox.appendChild(moveUpControl)
+    controlBox.appendChild(addArmControl)
+    controlBox.appendChild(renameControl)
+    controlBox.appendChild(deleteControl)
+    controlBox.appendChild(moveDownControl)
+
+    updateEpochControlVisibility('epoch-' + epochId)
+}
+
+function updateEpochControlVisibility(epochElt) {
+    var thisEpoch = $(epochElt)
+    var siblings = $$('div.epoch')
+
+    updateMoveControlVisibility('epoch', thisEpoch.id.split('-')[1], thisEpoch, siblings)
+}
+
+function updateAllEpochsControlVisibility() {
+    $$('div.epoch').each(updateEpochControlVisibility)
 }
 
 function createRenameControl(objectType, objectId) {
@@ -90,12 +133,25 @@ function createAddControl(text, objectType, objectId) {
     return createControlAnchor("add", text, '<c:url value="/pages/template/addTo"/>', objectType, objectId)
 }
 
+function createMoveControl(offset, text, objectType, objectId) {
+    return createControlAnchor("move" + offset, text, '<c:url value="/pages/template/move?offset="/>' + offset, objectType, objectId)
+}
+
 function createControlAnchor(controlName, text, baseHref, objectType, objectId) {
-    return Builder.node("a", {
+    var href = baseHref;
+    if (href.indexOf('?') >= 0) {
+        href += '&'
+    } else {
+        href += '?'
+    }
+    href += objectType + '=' + objectId
+    var a = Builder.node("a", {
         className: objectType + '-control',
         id: objectType + "-" + objectId + "-" + controlName,
-        href: baseHref + '?' + objectType + '=' + objectId
-    }, text)
+        href: href
+    })
+    a.innerHTML = text
+    return a
 }
 
 function deleteHandler(confirmMessageFn, link) {
@@ -109,5 +165,30 @@ function deleteHandler(confirmMessageFn, link) {
                 }
             })
         }
+    }
+}
+
+function updateMoveControlVisibility(objectType, objectId, thisElement, siblings) {
+    var isFirst = thisElement == siblings[0]
+    var isLast = thisElement == siblings.last()
+
+    var downControl = $(objectType + '-' + objectId + '-move1')
+    if (isLast) {
+        downControl.conceal();
+    } else {
+        downControl.reveal();
+    }
+
+    var upControl = $(objectType + '-' + objectId + '-move-1' )
+    if (isFirst) {
+        upControl.conceal();
+    } else {
+        upControl.reveal();
+    }
+
+    if (isFirst && isLast) {
+        upControl.hide(); downControl.hide();
+    } else {
+        upControl.show(); downControl.show();
     }
 }

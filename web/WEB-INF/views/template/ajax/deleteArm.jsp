@@ -5,3 +5,4 @@ SC.highlight(toDelete)
 toDelete.remove()
 
 $('epochs-container').style.height = '<tags:epochHeight plannedCalendar="${command.arm.epoch.plannedCalendar}"/>'
+updateAllArmsControlVisibility(${command.arm.epoch.id})

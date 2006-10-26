@@ -56,6 +56,10 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>deleteCommand</value></property>
     </bean>
+    <bean name="/template/move" id="moveController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>moveCommand</value></property>
+    </bean>
     <bean name="/template/edit.js" id="editJsController"
         class="org.springframework.web.servlet.mvc.ParameterizableViewController">
         <property name="viewName"><value>template/edit.js</value></property>

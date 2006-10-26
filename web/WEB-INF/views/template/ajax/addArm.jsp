@@ -8,3 +8,4 @@ $('epochs-container').style.height = '<tags:epochHeight plannedCalendar="${arm.e
 createArmControls($("arm-${arm.id}-item"))
 registerSelectArmHandler($("arm-${arm.id}"))
 SC.highlight("arm-${arm.id}-item")
+updateAllArmsControlVisibility(${arm.epoch.id})
