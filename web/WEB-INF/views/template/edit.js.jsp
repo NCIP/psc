@@ -26,9 +26,9 @@ function createArmControls(armItem) {
         }, deleteControl.href
     ))
 
-    var moveUpControl   = createMoveControl(-1, '&#8910;', 'arm', armId)
+    var moveUpControl   = createMoveControl(-1, '&#9650;', 'arm', armId)
     SC.asyncLink(moveUpControl, {}, "epochs-indicator")
-    var moveDownControl = createMoveControl( 1, '&#8911;', 'arm', armId)
+    var moveDownControl = createMoveControl( 1, '&#9660;', 'arm', armId)
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
@@ -96,9 +96,9 @@ function createEpochControls(epochH4) {
         }, deleteControl.href
     ));
 
-    var moveUpControl   = createMoveControl(-1, '&#8826;', 'epoch', epochId)
+    var moveUpControl   = createMoveControl(-1, '&#9668;', 'epoch', epochId)
     SC.asyncLink(moveUpControl,   {}, "epochs-indicator")
-    var moveDownControl = createMoveControl( 1, '&#8827;', 'epoch', epochId)
+    var moveDownControl = createMoveControl( 1, '&#9658;', 'epoch', epochId)
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
