@@ -68,9 +68,6 @@
     <bean name="/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
-    <bean name="/viewArm" id="viewArmController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ViewArmController"/>
-
     <bean name="/newPeriod" id="newPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController"/>
 
