@@ -33,6 +33,7 @@ public class URLAccessCheckInterceptor extends HandlerInterceptorAdapter {
                 = SecurityServiceProvider.getAuthorizationManager(APPLICATION_CONTEXT_STRING);
             if (!authorizationManager.checkPermission(userName, request.getRequestURI(), ACCESS_OPERATION)) {
                 ModelAndView mv = new ModelAndView("errorPage");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
                 throw new ModelAndViewDefiningException(mv);
             }
             return true;
