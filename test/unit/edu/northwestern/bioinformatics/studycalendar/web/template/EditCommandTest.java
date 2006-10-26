@@ -1,15 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.ArrayList;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Rhett Sutphin
@@ -30,7 +26,7 @@ public class EditCommandTest extends StudyCalendarTestCase {
         );
         command.setStudyDao(studyDao);
 
-        study = Fixtures.createSingleEpochStudy("Study", "E1", "A", "B");
+        study = Fixtures.createSingleEpochStudy("Study 1234", "E1", "A", "B");
         study.getPlannedCalendar().addEpoch(Epoch.create("E2"));
     }
 
@@ -42,6 +38,19 @@ public class EditCommandTest extends StudyCalendarTestCase {
         replayMocks();
         command.apply();
         verifyMocks();
+    }
+    
+    public void testApplyToCompleteCalendar() throws Exception {
+        study.getPlannedCalendar().setComplete(true);
+        command.setStudy(study);
+
+        try {
+            command.apply();
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException e) {
+            assertContains(e.getMessage(), study.getName());
+            assertContains(e.getMessage(), "complete");
+        }
     }
 
     public void testToSaveStudy() throws Exception {

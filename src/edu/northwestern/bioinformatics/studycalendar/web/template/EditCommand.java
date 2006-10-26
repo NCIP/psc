@@ -21,8 +21,14 @@ public abstract class EditCommand {
     private Arm arm;
 
     public void apply() {
-        performEdit();
-        studyDao.save(toSave());
+        Study target = toSave();
+        if (target.getPlannedCalendar().isComplete()) {
+            throw new StudyCalendarSystemException(
+                "The calendar for " + target.getName() + " is complete, and therefore uneditable");
+        } else {
+            performEdit();
+            studyDao.save(target);
+        }
     }
 
     /**
