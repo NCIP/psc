@@ -26,7 +26,7 @@
     <decorator:body/>
     </div>
     <div id="footmenu">
-        <tags:logout/>
+        <a href="<c:url value="/pages/studyList"/>">Calendar Menu</a> <tags:logout/>
     </div>
     <tags:errorConsole/>
     <tags:debugInfo/>
