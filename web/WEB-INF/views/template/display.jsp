@@ -93,7 +93,7 @@
             div.arm-controls, div.epoch-controls {
                 position: absolute;
                 bottom: 4px;
-                right: 4px;
+                right: 2px;
                 text-align: right;
             }
             span.study-controls {
@@ -106,15 +106,19 @@
                 padding: 3px;
             }
             .controls a, .inplaceeditor-form a {
-                font-weight: normal;
+                font-weight: bold;
                 text-decoration: none;
             }
             .controls a {
-                padding: 1px;
+                padding: 2px;
                 margin: 0 2px;
-                color: white !important;
-                border: 1px solid #309;
-                background-color: #309;
+                color: #444;
+                border: 1px solid #999;
+                background-color: #ccc;
+            }
+            .controls a:hover {
+                border-color: #444;
+                background-color: #ddd;
             }
         </style>
         <c:if test="${not plannedCalendar.complete}">
