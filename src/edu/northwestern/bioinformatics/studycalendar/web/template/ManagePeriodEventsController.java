@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -65,8 +66,9 @@ public class ManagePeriodEventsController extends SimpleFormController {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
         command.apply();
         periodDao.save(command.getPeriod());
-        Integer studyId = command.getPeriod().getArm().getEpoch().getPlannedCalendar().getStudy().getId();
-        return ControllerTools.redirectToCalendarTemplate(studyId);
+        Arm arm = command.getPeriod().getArm();
+        Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
+        return ControllerTools.redirectToCalendarTemplate(studyId, arm.getId());
     }
 
     ////// CONFIGURATION
