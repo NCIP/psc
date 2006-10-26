@@ -4,15 +4,17 @@ SC.Main = new Object();
 // this is so that the LI can be used as a container for other controls, but still be
 // generally useful
 SC.Main.registerClickForwarders = function() {
-    $$('.epochs-and-arms li').each(function(li) {
-        Event.observe(li, 'click', function() {
-            var armA;
-            $A(li.getElementsByTagName("a")).each(function(a) {
-                if (Element.hasClassName(a, "arm")) { armA = a; }
-            });
-            armA.click();
+    $$('.epochs-and-arms li').each(SC.Main.registerClickForwarder)
+}
+
+SC.Main.registerClickForwarder = function(armItem) {
+    Event.observe(armItem, 'click', function() {
+        var armA;
+        $A(armItem.getElementsByTagName("a")).each(function(a) {
+            if (Element.hasClassName(a, "arm")) { armA = a; }
         });
-    })
+        armA.click();
+    });
 }
 
 Event.observe(window, "load", SC.Main.registerClickForwarders)
