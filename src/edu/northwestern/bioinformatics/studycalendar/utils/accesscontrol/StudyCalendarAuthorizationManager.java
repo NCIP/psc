@@ -72,7 +72,43 @@ public class StudyCalendarAuthorizationManager {
 			}
 		}
 	}
-						
+    	
+    public void assignMultipleProtectionElements(String userId, List<String> protectionElementObjectIds) throws Exception
+	{
+    	boolean protectionElementPresent = false;
+    	String userName = getUserObject(userId).getLoginName();
+		for (String protectionElementObjectId : protectionElementObjectIds)	{
+			try { 
+				userProvisioningManager.getProtectionElement(protectionElementObjectId);
+				protectionElementPresent = true;
+			} catch (CSObjectNotFoundException ex){
+				ProtectionElement newProtectionElement = new ProtectionElement();
+				newProtectionElement.setObjectId(protectionElementObjectId);
+				newProtectionElement.setProtectionElementName(protectionElementObjectId);
+				userProvisioningManager.createProtectionElement(newProtectionElement);
+				//protection element attribute name is set to be the same as protection element object id
+				userProvisioningManager.setOwnerForProtectionElement(userName, protectionElementObjectId, protectionElementObjectId);
+			}
+		
+			if (protectionElementPresent)
+			{
+				if (log.isDebugEnabled()) {
+					log.debug(" The given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
+				}
+				if (!(userProvisioningManager.checkOwnership(userName, protectionElementObjectId)))
+				{
+					if (log.isDebugEnabled()) {
+						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is not owned by " + userName);
+					}
+					userProvisioningManager.setOwnerForProtectionElement(userName, protectionElementObjectId, userProvisioningManager.getProtectionElement(protectionElementObjectId).getAttribute());
+				} else {
+					if (log.isDebugEnabled()) 
+						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is owned by " + userName);
+				}
+			}
+		}
+	}
+    
 	public Map getUsers(String groupName, String protectionElementObjectId) throws Exception {
 		HashMap<String, List> usersMap = new HashMap<String, List>();
 		List<User> usersForRequiredGroup = getUsersForGroup(groupName);
@@ -281,6 +317,10 @@ public class StudyCalendarAuthorizationManager {
     	{
     		userProvisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
     	}
+    }
+    
+    public void assignProtectionElementToPGs(List<String> pgIdsList, String protectionElementId) throws Exception {
+    	userProvisioningManager.assignToProtectionGroups(protectionElementId, pgIdsList.toArray(new String[0]));
     }
     
     ////// CONFIGURATION
