@@ -21,6 +21,13 @@ EC.registerErrorConsoleControlHandlers = function() {
     }
     Event.observe("error-console-show", "click", fn)
     Event.observe("error-console-hide", "click", fn)
+    Event.observe("error-console-clear", "click", function(e) {
+        Event.stop(e);
+        $$("#error-console-errors li").each(function(li) { li.remove() })
+        $("error-console-hidden").show();
+        $("error-console-shown").hide();
+        $("error-console").hide();
+    })
 }
 
 Event.observe(window, "load", EC.registerErrorConsoleControlHandlers);
