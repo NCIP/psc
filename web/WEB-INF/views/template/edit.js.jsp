@@ -20,7 +20,7 @@ function createArmControls(armItem) {
 
     var deleteControl = createDeleteControl('arm', armId)
     Event.observe(deleteControl, "click", deleteHandler(function() {
-            return "Are you sure you want to delete the arm '" + armA.textContent +
+            return "Are you sure you want to delete the arm '" + armA.innerHTML +
                 "'?  This will permanently remove it, all its periods, and its events.  " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
@@ -90,7 +90,7 @@ function createEpochControls(epochH4) {
 
     var deleteControl = createDeleteControl('epoch', epochId)
     Event.observe(deleteControl, "click", deleteHandler(function() {
-            return "Are you sure you want to delete the epoch '" + epochName.textContent +
+            return "Are you sure you want to delete the epoch '" + epochName.innerHTML +
                 "'?  This will permanently remove it, all its arms, its periods, and its events. " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
