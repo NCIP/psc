@@ -82,9 +82,9 @@ SC.inPlaceEditors = { }
 SC.inPlaceEdit = function(element, url, options) {
     var e = $(element)
     SC.inPlaceEditors[e.id] = new SC.InPlaceEditor(element, url,
-        $H(options).merge({
+        Object.extend({
             evalScripts: true
-        })
+        }, options)
     );
 }
 

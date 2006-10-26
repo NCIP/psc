@@ -1,16 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.HashMap;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
@@ -19,27 +23,17 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 /**
  * @author Rhett Sutphin
  */
-public class NewStudyController extends SimpleFormController {
+public class NewStudyController implements Controller {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
 
-    public NewStudyController() {
-        setCommandClass(NewStudyCommand.class);
-        setFormView("editStudy");
-        setBindOnNewForm(true);
-    }
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Study study = new Study();
+        study.setName("New study");
+        study.setPlannedCalendar(new PlannedCalendar());
+        study.getPlannedCalendar().addEpoch(Epoch.create("New epoch"));
 
-    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-        Map<String, Object> refdata = new HashMap<String, Object>();
-        refdata.put("action", "New");
-        return refdata;
-    }
-
-    protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
-        NewStudyCommand command = (NewStudyCommand) oCommand;
-        Study study = command.createStudy();
-        // TODO: transaction
         studyDao.save(study);
 
         //// XXX: TEMPORARY until there's an interface for setting up sites & assigning studies to them
