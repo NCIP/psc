@@ -274,6 +274,7 @@ public class StudyCalendarAuthorizationManager {
 		List<User> availableUsers = new ArrayList<User>();
 		for (User user : users)
 		{
+			boolean isAssigned = false;
 			String userId = user.getUserId().toString();
 			Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
 			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
@@ -281,12 +282,16 @@ public class StudyCalendarAuthorizationManager {
 				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
 					if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
 						assignedUsers.add(user);
-					} else {
-						availableUsers.add(user);
-					}
+						isAssigned = true;
+						break;
+					} 
 				}
-			} else 
+				if (!isAssigned) {
+					availableUsers.add(user);
+				}
+			} else { 
 				availableUsers.add(user);
+			}
 		}
 		userHashMap.put(ASSIGNED_USERS, assignedUsers);
 		userHashMap.put(AVAILABLE_USERS, availableUsers);
