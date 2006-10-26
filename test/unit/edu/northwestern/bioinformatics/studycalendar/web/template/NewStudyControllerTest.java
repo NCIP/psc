@@ -73,6 +73,9 @@ public class NewStudyControllerTest extends ControllerTestCase {
             if (epochs.size() != 1) return false;
             if (!"New epoch".equals(epochs.get(0).getName())) return false;
 
+            // this is pretty bogus, but I can't think of a different solution right now
+            actual.setId(ID);
+
             return true;
         }
 
