@@ -181,7 +181,7 @@
 
         <security:secureOperation element="/studycalendar/pages/markComplete" operation="ACCESS">
         <c:if test="${not study.plannedCalendar.complete}">
-            <p><a href="<c:url value="/pages/markComplete?id=${study.id}"/>">Mark this template complete</a>.</p>
+            <p><a href="<c:url value="/pages/markComplete?study=${study.id}"/>">Mark this template complete</a>.</p>
         </c:if>
         </security:secureOperation>
         <security:secureOperation element="/studycalendar/pages/assignParticipantCoordinator" operation="ACCESS">
