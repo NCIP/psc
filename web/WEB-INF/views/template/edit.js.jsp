@@ -12,7 +12,7 @@ function createArmControls(armItem) {
 
     var renameControl = createRenameControl('arm', armId)
     SC.inPlaceEdit(armA, renameControl.href, {
-        externalControl: renameControl.id,
+        externalControl: renameControl,
         externalControlOnly: true,
         highlight: false,
         clickToEditText: armA.title
@@ -58,7 +58,7 @@ function createStudyControls() {
 
     var renameControl = createRenameControl('study', studyId)
     SC.inPlaceEdit("study-name", renameControl.href, {
-        externalControl: renameControl.id, 
+        externalControl: renameControl,
         clickToEditText: "Click to rename"
     })
 
@@ -84,7 +84,7 @@ function createEpochControls(epochH4) {
 
     var renameControl = createRenameControl('epoch', epochId)
     SC.inPlaceEdit(epochName, renameControl.href, {
-        externalControl: renameControl.id,
+        externalControl: renameControl,
         clickToEditText: "Click to rename"
     })
 
