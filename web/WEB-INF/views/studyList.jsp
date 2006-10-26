@@ -45,7 +45,7 @@
 <br>
 <strong> Administration </strong>
             <div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
-			<div><a href="<c:url value="/pages/assignParticipantCoordinatorsToSite"/>">Assign Participant Coordinators to Site</a></div>
+			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>
 			<div><a href="<c:url value="/pages/assignTemplatesToParticipantCoordinators"/>">Assign Study Templates to Participant Coordinators</a></div>
 </body>
 </html>

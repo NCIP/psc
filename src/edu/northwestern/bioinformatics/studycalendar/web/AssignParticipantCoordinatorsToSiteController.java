@@ -30,32 +30,26 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.apache.log4j.Logger;
 
 /**
- * @author Jaron Sampson
  * @author Yufang Wang
  */
 
-public class AssignSiteCoordinatorController extends SimpleFormController {
-	private static final String GROUP_NAME = "SITE_COORDINATOR";
+public class AssignParticipantCoordinatorsToSiteController extends SimpleFormController {
+	private static final String GROUP_NAME = "PARTICIPANT_COORDINATOR";
 	private SiteDao siteDao;
 	private SiteService siteService;
-    private static final Logger log = Logger.getLogger(AssignSiteCoordinatorController.class.getName());
+    private static final Logger log = Logger.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
 
-    public AssignSiteCoordinatorController() {
-        setCommandClass(AssignSiteCoordinatorCommand.class);
-        setFormView("assignSiteCoordinator");
-        setSuccessView("assignSiteCoordinator");
+    public AssignParticipantCoordinatorsToSiteController() {
+        setCommandClass(AssignParticipantCoordinatorsToSiteCommand.class);
+        setFormView("assignParticipantCoordinatorsToSite");
+        setSuccessView("assignParticipantCoordinatorsToSite");
     }
     
-/*    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Set.class, "assignedCoordinators", new CustomCollectionEditor(Set.class));
-        binder.registerCustomEditor(Set.class, "availableCoordinators", new CustomCollectionEditor(Set.class));
-    } 
-*/
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData");
         Map<String, Object> refdata = new HashMap<String, Object>();
         Site site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site.getName());
+        Map<String, List> userLists = siteService.getParticipantCoordinatorLists(site.getName());
         
         refdata.put("site", site);
         refdata.put("assignedUsers", userLists.get(SiteService.ASSIGNED_USERS));
@@ -65,28 +59,16 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-    	AssignSiteCoordinatorCommand assignCommand = (AssignSiteCoordinatorCommand) oCommand;
+    	AssignParticipantCoordinatorsToSiteCommand assignCommand = (AssignParticipantCoordinatorsToSiteCommand) oCommand;
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
-    	ProtectionGroup sitepg = siteService.getSiteProtectionGroup(assignedSite.getName()); 
+    	ProtectionGroup sitePG = siteService.getSiteProtectionGroup(assignedSite.getName()); 
     	
-        if("true".equals(assignCommand.getAssign())) {
-    		
-            log.debug("onSubmit:assign" + " siteId=" + assignedSite.getName());
-            String ac = assignCommand.getAvailableCoordinators().toString();
-            log.debug(ac);
-        	log.debug("+++ available coordinators size=" + assignCommand.getAvailableCoordinators().size());
-            if(assignCommand.getAvailableCoordinators().size()>0) {
-            	for(int i=0; i<assignCommand.getAvailableCoordinators().size(); ++i) {
-            		log.debug("+++ available coordinators i=" + i + ", " + assignCommand.getAvailableCoordinators().get(i));
-            	}
-            }
-            
-            siteService.assignSiteCoordinators(sitepg, assignCommand.getAvailableCoordinators());
-            
+        if("true".equals(assignCommand.getAssign())) {   
+            siteService.assignParticipantCoordinators(sitePG, assignCommand.getAvailableCoordinators());
         } else {
             log.debug("onSubmit:remove");
              
-            siteService.removeSiteCoordinators(sitepg, assignCommand.getAssignedCoordinators());
+            siteService.removeParticipantCoordinators(sitePG, assignCommand.getAssignedCoordinators());
     	}
 
         return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
@@ -94,7 +76,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         log.debug("formBackingObject");
-    	AssignSiteCoordinatorCommand command = new AssignSiteCoordinatorCommand();
+    	AssignParticipantCoordinatorsToSiteCommand command = new AssignParticipantCoordinatorsToSiteCommand();
         return command;
     }
 
