@@ -106,9 +106,7 @@
     <bean name="/newSite" id="newSiteController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController"/>
 
-    <bean name="/assignSite" id="assignSiteController"
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName"><value>assignSite</value></property>
+    <bean name="/assignSite" id="assignSiteController" autowire="byName"  lazy-init="true" class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
     </bean>
 
     <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName" lazy-init="true"
@@ -127,4 +125,5 @@
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
     </bean>
+
 </beans>
