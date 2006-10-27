@@ -51,7 +51,7 @@ public class ControllerProtectionElementCreatorTest extends StudyCalendarTestCas
 
     public void testMultiGroupRegistered() throws Exception {
         registerControllerBean("multi", MultiGroupController.class);
-        studyCalendarAuthorizationManager.registerUrl(PREFIX + "/multi", Arrays.asList(CREATE_STUDY.csmName(), ASSIGN_PARTICIPANT.csmName()));
+        studyCalendarAuthorizationManager.registerUrl(PREFIX + "/multi", Arrays.asList(STUDY_COORDINATOR.csmName(), PARTICIPANT_COORDINATOR.csmName()));
         doProcess();
     }
 
@@ -84,7 +84,7 @@ public class ControllerProtectionElementCreatorTest extends StudyCalendarTestCas
     @AccessControl(protectionGroups = BASE)
     public static class SingleGroupController extends TestingController { }
 
-    @AccessControl(protectionGroups = { CREATE_STUDY, ASSIGN_PARTICIPANT })
+    @AccessControl(protectionGroups = { STUDY_COORDINATOR, PARTICIPANT_COORDINATOR })
     public static class MultiGroupController extends TestingController { }
 
     public static class NoGroupController extends TestingController { }

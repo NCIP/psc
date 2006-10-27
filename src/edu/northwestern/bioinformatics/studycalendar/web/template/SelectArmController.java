@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class SelectArmController extends ReturnSingleObjectController<Arm> {
     public SelectArmController() {
         setParameterName("arm");

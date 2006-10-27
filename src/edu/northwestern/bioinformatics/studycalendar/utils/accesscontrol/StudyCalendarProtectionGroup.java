@@ -5,9 +5,9 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
  */
 public enum StudyCalendarProtectionGroup {
     BASE("BaseAccess"),
-    CREATE_STUDY("CreateStudyAccess"),
-    ADMIN("MarkTemplateCompleteAccess"), // TODO: change to AdministrativeAccess
-    ASSIGN_PARTICIPANT("ParticipantAssignmentAccess"),
+    STUDY_COORDINATOR("CreateStudyAccess"),
+    STUDY_ADMINISTRATOR("MarkTemplateCompleteAccess"), // TODO: change to AdministrativeAccess
+    PARTICIPANT_COORDINATOR("ParticipantAssignmentAccess"),
     SITE_COORDINATOR("SiteCoordinatorAccess")
     ;
 

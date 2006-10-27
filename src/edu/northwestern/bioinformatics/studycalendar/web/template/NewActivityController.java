@@ -21,7 +21,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 /**
  * @author Jaron Sampson
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class NewActivityController extends SimpleFormController {
     private ActivityDao activityDao;
 

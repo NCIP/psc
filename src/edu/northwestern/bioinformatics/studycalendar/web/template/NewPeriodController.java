@@ -19,7 +19,7 @@ import java.util.HashMap;
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class NewPeriodController extends SimpleFormController {
     private ArmDao armDao;
 

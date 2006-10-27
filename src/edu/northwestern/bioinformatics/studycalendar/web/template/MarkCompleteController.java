@@ -19,7 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class MarkCompleteController extends SimpleFormController {
     private StudyDao studyDao;
 

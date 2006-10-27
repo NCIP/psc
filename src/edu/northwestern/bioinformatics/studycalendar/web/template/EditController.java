@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class EditController extends AbstractCommandController {
     private StudyDao studyDao;
     private EpochDao epochDao;

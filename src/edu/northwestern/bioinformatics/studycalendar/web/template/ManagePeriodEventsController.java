@@ -25,7 +25,7 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class ManagePeriodEventsController extends SimpleFormController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
