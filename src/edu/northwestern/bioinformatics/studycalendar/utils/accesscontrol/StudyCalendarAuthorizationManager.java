@@ -346,7 +346,8 @@ public class StudyCalendarAuthorizationManager {
 		{
 			Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(protectionElementId);
 			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
-							
+				System.out.println("why no assgined sites : " +protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName());
+				
 				if (protectionGroupForPE.getParentProtectionGroup() != null) {
 					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
 						assignedPGs.add(protectionGroupForPE);
