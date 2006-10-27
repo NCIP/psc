@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,27 +15,25 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.web.servlet.view.RedirectView;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import gov.nih.nci.security.AuthenticationManager;
 
 /**
  * @author Padmaja Vedula
  */
 public class ParticipantCoordinatorController extends SimpleFormController {
-	private static final String GROUP_NAME = "PARTICIPANT_COORDINATOR";
+	private TemplateService templateService;
 	private StudyDao studyDao;
-	private StudyCalendarAuthorizationManager authorizationManager;
-
+	
     public ParticipantCoordinatorController() {
         setCommandClass(ParticipantCoordinatorCommand.class);
         setFormView("assignParticipantCoordinator");
     }
 
-   
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         binder.registerCustomEditor(Set.class, "assignedCoordinators", new CustomCollectionEditor(Set.class));
         binder.registerCustomEditor(Set.class, "availableCoordinators", new CustomCollectionEditor(Set.class));
@@ -45,7 +42,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List> userLists = authorizationManager.getUsers(GROUP_NAME, study.getClass().getName()+"."+study.getId());
+        Map<String, List> userLists = templateService.getParticipantCoordinators(study);
         refdata.put("study", study);
         refdata.put("assignedUsers", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS));
         refdata.put("availableUsers", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_USERS));
@@ -56,7 +53,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	ParticipantCoordinatorCommand assignCommand = (ParticipantCoordinatorCommand) oCommand;
     	Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
-        authorizationManager.assignProtectionElementsToUsers(assignCommand.getAssignedCoordinators(), assignedStudy.getClass().getName()+"."+assignedStudy.getId());
+        templateService.assignTemplateToParticipantCds(assignedStudy, assignCommand.getAssignedCoordinators());
 
         return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
@@ -74,8 +71,8 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     }
     
     @Required
-    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
-        this.authorizationManager = authorizationManager;
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
 }
