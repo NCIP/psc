@@ -9,7 +9,7 @@
 <h1>Calendar Menu</h1>
 
 <strong> Calendar Templates </strong>
-<security:secureOperation element="CreateStudyLink" operation="ACCESS">
+<security:secureOperation element="/studycalendar/pages/newStudy" operation="ACCESS">
 <p><a href="<c:url value="/pages/newStudy"/>">Create New Study Template</a></p>
 </security:secureOperation>
 <br>
