@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.Map;
 import java.util.Collections;
@@ -24,6 +26,8 @@ import java.util.Collections;
  *
  * @author Rhett Sutphin
  */
+// If this actually gets reused, it'll have to be subclassed for different access permissions
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class ReturnSingleObjectController<T extends DomainObject> implements Controller {
     private StudyCalendarDao<T> dao;
     private String parameterName;

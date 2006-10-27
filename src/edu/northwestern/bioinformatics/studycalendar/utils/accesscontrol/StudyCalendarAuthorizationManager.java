@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -404,6 +405,15 @@ public class StudyCalendarAuthorizationManager {
             if (desiredProtectionGroups.contains(group.getProtectionGroupName())) {
                 desiredGroupIds.add(group.getProtectionGroupId().toString());
             }
+        }
+        // warn about missing groups, if any
+        if (desiredGroupIds.size() != desiredProtectionGroups.size()) {
+            List<String> missingGroups = new LinkedList<String>(desiredProtectionGroups);
+            for (ProtectionGroup group : allGroups) {
+                String name = group.getProtectionGroupName();
+                if (missingGroups.contains(name)) missingGroups.remove(name);
+            }
+            log.warn("Requested protection groups included one or more that don't exist:  " + missingGroups + ".  These groups were skipped.");
         }
 
         try {
