@@ -9,7 +9,9 @@
     <participants/>
     <periods/>
     <planned_events/>
-    <sites/>
+    <sites 
+    	id="-1"
+    	name="default"/>
     <study_sites/>
     <participant_assignments/>
 </dataset>
