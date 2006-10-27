@@ -294,6 +294,7 @@
         <property name="hsqldb-jar" value="test/lib/sc-hsqldb.jar"/>
         <property name="create-hsqldb.temp-url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/study_calendar"/>
         <delete file="${hsqldb-jar}"/>
+        <delete dir="${hsqldb-dir}"/>
 
         <propertyfile file="db/hsqldb.properties">
             <entry key="datasource.url"      value="jdbc:hsqldb:res:/${hsqldb-dir}/study_calendar"/>
