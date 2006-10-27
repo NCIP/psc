@@ -20,7 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
+@AccessControl(protectionGroups = { StudyCalendarProtectionGroup.CREATE_STUDY, StudyCalendarProtectionGroup.BASE })
 public class DisplayTemplateController implements Controller {
     private StudyDao studyDao;
 
