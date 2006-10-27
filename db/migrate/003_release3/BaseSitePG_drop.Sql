@@ -1,0 +1,1 @@
+DELETE FROM csm_protection_group where protection_group_name = 'BaseSitePG';
