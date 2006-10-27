@@ -2,11 +2,16 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
 /**
  * @author Padmaja Vedula
@@ -37,7 +42,25 @@ public class TemplateService {
 		
     }
     
-    ////// CONFIGURATION
+    public Map getParticipantCoordinators(Study studyTemplate) throws Exception {
+    	return authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
+    }
+    
+
+    public Map getSiteLists(Study studyTemplate) throws Exception {
+    	List<ProtectionGroup> allSites = authorizationManager.getSites();
+    	return authorizationManager.getProtectionGroups(allSites, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
+    }
+    
+    public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
+    	return authorizationManager.getSite(siteName);
+    }
+    
+    public List getAllSiteProtectionGroups() throws Exception {
+    	return authorizationManager.getSites();
+    }
+
+      ////// CONFIGURATION
 
    
      public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
