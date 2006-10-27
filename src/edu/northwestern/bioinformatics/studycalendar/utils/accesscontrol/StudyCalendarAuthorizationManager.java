@@ -388,9 +388,14 @@ public class StudyCalendarAuthorizationManager {
         if (existingGroups.size() == desiredProtectionGroups.size()) {
             List<String> existingNames = new ArrayList<String>(existingGroups.size());
             for (ProtectionGroup existingGroup : existingGroups) existingNames.add(existingGroup.getProtectionGroupName());
-            if (existingNames.containsAll(desiredProtectionGroups)) return;
+            if (log.isDebugEnabled()) log.debug(element.getObjectId() + " currently in " + desiredProtectionGroups);
+            if (existingNames.containsAll(desiredProtectionGroups)) {
+                log.debug("Sync requires no changes");
+                return;
+            }
         }
 
+        if (log.isDebugEnabled()) log.debug("Setting groups for " + element.getObjectId() + " to " + desiredProtectionGroups);
         // accumulate IDs from names
         // Seriously -- there's no way to look them up by name
         List<ProtectionGroup> allGroups = userProvisioningManager.getProtectionGroups();

@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.beans.factory.annotation.Required;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
 public class ManagePeriodEventsController extends SimpleFormController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;

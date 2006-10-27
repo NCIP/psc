@@ -13,12 +13,15 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
 public class EditController extends AbstractCommandController {
     private StudyDao studyDao;
     private EpochDao epochDao;

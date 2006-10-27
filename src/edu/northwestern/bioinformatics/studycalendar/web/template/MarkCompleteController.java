@@ -12,11 +12,14 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
 public class MarkCompleteController extends SimpleFormController {
     private StudyDao studyDao;
 

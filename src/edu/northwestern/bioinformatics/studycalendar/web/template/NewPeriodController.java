@@ -4,6 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -17,6 +19,7 @@ import java.util.HashMap;
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
 public class NewPeriodController extends SimpleFormController {
     private ArmDao armDao;
 

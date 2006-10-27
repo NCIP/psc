@@ -14,10 +14,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.CREATE_STUDY)
 public class DisplayTemplateController implements Controller {
     private StudyDao studyDao;
 
