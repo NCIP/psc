@@ -22,14 +22,24 @@
         }
 
         #next-arm-form {
+            margin-top: 0;
             float: right;
-            height: 100%;
             width: 20%;
+            padding: 4px;
+            border: 1px solid #666;
         }
 
         #next-arm-form .row .label {
-            width: 40%;
+            width: 35%;
             color: #666;
+        }
+
+        #next-arm-form .row .value {
+            margin-left: 40%;
+        }
+
+        #mode-row label {
+            display: block;
         }
 
         #scheduled-arms ul {
@@ -128,20 +138,27 @@
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
-<div class="section">
+<div class="section autoclear">
     <h2>Schedule next arm</h2>
     <div class="content">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
-        <form id="next-arm-form" action="<c:url value="/pages/schedule/nextArm"/>">
+        <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
             <div class="row">
                 <div class="label">Next arm</div>
-                <div class="value"><span id="next-arm-name"></span></div>
+                <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
             </div>
             <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
             <input type="hidden" name="calendar" value="${calendar.id}"/>
             <div class="row">
                 <div class="label"><label for="start-date-input">Start date</label></div>
                 <div class="value"><input type="text" name="startDate" id="start-date-input" size="10"/></div>
+            </div>
+            <div class="row" id="mode-row">
+                <div class="label">When?</div>
+                <div class="value">
+                    <label><input type="radio" name="mode" value="IMMEDIATE"/> Immediately</label>
+                    <label><input type="radio" name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+                </div>
             </div>
             <div class="row">
                 <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>

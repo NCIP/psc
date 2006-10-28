@@ -15,6 +15,7 @@ public class ScheduleNextArmCommand {
     private ScheduledCalendar calendar;
     private Arm arm;
     private Date startDate;
+    private NextArmMode mode;
 
     private ParticipantService participantService;
 
@@ -25,7 +26,8 @@ public class ScheduleNextArmCommand {
     ////// LOGIC
 
     public ScheduledArm schedule() {
-        return participantService.scheduleArm(getCalendar().getAssignment(), getArm(), getStartDate(), NextArmMode.PER_PROTOCOL);
+        return participantService.scheduleArm(
+            getCalendar().getAssignment(), getArm(), getStartDate(), getMode());
     }
 
     ////// BOUND PROPERTIES
@@ -52,5 +54,13 @@ public class ScheduleNextArmCommand {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public NextArmMode getMode() {
+        return mode;
+    }
+
+    public void setMode(NextArmMode mode) {
+        this.mode = mode;
     }
 }

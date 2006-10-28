@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
@@ -69,6 +70,14 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
         executeRequest();
 
         assertDayOfDate(2003, Calendar.AUGUST, 5, command.getStartDate());
+    }
+
+    public void testBindMode() throws Exception {
+        request.addParameter("mode", "PER_PROTOCOL");
+
+        executeRequest();
+
+        assertSame(NextArmMode.PER_PROTOCOL, command.getMode());
     }
 
     public void testScheduledArmInModel() throws Exception {

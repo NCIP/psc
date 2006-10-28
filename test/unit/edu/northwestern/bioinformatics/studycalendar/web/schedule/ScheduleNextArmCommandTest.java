@@ -38,8 +38,9 @@ public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
         command.setCalendar(cal);
         command.setArm(arm);
         command.setStartDate(start);
+        command.setMode(NextArmMode.IMMEDIATE);
 
-        EasyMock.expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.PER_PROTOCOL))
+        EasyMock.expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
             .andReturn(expectedScheduledArm);
         replayMocks();
 
