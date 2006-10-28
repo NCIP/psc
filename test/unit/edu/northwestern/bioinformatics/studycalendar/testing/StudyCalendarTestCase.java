@@ -1,20 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
 
 import junit.framework.TestCase;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 
 import org.easymock.classextension.EasyMock;
+import org.easymock.IArgumentMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
+import org.apache.commons.beanutils.PropertyUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
 /**
@@ -76,5 +81,58 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     private <T> T registered(T mock) {
         mocks.add(mock);
         return mock;
+    }
+
+    protected static <T> T matchByProperties(T template) {
+        EasyMock.reportMatcher(new PropertyMatcher<T>(template));
+        return null;
+    }
+
+    /**
+     * Easymock matcher that compares two objects on their property values
+     */
+    private static class PropertyMatcher<T> implements IArgumentMatcher {
+        private T template;
+        private Map<String, Object> templateProperties;
+
+        public PropertyMatcher(T template) {
+            this.template = template;
+            try {
+                templateProperties = PropertyUtils.describe(template);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public boolean matches(Object argument) {
+            try {
+                Map<String, Object> argumentProperties = PropertyUtils.describe(argument);
+                for (Map.Entry<String, Object> entry : templateProperties.entrySet()) {
+                    Object argProp = argumentProperties.get(entry.getKey());
+                    Object templProp = entry.getValue();
+                    if (!ComparisonUtils.nullSafeEquals(templProp, argProp)) {
+                        throw new AssertionError("Argument's " + entry.getKey()
+                            + " property doesn't match template's: " + templProp + " != " + argProp);
+                    }
+                }
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            } catch (InvocationTargetException e) {
+                throw new RuntimeException(e);
+            } catch (NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+
+            return true;
+        }
+
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append(template).append(" (by properties)");
+        }
     }
 }
