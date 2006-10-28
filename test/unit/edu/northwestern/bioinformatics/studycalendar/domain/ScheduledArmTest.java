@@ -22,19 +22,19 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     }
 
     public void testNameWithMultiArmEpoch() throws Exception {
-        Epoch multi = createEpoch("Treatment", "A", "B", "C");
+        Epoch multi = Epoch.create("Treatment", "A", "B", "C");
         scheduledArm.setArm(multi.getArms().get(1));
         assertName("Treatment: B");
     }
 
     public void testNameWithZeroArmEpoch() throws Exception {
-        Epoch single = createEpoch("Screening");
+        Epoch single = Epoch.create("Screening");
         scheduledArm.setArm(single.getArms().get(0));
         assertName("Screening");
     }
 
     public void testNameWhenRepeated() throws Exception {
-        Epoch epoch = createEpoch("Treatment", "A", "B", "C");
+        Epoch epoch = Epoch.create("Treatment", "A", "B", "C");
         scheduledCalendar.getScheduledArms().clear();
         scheduledCalendar.addArm(createScheduledArm(epoch.getArms().get(1)));
         scheduledCalendar.addArm(createScheduledArm(epoch.getArms().get(0)));

@@ -34,11 +34,11 @@ public class ArmTest extends TestCase {
     }
 
     public void testQualifiedNameZeroArmEpoch() throws Exception {
-        assertEquals("Epoch", createEpoch("Epoch").getArms().get(0).getQualifiedName());
+        assertEquals("Epoch", Epoch.create("Epoch").getArms().get(0).getQualifiedName());
     }
     
     public void testQualifiedName() throws Exception {
-        Epoch epoch = createEpoch("Epoch", "A", "B");
+        Epoch epoch = Epoch.create("Epoch", "A", "B");
         assertEquals("Epoch: A", epoch.getArms().get(0).getQualifiedName());
         assertEquals("Epoch: B", epoch.getArms().get(1).getQualifiedName());
     }

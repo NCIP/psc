@@ -28,9 +28,9 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         study = setId(100, createNamedInstance("Proto", Study.class));
         study.setPlannedCalendar(new PlannedCalendar());
-        Epoch epoch1 = setId(1, createEpoch("E1"));
+        Epoch epoch1 = setId(1, Epoch.create("E1"));
         e1 = setId(1, epoch1.getArms().get(0));
-        Epoch epoch2 = setId(1, createEpoch("E2", "A", "B"));
+        Epoch epoch2 = setId(1, Epoch.create("E2", "A", "B"));
         e2a = setId(10, epoch2.getArms().get(0));
         e2b = setId(11, epoch2.getArms().get(1));
         study.getPlannedCalendar().addEpoch(epoch1);

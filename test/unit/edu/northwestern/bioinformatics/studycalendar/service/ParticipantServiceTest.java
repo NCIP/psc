@@ -43,7 +43,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         service = new ParticipantService();
         service.setParticipantDao(participantDao);
 
-
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
         arm = epoch.getArms().get(0);
         Period p1 = createPeriod("P1", 1, 7, 3);
@@ -66,7 +65,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         StudySite studySite = createStudySite(study, site);
         Participant participantIn = createParticipant("Alice", "Childress");
         Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
-        Arm expectedArm = createEpoch("Treatment", "A", "B", "C").getArms().get(1);
+        Arm expectedArm = Epoch.create("Treatment", "A", "B", "C").getArms().get(1);
         expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
         expectedArm.getPeriods().iterator().next().addPlannedEvent(createPlannedEvent("Any", 4));
 

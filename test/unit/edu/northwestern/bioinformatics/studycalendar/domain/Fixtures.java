@@ -44,11 +44,6 @@ public class Fixtures {
         return study;
     }
 
-    @Deprecated // use the factory on Epoch directly, instead
-    public static Epoch createEpoch(String name, String... armNames) {
-        return Epoch.create(name, armNames);
-    }
-
     public static StudySite createStudySite(Study study, Site site) {
         StudySite studySite = new StudySite();
         if (study != null) study.addStudySite(studySite);

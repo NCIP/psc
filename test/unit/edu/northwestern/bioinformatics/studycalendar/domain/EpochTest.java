@@ -41,8 +41,8 @@ public class EpochTest extends StudyCalendarTestCase {
     
     public void testMultipleArms() throws Exception {
         assertFalse(new Epoch().isMultipleArms());
-        assertFalse(Fixtures.createEpoch("Holocene").isMultipleArms());
-        assertTrue(Fixtures.createEpoch("Holocene", "A", "B").isMultipleArms());
+        assertFalse(Epoch.create("Holocene").isMultipleArms());
+        assertTrue(Epoch.create("Holocene", "A", "B").isMultipleArms());
     }
 
     public void testCreateNoArms() throws Exception {

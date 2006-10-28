@@ -6,11 +6,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         super.setUp();
         Study parent = createNamedInstance("Root", Study.class);
         parent.setPlannedCalendar(new PlannedCalendar());
-        parent.getPlannedCalendar().addEpoch(createEpoch("Holocene", "Middle"));
+        parent.getPlannedCalendar().addEpoch(Epoch.create("Holocene", "Middle"));
         parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
 
         periodDao = registerMockFor(PeriodDao.class);

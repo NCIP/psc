@@ -51,7 +51,7 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         study = setId(40, createNamedInstance("Protocol 1138", Study.class));
         createStudySite(study, createNamedInstance("Seattle", Site.class));
         PlannedCalendar calendar = new PlannedCalendar();
-        calendar.addEpoch(createEpoch("Treatment", "A", "B", "C"));
+        calendar.addEpoch(Epoch.create("Treatment", "A", "B", "C"));
         study.setPlannedCalendar(calendar);
         request.addParameter("id", study.getId().toString());
 
@@ -126,7 +126,7 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
 
     public void testRefdataIncludesNoArmsWhenFirstEpochHasNoArms() throws Exception {
         study.getPlannedCalendar().setEpochs(new LinkedList<Epoch>());
-        study.getPlannedCalendar().addEpoch(createEpoch("Screening"));
+        study.getPlannedCalendar().addEpoch(Epoch.create("Screening"));
         List<Arm> actualArms = (List<Arm>) getRefdata().get("arms");
         assertEquals(0, actualArms.size());
     }
