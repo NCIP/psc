@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 /**
  * @author Rhett Sutphin
@@ -66,6 +67,14 @@ public class Fixtures {
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);
         return scheduledArm;
+    }
+
+    public static ScheduledEvent createScheduledEvent(
+        String activityName, int year, int month, int day, ScheduledEventState state
+    ) {
+        ScheduledEvent event = createScheduledEvent(activityName, year, month, day);
+        event.changeState(state);
+        return event;
     }
 
     public static ScheduledEvent createScheduledEvent(String activityName, int year, int month, int day) {

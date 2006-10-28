@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Date;
@@ -38,7 +39,8 @@ public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
         command.setArm(arm);
         command.setStartDate(start);
 
-        EasyMock.expect(participantService.scheduleArm(assignment, arm, start)).andReturn(expectedScheduledArm);
+        EasyMock.expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.PER_PROTOCOL))
+            .andReturn(expectedScheduledArm);
         replayMocks();
 
         assertSame(expectedScheduledArm, command.schedule());

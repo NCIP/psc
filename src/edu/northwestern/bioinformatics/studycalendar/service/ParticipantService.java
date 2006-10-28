@@ -9,9 +9,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 
 import java.util.Date;
 import java.util.Calendar;
@@ -33,17 +34,31 @@ public class ParticipantService {
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
         participant.addAssignment(spa);
-        scheduleArm(spa, armOfFirstEpoch, startDate);
+        scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
         participantDao.save(participant);
         return spa;
     }
 
-    public ScheduledArm scheduleArm(StudyParticipantAssignment assignment, Arm arm, Date startDate) {
+    public ScheduledArm scheduleArm(
+        StudyParticipantAssignment assignment, Arm arm, Date startDate, NextArmMode mode
+    ) {
         ScheduledCalendar calendar = assignment.getScheduledCalendar();
         if (calendar == null) {
             calendar = new ScheduledCalendar();
             assignment.setScheduledCalendar(calendar);
         }
+
+        if (mode == NextArmMode.IMMEDIATE) {
+            String cancellationReason = "Immediate transition to " + arm.getQualifiedName();
+            for (ScheduledArm existingArm : calendar.getScheduledArms()) {
+                for (ScheduledEvent event : existingArm.getEvents()) {
+                    if (event.getCurrentState().getMode() == ScheduledEventMode.SCHEDULED) {
+                        event.changeState(new Canceled(cancellationReason));
+                    }
+                }
+            }
+        }
+
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);
         calendar.addArm(scheduledArm);

@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
 
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class ScheduleNextArmCommand {
     ////// LOGIC
 
     public ScheduledArm schedule() {
-        return participantService.scheduleArm(getCalendar().getAssignment(), getArm(), getStartDate());
+        return participantService.scheduleArm(getCalendar().getAssignment(), getArm(), getStartDate(), NextArmMode.PER_PROTOCOL);
     }
 
     ////// BOUND PROPERTIES
