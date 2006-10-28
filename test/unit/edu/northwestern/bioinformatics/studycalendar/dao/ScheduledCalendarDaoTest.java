@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
 
 import java.util.Calendar;
@@ -62,6 +63,27 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEventState(-12, ScheduledEventMode.CANCELED,  "Called to cancel", null, states.get(1));
         assertEventState(-13, ScheduledEventMode.SCHEDULED, "Called to reschedule", DateUtils.createDate(2006, Calendar.OCTOBER, 25), states.get(2));
         assertEventState(null, ScheduledEventMode.OCCURRED, "Success", DateUtils.createDate(2006, Calendar.OCTOBER, 25), states.get(3));
+    }
+    
+    public void testChangeStateAndSave() throws Exception {
+        {
+            ScheduledCalendar cal = getDao().getById(-20);
+            cal.getScheduledArms().get(0).getEvents().get(0).changeState(new Canceled("For great victory"));
+            getDao().save(cal);
+        }
+
+        interruptSession();
+
+        {
+            ScheduledCalendar loaded = getDao().getById(-20);
+            List<ScheduledEventState> states = loaded.getScheduledArms().get(0).getEvents().get(0).getAllStates();
+            assertEquals("Wrong number of states", 5, states.size());
+            // second to last should now have an ID
+            assertNotNull(states.get(3).getId());
+            assertEventState(states.get(3).getId(), ScheduledEventMode.OCCURRED, "Success", DateUtils.createDate(2006, Calendar.OCTOBER, 25), states.get(3));
+
+            assertEventState(null, ScheduledEventMode.CANCELED, "For great victory", null, states.get(4));
+        }
     }
 
     private void assertEventState(

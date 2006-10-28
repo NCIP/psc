@@ -49,27 +49,33 @@ public class ScheduledEventStateType implements CompositeUserType {
 
     public Object getPropertyValue(Object component, int property) throws HibernateException {
         String name = getPropertyNames()[property];
-        try {
-            return PropertyUtils.getProperty(component, name);
-        } catch (IllegalAccessException e) {
-            throw new HibernateException("Failed to read property " + name + " from " + component, e);
-        } catch (InvocationTargetException e) {
-            throw new HibernateException("Failed to read property " + name + " from " + component, e);
-        } catch (NoSuchMethodException e) {
-            throw new HibernateException("Failed to read property " + name + " from " + component, e);
+        if (PropertyUtils.isReadable(component, name)) {
+            try {
+                return PropertyUtils.getProperty(component, name);
+            } catch (IllegalAccessException e) {
+                throw new HibernateException("Failed to read property " + name + " from " + component, e);
+            } catch (InvocationTargetException e) {
+                throw new HibernateException("Failed to read property " + name + " from " + component, e);
+            } catch (NoSuchMethodException e) {
+                throw new HibernateException("Failed to read property " + name + " from " + component, e);
+            }
+        } else {
+            return null;
         }
     }
 
     public void setPropertyValue(Object component, int property, Object value) throws HibernateException {
         String name = getPropertyNames()[property];
-        try {
-            PropertyUtils.setProperty(component, name, value);
-        } catch (NoSuchMethodException e) {
-            throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
-        } catch (IllegalAccessException e) {
-            throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
-        } catch (InvocationTargetException e) {
-            throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
+        if (PropertyUtils.isWriteable(component, name)) {
+            try {
+                PropertyUtils.setProperty(component, name, value);
+            } catch (NoSuchMethodException e) {
+                throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
+            } catch (IllegalAccessException e) {
+                throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
+            } catch (InvocationTargetException e) {
+                throw new HibernateException("Failed to set property " + name + " on " + component + " with value " + value, e);
+            }
         }
     }
 

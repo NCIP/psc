@@ -7,6 +7,7 @@ import org.hibernate.annotations.Columns;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.IndexColumn;
+import org.hibernate.validator.NotNull;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -107,10 +108,11 @@ public class ScheduledEvent extends AbstractDomainObject {
         this.currentState = currentState;
     }
 
-    @OneToMany
-    @JoinColumn(name = "scheduled_event_id")
-    @Cascade(CascadeType.ALL)
+    @OneToMany(cascade = javax.persistence.CascadeType.ALL)
+    @JoinColumn(name = "scheduled_event_id", insertable = true, updatable = true, nullable = false)
+    @Cascade({CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     @IndexColumn(name = "list_index")
+    @NotNull
     public List<ScheduledEventState> getPreviousStates() {
         return previousStates;
     }
