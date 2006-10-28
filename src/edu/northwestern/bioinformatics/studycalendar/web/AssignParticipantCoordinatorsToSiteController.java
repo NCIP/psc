@@ -22,6 +22,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.UserProvisioningManager;
@@ -32,7 +34,7 @@ import org.apache.log4j.Logger;
 /**
  * @author Yufang Wang
  */
-
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
 public class AssignParticipantCoordinatorsToSiteController extends SimpleFormController {
 	private static final String GROUP_NAME = "PARTICIPANT_COORDINATOR";
 	private SiteDao siteDao;

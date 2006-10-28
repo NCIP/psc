@@ -25,6 +25,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 /**
  * @author Padmaja Vedula
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class NewParticipantController extends SimpleFormController {
     private ParticipantDao participantDao;
     private String pattern = "MM/dd/yyyy";

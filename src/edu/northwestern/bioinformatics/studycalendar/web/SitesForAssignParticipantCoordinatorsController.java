@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,7 +19,7 @@ import java.util.HashMap;
 /**
  * @author Yufang Wang
  */
- 
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class SitesForAssignParticipantCoordinatorsController extends AbstractController {
     private SiteDao siteDao;
 
