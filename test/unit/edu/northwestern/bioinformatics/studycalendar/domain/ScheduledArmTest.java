@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.nwu.bioinformatics.commons.DateUtils;
+
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
@@ -84,5 +86,41 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
             ScheduledEvent actualEvent = actualEvents.get(i);
             assertEquals("Event mismatch at " + i, expectedActivities[i], actualEvent.getPlannedEvent().getActivity().getName());
         }
+    }
+
+    public void testGetStartDateWithNoEvents() throws Exception {
+        assertNull(scheduledArm.getStartDate());
+    }
+
+    public void testGetStartDate() throws Exception {
+        Arm arm = Epoch.create("Screening").getArms().get(0);
+        Period period = createPeriod("P1", 4, 7, 3);
+        PlannedEvent plannedEvent = createPlannedEvent("ABC", 4);
+        period.addPlannedEvent(plannedEvent);
+        arm.addPeriod(period);
+
+        scheduledArm.setArm(arm);
+        ScheduledEvent event = new ScheduledEvent();
+        event.setPlannedEvent(plannedEvent);
+        event.setIdealDate(DateUtils.createDate(2004, Calendar.JANUARY, 4));
+        scheduledArm.addEvent(event);
+
+        assertDayOfDate(2004, Calendar.JANUARY, 1, scheduledArm.getStartDate());
+    }
+    
+    public void testGetNextArmPerProtocolStartDate() throws Exception {
+        Arm arm = Epoch.create("Screening").getArms().get(0);
+        Period period = createPeriod("P1", 4, 7, 3);
+        PlannedEvent plannedEvent = createPlannedEvent("ABC", 4);
+        period.addPlannedEvent(plannedEvent);
+        arm.addPeriod(period);
+
+        scheduledArm.setArm(arm);
+        ScheduledEvent event = new ScheduledEvent();
+        event.setPlannedEvent(plannedEvent);
+        event.setIdealDate(DateUtils.createDate(2004, Calendar.JANUARY, 4));
+        scheduledArm.addEvent(event);
+
+        assertDayOfDate(2004, Calendar.JANUARY, 25, scheduledArm.getNextArmPerProtocolStartDate());
     }
 }

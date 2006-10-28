@@ -78,6 +78,11 @@
         }
     </style>
     <script type="text/javascript">
+        var DEFAULT_DATES = {
+            IMMEDIATE: '<tags:formatDate value="${dates['IMMEDIATE']}"/>',
+            PER_PROTOCOL: '<tags:formatDate value="${dates['PER_PROTOCOL']}"/>'
+        }
+
         function registerSelectArmHandlers() {
             $$('#scheduled-arms a').each(registerSelectArmHandler)
         }
@@ -131,8 +136,17 @@
             })
         }
 
+        function registerDefaultDateSetterHandlers() {
+            $$('.mode-radio').each(function(radio) {
+                Event.observe(radio, "click", function() {
+                    $('start-date-input').value = DEFAULT_DATES[radio.value];
+                })
+            })
+        }
+
         Event.observe(window, "load", registerSelectArmHandlers);
         Event.observe(window, "load", registerSelectNextArmHandlers);
+        Event.observe(window, "load", registerDefaultDateSetterHandlers);
     </script>
 </head>
 <body>
@@ -151,13 +165,15 @@
             <input type="hidden" name="calendar" value="${calendar.id}"/>
             <div class="row">
                 <div class="label"><label for="start-date-input">Start date</label></div>
-                <div class="value"><input type="text" name="startDate" id="start-date-input" size="10"/></div>
+                <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
             </div>
             <div class="row" id="mode-row">
                 <div class="label">When?</div>
                 <div class="value">
-                    <label><input type="radio" name="mode" value="IMMEDIATE"/> Immediately</label>
-                    <label><input type="radio" name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+                    <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
+                                  name="mode" value="IMMEDIATE"/> Immediately</label>
+                    <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                                  name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
                 </div>
             </div>
             <div class="row">

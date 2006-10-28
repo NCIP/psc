@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -59,7 +60,7 @@ public class ScheduledArm extends AbstractDomainObject {
         if (selfIndex == -1) throw new StudyCalendarSystemException("This scheduled arm is not a child of its parent");
 
         if (armRepeats.size() > 1) {
-            name.append(" (").append(armRepeats.indexOf(selfIndex) + 1).append(")");
+            name.append(" (").append(armRepeats.indexOf(selfIndex) + 1).append(')');
         }
 
         return name.toString();
@@ -76,6 +77,30 @@ public class ScheduledArm extends AbstractDomainObject {
             byDate.get(key).add(event);
         }
         return byDate;
+    }
+
+    @Transient
+    public Date getStartDate() {
+        if (getEvents().size() == 0) return null;
+        ScheduledEvent anEvent = getEvents().get(0);
+        int relativeDay = anEvent.getPlannedEvent().getDay();
+        Calendar startDate = Calendar.getInstance();
+        startDate.setTime(anEvent.getIdealDate());
+        startDate.add(Calendar.DAY_OF_MONTH, -1 * relativeDay + 1);
+        return startDate.getTime();
+    }
+
+    @Transient
+    public Date getNextArmPerProtocolStartDate() {
+        Date origin = getStartDate();
+        if (origin != null) {
+            Calendar defaultState = Calendar.getInstance();
+            defaultState.setTime(origin);
+            defaultState.add(Calendar.DATE, getArm().getLengthInDays());
+            return defaultState.getTime();
+        } else {
+            return null;
+        }
     }
 
     ////// BEAN PROPERTIES
@@ -115,10 +140,13 @@ public class ScheduledArm extends AbstractDomainObject {
     ///// OBJECT METHODS
 
     public String toString() {
-        return new StringBuilder()
-            .append(getClass().getSimpleName()).append('[')
-            .append("name=").append(getName())
-            .append("; events=").append(getEvents())
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName()).append('[')
+            .append("name=");
+        if (getArm() != null) {
+            sb.append(getName());
+        }
+        return sb.append("; events=").append(getEvents())
             .append(']').toString();
     }
 }

@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
+import edu.nwu.bioinformatics.commons.DateUtils;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
@@ -14,17 +16,20 @@ import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
  */
 public class ScheduleNextArmControllerTest extends ControllerTestCase {
+    private static final Date NEXT_PROTOCOL_DATE = DateUtils.createDate(2003, Calendar.AUGUST, 14);
+
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
     private ScheduleNextArmCommand command;
     private ScheduleNextArmController controller;
-    private static final ScheduledArm SCHEDULED_ARM = new ScheduledArm();
+    private ScheduledArm scheduledArm;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -40,6 +45,9 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
         };
         controller.setArmDao(armDao);
         controller.setScheduledCalendarDao(scheduledCalendarDao);
+
+        scheduledArm = registerMockFor(ScheduledArm.class);
+        expect(scheduledArm.getNextArmPerProtocolStartDate()).andReturn(NEXT_PROTOCOL_DATE);
     }
     
     public void testBindArm() throws Exception {
@@ -83,11 +91,13 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
     public void testScheduledArmInModel() throws Exception {
         ModelAndView actual = executeRequest();
         assertTrue("Missing scheduledArm", actual.getModel().containsKey("scheduledArm"));
-        assertSame(SCHEDULED_ARM, actual.getModel().get("scheduledArm"));
+        assertSame(scheduledArm, actual.getModel().get("scheduledArm"));
+        assertDatesClose("Missing nextPerProtocolDate",
+            NEXT_PROTOCOL_DATE, (Date) actual.getModel().get("nextPerProtocolDate"), 2);
     }
 
     private ModelAndView executeRequest() throws Exception {
-        expect(command.schedule()).andReturn(SCHEDULED_ARM);
+        expect(command.schedule()).andReturn(scheduledArm);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();

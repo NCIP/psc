@@ -2,18 +2,17 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.classextension.EasyMock.expect;
 
-import java.util.Date;
 import java.util.Calendar;
-
-import org.easymock.classextension.EasyMock;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -40,7 +39,7 @@ public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
         command.setStartDate(start);
         command.setMode(NextArmMode.IMMEDIATE);
 
-        EasyMock.expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
+        expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
             .andReturn(expectedScheduledArm);
         replayMocks();
 
