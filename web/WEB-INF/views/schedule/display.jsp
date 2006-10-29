@@ -166,17 +166,31 @@
             })
         }
 
+        function registerHeaderCollapse() {
+            Event.observe('schedule-next-arm-header', 'click', function() {
+                var content = $$('#schedule-next-arm .content')[0];
+                if (content.visible()) {
+                    SC.slideAndHide(content);
+                    $('schedule-next-arm-header').title = "Click to schedule"
+                } else {
+                    SC.slideAndShow(content);
+                    $('schedule-next-arm-header').title = "Click to conceal form"
+                }
+            })
+        }
+
         Event.observe(window, "load", registerSelectArmHandlers);
         Event.observe(window, "load", registerSelectNextArmHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
+        Event.observe(window, "load", registerHeaderCollapse);
     </script>
 </head>
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
-<div class="section autoclear">
-    <h2>Schedule next arm</h2>
-    <div class="content">
+<div id="schedule-next-arm" class="section autoclear">
+    <h2 id="schedule-next-arm-header" title="Click to schedule">Schedule next arm</h2>
+    <div class="content" style="display: none">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
         <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
             <div class="row">
