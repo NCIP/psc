@@ -14,6 +14,7 @@
         }
 
         .epochs-and-arms {
+            margin-top: 0;
             width: 75%;
         }
 
@@ -75,6 +76,27 @@
 
         #scheduled-arms ul li:hover {
             background-color: #ccc;
+        }
+
+        #selected-arm h3 {
+            margin: 0 1em;
+        }
+
+        .day.odd {
+            background-color: #eee;
+        }
+
+        li.scheduled a {
+            font-weight: bold;
+            color: #00C;
+        }
+        li.canceled a {
+            font-style: italic;
+            color: #444;
+        }
+        li.occurred a {
+            font-weight: normal;
+            color: #006;
         }
     </style>
     <script type="text/javascript">
@@ -163,10 +185,6 @@
             </div>
             <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
             <input type="hidden" name="calendar" value="${calendar.id}"/>
-            <div class="row">
-                <div class="label"><label for="start-date-input">Start date</label></div>
-                <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
-            </div>
             <div class="row" id="mode-row">
                 <div class="label">When?</div>
                 <div class="value">
@@ -175,6 +193,10 @@
                     <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
                                   name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
                 </div>
+            </div>
+            <div class="row">
+                <div class="label"><label for="start-date-input">Start date</label></div>
+                <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
             </div>
             <div class="row">
                 <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>

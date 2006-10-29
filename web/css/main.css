@@ -17,7 +17,7 @@ h2 {
 }
 
 .day {
-    margin: 1em 0;
+    padding: 1em 0;
     position: relative;
 }
 
@@ -29,7 +29,7 @@ h2 {
 }
 
 .day ul {
-    margin-left: 4em;
+    margin: 0 0 0 8em;
     padding: 0;
 }
 
