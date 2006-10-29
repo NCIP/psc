@@ -4,6 +4,8 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 
 import java.util.List;
 import java.util.Calendar;
@@ -122,5 +124,37 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         scheduledArm.addEvent(event);
 
         assertDayOfDate(2004, Calendar.JANUARY, 25, scheduledArm.getNextArmPerProtocolStartDate());
+    }
+
+    public void testIsNotCompleteIfAnyEventInScheduledState() throws Exception {
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 9, new Occurred()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 18));
+
+        assertFalse(scheduledArm.isComplete());
+    }
+
+    public void testIsCompleteIfAllEventsAreCanceled() throws Exception {
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Canceled()));
+
+        assertTrue(scheduledArm.isComplete());
+    }
+
+    public void testIsCompleteIfAllEventsAreOccurred() throws Exception {
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Occurred()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+
+        assertTrue(scheduledArm.isComplete());
+    }
+
+    public void testIsCompleteIfNoEventsAreScheduled() throws Exception {
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+
+        assertTrue(scheduledArm.isComplete());
     }
 }

@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +32,16 @@ public class ScheduledCalendar extends AbstractDomainObject {
     public void addArm(ScheduledArm arm) {
         scheduledArms.add(arm);
         arm.setScheduledCalendar(this);
+    }
+
+    ////// LOGIC
+
+    @Transient
+    public ScheduledArm getCurrentArm() {
+        for (ScheduledArm arm : getScheduledArms()) {
+            if (!arm.isComplete()) return arm;
+        }
+        return getScheduledArms().get(getScheduledArms().size() - 1);
     }
 
     ////// BEAN PROPERTIES

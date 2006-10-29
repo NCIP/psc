@@ -42,6 +42,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
             StudySite studySite = createStudySite(createNamedInstance("A", Study.class), createNamedInstance("NU", Site.class));
             expectedPlannedCalendar.setStudy(studySite.getStudy());
             expectedCalendar.addArm(new ScheduledArm());
+            expectedCalendar.addArm(new ScheduledArm());
 
             assignment.setParticipant(createParticipant("Preston", "Sturges"));
             assignment.setScheduledCalendar(expectedCalendar);
@@ -64,7 +65,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertSame(assignment.getStudySite().getStudy().getPlannedCalendar(), actualModel.get("plannedCalendar"));
         assertSame(assignment.getScheduledCalendar(), actualModel.get("calendar"));
         assertSame(assignment.getParticipant(), actualModel.get("participant"));
-        assertSame(assignment.getScheduledCalendar().getScheduledArms().get(0), actualModel.get("arm"));
+        assertSame(assignment.getScheduledCalendar().getCurrentArm(), actualModel.get("arm"));
         assertSame(assignment, actualModel.get("assignment"));
     }
     
@@ -73,6 +74,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         expect(scheduledArm.getNextArmPerProtocolStartDate())
             .andReturn(DateUtils.createDate(2005, Calendar.MARCH, 11));
         scheduledArm.setScheduledCalendar(assignment.getScheduledCalendar());
+        expect(scheduledArm.isComplete()).andReturn(false);
 
         replayMocks();
         assignment.getScheduledCalendar().addArm(scheduledArm);

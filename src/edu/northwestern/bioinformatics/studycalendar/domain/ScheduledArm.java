@@ -103,6 +103,16 @@ public class ScheduledArm extends AbstractDomainObject {
         }
     }
 
+    @Transient
+    public boolean isComplete() {
+        for (ScheduledEvent event : getEvents()) {
+            if (event.getCurrentState().getMode() == ScheduledEventMode.SCHEDULED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     ////// BEAN PROPERTIES
 
     @OneToMany(mappedBy = "scheduledArm")
