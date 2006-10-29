@@ -89,5 +89,6 @@
 
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>
     <bean id="scheduledArmDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao"/>
+    <bean id="scheduledEventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao"/>
 
 </beans>

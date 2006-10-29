@@ -1,5 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+
 /**
  * Typedef enum representing the discriminator column for subclasses of
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState}.
@@ -8,14 +14,32 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
  *
  * @author Rhett Sutphin
  */
-public class ScheduledEventMode extends AbstractControlledVocabularyObject {
-    public static final ScheduledEventMode SCHEDULED = new ScheduledEventMode(1, "scheduled");
-    public static final ScheduledEventMode OCCURRED = new ScheduledEventMode(2, "occurred");
-    public static final ScheduledEventMode CANCELED = new ScheduledEventMode(3, "canceled");
+public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractControlledVocabularyObject {
+    public static final ScheduledEventMode<Scheduled> SCHEDULED
+        = new ScheduledEventMode<Scheduled>(1, "scheduled", Scheduled.class);
+    public static final ScheduledEventMode<Occurred> OCCURRED
+        = new ScheduledEventMode<Occurred>(2, "occurred", Occurred.class);
+    public static final ScheduledEventMode<Canceled> CANCELED
+        = new ScheduledEventMode<Canceled>(3, "canceled", Canceled.class);
 
-    private ScheduledEventMode(int id, String name) { super(id, name); }
+    private Class<T> clazz;
+
+    private ScheduledEventMode(int id, String name, Class<T> clazz) {
+        super(id, name);
+        this.clazz = clazz;
+    }
 
     public static ScheduledEventMode getById(int id) {
         return getById(ScheduledEventMode.class, id);
+    }
+
+    public T createStateInstance() {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new StudyCalendarSystemException(e);
+        } catch (IllegalAccessException e) {
+            throw new StudyCalendarSystemException(e);
+        }
     }
 }

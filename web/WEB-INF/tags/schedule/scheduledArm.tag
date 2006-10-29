@@ -11,7 +11,10 @@
             <h3><tags:formatDate value="${entry.key}"/></h3>
             <ul>
                 <c:forEach items="${entry.value}" var="event">
-                    <li class="${event.currentState.mode.name}"><a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>">${event.plannedEvent.activity.name}</a></li>
+                    <li class="${event.currentState.mode.name}">
+                        <a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.plannedEvent.activity.name}</a>
+                        <c:if test="${not empty event.plannedEvent.details}">(${event.plannedEvent.details})</c:if> 
+                    </li>
                 </c:forEach>
             </ul>
         </div>

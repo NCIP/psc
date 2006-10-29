@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
@@ -20,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
-import java.util.Calendar;
 import java.util.HashMap;
 
 /**
@@ -30,10 +32,26 @@ import java.util.HashMap;
 public class DisplayScheduleController implements Controller {
     private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+    private ScheduledCalendarDao scheduledCalendarDao;
+    private ScheduledArmDao scheduledArmDao;
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int assignmentId = ServletRequestUtils.getRequiredIntParameter(request, "assignment");
-        StudyParticipantAssignment assignment = studyParticipantAssignmentDao.getById(assignmentId);
+        Integer assignmentId = ServletRequestUtils.getIntParameter(request, "assignment");
+        StudyParticipantAssignment assignment;
+        if (assignmentId != null) {
+            assignment = studyParticipantAssignmentDao.getById(assignmentId);
+        } else {
+            int calendarId = ServletRequestUtils.getRequiredIntParameter(request, "calendar");
+            assignment = scheduledCalendarDao.getById(calendarId).getAssignment();
+        }
+
+        Integer armId = ServletRequestUtils.getIntParameter(request, "arm");
+        ScheduledArm selectedArm;
+        if (armId == null) {
+            selectedArm = assignment.getScheduledCalendar().getCurrentArm();
+        } else {
+            selectedArm = scheduledArmDao.getById(armId);
+        }
 
         ModelMap model = new ModelMap();
         model.addObject("assignment", assignment);
@@ -41,7 +59,7 @@ public class DisplayScheduleController implements Controller {
         model.addObject(assignment.getParticipant());
         model.addObject(assignment.getStudySite().getStudy().getPlannedCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
-        model.addObject("arm", assignment.getScheduledCalendar().getCurrentArm());
+        model.addObject("arm", selectedArm);
 
         return new ModelAndView("schedule/display", model);
     }
@@ -67,5 +85,15 @@ public class DisplayScheduleController implements Controller {
     @Required
     public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
         this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
+    }
+
+    @Required
+    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
+        this.scheduledCalendarDao = scheduledCalendarDao;
+    }
+
+    @Required
+    public void setScheduledArmDao(ScheduledArmDao scheduledArmDao) {
+        this.scheduledArmDao = scheduledArmDao;
     }
 }
