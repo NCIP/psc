@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+wpackage edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,8 @@ public class StudyCalendarAuthorizationManager {
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     public static final String ASSIGNED_PGS = "ASSIGNED_PGS";
     public static final String AVAILABLE_PGS = "AVAILABLE_PGS";
+    public static final String ASSIGNED_PES = "ASSIGNED_PES";
+    public static final String AVAILABLE_PES = "AVAILABLE_PES";
     
     private static Log log = LogFactory.getLog(StudyCalendarAuthorizationManager.class);
     
@@ -425,7 +427,7 @@ public class StudyCalendarAuthorizationManager {
     }
 
     public Map getProtectionGroups(List<ProtectionGroup> allProtectionGroups, String protectionElementId) throws Exception {
-    	HashMap<String, List> userHashMap = new HashMap<String, List>();
+    	HashMap<String, List> pgHashMap = new HashMap<String, List>();
 		List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
 		List<ProtectionGroup> availablePGs = new ArrayList<ProtectionGroup>();
 		try 
@@ -446,10 +448,32 @@ public class StudyCalendarAuthorizationManager {
 			}
 		}
     	availablePGs = (List) ObjectSetUtil.minus(allProtectionGroups, assignedPGs);
-    	userHashMap.put(ASSIGNED_PGS, assignedPGs);
-		userHashMap.put(AVAILABLE_PGS, availablePGs);
-		return userHashMap;
+    	pgHashMap.put(ASSIGNED_PGS, assignedPGs);
+    	pgHashMap.put(AVAILABLE_PGS, availablePGs);
+		return pgHashMap;
     	
+    }
+    
+    public Map getPEForUserProtectionGroup(String pgId, String userId) {
+    	HashMap<String, List> peHashMap = new HashMap<String, List>();
+		List<ProtectionElement> assignedPEs = new ArrayList<ProtectionElement>();
+		List<ProtectionElement> availablePEs = new ArrayList<ProtectionElement>();
+		
+		Set<ProtectionElement> allAssignedPEsForPGs = userProvisioningManager.getProtectionElements(pgId);
+		
+		for (ProtectionElement userPE : allAssignedPEsForPGs) {
+			String userName = getUserObject(userId).getLoginName();
+			if (userProvisioningManager.checkOwnership(userName, userPE.getObjectId()))
+			{
+				assignedPEs.add(userPE);
+			}
+		}
+		
+		availablePEs = (List) ObjectSetUtil.minus(allAssignedPEsForPGs, assignedPEs);
+    	peHashMap.put(ASSIGNED_PES, assignedPEs);
+    	peHashMap.put(AVAILABLE_PES, availablePEs);
+		return peHashMap;
+		
     }
 
     
