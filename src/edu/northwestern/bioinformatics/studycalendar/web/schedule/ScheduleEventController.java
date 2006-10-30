@@ -4,6 +4,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
@@ -42,6 +43,7 @@ public class ScheduleEventController extends SimpleFormController {
         ControllerTools.registerDomainObjectEditor(binder, "event", scheduledEventDao);
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode",
             new ControlledVocabularyEditor(ScheduledEventMode.class, true));
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
     protected ModelAndView showForm(

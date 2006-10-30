@@ -75,7 +75,7 @@ public class ScheduleEventCommand {
 
     public Date getNewDate() {
         if (newDate == null) {
-            return getEvent().getActualDate();
+            return getEvent() == null ? null : getEvent().getActualDate();
         } else {
             return newDate;
         }
@@ -87,7 +87,7 @@ public class ScheduleEventCommand {
 
     public String getNewNotes() {
         if (newNotes  == null) {
-            return getEvent().getNotes();
+            return getEvent() == null ? null : getEvent().getNotes();
         } else {
             return newNotes;
         }

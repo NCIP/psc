@@ -85,6 +85,30 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
         assertEquals("Insisted", command.getNewReason());
     }
 
+    public void testBindReasonBlankIsNull() throws Exception {
+        request.addParameter("newReason", "");
+
+        expectShowFormWithNoErrors();
+
+        assertNull(command.getNewReason());
+    }
+
+    public void testBindNotes() throws Exception {
+        request.addParameter("newNotes", "Insisted");
+
+        expectShowFormWithNoErrors();
+
+        assertEquals("Insisted", command.getNewNotes());
+    }
+
+    public void testBindNotesBlankIsNull() throws Exception {
+        request.addParameter("newNotes", "");
+
+        expectShowFormWithNoErrors();
+
+        assertNull(command.getNewNotes());
+    }
+
     public void testChangeStateOnSubmit() throws Exception {
         command.setEvent(new ScheduledEvent());
         command.getEvent().setScheduledArm(new ScheduledArm());
