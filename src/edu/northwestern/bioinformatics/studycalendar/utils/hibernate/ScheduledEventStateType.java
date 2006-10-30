@@ -99,7 +99,7 @@ public class ScheduledEventStateType implements CompositeUserType {
 
         loaded.setReason(rs.getString(names[REASON_INDEX]));
         if (loaded instanceof DatedScheduledEventState) {
-            ((DatedScheduledEventState) loaded).setDate(rs.getTimestamp(names[DATE_INDEX]));
+            ((DatedScheduledEventState) loaded).setDate(rs.getDate(names[DATE_INDEX]));
         }
         return loaded;
     }

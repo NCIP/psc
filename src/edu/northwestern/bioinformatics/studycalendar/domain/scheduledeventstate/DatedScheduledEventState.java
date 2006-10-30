@@ -37,7 +37,7 @@ public abstract class DatedScheduledEventState extends ScheduledEventState {
     ////// BEAN PROPERTIES
 
     @Column(name = "actual_date")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     public Date getDate() {
         return date;
     }

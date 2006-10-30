@@ -81,7 +81,7 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
     }
 
     private void expectGetStateFields(ScheduledEventMode expectedMode, boolean expectDate) throws SQLException {
-        if (expectDate) expect(rs.getTimestamp(COLUMN_NAMES[2])).andReturn(new java.sql.Timestamp(DATE.getTime()));
+        if (expectDate) expect(rs.getDate(COLUMN_NAMES[2])).andReturn(new java.sql.Date(DATE.getTime()));
         expect(rs.getString(COLUMN_NAMES[1])).andReturn(REASON);
         expect(rs.getInt(COLUMN_NAMES[0])).andReturn(expectedMode.getId());
     }
