@@ -2,7 +2,7 @@
 
 <html>
 <head>
-    <title>Patient Study Calendar - Public Demo</title>
+    <title>Patient Study Calendar - Public Test Site</title>
     <style type="text/css">
         #roles-swimlanes {
             display: block;
@@ -35,20 +35,22 @@
 </head>
 
 <body>
-<h1>Patient Study Calendar - Public Demo</h1>
+<h1>Patient Study Calendar - Public Test Site</h1>
 
 <p>
     Thank you for testing the Patient Study Calendar Module. The PSC team is developing this
     software over a six-month period which has been divided into four releases--one every six weeks.
-    The software you are about to test is the result of Release 2. Your feedback will help guide our
+    The software you are about to test is the result of Release 3. Your feedback will help guide our
     development efforts.
 </p>
 
 <p>
-    We are debuting a few new features as well as the ability to use the application from the
-    perspective of various roles within a clinical research organization. You will find a few
-    guiding instructions below.
+	This release has two major components:
 </p>
+<ol>
+	<li>Improved user interface for the creation of study templates and the creation and management of participant calendars.</li>
+	<li>All interfaces to manage access rights to the various components of the application across a multi-site environment.</li>
+</ol>
 
 <p>
     A few considerations before you begin:
@@ -58,35 +60,29 @@
         Other users will be able to see data that you enter. Please do not enter any confidential
         information.</li>
     <li>The big, beautiful green box at the bottom of each screen contains debugging information and
-        will not be visible in the final release of the Study Calendar Module.</li>
+        will not be visible in the final release of the Patient Study Calendar Module.</li>
     <li>We have focused on functionality rather than visual design in our development efforts thus
         far. However, please feel free to make design recommendations if you so desire.</li>
 </ol>
 
 <p class="demo-link">
-    Let the testing begin: <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Demo - start
+    Let the testing begin: <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Test Site - start
     page</a>
 </p>
 
-<h2>To test all of the features of the Study Calendar Module in a single session</h2>
+<h2>To test the creation and management of study templates and participant calendars:</h2>
 
 <ol>
     <li>Log in using <kbd>superuser</kbd> as both the username and password.</li>
-    <li>Click "New study" to begin the process of creating a new study.</li>
-    <li>You can name the study, create epochs (screening, treatment, follow-up, etc...), and add arms
-        to the study from this page.</li>
-    <li>The next page is the "Template page." You'll come back to this now and then. You'll want to
-        add some periods to the arms of your study in order to make this more interesting.</li>
-    <li>When you've finished creating your periods, go ahead and select one from the template in
-        order to add activities to it. Add some activities by selecting it from the drop box,
-        clicking the Add button, and specifying how times you would like that activity to occur on
-        any day within the period. If you don't see the activity that you want, feel free to create
-        a new one.</li>
-    <li>The "Mark this template as complete" link is a way to make a note that the template has been
-        reviewed and is both correct and complete.</li>
-    <li>Please also try adding some participants to the study. You can create new participants,
-        too.</li>
-    <li>Please send your feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>
+    <li>Click "Create New Study Template" to begin the process of creating a new study.</li>
+    <li>You will be presented with a blank study.  Using the on-screen buttons, rename the study, add and rename epochs, and add arms.</li>
+    <li>You can also reorder the epochs and arms.</li>
+    <li>When you click on an arm, you can add periods of time to that arm.  You can then select the periods to add activities.</li>
+    <li>The "Mark this template as complete" link is a way to make a note that the template has been completed.</li>
+    <li>After a template has been marked as complete, you can select it from the "Completed Templates" list in the Study Menu.</li>
+    <li>Assign a participant, schedule arms, and click on the activities to see how more information can be recorded.</li>
+    <li>Please record any bugs in our <a href="https://gforge.nci.nih.gov/tracker/?group_id=31">GForge bug tracking system</a>.  You will need to login to use the system.</li>
+    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>
     </li>
 </ol>
 
