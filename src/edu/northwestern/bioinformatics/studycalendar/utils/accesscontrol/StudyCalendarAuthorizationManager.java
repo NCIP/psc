@@ -1,4 +1,4 @@
-wpackage edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
+package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import java.util.ArrayList;
 import java.util.HashMap;
