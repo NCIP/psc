@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.validation.BindingResult;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -28,7 +30,7 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
         command = registerMockFor(ScheduleEventCommand.class,
-            ScheduleEventCommand.class.getMethod("changeState"));
+            ScheduleEventCommand.class.getMethod("apply"));
 
         controller = new ScheduleEventController() {
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -46,9 +48,7 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
         expect(scheduledEventDao.getById(16)).andReturn(event);
         request.setParameter("event", "16");
 
-        replayMocks();
-        controller.handleRequest(request, response);
-        verifyMocks();
+        expectShowFormWithNoErrors();
 
         assertSame(event, command.getEvent());
     }
@@ -56,19 +56,23 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
     public void testBindMode() throws Exception {
         request.addParameter("newMode", "2");
 
-        replayMocks();
-        controller.handleRequest(request, response);
-        verifyMocks();
+        expectShowFormWithNoErrors();
 
         assertSame(ScheduledEventMode.OCCURRED, command.getNewMode());
     }
-    
+
+    public void testBindNoMode() throws Exception {
+        request.addParameter("newMode", "");
+
+        expectShowFormWithNoErrors();
+
+        assertNull(command.getNewMode());
+    }
+
     public void testBindDate() throws Exception {
         request.addParameter("newDate", "11/2/2003");
 
-        replayMocks();
-        controller.handleRequest(request, response);
-        verifyMocks();
+        expectShowFormWithNoErrors();
 
         assertDayOfDate(2003, Calendar.NOVEMBER, 2, command.getNewDate());
     }
@@ -76,9 +80,7 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
     public void testBindReason() throws Exception {
         request.addParameter("newReason", "Insisted");
 
-        replayMocks();
-        controller.handleRequest(request, response);
-        verifyMocks();
+        expectShowFormWithNoErrors();
 
         assertEquals("Insisted", command.getNewReason());
     }
@@ -88,10 +90,19 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
         command.getEvent().setScheduledArm(new ScheduledArm());
         command.getEvent().getScheduledArm().setScheduledCalendar(new ScheduledCalendar());
         request.setMethod("POST");
-        command.changeState();
+        command.apply();
 
         replayMocks();
-        controller.handleRequest(request, response);
+        ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
+    }
+
+    private void expectShowFormWithNoErrors() throws Exception {
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+
+        BindingResult errors = (BindingResult) mv.getModel().get("org.springframework.validation.BindingResult.command");
+        assertFalse("Binding errors: " + errors.getAllErrors(), errors.hasErrors());
     }
 }

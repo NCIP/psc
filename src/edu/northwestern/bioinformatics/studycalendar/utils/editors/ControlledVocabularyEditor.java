@@ -8,6 +8,8 @@ import java.beans.PropertyEditorSupport;
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author Rhett Sutphin
  */
@@ -15,14 +17,22 @@ public class ControlledVocabularyEditor extends PropertyEditorSupport {
     private static final String LOOKUP_METHOD = "getById";
 
     private Class<? extends AbstractControlledVocabularyObject> enumClass;
+    private boolean blankAsNull;
 
     public <T extends AbstractControlledVocabularyObject> ControlledVocabularyEditor(Class<T> enumClass) {
+        this(enumClass, false);
+    }
+
+    public <T extends AbstractControlledVocabularyObject> ControlledVocabularyEditor(Class<T> enumClass, boolean blankAsNull) {
         this.enumClass = enumClass;
+        this.blankAsNull = blankAsNull;
     }
 
     public void setAsText(String text) throws IllegalArgumentException {
         AbstractControlledVocabularyObject newValue;
         if (text == null) {
+            newValue = null;
+        } else if (blankAsNull && StringUtils.isBlank(text)) {
             newValue = null;
         } else {
             Integer id = new Integer(text);

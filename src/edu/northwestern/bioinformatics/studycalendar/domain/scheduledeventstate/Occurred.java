@@ -31,6 +31,10 @@ public class Occurred extends DatedScheduledEventState {
         super(reason, date);
     }
 
+    protected void appendPreposition(StringBuilder sb) {
+        sb.append("on");
+    }
+
     @Transient // use superclass annotation
     public ScheduledEventMode getMode() { return ScheduledEventMode.OCCURRED; }
 }

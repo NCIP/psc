@@ -12,11 +12,13 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +40,21 @@ public abstract class ScheduledEventState extends AbstractDomainObject implement
     protected ScheduledEventState(String reason) {
         this.reason = reason;
     }
+
+    ////// LOGIC
+
+    @Transient
+    public String getTextSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(StringUtils.capitalize(getMode().getName()));
+        appendSummaryMiddle(sb);
+        if (getReason() != null) sb.append(" - ").append(getReason());
+        return sb.toString();
+    }
+
+    protected void appendSummaryMiddle(StringBuilder sb) { }
+
+    ////// BEAN PROPERTIES
 
     @Type(type = "scheduledEventMode")
     @Column(name = "mode_id", insertable = false, updatable = false)

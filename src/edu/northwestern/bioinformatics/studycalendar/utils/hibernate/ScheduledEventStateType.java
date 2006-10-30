@@ -38,7 +38,7 @@ public class ScheduledEventStateType implements CompositeUserType {
     private static final Type MODE_TYPE = Hibernate.custom(ControlledVocabularyObjectType.class, new String[] { "enumClass" }, new String[] { ScheduledEventMode.class.getName() });
 
     private static final String[] PROPERTY_NAMES = new String[] { "mode", "reason", "date" };
-    private static final Type[] PROPERTY_TYPES = new Type[] { MODE_TYPE, Hibernate.STRING, Hibernate.DATE };
+    private static final Type[] PROPERTY_TYPES = new Type[] { MODE_TYPE, Hibernate.STRING, Hibernate.TIMESTAMP };
     private static final int MODE_INDEX   = 0;
     private static final int REASON_INDEX = 1;
     private static final int DATE_INDEX   = 2;
@@ -99,7 +99,7 @@ public class ScheduledEventStateType implements CompositeUserType {
 
         loaded.setReason(rs.getString(names[REASON_INDEX]));
         if (loaded instanceof DatedScheduledEventState) {
-            ((DatedScheduledEventState) loaded).setDate(rs.getDate(names[DATE_INDEX]));
+            ((DatedScheduledEventState) loaded).setDate(rs.getTimestamp(names[DATE_INDEX]));
         }
         return loaded;
     }

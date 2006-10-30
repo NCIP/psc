@@ -30,6 +30,31 @@ public class ControlledVocabularyEditorTest extends StudyCalendarTestCase {
         editor.setValue(null);
         assertNull(editor.getAsText());
     }
+    
+    public void testNoBlankAsNullWhenNotAllowed() throws Exception {
+        try {
+            editor.setAsText("");
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException e) {
+            // good
+        }
+    }
+
+    public void testBlankAsNullWithBlank() throws Exception {
+        allowBlanks();
+        editor.setAsText("");
+        assertNull(editor.getValue());
+    }
+
+    public void testBlankAsNullWithValue() throws Exception {
+        allowBlanks();
+        editor.setAsText("3");
+        assertSame(TestVocab.THREE, editor.getValue());
+    }
+
+    private void allowBlanks() {
+        editor = new ControlledVocabularyEditor(TestVocab.class, true);
+    }
 
     private static class TestVocab extends AbstractControlledVocabularyObject {
         public static final TestVocab ONE   = new TestVocab(1, "one");

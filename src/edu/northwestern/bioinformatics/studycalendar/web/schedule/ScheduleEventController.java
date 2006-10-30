@@ -10,8 +10,11 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
@@ -19,12 +22,12 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class ScheduleEventController extends SimpleFormController {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledEventDao scheduledEventDao;
 
     public ScheduleEventController() {
-        setFormView("schedule/event");
         setBindOnNewForm(true);
         setCommandClass(ScheduleEventCommand.class);
     }
@@ -38,12 +41,22 @@ public class ScheduleEventController extends SimpleFormController {
         binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
         ControllerTools.registerDomainObjectEditor(binder, "event", scheduledEventDao);
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode",
-            new ControlledVocabularyEditor(ScheduledEventMode.class));
+            new ControlledVocabularyEditor(ScheduledEventMode.class, true));
+    }
+
+    protected ModelAndView showForm(
+        HttpServletRequest request, HttpServletResponse response, BindException errors
+    ) throws Exception {
+        Map<String, Object> model = errors.getModel();
+        ScheduleEventCommand command = (ScheduleEventCommand) errors.getTarget();
+        ControllerTools.addHierarchyToModel(command.getEvent(), model);
+        model.put("modes", ScheduledEventMode.values());
+        return new ModelAndView("schedule/event", model);
     }
 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ScheduleEventCommand command = (ScheduleEventCommand) oCommand;
-        command.changeState();
+        command.apply();
         Map<String, Object> model = new HashMap<String, Object>();
         ScheduledArm arm = command.getEvent().getScheduledArm();
         model.put("arm", arm.getId());

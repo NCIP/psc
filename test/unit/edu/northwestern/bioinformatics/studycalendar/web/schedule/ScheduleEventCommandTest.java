@@ -75,15 +75,18 @@ public class ScheduleEventCommandTest extends StudyCalendarTestCase {
 
     public void testChangeState() throws Exception {
         assertEquals("Unexpeced number of initial states", 1, event.getAllStates().size());
+        assertNull(event.getNotes());
 
         command.setNewMode(ScheduledEventMode.OCCURRED);
+        command.setNewNotes("Change-o");
         scheduledCalendarDao.save(event.getScheduledArm().getScheduledCalendar());
 
         replayMocks();
-        command.changeState();
+        command.apply();
         verifyMocks();
         assertEquals("Wrong number of states", 2, event.getAllStates().size());
         assertEquals("Wrong mode for current state", ScheduledEventMode.OCCURRED, event.getCurrentState().getMode());
         assertEquals("Wrong reason for current state", NEW_REASON, event.getCurrentState().getReason());
+        assertEquals("Wrong notes", "Change-o", event.getNotes());
     }
 }

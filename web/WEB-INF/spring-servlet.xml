@@ -105,6 +105,9 @@
     <bean name="/schedule/nextArm" id="scheduleNextArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
 
+    <bean name="/scheduleEvent" id="scheduleEventController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController"/>
+
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
 

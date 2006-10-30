@@ -16,6 +16,7 @@ public class ScheduleEventCommand {
     private ScheduledEventMode newMode;
     private String newReason;
     private Date newDate;
+    private String newNotes;
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
@@ -25,9 +26,16 @@ public class ScheduleEventCommand {
 
     ////// LOGIC
 
-    public void changeState() {
-        event.changeState(createState());
+    public void apply() {
+        if (hasStateChange()) {
+            event.changeState(createState());
+        }
+        event.setNotes(getNewNotes());
         scheduledCalendarDao.save(event.getScheduledArm().getScheduledCalendar());
+    }
+
+    private boolean hasStateChange() {
+        return getNewMode() != null;
     }
 
     public ScheduledEventState createState() {
@@ -66,10 +74,26 @@ public class ScheduleEventCommand {
     }
 
     public Date getNewDate() {
-        return newDate;
+        if (newDate == null) {
+            return getEvent().getActualDate();
+        } else {
+            return newDate;
+        }
     }
 
     public void setNewDate(Date newDate) {
         this.newDate = newDate;
+    }
+
+    public String getNewNotes() {
+        if (newNotes  == null) {
+            return getEvent().getNotes();
+        } else {
+            return newNotes;
+        }
+    }
+
+    public void setNewNotes(String newNotes) {
+        this.newNotes = newNotes;
     }
 }

@@ -30,6 +30,10 @@ public class Scheduled extends DatedScheduledEventState {
         super(reason, date);
     }
 
+    protected void appendPreposition(StringBuilder sb) {
+        sb.append("for");
+    }
+
     @Transient // use superclass annotation
     public ScheduledEventMode getMode() { return ScheduledEventMode.SCHEDULED; }
 }

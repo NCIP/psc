@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
+import java.util.Collection;
+
 /**
  * Typedef enum representing the discriminator column for subclasses of
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState}.
@@ -41,5 +43,9 @@ public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractC
         } catch (IllegalAccessException e) {
             throw new StudyCalendarSystemException(e);
         }
+    }
+
+    public static Collection<ScheduledEventMode> values() {
+        return values(ScheduledEventMode.class);
     }
 }
