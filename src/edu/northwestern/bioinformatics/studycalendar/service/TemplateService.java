@@ -52,6 +52,10 @@ public class TemplateService {
     	return authorizationManager.getProtectionGroups(allSites, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
     }
     
+    public Map getTemplatesLists(String siteId, String participantCdId) throws Exception {
+    	return authorizationManager.getPEForUserProtectionGroup(siteId, participantCdId);
+    }
+    
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
     	return authorizationManager.getSite(siteName);
     }
