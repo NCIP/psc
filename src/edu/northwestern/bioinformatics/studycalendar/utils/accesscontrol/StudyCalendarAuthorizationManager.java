@@ -454,7 +454,7 @@ public class StudyCalendarAuthorizationManager {
     	
     }
     
-    public Map getPEForUserProtectionGroup(String pgId, String userId) {
+    public Map getPEForUserProtectionGroup(String pgId, String userId) throws Exception {
     	HashMap<String, List> peHashMap = new HashMap<String, List>();
 		List<ProtectionElement> assignedPEs = new ArrayList<ProtectionElement>();
 		List<ProtectionElement> availablePEs = new ArrayList<ProtectionElement>();
