@@ -105,20 +105,31 @@
                 border: 1px solid #444;
                 padding: 3px;
             }
-            .controls a, .inplaceeditor-form a {
+            a.control, .inplaceeditor-form a  {
                 font-weight: bold;
                 text-decoration: none;
             }
-            .controls a {
+            a.control {
                 padding: 2px;
                 margin: 0 2px;
                 color: #444;
                 border: 1px solid #999;
                 background-color: #ccc;
             }
-            .controls a:hover {
+            a.control:hover {
                 border-color: #444;
                 background-color: #ddd;
+            }
+
+            ul#admin-options {
+                padding: 0;
+                margin: 0;
+            }
+            ul#admin-options li {
+                display: inline;
+                padding: 2px 4px;
+                margin: 0;
+                list-style-type: none;
             }
         </style>
         <c:if test="${not plannedCalendar.complete}">
@@ -170,34 +181,49 @@
                 </c:if>
             }
 
+            function registerAdminOptionsControls() {
+                Event.observe('go-to-schedule-control', "click", function(e) {
+                    Event.stop(e)
+                    var a = $('go-to-schedule-control')
+                    var scheduleId = $F('assigned-participant-selector')
+                    window.location.href = a.href + "?calendar=" + scheduleId;
+                })
+            }
+
             <c:if test="${not plannedCalendar.complete}">
             Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
+            Event.observe(window, "load", registerAdminOptionsControls)
         </script>
     </head>
     <body>
         <h1>Template for <span id="study-name">${study.name}</span></h1>
 
-        <security:secureOperation element="/studycalendar/pages/markComplete" operation="ACCESS">
-        <c:if test="${not study.plannedCalendar.complete}">
-            <p><a href="<c:url value="/pages/markComplete?study=${study.id}"/>">Mark this template complete</a>.</p>
-        </c:if>
-        </security:secureOperation>
-        <security:secureOperation element="/studycalendar/pages/assignParticipantCoordinator" operation="ACCESS">
-        <c:if test="${study.plannedCalendar.complete}">
-            <p><a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>.</p>
-        </c:if>
-        </security:secureOperation>
-        <security:secureOperation element="/studycalendar/pages/assignParticipant" operation="ACCESS">
-        <c:if test="${study.plannedCalendar.complete}">
-            <p><a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>.</p>
-        </c:if>
-        </security:secureOperation>
+        <ul id="admin-options">
+            <templ:restrictedControlListItem url="/pages/markComplete" queryString="study=${study.id}"
+                logicAllowed="${not plannedCalendar.complete}">Mark this template complete</templ:restrictedControlListItem>
+            <templ:restrictedControlListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}"
+                logicAllowed="${plannedCalendar.complete}">Assign Participant Coordinators</templ:restrictedControlListItem>
+            <templ:restrictedControlListItem url="/pages/assignParticipant" queryString="id=${study.id}"
+                logicAllowed="${plannedCalendar.complete}">Assign Participant</templ:restrictedControlListItem>
+            <c:if test="${not empty assignments}">
+                <security:secureOperation element="/studycalendar/pages/schedule" operation="ACCESS">
+                <li>View schedule for
+                    <select id="assigned-participant-selector">
+                        <c:forEach items="${assignments}" var="assignment">
+                            <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
+                        </c:forEach>
+                    </select>
+                    <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
+                </li>
+                </security:secureOperation>
+            </c:if>
+        </ul>
 
         <div id="epochs" class="section">
             <h2>Epochs and arms</h2>
-            <tags:epochsAndArms id="epochs-container" plannedCalendar="${calendar}" selectedArm="${arm.base}"/>
+            <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
         </div>
 
         <div id="selected-arm" class="section">

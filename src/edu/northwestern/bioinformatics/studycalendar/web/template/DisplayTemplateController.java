@@ -34,6 +34,10 @@ public class DisplayTemplateController implements Controller {
         ControllerTools.addHierarchyToModel(arm.getEpoch(), model);
         model.addObject("arm", new ArmTemplate(arm));
 
+        if (study.getPlannedCalendar().isComplete()) {
+            model.addObject("assignments", studyDao.getAssignmentsForStudy(studyId));
+        }
+
         return new ModelAndView("template/display", model);
     }
 

@@ -146,7 +146,7 @@ function createControlAnchor(controlName, text, baseHref, objectType, objectId) 
     }
     href += objectType + '=' + objectId
     var a = Builder.node("a", {
-        className: objectType + '-control',
+        className: objectType + '-control control',
         id: objectType + "-" + objectId + "-" + controlName,
         href: href
     })

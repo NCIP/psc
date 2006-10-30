@@ -6,11 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -41,7 +46,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
-        EasyMock.expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(studyDao.getById(study.getId())).andReturn(study);
     }
 
     public void testView() throws Exception {
@@ -52,8 +57,10 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     
     public void testNonArmModel() throws Exception {
         Map<String, Object> actualModel = getAndReturnModel();
+        assertSame(study, actualModel.get("study"));
         assertSame(study.getPlannedCalendar(), actualModel.get("plannedCalendar"));
         assertSame(e1.getEpoch(), actualModel.get("epoch"));
+        assertFalse(actualModel.containsKey("calendar"));
     }
 
     public void testArmIsFirstArmByDefault() throws Exception {
@@ -71,6 +78,15 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.addParameter("arm", "234");
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(e1, ((ArmTemplate) actualModel.get("arm")).getBase());
+    }
+
+    public void testAssignmentsIncludedIfComplete() throws Exception {
+        List<StudyParticipantAssignment> expectedAssignments = Arrays.asList(new StudyParticipantAssignment(), new StudyParticipantAssignment(), new StudyParticipantAssignment());
+        study.getPlannedCalendar().setComplete(true);
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
+
+        Map<String, Object> actualModel = getAndReturnModel();
+        assertSame(expectedAssignments, actualModel.get("assignments"));
     }
 
     private Map<String, Object> getAndReturnModel() throws Exception {
