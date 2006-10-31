@@ -79,35 +79,33 @@
     <li>Click "Mark this template as complete" when you have finished creating the template.</li>
     <li>After a template has been marked as complete, you can select it from the "Completed Templates" list in the Study Menu.</li>
     <li>Assign a participant, schedule arms, and click on the activities to see how more information can be recorded.</li>
-    <li>Please record any bugs in our <a href="https://gforge.nci.nih.gov/tracker/?group_id=31">GForge bug tracking system</a>.  You will need to login to use the system.</li>
-    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>
-    </li>
+    <li>Please record any bugs, suggestions, or requests for new features in our <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">GForge tracking system</a>.</li>
+    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
 </ol>
 
-<h2>To test access rights management: (see diagram below for more details)</h2>
+<h2>To test access rights management (see diagram below for more details):</h2>
 
 <ol>
-	<li>Login as a Study Coordinator (username and password of.....), create a study template, and mark it as complete.  Logout.</li>
-	<li>Login as a Study Administrator (usrname and pword of.....).  Click "Manage Sites" and add your site to the list by creating a new site.</li>
+	<li>Login as a Study Coordinator (username and password of <kbd>studycd_1</kbd>), create a study template, and mark it as complete.  Logout.</li>
+	<li>Login as a Study Administrator (username and password of <kbd>study_admin1</kbd>).  Click "Manage Sites" and add your site to the list by creating a new site.</li>
 	<li>Click the "Assign Site Coordinator" link next to your site and add a Site Coordinator to your Site.  Return to the Study Menu.</li>
 	<li>Click on the "Assign to Site" link next to the study template that you created above.  Assign it to your Site.  Logout.</li>
-	<li>Login as the Site Coordinator from above (usrname and pword of.....).  Near the bottom of the screen click Assign Participant Coordinators to Site and assign one to your Site.</li>
+	<li>Login as the Site Coordinator from above (username and password of <kbd>sitecd_1</kbd>).  Near the bottom of the screen click Assign Participant Coordinators to Site and assign one to your Site.</li>
 	<li>Next to the template that you created, click "Assign Participant Coordinator" and assign a Participant Coordinator.  Logout.</li>
-	<li>Login as the Participant Coordinator (usrname and pword of .....)and click "assign participants."</li>
-    <li>Please record any bugs in our <a href="https://gforge.nci.nih.gov/tracker/?group_id=31">GForge bug tracking system</a>.  You will need to login to use the system.</li>
-    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>
-    </li>
+	<li>Login as the Participant Coordinator (username and password of <kbd>participantcd_1</kbd>)and click "assign participants."</li>
+    <li>Please record any bugs, suggestions, or requests for new features in our <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">GForge tracking system</a>.</li>
+    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
 </ol>
 <p>
     This Activity Diagram explains the way that each user interacts with the Patient Study Calendar:
 </p>
-<img
+<a id="roles-swimlanes" href="https://svn.bioinformatics.northwestern.edu/studycalendar/trunk/documents/SRS_FR_SwimLanes.jpg"> <img
     src="https://svn.bioinformatics.northwestern.edu/studycalendar/trunk/documents/SRS_FR_SwimLanes.jpg"
-    alt="PSC roles" id="roles-swimlanes" width="800"/>
+    alt="PSC roles"  width="800"/> </a>
 
 <p class="demo-link">
     In case you missed the first one:
-    <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Demo - start page</a>
+    <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Test Site - start page</a>
 </p>
 
 <p>
