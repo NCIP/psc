@@ -129,6 +129,14 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantCoordinatorsToSiteController">
     </bean>
 
+    <bean name="/siteParticipantCoordinatorList" id="siteParticipantCoordinatorListController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.SiteParticipantCoordinatorListController">
+    </bean>
+    
+     <bean name="/assignTemplatesToOneParticipantCoordinator" id="assignTemplatesToOneParticipantCoordinatorController" autowire="byName" lazy-init="true"
+		  class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
+    </bean>
+    
     <bean name="/assignTemplatesToParticipantCoordinators" id="assignTemplatesToParticipantCoordinatorsController" 
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>

@@ -10,7 +10,7 @@
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
-            width: 35%;
+            width: 10%;
         }
         div.submit {
             text-align: right;
@@ -22,12 +22,14 @@
 </head>
 <body>
 <h1>Sites For Assigning Participant Coordinators</h1>
-
+<br>
+<br>
 
 <table>
     <c:forEach items="${sites}" var="site">
         <tr>
-            <td>${site.name}   <a href="<c:url value="/pages/assignParticipantCoordinatorsToSite?id=${site.id}"/>">  Assign Participant Coordinators to Site  </a></td>
+            <td><strong>${site.name}   </strong><a href="<c:url value="/pages/assignParticipantCoordinatorsToSite?id=${site.id}"/>">  Assign Participant Coordinators to Site  </a></td>
+        	<td>   <a href="<c:url value="/pages/siteParticipantCoordinatorList?id=${site.id}"/>">  Choose Participant Coordinators To Assign Study Templates  </a></td>
         </tr>
     </c:forEach>
 </table>
