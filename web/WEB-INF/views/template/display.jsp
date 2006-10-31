@@ -182,12 +182,14 @@
             }
 
             function registerAdminOptionsControls() {
-                Event.observe('go-to-schedule-control', "click", function(e) {
-                    Event.stop(e)
-                    var a = $('go-to-schedule-control')
-                    var scheduleId = $F('assigned-participant-selector')
-                    window.location.href = a.href + "?calendar=" + scheduleId;
-                })
+                if ($('go-to-schedule-control')) {
+                    Event.observe('go-to-schedule-control', "click", function(e) {
+                        Event.stop(e)
+                        var a = $('go-to-schedule-control')
+                        var scheduleId = $F('assigned-participant-selector')
+                        window.location.href = a.href + "?calendar=" + scheduleId;
+                    })
+                }
             }
 
             <c:if test="${not plannedCalendar.complete}">
