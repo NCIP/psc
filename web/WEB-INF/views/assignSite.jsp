@@ -78,6 +78,7 @@
 
 <form:form action="${formAction}" method="post">
 <input type="hidden" name="studyId" value="${study.id}"/>
+<input type="hidden" name="assign" value="true"/>
     <div class="row">
         <div class="label">
             <form:label path="availableSites">Available Sites</form:label>
@@ -89,12 +90,15 @@
         </div>
     </div>
     <div class="row">
-        <div class="value submit">
-            <input type="button" value="Assign" style="width:75px;" onclick="selSwitch(this);">  
-            <input type="button" value="Remove" style="width:75px;" onclick="selSwitch(this);">
+        <div class="submit">
+            <input type="submit" value="Assign"/>
         </div>
-
     </div>
+</form:form>
+
+<form:form action="${formAction}" method="post">
+<input type="hidden" name="studyId" value="${study.id}"/>
+<input type="hidden" name="assign" value="false"/>    
     <div class="row">
         <div class="label">
             <form:label path="assignedSites">Assigned Sites</form:label>
@@ -107,7 +111,7 @@
     </div>
     <div class="row">
         <div class="submit">
-            <input type="submit" value="Update Associations"/>
+            <input type="submit" value="Remove"/>
         </div>
     </div>
 </form:form>
