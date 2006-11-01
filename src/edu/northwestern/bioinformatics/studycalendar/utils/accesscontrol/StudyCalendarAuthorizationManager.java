@@ -1,15 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.LinkedList;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -17,15 +10,23 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroupRoleContext;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
 import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.dao.UserSearchCriteria;
-import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import gov.nih.nci.security.util.ObjectSetUtil;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Padmaja Vedula
@@ -40,6 +41,8 @@ public class StudyCalendarAuthorizationManager {
     public static final String AVAILABLE_PGS = "AVAILABLE_PGS";
     public static final String ASSIGNED_PES = "ASSIGNED_PES";
     public static final String AVAILABLE_PES = "AVAILABLE_PES";
+    public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
+    public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
     
     private static Log log = LogFactory.getLog(StudyCalendarAuthorizationManager.class);
     
@@ -47,19 +50,23 @@ public class StudyCalendarAuthorizationManager {
   
     public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception
 	{
-    	boolean protectionElementPresent = false;	
+    	boolean protectionElementPresent = false;
+    	ProtectionElement pElement = new ProtectionElement();
 			
 		try { 
-			userProvisioningManager.getProtectionElement(protectionElementObjectId);
+			pElement = userProvisioningManager.getProtectionElement(protectionElementObjectId);
 			protectionElementPresent = true;
 		} catch (CSObjectNotFoundException ex){
 			ProtectionElement newProtectionElement = new ProtectionElement();
 			newProtectionElement.setObjectId(protectionElementObjectId);
 			newProtectionElement.setProtectionElementName(protectionElementObjectId);
 			userProvisioningManager.createProtectionElement(newProtectionElement);
-			userProvisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
+			pElement = userProvisioningManager.getProtectionElement(protectionElementObjectId);
+			//userProvisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
+			//userProvisioningManager.assignOwners(protectionElementObjectId, userIds.toArray(new String[0]));
 		}
-		if (protectionElementPresent)
+		userProvisioningManager.assignOwners(pElement.getProtectionElementId().toString(), userIds.toArray(new String[0]));
+		/*if (protectionElementPresent)
 		{
 			if (log.isDebugEnabled()) {
 				log.debug(" The given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
@@ -80,7 +87,7 @@ public class StudyCalendarAuthorizationManager {
 				}
 			
 			}
-		}
+		}*/
 	}
     	
     public void assignMultipleProtectionElements(String userId, List<String> protectionElementObjectIds) throws Exception
@@ -328,10 +335,8 @@ public class StudyCalendarAuthorizationManager {
     }
     
     public void assignProtectionElementToPGs(List<String> pgIdsList, String protectionElementId) throws Exception {
-    	System.out.println("protectionElementId : "+ protectionElementId);
     	ProtectionElement requiredPE;
-    	System.out.println(pgIdsList.size());
-    	try { 
+     	try { 
 			requiredPE = userProvisioningManager.getProtectionElement(protectionElementId);
 		} catch (CSObjectNotFoundException ex){
 			ProtectionElement newProtectionElement = new ProtectionElement();
@@ -341,7 +346,29 @@ public class StudyCalendarAuthorizationManager {
 			requiredPE = userProvisioningManager.getProtectionElement(protectionElementId);
 		}
 		
-    	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), pgIdsList.toArray(new String[0]));
+		List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
+    	List<String> pgIds = new ArrayList<String>();
+    	try 
+		{
+    		Long peId = userProvisioningManager.getProtectionElement(protectionElementId).getProtectionElementId();
+    		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
+			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
+				if (protectionGroupForPE.getParentProtectionGroup() != null) {
+					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+						assignedPGs.add(protectionGroupForPE);
+					}
+				}
+			}
+		} catch (CSObjectNotFoundException  cse) {
+			if (log.isDebugEnabled()) {
+				log.debug("no assigned protectiongroups for this protection element");
+			}
+		}
+		for (ProtectionGroup assignedPG : assignedPGs) {
+			pgIds.add(assignedPG.getProtectionGroupId().toString());
+		}
+		pgIds.addAll(pgIdsList);
+    	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), pgIds.toArray(new String[0]));
     }
 
     public void registerUrl(String url, List<String> protectionGroups) {
@@ -426,16 +453,15 @@ public class StudyCalendarAuthorizationManager {
         }
     }
 
-    public Map getProtectionGroups(List<ProtectionGroup> allProtectionGroups, String protectionElementId) throws Exception {
+    public Map getProtectionGroups(List<ProtectionGroup> allProtectionGroups, String protectionElementObjectId) throws Exception {
     	HashMap<String, List> pgHashMap = new HashMap<String, List>();
 		List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
 		List<ProtectionGroup> availablePGs = new ArrayList<ProtectionGroup>();
 		try 
 		{
-			Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(protectionElementId);
+			Long peId = userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementId();
+			Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
 			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
-				System.out.println("why no assgined sites : " +protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName());
-				
 				if (protectionGroupForPE.getParentProtectionGroup() != null) {
 					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
 						assignedPGs.add(protectionGroupForPE);
@@ -474,6 +500,84 @@ public class StudyCalendarAuthorizationManager {
     	peHashMap.put(AVAILABLE_PES, availablePEs);
 		return peHashMap;
 		
+    }
+    
+    public void removeProtectionElementFromPGs(List<String> removePGs, String protectionElementObjectId) throws Exception {
+    	List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
+    	List<String> pgIds = new ArrayList<String>();
+    	ProtectionElement requiredPE;
+    	try 
+		{
+    		Long peId = userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementId();
+    		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
+			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
+				if (protectionGroupForPE.getParentProtectionGroup() != null) {
+					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+						assignedPGs.add(protectionGroupForPE);
+					}
+				}
+			}
+		} catch (CSObjectNotFoundException  cse) {
+			if (log.isDebugEnabled()) {
+				log.debug("no assigned protectiongroups for this protection element");
+			}
+		}
+		for (ProtectionGroup assignedPG : assignedPGs) {
+			pgIds.add(assignedPG.getProtectionGroupId().toString());
+		}
+		List<String> newList = (List) ObjectSetUtil.minus(pgIds, removePGs);
+		requiredPE = userProvisioningManager.getProtectionElement(protectionElementObjectId);
+    	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), newList.toArray(new String[0]));
+    }
+    
+    public List checkOwnership(String userName, List<Study> studies) throws Exception {
+    	Group requiredGroup = new Group();
+    	List<Study> assignedStudies = new ArrayList<Study>(); 
+		User user = new User();
+		user.setLoginName(userName);
+        SearchCriteria userSearchCriteria = new UserSearchCriteria(user);
+        List<User> userList = userProvisioningManager.getObjects(userSearchCriteria);
+        if (userList.size() > 0)
+		{
+        	Set groups = userProvisioningManager.getGroups(userList.get(0).getUserId().toString());
+			Set<Group> userGroups = groups;
+			if (userGroups.size() > 0) {	
+				   requiredGroup = (Group) userGroups.toArray()[0];
+				   if (requiredGroup.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
+					   for (Study study : studies) {
+						   if (userProvisioningManager.checkOwnership(userName, study.getClass().getName()+"."+study.getId())) {
+							   assignedStudies.add(study);
+						   }
+					   }
+					   
+				   } else if (requiredGroup.getGroupName().equals(SITE_COORDINATOR_GROUP)) {
+					   List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
+				   	   Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userList.get(0).getUserId().toString());
+					   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
+					   if (pgRoleContextList.size() != 0) {
+						   for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
+								if (pgrc.getProtectionGroup().getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+									sites.add(pgrc.getProtectionGroup());
+								}
+						   }
+					   }
+					   for (Study study : studies) {
+						   for (ProtectionGroup site : sites) {
+							   Set<ProtectionElement> assignedPEs = userProvisioningManager.getProtectionElements(site.getProtectionGroupId().toString());
+							   for (ProtectionElement pe : assignedPEs) {
+								   if (pe.getObjectId().equals(study.getClass().getName()+"."+study.getId())) {
+									   assignedStudies.add(study);
+								   }
+							   }
+						   }
+					   }
+				   } else {
+					   assignedStudies = studies;
+				   }
+			}  
+		}
+        
+    	return assignedStudies;
     }
 
     
