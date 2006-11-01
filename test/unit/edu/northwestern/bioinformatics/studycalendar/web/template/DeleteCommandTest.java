@@ -34,6 +34,20 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         assertEquals("E2", epochs.get(0).getName());
     }
     
+    public void testDeleteLastEpochIsNoop() throws Exception {
+        study.getPlannedCalendar().getEpochs().remove(1);
+
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        assertEquals(1, epochs.size());
+        assertEquals("E1", epochs.get(0).getName());
+
+        command.setEpoch(epochs.get(0));
+        command.performEdit();
+
+        assertEquals(1, epochs.size());
+        assertEquals("E1", epochs.get(0).getName());
+    }
+    
     public void testDeleteArm() throws Exception {
         List<Arm> arms = study.getPlannedCalendar().getEpochs().get(0).getArms();
         assertEquals(3, arms.size());
@@ -47,6 +61,18 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         assertEquals(2, arms.size());
         assertEquals("A", arms.get(0).getName());
         assertEquals("C", arms.get(1).getName());
+    }
+
+    public void testDeleteLastArmIsNoop() throws Exception {
+        List<Arm> arms = study.getPlannedCalendar().getEpochs().get(1).getArms();
+        assertEquals(1, arms.size());
+        assertEquals("E2", arms.get(0).getName());
+
+        command.setArm(arms.get(0));
+        command.performEdit();
+
+        assertEquals(1, arms.size());
+        assertEquals("E2", arms.get(0).getName());
     }
 
     public void testEpochView() throws Exception {
