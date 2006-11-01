@@ -56,9 +56,12 @@ public class AssignSiteController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignSiteCommand assignCommand = (AssignSiteCommand) oCommand;
     	Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
-        templateService.assignTemplateToSites(assignedStudy, assignCommand.getAssignedSites());
-
-        return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
+    	 if("true".equals(assignCommand.getAssign())) {
+    		templateService.assignTemplateToSites(assignedStudy, assignCommand.getAvailableSites());
+    	 } else {
+    		templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
+    	 }
+         return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
