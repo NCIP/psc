@@ -32,6 +32,10 @@ public class TemplateService {
     	authorizationManager.assignProtectionElementsToUsers(userIds, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
     }
     
+    public void removeTemplateFromSites(Study studyTemplate, List<String> siteIds) throws Exception {
+    	authorizationManager.removeProtectionElementFromPGs(siteIds, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
+    }
+    
     public void assignMultipleTemplates(List<Study> studyTemplates, String userId) throws Exception {
     	List<String> studyPEs = new ArrayList<String>();
     	for (Study template : studyTemplates)
@@ -63,7 +67,11 @@ public class TemplateService {
     public List getAllSiteProtectionGroups() throws Exception {
     	return authorizationManager.getSites();
     }
-
+    
+    public List checkOwnership(String userName, List<Study> studies) throws Exception {
+    	return authorizationManager.checkOwnership(userName, studies);
+    }
+    
       ////// CONFIGURATION
 
    
