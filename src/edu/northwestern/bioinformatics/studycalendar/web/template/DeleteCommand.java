@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import sun.jvm.hotspot.debugger.LongHashMap;
-
-import java.util.Map;
-import java.util.List;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -30,6 +28,10 @@ public class DeleteCommand extends ModalEditCommand {
             getCollection().remove(getObject());
         }
 
+        public Map<String, Object> getModel() {
+            return null;
+        }
+
         protected abstract List<T> getCollection();
 
         protected abstract T getObject();
@@ -38,10 +40,6 @@ public class DeleteCommand extends ModalEditCommand {
     private class DeleteEpoch extends DeleteMode<Epoch> {
         public String getRelativeViewName() {
             return "deleteEpoch";
-        }
-
-        public Map<String, Object> getModel() {
-            return null;
         }
 
         protected Epoch getObject() {
@@ -56,10 +54,6 @@ public class DeleteCommand extends ModalEditCommand {
     private class DeleteArm extends DeleteMode<Arm> {
         public String getRelativeViewName() {
             return "deleteArm";
-        }
-
-        public Map<String, Object> getModel() {
-             return null;
         }
 
         protected Arm getObject() {
