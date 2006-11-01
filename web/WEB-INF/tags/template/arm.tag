@@ -6,7 +6,7 @@
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
     <c:if test="${not arm.base.epoch.plannedCalendar.complete}">
-    <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>">Add period</a></p>
+    <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a></p>
     </c:if>
     <c:forEach items="${arm.months}" var="month">
         <table class="periods" cellspacing="0">
