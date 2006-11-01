@@ -9,6 +9,7 @@ import java.util.List;
 
 public class AssignSiteCommand {
     private Integer studyId;
+    private String assign;
     private List<String> assignedSites;
     private List<String> availableSites;
    
@@ -37,6 +38,14 @@ public class AssignSiteCommand {
 
     public void setStudyId(Integer studyId) {
         this.studyId = studyId;
+    }
+    
+    public String getAssign() {
+        return assign;
+    }
+
+    public void setAssign(String assign) {
+        this.assign = assign;
     }
   
 }
