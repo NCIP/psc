@@ -28,9 +28,9 @@ public class StudyListController extends AbstractController {
     private TemplateService templateService; 
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Collection<Study> studies = studyDao.getAll();
+        List<Study> studies = studyDao.getAll();
         String userName = ApplicationSecurityManager.getUser(request);
-        Collection<Study> ownedStudies = templateService.checkOwnership(userName, (List) studies);
+        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("studies", ownedStudies);
         return new ModelAndView("studyList", model);
