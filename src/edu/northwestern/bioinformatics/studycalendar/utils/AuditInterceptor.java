@@ -53,7 +53,11 @@ public class AuditInterceptor extends EmptyInterceptor {
 
     private void log(String message) {
         DataAuditInfo info = DataAuditInfo.getLocal();
-        log.info(info.getBy() + " connecting from " + info.getIp() + " performed " + message);
+        if (info != null) {
+            log.info(info.getBy() + " connecting from " + info.getIp() + " performed " + message);
+        } else {
+            log.info(message);
+        }
     }
 
     private String getEntityTypeName(Object entity) {
