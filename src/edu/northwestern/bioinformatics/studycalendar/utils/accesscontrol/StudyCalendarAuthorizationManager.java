@@ -480,12 +480,12 @@ public class StudyCalendarAuthorizationManager {
     	
     }
     
-    public Map getPEForUserProtectionGroup(String pgId, String userId) throws Exception {
+    public Map getPEForUserProtectionGroup(String pgName, String userId) throws Exception {
     	HashMap<String, List> peHashMap = new HashMap<String, List>();
 		List<ProtectionElement> assignedPEs = new ArrayList<ProtectionElement>();
 		List<ProtectionElement> availablePEs = new ArrayList<ProtectionElement>();
 		
-		Set<ProtectionElement> allAssignedPEsForPGs = userProvisioningManager.getProtectionElements(pgId);
+		Set<ProtectionElement> allAssignedPEsForPGs = userProvisioningManager.getProtectionElements(this.getSite(pgName).getProtectionGroupId().toString());
 		
 		for (ProtectionElement userPE : allAssignedPEsForPGs) {
 			String userName = getUserObject(userId).getLoginName();
