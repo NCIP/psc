@@ -43,7 +43,9 @@ public class TemplateService {
     	List<String> studyPEs = new ArrayList<String>();
     	for (Study template : studyTemplates)
 		{
-    		studyPEs.add(template.getClass().getName()+"."+template.getId());
+    		//studyPEs.add(template.getClass().getName()+"."+template.getId());
+    		studyPEs.add(DomainObjectTools.createExternalObjectId(template));
+    		
 		}
     	authorizationManager.assignMultipleProtectionElements(userId, studyPEs);
 		
@@ -66,11 +68,11 @@ public class TemplateService {
     	List<ProtectionElement> availablePEs = (List) templatesMap.get(authorizationManager.AVAILABLE_PES);
     	List<ProtectionElement> assignedPEs = (List) templatesMap.get(authorizationManager.ASSIGNED_PES);
     	for (ProtectionElement available : availablePEs) {
-    		int id = Integer.parseInt(DomainObjectTools.parseExternalObjectId(available.getObjectId()));
+    		int id = DomainObjectTools.parseExternalObjectId(available.getObjectId());
     		availableTemplates.add(studyDao.getById(id));
     	}
     	for (ProtectionElement assigned : assignedPEs) {
-    		int id = Integer.parseInt(DomainObjectTools.parseExternalObjectId(assigned.getObjectId()));
+    		int id = DomainObjectTools.parseExternalObjectId(assigned.getObjectId());
     		assignedTemplates.add(studyDao.getById(id));
     	}
     	templatesMap.put(authorizationManager.ASSIGNED_PES, assignedTemplates);
