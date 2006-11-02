@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -25,6 +26,7 @@ public class TemplateService {
 	public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     private StudyCalendarAuthorizationManager authorizationManager;
     private StudyDao studyDao;
+    private SiteDao siteDao;
 
    
     public void assignTemplateToSites(Study studyTemplate, List<String> siteIds) throws Exception {
@@ -51,8 +53,8 @@ public class TemplateService {
 		
     }
     
-    public Map getParticipantCoordinators(Study studyTemplate) throws Exception {
-    	return authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
+    public Map getParticipantCoordinators(Study studyTemplate, Site site) throws Exception {
+    	return authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studyTemplate), site.getName());
     }
     
 
@@ -98,8 +100,12 @@ public class TemplateService {
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
-   
-     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
+    
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+      
+    public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
 }
