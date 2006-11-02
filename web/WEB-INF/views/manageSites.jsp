@@ -23,8 +23,6 @@
 <body>
 <h1>Manage Sites</h1>
 
-<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
-
 <p><a href="<c:url value="/pages/newSite"/>">Create New Site</a></p>
 
 <table>
