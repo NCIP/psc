@@ -40,7 +40,7 @@ public class DomainObjectTools {
     		return "null";
     	} else {
     		String[] objectIdStrings = objectId.split("\\.");
-    		return  objectIdStrings[objectIdStrings.length - 1].;
+    		return  objectIdStrings[objectIdStrings.length - 1];
     	}
     }
 
