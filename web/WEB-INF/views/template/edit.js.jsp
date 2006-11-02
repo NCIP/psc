@@ -44,10 +44,12 @@ function updateArmControlVisibility(armItem) {
     var siblings = $A(thisArm.parentNode.getElementsByTagName("LI"))
 
     updateMoveControlVisibility('arm', thisArm.id.split('-')[1], thisArm, siblings)
+    updateDeleteControlVisibility('arm', siblings);
 }
 
 function updateAllArmsControlVisibility(epochId) {
-    $$('#epoch-' + epochId + '-arms li').each(updateArmControlVisibility)
+    var armItems = $$('#epoch-' + epochId + '-arms li');
+    armItems.each(updateArmControlVisibility)
 }
 
 function createStudyControls() {
@@ -115,6 +117,7 @@ function updateEpochControlVisibility(epochElt) {
     var siblings = $$('div.epoch')
 
     updateMoveControlVisibility('epoch', thisEpoch.id.split('-')[1], thisEpoch, siblings)
+    updateDeleteControlVisibility('epoch', siblings)
 }
 
 function updateAllEpochsControlVisibility() {
@@ -146,7 +149,7 @@ function createControlAnchor(controlName, text, baseHref, objectType, objectId) 
     }
     href += objectType + '=' + objectId
     var a = Builder.node("a", {
-        className: objectType + '-control control',
+        className: objectType + '-' + controlName + '-control ' + objectType + '-control control',
         id: objectType + "-" + objectId + "-" + controlName,
         href: href
     })
@@ -190,5 +193,14 @@ function updateMoveControlVisibility(objectType, objectId, thisElement, siblings
         upControl.hide(); downControl.hide();
     } else {
         upControl.show(); downControl.show();
+    }
+}
+
+function updateDeleteControlVisibility(objectType, elts) {
+    var controls = $$('.' + objectType + '-delete-control')
+    if (elts.length <= 1) {
+        controls.each(function(c) { c.hide() })
+    } else {
+        controls.each(function(c) { c.show() })
     }
 }
