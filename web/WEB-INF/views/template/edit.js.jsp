@@ -1,7 +1,12 @@
 <%@page contentType="text/javascript" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 function createAllArmControls() {
-    $$('#epochs li.arm').each(createArmControls)
+    $$('#epochs li.arm').each(function(li) {
+        createArmControls(li)
+    })
+    $$('#epochs ul').each(function(ul) {
+        _updateAllArmsControlVisibility(ul.id)
+    })
 }
 
 function createArmControls(armItem) {
@@ -44,12 +49,16 @@ function updateArmControlVisibility(armItem) {
     var siblings = $A(thisArm.parentNode.getElementsByTagName("LI"))
 
     updateMoveControlVisibility('arm', thisArm.id.split('-')[1], thisArm, siblings)
-    updateDeleteControlVisibility('arm', siblings);
 }
 
 function updateAllArmsControlVisibility(epochId) {
-    var armItems = $$('#epoch-' + epochId + '-arms li');
+    _updateAllArmsControlVisibility('epoch-' + epochId + '-arms')
+}
+
+function _updateAllArmsControlVisibility(eltId) {
+    var armItems = $$('#' + eltId + ' li');
     armItems.each(updateArmControlVisibility)
+    updateDeleteControlVisibility('arm', armItems, eltId);
 }
 
 function createStudyControls() {
@@ -117,7 +126,7 @@ function updateEpochControlVisibility(epochElt) {
     var siblings = $$('div.epoch')
 
     updateMoveControlVisibility('epoch', thisEpoch.id.split('-')[1], thisEpoch, siblings)
-    updateDeleteControlVisibility('epoch', siblings)
+    updateDeleteControlVisibility('epoch', siblings, 'epochs')
 }
 
 function updateAllEpochsControlVisibility() {
@@ -196,8 +205,10 @@ function updateMoveControlVisibility(objectType, objectId, thisElement, siblings
     }
 }
 
-function updateDeleteControlVisibility(objectType, elts) {
-    var controls = $$('.' + objectType + '-delete-control')
+function updateDeleteControlVisibility(objectType, elts, containerId) {
+    var controls = $$('#' + containerId + ' .' + objectType + '-delete-control')
+    console.log(elts)
+    console.log(controls)
     if (elts.length <= 1) {
         controls.each(function(c) { c.hide() })
     } else {
