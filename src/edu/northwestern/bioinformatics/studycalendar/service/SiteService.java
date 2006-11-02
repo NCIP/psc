@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -68,6 +69,15 @@ public class SiteService {
     
     public List getAllSiteProtectionGroups() throws Exception {
     	return authorizationManager.getSites();
+    }
+    
+    public List getSitesForSiteCd(String userName) throws Exception {
+    	List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
+    	List<Site> sites = new ArrayList<Site>();
+    	for (ProtectionGroup sitePG : sitePGs) {
+    		sites.add(siteDao.getByName(sitePG.getProtectionGroupName()));
+    	}
+    	return sites;
     }
 
       ////// CONFIGURATION
