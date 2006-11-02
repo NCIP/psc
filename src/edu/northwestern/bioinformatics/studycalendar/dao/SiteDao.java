@@ -40,7 +40,8 @@ public class SiteDao extends StudyCalendarDao<Site> {
     }
     
     public Site getByName(String name) {
-        return (Site) getHibernateTemplate().find("from Site where name= ?", name);
+        List<Site> results = getHibernateTemplate().find("from Site where name= ?", name);
+        return results.get(0);
     }
     
 }
