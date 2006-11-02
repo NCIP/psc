@@ -49,6 +49,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.utils.configuration.ConfigurationEntry</value>
             </list>
         </property>
+        <property name="entityInterceptor"><bean class="edu.northwestern.bioinformatics.studycalendar.utils.AuditInterceptor"/></property>
     </bean>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">

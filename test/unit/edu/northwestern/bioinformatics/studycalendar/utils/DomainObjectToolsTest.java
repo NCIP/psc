@@ -25,8 +25,26 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
                 entry.getKey(), entry.getValue().getId());
         }
     }
+    
+    public void testExternalObjectId() {
+        assertEquals("edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject.14",
+            DomainObjectTools.createExternalObjectId(new TestObject(14)));
+    }
+
+    public void testExternalObjectIdRequiresId() throws Exception {
+        try {
+            DomainObjectTools.createExternalObjectId(new TestObject());
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals(
+                "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject", iae.getMessage());
+        }
+    }
 
     private static class TestObject extends AbstractDomainObject {
+
+        public TestObject() { }
+
         public TestObject(int id) {
             setId(id);
         }
