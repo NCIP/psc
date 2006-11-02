@@ -6,7 +6,7 @@
 
 <html>
 <head>
-    <title>${action} Participant Coordinators</title>
+    <title>Assign Participant Coordinators</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -20,6 +20,18 @@
         }
     </style>
     <script> 
+    
+    function registerSiteSelector() {
+    	Event.observe("siteSelector", "change", function() {
+    		var siteId = $F("siteSelector")
+    		if(siteId) {
+    			SC.asyncSubmit("siteSelectorForm")
+    		}
+    	})
+    }
+    
+    Event.observe(window, "load", registerSiteSelector)
+    
     function selSwitch(btn)
 		{
 		   var i= btnType = 0;
@@ -34,7 +46,7 @@
 		
 	      isavailableIds = (btn.value.indexOf('Assign') != -1) ? true : false;     
 	
-	      with ( ((isavailableIds)? document.forms[0].availableCoordinators: document.forms[0].assignedCoordinators) )
+	      with ( (isavailableIds)? $("availableCoordinators"): $("assignedCoordinators") )
 	      {
 	         for (i = 0; i < length; i++)
 	         {
@@ -55,9 +67,9 @@
 	               with (options[i])
 	               {
 	                  if (isavailableIds)
-	                     document.forms[0].assignedCoordinators.options[document.forms[0].assignedCoordinators.length] = new Option( text, value );
+	                     $("assignedCoordinators").options[$("assignedCoordinators").length] = new Option( text, value );
 	                  else
-	                     document.forms[0].availableCoordinators.options[document.forms[0].availableCoordinators.length] = new Option( text, value );
+	                     $("availableCoordinators").options[$("availableCoordinators").length] = new Option( text, value );
 	               } 
 	               options[i] = null;
 	               i--;
@@ -70,13 +82,29 @@
 	</script>	
 </head>
 <body>
-<h1>${action} Participant Coordinators</h1>
+<h1>Assign Participant Coordinators</h1>
 <p>
     Study: ${study.name}
 </p>
-<c:url value="/pages/assignParticipantCoordinator?id=${study.id}" var="formAction"/>
 
-<form:form action="${formAction}" method="post">
+<form id="siteSelectorForm" action="<c:url value="/pages/assignParticipantCoordinator/selectSite"/>">
+	<input type="hidden" name="study" value="${study.id}">
+	<div class="row">
+		<div class="label">
+			<label for="siteSelector">Site</label>
+		</div>
+		<div class="value">
+			<select name="site" id="siteSelector">
+				<option value="">Select...</option>
+				<c:forEach items="${sites}" var="site">
+					<option value="${site.id}">${site.name}</option>
+				</c:forEach>
+			</select>			
+		</div>
+	</div>
+</form>
+
+<form:form method="post" id="assignmentForm" cssStyle="display:none">
 <input type="hidden" name="studyId" value="${study.id}"/>
     <div class="row">
         <div class="label">
@@ -84,7 +112,6 @@
         </div>
         <div class="value">
             <form:select path="availableCoordinators" multiple="true">
-                <form:options items="${availableUsers}" itemLabel="firstName" itemValue="userId"/>
             </form:select>
         </div>
     </div>
@@ -101,7 +128,6 @@
         </div>
         <div class="value">
             <form:select path="assignedCoordinators" multiple="true">
-                <form:options items="${assignedUsers}" itemLabel="firstName" itemValue="userId" />
             </form:select>
         </div>
     </div>

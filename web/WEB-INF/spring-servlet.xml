@@ -93,6 +93,9 @@
           
     <bean name="/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
+          
+    <bean name="/assignParticipantCoordinator/selectSite" id="ParticipantCoordinatorsBySiteController" autowire="byName"
+    	  class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
