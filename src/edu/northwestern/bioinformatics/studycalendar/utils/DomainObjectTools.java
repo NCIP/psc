@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import java.util.List;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.StringTokenizer;
 
 /**
  * @author Rhett Sutphin
@@ -18,6 +19,8 @@ public class DomainObjectTools {
         }
         return map;
     }
+    
+    
 
     public static String createExternalObjectId(DomainObject domainObject) {
         if (domainObject == null) {
@@ -30,6 +33,15 @@ public class DomainObjectTools {
             return new StringBuilder(domainObject.getClass().getName()).append('.')
                 .append(domainObject.getId()).toString();
         }
+    }
+    
+    public static String parseExternalObjectId(String objectId) {
+    	if (objectId == null) {
+    		return "null";
+    	} else {
+    		String[] objectIdStrings = objectId.split("\\.");
+    		return  objectIdStrings[objectIdStrings.length - 1].;
+    	}
     }
 
     private DomainObjectTools() { }
