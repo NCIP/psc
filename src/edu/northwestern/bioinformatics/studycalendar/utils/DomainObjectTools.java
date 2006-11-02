@@ -35,12 +35,12 @@ public class DomainObjectTools {
         }
     }
     
-    public static String parseExternalObjectId(String objectId) {
+    public static int parseExternalObjectId(String objectId) {
     	if (objectId == null) {
-    		return "null";
+    		return 0;
     	} else {
     		String[] objectIdStrings = objectId.split("\\.");
-    		return  objectIdStrings[objectIdStrings.length - 1];
+    		return  Integer.parseInt(objectIdStrings[objectIdStrings.length - 1]);
     	}
     }
 
