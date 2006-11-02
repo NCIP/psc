@@ -65,4 +65,8 @@ import java.util.Arrays;
 
  		assertEquals("Wrong View", "assignTemplatesToOneParticipantCoordinator", mv.getViewName());
  	}
+
+    public void testNothing() throws Exception {
+        // remove this
+    }
  }
