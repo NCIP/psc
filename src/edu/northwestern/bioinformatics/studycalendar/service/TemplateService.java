@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
 
@@ -22,6 +24,7 @@ public class TemplateService {
 	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
 	public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     private StudyCalendarAuthorizationManager authorizationManager;
+    private StudyDao studyDao;
 
    
     public void assignTemplateToSites(Study studyTemplate, List<String> siteIds) throws Exception {
@@ -56,8 +59,24 @@ public class TemplateService {
     	return authorizationManager.getProtectionGroups(allSites, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
     }
     
-    public Map getTemplatesLists(String siteId, String participantCdId) throws Exception {
-    	return authorizationManager.getPEForUserProtectionGroup(siteId, participantCdId);
+    public Map getTemplatesLists(Site site, User participantCdUser) throws Exception {
+    	List<Study> availableTemplates = new ArrayList<Study>();
+    	List<Study> assignedTemplates = new ArrayList<Study>();
+    	Map<String, List> templatesMap = authorizationManager.getPEForUserProtectionGroup(site.getName(), participantCdUser.getUserId().toString());
+    	List<ProtectionElement> availablePEs = (List) templatesMap.get(authorizationManager.AVAILABLE_PES);
+    	List<ProtectionElement> assignedPEs = (List) templatesMap.get(authorizationManager.ASSIGNED_PES);
+    	for (ProtectionElement available : availablePEs) {
+    		int id = Integer.parseInt(DomainObjectTools.parseExternalObjectId(available.getObjectId()));
+    		availableTemplates.add(studyDao.getById(id));
+    	}
+    	for (ProtectionElement assigned : assignedPEs) {
+    		int id = Integer.parseInt(DomainObjectTools.parseExternalObjectId(assigned.getObjectId()));
+    		assignedTemplates.add(studyDao.getById(id));
+    	}
+    	templatesMap.put(authorizationManager.ASSIGNED_PES, assignedTemplates);
+    	templatesMap.put(authorizationManager.AVAILABLE_PES, availableTemplates);
+    	
+    	return templatesMap;
     }
     
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
@@ -74,6 +93,9 @@ public class TemplateService {
     
       ////// CONFIGURATION
 
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
    
      public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
