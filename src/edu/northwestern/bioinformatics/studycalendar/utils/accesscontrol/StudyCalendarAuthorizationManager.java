@@ -502,6 +502,21 @@ public class StudyCalendarAuthorizationManager {
 		
     }
     
+    public List getSitePGsForUser(String userName) throws Exception {
+    	List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
+    	User user = userProvisioningManager.getUser(userName);  
+    	Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());
+		   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
+		   if (pgRoleContextList.size() != 0) {
+			   for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
+					if (pgrc.getProtectionGroup().getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+						sites.add(pgrc.getProtectionGroup());
+					}
+			   }
+		   }
+    	return sites;
+    }
+    
     public void removeProtectionElementFromPGs(List<String> removePGs, String protectionElementObjectId) throws Exception {
     	List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
     	List<String> pgIds = new ArrayList<String>();
