@@ -35,7 +35,7 @@
         </div>
         <div class="value">
             <form:select path="availableTemplates" multiple="true">
-                <form:options items="${availableTemplates}" itemLabel="name" itemValue="id"/>
+                <form:options items="${availableTemplates}" itemLabel="protectionElementName" itemValue="protectionElementId"/>
             </form:select>
         </div>
     </div>
@@ -56,7 +56,7 @@
         </div>
         <div class="value">
             <form:select path="assignedTemplates" multiple="true">
-                <form:options items="${assignedTemplates}" itemLabel="name" itemValue="id" />
+                <form:options items="${assignedTemplates}" itemLabel="protectionElementName" itemValue="protectionElementId" />
             </form:select>
         </div>
     </div>
