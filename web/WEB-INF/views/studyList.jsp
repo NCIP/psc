@@ -51,15 +51,36 @@
 </table>
 <br>
 <br>
-<strong> Administration </strong>
-	<security:secureOperation element="/studycalendar/pages/manageSites" operation="ACCESS">
-            <div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
-    </security:secureOperation>        
+<security:secureOperation element="/studycalendar/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
+<strong> Sites </strong>
+<table cellpadding="5">
+    <c:forEach items="${sites}" var="site">
+        <tr>
+        	<td>
+        	<security:secureOperation element="/studycalendar/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
+        		<td><strong>${site.name}   </strong><a href="<c:url value="/pages/assignParticipantCoordinatorsToSite?id=${site.id}"/>">  Assign Participant Coordinators  </a></td>
+        	</security:secureOperation>
+			<security:secureOperation element="/studycalendar/pages/siteParticipantCoordinatorList" operation="ACCESS">        		
+        		<td>   <a href="<c:url value="/pages/siteParticipantCoordinatorList?id=${site.id}"/>">  Assign Study Templates To Participant Coordinators </a></td>
+        	</security:secureOperation>	
+        	</td>
+        </tr>
+    </c:forEach>
+</table>
+</security:secureOperation> 
+<br>
+<br>
+<security:secureOperation element="/studycalendar/pages/manageSites" operation="ACCESS">
+   	<strong> Administration </strong>
+	<div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
+</security:secureOperation> 
+<!--
     <security:secureOperation element="/studycalendar/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">        
 			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>
     </security:secureOperation>
 	<security:secureOperation element="/studycalendar/pages/assignParticipantCoordinator" operation="ACCESS">
 			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Study Templates to Participant Coordinators</a></div>
 	</security:secureOperation>		
+-->
 </body>
 </html>
