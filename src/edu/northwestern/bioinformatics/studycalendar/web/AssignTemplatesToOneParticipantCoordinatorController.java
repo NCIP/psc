@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 /**
  * @author Yufang Wang
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class AssignTemplatesToOneParticipantCoordinatorController extends SimpleFormController {
 	private SiteDao siteDao;
 	private SiteService siteService;
@@ -69,41 +69,9 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
         Map<String, List> templateLists = new HashMap<String, List>();
         templateLists = templateService.getTemplatesLists(sitePG.getProtectionGroupId().toString(), participantcoordinatorId); 
         
-        log.debug("---+++sitePGid=" + sitePG.getProtectionGroupId().toString() + " pcuserid=" + participantcoordinatorId);
-        List<Study> availableTplt0 = (List<Study>)templateLists.get(sitePG.getProtectionGroupId().toString());
-        if(availableTplt0 != null) {
-        	Iterator avi0 = availableTplt0.iterator();
-        	while(avi0.hasNext()) {
-        		Study avtp = (Study)avi0.next();
-        		log.debug("---+++ availabletpname=" + avtp.getName() + "tpid=" + avtp.getId());
-        	}
-        } else {
-       		log.debug("---+++ cannot get availableTplt0");
-		}        
-        
         refdata.put("assignedTemplates", templateLists.get(StudyCalendarAuthorizationManager.ASSIGNED_PES));
         refdata.put("availableTemplates", templateLists.get(StudyCalendarAuthorizationManager.AVAILABLE_PES));
         
-        List<Study> assignTplt = (List<Study>)refdata.get("assignedTemplates");
-        if(assignTplt != null) {
-        	Iterator asi = assignTplt.iterator();
-        	while(asi.hasNext()) {
-        		Study astp = (Study)asi.next();
-        		log.debug("---+++ assignedtpname=" + astp.getName() + "tpid=" + astp.getId());
-        	}
-        } else {
-        	log.debug("---+++ cannot get assignTplt");
-        }
-        List<Study> availableTplt = (List<Study>)refdata.get("availableTemplates");
-        if(availableTplt != null) {
-        	Iterator avi = availableTplt.iterator();
-        	while(avi.hasNext()) {
-        		Study avtp = (Study)avi.next();
-        		log.debug("---+++ availabletpname=" + avtp.getName() + "tpid=" + avtp.getId());
-        	}
-        } else {
-        	log.debug("---+++ cannot get availableTplt");
-        }
         
         refdata.put("action", "Assign");
         return refdata;
@@ -112,14 +80,15 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignTemplatesToOneParticipantCoordinatorCommand assignCommand = (AssignTemplatesToOneParticipantCoordinatorCommand) oCommand;
     	
-    	log.debug("++++++ assignCommand.getParticipantCoordinatorUserId()=" + assignCommand.getParticipantCoordinatorUserId());
         if("true".equals(assignCommand.getAssign())) {
+  
         	templateService.assignMultipleTemplates(assignCommand.getAvailableTemplates(), assignCommand.getParticipantCoordinatorUserId());
-    	} else {
+        	
+        } else {
     		//templateService.remove
     	}
     	
-        return new ModelAndView(new RedirectView(getSuccessView()), "pcId", ServletRequestUtils.getLongParameter(request, "pcId"));
+        return new ModelAndView(new RedirectView(getSuccessView()), "pcId", ServletRequestUtils.getLongParameter(request, "pcId").toString());
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
