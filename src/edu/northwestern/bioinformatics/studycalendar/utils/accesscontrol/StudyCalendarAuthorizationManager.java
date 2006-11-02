@@ -127,29 +127,38 @@ public class StudyCalendarAuthorizationManager {
 	}
     
     //get users of a group, associated with a protection element, and also those not associated
-	public Map getUsers(String groupName, String protectionElementObjectId) throws Exception {
+	public Map getUsers(String groupName, String protectionElementObjectId, String pgName) throws Exception {
 		HashMap<String, List> usersMap = new HashMap<String, List>();
 		List<User> usersForRequiredGroup = getUsersForGroup(groupName);
-        usersMap = (HashMap) getUserListsForProtectionElement(usersForRequiredGroup, protectionElementObjectId);
-				
+        usersMap = (HashMap) getUserListsForProtectionElement(usersForRequiredGroup, protectionElementObjectId, pgName);
+		
+        
 		return usersMap;
 	}
     
 	
-	private Map getUserListsForProtectionElement(List<User> users, String protectionElementObjectId) throws Exception {
+	private Map getUserListsForProtectionElement(List<User> users, String protectionElementObjectId, String pgName) throws Exception {
 		HashMap<String, List> userHashMap = new HashMap<String, List>();
 		List<User> assignedUsers = new ArrayList<User>();
 		List<User> availableUsers = new ArrayList<User>();
-		
+		ProtectionGroup pGroup = getSite(pgName);
 		for (User user : users)
 		{
-			String userName = user.getLoginName();
-			if (userProvisioningManager.checkOwnership(userName, protectionElementObjectId))
-			{
-				assignedUsers.add(user);
-			} else {
-				availableUsers.add(user);
-			}
+			Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());
+			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
+			if (pgRoleContextList.size() != 0) {
+				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
+					if (pgrc.getProtectionGroup().getProtectionGroupName().equals(pgName)) {
+						String userName = user.getLoginName();
+						if (userProvisioningManager.checkOwnership(userName, protectionElementObjectId))
+						{
+							assignedUsers.add(user);
+						} else {
+							availableUsers.add(user);
+						}
+					} 
+				}
+			} 
 		}
 		userHashMap.put(ASSIGNED_USERS, assignedUsers);
 		userHashMap.put(AVAILABLE_USERS, availableUsers);
