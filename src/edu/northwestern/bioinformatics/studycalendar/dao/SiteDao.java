@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +39,8 @@ public class SiteDao extends StudyCalendarDao<Site> {
         getHibernateTemplate().saveOrUpdate(site);
     }
     
-    
+    public Site getByName(String name) {
+        return (Site) getHibernateTemplate().find("from Site where name= ?", name);
+    }
     
 }
