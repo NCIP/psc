@@ -4,6 +4,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.List;
 
@@ -27,5 +28,9 @@ public class StudyDao extends StudyCalendarDao<Study> {
 
     public List<StudyParticipantAssignment> getAssignmentsForStudy(Integer studyId) {
         return getHibernateTemplate().find("select a from StudyParticipantAssignment a inner join a.studySite ss where ss.study.id = ?", studyId);
+    }
+    
+    public Study getById(int id) {
+        return (Study) getHibernateTemplate().get(Study.class, new Integer(id));
     }
 }
