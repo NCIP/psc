@@ -131,6 +131,12 @@
                 margin: 0;
                 list-style-type: none;
             }
+
+            span.event-details {
+                color: #666;
+                font-style: italic;
+                font-size: 0.9em;
+            }
         </style>
         <c:if test="${not plannedCalendar.complete}">
         <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}"/>"></script>

@@ -40,7 +40,10 @@
                         <h3>Day ${entry.key}</h3>
                         <ul>
                         <c:forEach items="${entry.value.events}" var="event">
-                            <li><a href="<c:url value="/pages/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a></li>
+                            <li>
+                                <a href="<c:url value="/pages/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
+                                <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
+                            </li>
                         </c:forEach>
                         </ul>
                     </div>
