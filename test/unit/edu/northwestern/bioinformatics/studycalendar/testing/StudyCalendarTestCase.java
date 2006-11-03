@@ -38,13 +38,6 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
         }
     }
 
-    public static void assertEqualArrays(Object[] expected, Object[] actual) {
-        assertEquals(expected.length, actual.length);
-        for (int i = 0; i < actual.length; i++) {
-            assertEquals("Mismatch at index " + i, expected[i], actual[i]);
-        }
-    }
-
     ////// MOCK REGISTRATION AND HANDLING
 
     protected <T> T registerMockFor(Class<T> forClass) {
