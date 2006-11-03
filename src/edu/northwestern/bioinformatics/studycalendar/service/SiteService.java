@@ -39,28 +39,32 @@ public class SiteService {
     	authorizationManager.createProtectionGroup(siteName, BASE_SITE_PG);
     }
     
-    public void assignSiteCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, site, SITE_COORDINATOR_ACCESS_ROLE);
+    public void assignSiteCoordinators(Site site, List<String> userIds) throws Exception {
+    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, SITE_COORDINATOR_ACCESS_ROLE);
     }
     
-    public void assignParticipantCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, site, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+    public void assignParticipantCoordinators(Site site, List<String> userIds) throws Exception {
+    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
     }
     
-    public void removeSiteCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
-    	authorizationManager.removeProtectionGroupUsers(userIds, site);
+    public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
+    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
-    public void removeParticipantCoordinators(ProtectionGroup site, List<String> userIds) throws Exception {
-    	authorizationManager.removeProtectionGroupUsers(userIds, site);
+    public void removeParticipantCoordinators(Site site, List<String> userIds) throws Exception {
+    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
-    public Map getSiteCoordinatorLists(String siteProtectionGroupName) throws Exception {
-    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, siteProtectionGroupName);
+    public Map getSiteCoordinatorLists(Site site) throws Exception {
+    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, site.getName());
     }
     
-    public Map getParticipantCoordinatorLists(String siteProtectionGroupName) throws Exception {
-    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, siteProtectionGroupName);
+    public Map getParticipantCoordinatorLists(Site site) throws Exception {
+    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, site.getName());
     }
     
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
@@ -79,7 +83,7 @@ public class SiteService {
     	}
     	return sites;
     }
-
+    
       ////// CONFIGURATION
 
     public void setSiteDao(SiteDao siteDao) {
