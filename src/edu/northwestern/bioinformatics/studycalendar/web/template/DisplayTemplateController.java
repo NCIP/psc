@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.ui.ModelMap;
@@ -20,10 +21,10 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = { StudyCalendarProtectionGroup.STUDY_COORDINATOR, StudyCalendarProtectionGroup.BASE })
-public class DisplayTemplateController implements Controller {
+public class DisplayTemplateController extends AbstractController {
     private StudyDao studyDao;
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
         Integer selectedArmId = ServletRequestUtils.getIntParameter(request, "arm");
 

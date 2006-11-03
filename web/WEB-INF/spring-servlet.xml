@@ -37,11 +37,15 @@
     <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor" lazy-init="true"/>
 
     <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor" lazy-init="true"/>
-        
+
+    <bean id="noCacheTemplate" abstract="true">
+        <property name="cacheSeconds"><value>0</value></property>
+    </bean>
+
     <bean name="/studyList" id="studyListController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 
-    <bean name="/template" id="displayTemplateController" autowire="byName"
+    <bean name="/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController"/>
     <bean name="/template/select" id="selectArmController"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
