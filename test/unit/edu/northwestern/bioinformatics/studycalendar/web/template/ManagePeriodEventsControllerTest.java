@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
-import org.springframework.web.bind.ServletRequestDataBinder;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -35,8 +34,8 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         parent.getPlannedCalendar().addEpoch(Epoch.create("Holocene", "Middle"));
         parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
 
-        periodDao = registerMockFor(PeriodDao.class);
-        activityDao = registerMockFor(ActivityDao.class);
+        periodDao = registerDaoMockFor(PeriodDao.class);
+        activityDao = registerDaoMockFor(ActivityDao.class);
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
@@ -46,7 +45,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
 
-        command = new ManagePeriodEventsCommand(period, activityDao);
+        command = new ManagePeriodEventsCommand(period);
     }
 
     public void testFormBackingObject() throws Exception {
@@ -58,36 +57,54 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         assertSame(period, ((ManagePeriodEventsCommand) command).getPeriod());
     }
 
-    public void testBindingGrid() throws Exception {
-        request.addParameter("grid[7][4]", "2");
+    public void testBindingGridDetails() throws Exception {
+        request.addParameter("grid[7].details", "Anything");
         replayMocks();
 
         ManagePeriodEventsCommand command
             = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
-        assertEquals("Value not bound", (Integer) 2, command.getGrid().get(7).get(4));
+        assertEquals("Value not bound", "Anything", command.getGrid().get(7).getDetails());
     }
 
-    public void testBindingGridNull() throws Exception {
-        request.addParameter("grid[7][4]", "");
+    public void testBindingGridDetailsBlankIsNull() throws Exception {
+        request.addParameter("grid[7].details", "  ");
         replayMocks();
 
         ManagePeriodEventsCommand command
             = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
-        Integer actual = command.getGrid().get(7).get(4);
-        assertNull("Value not bound", actual);
+        assertEquals("Value not bound", null, command.getGrid().get(7).getDetails());
     }
 
-    /**
-     * This test simulates the part of the action of the spring:bind tag (and the various form: tags
-     * that behave similarly).  It was broken in spring 2.0 rc4 and final.
-     * @throws Exception
-     */
-    public void testRetrievingGridUsingSpring() throws Exception {
-        command.getGrid().get(7).set(4, 8);
-        ServletRequestDataBinder binder = new ServletRequestDataBinder(command, "command");
-        controller.initBinder(request, binder);
-        binder.bind(request);
-        assertEquals("8", binder.getBindingResult().getFieldValue("grid[7][4]"));
+    public void testBindingGridCount() throws Exception {
+        request.addParameter("grid[7].counts[4]", "1");
+        replayMocks();
+
+        ManagePeriodEventsCommand command
+            = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
+        Integer actual = command.getGrid().get(7).getCounts().get(4);
+        assertEquals("Value not bound", 1, (int) actual);
+    }
+
+    public void testBindingGridCountBlankIsZero() throws Exception {
+        request.addParameter("grid[7].counts[4]", " ");
+        replayMocks();
+
+        ManagePeriodEventsCommand command
+            = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
+        Integer actual = command.getGrid().get(7).getCounts().get(4);
+        assertEquals("Value not bound", 0, (int) actual);
+    }
+
+    public void testBindingGridActivity() throws Exception {
+        request.addParameter("grid[3].activity", "9");
+        Activity expectedActivity = setId(9, new Activity());
+        expect(activityDao.getById(9)).andReturn(expectedActivity);
+        replayMocks();
+
+        ManagePeriodEventsCommand command
+            = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
+        verifyMocks();
+        assertSame("Value not bound", expectedActivity, command.getGrid().get(3).getActivity());
     }
 
     public void testFormView() throws Exception {

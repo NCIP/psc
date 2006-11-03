@@ -5,10 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ManagePeriodCountEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -38,11 +40,13 @@ public class ManagePeriodEventsController extends SimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        return new ManagePeriodEventsCommand(periodDao.getById(id), activityDao);
+        return new ManagePeriodEventsCommand(periodDao.getById(id));
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, true));
+        binder.registerCustomEditor(Integer.class, new ManagePeriodCountEditor());
+        binder.registerCustomEditor(String.class, "grid.details", new StringTrimmerEditor(true));
+        ControllerTools.registerDomainObjectEditor(binder, "grid.activity", activityDao);
     }
 
     protected Map<String, Object> referenceData(

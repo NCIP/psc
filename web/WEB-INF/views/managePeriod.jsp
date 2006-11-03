@@ -16,9 +16,9 @@
         </c:forEach>
         var initiallySelectedActivity = ${empty selectedActivity ? 0 : selectedActivity.id}
 
-        function currentActivityCount() {
-            return $$('.input-row').length;
-        }
+            function currentActivityCount() {
+                return $$('.input-row').length;
+            }
 
         function highlightNonZero(source) {
             var input;
@@ -28,10 +28,12 @@
                 input = Event.findElement(source, "INPUT")
             }
             var cell = input.parentNode
-            if ($F(input) > 0) {
-                Element.addClassName(cell, "nonzero")
-            } else {
+            var value = $F(input).strip()
+            var nonzero;
+            if (value <= 0 || value.length == 0) {
                 Element.removeClassName(cell, "nonzero")
+            } else {
+                Element.addClassName(cell, "nonzero")
             }
         }
 
@@ -51,16 +53,23 @@
         function addActivityRow() {
             var activity = selectedActivity()
             var cells = []
+            var dayCount = $$("#days-header th").length - 1
+            var rowCount = $$("#input-body tr").length - 1
             // header
-            cells.push(Builder.node('th', {className: 'activity'}, activity.name));
+            var activityName = 'grid[' + rowCount + '].activity';
+            var activityInput = Builder.node("input", { id: activityName, name: activityName, type: 'hidden', value: activity.id })
+            cells.push(Builder.node('th', {className: 'activity'}, activity.name), [activityInput]);
             // input cells
-            var dayCount = $$("#days-header th").length
-            for (var i = 0 ; i < dayCount ; i++) {
-                var name = 'grid[' + activity.id + '][' + i + ']'
-                var input = Builder.node('input', { id: name, name: name, size: 2, type: 'text', value: 0 })
+            for (var i = 0; i < dayCount; i++) {
+                var name = 'grid[' + rowCount + '].counts[' + i + ']'
+                var input = Builder.node('input', { id: name, name: name, 'class': 'counter', size: 2, type: 'text', value: 0 })
                 registerCellInputHandlers(input)
                 cells.push(Builder.node('td', {}, [input]))
             }
+            var detailsName = 'grid[' + rowCount + '].details'
+            var detailsInput = Builder.node('input', { id: detailsName, name: detailsName, type: 'text' });
+            cells.push(Builder.node('td', {}, [detailsInput]))
+
             var rowId = 'activity' + activity.id;
             var row = Builder.node('tr', {className: 'input-row', id:rowId}, cells);
             row.style.display = 'none';
@@ -96,7 +105,7 @@
         }
 
         function registerHandlers() {
-            $$('.input-row td').each( function(cell) {
+            $$('.input-row td.counter').each(function(cell) {
                 var input = cell.getElementsByTagName("INPUT")[0]
                 registerCellInputHandlers(input)
             });
@@ -131,8 +140,7 @@
         }
 
         .input-row td input {
-            border-width: 0;
-            /*border-bottom: 1px dotted #666;*/
+            border-width: 0; /*border-bottom: 1px dotted #666;*/
             text-align: right;
             padding: 2px;
         }
@@ -140,6 +148,7 @@
         table {
             border-collapse: collapse;
         }
+
         td, th {
             border: 1px solid #666;
         }
@@ -169,11 +178,12 @@
 </p>
 
 <form:form>
-<c:set var="tableWidth" value="${period.duration.days + 1}"/>
+<c:set var="tableWidth" value="${period.duration.days + 2}"/>
 <table>
     <tr>
         <td></td>
-        <th colspan="${tableWidth - 1}">Days of epoch (${period.repetitions} repetitions)</th>
+        <th colspan="${tableWidth - 2}">Days of epoch (${period.repetitions} repetitions)</th>
+        <td></td>
     </tr>
     <tr id="days-header">
         <td></td>
@@ -185,18 +195,25 @@
             </c:forEach>
             </th>
         </c:forEach>
+        <th>Details</th>
     </tr>
     <tbody id="input-body">
     <tr id="no-activities-message" style="display:none">
         <td></td>
         <td colspan="${tableWidth - 1}">This period does not have any activities yet</td>
     </tr>
-    <c:forEach items="${command.grid}" var="entry">
+    <c:forEach items="${command.grid}" var="gridRow" varStatus="gridStatus">
     <tr class="input-row">
-        <th class="activity">${activitiesById[entry.key].name}</th>
-        <c:forEach items="${entry.value}" var="count" varStatus="cStatus">
-            <td><form:input path="grid[${entry.key}][${cStatus.index}]" size="2"/></td>
+        <th class="activity">
+            ${gridRow.activity.name}
+            <form:hidden path="grid[${gridStatus.index}].activity"/>
+        </th>
+        <c:forEach items="${gridRow.counts}" var="count" varStatus="cStatus">
+            <td class="counter"><form:input path="grid[${gridStatus.index}].counts[${cStatus.index}]" size="2"/></td>
         </c:forEach>
+        <td>
+            <form:input path="grid[${gridStatus.index}].details"/>
+        </td>
     </tr>
     </c:forEach>
     </tbody>
