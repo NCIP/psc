@@ -3,25 +3,23 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 /**
@@ -31,6 +29,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 public class AssignSiteController extends SimpleFormController {
 	private TemplateService templateService;
 	private StudyDao studyDao;
+	private SiteDao siteDao;
 	
     public AssignSiteController() {
         setCommandClass(AssignSiteCommand.class);
@@ -38,8 +37,8 @@ public class AssignSiteController extends SimpleFormController {
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Set.class, "assignedSites", new CustomCollectionEditor(Set.class));
-        binder.registerCustomEditor(Set.class, "availableSites", new CustomCollectionEditor(Set.class));
+        ControllerTools.registerDomainObjectEditor(binder, "assignedSites", siteDao);
+        ControllerTools.registerDomainObjectEditor(binder, "availableSites", siteDao);
     } 
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -74,6 +73,11 @@ public class AssignSiteController extends SimpleFormController {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+    
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
     
     @Required

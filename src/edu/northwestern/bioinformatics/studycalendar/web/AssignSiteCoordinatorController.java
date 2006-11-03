@@ -48,16 +48,11 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
         setSuccessView("assignSiteCoordinator");
     }
     
-/*    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Set.class, "assignedCoordinators", new CustomCollectionEditor(Set.class));
-        binder.registerCustomEditor(Set.class, "availableCoordinators", new CustomCollectionEditor(Set.class));
-    } 
-*/
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData");
         Map<String, Object> refdata = new HashMap<String, Object>();
         Site site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site.getName());
+        Map<String, List> userLists = siteService.getSiteCoordinatorLists(site);
         
         refdata.put("site", site);
         refdata.put("assignedUsers", userLists.get(SiteService.ASSIGNED_USERS));
@@ -69,7 +64,7 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignSiteCoordinatorCommand assignCommand = (AssignSiteCoordinatorCommand) oCommand;
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
-    	ProtectionGroup sitepg = siteService.getSiteProtectionGroup(assignedSite.getName()); 
+    	//ProtectionGroup sitepg = siteService.getSiteProtectionGroup(assignedSite.getName()); 
     	
         if("true".equals(assignCommand.getAssign())) {
     		
@@ -83,12 +78,12 @@ public class AssignSiteCoordinatorController extends SimpleFormController {
             	}
             }
             
-            siteService.assignSiteCoordinators(sitepg, assignCommand.getAvailableCoordinators());
+            siteService.assignSiteCoordinators(assignedSite, assignCommand.getAvailableCoordinators());
             
         } else {
             log.debug("onSubmit:remove");
              
-            siteService.removeSiteCoordinators(sitepg, assignCommand.getAssignedCoordinators());
+            siteService.removeSiteCoordinators(assignedSite, assignCommand.getAssignedCoordinators());
     	}
 
         return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));

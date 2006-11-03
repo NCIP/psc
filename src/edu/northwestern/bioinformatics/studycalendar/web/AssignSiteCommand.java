@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import java.util.List;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+
 
 /**
  * @author Padmaja Vedula
@@ -10,17 +13,17 @@ import java.util.List;
 public class AssignSiteCommand {
     private Integer studyId;
     private String assign;
-    private List<String> assignedSites;
-    private List<String> availableSites;
+    private List<Site> assignedSites;
+    private List<Site> availableSites;
    
   
     ////// BOUND PROPERTIES
 
-    public List getAssignedSites() {
+    public List<Site> getAssignedSites() {
         return assignedSites;
     }
 
-    public void setAssignedSites(List assignedSites) {
+    public void setAssignedSites(List<Site> assignedSites) {
         this.assignedSites = assignedSites;
     }
 
@@ -28,7 +31,7 @@ public class AssignSiteCommand {
         return availableSites;
     }
 
-    public void setAvailableSites(List availableSites) {
+    public void setAvailableSites(List<Site> availableSites) {
         this.availableSites = availableSites;
     }
 

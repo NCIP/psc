@@ -603,6 +603,16 @@ public class StudyCalendarAuthorizationManager {
         
     	return assignedStudies;
     }
+    public void removeProtectionGroup(String protectionGroupName) throws Exception {
+		ProtectionGroup pg = new ProtectionGroup();
+		pg.setProtectionGroupName(protectionGroupName);
+        SearchCriteria pgSearchCriteria = new ProtectionGroupSearchCriteria(pg);
+        List<ProtectionGroup> pgList = userProvisioningManager.getObjects(pgSearchCriteria);
+        if (pgList.size() > 0) {
+        	userProvisioningManager.removeProtectionGroup(pgList.get(0).getProtectionGroupId().toString());
+        }
+        
+    }
 
     
     ////// CONFIGURATION

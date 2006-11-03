@@ -56,7 +56,7 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     	
     	Map<String, Object> refdata = new HashMap<String, Object>();
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
-        List<Site> siteCoordinatorSites = siteService.getSitesForSiteCd(userName);
+        List<Site> siteCoordinatorSites = templateService.getSitesForTemplateSiteCd(userName, study);
         refdata.put("study", study);
         refdata.put("sites", siteCoordinatorSites);
         return refdata;

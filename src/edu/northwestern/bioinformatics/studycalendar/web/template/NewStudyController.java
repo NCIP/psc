@@ -40,10 +40,10 @@ public class NewStudyController implements Controller {
         studyDao.save(study);
 
         //// XXX: TEMPORARY until there's an interface for setting up sites & assigning studies to them
-        StudySite ss = new StudySite();
+        /*StudySite ss = new StudySite();
         ss.setStudy(study);
         ss.setSite(siteDao.getDefaultSite());
-        studySiteDao.save(ss);
+        studySiteDao.save(ss);*/
 
         return ControllerTools.redirectToCalendarTemplate(study.getId());
     }
