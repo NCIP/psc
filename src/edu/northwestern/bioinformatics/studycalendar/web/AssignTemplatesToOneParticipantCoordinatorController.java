@@ -66,8 +66,7 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
         refdata.put("participantcoordinator", participantcoordinator);
         
         
-        Map<String, List> templateLists = new HashMap<String, List>();
-        templateLists = templateService.getTemplatesLists(sitePG.getProtectionGroupId().toString(), participantcoordinatorId); 
+        Map<String, List> templateLists = templateService.getTemplatesLists(site, participantcoordinator);
         
         refdata.put("assignedTemplates", templateLists.get(StudyCalendarAuthorizationManager.ASSIGNED_PES));
         refdata.put("availableTemplates", templateLists.get(StudyCalendarAuthorizationManager.AVAILABLE_PES));
