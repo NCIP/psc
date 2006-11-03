@@ -135,6 +135,23 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         assertEquals("Details not updated", "Det B", actual.getDetails());
     }
 
+    public void testApplyChangeDetailsDirectly() throws Exception {
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A");
+        period.addPlannedEvent(existingEvent);
+        initCommand();
+
+        command.getGrid().remove(0);
+        command.getGrid().add(createGridRow(activities.get(4), "Det B", 0, 0, 1, 0, 0, 0, 0));
+
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals(1, period.getPlannedEvents().size());
+        PlannedEvent actual = period.getPlannedEvents().get(0);
+        assertEquals("Details not updated", "Det B", actual.getDetails());
+    }
+
     public void testApplyAnotherWithDifferentDetails() throws Exception {
         PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A");
         period.addPlannedEvent(existingEvent);

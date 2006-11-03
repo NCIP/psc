@@ -58,8 +58,11 @@ public class ManagePeriodEventsCommand {
         List<GridRow> existingGrid = createGrid(period);
         Map<String, GridRow> difference = new LinkedHashMap<String, GridRow>();
         // Initialize difference from existing events
-        for (GridRow existing : existingGrid) {
-            difference.put(existing.key(), existing);
+        for (GridRow diffRow : existingGrid) {
+            for (int i = 0; i < diffRow.getCounts().size(); i++) {
+                diffRow.getCounts().set(i, diffRow.getCounts().get(i) * -1);
+            }
+            difference.put(diffRow.key(), diffRow);
         }
         // calculate difference from bound grid
         for (GridRow bound : getGrid()) {
@@ -68,7 +71,7 @@ public class ManagePeriodEventsCommand {
                 GridRow diffRow = difference.get(bound.key());
                 for (int i = 0; i < bound.getCounts().size(); i++) {
                     Integer newCount = bound.getCounts().get(i);
-                    diffRow.getCounts().set(i, newCount - diffRow.getCounts().get(i));
+                    diffRow.getCounts().set(i, newCount + diffRow.getCounts().get(i));
                 }
             } else {
                 // otherwise, it is all new
