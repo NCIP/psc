@@ -85,7 +85,7 @@
         </div>
         <div class="value">
             <form:select path="availableSites" multiple="true">
-                <form:options items="${availableSites}" itemLabel="protectionGroupName" itemValue="protectionGroupId"/>
+                <form:options items="${availableSites}" itemLabel="name" itemValue="id"/>
             </form:select>
         </div>
     </div>
@@ -105,7 +105,7 @@
         </div>
         <div class="value">
             <form:select path="assignedSites" multiple="true">
-                <form:options items="${assignedSites}" itemLabel="protectionGroupName" itemValue="protectionGroupId" />
+                <form:options items="${assignedSites}" itemLabel="name" itemValue="id" />
             </form:select>
         </div>
     </div>
