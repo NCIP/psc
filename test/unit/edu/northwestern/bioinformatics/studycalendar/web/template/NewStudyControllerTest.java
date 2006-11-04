@@ -45,10 +45,6 @@ public class NewStudyControllerTest extends ControllerTestCase {
     public void testHandle() throws Exception {
         studyDao.save(newStudy());
 
-        // these are temporary
-        expect(siteDao.getDefaultSite()).andReturn(new Site());
-        studySiteDao.save((StudySite) notNull());
-
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
