@@ -36,11 +36,11 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class ParticipantCoordinatorController extends SimpleFormController {
+    private static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
+
 	private TemplateService templateService;
 	private StudyDao studyDao;
-	private SiteService siteService;
-	static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
-	
+
     public ParticipantCoordinatorController() {
         setCommandClass(ParticipantCoordinatorCommand.class);
         setFormView("assignParticipantCoordinator");
@@ -87,10 +87,4 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
     }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
-    }
-    
 }
