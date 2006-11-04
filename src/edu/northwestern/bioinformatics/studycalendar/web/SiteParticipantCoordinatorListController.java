@@ -43,7 +43,7 @@ public class SiteParticipantCoordinatorListController extends AbstractController
         
         
         Site site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "id"));
-        Map<String, List> participantcoordinatorList = siteService.getParticipantCoordinatorLists(site.getName());
+        Map<String, List> participantcoordinatorList = siteService.getParticipantCoordinatorLists(site);
         
         
         log.debug("+++++id=" + site.getId());
