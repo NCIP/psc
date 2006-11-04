@@ -1,19 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static org.easymock.classextension.EasyMock.*;
-import static org.easymock.classextension.EasyMock.*;
-import org.easymock.classextension.EasyMock;
-import org.easymock.ArgumentsMatcher;
 import org.easymock.IArgumentMatcher;
+import static org.easymock.classextension.EasyMock.*;
 import org.springframework.context.ApplicationContext;
-import org.springframework.mock.web.MockFilterConfig;
-import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.mock.web.MockFilterConfig;
+import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
