@@ -139,22 +139,22 @@ function updateAllEpochsControlVisibility() {
 }
 
 function createRenameControl(objectType, objectId) {
-    return createControlAnchor("rename", "Rename", '<c:url value="/pages/template/rename"/>', objectType, objectId)
+    return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/template/rename"/>', objectType, objectId)
 }
 
 function createDeleteControl(objectType, objectId) {
-    return createControlAnchor("delete", "Delete", '<c:url value="/pages/template/delete"/>', objectType, objectId)
+    return createControlAnchor("delete", "Delete", "Delete this " + objectType, '<c:url value="/pages/template/delete"/>', objectType, objectId)
 }
 
 function createAddControl(text, objectType, objectId) {
-    return createControlAnchor("add", text, '<c:url value="/pages/template/addTo"/>', objectType, objectId)
+    return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/template/addTo"/>', objectType, objectId)
 }
 
 function createMoveControl(offset, text, objectType, objectId) {
-    return createControlAnchor("move" + offset, text, '<c:url value="/pages/template/move?offset="/>' + offset, objectType, objectId)
+    return createControlAnchor("move" + offset, text, "Reorder the " + objectType + "s", '<c:url value="/pages/template/move?offset="/>' + offset, objectType, objectId)
 }
 
-function createControlAnchor(controlName, text, baseHref, objectType, objectId) {
+function createControlAnchor(controlName, text, title, baseHref, objectType, objectId) {
     var href = baseHref;
     if (href.indexOf('?') >= 0) {
         href += '&'
@@ -165,7 +165,8 @@ function createControlAnchor(controlName, text, baseHref, objectType, objectId) 
     var a = Builder.node("a", {
         className: objectType + '-' + controlName + '-control ' + objectType + '-control control',
         id: objectType + "-" + objectId + "-" + controlName,
-        href: href
+        href: href,
+        title: title
     })
     a.innerHTML = text
     return a
