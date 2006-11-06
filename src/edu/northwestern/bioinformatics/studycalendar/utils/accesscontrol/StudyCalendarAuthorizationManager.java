@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
@@ -595,13 +596,13 @@ public class StudyCalendarAuthorizationManager {
 						   }
 					   }
 					   for (Study study : studies) {
-						   for (ProtectionGroup site : sites) {
-							   Set<ProtectionElement> assignedPEs = userProvisioningManager.getProtectionElements(site.getProtectionGroupId().toString());
-							   for (ProtectionElement pe : assignedPEs) {
-								   if (pe.getObjectId().equals(study.getClass().getName()+"."+study.getId())) {
-									   assignedStudies.add(study);
-								   }
-							   }
+						   List<StudySite> studySites = study.getStudySites();
+						   for (StudySite studySite : studySites) {
+					   		   for (ProtectionGroup site : sites) {
+					   			   if (studySite.getSite().getName().equals(site.getProtectionGroupName())) {
+					   				   if (!assignedStudies.contains(study)) assignedStudies.add(study);
+					   			   }
+					   		   }
 						   }
 					   }
 				   } else {
