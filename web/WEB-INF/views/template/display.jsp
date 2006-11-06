@@ -216,7 +216,7 @@
             <templ:restrictedControlListItem url="/pages/assignParticipant" queryString="id=${study.id}"
                 logicAllowed="${plannedCalendar.complete}">Assign Participant</templ:restrictedControlListItem>
             <c:if test="${not empty assignments}">
-                <security:secureOperation element="/studycalendar/pages/schedule" operation="ACCESS">
+                <security:secureOperation element="/pages/schedule" operation="ACCESS">
                 <li>View schedule for
                     <select id="assigned-participant-selector">
                         <c:forEach items="${assignments}" var="assignment">

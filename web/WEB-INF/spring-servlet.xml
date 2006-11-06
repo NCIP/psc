@@ -20,7 +20,7 @@
 
     <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
         <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
-        <property name="urlPrefix"><value>/studycalendar/pages</value></property>
+        <property name="urlPrefix"><value>/pages</value></property>
     </bean>
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
@@ -34,9 +34,10 @@
         </property>
     </bean>
     
-    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor" lazy-init="true"/>
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
-    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor" lazy-init="true"/>
+    <bean id="URLAccessCheckInterceptor" lazy-init="true" autowire="byType" 
+          class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
 
     <bean id="noCacheTemplate" abstract="true">
         <property name="cacheSeconds"><value>0</value></property>

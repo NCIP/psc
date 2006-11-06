@@ -14,7 +14,7 @@
           factory-method="getAuthenticationManager" lazy-init="true">
         <constructor-arg><ref local="csmContextName"/></constructor-arg>
     </bean>
-	<bean id="userProvisioningManager" class="gov.nih.nci.security.SecurityServiceProvider"
+    <bean id="userProvisioningManager" class="gov.nih.nci.security.SecurityServiceProvider"
           factory-method="getUserProvisioningManager" lazy-init="true">
         <constructor-arg><ref local="csmContextName"/></constructor-arg>
     </bean>

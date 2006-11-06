@@ -4,7 +4,7 @@
 <%@attribute name="logicAllowed" type="java.lang.Boolean"%>
 <%@attribute name="url" required="true" %>
 <%@attribute name="queryString"%>
-<security:secureOperation element="/studycalendar${url}" operation="ACCESS">
+<security:secureOperation element="${url}" operation="ACCESS">
 <c:if test="${logicAllowed}">
     <c:set var="qs"><c:if test="${not empty queryString}">?${queryString}</c:if></c:set>
     <li><a href="<c:url value="${url}${qs}"/>" class="control"><jsp:doBody/></a></li>
