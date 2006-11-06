@@ -40,22 +40,22 @@ public class SiteService {
     }
     
     public void assignSiteCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, SITE_COORDINATOR_ACCESS_ROLE);
     }
     
     public void assignParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
     }
     
     public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
     	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
     public void removeParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getSite(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
     	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
@@ -68,7 +68,7 @@ public class SiteService {
     }
     
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
-    	return authorizationManager.getSite(siteName);
+    	return authorizationManager.getPGByName(siteName);
     }
     
     public List getAllSiteProtectionGroups() throws Exception {
