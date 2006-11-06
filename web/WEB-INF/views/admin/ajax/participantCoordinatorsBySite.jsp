@@ -1,6 +1,8 @@
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+$('site-id-forwarder').value = ${site.id};
+
 function replaceOptions(selectElt, text, value) {
 	var select = $(selectElt)
 	select.options.length = 0

@@ -95,7 +95,8 @@
 </form>
 
 <form:form method="post" id="assignmentForm" cssStyle="display: none">
-<input type="hidden" name="studyId" value="${study.id}"/>
+    <input type="hidden" name="studyId" value="${study.id}"/>
+    <input type="hidden" name="siteId" id="site-id-forwarder" value="NOT SET"/>
     <div class="row">
         <div class="label">
             <form:label path="availableCoordinators">Available Participant Coordinators</form:label>

@@ -33,38 +33,36 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class ParticipantCoordinatorsBySiteController implements Controller {
-	
-	private SiteDao siteDao;
-	private StudyDao studyDao;
-	private TemplateService templateService;
-	static Log log = LogFactory.getLog(ParticipantCoordinatorsBySiteController.class);
-	
-	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Site site = siteDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "site"));
-		Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
-		Map<String, List<User>> userLists = templateService.getParticipantCoordinators(study, site);
-		log.debug("+++" + userLists);
-		Map model = new HashMap();
-		model.put("assigned", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS));
-		model.put("available", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_USERS));
-		return new ModelAndView("admin/ajax/participantCoordinatorsBySite", model);
-	}
+
+    private SiteDao siteDao;
+    private StudyDao studyDao;
+    private TemplateService templateService;
+    static Log log = LogFactory.getLog(ParticipantCoordinatorsBySiteController.class);
+
+    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Site site = siteDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "site"));
+        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
+        Map<String, List<User>> userLists = templateService.getParticipantCoordinators(study, site);
+        log.debug("+++" + userLists);
+        Map model = new HashMap();
+        model.put("assigned", userLists.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS));
+        model.put("available", userLists.get(StudyCalendarAuthorizationManager.AVAILABLE_USERS));
+        model.put("site", site);
+        return new ModelAndView("admin/ajax/participantCoordinatorsBySite", model);
+    }
 
     @Required
-	public void setSiteDao(SiteDao siteDao) {
-		this.siteDao = siteDao;
-	}
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
 
     @Required
-	public void setStudyDao(StudyDao studyDao) {
-		this.studyDao = studyDao;
-	}
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
     
     @Required
-	public void setTemplateService(TemplateService templateService) {
-		this.templateService = templateService;
-	}
-	
-	
-
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 }

@@ -23,7 +23,6 @@ public class ParticipantCoordinatorsBySiteControllerTest extends ControllerTestC
 	private TemplateService templateService;
 	private SiteDao siteDao;
 	private StudyDao studyDao;
-	private Study study;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -63,7 +62,8 @@ public class ParticipantCoordinatorsBySiteControllerTest extends ControllerTestC
 		
 		assertSame("Assigned users not present", assignedUsers, actual.getModel().get("assigned"));
 		assertSame("Available users not present", availableUsers, actual.getModel().get("available"));
-		assertEquals("Wrong view name", "admin/ajax/participantCoordinatorsBySite", actual.getViewName());	
+		assertSame("Site not present", site, actual.getModel().get("site"));
+		assertEquals("Wrong view name", "admin/ajax/participantCoordinatorsBySite", actual.getViewName());
 	}
 
 }
