@@ -84,6 +84,11 @@ public class ParticipantCoordinatorController extends SimpleFormController {
     }
     
     @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+    
+    @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
     }
