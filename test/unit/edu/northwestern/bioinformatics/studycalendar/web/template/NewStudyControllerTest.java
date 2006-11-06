@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.easymock.IArgumentMatcher;
@@ -16,6 +17,7 @@ import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -26,24 +28,26 @@ public class NewStudyControllerTest extends ControllerTestCase {
 
     private NewStudyController controller;
     private StudyDao studyDao;
-    private StudySiteDao studySiteDao;
-    private SiteDao siteDao;
+    private NewStudyCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
         request.setMethod("GET");
         studyDao = registerMockFor(StudyDao.class);
-        studySiteDao = registerMockFor(StudySiteDao.class);
-        siteDao = registerMockFor(SiteDao.class);
+        command = registerMockFor(NewStudyCommand.class);
 
-        controller = new NewStudyController();
+        controller = new NewStudyController() {
+            @Override
+            protected Object getCommand(HttpServletRequest request) throws Exception {
+                return command;
+            }
+        };
         controller.setStudyDao(studyDao);
-        controller.setSiteDao(siteDao);
-        controller.setStudySiteDao(studySiteDao);
     }
 
     public void testHandle() throws Exception {
-        studyDao.save(newStudy());
+        Study study = setId(ID, new Study());
+        expect(command.create()).andReturn(study);
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -53,30 +57,15 @@ public class NewStudyControllerTest extends ControllerTestCase {
         assertEquals(1, mv.getModel().size());
         assertContainsPair(mv.getModel(), "study", ID);
     }
-
-    private static Study newStudy() {
-        EasyMock.reportMatcher(new NewStudyMatcher());
-        return setId(ID, new Study());
-    }
     
-    private static class NewStudyMatcher implements IArgumentMatcher {
+    public void testBindMode() throws Exception {
+        request.setParameter("base", "BLANK");
+        command.setBase(NewStudyCommand.TemplateBase.BLANK);
+        expect(command.create()).andReturn(setId(ID, new Study()));
 
-        public boolean matches(Object argument) {
-            Study actual = (Study) argument;
-            if (!"New study".equals(actual.getName())) return false;
-
-            List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
-            if (epochs.size() != 1) return false;
-            if (!"New epoch".equals(epochs.get(0).getName())) return false;
-
-            // this is pretty bogus, but I can't think of a different solution right now
-            actual.setId(ID);
-
-            return true;
-        }
-
-        public void appendTo(StringBuffer buffer) {
-            buffer.append("new, blank study");
-        }
+        replayMocks();
+        controller.handleRequest(request, response);
+        verifyMocks();
     }
+
 }
