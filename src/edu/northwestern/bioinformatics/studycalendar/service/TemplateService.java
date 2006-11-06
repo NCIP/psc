@@ -49,8 +49,18 @@ public class TemplateService {
     	authorizationManager.assignProtectionElementToPGs(siteIds, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
     }*/
     
-    public void assignTemplateToParticipantCds(Study studyTemplate, List<String> userIds) throws Exception {
-    	authorizationManager.assignProtectionElementsToUsers(userIds, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
+    public void assignTemplateToParticipantCds(Study studyTemplate, Site site, List<String> assignedUserIds, List<String> availableUserIds) throws Exception {
+    	List<StudySite> studySites = studyTemplate.getStudySites();
+    	Integer requiredStudySite;
+    	for (StudySite studySite : studySites) {
+			if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
+				String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
+				authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+				ProtectionGroup studySitePG = authorizationManager.getPGByName(studySitePGName);
+				authorizationManager.removeProtectionGroupUsers(availableUserIds, studySitePG);
+			}
+		}
+    	
     }
     
     public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) throws Exception {
@@ -89,7 +99,14 @@ public class TemplateService {
     }
     
     public Map getParticipantCoordinators(Study studyTemplate, Site site) throws Exception {
-    	return authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studyTemplate), site.getName());
+    	Map<String, List> pcdMap = new HashMap<String, List>();
+    	List<StudySite> studySites = studyTemplate.getStudySites();
+    	for (StudySite studySite : studySites) {
+			if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
+				pcdMap = authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite), site.getName());
+			}
+		}
+    	return pcdMap;
     }
     
 
@@ -132,7 +149,7 @@ public class TemplateService {
     }
     
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
-    	return authorizationManager.getSite(siteName);
+    	return authorizationManager.getPGByName(siteName);
     }
     
     public List getAllSiteProtectionGroups() throws Exception {
