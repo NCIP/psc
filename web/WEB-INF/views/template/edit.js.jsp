@@ -207,8 +207,6 @@ function updateMoveControlVisibility(objectType, objectId, thisElement, siblings
 
 function updateDeleteControlVisibility(objectType, elts, containerId) {
     var controls = $$('#' + containerId + ' .' + objectType + '-delete-control')
-    console.log(elts)
-    console.log(controls)
     if (elts.length <= 1) {
         controls.each(function(c) { c.hide() })
     } else {
