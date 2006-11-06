@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ParticipantCoordinatorCommand {
     private Integer studyId;
+    private Integer siteId;
     private List<String> assignedCoordinators;
     private List<String> availableCoordinators;
    
@@ -37,6 +38,14 @@ public class ParticipantCoordinatorCommand {
 
     public void setStudyId(Integer studyId) {
         this.studyId = studyId;
+    }
+    
+    public Integer getSiteId() {
+    	return siteId;
+    }
+    
+    public void setSiteId(Integer siteId) {
+    	this.siteId = siteId;
     }
   
 }
