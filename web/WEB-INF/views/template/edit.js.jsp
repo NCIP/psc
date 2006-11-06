@@ -59,6 +59,11 @@ function _updateAllArmsControlVisibility(eltId) {
     var armItems = $$('#' + eltId + ' li');
     armItems.each(updateArmControlVisibility)
     updateDeleteControlVisibility('arm', armItems, eltId);
+    if (armItems.length <= 1) {
+        $$('#' + eltId + ' li .arm-rename-control').each(function(e) { e.hide() })
+    } else {
+        $$('#' + eltId + ' li .arm-rename-control').each(function(e) { e.show() })
+    }
 }
 
 function createStudyControls() {
