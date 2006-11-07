@@ -27,10 +27,8 @@
 <c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${siteId}&pcId=${participantcoordinator.userId}" var="formAction"/>
 
 <form:form action="${formAction}" method="post">
-<!--
 <input type="hidden" name="siteId" value="${site.id}"/>
 <input type="hidden" name="pcId" value="${participantcoordinator.userId}"/>
--->
 <input type="hidden" name="assign" value="true"/>
     <div class="row">
         <div class="label">
@@ -50,10 +48,8 @@
 </form:form>
 
 <form:form action="${formAction}" method="post">
-<!--
 <input type="hidden" name="siteId" value="${site.id}"/>
 <input type="hidden" name="pcId" value="${participantcoordinator.userId}"/>
--->
 <input type="hidden" name="assign" value="false"/>
     <div class="row">
         <div class="label">
