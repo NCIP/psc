@@ -45,7 +45,7 @@
 					30000			
 				</allowed-login-time>
 				<allowed-attempts>
-					10				
+					2			
 				</allowed-attempts>
 				<authentication-provider-class>
 				<!-- Fully qualified class name-->

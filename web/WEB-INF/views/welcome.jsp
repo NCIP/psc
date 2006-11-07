@@ -77,7 +77,8 @@
     <li>You can also reorder the epochs and arms.</li>
     <li>When you click on an arm, you can add periods of time to that arm.  You can then select the periods to add activities.</li>
     <li>Click "Mark this template as complete" when you have finished creating the template.</li>
-    <li>After a template has been marked as complete, you can select it from the "Completed Templates" list in the Study Menu.</li>
+	<li>Because a template must be associated with a site before participants can be added, find your template in the list of completed templates and click the "Assign Sites" link next to the template.  Assign a Site to your template.</li>  
+    <li>You can click on your template in the list of "Completed Templates" and then click "Assign Participants" within the Template view.</li>
     <li>Assign a participant, schedule arms, and click on the activities to see how more information can be recorded.</li>
     <li>Please record any bugs, suggestions, or requests for new features in our <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">GForge tracking system</a>.</li>
     <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
