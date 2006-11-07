@@ -49,6 +49,7 @@ public class TemplateService {
     	authorizationManager.assignProtectionElementToPGs(siteIds, studyTemplate.getClass().getName()+"."+studyTemplate.getId());
     }*/
     
+       
     public void assignTemplateToParticipantCds(Study studyTemplate, Site site, List<String> assignedUserIds, List<String> availableUserIds) throws Exception {
     	List<StudySite> studySites = studyTemplate.getStudySites();
     	Integer requiredStudySite;
@@ -86,16 +87,21 @@ public class TemplateService {
     	
     }
     
-    public void assignMultipleTemplates(List<Study> studyTemplates, String userId) throws Exception {
-    	List<String> studyPEs = new ArrayList<String>();
+    public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
+    	List<String> assignedUserIds = new ArrayList<String>();
+    	
+    	assignedUserIds.add(userId);
+
     	for (Study template : studyTemplates)
 		{
-    		//studyPEs.add(template.getClass().getName()+"."+template.getId());
-    		studyPEs.add(DomainObjectTools.createExternalObjectId(template));
-    		
+        	List<StudySite> studySites = template.getStudySites();
+        	for (StudySite studySite : studySites) {
+    			if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
+    				String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
+    				authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+    			}
+    		}
 		}
-    	authorizationManager.assignMultipleProtectionElements(userId, studyPEs);
-		
     }
     
     public Map getParticipantCoordinators(Study studyTemplate, Site site) throws Exception {
@@ -129,23 +135,25 @@ public class TemplateService {
     }
     
     public Map getTemplatesLists(Site site, User participantCdUser) throws Exception {
-    	List<Study> availableTemplates = new ArrayList<Study>();
+    	Map<String, List> templatesMap = new HashMap<String, List>();
     	List<Study> assignedTemplates = new ArrayList<Study>();
-    	Map<String, List> templatesMap = authorizationManager.getPEForUserProtectionGroup(site.getName(), participantCdUser.getUserId().toString());
-    	List<ProtectionElement> availablePEs = (List) templatesMap.get(authorizationManager.AVAILABLE_PES);
-    	List<ProtectionElement> assignedPEs = (List) templatesMap.get(authorizationManager.ASSIGNED_PES);
-    	for (ProtectionElement available : availablePEs) {
-    		int id = DomainObjectTools.parseExternalObjectId(available.getObjectId());
-    		availableTemplates.add(studyDao.getById(id));
-    	}
-    	for (ProtectionElement assigned : assignedPEs) {
-    		int id = DomainObjectTools.parseExternalObjectId(assigned.getObjectId());
-    		assignedTemplates.add(studyDao.getById(id));
-    	}
+    	List<Study> availableTemplates = new ArrayList<Study>();
+    	List<Study> allTemplates = new ArrayList<Study>();
+    	
+    	List<StudySite> studySites = site.getStudySites();
+    	for (StudySite studySite : studySites) {
+    		allTemplates.add(studySite.getStudy());
+			if (authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite), participantCdUser.getUserId().toString())) {
+				assignedTemplates.add(studySite.getStudy());
+			}
+		}
+    	
+    	
+    	availableTemplates = (List) ObjectSetUtil.minus(allTemplates, assignedTemplates);
     	templatesMap.put(authorizationManager.ASSIGNED_PES, assignedTemplates);
     	templatesMap.put(authorizationManager.AVAILABLE_PES, availableTemplates);
-    	
     	return templatesMap;
+    	
     }
     
     public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
@@ -180,6 +188,27 @@ public class TemplateService {
     	
     	return templateSites;
     }
+    
+    
+    public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
+    	List<String> userIds = new ArrayList<String>();
+    	
+    	userIds.add(userId);
+
+    	for (Study template : studyTemplates)
+		{
+        	List<StudySite> studySites = template.getStudySites();
+        	for (StudySite studySite : studySites) {
+    			if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
+    				String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
+    				ProtectionGroup studySitePG = authorizationManager.getPGByName(studySitePGName);
+    				authorizationManager.removeProtectionGroupUsers(userIds, studySitePG);
+    			}
+    		}
+		}
+
+    }
+    
     
       ////// CONFIGURATION
 
