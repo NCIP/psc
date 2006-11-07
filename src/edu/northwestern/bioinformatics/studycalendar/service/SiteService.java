@@ -3,12 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 /**
@@ -76,11 +78,11 @@ public class SiteService {
     }
     
     public List getSitesForSiteCd(String userName) throws Exception {
-    	List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
     	List<Site> sites = new ArrayList<Site>();
-    	for (ProtectionGroup sitePG : sitePGs) {
-    		sites.add(siteDao.getByName(sitePG.getProtectionGroupName()));
-    	}
+	   	List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
+	   	for (ProtectionGroup sitePG : sitePGs) {
+	   		sites.add(siteDao.getByName(sitePG.getProtectionGroupName()));
+		}
     	return sites;
     }
     
