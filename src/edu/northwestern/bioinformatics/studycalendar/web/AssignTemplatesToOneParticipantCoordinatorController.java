@@ -90,13 +90,14 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignTemplatesToOneParticipantCoordinatorCommand assignCommand = (AssignTemplatesToOneParticipantCoordinatorCommand) oCommand;
+    	Site site = siteDao.getById(assignCommand.getSiteId());
     	
         if("true".equals(assignCommand.getAssign())) {
   
-        	templateService.assignMultipleTemplates(assignCommand.getAvailableTemplates(), assignCommand.getPcId());
+        	templateService.assignMultipleTemplates(assignCommand.getAvailableTemplates(), site, assignCommand.getPcId());
         	
         } else {
-    		//templateService.remove
+    		templateService.removeMultipleTemplates(assignCommand.getAssignedTemplates(), site, assignCommand.getPcId());
     	}
     	
         return new ModelAndView(new RedirectView(getSuccessView()), "pcId", request.getParameter("pcId"));
