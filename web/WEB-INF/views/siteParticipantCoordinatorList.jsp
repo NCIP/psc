@@ -26,7 +26,7 @@
 <table>
     <c:forEach items="${participantcoordinators}" var="participantcoordinator">
         <tr>
-            <td><strong>${participantcoordinator.name} </strong><a href="<c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${site.id}&pcId=${participantcoordinator.userId}"/>">  Assign Study Templates  </a></td>
+            <td><strong>${participantcoordinator.name} </strong><a href="<c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${site.id}.${participantcoordinator.userId}"/>">  Assign Study Templates  </a></td>
         </tr>
     </c:forEach>
 </table>

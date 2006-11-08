@@ -40,6 +40,8 @@ import org.apache.log4j.Logger;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class AssignTemplatesToOneParticipantCoordinatorController extends SimpleFormController {
+	private int siteId;
+	private String pcId;
 	private Site site;
 	private SiteDao siteDao;
 	private StudyDao studyDao;
@@ -47,7 +49,6 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
 	private TemplateService templateService;
 	private StudyCalendarAuthorizationManager authorizationManager;
 	private static final Logger log = Logger.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
-	int first = 1;
 
     public AssignTemplatesToOneParticipantCoordinatorController() {
         setCommandClass(AssignTemplatesToOneParticipantCoordinatorCommand.class);
@@ -62,25 +63,19 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData"); 
-        
+        String stemp = ServletRequestUtils.getRequiredStringParameter(httpServletRequest, "siteId");
+        siteId = Integer.valueOf( stemp.split("\\.")[0] ).intValue();
+        pcId = stemp.split("\\.")[1];
         Map<String, Object> refdata = new HashMap<String, Object>();
-        if(first==1) {
-        	site= siteDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "siteId"));
-        	refdata.put("site", site);
-        	first = 0;
-        }
         
-        //ProtectionGroup sitePG = siteService.getSiteProtectionGroup(site.getName());
-        Long pcid = ServletRequestUtils.getRequiredLongParameter(httpServletRequest, "pcId");
-        String participantcoordinatorId = pcid.toString();
-        User participantcoordinator = authorizationManager.getUserObject(participantcoordinatorId);
+        site= siteDao.getById(siteId);
+        refdata.put("site", site);
+        
+        User participantcoordinator = authorizationManager.getUserObject(pcId);
         refdata.put("participantcoordinator", participantcoordinator);
-        
-        
 
         Map<String, List> templateLists = new HashMap<String, List>();
         templateLists = templateService.getTemplatesLists(site, participantcoordinator); 
-     
         refdata.put("assignedTemplates", templateLists.get(StudyCalendarAuthorizationManager.ASSIGNED_PES));
         refdata.put("availableTemplates", templateLists.get(StudyCalendarAuthorizationManager.AVAILABLE_PES));
         
@@ -90,17 +85,14 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends Simple
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	AssignTemplatesToOneParticipantCoordinatorCommand assignCommand = (AssignTemplatesToOneParticipantCoordinatorCommand) oCommand;
-    	Site site = siteDao.getById(assignCommand.getSiteId());
     	
         if("true".equals(assignCommand.getAssign())) {
-  
-        	templateService.assignMultipleTemplates(assignCommand.getAvailableTemplates(), site, assignCommand.getPcId());
-        	
+        	templateService.assignMultipleTemplates(assignCommand.getAvailableTemplates(), site, pcId);
         } else {
-    		templateService.removeMultipleTemplates(assignCommand.getAssignedTemplates(), site, assignCommand.getPcId());
+        	templateService.removeMultipleTemplates(assignCommand.getAssignedTemplates(), site, pcId);
     	}
     	
-        return new ModelAndView(new RedirectView(getSuccessView()), "pcId", request.getParameter("pcId"));
+        return new ModelAndView(new RedirectView(getSuccessView()), "siteId", request.getParameter("siteId"));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

@@ -11,8 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
  */
 
 public class AssignTemplatesToOneParticipantCoordinatorCommand {
-    private Integer siteId;
-    private String pcId;
     private String assign;
     private List<String> participantcoordinators;
     private List<Study> assignedTemplates;
@@ -35,22 +33,6 @@ public class AssignTemplatesToOneParticipantCoordinatorCommand {
 
     public void setAvailableTemplates(List<Study> availableTemplates) {
         this.availableTemplates = availableTemplates;
-    }
-
-    public Integer getSiteId() {
-        return siteId;
-    }
-
-    public void setSiteId(Integer siteId) {
-        this.siteId = siteId;
-    }
-    
-    public String getPcId(){
-    	return pcId;
-    }
-   
-    public void setPcId(String pcId) {
-    	this.pcId = pcId;
     }
 
     public String getAssign() {

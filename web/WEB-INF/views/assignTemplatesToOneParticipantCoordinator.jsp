@@ -24,11 +24,9 @@
 <body>
 <h1>Assign Study Templates To Participant Coordinator ${participantcoordinator.name}</h1>
 <div><a href="<c:url value="/pages/studyList"/>">Calendar Menu</a></div>
-<c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${siteId}&pcId=${participantcoordinator.userId}" var="formAction"/>
+<c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${site.id}.${participantcoordinator.userId}" var="formAction"/>
 
 <form:form action="${formAction}" method="post">
-<input type="hidden" name="siteId" value="${site.id}"/>
-<input type="hidden" name="pcId" value="${participantcoordinator.userId}"/>
 <input type="hidden" name="assign" value="true"/>
     <div class="row">
         <div class="label">
@@ -48,8 +46,6 @@
 </form:form>
 
 <form:form action="${formAction}" method="post">
-<input type="hidden" name="siteId" value="${site.id}"/>
-<input type="hidden" name="pcId" value="${participantcoordinator.userId}"/>
 <input type="hidden" name="assign" value="false"/>
     <div class="row">
         <div class="label">
