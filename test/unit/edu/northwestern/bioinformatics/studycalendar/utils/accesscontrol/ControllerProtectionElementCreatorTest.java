@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.spring.BeanNameControllerUrlResolver;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,19 +17,23 @@ import java.util.Arrays;
  * @author Rhett Sutphin
  */
 public class ControllerProtectionElementCreatorTest extends StudyCalendarTestCase {
-    private static final String PREFIX = "/prefix";
+    private static final String PREFIX = "prefix";
 
     private ControllerProtectionElementCreator creator;
     private StudyCalendarAuthorizationManager studyCalendarAuthorizationManager;
     private DefaultListableBeanFactory beanFactory;
+    private BeanNameControllerUrlResolver resolver;
 
     protected void setUp() throws Exception {
         super.setUp();
         studyCalendarAuthorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
+        resolver = new BeanNameControllerUrlResolver();
+        resolver.setServletName(PREFIX);
+
         creator = new ControllerProtectionElementCreator();
         creator.setStudyCalendarAuthorizationManager(studyCalendarAuthorizationManager);
-        creator.setUrlPrefix(PREFIX);
+        creator.setUrlResolver(resolver);
 
         beanFactory = new DefaultListableBeanFactory();
     }
@@ -45,13 +50,13 @@ public class ControllerProtectionElementCreatorTest extends StudyCalendarTestCas
 
     public void testSingleGroupRegistered() throws Exception {
         registerControllerBean("single", SingleGroupController.class);
-        studyCalendarAuthorizationManager.registerUrl(PREFIX + "/single", Arrays.asList(BASE.csmName()));
+        studyCalendarAuthorizationManager.registerUrl('/' + PREFIX + "/single", Arrays.asList(BASE.csmName()));
         doProcess();
     }
 
     public void testMultiGroupRegistered() throws Exception {
         registerControllerBean("multi", MultiGroupController.class);
-        studyCalendarAuthorizationManager.registerUrl(PREFIX + "/multi", Arrays.asList(STUDY_COORDINATOR.csmName(), PARTICIPANT_COORDINATOR.csmName()));
+        studyCalendarAuthorizationManager.registerUrl('/' + PREFIX + "/multi", Arrays.asList(STUDY_COORDINATOR.csmName(), PARTICIPANT_COORDINATOR.csmName()));
         doProcess();
     }
 
@@ -60,15 +65,9 @@ public class ControllerProtectionElementCreatorTest extends StudyCalendarTestCas
         doProcess();
     }
     
-    public void testNullPrefixWorks() throws Exception {
-        creator.setUrlPrefix(null);
-        registerControllerBean("single", SingleGroupController.class);
-        studyCalendarAuthorizationManager.registerUrl("/single", Arrays.asList(BASE.csmName()));
-        doProcess();
-    }
-
     private void doProcess() {
         replayMocks();
+        resolver.postProcessBeanFactory(beanFactory);
         creator.postProcessBeanFactory(beanFactory);
         verifyMocks();
     }
