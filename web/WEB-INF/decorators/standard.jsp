@@ -22,6 +22,7 @@
     <decorator:head/>
   </head>
   <body>
+    <c:if test="${not empty breadcrumbs}"><tags:breadcrumbs anchors="${breadcrumbs}"/></c:if>
     <div id="body">
     <decorator:body/>
     </div>

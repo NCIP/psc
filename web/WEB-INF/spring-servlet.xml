@@ -18,9 +18,13 @@
         </property>
     </bean>
 
+    <bean id="urlResolver" class="edu.northwestern.bioinformatics.studycalendar.utils.spring.BeanNameControllerUrlResolver">
+        <property name="servletName"><value>pages</value></property>
+    </bean>
+
     <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
         <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
-        <property name="urlPrefix"><value>/pages</value></property>
+        <property name="urlResolver"><ref local="urlResolver"/></property>
     </bean>
 
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
@@ -30,6 +34,7 @@
             <list>
                 <ref bean="loginCheckInterceptor"/>
                 <ref bean="URLAccessCheckInterceptor"/>
+                <ref bean="breadcrumbInterceptor"/>
             </list>
         </property>
     </bean>
@@ -39,6 +44,12 @@
     <bean id="URLAccessCheckInterceptor" lazy-init="true" autowire="byType" 
           class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
 
+    <bean id="breadcrumbInterceptor" autowire="byType"
+        class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
+
+    <bean id="breadcrumbCreator" autowire="byName" 
+        class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbCreator"/>
+
     <bean id="noCacheTemplate" abstract="true">
         <property name="cacheSeconds"><value>0</value></property>
     </bean>
@@ -47,7 +58,9 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
 
     <bean name="/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
+        <property name="crumb.parent"><ref local="studyListController"/></property>
+    </bean>
     <bean name="/template/select" id="selectArmController"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
         <property name="parameterName"><value>arm</value></property>
@@ -91,10 +104,14 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
 
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
 
     <bean name="/managePeriod" id="managePeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
           
     <bean name="/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>

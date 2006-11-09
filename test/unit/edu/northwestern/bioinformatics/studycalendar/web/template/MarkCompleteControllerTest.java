@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author Rhett Sutphin
  */
 public class MarkCompleteControllerTest extends ControllerTestCase {
+    private MarkCompleteController mockCommandController;
     private MarkCompleteController controller;
+    private MarkCompleteCommand mockCommand;
     private MarkCompleteCommand command;
     private StudyDao studyDao;
 
@@ -21,8 +23,16 @@ public class MarkCompleteControllerTest extends ControllerTestCase {
         super.setUp();
 
         studyDao = registerDaoMockFor(StudyDao.class);
-        command = registerMockFor(MarkCompleteCommand.class);
+        mockCommand = registerMockFor(MarkCompleteCommand.class);
 
+        mockCommandController = new MarkCompleteController() {
+            @Override
+            protected Object formBackingObject(HttpServletRequest request) throws Exception {
+                return mockCommand;
+            }
+        };
+        mockCommandController.setStudyDao(studyDao);
+        command = new MarkCompleteCommand(studyDao);
         controller = new MarkCompleteController() {
             @Override
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -39,36 +49,38 @@ public class MarkCompleteControllerTest extends ControllerTestCase {
         request.addParameter("study", Integer.toString(id));
         Study study = setId(id, new Study());
         expect(studyDao.getById(id)).andReturn(study);
-        command.setStudy(study);
 
         replayMocks();
         controller.handleRequest(request, response);
         verifyMocks();
+
+        assertSame(study, command.getStudy());
     }
 
     public void testBindCompleted() throws Exception {
         request.setMethod("GET");
         request.addParameter("completed", "true");
-        command.setCompleted(true);
 
         replayMocks();
         controller.handleRequest(request, response);
         verifyMocks();
+
+        assertTrue(command.getCompleted());
     }
 
     public void testApplyOnPost() throws Exception {
-        command.apply();
+        mockCommand.apply();
 
         replayMocks();
-        controller.handleRequest(request, response);
+        mockCommandController.handleRequest(request, response);
         verifyMocks();
     }
 
     public void testModelAndViewOnPost() throws Exception {
-        command.apply();
+        mockCommand.apply();
 
         replayMocks();
-        ModelAndView mv = controller.handleRequest(request, response);
+        ModelAndView mv = mockCommandController.handleRequest(request, response);
         verifyMocks();
 
         assertEquals("redirectToStudyList", mv.getViewName());

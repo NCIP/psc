@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 
 import java.util.Collection;
 import java.util.List;
@@ -25,10 +26,14 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.BASE)
-public class StudyListController extends AbstractController {
+public class StudyListController extends PscAbstractController {
     private StudyDao studyDao;
     private TemplateService templateService;
     private SiteService siteService;
+
+    public StudyListController() {
+        setCrumb(new DefaultCrumb("Calendar Menu"));
+    }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();

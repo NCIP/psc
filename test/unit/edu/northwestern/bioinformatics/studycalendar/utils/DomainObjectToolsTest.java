@@ -1,6 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
@@ -39,6 +49,29 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
             assertEquals(
                 "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject", iae.getMessage());
         }
+    }
+
+    public void testPlannedTypeSpecificity() {
+        assertIsMoreSpecific(Study.class, PlannedCalendar.class);
+        assertIsMoreSpecific(PlannedCalendar.class, Epoch.class);
+        assertIsMoreSpecific(Epoch.class, Arm.class);
+        assertIsMoreSpecific(Arm.class, Period.class);
+        assertIsMoreSpecific(Period.class, PlannedEvent.class);
+    }
+
+    public void testScheduledTypeSpecificity() throws Exception {
+        assertIsMoreSpecific(Study.class, ScheduledCalendar.class);
+        assertIsMoreSpecific(ScheduledCalendar.class, ScheduledArm.class);
+        assertIsMoreSpecific(ScheduledArm.class, ScheduledEvent.class);
+    }
+
+    public void testPlannedLessSpecificThanScheduled() throws Exception {
+        assertIsMoreSpecific(PlannedEvent.class, ScheduledCalendar.class);
+    }
+
+    private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {
+        assertTrue(moreSpecific.getName() + " should be more specific than " + lessSpecific.getName(), DomainObjectTools.isMoreSpecific(moreSpecific, lessSpecific));
+        assertFalse(lessSpecific.getName() + " should be less specific than " + moreSpecific.getName(), DomainObjectTools.isMoreSpecific(lessSpecific, moreSpecific));
     }
 
     private static class TestObject extends AbstractDomainObject {
