@@ -114,7 +114,7 @@ public class DisplayScheduleController extends PscAbstractController {
 
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = createParameters(
-                "calendar", context.getScheduledCalendar().toString()
+                "calendar", context.getScheduledCalendar().getId().toString()
             );
             if (context.getScheduledArm() != null) {
                 params.put("arm", context.getScheduledArm().getId().toString());
