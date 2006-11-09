@@ -35,6 +35,7 @@ public class BreadcrumbContext {
             else if (basis instanceof PlannedCalendar) context.setPlannedCalendar((PlannedCalendar) basis);
             else if (basis instanceof Epoch) context.setEpoch((Epoch) basis);
             else if (basis instanceof Arm) context.setArm((Arm) basis);
+            else if (basis instanceof Period) context.setPeriod((Period) basis);
             else throw new UnsupportedOperationException("No setter for property of type " + basis.getClass().getName());
         }
         return context;
@@ -57,6 +58,11 @@ public class BreadcrumbContext {
     public void setArm(Arm arm) {
         setEpoch(arm.getEpoch());
         this.arm = arm;
+    }
+
+    public void setPeriod(Period period) {
+        setArm(period.getArm());
+        this.period = period;
     }
 
     // TODO: more setters, as needed
