@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Rhett Sutphin
@@ -33,5 +34,20 @@ public class DefaultCrumb implements Crumb {
 
     public Map<String, String> getParameters(BreadcrumbContext context) {
         return null;
+    }
+
+    /**
+     * Creates a parameter map by combining the elements of the given array such that
+     * the even elements are keys and the odd elements values.
+     * @param elements
+     * @return
+     */
+    protected Map<String, String> createParameters(String... elements) {
+        if (elements.length % 2 != 0) throw new IllegalArgumentException("Must provide an even number of entries");
+        Map<String, String> params = new HashMap<String, String>();
+        for (int i = 0 ; i < elements.length ; i = i+2) {
+            params.put(elements[i], elements[i+1]);
+        }
+        return params;
     }
 }

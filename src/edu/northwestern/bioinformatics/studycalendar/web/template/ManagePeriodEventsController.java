@@ -97,7 +97,7 @@ public class ManagePeriodEventsController extends PscSimpleFormController {
         this.activityDao = activityDao;
     }
 
-    public static class Crumb extends DefaultCrumb {
+    private static class Crumb extends DefaultCrumb {
         public String getName(BreadcrumbContext context) {
             Period p = context.getPeriod();
             if (p.getName() != null) {

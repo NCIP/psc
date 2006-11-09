@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,8 @@ public class DomainObjectTools {
         Period.class,
         PlannedEvent.class,
 
+        Participant.class,
+        StudyParticipantAssignment.class,
         ScheduledCalendar.class,
         ScheduledArm.class,
         ScheduledEvent.class

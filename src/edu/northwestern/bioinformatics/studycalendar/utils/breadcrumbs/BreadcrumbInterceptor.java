@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
 
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {
         if (!(handler instanceof CrumbSource)) return;
+        if (isRedirect(mv)) return;
         CrumbSource src = (CrumbSource) handler;
         mv.getModel().put(
             "breadcrumbs",
@@ -37,6 +39,11 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
             }
         }
         return BreadcrumbContext.create(basis);
+    }
+
+    private boolean isRedirect(ModelAndView mv) {
+        boolean namedRedirect = mv.getViewName() != null && mv.getViewName().startsWith("redirect");
+        return mv.getView() instanceof RedirectView || namedRedirect;
     }
 
     ////// CONFIGURATION

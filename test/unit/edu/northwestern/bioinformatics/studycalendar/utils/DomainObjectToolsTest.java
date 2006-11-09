@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
@@ -60,13 +62,15 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     }
 
     public void testScheduledTypeSpecificity() throws Exception {
-        assertIsMoreSpecific(Study.class, ScheduledCalendar.class);
+        assertIsMoreSpecific(Study.class, Participant.class);
+        assertIsMoreSpecific(Participant.class, StudyParticipantAssignment.class);
+        assertIsMoreSpecific(StudyParticipantAssignment.class, ScheduledCalendar.class);
         assertIsMoreSpecific(ScheduledCalendar.class, ScheduledArm.class);
         assertIsMoreSpecific(ScheduledArm.class, ScheduledEvent.class);
     }
 
     public void testPlannedLessSpecificThanScheduled() throws Exception {
-        assertIsMoreSpecific(PlannedEvent.class, ScheduledCalendar.class);
+        assertIsMoreSpecific(PlannedEvent.class, StudyParticipantAssignment.class);
     }
 
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {

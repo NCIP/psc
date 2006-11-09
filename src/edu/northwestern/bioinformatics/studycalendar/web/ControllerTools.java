@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
 
 import java.util.Map;
+import java.util.Date;
 import java.beans.PropertyEditor;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Rhett Sutphin
  */
 public class ControllerTools {
+    private static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>();
 
     // TODO: make date format externally configurable
     public static PropertyEditor getDateEditor(boolean required) {
@@ -39,6 +41,13 @@ public class ControllerTools {
     // TODO: make date format externally configurable
     public static DateFormat createDateFormat() {
         return new SimpleDateFormat("MM/dd/yyyy");
+    }
+
+    public static String formatDate(Date date) {
+        if (dateFormat.get() == null) {
+            dateFormat.set(createDateFormat());
+        }
+        return dateFormat.get().format(date);
     }
 
     public static void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao dao) {

@@ -1,15 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import org.apache.commons.beanutils.PropertyUtils;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Rhett Sutphin
@@ -22,6 +28,8 @@ public class BreadcrumbContext {
     private Period period;
     private PlannedEvent plannedEvent;
 
+    private Participant participant;
+    private StudyParticipantAssignment studyParticipantAssignment;
     private ScheduledCalendar scheduledCalendar;
     private ScheduledArm scheduledArm;
     private ScheduledEvent scheduledEvent;
@@ -31,12 +39,17 @@ public class BreadcrumbContext {
     public static BreadcrumbContext create(DomainObject basis) {
         BreadcrumbContext context = new BreadcrumbContext();
         if (basis != null) {
-            if (basis instanceof Study) context.setStudy((Study) basis);
-            else if (basis instanceof PlannedCalendar) context.setPlannedCalendar((PlannedCalendar) basis);
-            else if (basis instanceof Epoch) context.setEpoch((Epoch) basis);
-            else if (basis instanceof Arm) context.setArm((Arm) basis);
-            else if (basis instanceof Period) context.setPeriod((Period) basis);
-            else throw new UnsupportedOperationException("No setter for property of type " + basis.getClass().getName());
+            StringBuilder propertyName = new StringBuilder(basis.getClass().getSimpleName());
+            propertyName.setCharAt(0, Character.toLowerCase(propertyName.charAt(0)));
+            try {
+                PropertyUtils.setProperty(context, propertyName.toString(), basis);
+            } catch (NoSuchMethodException e) {
+                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
+            } catch (IllegalAccessException e) {
+                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
+            } catch (InvocationTargetException e) {
+                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
+            }
         }
         return context;
     }
@@ -65,6 +78,38 @@ public class BreadcrumbContext {
         this.period = period;
     }
 
+    public void setPlannedEvent(PlannedEvent plannedEvent) {
+        setPeriod(plannedEvent.getPeriod());
+        this.plannedEvent = plannedEvent;
+    }
+
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
+    }
+
+    public void setStudyParticipantAssignment(StudyParticipantAssignment studyParticipantAssignment) {
+        setParticipant(studyParticipantAssignment.getParticipant());
+        setPlannedCalendar(studyParticipantAssignment.getStudySite().getStudy().getPlannedCalendar());
+        this.studyParticipantAssignment = studyParticipantAssignment;
+    }
+
+    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
+        setStudyParticipantAssignment(scheduledCalendar.getAssignment());
+        this.scheduledCalendar = scheduledCalendar;
+    }
+
+    public void setScheduledArm(ScheduledArm scheduledArm) {
+        setScheduledCalendar(scheduledArm.getScheduledCalendar());
+        setArm(scheduledArm.getArm());
+        this.scheduledArm = scheduledArm;
+    }
+
+    public void setScheduledEvent(ScheduledEvent scheduledEvent) {
+        setScheduledArm(scheduledEvent.getScheduledArm());
+        setPlannedEvent(scheduledEvent.getPlannedEvent());
+        this.scheduledEvent = scheduledEvent;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -91,6 +136,14 @@ public class BreadcrumbContext {
 
     public PlannedEvent getPlannedEvent() {
         return plannedEvent;
+    }
+
+    public Participant getParticipant() {
+        return participant;
+    }
+
+    public StudyParticipantAssignment getStudyParticipantAssignment() {
+        return studyParticipantAssignment;
     }
 
     public ScheduledCalendar getScheduledCalendar() {

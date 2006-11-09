@@ -9,7 +9,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -29,13 +32,18 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class DisplayScheduleController implements Controller {
+public class DisplayScheduleController extends PscAbstractController {
     private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+    public DisplayScheduleController() {
+        setCrumb(new Crumb());
+    }
+
+    public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Integer assignmentId = ServletRequestUtils.getIntParameter(request, "assignment");
         StudyParticipantAssignment assignment;
         if (assignmentId != null) {
@@ -95,5 +103,23 @@ public class DisplayScheduleController implements Controller {
     @Required
     public void setScheduledArmDao(ScheduledArmDao scheduledArmDao) {
         this.scheduledArmDao = scheduledArmDao;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        public String getName(BreadcrumbContext context) {
+            return new StringBuilder()
+                .append("Schedule for ").append(context.getParticipant().getFullName())
+                .toString();
+        }
+
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            Map<String, String> params = createParameters(
+                "calendar", context.getScheduledCalendar().toString()
+            );
+            if (context.getScheduledArm() != null) {
+                params.put("arm", context.getScheduledArm().getId().toString());
+            }
+            return params;
+        }
     }
 }

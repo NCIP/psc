@@ -8,11 +8,15 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,13 +28,14 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class ScheduleEventController extends SimpleFormController {
+public class ScheduleEventController extends PscSimpleFormController {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledEventDao scheduledEventDao;
 
     public ScheduleEventController() {
         setBindOnNewForm(true);
         setCommandClass(ScheduleEventCommand.class);
+        setCrumb(new Crumb());
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -74,5 +79,20 @@ public class ScheduleEventController extends SimpleFormController {
 
     public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
         this.scheduledEventDao = scheduledEventDao;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        public String getName(BreadcrumbContext context) {
+            ScheduledEvent evt = context.getScheduledEvent();
+            return new StringBuilder()
+                .append(evt.getPlannedEvent().getActivity().getName())
+                .append(" on ")
+                .append(ControllerTools.formatDate(evt.getActualDate()))
+                .toString();
+        }
+
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            return createParameters("event", context.getScheduledEvent().getId().toString());
+        }
     }
 }

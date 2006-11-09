@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 
@@ -60,8 +61,25 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
 
     public void testInterceptNonCrumbSourceHandler() throws Exception {
         replayMocks();
-        interceptor.postHandle(request, response, new Object(), new ModelAndView());
+        ModelAndView mv = new ModelAndView();
+        interceptor.postHandle(request, response, new Object(), mv);
         verifyMocks();
-        // no errors
+        assertEquals(0, mv.getModel().size());
+    }
+    
+    public void testInterceptRedirectByName() throws Exception {
+        ModelAndView mv = new ModelAndView("redirectToCalendarTemplate");
+        replayMocks();
+        interceptor.postHandle(request, response, new TestCrumbSource(new TestCrumb("crumb", null, null)), mv);
+        verifyMocks();
+        assertEquals(0, mv.getModel().size());
+    }
+    
+    public void testInterceptRedirectView() throws Exception {
+        ModelAndView mv = new ModelAndView(new RedirectView("target"));
+        replayMocks();
+        interceptor.postHandle(request, response, new TestCrumbSource(new TestCrumb("crumb", null, null)), mv);
+        verifyMocks();
+        assertEquals(0, mv.getModel().size());
     }
 }

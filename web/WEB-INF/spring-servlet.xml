@@ -107,10 +107,19 @@
     </bean>
 
     <bean name="/createParticipant" id="newParticipantController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New Participant</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
 
     <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
 
     <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController">
@@ -129,7 +138,9 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
     <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
         <property name="parameterName"><value>arm</value></property>
@@ -140,7 +151,9 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
 
     <bean name="/scheduleEvent" id="scheduleEventController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
 
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>

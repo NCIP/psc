@@ -26,10 +26,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  * @author Padmaja Vedula
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class NewParticipantController extends SimpleFormController {
+public class NewParticipantController extends PscSimpleFormController {
     private ParticipantDao participantDao;
-    private String pattern = "MM/dd/yyyy";
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
     public NewParticipantController() {
         setCommandClass(NewParticipantCommand.class);
@@ -39,8 +37,7 @@ public class NewParticipantController extends SimpleFormController {
 
     protected void initBinder(HttpServletRequest request,
         ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Date.class, null, new CustomDateEditor(
-        simpleDateFormat, false));
+        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
         super.initBinder(request, binder);
     }
     

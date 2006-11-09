@@ -1,38 +1,40 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Padmaja Vedula
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class AssignParticipantController extends SimpleFormController {
+public class AssignParticipantController extends PscSimpleFormController {
     private ParticipantDao participantDao;
     private ParticipantService participantService;
     private StudyDao studyDao;
@@ -43,6 +45,7 @@ public class AssignParticipantController extends SimpleFormController {
         setCommandClass(AssignParticipantCommand.class);
         setFormView("assignParticipant");
         setBindOnNewForm(true);
+        setCrumb(new Crumb());
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -109,5 +112,15 @@ public class AssignParticipantController extends SimpleFormController {
     @Required
     public void setParticipantService(ParticipantService participantService) {
         this.participantService = participantService;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        public Crumb() {
+            super("Assign Participant");
+        }
+
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            return createParameters("id", context.getStudy().getId().toString());
+        }
     }
 }
