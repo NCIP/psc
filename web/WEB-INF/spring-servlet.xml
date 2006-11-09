@@ -92,10 +92,19 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
     <bean name="/newPeriod" id="newPeriodController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New Activity</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
 
     <bean name="/createParticipant" id="newParticipantController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
@@ -117,7 +126,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
           
     <bean name="/assignParticipantCoordinator/selectSite" id="ParticipantCoordinatorsBySiteController" autowire="byName"
-    	  class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
 
     <bean name="/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>

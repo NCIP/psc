@@ -72,7 +72,7 @@ public class DisplayTemplateController extends PscAbstractController {
         public String getName(BreadcrumbContext context) {
             StringBuilder sb = new StringBuilder(context.getStudy().getName());
             if (context.getArm() != null) {
-                sb.append(" | ").append(context.getArm().getQualifiedName());
+                sb.append(" (").append(context.getArm().getQualifiedName()).append(')');
             }
             return sb.toString();
         }

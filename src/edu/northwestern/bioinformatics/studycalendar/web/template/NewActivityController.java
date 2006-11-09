@@ -17,12 +17,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 
 /**
  * @author Jaron Sampson
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
-public class NewActivityController extends SimpleFormController {
+public class NewActivityController extends PscSimpleFormController {
     private ActivityDao activityDao;
 
     public NewActivityController() {
