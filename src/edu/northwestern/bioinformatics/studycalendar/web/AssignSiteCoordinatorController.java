@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  * @author Yufang Wang
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class AssignSiteCoordinatorController extends SimpleFormController {
+public class AssignSiteCoordinatorController extends PscSimpleFormController {
 	private static final String GROUP_NAME = "SITE_COORDINATOR";
 	private SiteDao siteDao;
 	private SiteService siteService;

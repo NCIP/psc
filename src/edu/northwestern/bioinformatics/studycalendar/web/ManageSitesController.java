@@ -20,7 +20,7 @@ import java.util.HashMap;
  * @author Jaron Sampson
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class ManageSitesController extends AbstractController {
+public class ManageSitesController extends PscAbstractController {
     private SiteDao siteDao;
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

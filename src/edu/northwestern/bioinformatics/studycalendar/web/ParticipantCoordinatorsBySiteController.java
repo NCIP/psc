@@ -32,14 +32,14 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  */
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
-public class ParticipantCoordinatorsBySiteController implements Controller {
+public class ParticipantCoordinatorsBySiteController extends PscAbstractController {
 
     private SiteDao siteDao;
     private StudyDao studyDao;
     private TemplateService templateService;
     static Log log = LogFactory.getLog(ParticipantCoordinatorsBySiteController.class);
 
-    public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Site site = siteDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "site"));
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
         Map<String, List<User>> userLists = templateService.getParticipantCoordinators(study, site);

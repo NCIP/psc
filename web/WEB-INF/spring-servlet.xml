@@ -132,8 +132,14 @@
     </bean>
           
     <bean name="/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
-          
+          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Participant Coordinator</value></property>
+                <property name="parent"><ref local="displayTemplateController"/></property>
+            </bean>
+        </property>
+    </bean>
     <bean name="/assignParticipantCoordinator/selectSite" id="ParticipantCoordinatorsBySiteController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
 
@@ -156,37 +162,82 @@
     </bean>
 
     <bean name="/manageSites" id="manageSitesController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Manage Sites</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
 
     <bean name="/newSite" id="newSiteController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New Site</value></property>
+                <property name="parent"><ref local="manageSitesController"/></property>
+            </bean>
+        </property>
+    </bean>
 
-    <bean name="/assignSite" id="assignSiteController" autowire="byName"  lazy-init="true" class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
+    <bean name="/assignSite" id="assignSiteController" autowire="byName"  lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Site</value></property>
+                <property name="parent"><ref local="displayTemplateController"/></property>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteCoordinatorController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Site Coordinator</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
     
     <bean name="/sitesForAssignParticipantCoordinators" id="sitesForAssignParticipantCoordinatorsController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.SitesForAssignParticipantCoordinatorsController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Sites to Participant Coordinators</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/assignParticipantCoordinatorsToSite" id="assignParticipantCoordinatorsToSiteController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantCoordinatorsToSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Participant Coordinators to a Site</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/siteParticipantCoordinatorList" id="siteParticipantCoordinatorListController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.SiteParticipantCoordinatorListController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Participant Coordinator List</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
     
      <bean name="/assignTemplatesToOneParticipantCoordinator" id="assignTemplatesToOneParticipantCoordinatorController" autowire="byName" lazy-init="true"
-		  class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
+           class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
+         <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Assign Studies to Participant Coordinator</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
     </bean>
-    
-    <bean name="/assignTemplatesToParticipantCoordinators" id="assignTemplatesToParticipantCoordinatorsController" 
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-      <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
-    </bean>
-
 </beans>

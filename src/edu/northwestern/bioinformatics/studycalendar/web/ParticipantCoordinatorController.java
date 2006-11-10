@@ -34,7 +34,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  */
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
-public class ParticipantCoordinatorController extends SimpleFormController {
+public class ParticipantCoordinatorController extends PscSimpleFormController {
     private static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
 
 	private TemplateService templateService;

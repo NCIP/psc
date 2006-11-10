@@ -32,7 +32,7 @@ import java.util.Iterator;
  * @author Yufang Wang
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
-public class SiteParticipantCoordinatorListController extends AbstractController {
+public class SiteParticipantCoordinatorListController extends PscAbstractController {
     //private Map<String, List> participantcoordinators;
 	private SiteDao siteDao;
 	private SiteService siteService;

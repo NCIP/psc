@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  * @author Yufang Wang
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
-public class AssignTemplatesToOneParticipantCoordinatorController extends SimpleFormController {
+public class AssignTemplatesToOneParticipantCoordinatorController extends PscSimpleFormController {
 	private int siteId;
 	private String pcId;
 	private Site site;

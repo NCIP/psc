@@ -26,7 +26,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  * @author Padmaja Vedula
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class AssignSiteController extends SimpleFormController {
+public class AssignSiteController extends PscSimpleFormController {
 	private TemplateService templateService;
 	private StudyDao studyDao;
 	private SiteDao siteDao;

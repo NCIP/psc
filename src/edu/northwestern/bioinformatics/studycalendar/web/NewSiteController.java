@@ -18,7 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class NewSiteController extends SimpleFormController {
+public class NewSiteController extends PscSimpleFormController {
     private SiteService siteService;
        
     public NewSiteController() {
