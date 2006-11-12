@@ -101,6 +101,7 @@
             right: 1em;
             top: 1em;
             width: 20%;
+            font-size: 11pt;
             border: 1px solid #444;
             background-color: white;
             z-index: 50;
@@ -113,6 +114,8 @@
             color: #fff;
             padding: 4px;
             margin: 0;
+            font-size: 11pt;
+            font-family: inherit;
         }
 
         #selected-arm .legend ul {
@@ -213,13 +216,19 @@
             Event.observe('schedule-next-arm-header', 'click', function() {
                 var content = $$('#schedule-next-arm .content')[0];
                 if (content.visible()) {
-                    SC.slideAndHide(content);
-                    $('schedule-next-arm-header').title = "Click to schedule"
-                    $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9660;</span>"
+                    SC.slideAndHide(content, {
+                        afterFinish: function() {
+                            $('schedule-next-arm-header').title = "Click to schedule"
+                            $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9660;</span>"
+                        }
+                    });
                 } else {
-                    SC.slideAndShow(content);
-                    $('schedule-next-arm-header').title = "Click to conceal form"
-                    $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9650;</span>"
+                    SC.slideAndShow(content, {
+                        afterFinish: function() {
+                            $('schedule-next-arm-header').title = "Click to conceal form"
+                            $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9650;</span>"
+                        }
+                    });
                 }
             })
         }
