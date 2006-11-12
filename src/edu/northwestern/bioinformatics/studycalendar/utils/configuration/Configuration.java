@@ -17,15 +17,15 @@ public class Configuration extends HibernateDaoSupport {
     private Properties defaults;
 
     public static final Property<String>
-        DEPLOYMENT_NAME = new StringProperty("deploymentName");
+        DEPLOYMENT_NAME = new Property.Text("deploymentName");
     public static final Property<String>
-        MAIL_REPLY_TO = new StringProperty("replyTo");
+        MAIL_REPLY_TO = new Property.Text("replyTo");
     public static final Property<List<String>>
-        MAIL_EXCEPTIONS_TO = new ListProperty("mailExceptionsTo");
+        MAIL_EXCEPTIONS_TO = new Property.Csv("mailExceptionsTo");
     public static final Property<String>
-        SMTP_HOST = new StringProperty("smtpHost");
+        SMTP_HOST = new Property.Text("smtpHost");
     public static final Property<Integer>
-        SMTP_PORT = new IntegerProperty("smtpPort");
+        SMTP_PORT = new Property.Int("smtpPort");
 
     public Configuration() {
         defaults = new Properties();
@@ -37,8 +37,11 @@ public class Configuration extends HibernateDaoSupport {
     }
 
     public <V> V get(Property<V> property) {
-        String value = getValue(property.getKey());
-        return value == null ? null : property.fromStorageFormat(value);
+        return parseValue(property, getValue(property.getKey()));
+    }
+
+    public <V> V getDefault(Property<V> property) {
+        return parseValue(property, defaults.getProperty(property.getKey()));
     }
 
     private String getValue(String key) {
@@ -51,6 +54,10 @@ public class Configuration extends HibernateDaoSupport {
         }
     }
 
+    private <V> V parseValue(Property<V> property, String value) {
+        return value == null ? null : property.fromStorageFormat(value);
+    }
+
     public <V> void set(Property<V> property, V value) {
         ConfigurationEntry entry
             = (ConfigurationEntry) getHibernateTemplate().get(ConfigurationEntry.class, property.getKey());
@@ -60,60 +67,5 @@ public class Configuration extends HibernateDaoSupport {
         }
         entry.setValue(property.toStorageFormat(value));
         getHibernateTemplate().saveOrUpdate(entry);
-    }
-
-    public static abstract class Property<V> {
-        private final String key;
-
-        public Property(String key) {
-            this.key = key;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public abstract String toStorageFormat(V value);
-        public abstract V fromStorageFormat(String stored);
-    }
-
-    public static class StringProperty extends Property<String> {
-        public StringProperty(String key) { super(key); }
-
-        public String toStorageFormat(String value) {
-            return value;
-        }
-
-        public String fromStorageFormat(String stored) {
-            return stored;
-        }
-    }
-
-    public static class ListProperty extends Property<List<String>> {
-        public ListProperty(String key) { super(key); }
-
-        public String toStorageFormat(List<String> value) {
-            return StringUtils.join(value.iterator(), ", ");
-        }
-
-        public List<String> fromStorageFormat(String stored) {
-            String[] values = stored.split(",");
-            for (int i = 0; i < values.length; i++) {
-                values[i] = values[i].trim();
-            }
-            return Arrays.asList(values);
-        }
-    }
-
-    public static class IntegerProperty extends Property<Integer> {
-        public IntegerProperty(String key) { super(key); }
-
-        public String toStorageFormat(Integer value) {
-            return value.toString();
-        }
-
-        public Integer fromStorageFormat(String stored) {
-            return new Integer(stored);
-        }
     }
 }

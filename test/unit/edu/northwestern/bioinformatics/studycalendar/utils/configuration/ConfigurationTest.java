@@ -25,12 +25,16 @@ public class ConfigurationTest extends DaoTestCase {
     }
     
     public void testGetIntegerProperty() throws Exception {
-        assertEquals((Integer) 25, configuration.get(SMTP_PORT));
+        assertEquals((Integer) 28, configuration.get(SMTP_PORT));
     }
 
-    public void testGetDefaultValue() throws Exception {
+    public void testGetDefaultWhenUnconfigured() throws Exception {
         String actual = configuration.get(DEPLOYMENT_NAME);
         assertEquals("Study Calendar", actual);
+    }
+    
+    public void testGetDefaultExplicitly() throws Exception {
+        assertEquals(25, (int) configuration.getDefault(SMTP_PORT));
     }
 
     public void testSetStringProperty() throws Exception {
