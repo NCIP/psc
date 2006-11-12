@@ -78,8 +78,46 @@
             background-color: #ccc;
         }
 
+        #selected-arm .content {
+            position: relative;
+        }
+
+        /* For IE */
+        * html #selected-arm .content {
+            height: 0;
+        }
+
         #selected-arm h3 {
             margin: 0 1em;
+        }
+
+        #selected-arm .legend {
+            position: absolute;
+            right: 1em;
+            top: 1em;
+            width: 20%;
+            border: 1px solid #444;
+            background-color: white;
+            z-index: 50;
+            padding: 0;
+            margin: 0;
+        }
+
+        #selected-arm .legend h3 {
+            background-color: #444;
+            color: #fff;
+            padding: 4px;
+            margin: 0;
+        }
+
+        #selected-arm .legend ul {
+            margin: 0; padding: 0;
+        }
+
+        .legend li {
+            display: block;
+            padding: 3px;
+            border-top: 1px solid #444;
         }
 
         .day.odd {

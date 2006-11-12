@@ -6,6 +6,14 @@
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <h2 id="selected-arm-header">${arm.name}</h2>
 <div class="content" id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
+    <div class="legend">
+        <h3>Legend</h3>
+        <ul>
+            <li class="scheduled even"><a>Scheduled</a></li>
+            <li class="occurred  odd" ><a>Occurred</a></li>
+            <li class="canceled even" ><a>Canceled</a></li>
+        </ul>
+    </div>
     <c:forEach items="${arm.eventsByDate}" var="entry" varStatus="status">
         <div class="day autoclear ${commons:parity(status.index)}">
             <h3><tags:formatDate value="${entry.key}"/></h3>
