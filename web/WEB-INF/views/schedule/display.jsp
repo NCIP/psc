@@ -1,3 +1,4 @@
+<%@page pageEncoding="utf8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
@@ -20,6 +21,10 @@
 
         #epochs-indicator {
             display: none;
+        }
+
+        #schedule-next-arm-header span {
+            font-size: 0.6em;
         }
 
         #next-arm-form {
@@ -210,9 +215,11 @@
                 if (content.visible()) {
                     SC.slideAndHide(content);
                     $('schedule-next-arm-header').title = "Click to schedule"
+                    $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9660;</span>"
                 } else {
                     SC.slideAndShow(content);
                     $('schedule-next-arm-header').title = "Click to conceal form"
+                    $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9650;</span>"
                 }
             })
         }
@@ -227,7 +234,7 @@
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
 <div id="schedule-next-arm" class="section autoclear">
-    <h2 id="schedule-next-arm-header" title="Click to schedule">Schedule next arm</h2>
+    <h2 id="schedule-next-arm-header" title="Click to schedule">Schedule next arm <span>&#9660;</span></h2>
     <div class="content" style="display: none">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
         <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
