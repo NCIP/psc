@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -32,8 +33,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  */
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
-public class ParticipantCoordinatorsBySiteController extends PscAbstractController {
-
+public class ParticipantCoordinatorsBySiteController extends AbstractController {
     private SiteDao siteDao;
     private StudyDao studyDao;
     private TemplateService templateService;
