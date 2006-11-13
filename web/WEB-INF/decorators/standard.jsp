@@ -28,7 +28,6 @@
     </div>
     <div id="footmenu">
         <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
-        | <a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>
         | <tags:logout/>
     </div>
     <tags:errorConsole/>
