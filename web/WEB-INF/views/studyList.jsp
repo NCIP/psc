@@ -90,15 +90,7 @@
 </ul>
 </c:if> 
 
-<!--
-    <security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
-			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>
-    </security:secureOperation>
-	<security:secureOperation element="/pages/assignParticipantCoordinator" operation="ACCESS">
-			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Study Templates to Participant Coordinators</a></div>
-	</security:secureOperation>		
--->
-
+<security:secureOperation element="/pages/manageSites" operation="ACCESS">
 <h2>Administration</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
