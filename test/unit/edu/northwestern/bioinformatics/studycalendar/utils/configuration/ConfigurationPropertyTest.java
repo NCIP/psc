@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 /**
  * @author Rhett Sutphin
  */
-public class PropertyTest extends StudyCalendarTestCase {
+public class ConfigurationPropertyTest extends StudyCalendarTestCase {
     public void testGetName() throws Exception {
         assertEquals("Deployment name", Configuration.DEPLOYMENT_NAME.getName());
     }

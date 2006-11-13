@@ -13,11 +13,11 @@ public class MockConfiguration extends Configuration {
         this.configuration = new HashMap<String, Object>();
     }
 
-    public <V> V get(Property<V> property) {
+    public <V> V get(ConfigurationProperty<V> property) {
         return (V) configuration.get(property.getKey());
     }
 
-    public <V> void set(Property<V> property, V value) {
+    public <V> void set(ConfigurationProperty<V> property, V value) {
         configuration.put(property.getKey(), value);
     }
 }

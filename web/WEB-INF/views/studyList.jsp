@@ -73,7 +73,8 @@
 <security:secureOperation element="/pages/manageSites" operation="ACCESS">
    	<strong> Administration </strong>
 	<div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
-</security:secureOperation> 
+	<div><a href="<c:url value="/pages/configure"/>">Configure PSC</a></div>
+</security:secureOperation>
 <!--
     <security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
 			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>

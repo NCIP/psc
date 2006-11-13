@@ -15,19 +15,19 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 /**
  * @author Rhett Sutphin
 */
-public abstract class Property<V> {
-    private static final Map<String, Property> INSTANCES = new TreeMap<String, Property>();
+public abstract class ConfigurationProperty<V> {
+    private static final Map<String, ConfigurationProperty> INSTANCES = new TreeMap<String, ConfigurationProperty>();
     private static final String DETAILS_RESOURCE = "details.properties";
     private static Properties details;
 
     private final String key;
 
-    public Property(String key) {
+    public ConfigurationProperty(String key) {
         this.key = key;
         INSTANCES.put(key, this);
     }
 
-    public static Collection<Property> values() {
+    public static Collection<ConfigurationProperty> values() {
         return INSTANCES.values();
     }
 
@@ -52,7 +52,7 @@ public abstract class Property<V> {
         if (details == null) {
             details = new Properties();
             try {
-                details.load(Property.class.getResourceAsStream(DETAILS_RESOURCE));
+                details.load(ConfigurationProperty.class.getResourceAsStream(DETAILS_RESOURCE));
             } catch (IOException e) {
                 throw new StudyCalendarSystemException("Failed to load property details " + DETAILS_RESOURCE, e);
             }
@@ -61,7 +61,7 @@ public abstract class Property<V> {
 
     ////// IMPLEMENTATIONS
 
-    public static class Text extends Property<String> {
+    public static class Text extends ConfigurationProperty<String> {
         public Text(String key) { super(key); }
 
         public String toStorageFormat(String value) {
@@ -73,7 +73,7 @@ public abstract class Property<V> {
         }
     }
 
-    public static class Csv extends Property<List<String>> {
+    public static class Csv extends ConfigurationProperty<List<String>> {
         public Csv(String key) { super(key); }
 
         public String toStorageFormat(List<String> value) {
@@ -89,7 +89,7 @@ public abstract class Property<V> {
         }
     }
 
-    public static class Int extends Property<Integer> {
+    public static class Int extends ConfigurationProperty<Integer> {
         public Int(String key) { super(key); }
 
         public String toStorageFormat(Integer value) {

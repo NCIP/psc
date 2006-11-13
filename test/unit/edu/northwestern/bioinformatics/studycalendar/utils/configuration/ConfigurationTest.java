@@ -53,7 +53,7 @@ public class ConfigurationTest extends DaoTestCase {
         assertStoredValue("a, b, c", MAIL_EXCEPTIONS_TO);
     }
 
-    private <V> void assertStoredValue(final String expected, Property<V> property) {
+    private <V> void assertStoredValue(final String expected, ConfigurationProperty<V> property) {
         final int[] count = new int[1];
         getJdbcTemplate().query("SELECT value FROM configuration WHERE key=?",
             new Object[] { property.getKey() }, new RowCallbackHandler() {

@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import java.util.Properties;
 import java.util.List;
-import java.util.Arrays;
 import java.io.IOException;
 
 /**
@@ -16,16 +14,16 @@ public class Configuration extends HibernateDaoSupport {
 
     private Properties defaults;
 
-    public static final Property<String>
-        DEPLOYMENT_NAME = new Property.Text("deploymentName");
-    public static final Property<String>
-        MAIL_REPLY_TO = new Property.Text("replyTo");
-    public static final Property<List<String>>
-        MAIL_EXCEPTIONS_TO = new Property.Csv("mailExceptionsTo");
-    public static final Property<String>
-        SMTP_HOST = new Property.Text("smtpHost");
-    public static final Property<Integer>
-        SMTP_PORT = new Property.Int("smtpPort");
+    public static final ConfigurationProperty<String>
+        DEPLOYMENT_NAME = new ConfigurationProperty.Text("deploymentName");
+    public static final ConfigurationProperty<String>
+        MAIL_REPLY_TO = new ConfigurationProperty.Text("replyTo");
+    public static final ConfigurationProperty<List<String>>
+        MAIL_EXCEPTIONS_TO = new ConfigurationProperty.Csv("mailExceptionsTo");
+    public static final ConfigurationProperty<String>
+        SMTP_HOST = new ConfigurationProperty.Text("smtpHost");
+    public static final ConfigurationProperty<Integer>
+        SMTP_PORT = new ConfigurationProperty.Int("smtpPort");
 
     public Configuration() {
         defaults = new Properties();
@@ -36,11 +34,11 @@ public class Configuration extends HibernateDaoSupport {
         }
     }
 
-    public <V> V get(Property<V> property) {
+    public <V> V get(ConfigurationProperty<V> property) {
         return parseValue(property, getValue(property.getKey()));
     }
 
-    public <V> V getDefault(Property<V> property) {
+    public <V> V getDefault(ConfigurationProperty<V> property) {
         return parseValue(property, defaults.getProperty(property.getKey()));
     }
 
@@ -54,11 +52,11 @@ public class Configuration extends HibernateDaoSupport {
         }
     }
 
-    private <V> V parseValue(Property<V> property, String value) {
+    private <V> V parseValue(ConfigurationProperty<V> property, String value) {
         return value == null ? null : property.fromStorageFormat(value);
     }
 
-    public <V> void set(Property<V> property, V value) {
+    public <V> void set(ConfigurationProperty<V> property, V value) {
         ConfigurationEntry entry
             = (ConfigurationEntry) getHibernateTemplate().get(ConfigurationEntry.class, property.getKey());
         if (entry == null) {
