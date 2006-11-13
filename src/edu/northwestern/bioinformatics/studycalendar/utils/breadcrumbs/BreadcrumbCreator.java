@@ -6,6 +6,8 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.BeansException;
 import org.springframework.core.Ordered;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -19,6 +21,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlR
  * @author Rhett Sutphin
  */
 public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
+    private static final Log log = LogFactory.getLog(BreadcrumbCreator.class);
+
     private ControllerUrlResolver urlResolver;
     private Map<Crumb, String> names;
 
@@ -33,6 +37,7 @@ public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
     }
 
     public List<Anchor> createAnchors(CrumbSource current, BreadcrumbContext breadcrumbContext) {
+        log.debug("Creating anchors for source of type " + current.getClass().getName());
         List<Crumb> ancestry = new LinkedList<Crumb>();
         buildAncestry(current, ancestry);
 
