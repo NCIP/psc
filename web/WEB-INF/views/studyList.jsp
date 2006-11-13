@@ -90,12 +90,24 @@
 </ul>
 </c:if> 
 
-<security:secureOperation element="/pages/manageSites" operation="ACCESS">
+<!--
+    <security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
+			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>
+    </security:secureOperation>
+	<security:secureOperation element="/pages/assignParticipantCoordinator" operation="ACCESS">
+			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Study Templates to Participant Coordinators</a></div>
+	</security:secureOperation>		
+-->
+
 <h2>Administration</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
     <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
 </ul>
 </security:secureOperation>
+
+<security:secureOperation element="/pages/reportBuilder" operation="ACCESS">
+	<div><a href="<c:url value="/pages/reportBuilder"/>">Report Builder</a></div>
+</security:secureOperation>  
 </body>
 </html>

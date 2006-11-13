@@ -240,6 +240,16 @@
              </bean>
          </property>
     </bean>
+    
+     <bean name="/reportBuilder" id="reportBuilderController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.ReportBuilderController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Report Builder</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
 
      <bean name="/configure" id="configurationController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
