@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author Rhett Sutphin
@@ -34,19 +36,26 @@ public class StudyListControllerTest extends ControllerTestCase {
     }
 
     public void testModelAndView() throws Exception {
-        List<Study> theList = new ArrayList<Study>();
+        Study complete = Fixtures.createSingleEpochStudy("Complete", "E1");
+        complete.getPlannedCalendar().setComplete(true);
+        Study incomplete = Fixtures.createSingleEpochStudy("Incomplete", "E1");
+        incomplete.getPlannedCalendar().setComplete(false);
+        List<Study> studies = Arrays.asList(incomplete, complete);
         List<Site> sites = new ArrayList<Site>();
         ApplicationSecurityManager.setUser(request, "jimbo");
 
-        expect(studyDao.getAll()).andReturn(theList);
-        expect(templateService.checkOwnership("jimbo", theList)).andReturn(theList);
+        expect(studyDao.getAll()).andReturn(studies);
+        expect(templateService.checkOwnership("jimbo", studies)).andReturn(studies);
         expect(siteService.getSitesForSiteCd("jimbo")).andReturn(sites);
         replayMocks();
 
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
-        assertSame("Studies list missing or wrong", theList, mv.getModel().get("studies"));
+        assertEquals("Complete studies list missing or wrong", Arrays.asList(complete),
+            mv.getModel().get("completeStudies"));
+        assertEquals("Incomplete studies list missing or wrong", Arrays.asList(incomplete),
+            mv.getModel().get("incompleteStudies"));
         assertSame("Sites list missing or wrong", sites, mv.getModel().get("sites"));
         assertEquals("studyList", mv.getViewName());
     }

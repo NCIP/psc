@@ -105,21 +105,6 @@
                 border: 1px solid #444;
                 padding: 3px;
             }
-            a.control, .inplaceeditor-form a  {
-                font-weight: bold;
-                text-decoration: none;
-            }
-            a.control {
-                padding: 2px;
-                margin: 0 2px;
-                color: #444;
-                border: 1px solid #999;
-                background-color: #ccc;
-            }
-            a.control:hover {
-                border-color: #444;
-                background-color: #ddd;
-            }
 
             ul#admin-options {
                 padding: 0;
@@ -209,12 +194,12 @@
         <h1>Template for <span id="study-name">${study.name}</span></h1>
 
         <ul id="admin-options">
-            <templ:restrictedControlListItem url="/pages/markComplete" queryString="study=${study.id}"
-                logicAllowed="${not plannedCalendar.complete}">Mark this template complete</templ:restrictedControlListItem>
-            <templ:restrictedControlListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}"
-                logicAllowed="${plannedCalendar.complete}">Assign Participant Coordinators</templ:restrictedControlListItem>
-            <templ:restrictedControlListItem url="/pages/assignParticipant" queryString="id=${study.id}"
-                logicAllowed="${plannedCalendar.complete}">Assign Participant</templ:restrictedControlListItem>
+            <tags:restrictedListItem url="/pages/markComplete" queryString="study=${study.id}" cssClass="control"
+                logicNotAllowed="${plannedCalendar.complete}">Mark this template complete</tags:restrictedListItem>
+            <tags:restrictedListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
+                logicNotAllowed="${not plannedCalendar.complete}">Assign Participant Coordinators</tags:restrictedListItem>
+            <tags:restrictedListItem url="/pages/assignParticipant" queryString="id=${study.id}" cssClass="control"
+                logicNotAllowed="${not plannedCalendar.complete}">Assign Participant</tags:restrictedListItem>
             <c:if test="${not empty assignments}">
                 <security:secureOperation element="/pages/schedule" operation="ACCESS">
                 <li>View schedule for

@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -39,10 +40,21 @@ public class StudyListController extends PscAbstractController {
         List<Study> studies = studyDao.getAll();
         String userName = ApplicationSecurityManager.getUser(request);
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
-        Map<String, Object> model = new HashMap<String, Object>();
-        model.put("studies", ownedStudies);
-        
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
+
+        List<Study> complete = new ArrayList<Study>();
+        List<Study> incomplete = new ArrayList<Study>();
+        for (Study ownedStudy : ownedStudies) {
+            if (ownedStudy.getPlannedCalendar().isComplete()) {
+                complete.add(ownedStudy);
+            } else {
+                incomplete.add(ownedStudy);
+            }
+        }
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("completeStudies", complete);
+        model.put("incompleteStudies", incomplete);
         model.put("sites", ownedSites);
         
         return new ModelAndView("studyList", model);

@@ -1,87 +1,101 @@
 <%@taglib prefix="security" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <html>
 <head>
-<title>Patient Study Calendar Menu</title>
+    <title>Patient Study Calendar Menu</title>
+    <tags:stylesheetLink name="main"/>
+    <style type="text/css">
+        ul ul.controls {
+            display: inline;
+        }
+        ul.controls li {
+            display: inline;
+        }
+        ul li ul.controls li {
+            margin: 0;
+            padding: 3px;
+        }
+        ul.menu {
+            margin: 0;
+            padding: 0;
+        }
+        ul.menu li {
+            padding: 0.5em;
+            list-style-type: none;
+            margin: 0.5em;
+        }
+        ul.menu li .primary {
+            display: block;
+            float: left;
+            width: 20%;
+        }
+        li.odd {
+            background-color: #eee;
+        }
+        h2 {
+            margin-top: 2em;
+        }
+    </style>
 </head>
 <body>
 <h1>Calendar Menu</h1>
 
-<strong> Calendar Templates </strong>
+<h2>Calendar templates</h2>
 <security:secureOperation element="/pages/newStudy" operation="ACCESS">
-<p><a href="<c:url value="/pages/newStudy"/>">Create New Study Template</a></p>
+    <p><a href="<c:url value="/pages/newStudy"/>">Create a new template</a></p>
 </security:secureOperation>
-<br>
+
 <security:secureOperation element="/pages/markComplete" operation="ACCESS">
-<br>
-<strong> Templates In Design </strong>
-<table cellpadding="5">
-    <c:forEach items="${studies}" var="study">
-    	<c:if test="${not study.plannedCalendar.complete}">
-    	<tr>
-    		<td><a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a></td>
-    	</tr>
-    	</c:if>
-    </c:forEach>
-</table>
-<br>
+<h3>Templates in design</h3>
+<ul class="menu">
+<c:forEach items="${incompleteStudies}" var="study" varStatus="status">
+    <li class="autoclear ${commons:parity(status.count)}">
+        <a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a>
+    </li>
+</c:forEach>
+</ul>
 </security:secureOperation>
-<br>
-<strong> Completed Templates </strong>
-<table cellpadding="5">
-    <c:forEach items="${studies}" var="study">
-    	<c:if test="${study.plannedCalendar.complete}">
-        <tr>
-            <td><a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a></td>
-        	<td>
-        	<security:secureOperation element="/pages/assignSite" operation="ACCESS">
-        		<a href="<c:url value="/pages/assignSite?id=${study.id}"/>">Assign Sites</a>
-        	</security:secureOperation>
-			<security:secureOperation element="/pages/assignParticipantCoordinator" operation="ACCESS">
-        		<a href="<c:url value="/pages/assignParticipantCoordinator?id=${study.id}"/>">Assign Participant Coordinators</a>
-        	</security:secureOperation>	
-        	<security:secureOperation element="/pages/assignParticipant" operation="ACCESS">
-        		<a href="<c:url value="/pages/assignParticipant?id=${study.id}"/>">Assign Participants</a>
-        	</security:secureOperation>	
-        	</td>
-        </tr>
-        </c:if>
+
+<h3>Completed templates</h3>
+<ul class="menu">
+<c:forEach items="${completeStudies}" var="study" varStatus="status">
+    <li class="autoclear ${commons:parity(status.count)}">
+        <a href="<c:url value="/pages/template?study=${study.id}"/>" class="primary">${study.name}</a>
+        <ul class="controls">
+            <tags:restrictedListItem cssClass="control" url="/pages/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+            <tags:restrictedListItem cssClass="control" url="/pages/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
+            <tags:restrictedListItem cssClass="control" url="/pages/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+        </ul>
+    </li>
+</c:forEach>
+</ul>
+
+<c:if test="${not empty sites}">
+<h2>Sites</h2>
+<ul class="menu">
+    <c:forEach items="${sites}" var="site" varStatus="status">
+    <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span>
+        <ul class="controls">
+            <tags:restrictedListItem url="/pages/assignParticipantCoordinatorsToSite" queryString="id=${site.id}" cssClass="control">
+                Assign participant coordinators
+            </tags:restrictedListItem>
+            <tags:restrictedListItem url="/pages/siteParticipantCoordinatorList" queryString="id=${site.id}" cssClass="control">
+                Assign study templates to participant coordinators
+            </tags:restrictedListItem>
+        </ul>
+    </li>
     </c:forEach>
-</table>
-<br>
-<br>
-<security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
-<strong> Sites </strong>
-<table cellpadding="5">
-    <c:forEach items="${sites}" var="site">
-        <tr>
-        	<td>
-        	<security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
-        		<td><strong>${site.name}   </strong><a href="<c:url value="/pages/assignParticipantCoordinatorsToSite?id=${site.id}"/>">  Assign Participant Coordinators  </a></td>
-        	</security:secureOperation>
-			<security:secureOperation element="/pages/siteParticipantCoordinatorList" operation="ACCESS">
-        		<td>   <a href="<c:url value="/pages/siteParticipantCoordinatorList?id=${site.id}"/>">  Assign Study Templates To Participant Coordinators </a></td>
-        	</security:secureOperation>	
-        	</td>
-        </tr>
-    </c:forEach>
-</table>
-</security:secureOperation> 
-<br>
-<br>
+</ul>
+</c:if> 
+
 <security:secureOperation element="/pages/manageSites" operation="ACCESS">
-   	<strong> Administration </strong>
-	<div><a href="<c:url value="/pages/manageSites"/>">Manage Sites</a></div>
-	<div><a href="<c:url value="/pages/configure"/>">Configure PSC</a></div>
+<h2>Administration</h2>
+<ul class="menu">
+    <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
+    <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
+</ul>
 </security:secureOperation>
-<!--
-    <security:secureOperation element="/pages/assignParticipantCoordinatorsToSite" operation="ACCESS">
-			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Participant Coordinators to Site</a></div>
-    </security:secureOperation>
-	<security:secureOperation element="/pages/assignParticipantCoordinator" operation="ACCESS">
-			<div><a href="<c:url value="/pages/sitesForAssignParticipantCoordinators"/>">Assign Study Templates to Participant Coordinators</a></div>
-	</security:secureOperation>		
--->
 </body>
 </html>

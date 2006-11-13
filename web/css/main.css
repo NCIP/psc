@@ -87,3 +87,19 @@ h2 {
     background-color: #ddd;
 }
 
+a.control, .inplaceeditor-form a  {
+    font-weight: bold;
+    text-decoration: none;
+}
+a.control {
+    padding: 2px;
+    margin: 0 2px;
+    color: #444;
+    border: 1px solid #999;
+    background-color: #ccc;
+}
+a.control:hover {
+    border-color: #444;
+    background-color: #ddd;
+}
+
