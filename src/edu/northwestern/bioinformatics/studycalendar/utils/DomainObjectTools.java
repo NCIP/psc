@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,9 @@ import java.util.Arrays;
  */
 public class DomainObjectTools {
     private static final List<Class<? extends AbstractDomainObject>> DETAIL_ORDER = Arrays.asList(
+        Site.class,
+        StudySite.class,
+
         Study.class,
         PlannedCalendar.class,
         Epoch.class,
@@ -39,7 +44,6 @@ public class DomainObjectTools {
         ScheduledEvent.class
     );
 
-
     public static <T extends AbstractDomainObject> Map<Integer, T> byId(List<T> objs) {
         Map<Integer, T> map = new LinkedHashMap<Integer, T>();
         for (T t : objs) {
@@ -47,8 +51,6 @@ public class DomainObjectTools {
         }
         return map;
     }
-    
-    
 
     public static String createExternalObjectId(DomainObject domainObject) {
         if (domainObject == null) {

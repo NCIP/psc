@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
@@ -51,6 +53,11 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
             assertEquals(
                 "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject", iae.getMessage());
         }
+    }
+
+    public void testOtherTypeSpecificity() throws Exception {
+        assertIsMoreSpecific(Site.class, StudySite.class);
+        assertIsMoreSpecific(StudySite.class, Study.class);
     }
 
     public void testPlannedTypeSpecificity() {

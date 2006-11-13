@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,6 +36,9 @@ public class BreadcrumbContext {
     private ScheduledArm scheduledArm;
     private ScheduledEvent scheduledEvent;
 
+    private Site site;
+    private StudySite studySite;
+
     public BreadcrumbContext() { }
 
     public static BreadcrumbContext create(DomainObject basis) {
@@ -52,6 +57,16 @@ public class BreadcrumbContext {
             }
         }
         return context;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+
+    public void setStudySite(StudySite studySite) {
+        setSite(studySite.getSite());
+        setStudy(studySite.getStudy());
+        this.studySite = studySite;
     }
 
     public void setStudy(Study study) {
@@ -113,6 +128,14 @@ public class BreadcrumbContext {
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
+
+    public Site getSite() {
+        return site;
+    }
+
+    public StudySite getStudySite() {
+        return studySite;
+    }
 
     public Study getStudy() {
         return study;
