@@ -127,6 +127,43 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, events.get(9));
         assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, events.get(10));
     }
+    
+    public void testScheduleFirstArmWithNegativeDays() throws Exception {
+        arm.getPeriods().first().setStartDay(-7);
+        // this will shift the days for events in the first period:
+        // event 1: -7, 0, 7
+        // event 2: -5, 2, 9
+
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        assignment.setParticipant(createParticipant("Alice", "Childress"));
+        participantDao.save(assignment.getParticipant());
+        replayMocks();
+
+
+        ScheduledArm returnedArm = service.scheduleArm(
+            assignment, arm, DateUtils.createDate(2006, Calendar.MARCH, 24), NextArmMode.PER_PROTOCOL);
+        verifyMocks();
+
+        ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
+        assertNotNull("Scheduled calendar not created", scheduledCalendar);
+        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
+        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
+        assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
+        List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
+        assertEquals("Wrong number of events added", 11, events.size());
+
+        assertNewlyScheduledEvent(2006, Calendar.MARCH, 24, 1, events.get(0));
+        assertNewlyScheduledEvent(2006, Calendar.MARCH, 26, 2, events.get(1));
+        assertNewlyScheduledEvent(2006, Calendar.MARCH, 31, 1, events.get(2));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  2, 2, events.get(3));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 3, events.get(4));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  7, 1, events.get(5));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 4, events.get(6));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  9, 2, events.get(7));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, events.get(8));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, events.get(9));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, events.get(10));
+    }
 
     public void testScheduleImmediateNextArm() throws Exception {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();

@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -24,10 +25,11 @@ public class ArmTemplate {
 
     public ArmTemplate(Arm arm) {
         this.arm = arm;
-        int monthCount = (int) Math.ceil(((double) arm.getLengthInDays()) / MONTH_LENGTH);
+        DayRange range = arm.getDayRange();
+        int monthCount = (int) Math.ceil(((double) range.getDayCount()) / MONTH_LENGTH);
         months = new ArrayList<Month>(monthCount);
         while (months.size() < monthCount) {
-            months.add(new Month(1 + MONTH_LENGTH * months.size()));
+            months.add(new Month(range.getStartDay() + MONTH_LENGTH * months.size()));
         }
     }
 
@@ -45,7 +47,7 @@ public class ArmTemplate {
 
         public Month(int firstDay) {
             days = new TreeMap<Integer, Day>();
-            int monthLength = Math.min(MONTH_LENGTH, arm.getLengthInDays() - firstDay + 1);
+            int monthLength = Math.min(MONTH_LENGTH, arm.getDayRange().getEndDay() - firstDay + 1);
             while (days.size() < monthLength) {
                 int dayN = firstDay + days.size();
                 days.put(dayN, new Day(dayN));
@@ -102,7 +104,7 @@ public class ArmTemplate {
 
         public boolean isResume() {
             return !getFirstDay().isFirstDayOfSpan()
-                && getPeriod().getDayRange().containsInteger(getFirstDay().getDay().getNumber());
+                && getPeriod().getTotalDayRange().containsDay(getFirstDay().getDay().getNumber());
         }
 
         public List<DayOfPeriod> getDays() {
@@ -173,7 +175,7 @@ public class ArmTemplate {
         }
 
         public boolean isInPeriod() {
-            return period.getDayRange().containsInteger(day.getNumber());
+            return period.getTotalDayRange().containsDay(day.getNumber());
         }
 
         public boolean isEmpty() {

@@ -21,6 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.WebApplicationContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 /**
  * @author Rhett Sutphin
@@ -79,6 +80,11 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected static <T> T matchByProperties(T template) {
         EasyMock.reportMatcher(new PropertyMatcher<T>(template));
         return null;
+    }
+
+    protected static void assertDayRange(Integer expectedStart, Integer expectedEnd, DayRange actual) {
+        assertEquals("Wrong start day", expectedStart, actual.getStartDay());
+        assertEquals("Wrong end day", expectedEnd, actual.getEndDay());
     }
 
     /**

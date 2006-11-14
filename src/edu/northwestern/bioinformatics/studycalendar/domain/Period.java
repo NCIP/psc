@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 
-import org.apache.commons.lang.math.IntRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,6 +21,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 /**
  * @author Moses Hohman
@@ -56,15 +58,21 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
     }
 
     @Transient
-    public IntRange getDayRange() {
-        return new IntRange(getStartDay(), getEndDay());
+    public List<DayRange> getDayRanges() {
+        List<DayRange> ranges = new ArrayList<DayRange>(getRepetitions());
+        while (ranges.size() < getRepetitions()) {
+            int rep = ranges.size();
+            Integer dayCount = getDuration().getDays();
+            int repStartDay = getStartDay() + rep * dayCount;
+            ranges.add(new DayRange(repStartDay, repStartDay + dayCount - 1));
+        }
+        return ranges;
     }
 
     @Transient
-    public Integer getEndDay() {
-        if (startDay == null) return null;
-        if (getDuration().getQuantity() == null) return null;
-        return startDay + (getDuration().getDays() * repetitions) - 1;
+    public DayRange getTotalDayRange() {
+        int dayCount = getDuration().getDays() * getRepetitions();
+        return new DayRange(getStartDay(), getStartDay() + dayCount - 1);
     }
 
     @Transient
@@ -73,11 +81,11 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
     }
 
     public boolean isFirstDayOfRepetition(int day) {
-        return getDayRange().containsInteger(day) && getRepetitionRelativeDay(day) == 1;
+        return getTotalDayRange().containsDay(day) && getRepetitionRelativeDay(day) == 1;
     }
 
     public boolean isLastDayOfRepetition(int day) {
-        return getDayRange().containsInteger(day) && getRepetitionRelativeDay(day) == getDuration().getDays();
+        return getTotalDayRange().containsDay(day) && getRepetitionRelativeDay(day) == getDuration().getDays();
     }
 
     private int getRepetitionRelativeDay(int day) {

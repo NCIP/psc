@@ -58,6 +58,12 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         assertDaysInArm(e0, 8, 12, 16);
         assertDaysInArm(e1, 9, 13, 17);
     }
+    
+    public void testDayInArmNegative() throws Exception {
+        changePeriod(-21, 7, 2);
+        assertDaysInArm(e0, -21, -14);
+        assertDaysInArm(e1, -20, -13);
+    }
 
     private void assertDaysInArm(PlannedEvent e, int... expectedDays) {
         assertEquals("Wrong number of days in arm", expectedDays.length, e.getDaysInArm().size());

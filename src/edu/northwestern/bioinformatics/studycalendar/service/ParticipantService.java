@@ -62,13 +62,14 @@ public class ParticipantService {
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);
         calendar.addArm(scheduledArm);
+        int normalizationFactor = arm.getDayRange().getStartDay() * -1 + 1;
 
         for (Period period : arm.getPeriods()) {
             for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
                 for (Integer armDay : plannedEvent.getDaysInArm()) {
                     // TODO: I think we might need to track which repetition an event is from
                     ScheduledEvent event = new ScheduledEvent();
-                    event.setIdealDate(idealDate(armDay, startDate));
+                    event.setIdealDate(idealDate(armDay + normalizationFactor, startDate));
                     event.setPlannedEvent(plannedEvent);
                     event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
                     scheduledArm.addEvent(event);

@@ -2,6 +2,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <html>
 <head>
     <title>Set up Period ${period.name} of ${arm.qualifiedName} in ${study.name}</title>
@@ -172,9 +173,10 @@
 <h1>Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}</h1>
 
 <p>
-    This period has ${period.duration.days} days and repeats ${period.repetitions} times.  It begins on
-    day ${period.startDay} of the epoch.  The numbers in the grid below show how many times each
-    activity should be performed on each day of the period (most of the time this will be 1 or 0).
+    This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
+    It begins on day ${period.startDay} of the ${arm.qualifiedName}.  The numbers in the grid below
+    show how many times each activity should be performed on each day of the period
+    (most of the time this will be 1 or 0).
 </p>
 
 <form:form>
@@ -182,12 +184,12 @@
 <table>
     <tr>
         <td></td>
-        <th colspan="${tableWidth - 2}">Days of epoch (${period.repetitions} repetitions)</th>
+        <th colspan="${tableWidth - 2}">Days of arm (${commons:pluralize(period.repetitions, "repetition")})</th>
         <td></td>
     </tr>
     <tr id="days-header">
         <td></td>
-        <c:forEach begin="${period.startDay}" end="${period.startDay + period.duration.days - 1}" var="d">
+        <c:forEach items="${period.dayRanges[0].days}" var="d">
             <th class="day-number">
             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
                 ${d + x * period.duration.days}
@@ -229,6 +231,7 @@
     </select>
     <input type="button" id="add-activity-button" value="Add to period"/>
     <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
+    <span class="tip">(Be sure to save your changes before leaving this page)</span>
 </div>
 
 

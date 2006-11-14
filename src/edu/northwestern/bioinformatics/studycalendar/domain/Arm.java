@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.apache.commons.lang.math.IntRange;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -17,6 +16,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 /**
  * @author Rhett Sutphin
@@ -52,16 +53,16 @@ public class Arm extends AbstractDomainObject implements Named {
 
     @Transient
     public int getLengthInDays() {
-        int len = 0;
-        for (Period period : periods) {
-            len = Math.max(period.getEndDay(), len);
-        }
-        return len;
+        return getDayRange().getDayCount();
     }
 
     @Transient
-    public IntRange getDayRange() {
-        return new IntRange(1, getLengthInDays());
+    public DayRange getDayRange() {
+        DayRange range = new DayRange(Integer.MAX_VALUE, Integer.MIN_VALUE);
+        for (Period period : periods) {
+            range.add(period.getTotalDayRange());
+        }
+        return range;
     }
 
     // bean methods

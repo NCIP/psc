@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+
+import java.util.List;
 
 /**
  * @author Moses Hohman
@@ -16,25 +19,36 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertNotNull(p.getDuration());
     }
 
-    public void testEndDay() {
-        assertNull("not null when startDay null", period.getEndDay());
+    public void testDayRange() {
         period.setStartDay(1);
-        assertNull("not null when duration blank", period.getEndDay());
         period.setRepetitions(2);
         period.setDuration(new Duration(2, Duration.Unit.week));
-        assertEquals(new Integer(28), period.getEndDay());
+        assertDayRange(1, 28, period.getTotalDayRange());
     }
     
-    public void testEndDayWithNegativeStart() throws Exception {
+    public void testDayRangeWithNegativeStart() throws Exception {
         period.setStartDay(-7);
         period.setDuration(new Duration(4, Duration.Unit.day));
         period.setRepetitions(1);
 
-        assertEquals(-4, (int) period.getEndDay());
+        assertDayRange(-7, -4, period.getTotalDayRange());
         period.setRepetitions(2);
-        assertEquals(0, (int) period.getEndDay());
+        assertDayRange(-7, 0, period.getTotalDayRange());
         period.setRepetitions(3);
-        assertEquals(4, (int) period.getEndDay());
+        assertDayRange(-7, 4, period.getTotalDayRange());
+    }
+    
+    public void testGetDayRanges() throws Exception {
+        period.setStartDay(-4);
+        period.setDuration(new Duration(3, Duration.Unit.day));
+        period.setRepetitions(4);
+
+        List<DayRange> actual = period.getDayRanges();
+        assertEquals("Wrong number of ranges", 4, actual.size());
+        assertDayRange(-4, -2, actual.get(0));
+        assertDayRange(-1,  1, actual.get(1));
+        assertDayRange(2, 4, actual.get(2));
+        assertDayRange(5, 7, actual.get(3));
     }
 
     public void testAddPlannedEventMaintainsBidirectionality() throws Exception {
