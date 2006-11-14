@@ -24,6 +24,18 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.setDuration(new Duration(2, Duration.Unit.week));
         assertEquals(new Integer(28), period.getEndDay());
     }
+    
+    public void testEndDayWithNegativeStart() throws Exception {
+        period.setStartDay(-7);
+        period.setDuration(new Duration(4, Duration.Unit.day));
+        period.setRepetitions(1);
+
+        assertEquals(-4, (int) period.getEndDay());
+        period.setRepetitions(2);
+        assertEquals(0, (int) period.getEndDay());
+        period.setRepetitions(3);
+        assertEquals(4, (int) period.getEndDay());
+    }
 
     public void testAddPlannedEventMaintainsBidirectionality() throws Exception {
         PlannedEvent e = createPlannedEvent("Any", 5);
@@ -113,5 +125,21 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Out of range considered last day", p1.isLastDayOfRepetition(33));
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(5));
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(10));
+    }
+    
+    public void testIsFirstDayOfRepWithNegDays() throws Exception {
+        Period p1 = createPeriod("A", -6, 5, 2);
+        assertTrue(p1.isFirstDayOfRepetition(-6));
+        assertTrue(p1.isFirstDayOfRepetition(-1));
+        assertFalse("Out of range considered first day", p1.isFirstDayOfRepetition(5));
+        assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(-5));
+    }
+    
+    public void testIsLastDayOfRepWithNegDays() throws Exception {
+        Period p1 = createPeriod("A", -6, 5, 2);
+        assertTrue(p1.isLastDayOfRepetition(-2));
+        assertTrue(p1.isLastDayOfRepetition(3));
+        assertFalse("Out of range considered last day", p1.isFirstDayOfRepetition(5));
+        assertFalse("Second day considered last day", p1.isFirstDayOfRepetition(-5));
     }
 }
