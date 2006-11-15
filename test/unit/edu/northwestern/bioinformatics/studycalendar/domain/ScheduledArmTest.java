@@ -123,7 +123,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         event.setIdealDate(DateUtils.createDate(2004, Calendar.JANUARY, 4));
         scheduledArm.addEvent(event);
 
-        assertDayOfDate(2004, Calendar.JANUARY, 25, scheduledArm.getNextArmPerProtocolStartDate());
+        assertDayOfDate(2004, Calendar.JANUARY, 22, scheduledArm.getNextArmPerProtocolStartDate());
     }
 
     public void testIsNotCompleteIfAnyEventInScheduledState() throws Exception {
