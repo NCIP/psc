@@ -3,8 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.testing;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 
-import junit.framework.TestCase;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Set;
@@ -18,7 +16,6 @@ import java.util.Map;
 import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.WebApplicationContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;

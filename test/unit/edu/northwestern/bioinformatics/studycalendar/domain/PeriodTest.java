@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 import java.util.List;
@@ -17,6 +17,13 @@ public class PeriodTest extends StudyCalendarTestCase {
         Period p = new Period();
         p.setDuration(null);
         assertNotNull(p.getDuration());
+    }
+
+    public void testDefaults() throws Exception {
+        assertEquals("Default start day is 1", 1, (int) period.getStartDay());
+        assertEquals("Default duration is 1 day", 1, (int) period.getDuration().getQuantity());
+        assertEquals("Default duration is 1 day", Duration.Unit.day, period.getDuration().getUnit());
+        assertEquals("Default reps is 1", 1, period.getRepetitions());
     }
 
     public void testDayRange() {

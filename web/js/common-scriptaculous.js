@@ -30,7 +30,9 @@ SC.slideAndShow = function(element, options) {
 
 SC.highlight = function(element, options) {
     var e = $(element)
-    new Effect.Highlight(element, $H(options))
+    new Effect.Highlight(element, Object.extend({
+        restorecolor: "#ffffff"
+    }, $H(options)));
 }
 
 ////// CONTROLS

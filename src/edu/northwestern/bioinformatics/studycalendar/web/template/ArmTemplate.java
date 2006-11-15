@@ -41,6 +41,12 @@ public class ArmTemplate {
         return arm;
     }
 
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[arm=").append(getBase().getQualifiedName())
+            .append("; months=").append(getMonths()).append(']').toString();
+    }
+
     public class Month {
         private SortedMap<Integer, Day> days;
         private List<MonthOfPeriod> periods;
@@ -57,7 +63,7 @@ public class ArmTemplate {
 
         private void initPeriods() {
             // temporary structure, indexed by Period#id.
-            SortedMap<Integer, MonthOfPeriod> byPeriodId= new ExpandingMap<Integer, MonthOfPeriod>(
+            SortedMap<Integer, MonthOfPeriod> byPeriodId = new ExpandingMap<Integer, MonthOfPeriod>(
                 new ExpandingMap.Filler<MonthOfPeriod>() {
                     public MonthOfPeriod createNew(Object key) { return new MonthOfPeriod(); }
                 }
@@ -76,6 +82,12 @@ public class ArmTemplate {
 
         public List<MonthOfPeriod> getPeriods() {
             return periods;
+        }
+
+        public String toString() {
+            return new StringBuilder(getClass().getSimpleName())
+                .append("[days=[").append(getDays().firstKey()).append(", ").append(getDays().lastKey())
+                .append(']').toString();
         }
     }
 

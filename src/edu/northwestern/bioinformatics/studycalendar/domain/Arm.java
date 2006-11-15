@@ -17,7 +17,9 @@ import javax.persistence.Transient;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
 
 /**
  * @author Rhett Sutphin
@@ -58,11 +60,15 @@ public class Arm extends AbstractDomainObject implements Named {
 
     @Transient
     public DayRange getDayRange() {
-        DayRange range = new DayRange(Integer.MAX_VALUE, Integer.MIN_VALUE);
-        for (Period period : periods) {
-            range.add(period.getTotalDayRange());
+        if (getPeriods().size() == 0) {
+            return EmptyDayRange.INSTANCE;
+        } else {
+            DefaultDayRange range = new DefaultDayRange(Integer.MAX_VALUE, Integer.MIN_VALUE);
+            for (Period period : getPeriods()) {
+                range.add(period.getTotalDayRange());
+            }
+            return range;
         }
-        return range;
     }
 
     // bean methods

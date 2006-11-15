@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,11 @@ public class NewPeriodController extends PscSimpleFormController {
     }
 
     @Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
+    }
+
+    @Override
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("arm", armDao.getById(ServletRequestUtils.getIntParameter(request, "arm")));
@@ -45,16 +51,10 @@ public class NewPeriodController extends PscSimpleFormController {
     }
 
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
-        Arm arm = doSubmitAction(command);
+        Arm arm = command.getArm();
+        arm.addPeriod(command);
         Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
         return ControllerTools.redirectToCalendarTemplate(studyId, arm.getId());
-    }
-
-    private Arm doSubmitAction(NewPeriodCommand command) throws Exception {
-        Arm arm = armDao.getById(command.getArmId());
-        arm.addPeriod(command);
-        armDao.save(arm);
-        return arm;
     }
 
     @Required

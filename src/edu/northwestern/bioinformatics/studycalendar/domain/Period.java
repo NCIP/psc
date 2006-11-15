@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
 /**
@@ -48,6 +49,10 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
 
     public Period() {
         plannedEvents = new LinkedList<PlannedEvent>();
+        startDay = 1;
+        repetitions = 1;
+        getDuration().setQuantity(1);
+        getDuration().setUnit(Duration.Unit.day);
     }
 
     ////// LOGIC
@@ -64,7 +69,7 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
             int rep = ranges.size();
             Integer dayCount = getDuration().getDays();
             int repStartDay = getStartDay() + rep * dayCount;
-            ranges.add(new DayRange(repStartDay, repStartDay + dayCount - 1));
+            ranges.add(new DefaultDayRange(repStartDay, repStartDay + dayCount - 1));
         }
         return ranges;
     }
@@ -72,7 +77,7 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
     @Transient
     public DayRange getTotalDayRange() {
         int dayCount = getDuration().getDays() * getRepetitions();
-        return new DayRange(getStartDay(), getStartDay() + dayCount - 1);
+        return new DefaultDayRange(getStartDay(), getStartDay() + dayCount - 1);
     }
 
     @Transient

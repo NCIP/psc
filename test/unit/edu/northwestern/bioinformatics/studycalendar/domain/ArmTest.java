@@ -61,4 +61,8 @@ public class ArmTest extends StudyCalendarTestCase {
         assertEquals("Epoch: A", epoch.getArms().get(0).getQualifiedName());
         assertEquals("Epoch: B", epoch.getArms().get(1).getQualifiedName());
     }
+
+    public void testDayRangeWithNoPeriods() throws Exception {
+        assertEquals(0, new Arm().getDayRange().getDayCount());
+    }
 }

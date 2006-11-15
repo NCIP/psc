@@ -22,6 +22,14 @@ h1, h2, h3, h4, h5, h6 {
     color: #c03;
 }
 
+.odd {
+    background-color: #eee;
+}
+
+.tip {
+    font-size: 80%;
+}
+
 #breadcrumbs {
     font-size: 10pt;
     background-color: #444;

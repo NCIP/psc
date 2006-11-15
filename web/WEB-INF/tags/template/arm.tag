@@ -8,6 +8,15 @@
     <c:if test="${not arm.base.epoch.plannedCalendar.complete}">
     <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a></p>
     </c:if>
+    <c:if test="${empty arm.months}">
+        <p class="tip">
+            To begin placing activities in this part of the protocol template, click
+            <a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.
+            This will allow you to add a <em>period</em>, which is a (possibly repeating) series of
+            days.  You will then have the opportunity to associate activities with days in your new
+            period.
+        </p>
+    </c:if>
     <c:forEach items="${arm.months}" var="month">
         <table class="periods" cellspacing="0">
             <tr>
