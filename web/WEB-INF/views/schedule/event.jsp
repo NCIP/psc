@@ -45,10 +45,6 @@
             padding: 4px 1em;
         }
 
-        div.row.odd {
-            background-color: #eee;
-        }
-
         div.row div.label {
             width: 8em;
         }

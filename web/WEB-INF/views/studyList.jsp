@@ -31,9 +31,6 @@
             float: left;
             width: 20%;
         }
-        li.odd {
-            background-color: #eee;
-        }
         h2 {
             margin-top: 2em;
         }

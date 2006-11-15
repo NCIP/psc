@@ -128,10 +128,6 @@
             border-top: 1px solid #444;
         }
 
-        .day.odd {
-            background-color: #eee;
-        }
-
         li.scheduled a {
             font-weight: bold;
             color: #00C;

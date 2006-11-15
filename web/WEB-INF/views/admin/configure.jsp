@@ -16,9 +16,6 @@
             margin-left: 1em;
             text-align: right;
         }
-        .row.odd {
-            background-color: #eee;
-        }
         p.description {
             margin: 0.25em 0 0 1em;
         }
