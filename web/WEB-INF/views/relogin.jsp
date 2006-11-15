@@ -6,8 +6,8 @@
     <div id="lightbox-content">
         <p>
             Your session has expired.  Please log in again.
-            Once you've logged in, you may need to retry your
-            last action.
+        </p><p>
+            Once you've logged in, you may need to retry your last action.
         </p>
         <tags:loginForm ajax="${true}"/>
     </div>
@@ -20,10 +20,6 @@ Event.observe('login', 'submit', function(e) {
         onLoaded: function() {
             $('login-indicator').conceal()
             LB.Lightbox.deactivate()
-        },
-        onFailure: function() {
-            // TODO:
-            alert("Need error handling")
         }
     })
 })
