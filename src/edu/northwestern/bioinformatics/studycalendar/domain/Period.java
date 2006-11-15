@@ -38,21 +38,24 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
     }
 )
 public class Period extends AbstractDomainObject implements Named, Comparable<Period> {
-    public static final int DEFAULT_REPETITIONS = 1;
+    private static final int DEFAULT_REPETITIONS = 1;
+    private static final int DEFAULT_START_DAY = 1;
+    private static final int DEFAULT_DURATION_QUANTITY = 1;
+    private static final Duration.Unit DEFAULT_DURATION_UNIT = Duration.Unit.day;
 
     private String name;
     private Arm arm;
     private Integer startDay;
     private Duration duration;
-    private int repetitions = DEFAULT_REPETITIONS;
+    private int repetitions;
     private List<PlannedEvent> plannedEvents;
 
     public Period() {
         plannedEvents = new LinkedList<PlannedEvent>();
-        startDay = 1;
-        repetitions = 1;
-        getDuration().setQuantity(1);
-        getDuration().setUnit(Duration.Unit.day);
+        startDay = DEFAULT_START_DAY;
+        repetitions = DEFAULT_REPETITIONS;
+        getDuration().setQuantity(DEFAULT_DURATION_QUANTITY);
+        getDuration().setUnit(DEFAULT_DURATION_UNIT);
     }
 
     ////// LOGIC
