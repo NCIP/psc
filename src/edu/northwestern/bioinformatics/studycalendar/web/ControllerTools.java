@@ -18,6 +18,7 @@ import java.util.Date;
 import java.beans.PropertyEditor;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.io.IOException;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Rhett Sutphin
@@ -50,7 +52,7 @@ public class ControllerTools {
         return dateFormat.get().format(date);
     }
 
-    public static void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao dao) {
+    public static void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {
         binder.registerCustomEditor(dao.domainClass(), field, new DaoBasedEditor(dao));
     }
 
@@ -119,6 +121,11 @@ public class ControllerTools {
         ModelMap model = new ModelMap("study", studyId);
         if (selectedArmId != null) model.put("arm", selectedArmId);
         return new ModelAndView("redirectToCalendarTemplate", model);
+    }
+
+    // note that if you change the error message here, you need to change it in error-console.js, too
+    public static void sendPostOnlyError(HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "POST is the only valid method for this URL");
     }
 
     private ControllerTools() { }

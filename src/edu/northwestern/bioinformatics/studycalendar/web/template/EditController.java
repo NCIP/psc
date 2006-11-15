@@ -44,11 +44,17 @@ public class EditController extends AbstractCommandController {
     }
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        EditCommand command = (EditCommand) oCommand;
-        command.apply();
-        Map<String, Object> model = command.getModel();
-        model.putAll(errors.getModel());
-        return new ModelAndView(createViewName(command), model);
+        if ("POST".equals(request.getMethod())) {
+            EditCommand command = (EditCommand) oCommand;
+            command.apply();
+            Map<String, Object> model = command.getModel();
+            model.putAll(errors.getModel());
+            return new ModelAndView(createViewName(command), model);
+        } else {
+            // All edits are non-idempotent, so...
+            ControllerTools.sendPostOnlyError(response);
+            return null;
+        }
     }
 
     private String createViewName(EditCommand command) {

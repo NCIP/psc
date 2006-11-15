@@ -7,8 +7,13 @@ EC.AjaxResponders = {
     },
     onComplete: function(request, transport, json) {
         if (request.responseIsFailure()) {
-            new Insertion.Top('error-console-errors', "<li>" + transport.status + " " + transport.statusText + "</li>")
-            $('error-console').show()
+            // handle 400s caused by GETting a POST-only resource (see ControllerTools#sendPostOnlyError)
+            if (transport.status == 400 && transport.statusText == "POST is the only valid method for this URL") {
+                alert("Please retry your last action now that you have logged back in")
+            } else {
+                new Insertion.Top('error-console-errors', "<li>" + transport.status + " " + transport.statusText + "</li>")
+                $('error-console').show()
+            }
         }
     }
 }

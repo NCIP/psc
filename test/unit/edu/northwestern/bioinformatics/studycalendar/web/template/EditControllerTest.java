@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author Rhett Sutphin
  */
@@ -50,5 +52,15 @@ public class EditControllerTest extends ControllerTestCase {
 
         assertEquals("template/ajax/pony", mv.getViewName());
         assertContainsPair(mv.getModel(), "foo", 95);
+    }
+    
+    public void testHandleGetIsError() throws Exception {
+        request.setMethod("GET");
+        replayMocks();
+        assertNull(controller.handleRequest(request, response));
+        verifyMocks();
+
+        assertEquals("Wrong HTTP status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
+        assertEquals("Wrong error message", "POST is the only valid method for this URL", response.getErrorMessage());
     }
 }
