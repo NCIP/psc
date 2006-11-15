@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
@@ -51,10 +52,9 @@ public class NewPeriodController extends PscSimpleFormController {
     }
 
     private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
-        Arm arm = command.getArm();
-        arm.addPeriod(command);
-        Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
-        return ControllerTools.redirectToCalendarTemplate(studyId, arm.getId());
+        command.apply();
+        Study study = command.getArm().getEpoch().getPlannedCalendar().getStudy();
+        return ControllerTools.redirectToCalendarTemplate(study.getId(), command.getArm().getId());
     }
 
     @Required

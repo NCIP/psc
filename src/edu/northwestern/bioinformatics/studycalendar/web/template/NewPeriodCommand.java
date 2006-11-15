@@ -6,4 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
  * @author Moses Hohman
  */
 public class NewPeriodCommand extends Period {
+    public void apply() {
+        getArm().addPeriod(this);
+    }
 }
