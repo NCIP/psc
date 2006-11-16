@@ -57,6 +57,13 @@
             }
         }
 
+        function selectAll(selector) {
+            var sel = $(selector)
+            $A(sel.options).each(function(opt) {
+                opt.selected = true;
+            })
+        }
+
         Event.observe(window, "load", registerSiteSelector)
         Event.observe(window, "load", function() {
             Event.observe("assign-button", "click", function() {
@@ -64,6 +71,13 @@
             })
             Event.observe("remove-button", "click", function() {
                 moveSelected($('assignedCoordinators'), $('availableCoordinators'))
+            })
+        })
+
+        Event.observe(window, "load", function() {
+            Event.observe("assignmentForm", "submit", function() {
+                selectAll("assignedCoordinators")
+                selectAll("availableCoordinators")
             })
         })
 
