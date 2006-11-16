@@ -129,7 +129,7 @@
                 <form:label path="repetitions">Repetitions</form:label>
             </div>
             <div class="tip">
-                The number of times the days of this period will repeat.  
+                The number of times the days of this period will occur.  
             </div>
             <div class="value">
                 <form:input path="repetitions" size="3" maxlength="3"/>
