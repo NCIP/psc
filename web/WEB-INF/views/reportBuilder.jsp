@@ -21,23 +21,71 @@
             width: 20em;
         }
     </style>
+    <script type="text/javascript">
+
+        function registerSiteSelectorFormNext() {
+            Event.observe("siteSelectorFormNext", "click", function() {
+                SC.slideAndHide("siteSelectorForm")
+                SC.slideAndShow('studySelectorForm')
+            })
+        }
+        
+		function registerStudySelectorFormBack() {
+            Event.observe("studySelectorFormBack", "click", function() {
+                SC.slideAndHide("studySelectorForm")
+                SC.slideAndShow('siteSelectorForm')
+            })
+        }
+        
+		function registerStudySelectorFormNext() {
+            Event.observe("studySelectorFormNext", "click", function() {
+                SC.slideAndHide("studySelectorForm")
+                SC.slideAndShow('participantSelectorForm')
+            })
+        }
+
+		function registerParticipantSelectorFormBack() {
+            Event.observe("participantSelectorFormBack", "click", function() {
+                SC.slideAndHide("participantSelectorForm")
+                SC.slideAndShow('studySelectorForm')
+            })
+        }
+        
+		function registerParticipantSelectorFormNext() {
+            Event.observe("participantSelectorFormNext", "click", function() {
+                SC.slideAndHide("participantSelectorForm")
+                SC.slideAndShow('dateRangeSelectorForm')
+            })
+        }
+
+		function registerDateRangeSelectorFormBack() {
+            Event.observe("dateRangeSelectorFormBack", "click", function() {
+                SC.slideAndHide("dateRangeSelectorForm")
+                SC.slideAndShow('participantSelectorForm')
+            })
+        }
+
+		function registerDateRangeSelectorFormFinish() {
+            Event.observe("dateRangeSelectorFormBack", "click", function() {
+                SC.slideAndHide("dateRangeSelectorForm")
+            })
+        }
+           
+    	Event.observe(window, "load", registerSiteSelectorFormNext)  	
+    	Event.observe(window, "load", registerStudySelectorFormBack)
+    	Event.observe(window, "load", registerStudySelectorFormNext)   	
+    	Event.observe(window, "load", registerParticipantSelectorFormBack)   	
+    	Event.observe(window, "load", registerParticipantSelectorFormNext)   	
+    	Event.observe(window, "load", registerDateRangeSelectorFormBack)   	
+    	Event.observe(window, "load", registerDateRangeSelectorFormFinish)   	
+    	Event.observe(window, "load", registerDateRangeSelectorFormFinish)   	
+	</script>
 </head>
 <body>
 <h1>Report Builder</h1>
 
-<form:form action="${formAction}" method="post">
-    <div class="row">
-        <div class="label">
-            <form:label path="studies">Studies</form:label>
-        </div>
-        <div class="value">
-            <form:select path="studies" multiple="true">
-                <form:options items="${studies}" itemLabel="name" itemValue="id"/>
-            </form:select>
-        </div>
-    </div>
-    
-    <div class="row">
+<form:form id="reportBuilderForm" action="${formAction}" method="post">
+    <div id="siteSelectorForm" class="row">
         <div class="label">
             <form:label path="sites">Sites</form:label>
         </div>
@@ -46,9 +94,26 @@
                 <form:options items="${sites}" itemLabel="name" itemValue="id"/>
             </form:select>
         </div>
-    </div>
+        <div class="value">
+            <input type="button" id="siteSelectorFormNext" value="Next"/>
+        </div>
+    </div>    
+
+    <div id="studySelectorForm" class="row" style="display: none">
+        <div class="label">
+            <form:label path="studies">Studies</form:label>
+        </div>
+        <div class="value">
+            <form:select path="studies" multiple="true">
+                <form:options items="${studies}" itemLabel="name" itemValue="id"/>
+            </form:select>
+        </div>
+        <div class="value">
+            <input type="button" id="studySelectorFormBack" value="Back"/><input type="button" id="studySelectorFormNext" value="Next"/>            
+        </div>
+    </div>    
     
-    <div class="row">
+    <div id="participantSelectorForm" class="row" style="display: none">
         <div class="label">
             <form:label path="participants">Participants</form:label>
         </div>
@@ -57,27 +122,36 @@
                 <form:options items="${participants}" itemLabel="firstName" itemValue="id"/>
             </form:select>
         </div>
-    </div>
-    
-    <div class="row">
-        <div class="label">
-            <label for="startTimeSelector">Start Time</label>
-        </div>
         <div class="value">
-            <form:input path="startDate"/>
-        </div>
-    </div>
-             
-    <div class="row">
-        <div class="label">
-            <label for="endTimeSelector">End Time</label>
-        </div>
-        <div class="value">
-            <form:input path="endDate"/>
+            <input type="button" id="participantSelectorFormBack" value="Back"/><input type="button" id="participantSelectorFormNext" value="Next"/>            
         </div>
     </div>
     
-    <div class="row">
+    <div id="dateRangeSelectorForm" style="display: none">
+	    <div class="row">
+	        <div class="label">
+	            <label for="startTimeSelector">Start Time</label>
+	        </div>
+	        <div class="value">
+	            <form:input path="startDate"/>
+	        </div>
+	    </div>
+	             
+	    <div class="row">
+	        <div class="label">
+	            <label for="endTimeSelector">End Time</label>
+	        </div>
+	        <div class="value">
+	            <form:input path="endDate"/>
+	        </div>
+	    </div>
+	
+	    <div class="value">
+	        <input type="button" id="dateRangeSelectorFormBack" value="Back"/><input type="button" id="dateRangeSelectorFormFinish" value="Finish"/>            
+	    </div>
+	</div>
+	
+	<div id="reportBuilderFormSubmit" class="row" style="display: none">
         <div class="submit">
             <input type="submit" value="Report"/>
         </div>
