@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,11 +47,6 @@ public class ParticipantCoordinatorController extends PscSimpleFormController {
         setFormView("assignParticipantCoordinator");
     }
 
-    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Set.class, "assignedCoordinators", new CustomCollectionEditor(Set.class));
-        binder.registerCustomEditor(Set.class, "availableCoordinators", new CustomCollectionEditor(Set.class));
-    } 
-
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
     	String userName = ApplicationSecurityManager.getUser(httpServletRequest);
     	
@@ -66,9 +62,14 @@ public class ParticipantCoordinatorController extends PscSimpleFormController {
     	ParticipantCoordinatorCommand assignCommand = (ParticipantCoordinatorCommand) oCommand;
     	Study assignedStudy = studyDao.getById(assignCommand.getStudyId());
     	Site assignedSite = siteDao.getById(assignCommand.getSiteId());
-    	log.debug("+$+" + assignCommand.getAssignedCoordinators());
-    	templateService.assignTemplateToParticipantCds(assignedStudy, assignedSite, assignCommand.getAssignedCoordinators(), assignCommand.getAvailableCoordinators());
+        templateService.assignTemplateToParticipantCds(assignedStudy, assignedSite,
+            emptyForNull(assignCommand.getAssignedCoordinators()),
+            emptyForNull(assignCommand.getAvailableCoordinators()));
         return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
+    }
+
+    private List emptyForNull(List assignedCoordinators) {
+        return assignedCoordinators == null ? Collections.emptyList() : assignedCoordinators;
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
