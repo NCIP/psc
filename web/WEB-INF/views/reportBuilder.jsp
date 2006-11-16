@@ -66,8 +66,9 @@
         }
 
 		function registerDateRangeSelectorFormFinish() {
-            Event.observe("dateRangeSelectorFormBack", "click", function() {
+            Event.observe("dateRangeSelectorFormFinish", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
+                SC.slideAndShow('reportBuilderFormSubmit')
             })
         }
            
@@ -78,13 +79,12 @@
     	Event.observe(window, "load", registerParticipantSelectorFormNext)   	
     	Event.observe(window, "load", registerDateRangeSelectorFormBack)   	
     	Event.observe(window, "load", registerDateRangeSelectorFormFinish)   	
-    	Event.observe(window, "load", registerDateRangeSelectorFormFinish)   	
 	</script>
 </head>
 <body>
 <h1>Report Builder</h1>
 
-<form:form id="reportBuilderForm" action="${formAction}" method="post">
+<form:form id="reportBuilderForm" action="" method="post">
     <div id="siteSelectorForm" class="row">
         <div class="label">
             <form:label path="sites">Sites</form:label>
