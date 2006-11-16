@@ -17,7 +17,7 @@
             period.
         </p>
     </c:if>
-    <c:forEach items="${arm.months}" var="month">
+    <c:forEach items="${arm.months}" var="month" varStatus="monthStatus">
         <table class="periods" cellspacing="0">
             <tr>
                 <th class="row">Day</th>
@@ -41,6 +41,12 @@
                 </tr>
             </c:forEach>
         </table>
+        <c:if test="${not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
+            <p class="tip">
+                Now that you have a period, you can add activities to it.  Click in any shaded
+                part of the grid above to begin.
+            </p>
+        </c:if>
 
         <div class="days">
             <c:forEach items="${month.days}" var="entry">

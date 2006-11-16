@@ -102,4 +102,9 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
             assertFalse("Period " + period.getName() + " in third month incorrectly flagged", period.isResume());
         }
     }
+    
+    public void testHasEvents() throws Exception {
+        assertTrue(template.getHasEvents());
+        assertFalse(new ArmTemplate(new Arm()).getHasEvents());
+    }
 }

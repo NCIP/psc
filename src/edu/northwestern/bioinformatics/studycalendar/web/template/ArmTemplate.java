@@ -41,6 +41,15 @@ public class ArmTemplate {
         return arm;
     }
 
+    public boolean getHasEvents() {
+        for (Period period : arm.getPeriods()) {
+            if (period.getPlannedEvents().size() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
             .append("[arm=").append(getBase().getQualifiedName())
