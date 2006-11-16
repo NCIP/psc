@@ -84,7 +84,8 @@
 <body>
 <h1>Report Builder</h1>
 
-<form:form id="reportBuilderForm" action="" method="post">
+<c:url value="/pages/generateReport" var="formAction"/>
+<form:form id="reportBuilderForm" method="post" action="${formAction}">
     <div id="siteSelectorForm" class="row">
         <div class="label">
             <form:label path="sites">Sites</form:label>
@@ -152,6 +153,11 @@
 	</div>
 	
 	<div id="reportBuilderFormSubmit" class="row" style="display: none">
+		<div>You selected the following filters:</div>
+		<div>Sites:</div>
+		<div>Studies:</div>
+		<div>Participants:</div>
+		<div>Occuring from: to: </div>		
         <div class="submit">
             <input type="submit" value="Report"/>
         </div>

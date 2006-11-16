@@ -1,8 +1,15 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <!-- Redirect views -->
 
+	<!-- Intermediate views for JasperReports -->
+    <bean id="report" class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView">
+		<property name="url">
+			<value>/WEB-INF/reports/generateReport.jrxml</value>
+        </property>
+    </bean>
+
+    <!-- Redirect views -->
     <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/public/login</value></property>

@@ -91,12 +91,10 @@
 <h2>Administration</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
-    <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
+    <tags:restrictedListItem url="/pages/reportBuilder">Report Builder</tags:restrictedListItem>
+	<tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
 </ul>
 </security:secureOperation>
 
-<security:secureOperation element="/pages/reportBuilder" operation="ACCESS">
-	<div><a href="<c:url value="/pages/reportBuilder"/>">Report Builder</a></div>
-</security:secureOperation>  
 </body>
 </html>

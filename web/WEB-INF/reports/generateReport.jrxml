@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport name="generateReport">
+	
+	<field name="studyName" class="java.lang.String"/>
+	<field name="siteName" class="java.lang.String"/>
+	<field name="participantName" class="java.lang.String"/>
+	<field name="eventName" class="java.lang.String"/>
+	<field name="currentState" class="java.lang.String"/>
+	<field name="epochName" class="java.lang.String"/>
+	<field name="armName" class="java.lang.String"/>
+<title>
+	<band height="30">
+		<staticText>
+			<reportElement width="555" height="30" x="0" y="0"/>
+			<text>
+				<![CDATA[Report]]>
+			</text>
+			</staticText>
+	</band>
+ </title>
+<pageHeader>
+	<band height="40">
+		<staticText>
+			<reportElement width="75" height="40" x="0" y="0"/>
+			<text>
+				<![CDATA[Study-Name]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="80" y="0"/>
+			<text>
+				<![CDATA[Site-Name]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="160" y="0"/>
+			<text>
+				<![CDATA[Paticipant-Name]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="240" y="0"/>
+			<text>
+				<![CDATA[Event-Name]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="320" y="0"/>
+			<text>
+				<![CDATA[Event-Current-State]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="400" y="0"/>
+			<text>
+				<![CDATA[Epoch-Name]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="75" height="40" x="480" y="0"/>
+			<text>
+				<![CDATA[Arm-Name]]>
+			</text>
+		</staticText>
+	</band>
+</pageHeader>
+<detail>
+	<band height="40">
+		<textField>
+			<reportElement width="75" height="40" x="0" y="0"/>
+			<textFieldExpression><![CDATA[$F{studyName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="80" y="0"/>
+			<textFieldExpression><![CDATA[$F{siteName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="160" y="0"/>
+			<textFieldExpression><![CDATA[$F{participantName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="240" y="0"/>
+			<textFieldExpression><![CDATA[$F{eventName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="320" y="0"/>
+			<textFieldExpression><![CDATA[$F{currentState}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="400" y="0"/>
+			<textFieldExpression><![CDATA[$F{epochName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="75" height="40" x="480" y="0"/>
+			<textFieldExpression><![CDATA[$F{armName}]]></textFieldExpression>
+		</textField>
+	</band>
+</detail>
+</jasperReport>
