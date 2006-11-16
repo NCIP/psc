@@ -28,6 +28,10 @@ public class ConfigurationTest extends DaoTestCase {
         assertEquals((Integer) 28, configuration.get(SMTP_PORT));
     }
 
+    public void testGetBooleanProperty() throws Exception {
+        assertEquals(Boolean.FALSE, configuration.get(SHOW_FULL_EXCEPTIONS));
+    }
+
     public void testGetDefaultWhenUnconfigured() throws Exception {
         String actual = configuration.get(DEPLOYMENT_NAME);
         assertEquals("Study Calendar", actual);

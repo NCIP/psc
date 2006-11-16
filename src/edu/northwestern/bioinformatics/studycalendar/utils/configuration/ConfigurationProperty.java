@@ -45,6 +45,10 @@ public abstract class ConfigurationProperty<V> {
         return details.getProperty(key + ".description");
     }
 
+    public String getControlType() {
+        return "text";
+    }
+
     public abstract String toStorageFormat(V value);
     public abstract V fromStorageFormat(String stored);
 
@@ -98,6 +102,24 @@ public abstract class ConfigurationProperty<V> {
 
         public Integer fromStorageFormat(String stored) {
             return new Integer(stored);
+        }
+    }
+
+    public static class Bool extends ConfigurationProperty<Boolean> {
+        public Bool(String key) {
+            super(key);
+        }
+
+        public String getControlType() {
+            return "boolean";
+        }
+
+        public String toStorageFormat(Boolean value) {
+            return value.toString();
+        }
+
+        public Boolean fromStorageFormat(String stored) {
+            return Boolean.valueOf(stored);
         }
     }
 }

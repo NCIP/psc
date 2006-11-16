@@ -24,6 +24,10 @@ public class Configuration extends HibernateDaoSupport {
         SMTP_HOST = new ConfigurationProperty.Text("smtpHost");
     public static final ConfigurationProperty<Integer>
         SMTP_PORT = new ConfigurationProperty.Int("smtpPort");
+    public static final ConfigurationProperty<Boolean>
+        SHOW_FULL_EXCEPTIONS = new ConfigurationProperty.Bool("showFullExceptions");
+    public static final ConfigurationProperty<Boolean>
+        SHOW_DEBUG_INFORMATION = new ConfigurationProperty.Bool("showDebugInformation");
 
     public Configuration() {
         defaults = new Properties();

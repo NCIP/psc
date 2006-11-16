@@ -22,7 +22,7 @@
         div.submit {
             text-align: right;
         }
-        .value input {
+        .value input[type=text] {
             width: 80%;
         }
     </style>
@@ -36,7 +36,21 @@
                     <form:label path="conf[${entry.key}].value">${entry.value.property.name}</form:label>
                 </div>
                 <div class="value">
-                    <div><form:input path="conf[${entry.key}].value"/></div>
+                    <c:set var="beanPath">conf[${entry.key}].value</c:set>
+                    <c:choose>
+                        <c:when test="${entry.value.property.controlType == 'boolean'}">
+                            <div>
+                                <label><form:radiobutton path="${beanPath}" value="true"/> Yes</label>
+                                <label><form:radiobutton path="${beanPath}" value="false"/> No</label>
+                            </div>
+                        </c:when>
+                        <c:when test="${entry.value.property.controlType == 'text'}">
+                            <div><form:input path="${beanPath}"/></div>
+                        </c:when>
+                        <c:otherwise>
+                            <div>Unimplemented control type ${entry.value.controlType} for ${beanPath}</div>
+                        </c:otherwise>
+                    </c:choose>
                     <p class="description">${entry.value.property.description}</p>
                     <c:if test="${not empty entry.value.default}"><p class="description">(Default: ${entry.value.default})</p></c:if>
                 </div>
