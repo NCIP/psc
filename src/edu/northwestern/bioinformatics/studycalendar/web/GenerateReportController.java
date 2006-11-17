@@ -4,6 +4,9 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.text.DateFormat;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,7 +31,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class GenerateReportController extends SimpleFormController {
-	private JRBeanCollectionDataSource dataSource;
 	private StudyDao studyDao;
 	
 	public GenerateReportController() {
@@ -38,7 +40,7 @@ public class GenerateReportController extends SimpleFormController {
 	
 	public ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {	
 		Collection reportRows = initializeBeanCollection();
-		dataSource = new JRBeanCollectionDataSource(reportRows);
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
 			
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put("datasource", dataSource);
@@ -53,12 +55,16 @@ public class GenerateReportController extends SimpleFormController {
     }
 	
 	private Collection initializeBeanCollection() {
-		ArrayList<ReportBuilderRow> reportRows = new ArrayList<ReportBuilderRow>();
-		reportRows.add( new ReportBuilderRow("100", "101", "p100101", "ev100101", "ep100101", "a100101", 
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
+		String sd = df.format(date);
+		
+		List<ReportBuilderRow> reportRows = new ArrayList<ReportBuilderRow>();
+		reportRows.add( new ReportBuilderRow(sd, "100", "101", "p100101", "ev100101", "ep100101", "a100101", 
 				"sheduled", "liver-cancer", "boston", "Window Mic", "computer", "business", "software") );
-		reportRows.add( new ReportBuilderRow("100", "102", "p100102", "ev100101", "ep100101", "a100101", 
-				"occurred", "skin-cancer", "cambridge", "Redhat Lin", "computer", "fan", "software") );
-		reportRows.add( new ReportBuilderRow("300", "301", "p300301", "ev300301", "ep300301", "a300301",
+		reportRows.add( new ReportBuilderRow(sd, "100", "102", "p100102", "ev100101", "ep100101", "a100101", 
+				"occurred", "skin-cancer", "cambridge", "Redhat Lin", "computer-long-long-long", "fan", "software") );
+		reportRows.add( new ReportBuilderRow(sd, "300", "301", "p300301", "ev300301", "ep300301", "a300301",
 				"canceled", "brain-cancer", "boston", "Window Mic", "computer", "business", "software") );
 		
 		return reportRows;
@@ -70,6 +76,7 @@ public class GenerateReportController extends SimpleFormController {
 	}
 	
 	public class ReportBuilderRow {
+		private String dateStr;
 		private String studyId;
 		private String siteId;
 		private String participantId;
@@ -86,9 +93,10 @@ public class GenerateReportController extends SimpleFormController {
 		private String epochName;
 		private String armName;
 		
-		public ReportBuilderRow(String studyid, String siteid, String pid, String eventid, String epochid, 
+		public ReportBuilderRow(String datestr, String studyid, String siteid, String pid, String eventid, String epochid, 
 				String armid, String currentState, String studyname, String sitename, String pname, 
 				String eventname, String epochname, String armname){
+			this.dateStr = datestr;
 			this.studyId = studyid;
 			this.studyName = studyname;
 			this.siteId = siteid;
@@ -102,6 +110,14 @@ public class GenerateReportController extends SimpleFormController {
 			this.armId = armid;
 			this.armName = armname;
 			this.currentState = currentState;
+		}
+		
+		public void setDateStr(String date){
+			this.dateStr = date;
+		}
+		
+		public String getDateStr(){
+			return this.dateStr;
 		}
 		
 		public void setStudyId(String studyid){

@@ -3,7 +3,7 @@
 <beans>
 
 	<!-- Intermediate views for JasperReports -->
-    <bean id="report" class="org.springframework.web.servlet.view.jasperreports.JasperReportsHtmlView">
+    <bean id="report" class="org.springframework.web.servlet.view.jasperreports.JasperReportsPdfView">
 		<property name="url">
 			<value>/WEB-INF/reports/generateReport.jrxml</value>
         </property>

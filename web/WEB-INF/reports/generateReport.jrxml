@@ -2,8 +2,11 @@
 <!DOCTYPE jasperReport
   PUBLIC "-//JasperReports//DTD Report Design//EN"
   "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-<jasperReport name="generateReport">
-	
+<jasperReport name="generateReport" >
+	<style name="Arial_Normal_Default" isDefault="true" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica"/>
+	<style name="Arial_Normal_Header" isDefault="false" fontName="Arial" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<style name="Arial_Bold" isDefault="false" fontName="Arial" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<field name="dateStr" class="java.lang.String"/>
 	<field name="studyName" class="java.lang.String"/>
 	<field name="siteName" class="java.lang.String"/>
 	<field name="participantName" class="java.lang.String"/>
@@ -12,89 +15,99 @@
 	<field name="epochName" class="java.lang.String"/>
 	<field name="armName" class="java.lang.String"/>
 <title>
-	<band height="30">
+	<band height="70">
 		<staticText>
-			<reportElement width="555" height="30" x="0" y="0"/>
+			<reportElement width="555" height="50" x="0" y="0" style="Arial_Bold"/>
 			<text>
 				<![CDATA[Report]]>
 			</text>
-			</staticText>
+		</staticText>
 	</band>
  </title>
 <pageHeader>
 	<band height="40">
 		<staticText>
-			<reportElement width="75" height="40" x="0" y="0"/>
+			<reportElement width="70" height="40" x="0" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Study-Name]]>
+				<![CDATA[Date]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="80" y="0"/>
+			<reportElement width="70" height="40" x="70" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Site-Name]]>
+				<![CDATA[Study]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="160" y="0"/>
+			<reportElement width="70" height="40" x="140" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Paticipant-Name]]>
+				<![CDATA[Site]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="240" y="0"/>
+			<reportElement width="70" height="40" x="200" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Event-Name]]>
+				<![CDATA[Paticipant]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="320" y="0"/>
+			<reportElement width="70" height="40" x="278" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Event-Current-State]]>
+				<![CDATA[Event]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="400" y="0"/>
+			<reportElement width="70" height="40" x="340" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Epoch-Name]]>
+				<![CDATA[Event State]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="75" height="40" x="480" y="0"/>
+			<reportElement width="70" height="40" x="410" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Arm-Name]]>
+				<![CDATA[Epoch]]>
+			</text>
+		</staticText>
+		<staticText>
+			<reportElement width="70" height="40" x="480" y="0" style="Arial_Normal_Header"/>
+			<text>
+				<![CDATA[Arm]]>
 			</text>
 		</staticText>
 	</band>
 </pageHeader>
 <detail>
-	<band height="40">
+	<band height="20">
 		<textField>
-			<reportElement width="75" height="40" x="0" y="0"/>
+			<reportElement width="70" height="20" x="0" y="0"/>
+			<textFieldExpression><![CDATA[$F{dateStr}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="75" y="0"/>
 			<textFieldExpression><![CDATA[$F{studyName}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="80" y="0"/>
+			<reportElement width="70" height="20" x="145" y="0"/>
 			<textFieldExpression><![CDATA[$F{siteName}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="160" y="0"/>
+			<reportElement width="70" height="20" x="215" y="0"/>
 			<textFieldExpression><![CDATA[$F{participantName}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="240" y="0"/>
+			<reportElement width="70" height="20" x="285" y="0"/>
 			<textFieldExpression><![CDATA[$F{eventName}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="320" y="0"/>
+			<reportElement width="70" height="20" x="355" y="0"/>
 			<textFieldExpression><![CDATA[$F{currentState}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="400" y="0"/>
+			<reportElement width="70" height="20" x="425" y="0"/>
 			<textFieldExpression><![CDATA[$F{epochName}]]></textFieldExpression>
 		</textField>
 		<textField>
-			<reportElement width="75" height="40" x="480" y="0"/>
+			<reportElement width="70" height="20" x="495" y="0"/>
 			<textFieldExpression><![CDATA[$F{armName}]]></textFieldExpression>
 		</textField>
 	</band>
