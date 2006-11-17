@@ -261,6 +261,7 @@
             <!-- Using the template for this parameter is sufficient to initialize the
                  AuthenticationManager, which is all that is needed for the unit tests -->
             <jvmarg value="-Dgov.nih.nci.security.configFile=${basedir}/conf/upt/ApplicationSecurityConfig.xml"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
             <formatter type="plain" usefile="false"/>
             <formatter type="xml" usefile="true"/>
             <batchtest todir="${build-dir.unit-test}/junit">
