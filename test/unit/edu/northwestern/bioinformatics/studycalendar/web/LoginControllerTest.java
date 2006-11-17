@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import static edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor.REQUESTED_URL_ATTRIBUTE;
+import edu.northwestern.bioinformatics.studycalendar.dao.LoginAuditDao;
 import gov.nih.nci.security.exceptions.CSException;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,17 +20,18 @@ public class LoginControllerTest extends ControllerTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        command = registerMockFor(LoginCommand.class, LoginCommand.class.getMethod("login"));
-
+        command = registerMockFor(LoginCommand.class, LoginCommand.class.getMethod("login", String.class));
         controller = new LoginController() {
+        	   
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
                 return command;
             }
         };
     }
+        
 
     public void testViewOnGet() throws Exception {
-        request.setMethod("GET");
+        request.setMethod("GET");	
         ModelAndView view = controller.handleRequest(request, response);
         assertEquals("login", view.getViewName());
     }
@@ -93,7 +95,7 @@ public class LoginControllerTest extends ControllerTestCase {
     }
 
     private void expectLogin(boolean success) throws CSException {
-        expect(command.login()).andReturn(success);
+    	expect(command.login(request.getRemoteAddr())).andReturn(success);
     }
 
 }
