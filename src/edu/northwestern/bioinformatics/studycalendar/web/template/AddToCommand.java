@@ -27,7 +27,7 @@ public class AddToCommand extends ModalEditCommand {
 
         public void performEdit() {
             Arm arm = new Arm();
-            arm.setName("New arm");
+            arm.setName("[Unnamed arm]");
             getEpoch().addArm(arm);
         }
 
@@ -48,7 +48,7 @@ public class AddToCommand extends ModalEditCommand {
         }
 
         public void performEdit() {
-            getStudy().getPlannedCalendar().addEpoch(Epoch.create("New epoch"));
+            getStudy().getPlannedCalendar().addEpoch(Epoch.create("[Unnamed epoch]"));
         }
     }
 }

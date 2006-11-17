@@ -31,11 +31,11 @@ public class NewStudyCommandTest extends StudyCalendarTestCase {
     }
     
     private static void assertBlankStudy(Study actual) {
-        assertEquals("Wrong study name", "New blank study", actual.getName());
+        assertEquals("Wrong study name", "[Unnamed blank study]", actual.getName());
 
         List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
         assertEquals("Wrong number of epochs", 1, epochs.size());
-        assertEquals("Wrong epoch name", "New epoch", epochs.get(0).getName());
+        assertEquals("Wrong epoch name", "[Unnamed epoch]", epochs.get(0).getName());
     }
 
     public void testCreateBasic() throws Exception {
@@ -55,7 +55,7 @@ public class NewStudyCommandTest extends StudyCalendarTestCase {
     }
 
     private static void assertBasicStudy(Study actual) {
-        assertEquals("Wrong study name for new study", "New study", actual.getName());
+        assertEquals("Wrong study name for new study", "[Unnamed study]", actual.getName());
 
         List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
         assertEquals("Wrong number of epochs", 3, epochs.size());

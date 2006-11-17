@@ -41,9 +41,9 @@ public class NewStudyCommand {
     protected static class Blank implements TemplateBase {
         public Study create() {
             Study study = new Study();
-            study.setName("New blank study");
+            study.setName("[Unnamed blank study]");
             study.setPlannedCalendar(new PlannedCalendar());
-            study.getPlannedCalendar().addEpoch(Epoch.create("New epoch"));
+            study.getPlannedCalendar().addEpoch(Epoch.create("[Unnamed epoch]"));
             return study;
         }
     }
@@ -51,7 +51,7 @@ public class NewStudyCommand {
     protected static class Basic implements TemplateBase {
         public Study create() {
             Study study = new Study();
-            study.setName("New study");
+            study.setName("[Unnamed study]");
             study.setPlannedCalendar(new PlannedCalendar());
             study.getPlannedCalendar().addEpoch(Epoch.create("Screening"));
             study.getPlannedCalendar().addEpoch(Epoch.create("Treatment", "A", "B", "C"));
