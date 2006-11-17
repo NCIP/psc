@@ -22,6 +22,6 @@ public class NewPeriodCommandTest extends StudyCalendarTestCase {
         command.apply();
 
         assertEquals(1, arm.getPeriods().size());
-        assertSame(command, arm.getPeriods().first());
+        assertSame(command.getPeriod(), arm.getPeriods().first());
     }
 }
