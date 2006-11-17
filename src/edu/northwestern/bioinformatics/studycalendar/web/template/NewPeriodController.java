@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 /**
  * @author Moses Hohman
@@ -30,7 +32,7 @@ public class NewPeriodController extends PscSimpleFormController {
     public NewPeriodController() {
         setCommandClass(NewPeriodCommand.class);
         setFormView("editPeriod");
-        setCrumb(new DefaultCrumb("New Period"));
+        setCrumb(new Crumb());
     }
 
     @Override
@@ -60,5 +62,15 @@ public class NewPeriodController extends PscSimpleFormController {
     @Required
     public void setArmDao(ArmDao armDao) {
         this.armDao = armDao;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        public Crumb() {
+            super("Add period");
+        }
+
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            return Collections.singletonMap("arm", context.getArm().getId().toString());
+        }
     }
 }
