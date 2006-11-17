@@ -66,6 +66,11 @@ public class Period extends AbstractDomainObject implements Named, Comparable<Pe
     }
 
     @Transient
+    public String getDisplayName() {
+        return getName() == null ? "[period]" : getName();
+    }
+
+    @Transient
     public List<DayRange> getDayRanges() {
         List<DayRange> ranges = new ArrayList<DayRange>(getRepetitions());
         while (ranges.size() < getRepetitions()) {

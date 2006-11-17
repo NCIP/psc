@@ -111,8 +111,12 @@ public class ArmTemplate {
             days.add(day);
         }
 
+        public int getId() {
+            return getPeriod().getId();
+        }
+
         public String getName() {
-            return getPeriod().getName();
+            return getPeriod().getDisplayName();
         }
 
         private Period getPeriod() {

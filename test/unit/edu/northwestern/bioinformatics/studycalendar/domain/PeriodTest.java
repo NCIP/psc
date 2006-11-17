@@ -13,6 +13,16 @@ import java.util.List;
 public class PeriodTest extends StudyCalendarTestCase {
     private Period period = new Period();
 
+    public void testDisplayNameWithName() throws Exception {
+        period.setName("Name-o");
+        assertEquals("Name-o", period.getDisplayName());
+    }
+
+    public void testDisplayNameWithNoName() throws Exception {
+        period.setName(null);
+        assertEquals("[period]", period.getDisplayName());
+    }
+
     public void testDurationNeverNull() {
         Period p = new Period();
         p.setDuration(null);

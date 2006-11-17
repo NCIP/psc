@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 /**
  * @author Moses Hohman
  */
-public class NewPeriodCommand {
+public class NewPeriodCommand implements PeriodCommand {
     private Arm arm;
     private Period period;
 

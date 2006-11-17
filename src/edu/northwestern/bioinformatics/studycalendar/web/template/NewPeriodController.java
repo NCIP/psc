@@ -15,6 +15,8 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -26,37 +28,25 @@ import java.util.Collections;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
-public class NewPeriodController extends PscSimpleFormController {
+public class NewPeriodController extends AbstractPeriodController<NewPeriodCommand> {
     private ArmDao armDao;
 
     public NewPeriodController() {
-        setCommandClass(NewPeriodCommand.class);
-        setFormView("editPeriod");
+        super(NewPeriodCommand.class);
         setCrumb(new Crumb());
     }
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
         ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
     }
 
-    @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
-        Map<String, Object> data = new HashMap<String, Object>();
-        data.put("arm", armDao.getById(ServletRequestUtils.getIntParameter(request, "arm")));
-        data.put("durationUnits", Duration.Unit.values());
-        return data;
-    }
-
-    @Override
-    protected ModelAndView onSubmit(Object command) throws Exception {
-        return onSubmit((NewPeriodCommand) command);
-    }
-
-    private ModelAndView onSubmit(NewPeriodCommand command) throws Exception {
-        command.apply();
-        Study study = command.getArm().getEpoch().getPlannedCalendar().getStudy();
-        return ControllerTools.redirectToCalendarTemplate(study.getId(), command.getArm().getId());
+    protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
+        Map<String, Object> refdata = super.referenceData(request, command, errors);
+        refdata.put("verb", "add");
+        ControllerTools.addHierarchyToModel(((PeriodCommand) command).getArm(), refdata);
+        return refdata;
     }
 
     @Required

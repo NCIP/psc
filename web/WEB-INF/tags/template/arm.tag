@@ -2,13 +2,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
+<c:set var="editable" value="${not arm.base.epoch.plannedCalendar.complete}"/>
 <h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
-    <c:if test="${not arm.base.epoch.plannedCalendar.complete}">
+    <c:if test="${editable}">
     <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a></p>
     </c:if>
-    <c:if test="${empty arm.months}">
+    <c:if test="${editable and empty arm.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
             <a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.
@@ -20,6 +21,7 @@
     <c:forEach items="${arm.months}" var="month" varStatus="monthStatus">
         <table class="periods" cellspacing="0">
             <tr>
+                <c:if test="${editable}"><td class="controls"></td></c:if>
                 <th class="row">Day</th>
                 <c:forEach items="${month.periods[0].days}" var="day">
                     <th class="column">${day.day.number}</th>
@@ -27,7 +29,10 @@
             </tr>
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
-                    <th class="row">${period.name}<c:if test="${empty period.name}">&nbsp;</c:if></th>
+                    <c:if test="${editable}"><td class="controls"><a class="control" href="<c:url value="/pages/editPeriod?period=${period.id}"/>">Edit</a></td></c:if>
+                    <th class="row">
+                        ${period.name}
+                    </th>
                     <c:forEach items="${period.days}" var="day" varStatus="dStatus">
                     <c:choose>
                         <c:when test="${day.inPeriod}">
@@ -41,7 +46,7 @@
                 </tr>
             </c:forEach>
         </table>
-        <c:if test="${not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
+        <c:if test="${editable and not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
             <p class="tip">
                 Now that you have a period, you can add activities to it.  Click in any shaded
                 part of the grid above to begin.

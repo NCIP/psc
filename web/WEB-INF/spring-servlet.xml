@@ -100,6 +100,11 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
+    <bean name="/editPeriod" id="editPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPeriodController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
         <property name="crumb">

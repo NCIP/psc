@@ -35,6 +35,7 @@
             table.periods th.row {
                 padding-right: 0.5em;
                 text-align: right;
+                white-space: nowrap;
             }
             table.periods th.column {
                 border-top-width: 1px;
@@ -47,7 +48,7 @@
                 border-width: 1px 1px 0 0;
                 text-align: center;
             }
-            table.periods a {
+            table.periods td.repetition a {
                 text-decoration: none;
                 margin: 0;
                 padding: 2px;
@@ -76,6 +77,10 @@
             table.periods tr.last td {
                 border-bottom-width: 1px;
             }
+            table.periods td.controls {
+                border-width: 0 !important;
+                padding: 3px;
+            }
 
             .days {
                 margin: 0 3em 3em 5em;
@@ -86,7 +91,7 @@
             }
             /* For IE */
             * html #epochs h4 { height: 1px; }
-            .controls {
+            .controls, table.periods a.control {
                 font-family: Arial, sans-serif;
                 font-size: 7.5pt;
             }
