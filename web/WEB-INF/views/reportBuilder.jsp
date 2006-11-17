@@ -83,7 +83,7 @@
 </head>
 <body>
 <h1>Report Builder</h1>
-
+<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
 <c:url value="/pages/generateReport" var="formAction"/>
 <form:form id="reportBuilderForm" method="post" action="${formAction}">
     <div id="siteSelectorForm" class="row">
