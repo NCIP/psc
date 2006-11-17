@@ -23,7 +23,6 @@
 </head>
 <body>
 <h1>Assign Site Coordinators to ${site.name}</h1>
-<div><a href="<c:url value="/pages/studyList"/>">Calendar Menu</a></div>
 
 <form:form action="${formAction}" method="post">
 <input type="hidden" name="siteId" value="${site.id}"/>
