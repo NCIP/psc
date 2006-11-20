@@ -5,6 +5,7 @@ import static edu.northwestern.bioinformatics.studycalendar.utils.configuration.
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.Map;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -55,6 +56,17 @@ public class ConfigurationTest extends DaoTestCase {
         interruptSession();
 
         assertStoredValue("a, b, c", MAIL_EXCEPTIONS_TO);
+    }
+    
+    public void testMap() throws Exception {
+        Map<String, Object> map = configuration.getMap();
+        assertEquals(28, map.get("smtpPort"));
+        assertEquals(false, map.get("showFullExceptions"));
+        assertEquals("Study Calendar", map.get("deploymentName"));
+    }
+    
+    public void testMapReturnsNullForMissing() throws Exception {
+        assertNull(configuration.getMap().get("bogus"));
     }
 
     private <V> void assertStoredValue(final String expected, ConfigurationProperty<V> property) {

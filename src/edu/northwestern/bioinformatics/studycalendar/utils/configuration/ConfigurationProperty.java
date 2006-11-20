@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Collection;
 import java.util.Properties;
+import java.util.Set;
 import java.io.IOException;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -16,19 +17,27 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
  * @author Rhett Sutphin
 */
 public abstract class ConfigurationProperty<V> {
-    private static final Map<String, ConfigurationProperty> INSTANCES = new TreeMap<String, ConfigurationProperty>();
+    private static final Map<String, ConfigurationProperty<?>> INSTANCES = new TreeMap<String, ConfigurationProperty<?>>();
     private static final String DETAILS_RESOURCE = "details.properties";
     private static Properties details;
 
     private final String key;
 
-    public ConfigurationProperty(String key) {
+    protected ConfigurationProperty(String key) {
         this.key = key;
         INSTANCES.put(key, this);
     }
 
-    public static Collection<ConfigurationProperty> values() {
+    public static Collection<ConfigurationProperty<?>> values() {
         return INSTANCES.values();
+    }
+
+    public static ConfigurationProperty<?> getPropertyForKey(String key) {
+        return INSTANCES.get(key);
+    }
+
+    public static Set<String> keys() {
+        return INSTANCES.keySet();
     }
 
     public String getKey() {

@@ -39,15 +39,16 @@
         </style>
     </head>
     <body>
+    <c:set var="showDetail" value="${configuration.map.showFullExceptions}"/>
     <h1>${statusName}</h1>
     <p>${message}</p>
 
     <c:choose>
         <c:when test="${notified}">
             <p>
-                The following information about this error has been mailed to the
-                system administrator(s).  If you can provide any additional context,
-                please contact them.
+                ${showDetail ? 'The following information' : 'Information'} about this error has
+                been mailed to the system administrator(s).  If you can provide any additional
+                context, please contact them.
             </p>
         </c:when>
         <c:otherwise>
@@ -57,8 +58,11 @@
         </c:otherwise>
     </c:choose>
 
-    ${stackTrace}
+    <c:if test="${showDetail}">
+        ${stackTrace}
+    
+        <tags:debugInfo force="true"/>
+    </c:if>
 
-    <tags:debugInfo force="true"/>
     </body>
 </html>
