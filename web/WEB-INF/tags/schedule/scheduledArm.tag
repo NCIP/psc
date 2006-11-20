@@ -21,7 +21,7 @@
                 <c:forEach items="${entry.value}" var="event">
                     <li class="${event.currentState.mode.name}">
                         <a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.plannedEvent.activity.name}</a>
-                        <c:if test="${not empty event.plannedEvent.details}">(${event.plannedEvent.details})</c:if> 
+                        <c:if test="${not empty event.plannedEvent.details}"><span class="event-details">(${event.plannedEvent.details})</span></c:if> 
                     </li>
                 </c:forEach>
             </ul>
