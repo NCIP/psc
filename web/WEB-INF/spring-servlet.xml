@@ -164,6 +164,8 @@
     </bean>
     <bean name="/schedule/nextArm" id="scheduleNextArmController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
+    <bean name="/schedule/batch" id="batchRescheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchRescheduleController"/>
 
     <bean name="/scheduleEvent" id="scheduleEventController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController">

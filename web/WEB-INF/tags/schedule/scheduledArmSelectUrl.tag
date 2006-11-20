@@ -1,0 +1,1 @@
+<%@tag%><%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%><%@attribute name="scheduledArmId" required="true"%><c:url value="/pages/schedule/select?arm=${scheduledArmId}"/>

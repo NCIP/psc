@@ -9,6 +9,7 @@
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
+    <tags:javascriptLink name="scheduled-event"/>
     <style type="text/css">
         .epochs-and-arms, #next-arm-form {
             margin: 1em;
@@ -23,8 +24,12 @@
             display: none;
         }
 
-        #schedule-next-arm-header span {
+        .collapse-icon {
             font-size: 0.6em;
+        }
+
+        .collapsible h2 {
+            cursor: pointer;
         }
 
         #next-arm-form {
@@ -46,6 +51,11 @@
 
         #mode-row label {
             display: block;
+        }
+
+        #batch-reschedule form {
+            font-size: 0.8em;
+            margin: 1em;
         }
 
         #scheduled-arms ul {
@@ -155,24 +165,28 @@
             var aElement = $(a)
             Event.observe(aElement, "click", function(e) {
                 Event.stop(e)
-                $("scheduled-arms-indicator").reveal();
-                SC.slideAndHide('selected-arm-content', { afterFinish: function() {
-                    // deselect current
-                    var sel = $$("#scheduled-arms li.selected")
-                    if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
-
-                    new Ajax.Request(aElement.href, { asynchronous: true,
-                        onComplete: function() {
-                            $("scheduled-arms-indicator").conceal()
-                        },
-                        onFailure: function() {
-                            Element.update('selected-arm-content', "Loading failed")
-                            Element.update('selected-arm-header', "Error")
-                            SC.slideAndShow('selected-arm-content')
-                        }
-                    });
-                } });
+                selectArm(aElement.href)
             })
+        }
+
+        function selectArm(href) {
+            $("scheduled-arms-indicator").reveal();
+            SC.slideAndHide('selected-arm-content', { afterFinish: function() {
+                // deselect current
+                var sel = $$("#scheduled-arms li.selected")
+                if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+
+                new Ajax.Request(href, { asynchronous: true,
+                    onComplete: function() {
+                        $("scheduled-arms-indicator").conceal()
+                    },
+                    onFailure: function() {
+                        Element.update('selected-arm-content', "Loading failed")
+                        Element.update('selected-arm-header', "Error")
+                        SC.slideAndShow('selected-arm-content')
+                    }
+                });
+            } });
         }
 
         function registerSelectNextArmHandlers() {
@@ -192,9 +206,18 @@
                 SC.asyncSubmit('next-arm-form', {
                     onComplete: function() {
                         $('next-arm-indicator').conceal()
-                    },
-                    onFailure: function() {
-                        alert("TODO: need to handle errors")
+                    }
+                })
+            })
+        }
+
+        function registerBatchRescheduleHandlers() {
+            Event.observe('batch-form', "submit", function(e) {
+                $('batch-indicator').reveal()
+                Event.stop(e)
+                SC.asyncSubmit('batch-form', {
+                    onComplete: function() {
+                        $('batch-indicator').conceal()
                     }
                 })
             })
@@ -209,28 +232,35 @@
         }
 
         function registerHeaderCollapse() {
-            Event.observe('schedule-next-arm-header', 'click', function() {
-                var content = $$('#schedule-next-arm .content')[0];
-                if (content.visible()) {
-                    SC.slideAndHide(content, {
-                        afterFinish: function() {
-                            $('schedule-next-arm-header').title = "Click to schedule"
-                            $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9660;</span>"
-                        }
-                    });
-                } else {
-                    SC.slideAndShow(content, {
-                        afterFinish: function() {
-                            $('schedule-next-arm-header').title = "Click to conceal form"
-                            $('schedule-next-arm-header').innerHTML = "Schedule next arm <span>&#9650;</span>"
-                        }
-                    });
-                }
+            $$(".collapsible").each(function(section) {
+                var header = section.getElementsByTagName("H2")[0]
+                header.innerHTML += " <span class='collapse-icon'>&#9660;</span>"
+                header.title = "Click to reveal"
+                Event.observe(header, 'click', function() {
+                    var content = section.getElementsByClassName("content")[0]
+                    var icon = section.getElementsByClassName("collapse-icon")[0]
+                    if (content.visible()) {
+                        SC.slideAndHide(content, {
+                            afterFinish: function() {
+                                header.title = "Click to reveal form"
+                                Element.update(icon, '&#9660;')
+                            }
+                        });
+                    } else {
+                        SC.slideAndShow(content, {
+                            afterFinish: function() {
+                                header.title = "Click to conceal form"
+                                Element.update(icon, '&#9650;')
+                            }
+                        });
+                    }
+                })
             })
         }
 
         Event.observe(window, "load", registerSelectArmHandlers);
         Event.observe(window, "load", registerSelectNextArmHandlers);
+        Event.observe(window, "load", registerBatchRescheduleHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
         Event.observe(window, "load", registerHeaderCollapse);
     </script>
@@ -238,8 +268,8 @@
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
-<div id="schedule-next-arm" class="section autoclear">
-    <h2 id="schedule-next-arm-header" title="Click to schedule">Schedule next arm <span>&#9660;</span></h2>
+<div id="schedule-next-arm" class="section autoclear collapsible">
+    <h2 id="schedule-next-arm-header">Schedule next arm</h2>
     <div class="content" style="display: none">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
         <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
@@ -267,6 +297,37 @@
             </div>
         </form>
         <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+    </div>
+</div>
+
+<div id="batch-reschedule" class="section collapsible">
+    <h2>Batch reschedule</h2>
+    <div class="content" style="display: none">
+        <p class="tip">
+            To change all currently scheduled events, first select to what you'd like to change them.
+            Then fill in the rest of the form.
+        </p>
+        <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
+            <input type="hidden" name="scheduledCalendar" value="${calendar.id}"/>
+            <label id="new-mode-selector-group">
+                <select name="newMode" id="new-mode-selector">
+                    <option></option>
+                    <option value="1">Keep as scheduled</option>
+                    <option value="3">Mark canceled</option>
+                </select>
+            </label>
+            <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
+            <label id="new-reason-input-group">
+                Why? <input type="text" name="newReason"/>
+                <tags:activityIndicator id="batch-indicator"/>
+                <input type="submit" value="Submit"/>
+            </label>
+        </form>
+        <p class="tip">
+            This change will affect all events for this participant that have not been canceled or
+            marked "occurred."  To change a single event, click it in the full schedule display
+            below.
+        </p>
     </div>
 </div>
 

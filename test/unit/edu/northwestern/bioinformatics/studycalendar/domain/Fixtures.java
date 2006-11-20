@@ -81,6 +81,12 @@ public class Fixtures {
         return event;
     }
 
+    public static void addEvents(ScheduledArm scheduledArm, ScheduledEvent... events) {
+        for (ScheduledEvent event : events) {
+            scheduledArm.addEvent(event);
+        }
+    }
+
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
         try {
             T instance = clazz.newInstance();
