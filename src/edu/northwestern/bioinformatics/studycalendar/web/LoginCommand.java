@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.LoginAudit;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.exceptions.CSException;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
@@ -39,7 +40,7 @@ public class LoginCommand {
         } catch (CSException ex) {
             log.debug("Authentication failed for " + getUsername() + " with exception", ex);
         }
-        createAuditObject(ipAddress, new Date(), new Boolean(loginSuccess).toString());
+        createAuditObject(ipAddress, new Timestamp(new Date().getTime()), new Boolean(loginSuccess).toString());
         if (loginSuccess) {
             log.debug("Login successful for " + getUsername());
         } else {
@@ -66,7 +67,7 @@ public class LoginCommand {
         this.username = username;
     }
     
-    public void createAuditObject(String ipAddress, Date time, String loginStatus) {
+    public void createAuditObject(String ipAddress, Timestamp time, String loginStatus) {
     	LoginAudit auditObj = new LoginAudit();
     	String status = "Failure";
     	auditObj.setIpAddress(ipAddress);
