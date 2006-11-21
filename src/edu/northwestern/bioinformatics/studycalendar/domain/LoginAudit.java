@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -30,7 +30,7 @@ import java.util.List;
 public class LoginAudit extends AbstractDomainObject {
     private String ipAddress;
     private String userName;
-    private Date time;
+    private Timestamp time;
     private String loginStatus;
    
     // business methods
@@ -54,11 +54,11 @@ public class LoginAudit extends AbstractDomainObject {
 		this.loginStatus = loginStatus;
 	}
 
-	public Date getTime() {
+	public Timestamp getTime() {
 		return time;
 	}
 
-	public void setTime(Date time) {
+	public void setTime(Timestamp time) {
 		this.time = time;
 	}
 
