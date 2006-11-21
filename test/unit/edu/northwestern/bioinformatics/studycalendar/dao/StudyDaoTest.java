@@ -22,6 +22,7 @@ public class StudyDaoTest extends DaoTestCase {
         Study study = dao.getById(-100);
         assertNotNull("Study 1 not found", study);
         assertEquals("Wrong name", "First Study", study.getName());
+        assertEquals("Wrong grid ID", "long-GUID-string", study.getBigId());
     }
 
     public void testGetAll() throws Exception {
@@ -48,6 +49,7 @@ public class StudyDaoTest extends DaoTestCase {
             Study loaded = dao.getById(savedId);
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong name", "New study", loaded.getName());
+            assertNotNull("Grid ID not automatically added", loaded.getBigId());
         }
     }
     

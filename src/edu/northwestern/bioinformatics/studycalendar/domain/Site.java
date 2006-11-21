@@ -27,7 +27,7 @@ import javax.persistence.OrderBy;
         @Parameter(name="sequence", value="seq_sites_id")
     }
 )
-public class Site extends AbstractDomainObject implements Named {
+public class Site extends AbstractDomainObjectWithBigId implements Named {
     public static final String DEFAULT_SITE_NAME = "default";
 
     private String name;

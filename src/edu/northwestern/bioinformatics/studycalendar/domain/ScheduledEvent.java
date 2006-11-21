@@ -35,7 +35,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
         @Parameter(name="sequence", value="seq_scheduled_events_id")
     }
 )
-public class ScheduledEvent extends AbstractDomainObject {
+public class ScheduledEvent extends AbstractDomainObjectWithBigId {
     private ScheduledArm scheduledArm;
     private PlannedEvent plannedEvent;
     private Date idealDate;

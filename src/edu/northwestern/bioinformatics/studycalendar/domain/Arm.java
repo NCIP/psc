@@ -31,7 +31,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
         @Parameter(name="sequence", value="seq_arms_id")
     }
 )
-public class Arm extends AbstractDomainObject implements Named {
+public class Arm extends AbstractDomainObjectWithBigId implements Named {
     private Epoch epoch;
     private String name;
     private SortedSet<Period> periods = new TreeSet<Period>();

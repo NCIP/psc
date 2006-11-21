@@ -28,7 +28,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_participants_id")
     }
 )
-public class Participant extends AbstractDomainObject {
+public class Participant extends AbstractDomainObjectWithBigId {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
