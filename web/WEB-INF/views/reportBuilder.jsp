@@ -25,17 +25,9 @@
 
         function registerSiteSelectorFormNext() {
             Event.observe("siteSelectorFormNext", "click", function() {
-            	$('sites-indicator').reveal();
-                SC.slideAndHide("siteSelectorForm", {
-                    afterFinish: function() {
-	                    SC.asyncSubmit("siteSelectorForm", {
-	                        onComplete: function() {
-	                            $('sites-indicator').conceal();
-	                        }
-	                    })
-                    }
-                })
-        	})
+                SC.slideAndHide("siteSelectorForm")
+                SC.slideAndShow('studySelectorForm')
+            })
         }
         
 		function registerStudySelectorFormBack() {
@@ -47,17 +39,9 @@
         
 		function registerStudySelectorFormNext() {
             Event.observe("studySelectorFormNext", "click", function() {
-            	$('studies-indicator').reveal();
-                SC.slideAndHide("studySelectorForm", {
-                    afterFinish: function() {
-	                    SC.asyncSubmit("studySelectorForm", {
-	                        onComplete: function() {
-	                            $('studies-indicator').conceal();
-	                        }
-	                    })
-                    }
-                })
-        	})
+                SC.slideAndHide("studySelectorForm")
+                SC.slideAndShow('participantSelectorForm')
+            })
         }
 
 		function registerParticipantSelectorFormBack() {
@@ -84,7 +68,7 @@
 		function registerDateRangeSelectorFormFinish() {
             Event.observe("dateRangeSelectorFormFinish", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
-                SC.slideAndShow('reportBuilderForm')
+                SC.slideAndShow('reportBuilderFormSubmit')
             })
         }
            
@@ -99,15 +83,14 @@
 </head>
 <body>
 <h1>Report Builder</h1>
-
-<c:url value="/pages/reportBuilder/selectSites" var="siteSelectorFormAction"/>
-<form:form method="post" action="${siteSelectorFormAction}" id="siteSelectorForm">
-	<div class="row">
+<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
+<c:url value="/pages/generateReport" var="formAction"/>
+<form:form id="reportBuilderForm" method="post" action="${formAction}">
+    <div id="siteSelectorForm" class="row">
         <div class="label">
             <form:label path="sites">Sites</form:label>
         </div>
         <div class="value">
-            <tags:activityIndicator id="sites-indicator"/>
             <form:select path="sites" multiple="true">
                 <form:options items="${sites}" itemLabel="name" itemValue="id"/>
             </form:select>
@@ -116,16 +99,12 @@
             <input type="button" id="siteSelectorFormNext" value="Next"/>
         </div>
     </div>    
-</form:form>
 
-<c:url value="/pages/reportBuilder/selectStudies" var="studySelectorFormAction"/>
-<form:form method="post" action="${studySelectorFormAction}" id="studySelectorForm" cssStyle="display: none">
-	<div class="row">
+    <div id="studySelectorForm" class="row" style="display: none">
         <div class="label">
             <form:label path="studies">Studies</form:label>
         </div>
         <div class="value">
-            <tags:activityIndicator id="studies-indicator"/>
             <form:select path="studies" multiple="true">
                 <form:options items="${studies}" itemLabel="name" itemValue="id"/>
             </form:select>
@@ -134,10 +113,8 @@
             <input type="button" id="studySelectorFormBack" value="Back"/><input type="button" id="studySelectorFormNext" value="Next"/>            
         </div>
     </div>    
-</form:form>
     
-<form:form method="post" id="participantSelectorForm" cssStyle="display: none">
-	<div class="row">
+    <div id="participantSelectorForm" class="row" style="display: none">
         <div class="label">
             <form:label path="participants">Participants</form:label>
         </div>
@@ -150,9 +127,8 @@
             <input type="button" id="participantSelectorFormBack" value="Back"/><input type="button" id="participantSelectorFormNext" value="Next"/>            
         </div>
     </div>
-</form:form>
     
-<form:form method="post" id="dateRangeSelectorForm" cssStyle="display: none">
+    <div id="dateRangeSelectorForm" style="display: none">
 	    <div class="row">
 	        <div class="label">
 	            <label for="startTimeSelector">Start Time</label>
@@ -175,11 +151,8 @@
 	        <input type="button" id="dateRangeSelectorFormBack" value="Back"/><input type="button" id="dateRangeSelectorFormFinish" value="Finish"/>            
 	    </div>
 	</div>
-</form:form>
-
-<c:url value="/pages/generateReport" var="formAction"/>
-<form:form id="reportBuilderForm" method="post" action="${formAction}" cssStyle="display: none">
-	<div class="row" >
+	
+	<div id="reportBuilderFormSubmit" class="row" style="display: none">
 		<div>You selected the following filters:</div>
 		<div>Sites:</div>
 		<div>Studies:</div>

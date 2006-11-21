@@ -262,8 +262,11 @@
          </property>
     </bean>
     
-    <bean name="/reportBuilder/selectSite" id="reportBuilderSelectSitesController" autowire="byName"
+    <bean name="/reportBuilder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
+
+    <bean name="/reportBuilder/selectStudies" id="reportBuilderSelectStudiesController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectStudiesController"/>
 
      <bean name="/configure" id="configurationController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">

@@ -41,14 +41,14 @@ public class ReportBuilderController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData"); 
         Map<String, Object> refdata = new HashMap<String, Object>();
-//        List<Study> studies = new ArrayList<Study>();
+        List<Study> studies = new ArrayList<Study>();
         List<Site> sites = new ArrayList<Site>();
-//    	List<Participant> participants = new ArrayList<Participant>();
+        List<Participant> participants = new ArrayList<Participant>();
         sites = siteDao.getAll();
         
-//    	refdata.put("studies", studies);        
+    	refdata.put("studies", studies);        
     	refdata.put("sites", sites);        
-//    	refdata.put("participants", participants);        
+    	refdata.put("participants", participants);        
         
         return refdata;
     }

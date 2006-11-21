@@ -5,7 +5,10 @@ import java.util.List;
 import org.easymock.classextension.EasyMock;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
@@ -16,36 +19,37 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
  */
 public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 	private ReportBuilderSelectSitesController controller;
-    private StudyDao studyDao;
-    private TemplateService templateService;
+    private SiteDao siteDao;
 
 
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		templateService = registerMockFor(TemplateService.class);
-		studyDao = registerDaoMockFor(StudyDao.class);
+		siteDao = registerDaoMockFor(SiteDao.class);
 		
 		controller = new ReportBuilderSelectSitesController();
 		
-		controller.setTemplateService(templateService);
-		controller.setStudyDao(studyDao);
+		controller.setSiteDao(siteDao);
 
 	}
 	
 	public void testHandleRequest() throws Exception {
-		List<Study> studies = new ArrayList<Study>();
-		EasyMock.expect(studyDao.getAll()).andReturn(studies);
-		//TODO: Fix this so that it the ASM.getUser request doesn't leave a null here - jsampson
-//		EasyMock.expect(templateService.checkOwnership(null, studies)).andReturn(studies);
+		List<Site> sites = new ArrayList<Site>();
+		sites.add(Fixtures.createNamedInstance("New York", Site.class));
+		sites.add(Fixtures.createNamedInstance("Chicago", Site.class));
+		sites.add(Fixtures.createNamedInstance("Boston", Site.class));
+		
+		EasyMock.expect(siteDao.getById(1)).andReturn(sites.get(0));
+		EasyMock.expect(siteDao.getById(2)).andReturn(sites.get(1));;
+		EasyMock.expect(siteDao.getById(3)).andReturn(sites.get(2));;
 		
 		replayMocks();
-		
+		String[] siteIds = {"1","2","3"};
+		request.addParameter("sites", siteIds);
 		ModelAndView actual = controller.handleRequest(request, response);
 		
 		verifyMocks();
 		
-		assertSame("Studies list not present", studies, actual.getModel().get("studies"));
 		assertEquals("Wrong view name", "reporting/ajax/studiesBySites", actual.getViewName());
 	}
 
