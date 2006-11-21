@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.editors;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
-
-import java.lang.reflect.Method;
 
 /**
  * @author Rhett Sutphin
@@ -73,12 +71,6 @@ public class DaoBasedEditorTest extends StudyCalendarTestCase {
         editor.setValue(null);
         verifyMocks();
         assertNull(editor.getAsText());
-    }
-
-    private static class TestObject extends AbstractDomainObject {
-        public TestObject() { }
-
-        public TestObject(int id) { setId(id); }
     }
 
     private static class StubDao extends StudyCalendarDao<TestObject> {

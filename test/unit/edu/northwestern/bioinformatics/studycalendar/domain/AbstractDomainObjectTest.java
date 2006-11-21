@@ -61,6 +61,4 @@ public class AbstractDomainObjectTest extends StudyCalendarTestCase {
     public void testEqualByIdWhenNotEqual() throws Exception {
         assertFalse(AbstractDomainObject.equalById(o1, o2));
     }
-
-    private static class TestObject extends AbstractDomainObject { }
 }

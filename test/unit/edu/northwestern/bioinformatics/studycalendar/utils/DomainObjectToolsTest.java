@@ -1,24 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,7 +41,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     }
     
     public void testExternalObjectId() {
-        assertEquals("edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject.14",
+        assertEquals("edu.northwestern.bioinformatics.studycalendar.domain.TestObject.14",
             DomainObjectTools.createExternalObjectId(new TestObject(14)));
     }
 
@@ -51,7 +51,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
             assertEquals(
-                "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectToolsTest$TestObject", iae.getMessage());
+                "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.domain.TestObject", iae.getMessage());
         }
     }
 
@@ -83,14 +83,5 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {
         assertTrue(moreSpecific.getName() + " should be more specific than " + lessSpecific.getName(), DomainObjectTools.isMoreSpecific(moreSpecific, lessSpecific));
         assertFalse(lessSpecific.getName() + " should be less specific than " + moreSpecific.getName(), DomainObjectTools.isMoreSpecific(lessSpecific, moreSpecific));
-    }
-
-    private static class TestObject extends AbstractDomainObject {
-
-        public TestObject() { }
-
-        public TestObject(int id) {
-            setId(id);
-        }
     }
 }
