@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import java.util.Date;
+import java.sql.Timestamp;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.LoginAudit;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -65,7 +66,7 @@ public class LoginCommandTest extends StudyCalendarTestCase {
     	LoginAudit loginAudit = new LoginAudit();
     	loginAudit.setIpAddress("123.0.0.1");
     	loginAudit.setLoginStatus("Success");
-    	loginAudit.setTime(new Date());
+    	loginAudit.setTime(new Timestamp(new Date().getTime()));
     	loginAudit.setUserName("study_admin");
 		auditDao.save(loginAudit);
 		replayMocks();
