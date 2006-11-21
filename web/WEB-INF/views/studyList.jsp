@@ -62,8 +62,10 @@
         <a href="<c:url value="/pages/template?study=${study.id}"/>" class="primary">${study.name}</a>
         <ul class="controls">
             <tags:restrictedListItem cssClass="control" url="/pages/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-            <tags:restrictedListItem cssClass="control" url="/pages/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
-            <tags:restrictedListItem cssClass="control" url="/pages/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+            <c:if test="${not empty study.studySites}">
+                <tags:restrictedListItem cssClass="control" url="/pages/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
+                <tags:restrictedListItem cssClass="control" url="/pages/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+            </c:if>
         </ul>
     </li>
 </c:forEach>

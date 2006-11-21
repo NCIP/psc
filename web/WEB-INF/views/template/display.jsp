@@ -193,12 +193,16 @@
         <h1>Template for <span id="study-name">${study.name}</span></h1>
 
         <ul id="admin-options">
-            <tags:restrictedListItem url="/pages/markComplete" queryString="study=${study.id}" cssClass="control"
-                logicNotAllowed="${plannedCalendar.complete}">Mark this template complete</tags:restrictedListItem>
-            <tags:restrictedListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
-                logicNotAllowed="${not plannedCalendar.complete}">Assign Participant Coordinators</tags:restrictedListItem>
-            <tags:restrictedListItem url="/pages/assignParticipant" queryString="id=${study.id}" cssClass="control"
-                logicNotAllowed="${not plannedCalendar.complete}">Assign Participant</tags:restrictedListItem>
+            <c:if test="${not plannedCalendar.complete}">
+                <tags:restrictedListItem url="/pages/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
+            </c:if>
+            <tags:restrictedListItem cssClass="control" url="/pages/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+            <c:if test="${not empty study.studySites}">
+                <tags:restrictedListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
+                    >Assign Participant Coordinators</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/assignParticipant" queryString="id=${study.id}" cssClass="control"
+                    >Assign Participant</tags:restrictedListItem>
+            </c:if>
             <c:if test="${not empty assignments}">
                 <security:secureOperation element="/pages/schedule" operation="ACCESS">
                 <li>View schedule for
