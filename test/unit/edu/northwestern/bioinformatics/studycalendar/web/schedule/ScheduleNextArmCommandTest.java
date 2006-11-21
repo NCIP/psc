@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;

@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;

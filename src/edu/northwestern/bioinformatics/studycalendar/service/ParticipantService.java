@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 

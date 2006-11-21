@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.service.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Date;
