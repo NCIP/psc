@@ -33,7 +33,7 @@ public class StudyListController extends PscAbstractController {
     private SiteService siteService;
 
     public StudyListController() {
-        setCrumb(new DefaultCrumb("Calendar Menu"));
+        setCrumb(new DefaultCrumb("Home"));
     }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

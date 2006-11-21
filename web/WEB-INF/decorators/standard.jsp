@@ -22,7 +22,11 @@
     <decorator:head/>
   </head>
   <body>
-    <c:if test="${not empty breadcrumbs}"><tags:breadcrumbs anchors="${breadcrumbs}"/></c:if>
+    <div id="header" class="autoclear">
+        <img id="cabig-logo" src="<c:url value="/images/cabig.jpg"/>" alt="caBIG" width="739" height="45"/>
+        <div id="psc-module">Patient Study Calendar</div>
+    </div>
+    <tags:breadcrumbs anchors="${breadcrumbs}"/>
     <div id="body">
     <decorator:body/>
     </div>

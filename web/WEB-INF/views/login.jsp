@@ -5,7 +5,7 @@
     <title>Account login</title>
     <style type="text/css">
         body {
-            background-color: #999;
+            background-color: #666;
         }
         div#body {
             width: 24em;

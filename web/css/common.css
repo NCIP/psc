@@ -11,6 +11,22 @@ h1, h2, h3, h4, h5, h6 {
     font-family: Arial, sans-serif;
 }
 
+a {
+    color: #00c;
+}
+
+a:visited {
+    color: #006;
+}
+
+a:hover {
+    color: #33f;
+}
+
+a:active {
+    color: #f00;
+}
+
 #footmenu {
     margin-top: 2em;
     padding: 0.5em;
@@ -30,6 +46,26 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 80%;
 }
 
+#header {
+    background-color: #fff;
+}
+
+#psc-module {
+    color: #3D3E6A;
+    font-size: 14pt;
+    font-family: "Arial", sans-serif;
+    font-weight: bold;
+    text-align: center;
+    float: right;
+    padding: 11px 1em;
+    height: 23px;
+}
+
+img#cabig-logo {
+    display: block;
+    float: left;
+}
+
 #breadcrumbs {
     font-size: 10pt;
     background-color: #444;
@@ -46,6 +82,20 @@ h1, h2, h3, h4, h5, h6 {
 #breadcrumbs a:hover {
     background-color: #999;
     border-bottom: 1px solid #eee;
+}
+
+img.indicator {
+    visibility: hidden;
+}
+
+form#login div.label {
+    width: 35%;
+}
+form#login div.submit {
+    text-align: right;
+}
+form#login {
+    width: 20em;
 }
 
 /****** SPECIAL TYPES */
@@ -74,21 +124,6 @@ div.row:after, div.autoclear:after {
 * html div.row, * html div.autoclear { height: 1% }
 div.row div.label { font-weight: bold; float: left; margin-left: 0.5em }
 div.row div.value { font-weight: normal; }
-
-/***** STYLES FOR CALENDAR STRUCTURE COMPONENTS */
-img.indicator {
-    visibility: hidden;
-}
-
-form#login div.label {
-    width: 35%;
-}
-form#login div.submit {
-    text-align: right;
-}
-form#login {
-    width: 20em;
-}
 
 /****** MODIFICATIONS TO lightbox.css STYLES */
 
