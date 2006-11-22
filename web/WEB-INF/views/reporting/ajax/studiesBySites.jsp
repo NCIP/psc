@@ -19,3 +19,8 @@ replaceOptions('studies', [
 
 SC.slideAndShow('studySelectorForm');
 
+var sitesFilterList = "";
+<c:forEach items="${sitesSelected}" var="selectedSite">
+	sitesFilterList = sitesFilterList + "${selectedSite.name} <br>";
+</c:forEach>
+$('sitesFilter').innerHTML = sitesFilterList;	

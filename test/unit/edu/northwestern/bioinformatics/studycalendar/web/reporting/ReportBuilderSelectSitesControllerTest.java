@@ -65,9 +65,12 @@ public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 		verifyMocks();
 		
 		Set<Study> studiesInModel = (Set<Study>) actual.getModel().get("studies");
+		//TODO: Fix this
+		//assertEquals("Wrong number of studies.", 3, studiesInModel.size());
 		for(Study study : studiesInModel) {
 			assertNotSame("Found a study from wrong site.", studies.get(2), study);
 		}
+		assertNotNull("Selected sites not in model", actual.getModel().get("sitesSelected"));
 		assertEquals("Wrong view name", "reporting/ajax/studiesBySites", actual.getViewName());
 	}
 

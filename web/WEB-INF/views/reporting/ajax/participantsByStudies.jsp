@@ -11,7 +11,7 @@ function replaceOptions(selectElt, text, value) {
 
 replaceOptions('participants', [
 <c:forEach items="${participants}" var="participant">
-	"${participant.name}",
+	"${participant.lastName}, ${participant.firstName}",
 </c:forEach>], [
 <c:forEach items="${participants}" var="participant">
 	"${participant.id}",
@@ -19,3 +19,8 @@ replaceOptions('participants', [
 
 SC.slideAndShow('participantSelectorForm');
 
+var studiesFilterList = "";
+<c:forEach items="${studiesSelected}" var="selectedStudy">
+	studiesFilterList = studiesFilterList + "${selectedStudy.name} <br>";
+</c:forEach>
+$('studiesFilter').innerHTML = studiesFilterList;	

@@ -30,7 +30,7 @@
                     afterFinish: function() {
 	                    SC.asyncSubmit("siteSelectorForm", {
 	                        onComplete: function() {
-	                            $('sites-indicator').conceal();
+	                            $('sites-indicator').conceal();                            
 	                        }
 	                    })
                     }
@@ -42,6 +42,7 @@
             Event.observe("studySelectorFormBack", "click", function() {
                 SC.slideAndHide("studySelectorForm")
                 SC.slideAndShow('siteSelectorForm')
+                $('sitesFilter').innerHTML = "None"
             })
         }
         
@@ -64,6 +65,7 @@
             Event.observe("participantSelectorFormBack", "click", function() {
                 SC.slideAndHide("participantSelectorForm")
                 SC.slideAndShow('studySelectorForm')
+                $('studiesFilter').innerHTML = "None"
             })
         }
         
@@ -71,6 +73,11 @@
             Event.observe("participantSelectorFormNext", "click", function() {
                 SC.slideAndHide("participantSelectorForm")
                 SC.slideAndShow('dateRangeSelectorForm')
+                var participantsFilterList = "";
+				<c:forEach items="${participants}" var="participant">
+					participantsFilterList = participantsFilterList + "${participant.lastName}, ${participant.firstName} <br>";
+				</c:forEach>
+				$('participantsFilter').innerHTML = participantsFilterList;	
             })
         }
 
@@ -78,13 +85,14 @@
             Event.observe("dateRangeSelectorFormBack", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
                 SC.slideAndShow('participantSelectorForm')
+                $('participantsFilter').innerHTML = "None"
             })
         }
 
 		function registerDateRangeSelectorFormFinish() {
             Event.observe("dateRangeSelectorFormFinish", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
-                SC.slideAndShow('reportBuilderForm')
+                SC.slideAndShow('generateReport')
             })
         }
            
@@ -155,7 +163,7 @@
 <form:form method="post" id="dateRangeSelectorForm" cssStyle="display: none">
 	    <div class="row">
 	        <div class="label">
-	            <label for="startTimeSelector">Start Time</label>
+	            <label for="startTimeSelector">Start (mm/dd/yyyy)</label>
 	        </div>
 	        <div class="value">
 	            <form:input path="startDate"/>
@@ -164,7 +172,7 @@
 	             
 	    <div class="row">
 	        <div class="label">
-	            <label for="endTimeSelector">End Time</label>
+	            <label for="endTimeSelector">End (mm/dd/yyyy)</label>
 	        </div>
 	        <div class="value">
 	            <form:input path="endDate"/>
@@ -178,14 +186,20 @@
 </form:form>
 
 <c:url value="/pages/generateReport" var="formAction"/>
-<form:form id="reportBuilderForm" method="post" action="${formAction}" cssStyle="display: none">
+<form:form id="reportBuilderForm" method="post" action="${formAction}">
 	<div class="row" >
 		<div>You selected the following filters:</div>
-		<div>Sites:</div>
-		<div>Studies:</div>
-		<div>Participants:</div>
-		<div>Occuring from: to: </div>		
-        <div class="submit">
+		<div><strong>Sites:</strong></div>
+		<div id="sitesFilter">None</div>
+		<div><strong>Studies:</strong></div>
+		<div id="studiesFilter">None</div>
+		<div><strong>Participants:</strong></div>
+		<div id="participantsFilter">None</div>
+		<div><strong>Occuring from:</strong>
+		<div id="fromFilter">None</div>
+		<div><strong>to: </strong></div>		
+		<div id="toFilter">None</div>
+        <div id="generateReport" class="submit" style="display: none">
             <input type="submit" value="Report"/>
         </div>
     </div>

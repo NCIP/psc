@@ -18,6 +18,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class ReportBuilderSelectSitesController extends AbstractController {
     private SiteDao siteDao;
+	private static final Logger log = Logger.getLogger(ReportBuilderSelectSitesController.class.getName());
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map model = new HashMap();
@@ -41,6 +43,7 @@ public class ReportBuilderSelectSitesController extends AbstractController {
 		for(int id : siteIds) {
 			sites.add(siteDao.getById(id));
 		}
+        model.put("sitesSelected", sites);
         Set<Study> studies = getStudiesForSites(sites);
         model.put("studies", studies);
         

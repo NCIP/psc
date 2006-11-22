@@ -41,8 +41,9 @@ public class ReportBuilderSelectStudiesController extends AbstractController {
 		for(int id : studiesIds) {
 			studies.add(studyDao.getById(id));
 		}
+		model.put("studiesSelected", studies);
 		Set<Participant> participants = getParticipantsForStudies(studies);
-		model.put("particpants", participants);
+		model.put("participants", participants);
 		
         return new ModelAndView("reporting/ajax/participantsByStudies", model);	
         }
