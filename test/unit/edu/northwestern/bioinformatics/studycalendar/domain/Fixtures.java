@@ -47,7 +47,7 @@ public class Fixtures {
     public static StudySite createStudySite(Study study, Site site) {
         StudySite studySite = new StudySite();
         if (study != null) study.addStudySite(studySite);
-        studySite.setSite(site);
+        if (site != null) site.addStudySite(studySite);
         return studySite;
     }
 

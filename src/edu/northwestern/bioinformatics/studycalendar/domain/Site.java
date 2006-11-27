@@ -33,6 +33,13 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
     private String name;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
+    ////// LOGIC
+
+    public void addStudySite(StudySite studySite) {
+        getStudySites().add(studySite);
+        studySite.setSite(this);
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
@@ -41,6 +48,17 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setStudySites(List<StudySite> studySites) {
+        this.studySites = studySites;
+    }
+
+    @OneToMany (mappedBy = "site",fetch = FetchType.EAGER)
+    @OrderBy // order by ID for testing consistency
+    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<StudySite> getStudySites() {
+        return studySites;
     }
 
     public boolean equals(Object obj) {
@@ -53,17 +71,6 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
 
     public int hashCode() {
         return getName().hashCode();
-    }
-
-    public void setStudySites(List<StudySite> studySites) {
-        this.studySites = studySites;
-    }
-
-    @OneToMany (mappedBy = "site",fetch = FetchType.EAGER)
-    @OrderBy // order by ID for testing consistency
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<StudySite> getStudySites() {
-        return studySites;
     }
 }
 
