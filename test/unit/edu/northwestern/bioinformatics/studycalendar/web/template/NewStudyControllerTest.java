@@ -1,24 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import org.easymock.IArgumentMatcher;
-import org.easymock.classextension.EasyMock;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -60,7 +50,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
     
     public void testBindMode() throws Exception {
         request.setParameter("base", "BLANK");
-        command.setBase(NewStudyCommand.TemplateBase.BLANK);
+        command.setBase(TemplateSkeletonCreator.BLANK);
         expect(command.create()).andReturn(setId(ID, new Study()));
 
         replayMocks();

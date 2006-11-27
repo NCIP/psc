@@ -5,6 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorTest;
+import static edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorTest.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.List;
@@ -23,23 +26,15 @@ public class NewStudyCommandTest extends StudyCalendarTestCase {
     }
 
     public void testCreateBlank() throws Exception {
-        command.setBase(NewStudyCommand.TemplateBase.BLANK);
+        command.setBase(TemplateSkeletonCreator.BLANK);
         expectCreate();
         replayMocks();
         assertBlankStudy(command.create());
         verifyMocks();
     }
     
-    private static void assertBlankStudy(Study actual) {
-        assertEquals("Wrong study name", "[Unnamed blank study]", actual.getName());
-
-        List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
-        assertEquals("Wrong number of epochs", 1, epochs.size());
-        assertEquals("Wrong epoch name", "[Unnamed epoch]", epochs.get(0).getName());
-    }
-
     public void testCreateBasic() throws Exception {
-        command.setBase(NewStudyCommand.TemplateBase.BASIC);
+        command.setBase(TemplateSkeletonCreator.BASIC);
         expectCreate();
         replayMocks();
         assertBasicStudy(command.create());
@@ -52,21 +47,6 @@ public class NewStudyCommandTest extends StudyCalendarTestCase {
         replayMocks();
         assertBasicStudy(command.create());
         verifyMocks();
-    }
-
-    private static void assertBasicStudy(Study actual) {
-        assertEquals("Wrong study name for new study", "[Unnamed study]", actual.getName());
-
-        List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
-        assertEquals("Wrong number of epochs", 3, epochs.size());
-        assertEquals("Wrong name for epoch 0", "Screening", epochs.get(0).getName());
-        assertEquals("Wrong name for epoch 1", "Treatment", epochs.get(1).getName());
-        assertEquals("Wrong name for epoch 2", "Follow up", epochs.get(2).getName());
-
-        List<Arm> treatmentArms = actual.getPlannedCalendar().getEpochs().get(1).getArms();
-        assertEquals("Wrong name for treatment arm 0", "A", treatmentArms.get(0).getName());
-        assertEquals("Wrong name for treatment arm 1", "B", treatmentArms.get(1).getName());
-        assertEquals("Wrong name for treatment arm 2", "C", treatmentArms.get(2).getName());
     }
 
     private void expectCreate() {
