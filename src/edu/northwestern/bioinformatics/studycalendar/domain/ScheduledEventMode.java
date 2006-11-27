@@ -11,8 +11,8 @@ import java.util.Collection;
 /**
  * Typedef enum representing the discriminator column for subclasses of
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState}.
- *
- * This class is an implementation detail -- it is not part of the public API for Study Calendar.
+ * <p>
+ * This class is an implementation detail -- it is not needed in the public API for the PSC.
  *
  * @author Rhett Sutphin
  */
