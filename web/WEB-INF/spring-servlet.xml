@@ -268,6 +268,12 @@
     <bean name="/reportBuilder/selectStudies" id="reportBuilderSelectStudiesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectStudiesController"/>
 
+    <bean name="/reportBuilder/selectParticipants" id="reportBuilderSelectParticipantsController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectParticipantsController"/>
+
+    <bean name="/reportBuilder/selectDateRange" id="reportBuilderSelectDateRangeController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectDateRangeController"/>
+      
      <bean name="/configure" id="configurationController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
          <property name="crumb">

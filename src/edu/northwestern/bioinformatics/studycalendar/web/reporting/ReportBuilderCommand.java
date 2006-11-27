@@ -16,32 +16,28 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
  */
 
 public class ReportBuilderCommand {
-	private Date startDate;
-	private Date endDate;
+	private String startDate;
+	private String endDate;
 	private List<Study> studies;
+	private List<Study> studiesFilter;
 	private List<Site> sites;
+	private List<Site> sitesFilter;
 	private List<Participant> participants;
-	/*
-	private List<ScheduledEvent> scheduledEvents;
-	private List<ScheduledEvent> occurredEvents;
-	private List<ScheduledEvent> canceledEvents;
-	private List<Epoch> epoches;
-	private List<Arm> arms;
-	*/
-	
-    public Date getStartDate() {
+	private List<Participant> participantsFilter;
+
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 	
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
     
@@ -68,46 +64,30 @@ public class ReportBuilderCommand {
 	public void setParticipants(List<Participant> p) {
 		this.participants = p;
 	}
-	
-	/*
-	public List<ScheduledEvent> getScheduledEvents() {
-		return scheduledEvents;
+
+	public List<Site> getSitesFilter() {
+		return sitesFilter;
 	}
 
-	public void setScheduledEvents(List<ScheduledEvent> se) {
-		this.scheduledEvents = se;
-	}
-	
-	public List<ScheduledEvent> getOccurredEvents() {
-		return occurredEvents;
+	public void setSitesFilter(List<Site> siteFilter) {
+		this.sitesFilter = siteFilter;
 	}
 
-	public void setOccurredEvents(List<ScheduledEvent> oe) {
-		this.occurredEvents = oe;
-	}
-	
-	public List<ScheduledEvent> getCanceledEventsEvents() {
-		return canceledEvents;
+	public List<Participant> getParticipantsFilter() {
+		return participantsFilter;
 	}
 
-	public void setCanceledEvents(List<ScheduledEvent> ce) {
-		this.canceledEvents = ce;
+	public void setParticipantsFilter(List<Participant> participantsFilter) {
+		this.participantsFilter = participantsFilter;
 	}
 
-	public List<Epoch> getEpoches() {
-		return epoches;
+	public List<Study> getStudiesFilter() {
+		return studiesFilter;
 	}
 
-	public void setEpoches(List<Epoch> es) {
-		this.epoches = es;
+	public void setStudiesFilter(List<Study> studiesFilter) {
+		this.studiesFilter = studiesFilter;
 	}
 	
-	public List<Arm> getArms() {
-		return arms;
-	}
 
-	public void setArms(List<Arm> as) {
-		this.arms = as;
-	}
-	*/
 }

@@ -1,0 +1,36 @@
+package edu.northwestern.bioinformatics.studycalendar.web.reporting;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+
+/**
+ * @author Jaron Sampson
+ *
+ */
+
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
+public class ReportBuilderSelectDateRangeController extends AbstractController {
+
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		Map model = new HashMap();
+
+		String fromFilter = ServletRequestUtils.getRequiredStringParameter(request, "startDate");
+		String toFilter = ServletRequestUtils.getRequiredStringParameter(request, "endDate");
+		
+		model.put("fromSelected", fromFilter);
+		model.put("toSelected", toFilter);
+		
+        return new ModelAndView("reporting/ajax/dateRange", model);	
+	}
+
+}

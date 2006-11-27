@@ -42,13 +42,19 @@ public class ReportBuilderController extends PscSimpleFormController {
         log.debug("referenceData"); 
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Study> studies = new ArrayList<Study>();
+        List<Study> studiesFilter = new ArrayList<Study>();
         List<Site> sites = new ArrayList<Site>();
+        List<Site> sitesFilter = new ArrayList<Site>();
         List<Participant> participants = new ArrayList<Participant>();
+        List<Participant> participantsFilter = new ArrayList<Participant>();
         sites = siteDao.getAll();
         
     	refdata.put("studies", studies);        
+    	refdata.put("studiesFilter", studiesFilter);        
     	refdata.put("sites", sites);        
+    	refdata.put("sitesFilter", sitesFilter);        
     	refdata.put("participants", participants);        
+    	refdata.put("participantsFilter", participantsFilter);        
         
         return refdata;
     }
@@ -57,8 +63,8 @@ public class ReportBuilderController extends PscSimpleFormController {
     	ReportBuilderCommand reportCommand = (ReportBuilderCommand) oCommand;
     	
         Map<String, Object> model = new HashMap<String, Object>();
-        Date startDate = reportCommand.getStartDate();
-        Date endDate = reportCommand.getEndDate();
+        String startDate = reportCommand.getStartDate();
+        String endDate = reportCommand.getEndDate();
         List<Study> studies = new ArrayList<Study>();
         List<Site> sites = new ArrayList<Site>();
         List<Participant> participants = new ArrayList<Participant>();

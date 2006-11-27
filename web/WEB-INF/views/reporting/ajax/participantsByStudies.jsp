@@ -17,10 +17,12 @@ replaceOptions('participants', [
 	"${participant.id}",
 </c:forEach>]);
 
-SC.slideAndShow('participantSelectorForm');
+replaceOptions('studiesFilter', [
+<c:forEach items="${studiesSelected}" var="study">
+	"${study.name}",
+</c:forEach>], [
+<c:forEach items="${studiesSelected}" var="study">
+	"${study.id}",
+</c:forEach>]);
 
-var studiesFilterList = "";
-<c:forEach items="${studiesSelected}" var="selectedStudy">
-	studiesFilterList = studiesFilterList + "${selectedStudy.name} <br>";
-</c:forEach>
-$('studiesFilter').innerHTML = studiesFilterList;	
+SC.slideAndShow('participantSelectorForm');
