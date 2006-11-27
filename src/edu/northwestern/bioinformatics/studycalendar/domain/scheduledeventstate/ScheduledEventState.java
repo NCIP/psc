@@ -59,7 +59,7 @@ public abstract class ScheduledEventState extends AbstractDomainObject implement
     @Type(type = "scheduledEventMode")
     @Column(name = "mode_id", insertable = false, updatable = false)
     public abstract ScheduledEventMode getMode();
-    protected void setMode(ScheduledEventMode mode) { /* for hibernate; value ignored */ }
+    void setMode(ScheduledEventMode mode) { /* for hibernate; value ignored */ }
 
     public String getReason() {
         return reason;
