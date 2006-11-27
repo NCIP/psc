@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 /**
@@ -64,4 +66,63 @@ public class PlannedCalendarDaoTest extends DaoTestCase {
         assertEquals(message + ": wrong id", expectedId, actualEpoch.getId());
         assertEquals(message + ": wrong name", expectedName, actualEpoch.getName());
     }
+
+    public void testInitializeMainStructure() throws Exception {
+        PlannedCalendar plannedCalendar = assertGetAndInitialize();
+
+        assertEquals("Wrong number of epochs", 2, plannedCalendar.getEpochs().size());
+
+        Epoch e0 = plannedCalendar.getEpochs().get(0);
+        assertEquals("Treatment", e0.getName());
+        assertEquals("Wrong number of arms in first epoch", 2, e0.getArms().size());
+        assertEquals("A", e0.getArms().get(0).getName());
+        assertEquals("B", e0.getArms().get(1).getName());
+
+        Epoch e1 = plannedCalendar.getEpochs().get(1);
+        assertEquals("Follow up", e1.getName());
+        assertEquals("Wrong number of arms in second epoch", 1, e1.getArms().size());
+        assertEquals("Follow up", e1.getArms().get(0).getName());
+    }
+
+    public void testPeriodsInitialzed() throws Exception {
+        PlannedCalendar calendar = assertGetAndInitialize();
+
+        assertPeriod( 7, Duration.Unit.day, 4, calendar.getEpochs().get(0).getArms().get(0).getPeriods().first());
+        assertPeriod(14, Duration.Unit.day, 4, calendar.getEpochs().get(0).getArms().get(1).getPeriods().first());
+        assertPeriod(10, Duration.Unit.day, 1, calendar.getEpochs().get(1).getArms().get(0).getPeriods().first());
+    }
+
+    private void assertPeriod(int expectedDurationQuantity, Duration.Unit expectedDurationUnit, int expectedRepetitions, Period actual) {
+        assertEquals("Wrong quantity", expectedDurationQuantity, (int) actual.getDuration().getQuantity());
+        assertEquals("Wrong unit", expectedDurationUnit, actual.getDuration().getUnit());
+        assertEquals("Wrong reps", expectedRepetitions, actual.getRepetitions());
+    }
+
+    public void testPlannedEventsInitialized() throws Exception {
+        PlannedCalendar calendar = assertGetAndInitialize();
+
+        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getDay());
+        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(0).getDay());
+        assertEquals(8, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(1).getDay());
+        assertEquals(1, (int) calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getDay());
+    }
+
+    public void testActivitiesInitialized() throws Exception {
+        PlannedCalendar calendar = assertGetAndInitialize();
+
+        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
+        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
+        assertEquals("Activity 2", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(1).getActivity().getName());
+        assertEquals("Activity 1", calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
+    }
+
+    private PlannedCalendar assertGetAndInitialize() {
+        PlannedCalendar plannedCalendar = dao.getById(-10);
+        assertNotNull("PC not found", plannedCalendar);
+        dao.initialize(plannedCalendar);
+        interruptSession();
+
+        return plannedCalendar;
+    }
+
 }

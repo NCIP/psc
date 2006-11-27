@@ -21,4 +21,111 @@
         name="Gripping"
         list_index="1"
         planned_calendar_id="-100"/>
+
+    <!-- deep structure for testing #initializeTemplate -->
+    <activity_types
+        id="-1"
+        name="Test type"
+        />
+    <activities
+        id="-100"
+        name="Activity 1"
+        activity_type_id="-1"
+        />
+    <activities
+        id="-101"
+        name="Activity 2"
+        activity_type_id="-1"
+        />
+
+    <studies
+        id="-23"
+        big_id="UNIQUE!"
+        name="ECOG 1234"
+        />
+    <planned_calendars
+        id="-10"
+        study_id="-23"
+        complete="true"
+        />
+
+
+    <epochs
+        id="-20"
+        planned_calendar_id="-10"
+        name="Treatment"
+        list_index="0"
+        />
+
+    <arms
+        id="-30"
+        epoch_id="-20"
+        list_index="0"
+        name="A"
+        />
+    <periods
+        id="-40"
+        arm_id="-30"
+        duration_quantity="7"
+        repetitions="4"
+        />
+    <planned_events
+        id="-50"
+        period_id="-40"
+        activity_id="-100"
+        day="3"
+        />
+
+    <arms
+        id="-31"
+        epoch_id="-20"
+        list_index="1"
+        name="B"
+        />
+    <periods
+        id="-41"
+        arm_id="-31"
+        duration_quantity="14"
+        repetitions="4"
+        />
+    <planned_events
+        id="-53"
+        period_id="-41"
+        activity_id="-100"
+        day="3"
+        />
+    <planned_events
+        id="-52"
+        period_id="-41"
+        activity_id="-101"
+        day="8"
+        />
+
+
+    <epochs
+        id="-21"
+        planned_calendar_id="-10"
+        name="Follow up"
+        list_index="1"
+        />
+
+    <arms
+        id="-35"
+        epoch_id="-21"
+        list_index="0"
+        name="Follow up"
+        />
+    <periods
+        id="-42"
+        arm_id="-35"
+        duration_quantity="10"
+        repetitions="1"
+        />
+    <planned_events
+        id="-55"
+        period_id="-42"
+        activity_id="-100"
+        day="1"
+        />
+
 </dataset>
