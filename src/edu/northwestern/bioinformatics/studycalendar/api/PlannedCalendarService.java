@@ -11,6 +11,8 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ * The public interface for accessing and manipulating the PSC on the study-wide "plan" side.
+ *
  * @author Rhett Sutphin
  */
 public interface PlannedCalendarService {

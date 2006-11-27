@@ -13,6 +13,8 @@ import java.util.Collection;
 import java.util.Date;
 
 /**
+ * The public interface for accessing and manipulating the PSC on the per-patient "schedule" side.
+ *
  * @author Rhett Sutphin
  */
 public interface ScheduledCalendarService {
@@ -54,7 +56,6 @@ public interface ScheduledCalendarService {
      * @param site
      * @param startDate The beginning of the range of dates to include.  If null, there is no early limit.
      * @param endDate The end of the range of dates to include.  If null, there is no late limit.
-     * @return
      */
     Collection<ScheduledEvent> getScheduledEvents(
         Study study, Participant participant, Site site, Date startDate, Date endDate);

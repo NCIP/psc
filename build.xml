@@ -193,7 +193,7 @@
         <mkdir dir="${api-dir}"/>
         <javadoc destdir="${api-dir}" classpathref="cp.main" source="1.5">
             <fileset dir="${src-dir.main}">
-                <include name="**/dao/**/*.java"/>
+                <include name="**/api/*.java"/>
                 <include name="**/domain/**/*.java"/>
             </fileset>
         </javadoc>
