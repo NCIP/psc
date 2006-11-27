@@ -24,6 +24,13 @@ public class StudyDaoTest extends DaoTestCase {
         assertEquals("Wrong name", "First Study", study.getName());
         assertEquals("Wrong grid ID", "long-GUID-string", study.getBigId());
     }
+    
+    public void testGetByBigId() throws Exception {
+        Study actual = dao.getByBigId("long-GUID-string");
+        assertNotNull("Could not locate via bigId", actual);
+        assertEquals("Wrong id", -100, (int) actual.getId());
+        assertEquals("Wrong name", "First Study", actual.getName());
+    }
 
     public void testGetAll() throws Exception {
         List<Study> actual = dao.getAll();

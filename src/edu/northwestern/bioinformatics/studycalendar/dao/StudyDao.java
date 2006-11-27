@@ -12,7 +12,7 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class StudyDao extends StudyCalendarDao<Study> {
+public class StudyDao extends WithBigIdDao<Study> {
     public Class<Study> domainClass() {
         return Study.class;
     }
