@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +29,14 @@ public class StudySite extends AbstractDomainObject {
     private Site site;
     private Study study;
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+
+    ////// LOGIC
+
+    /** Are there any assignments using this relationship? */
+    @Transient
+    public boolean isUsed() {
+        return getStudyParticipantAssignments().size() > 0;
+    }
 
     ////// BEAN PROPERTIES
 

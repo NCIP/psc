@@ -4,14 +4,17 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -28,13 +31,30 @@ public class Study extends AbstractDomainObjectWithBigId implements Named {
     private PlannedCalendar plannedCalendar;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    ////// BUSINESS METHODS
+    ////// LOGIC
 
     public void addStudySite(StudySite studySite){
         getStudySites().add(studySite);
         studySite.setStudy(this);
     }
-    
+
+    public void addSite(Site site) {
+        if (!getSites().contains(site)) {
+            StudySite newSS = new StudySite();
+            newSS.setSite(site);
+            addStudySite(newSS);
+        }
+    }
+
+    @Transient
+    public List<Site> getSites() {
+        List<Site> sites = new ArrayList<Site>(getStudySites().size());
+        for (StudySite studySite : studySites) {
+            sites.add(studySite.getSite());
+        }
+        return Collections.unmodifiableList(sites);
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
