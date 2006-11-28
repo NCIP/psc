@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -64,27 +65,30 @@ public class TemplateService {
     	
     }
     
-    public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) throws Exception {
-    	List<StudySite> studySites = studyTemplate.getStudySites();
-    	List<StudySite> removeStudySiteList = new ArrayList<StudySite>();
-    	for (Site site : sites) {
-    		for (StudySite studySite : studySites) {
-    			if (studySite.getSite().getId() == site.getId()) {
-    				authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
-    				removeStudySiteList.add(studySite);
-    			}
-    		}
-    		for (StudySite studySite : removeStudySiteList) {
-    			Site siteAssoc = studySite.getSite();
-    			siteAssoc.getStudySites().remove(studySite);
-				siteDao.save(siteAssoc);
-				Study studyAssoc = studySite.getStudy();
-				studyAssoc.getStudySites().remove(studySite);
-				studyDao.save(studyAssoc);
-    		}
-    		
-    	}
-    	
+    public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
+        List<StudySite> studySites = studyTemplate.getStudySites();
+        List<StudySite> removeStudySiteList = new ArrayList<StudySite>();
+        for (Site site : sites) {
+            for (StudySite studySite : studySites) {
+                if (studySite.getSite().getId() == site.getId()) {
+                    try {
+                        authorizationManager.removeProtectionGroup(DomainObjectTools.createExternalObjectId(studySite));
+                    } catch (Exception e) {
+                        throw new StudyCalendarSystemException(e);
+                    }
+                    removeStudySiteList.add(studySite);
+                }
+            }
+            for (StudySite studySite : removeStudySiteList) {
+                Site siteAssoc = studySite.getSite();
+                siteAssoc.getStudySites().remove(studySite);
+                siteDao.save(siteAssoc);
+                Study studyAssoc = studySite.getStudy();
+                studyAssoc.getStudySites().remove(studySite);
+                studyDao.save(studyAssoc);
+            }
+
+        }
     }
     
     public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
