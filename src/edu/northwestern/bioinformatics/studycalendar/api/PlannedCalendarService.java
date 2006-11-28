@@ -2,13 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.api;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-
-import java.util.Collection;
-import java.util.Date;
 
 /**
  * The public interface for accessing and manipulating the PSC on the study-wide "plan" side.
@@ -18,12 +11,16 @@ import java.util.Date;
 public interface PlannedCalendarService {
     /**
      * Notify the PSC about the given study.  The PSC will create a default template for it.
-     * The study must include all site associations. 
+     * The study must include all site associations.
+     * <p>
+     * If the study has previously been registered, the existing template will be returned.
+     * If a study is re-registered with different site associations, any new site associations will
+     * be added.  Attempting to re-register with missing site associations is an error.
      *
      * @param study
-     * @return the newly created default template for the study
+     * @return the newly created default template for the study.
      * @see edu.northwestern.bioinformatics.studycalendar.domain.StudySite
-     * @see Site
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.Site
      */
     PlannedCalendar registerStudy(Study study);
 

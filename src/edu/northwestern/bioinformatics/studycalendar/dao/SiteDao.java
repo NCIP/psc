@@ -17,8 +17,7 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
-
-public class SiteDao extends StudyCalendarDao<Site> {
+public class SiteDao extends WithBigIdDao<Site> {
     public Class<Site> domainClass() {
         return Site.class;
     }
