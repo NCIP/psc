@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCre
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
@@ -27,12 +29,15 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private static final String SITE_BIG_ID = "SITE-GUID";
     private static final String PARTICIPANT_BIG_ID = "PARTICPANT-GUID";
     private static final String ARM_BIG_ID = "ARM-GUID";
+    private static final Date START_DATE = new Date();
 
     private DefaultScheduledCalendarService service;
     private SiteDao siteDao;
     private StudyDao studyDao;
     private ParticipantDao participantDao;
     private ParticipantService participantService;
+    private ArmDao armDao;
+    private ScheduledCalendarDao scheduledCalendarDao;
 
     private Study parameterStudy;
     private Site parameterSite;
@@ -46,16 +51,20 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        armDao = registerDaoMockFor(ArmDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         participantDao = registerDaoMockFor(ParticipantDao.class);
         participantService = registerMockFor(ParticipantService.class);
+        scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
 
         service = new DefaultScheduledCalendarService();
         service.setParticipantDao(participantDao);
         service.setParticipantService(participantService);
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
+        service.setArmDao(armDao);
+        service.setScheduledCalendarDao(scheduledCalendarDao);
 
         parameterStudy = setBigId(STUDY_BIG_ID, new Study());
         parameterSite = setBigId(SITE_BIG_ID, new Site());
@@ -69,6 +78,11 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         loadedArm = setBigId(ARM_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
 
         loadedParticipant = setBigId(PARTICIPANT_BIG_ID, createParticipant("Edward", "Armor-o"));
+
+        expect(studyDao.getByBigId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
+        expect(siteDao.getByBigId(parameterSite)).andReturn(loadedSite).times(0, 1);
+        expect(participantDao.getByBigId(parameterParticipant)).andReturn(loadedParticipant).times(0, 1);
+        expect(armDao.getByBigId(parameterArm)).andReturn(loadedArm).times(0, 1);
     }
 
     private void setAssigned() {
@@ -86,11 +100,8 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         setAssigned();
         StudyParticipantAssignment expectedAssignment = loadedParticipant.getAssignments().get(0);
 
-        expectLoadStudy();
-        expectLoadParticipant();
-        expectLoadSite();
-
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(expectedAssignment);
+        scheduledCalendarDao.initialize(expectedAssignment.getScheduledCalendar());
 
         replayMocks();
         assertSame(expectedAssignment.getScheduledCalendar(),
@@ -99,9 +110,6 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testBasicGetWithNoSchedule() throws Exception {
-        expectLoadStudy();
-        expectLoadParticipant();
-        expectLoadSite();
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
 
         replayMocks();
@@ -110,46 +118,43 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetInvalidStudy() throws Exception {
+        reset(studyDao);
         expect(studyDao.getByBigId(parameterStudy)).andReturn(null);
-        expectLoadSite();
-        expectLoadParticipant();
 
         replayMocks();
         try {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no study with bigId " + STUDY_BIG_ID, iae.getMessage());
+            assertEquals("No study with bigId " + STUDY_BIG_ID, iae.getMessage());
         }
         verifyMocks();
     }
 
     public void testGetInvalidSite() throws Exception {
+        reset(siteDao);
         expect(siteDao.getByBigId(parameterSite)).andReturn(null);
-        expectLoadStudy();
-        expectLoadParticipant();
 
         replayMocks();
         try {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no site with bigId " + SITE_BIG_ID, iae.getMessage());
+            assertEquals("No site with bigId " + SITE_BIG_ID, iae.getMessage());
         }
         verifyMocks();
     }
 
     public void testGetInvalidParticipant() throws Exception {
+        reset(participantDao);
         expect(participantDao.getByBigId(parameterParticipant)).andReturn(null);
-        expectLoadStudy();
-        expectLoadSite();
 
         replayMocks();
         try {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no participant with bigId " + PARTICIPANT_BIG_ID, iae.getMessage());
+            assertEquals("No participant with bigId " + PARTICIPANT_BIG_ID, iae.getMessage());
         }
         verifyMocks();
     }
@@ -162,7 +167,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no bigId on study parameter", iae.getMessage());
+            assertEquals("No bigId on study parameter", iae.getMessage());
         }
         verifyMocks();
     }
@@ -175,7 +180,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no bigId on participant parameter", iae.getMessage());
+            assertEquals("No bigId on participant parameter", iae.getMessage());
         }
         verifyMocks();
     }
@@ -188,42 +193,94 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             service.getScheduledCalendar(parameterStudy, parameterParticipant, parameterSite);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Could not get schedule: no bigId on site parameter", iae.getMessage());
+            assertEquals("No bigId on site parameter", iae.getMessage());
         }
         verifyMocks();
     }
 
     public void testAssignKnownParticipant() throws Exception {
-        // TODO
+        StudyParticipantAssignment newAssignment = new StudyParticipantAssignment();
+        newAssignment.setScheduledCalendar(new ScheduledCalendar());
+
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
+        expect(participantService.assignParticipant(
+            loadedParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE)).andReturn(newAssignment);
+
+        replayMocks();
+        assertSame(newAssignment.getScheduledCalendar(),
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE));
+        verifyMocks();
     }
 
-    public void testAssignUnknownParticpant() throws Exception {
-        // TODO
+    public void testAssignUnknownParticipant() throws Exception {
+        StudyParticipantAssignment newAssignment = new StudyParticipantAssignment();
+        newAssignment.setScheduledCalendar(new ScheduledCalendar());
+
+        reset(participantDao);
+        expect(participantDao.getByBigId(parameterParticipant)).andReturn(null);
+
+        participantDao.save(parameterParticipant);
+        expect(participantService.assignParticipant(
+            parameterParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE)
+            ).andReturn(newAssignment);
+
+        replayMocks();
+        assertSame(newAssignment.getScheduledCalendar(),
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE));
+        verifyMocks();
     }
 
     public void testAssignAgain() throws Exception {
-        // TODO
+        setAssigned();
+
+        StudyParticipantAssignment expectedAssignment = loadedParticipant.getAssignments().get(0);
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite))
+            .andReturn(expectedAssignment);
+
+        replayMocks();
+        try {
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("Participant already assigned to this study.  Use scheduleNextArm to change to the next arm.", iae.getMessage());
+        }
+        verifyMocks();
     }
 
     public void testAssignFromSiteNotAssociatedWithStudy() throws Exception {
-        // TODO
+        loadedStudy.getStudySites().clear();
+        loadedSite.getStudySites().clear();
+
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
+
+        replayMocks();
+        try {
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("Site " + loadedSite.getBigId() + " not associated with study " + loadedStudy.getBigId(),
+                iae.getMessage());
+        }
+        verifyMocks();
     }
 
     public void testAssignFromArmNotInStudy() throws Exception {
-        // TODO
-    }
+        Arm badParameterArm = setBigId("BAD-NEWS", new Arm());
+        Arm badLoadedArm = setBigId("BAD-NEWS", new Arm());
 
+        reset(armDao);
+        expect(armDao.getByBigId(badParameterArm)).andReturn(badLoadedArm);
 
-    private void expectLoadParticipant() {
-        expect(participantDao.getByBigId(parameterParticipant)).andReturn(loadedParticipant);
-    }
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
 
-    private void expectLoadSite() {
-        expect(siteDao.getByBigId(parameterSite)).andReturn(loadedSite);
-    }
-
-    private void expectLoadStudy() {
-        expect(studyDao.getByBigId(parameterStudy)).andReturn(loadedStudy);
+        replayMocks();
+        try {
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, badParameterArm, START_DATE);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals("Arm BAD-NEWS not part of template for study " + STUDY_BIG_ID, iae.getMessage());
+        }
+        verifyMocks();
     }
 
 }

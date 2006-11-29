@@ -25,11 +25,12 @@ public interface ScheduledCalendarService {
      * @param participant  If the participant is unknown, it will be automatically registered.
      * @param site The site from which the participant is being assigned.  The PSC must already know about it and its association with the study.
      * @param firstArm The arm of the template to which the participant should be initially assigned
+     * @param startDate
      * @return the newly created schedule
      *
      * @see PlannedCalendarService#registerStudy(Study)
      */
-    ScheduledCalendar assignParticipant(Study study, Participant participant, Site site, Arm firstArm);
+    ScheduledCalendar assignParticipant(Study study, Participant participant, Site site, Arm firstArm, Date startDate);
 
 
     /**

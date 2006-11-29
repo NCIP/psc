@@ -61,16 +61,19 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
         return studySites;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Site)) return false;
-        final Site site = (Site) obj;
-        if (!getName().equals(site.getName())) return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Site site = (Site) o;
+
+        if (name != null ? !name.equals(site.name) : site.name != null) return false;
+
         return true;
     }
 
     public int hashCode() {
-        return getName().hashCode();
+        return (name != null ? name.hashCode() : 0);
     }
 }
 

@@ -31,7 +31,10 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
     public void testGetById() throws Exception {
         ScheduledCalendar cal = getDao().getById(-20);
+        assertScheduledCalendar20(cal);
+    }
 
+    private void assertScheduledCalendar20(ScheduledCalendar cal) {
         assertEquals("Wrong assignment", -1, (int) cal.getAssignment().getId());
 
         assertEquals("Wrong number of arms", 2, cal.getScheduledArms().size());
@@ -52,10 +55,6 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertDayOfDate("Wrong current state date", 2006, Calendar.OCTOBER, 25, ((DatedScheduledEventState) currentState).getDate());
         assertEquals("Wrong current state mode", ScheduledEventMode.OCCURRED, currentState.getMode());
         assertEquals("Wrong current state reason", "Success", currentState.getReason());
-    }
-
-    public void testLoadStateHistory() throws Exception {
-        ScheduledCalendar cal = getDao().getById(-20);
 
         List<ScheduledEventState> states = cal.getScheduledArms().get(0).getEvents().get(0).getAllStates();
         assertEquals("Wrong number of states", 4, states.size());
@@ -64,7 +63,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEventState(-13, ScheduledEventMode.SCHEDULED, "Called to reschedule", DateUtils.createDate(2006, Calendar.OCTOBER, 25), states.get(2));
         assertEventState(null, ScheduledEventMode.OCCURRED, "Success", DateUtils.createDate(2006, Calendar.OCTOBER, 25), states.get(3));
     }
-    
+
     public void testChangeStateAndSave() throws Exception {
         {
             ScheduledCalendar cal = getDao().getById(-20);
@@ -148,5 +147,13 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertSameDay("Wrong current state date", expectedActualDate, ((DatedScheduledEventState) currentState).getDate());
         assertEquals("Wrong current state mode", expectedMode, currentState.getMode());
         assertEquals("Wrong current state reason", expectedReason, currentState.getReason());
+    }
+
+    public void testInitialize() throws Exception {
+        ScheduledCalendar cal = getDao().getById(-20);
+        getDao().initialize(cal);
+        interruptSession();
+
+        assertScheduledCalendar20(cal);
     }
 }
