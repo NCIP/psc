@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -20,16 +21,17 @@ public class StudyDaoTest extends DaoTestCase {
 
     public void testGetById() throws Exception {
         Study study = dao.getById(-100);
-        assertNotNull("Study 1 not found", study);
-        assertEquals("Wrong name", "First Study", study.getName());
-        assertEquals("Wrong grid ID", "long-GUID-string", study.getBigId());
+        assertIsTestStudy100(study);
     }
     
     public void testGetByBigId() throws Exception {
         Study actual = dao.getByBigId("long-GUID-string");
-        assertNotNull("Could not locate via bigId", actual);
-        assertEquals("Wrong id", -100, (int) actual.getId());
-        assertEquals("Wrong name", "First Study", actual.getName());
+        assertIsTestStudy100(actual);
+    }
+
+    public void testGetByBigIdByTemplate() throws Exception {
+        Study actual = dao.getByBigId(Fixtures.setBigId("long-GUID-string", new Study()));
+        assertIsTestStudy100(actual);
     }
 
     public void testGetAll() throws Exception {
@@ -67,6 +69,13 @@ public class StudyDaoTest extends DaoTestCase {
 
         assertContains("Missing expected assignment", ids, -10);
         assertContains("Missing expected assignment", ids, -11);
+    }
+
+    private void assertIsTestStudy100(Study actual) {
+        assertNotNull("Could not locate", actual);
+        assertEquals("Wrong id", -100, (int) actual.getId());
+        assertEquals("Wrong name", "First Study", actual.getName());
+        assertEquals("Wrong grid ID", "long-GUID-string", actual.getBigId());
     }
 
     private List<Integer> collectIds(List<? extends DomainObject> actual) {

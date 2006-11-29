@@ -13,7 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 import javax.servlet.http.HttpSession;
 
 
-public class ParticipantDao extends StudyCalendarDao<Participant> {
+public class ParticipantDao extends WithBigIdDao<Participant> {
     public Class<Participant> domainClass() {
         return Participant.class;
     }

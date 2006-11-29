@@ -9,6 +9,14 @@ import javax.persistence.MappedSuperclass;
 public class AbstractDomainObjectWithBigId extends AbstractDomainObject implements WithBigId {
     private String bigId;
 
+    ////// LOGIC
+
+    public boolean hasBigId() {
+        return getBigId() != null;
+    }
+
+    ////// BEAN PROPERTIES
+
     public String getBigId() {
         return bigId;
     }

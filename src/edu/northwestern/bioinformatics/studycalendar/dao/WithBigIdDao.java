@@ -15,4 +15,8 @@ public abstract class WithBigIdDao<T extends DomainObject & WithBigId> extends S
         example.setBigId(bigId);
         return (T) CollectionUtils.firstElement(getHibernateTemplate().findByExample(example));
     }
+
+    public T getByBigId(T template) {
+        return getByBigId(template.getBigId());
+    }
 }

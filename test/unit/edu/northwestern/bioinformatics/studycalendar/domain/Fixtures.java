@@ -14,6 +14,11 @@ public class Fixtures {
         return target;
     }
 
+    public static <T extends WithBigId> T setBigId(String bigId, T target) {
+        target.setBigId(bigId);
+        return target;
+    }
+
     public static Period createPeriod(String name, int startDay, int dayCount, int repetitions) {
         return createPeriod(name, startDay, Duration.Unit.day, dayCount, repetitions);
     }
