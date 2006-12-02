@@ -21,6 +21,9 @@ import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.StringTokenizer;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
+import java.util.LinkedHashSet;
 
 /**
  * @author Rhett Sutphin
@@ -66,17 +69,23 @@ public class DomainObjectTools {
     }
     
     public static int parseExternalObjectId(String objectId) {
-    	if (objectId == null) {
-    		return 0;
-    	} else {
-    		String[] objectIdStrings = objectId.split("\\.");
-    		return  Integer.parseInt(objectIdStrings[objectIdStrings.length - 1]);
-    	}
+        if (objectId == null) {
+            return 0;
+        } else {
+            String[] objectIdStrings = objectId.split("\\.");
+            return  Integer.parseInt(objectIdStrings[objectIdStrings.length - 1]);
+        }
     }
 
     public static boolean isMoreSpecific(Class<? extends DomainObject> more, Class<? extends DomainObject> less) {
         int diff = DETAIL_ORDER.indexOf(more) - DETAIL_ORDER.indexOf(less);
         return diff > 0;
+    }
+
+    public static Collection<Integer> collectIds(Collection<? extends DomainObject> objs) {
+        Set<Integer> ids = new LinkedHashSet<Integer>();
+        for (DomainObject obj : objs) ids.add(obj.getId());
+        return ids;
     }
 
     private DomainObjectTools() { }

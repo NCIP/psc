@@ -41,7 +41,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong arm 0", -22, (int) cal.getScheduledArms().get(0).getId());
         assertEquals("Wrong arm 1", -21, (int) cal.getScheduledArms().get(1).getId());
 
-        assertEquals("Wrong number of events in arm 0", 1, cal.getScheduledArms().get(0).getEvents().size());
+        assertEquals("Wrong number of events in arm 0", 5, cal.getScheduledArms().get(0).getEvents().size());
         assertEquals("Wrong number of events in arm 1", 0, cal.getScheduledArms().get(1).getEvents().size());
 
         ScheduledEvent event = cal.getScheduledArms().get(0).getEvents().get(0);

@@ -20,6 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.WithBigIdDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Collection;
@@ -37,6 +38,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private SiteDao siteDao;
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
+    private ScheduledEventDao scheduledEventDao;
 
     public ScheduledCalendar assignParticipant(
         Study study, Participant participant, Site site, Arm firstArm, Date startDate
@@ -68,8 +70,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     public ScheduledCalendar getScheduledCalendar(Study study, Participant participant, Site site) {
         ParameterLoader loader = new ParameterLoader(study, participant, site);
 
-        StudyParticipantAssignment assignment = participantDao.getAssignment(
-            loader.getParticipant(), loader.getStudy(), loader.getSite());
+        StudyParticipantAssignment assignment = loader.findAssignment();
         if (assignment == null) {
             return null;
         } else {
@@ -82,17 +83,24 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     public Collection<ScheduledEvent> getScheduledEvents(
         Study study, Participant participant, Site site, Date startDate, Date endDate
     ) {
-        throw new UnsupportedOperationException("getScheduledEvents not implemented");
+        ParameterLoader loader = new ParameterLoader(study, participant, site);
+        ScheduledCalendar calendar = loader.findAssignment().getScheduledCalendar();
+        return scheduledEventDao.getEventsByDate(calendar, startDate, endDate);
     }
 
     public ScheduledEvent changeEventState(ScheduledEvent event, ScheduledEventState newState) {
-        throw new UnsupportedOperationException("changeEventState not implemented");
+        ParameterLoader loader = new ParameterLoader(event);
+
+        loader.getScheduledEvent().changeState(newState);
+        scheduledEventDao.save(loader.getScheduledEvent());
+        return loader.getScheduledEvent();
     }
 
     public void scheduleNextArm(
         Study study, Participant participant, Site site, Arm nextArm, NextArmMode mode, Date startDate
     ) {
-        throw new UnsupportedOperationException("scheduleNextArm not implemented");
+        ParameterLoader loader = new ParameterLoader(study, participant, site, nextArm);
+        participantService.scheduleArm(loader.findAssignment(), loader.getArm(), startDate, mode);
     }
 
     ////// CONFIGURATION
@@ -125,6 +133,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     @Required
     public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
         this.scheduledCalendarDao = scheduledCalendarDao;
+    }
+
+    @Required
+    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
+        this.scheduledEventDao = scheduledEventDao;
     }
 
     //////
@@ -163,10 +176,21 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             loadSite(site);
         }
 
+        public ParameterLoader(Study study, Participant participant, Site site, Arm arm) {
+            loadStudy(study);
+            loadParticipant(participant);
+            loadSite(site);
+            loadArm(arm);
+        }
+
         public ParameterLoader(Study study, Site site, Arm arm) {
             loadStudy(study);
             loadSite(site);
             loadArm(arm);
+        }
+
+        public ParameterLoader(ScheduledEvent scheduledEvent) {
+            loadEvent(scheduledEvent);
         }
 
         ////// LOADING
@@ -187,9 +211,13 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             this.arm = load(parameterArm, armDao);
         }
 
+        private void loadEvent(ScheduledEvent parameterEvent) {
+            this.scheduledEvent = load(parameterEvent, scheduledEventDao);
+        }
+
         ////// LOGIC
 
-        private StudySite validateSiteInStudy() {
+        public StudySite validateSiteInStudy() {
             for (StudySite studySite : this.getStudy().getStudySites()) {
                 if (studySite.getSite().equals(this.getSite())) {
                     return studySite;
@@ -199,7 +227,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                 + " not associated with study " + this.getStudy().getBigId());
         }
 
-        private void validateArmInStudy() {
+        public void validateArmInStudy() {
             for (Epoch epoch : getStudy().getPlannedCalendar().getEpochs()) {
                 if (epoch.getArms().contains(getArm())) {
                     return;
@@ -207,6 +235,10 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             }
             throw new IllegalArgumentException("Arm " + getArm().getBigId()
                 + " not part of template for study " + getStudy().getBigId());
+        }
+
+        public StudyParticipantAssignment findAssignment() {
+            return participantDao.getAssignment(getParticipant(), getStudy(), getSite());
         }
 
         ////// ACCESSORS
