@@ -15,16 +15,28 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 /**
  * @author Rhett Sutphin
  */
 public class DomainObjectToolsTest extends StudyCalendarTestCase {
+    private Comparator<TestObject> byIdComparator = new DomainObjectTools.ById<TestObject>();
+
+    private TestObject o1, o2;
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        o1 = new TestObject(1);
+        o2 = new TestObject(2);
+    }
+
     public void testById() throws Exception {
         List<TestObject> objs = Arrays.asList(
             new TestObject(5),
@@ -40,6 +52,24 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         }
     }
     
+    public void testByIdComparator() throws Exception {
+        assertPositive(byIdComparator.compare(o2, o1));
+        assertNegative(byIdComparator.compare(o1, o2));
+    }
+
+    public void testByIdComparatorWhenEqual() throws Exception {
+        o2.setId(1);
+        assertEquals(0, byIdComparator.compare(o1, o2));
+        assertEquals(0, byIdComparator.compare(o2, o1));
+    }
+
+    public void testByIdComparatorNullSafe() throws Exception {
+        o1.setId(null);
+        assertNegative(byIdComparator.compare(o1, o2));
+        assertPositive(byIdComparator.compare(o2, o1));
+        assertEquals(0, byIdComparator.compare(o1, o1));
+    }
+
     public void testExternalObjectId() {
         assertEquals("edu.northwestern.bioinformatics.studycalendar.domain.TestObject.14",
             DomainObjectTools.createExternalObjectId(new TestObject(14)));

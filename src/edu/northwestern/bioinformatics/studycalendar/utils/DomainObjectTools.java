@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.LinkedHashSet;
+import java.util.Comparator;
 
 /**
  * @author Rhett Sutphin
@@ -89,4 +92,10 @@ public class DomainObjectTools {
     }
 
     private DomainObjectTools() { }
+
+    public static class ById<T extends DomainObject> implements Comparator<T> {
+        public int compare(T o1, T o2) {
+            return ComparisonUtils.nullSafeCompare(o1.getId(), o2.getId());
+        }
+    }
 }

@@ -34,10 +34,4 @@ public interface DomainObject {
      * @param version
      */
     void setVersion(Integer version);
-
-    class ById<T extends DomainObject> implements Comparator<T> {
-        public int compare(T o1, T o2) {
-            return ComparisonUtils.nullSafeCompare(o1.getId(), o2.getId());
-        }
-    }
 }
