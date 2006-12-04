@@ -283,4 +283,8 @@
              </bean>
          </property>
     </bean>
+    
+    <bean name="/simpleReport" id="simpleReportController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.SimpleReportController"/>
+    
 </beans>

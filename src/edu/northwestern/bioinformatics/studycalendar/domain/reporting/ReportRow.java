@@ -1,5 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.reporting;
 
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.FilterDefs;
+import org.hibernate.annotations.Filters;
+import org.hibernate.annotations.ParamDef;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import javax.persistence.Id;
@@ -18,6 +23,14 @@ import java.util.Date;
  * @author Jaron Sampson
  */
 @Entity
+@FilterDefs( {
+	@FilterDef(name="testEventName", parameters={ @ParamDef( name="name", type="string") }),
+	@FilterDef(name="betweenDates", parameters={ @ParamDef( name="fromDate", type="date"), @ParamDef(name="toDate", type="date") } )
+})
+@Filters ({
+	@Filter(name="testEventName", condition=":name = event_name "),
+	@Filter(name="betweenDates", condition="date BETWEEN :fromDate and :toDate" )
+})
 @NamedNativeQuery(
 	name = "reportSqlQuery",
 	query = "select " +
@@ -59,9 +72,12 @@ import java.util.Date;
 										@FieldResult( name = "participantFirstName", column = "p_first_name"),
 										@FieldResult( name = "participantLastName", column = "p_last_name"),
 										@FieldResult( name = "studyName", column = "study_name"),
-										@FieldResult( name = "siteName", column = "site_name") 
-})
+										@FieldResult( name = "siteName", column = "site_name")
+				            }
+
+	)
 )
+
 public class ReportRow extends HibernateDaoSupport {
 private Date date;
 private String dateStr;
