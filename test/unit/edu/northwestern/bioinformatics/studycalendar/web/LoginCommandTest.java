@@ -3,9 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import java.util.Date;
 import java.sql.Timestamp;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.LoginAudit;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.dao.LoginAuditDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.LoginAudit;
+import edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.exceptions.CSException;

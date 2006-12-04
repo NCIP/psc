@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import java.util.Date;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,8 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractFormController;
 import org.springframework.web.servlet.view.RedirectView;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.LoginAuditDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.LoginAudit;
+import edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor;
 import gov.nih.nci.security.AuthenticationManager;

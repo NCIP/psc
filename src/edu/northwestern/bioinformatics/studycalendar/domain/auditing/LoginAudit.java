@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain;
+package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -16,6 +16,8 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.sql.Timestamp;
 import java.util.List;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 
 /**
  * @author Padmaja Vedula
