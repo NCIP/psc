@@ -194,7 +194,8 @@
         <javadoc destdir="${api-dir}" classpathref="cp.main" source="1.5" use="true">
             <fileset dir="${src-dir.main}">
                 <include name="**/api/*.java"/>
-                <include name="**/domain/**/*.java"/>
+                <include name="**/domain/*.java"/>
+                <include name="**/domain/scheduledeventstate/*.java"/>
             </fileset>
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
         </javadoc>
