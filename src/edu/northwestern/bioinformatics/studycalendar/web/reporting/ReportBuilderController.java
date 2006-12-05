@@ -92,6 +92,13 @@ public class ReportBuilderController extends PscSimpleFormController {
 		Collection reportRows = initializeBeanCollection(sites, studies, participants, startDate, endDate);
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
 		model.put("datasource", dataSource);
+		String format = new String();
+		if(reportCommand.getExcelFormat()) {
+			format = "xls";
+		} else {
+			format = "pdf";
+		}
+        model.put("format", format);
     	  	
         return new ModelAndView(getSuccessView(), model);
     }

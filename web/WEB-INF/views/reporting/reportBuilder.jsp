@@ -43,7 +43,7 @@
             Event.observe("studySelectorFormBack", "click", function() {
                 SC.slideAndHide("studySelectorForm")
                 SC.slideAndShow('siteSelectorForm')
-                $('sitesFilterList').innerHTML = "None selected"
+                $('sitesFilterDisplay').innerHTML = "None selected"
             })
         }
         
@@ -66,7 +66,7 @@
             Event.observe("participantSelectorFormBack", "click", function() {
                 SC.slideAndHide("participantSelectorForm")
                 SC.slideAndShow('studySelectorForm')
-                $('studiesFilterList').innerHTML = "None selected"
+                $('studiesFilterDisplay').innerHTML = "None selected"
             })
         }
         
@@ -89,7 +89,7 @@
             Event.observe("dateRangeSelectorFormBack", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
                 SC.slideAndShow('participantSelectorForm')
-                $('participantsFilterList').innerHTML = "None selected"
+                $('participantsFilterDisplay').innerHTML = "None selected"
             })
         }
 
@@ -179,8 +179,10 @@
 <form method="post" id="dateRangeSelectorForm" action="${dateRangeSelectorFormAction}" style="display: none">
 	    <div class="row">
 	        <div class="label">
-	            <label for="startTimeSelector">Start (mm/dd/yyyy)</label>
+	            <label for="startDateInput">Start (mm/dd/yyyy)</label>
 	        </div>
+        </div>
+	    <div class="row">
 	        <div class="value">
 	            <input name="startDateInput"/>
 	        </div>
@@ -188,8 +190,10 @@
 	             
 	    <div class="row">
 	        <div class="label">
-	            <label for="endTimeSelector">End (mm/dd/yyyy)</label>
+	            <label for="endDateInput">End (mm/dd/yyyy)</label>
 	        </div>
+        </div>
+	    <div class="row">
 	        <div class="value">
 	            <input name="endDateInput"/>
 				<tags:activityIndicator id="dateRange-indicator"/>
@@ -212,15 +216,25 @@
 		<div><strong>Participants:</strong></div>
 			<div id="participantsFilterDisplay">None selected</div>
 		<div>
-			<div><strong>Occuring after (MM/DD/YYYY):</strong></div>
+			<div><strong>Occuring after (mm/dd/yyyy):</strong></div>
 			<div id="startDateDisplay">Any date</div>
 		</div>
 		<div>
-			<div><strong>and before (MM/DD/YYYY):</strong></div>
+			<div><strong>and before (mm/dd/yyyy):</strong></div>
 			<div id="endDateDisplay">Any date</div>
 		</div>
         <div id="generateReport" class="submit" style="display: none">
-            <input type="submit" value="Report"/>
+        	<div class="row">
+        		<div class="label"><label for="excelFormatTrue">XLS format</label></div>
+	        	<input type="radio" name="excelFormat" value="true" id="excelFormatTrue">
+			</div>
+        	<div class="row">
+        		<div class="label"><label for="excelFormatFalse">PDF format</label></div>       	
+	        	<input type="radio" name="excelFormat" value="false" id="excelFormatFalse" checked>      	
+			</div>
+        	<div class="row">
+	            <input type="submit" value="Report"/>
+			</div>
         </div>
     </div>
 </form>

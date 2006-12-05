@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 public class ReportBuilderCommand {
 	private String startDate;
 	private String endDate;
+	private Boolean excelFormat;
 	private List<Study> studiesFilter;
 	private List<Site> sitesFilter;
 	private List<Participant> participantsFilter;
@@ -55,6 +56,14 @@ public class ReportBuilderCommand {
 
 	public void setStudiesFilter(List<Study> studiesFilter) {
 		this.studiesFilter = studiesFilter;
+	}
+
+	public Boolean getExcelFormat() {
+		return excelFormat;
+	}
+
+	public void setExcelFormat(Boolean excelFormat) {
+		this.excelFormat = excelFormat;
 	}
 	
 

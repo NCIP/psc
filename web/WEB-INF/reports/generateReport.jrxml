@@ -45,31 +45,31 @@
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="70" height="40" x="200" y="0" style="Arial_Normal_Header"/>
+			<reportElement width="70" height="40" x="210" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Participant]]>
+				<![CDATA[Paticipant]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="70" height="40" x="278" y="0" style="Arial_Normal_Header"/>
+			<reportElement width="70" height="40" x="280" y="0" style="Arial_Normal_Header"/>
 			<text>
 				<![CDATA[Event]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="70" height="40" x="340" y="0" style="Arial_Normal_Header"/>
+			<reportElement width="70" height="40" x="350" y="0" style="Arial_Normal_Header"/>
 			<text>
 				<![CDATA[Event State]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="70" height="40" x="410" y="0" style="Arial_Normal_Header"/>
+			<reportElement width="70" height="40" x="420" y="0" style="Arial_Normal_Header"/>
 			<text>
 				<![CDATA[Epoch]]>
 			</text>
 		</staticText>
 		<staticText>
-			<reportElement width="70" height="40" x="480" y="0" style="Arial_Normal_Header"/>
+			<reportElement width="70" height="40" x="490" y="0" style="Arial_Normal_Header"/>
 			<text>
 				<![CDATA[Arm]]>
 			</text>
