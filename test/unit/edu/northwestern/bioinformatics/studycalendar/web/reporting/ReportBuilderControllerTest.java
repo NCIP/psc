@@ -31,8 +31,6 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 
 	public void testRefData() throws Exception {
         List<Site> sites = new ArrayList<Site>();
-        List<Study> studies = new ArrayList<Study>();
-        List<Participant> participants = new ArrayList<Participant>();
         expect(siteDao.getAll()).andReturn(sites);
 
 		replayMocks();
@@ -41,8 +39,6 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 
         verifyMocks();
         assertSame("Site lists not the same.", sites, map.get("sites"));
-        assertEquals("Studies list not empty.", studies, map.get("studies"));
-        assertEquals("Participants list not empty.", participants, map.get("participants"));
 	}
 	
 }

@@ -23,7 +23,9 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
 
 /**
  * @author Yufang Wang
@@ -31,7 +33,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class GenerateReportController extends SimpleFormController {
-	private StudyDao studyDao;
+	private ReportRowDao reportRowDao;
 	
 	public GenerateReportController() {
 		setCommandClass(GenerateReportCommand.class);
@@ -59,22 +61,11 @@ public class GenerateReportController extends SimpleFormController {
 		DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 		String sd = df.format(date);
 		
-		List<ReportBuilderRow> reportRows = new ArrayList<ReportBuilderRow>();
-		reportRows.add( new ReportBuilderRow(sd, "100", "101", "p100101", "ev100101", "ep100101", "a100101", 
-				"sheduled", "liver-cancer", "boston", "Window Mic", "computer", "business", "software") );
-		reportRows.add( new ReportBuilderRow(sd, "100", "102", "p100102", "ev100101", "ep100101", "a100101", 
-				"occurred", "skin-cancer", "cambridge", "Redhat Lin", "computer-long-long-long", "fan", "software") );
-		reportRows.add( new ReportBuilderRow(sd, "300", "301", "p300301", "ev300301", "ep300301", "a300301",
-				"canceled", "brain-cancer", "boston", "Window Mic", "computer", "business", "software") );
+		List<ReportRow> reportRows = reportRowDao.getAll();
 		
 		return reportRows;
 	}
-	
-	@Required
-	public void setStudyDao(StudyDao studyDao) {
-		this.studyDao = studyDao;
-	}
-	
+		
 	public class ReportBuilderRow {
 		private String dateStr;
 		private String studyId;
@@ -223,5 +214,11 @@ public class GenerateReportController extends SimpleFormController {
 		public String getArmName() {
 			return this.armName;
 		}
+	}
+
+	///////////////////Config 
+	@Required
+	public void setReportRowDao(ReportRowDao reportRowDao) {
+		this.reportRowDao = reportRowDao;
 	}
 }

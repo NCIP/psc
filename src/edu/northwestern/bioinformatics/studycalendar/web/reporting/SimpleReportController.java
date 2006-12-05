@@ -13,6 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
@@ -24,7 +26,8 @@ public class SimpleReportController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         List<ReportRow> reportRows = new ArrayList<ReportRow>();
-        reportRows = reportRowDao.getFilteredByDates();
+        ArrayList<Site> sites = new ArrayList<Site>();
+        reportRows = reportRowDao.getFilteredReport((List) sites, (List)  new ArrayList<Site>(),(List)  new ArrayList<Site>(), "", "");
         model.put("scheduledEvents", reportRows);
         return new ModelAndView("reporting/simpleReport", model);
 	}
@@ -34,4 +37,5 @@ public class SimpleReportController extends AbstractController {
 	public void setReportRowDao(ReportRowDao reportRowDao) {
 		this.reportRowDao = reportRowDao;
 	}
+    
 }

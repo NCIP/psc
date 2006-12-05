@@ -10,7 +10,7 @@
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
-            width: 40%;
+            width: 35%;
         }
 
         div.submit {
@@ -19,6 +19,7 @@
 
         form {
             width: 20em;
+            margin: 10px;
         }
     </style>
     <script type="text/javascript">
@@ -42,7 +43,7 @@
             Event.observe("studySelectorFormBack", "click", function() {
                 SC.slideAndHide("studySelectorForm")
                 SC.slideAndShow('siteSelectorForm')
-                $('sitesFilter').innerHTML = "None"
+                $('sitesFilterList').innerHTML = "None selected"
             })
         }
         
@@ -65,7 +66,7 @@
             Event.observe("participantSelectorFormBack", "click", function() {
                 SC.slideAndHide("participantSelectorForm")
                 SC.slideAndShow('studySelectorForm')
-                $('studiesFilter').innerHTML = "None"
+                $('studiesFilterList').innerHTML = "None selected"
             })
         }
         
@@ -88,7 +89,7 @@
             Event.observe("dateRangeSelectorFormBack", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
                 SC.slideAndShow('participantSelectorForm')
-                $('participantsFilter').innerHTML = "None"
+                $('participantsFilterList').innerHTML = "None selected"
             })
         }
 
@@ -121,67 +122,67 @@
 <h1>Report Builder</h1>
 
 <c:url value="/pages/reportBuilder/selectSites" var="siteSelectorFormAction"/>
-<form:form method="post" action="${siteSelectorFormAction}" id="siteSelectorForm">
+<form method="post" action="${siteSelectorFormAction}" id="siteSelectorForm">
 	<div class="row">
         <div class="label">
-            <form:label path="sites">Sites</form:label>
+            <label>Sites</label>
         </div>
         <div class="value">
             <tags:activityIndicator id="sites-indicator"/>
-            <form:select path="sites" multiple="true">
-			<form:options items="${sites}" itemLabel="name" itemValue="id"/>
-            </form:select>
+            <select id="sites" name="sites" multiple="true">
+            <c:forEach items="${sites}" var="site">
+            	<option value="${site.id}"><c:out value="${site.name}"/></option>
+            </c:forEach>
+            </select>
         </div>
         <div class="value">
             <input type="button" id="siteSelectorFormNext" value="Next"/>
         </div>
     </div>    
-</form:form>
+</form>
 
 <c:url value="/pages/reportBuilder/selectStudies" var="studySelectorFormAction"/>
-<form:form method="post" action="${studySelectorFormAction}" id="studySelectorForm" cssStyle="display: none">
+<form method="post" action="${studySelectorFormAction}" id="studySelectorForm" style="display: none">
 	<div class="row">
         <div class="label">
-            <form:label path="studies">Studies</form:label>
+            <label>Studies</label>
         </div>
         <div class="value">
             <tags:activityIndicator id="studies-indicator"/>
-            <form:select path="studies" multiple="true">
-                <!-- <form:options items="${studies}" itemLabel="name" itemValue="id"/> -->
-            </form:select>
+            <select id="studies" name="studies" multiple="true">
+            </select>
         </div>
         <div class="value">
             <input type="button" id="studySelectorFormBack" value="Back"/><input type="button" id="studySelectorFormNext" value="Next"/>            
         </div>
     </div>    
-</form:form>
+</form>
 
 <c:url value="/pages/reportBuilder/selectParticipants" var="partipantSelectorFormAction"/>    
-<form:form method="post" action="${partipantSelectorFormAction}" id="participantSelectorForm" cssStyle="display: none">
+<form method="post" action="${partipantSelectorFormAction}" id="participantSelectorForm" style="display: none">
 	<div class="row">
         <div class="label">
-            <form:label path="participants">Participants</form:label>
+            <label>Participants</label>
         </div>
         <div class="value">
             <tags:activityIndicator id="participants-indicator"/>
-            <form:select path="participants" multiple="true">
-                <!-- <form:options items="${participants}" itemLabel="firstName" itemValue="id"/> -->
-            </form:select>
+            <select id="participants" name="participants" multiple="true">
+            </select>
         </div>
         <div class="value">
             <input type="button" id="participantSelectorFormBack" value="Back"/><input type="button" id="participantSelectorFormNext" value="Next"/>            
         </div>
     </div>
-</form:form>
+</form>
 
 <c:url value="/pages/reportBuilder/selectDateRange" var="dateRangeSelectorFormAction"/>
-<form:form method="post" id="dateRangeSelectorForm" action="${dateRangeSelectorFormAction}" cssStyle="display: none">
+<form method="post" id="dateRangeSelectorForm" action="${dateRangeSelectorFormAction}" style="display: none">
 	    <div class="row">
 	        <div class="label">
 	            <label for="startTimeSelector">Start (mm/dd/yyyy)</label>
 	        </div>
 	        <div class="value">
-	            <form:input path="startDate"/>
+	            <input name="startDateInput"/>
 	        </div>
 	    </div>
 	             
@@ -190,7 +191,7 @@
 	            <label for="endTimeSelector">End (mm/dd/yyyy)</label>
 	        </div>
 	        <div class="value">
-	            <form:input path="endDate"/>
+	            <input name="endDateInput"/>
 				<tags:activityIndicator id="dateRange-indicator"/>
 	        </div>
 	    </div>
@@ -199,28 +200,30 @@
 	        <input type="button" id="dateRangeSelectorFormBack" value="Back"/><input type="button" id="dateRangeSelectorFormFinish" value="Finish"/>            
 	    </div>
 	</div>
-</form:form>
+</form>
 
-<c:url value="/pages/generateReport" var="formAction"/>
-<form:form id="reportBuilderForm" method="post" action="${formAction}">
-	<div class="row" >
+<form:form id="reportBuilderForm" method="post">
+<form:hidden path="sitesFilter"/>
+<form:hidden path="studiesFilter"/>
+<form:hidden path="participantsFilter"/>
+<form:hidden path="startDate"/>
+<form:hidden path="endDate"/>
+	<div class="row">
 		<div>You selected the following filters:</div>
 		<div><strong>Sites:</strong></div>
-		<form:select id="sitesFilter" path="sitesFilter" multiple="true" disabled="true" cssStyle="width: 20em">
-			<form:options items="${sitesFilter}" itemLabel="name" itemValue="id"/>
-		</form:select>
+			<div id="sitesFilterDisplay">None selected</div>
 		<div><strong>Studies:</strong></div>
-		<form:select id="studiesFilter" path="studiesFilter" multiple="true" disabled="true" cssStyle="width: 20em">
-			<form:options items="${studiesFilter}" itemLabel="studiesFilter" itemValue="id"/>
-		</form:select>
+			<div id="studiesFilterDisplay">None selected</div>
 		<div><strong>Participants:</strong></div>
-		<form:select id="participantsFilter" path="participantsFilter" multiple="true" disabled="true" cssStyle="width: 20em">
-			<form:options items="${participantsFilter}" itemLabel="fullName" itemValue="id"/>
-		</form:select>
-			<div class="label"><strong>Occuring from:</strong>
-		<form:input path="startDate" id="fromFilter"/>
-			<div class="label">to: </strong></div>		
-		<form:input path="endDate"  id="toFilter"/>
+			<div id="participantsFilterDisplay">None selected</div>
+		<div>
+			<div><strong>Occuring after (MM/DD/YYYY):</strong></div>
+			<div id="startDateDisplay">Any date</div>
+		</div>
+		<div>
+			<div><strong>and before (MM/DD/YYYY):</strong></div>
+			<div id="endDateDisplay">Any date</div>
+		</div>
         <div id="generateReport" class="submit" style="display: none">
             <input type="submit" value="Report"/>
         </div>

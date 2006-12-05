@@ -24,8 +24,8 @@ public class ReportBuilderSelectDateRangeController extends AbstractController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map model = new HashMap();
 
-		String fromFilter = ServletRequestUtils.getRequiredStringParameter(request, "startDate");
-		String toFilter = ServletRequestUtils.getRequiredStringParameter(request, "endDate");
+		String fromFilter = ServletRequestUtils.getRequiredStringParameter(request, "startDateInput");
+		String toFilter = ServletRequestUtils.getRequiredStringParameter(request, "endDateInput");
 		
 		model.put("fromSelected", fromFilter);
 		model.put("toSelected", toFilter);

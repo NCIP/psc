@@ -23,43 +23,6 @@ import java.util.Date;
  * @author Jaron Sampson
  */
 @Entity
-@FilterDefs( {
-	@FilterDef(name="testEventName", parameters={ @ParamDef( name="name", type="string") }),
-	@FilterDef(name="betweenDates", parameters={ @ParamDef( name="fromDate", type="date"), @ParamDef(name="toDate", type="date") } )
-})
-@Filters ({
-	@Filter(name="testEventName", condition=":name = event_name "),
-	@Filter(name="betweenDates", condition="date BETWEEN :fromDate and :toDate" )
-})
-@NamedNativeQuery(
-	name = "reportSqlQuery",
-	query = "select " +
-		"se.id as event_id," + 
-		"act.name as event_name, " +
-		"sem.name as state_name, " +
-		"se.current_state_date as date," +
-		"a.name as arm_name," +
-		"e.name as epoch_name, " +
-		"p.first_name as p_first_name, " +
-		"p.last_name as p_last_name, " + 
-		"st.name as study_name, " +
-		"si.name as site_name "+
-	"from "+
-		"sites si inner join study_sites ss on si.id=ss.site_id " +
-		"inner join studies st on st.id=ss.study_id " +
-		"inner join participant_assignments pa on ss.id=pa.study_site_id " +
-		"inner join participants p on pa.participant_id=p.id " +
-		"inner join scheduled_calendars sc on pa.id=sc.assignment_id " +
-		"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-		"inner join scheduled_events se on sa.id=se.scheduled_arm_id " +
-		"inner join scheduled_event_modes sem on se.current_state_mode_id=sem.id " +
-		"inner join planned_events pe on se.planned_event_id=pe.id " +
-		"inner join activities act on pe.activity_id=act.id " +
-		"inner join arms a on sa.arm_id=a.id " +
-		"inner join epochs e on a.epoch_id=e.id " +
-	"order by se.id",
-	resultSetMapping = "reportSqlQueryMapping"
-)
 @SqlResultSetMapping(
 	name = "reportSqlQueryMapping",
 	entities = @EntityResult(entityClass = edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow.class,

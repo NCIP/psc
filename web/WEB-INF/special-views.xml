@@ -8,7 +8,7 @@
 			<value>/WEB-INF/reports/generateReport.jrxml</value>
         </property>
     </bean>
-
+    
     <!-- Redirect views -->
     <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>

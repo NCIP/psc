@@ -9,12 +9,17 @@ function replaceOptions(selectElt, text, value) {
 	}
 }
 
-replaceOptions('participantsFilter', [
-<c:forEach items="${participantsSelected}" var="participants">
-	"${participants.fullName}",
-</c:forEach>], [
-<c:forEach items="${participantsSelected}" var="participants">
-	"${participants.id}",
-</c:forEach>]);
-
 SC.slideAndShow('dateRangeSelectorForm');
+
+
+var participantsFilterList = ""; 
+<c:forEach items="${participantsSelected}" var="participant"> 
+	participantsFilterList = "<div> " + participantsFilterList + "${participant.lastName}, ${participant.firstName} </div>"; 
+</c:forEach> 
+$('participantsFilterDisplay').innerHTML = participantsFilterList;    
+
+var participantsFilterElements = new Array(); 
+<c:forEach items="${participantsSelected}" var="selectedParticipant"> 
+	participantsFilterElements.push(${selectedParticipant.id}); 
+</c:forEach> 
+$('participantsFilter').value = participantsFilterElements
