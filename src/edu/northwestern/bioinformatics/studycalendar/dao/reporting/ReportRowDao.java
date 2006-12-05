@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.hibernate.HibernateException;
 //import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -85,8 +86,13 @@ public class ReportRowDao extends HibernateDaoSupport {
 	} 
 */
 	@SuppressWarnings("unchecked")
-	public List<ReportRow> getFilteredReport(List<Site> sites, List<Study> studies, List<Participant> participants, String fromDate, String toDate) {
-		final  List<Site> sitesFinal = sites;
+	public List<ReportRow> getFilteredReport(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
+		final List<Site> sitesFinal = sites;
+		final List<Study> studiesFinal = studies;
+		final List<Participant> participantsFinal = participants;
+		final String startDateFinal = startDate;
+		final String endDateFinal = endDate;
+		
 		return getHibernateTemplate().executeFind(new HibernateCallback() {
 			
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -114,9 +120,8 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"inner join activities act on pe.activity_id=act.id " +
 				"inner join arms a on sa.arm_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
-				"where " +
- 				getSitesWheres(sitesFinal) + 
-			"order by se.id";
+				getWhere(sitesFinal, studiesFinal, participantsFinal, startDateFinal, endDateFinal) + 
+			" order by se.id";
 				
 				log.debug("%%%%%%%%%%%%" + query.toString());
 				SQLQuery myQuery = session.createSQLQuery(query);
@@ -127,6 +132,38 @@ public class ReportRowDao extends HibernateDaoSupport {
 		});
 		
 	}
+	
+	private String getWhere(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
+		String where = new String();
+		
+		List<String> wheres = new ArrayList<String>();
+		if(!"".equals(getSitesWheres(sites))) { wheres.add(getSitesWheres(sites));}
+		if(!"".equals(getStudiesWheres(studies))) { wheres.add(getStudiesWheres(studies));}
+		if(!"".equals(getParticipantsWheres(participants))) {wheres.add(getParticipantsWheres(participants));}
+		if(!"".equals(getDateWheres(startDate, endDate))) {wheres.add(getDateWheres(startDate, endDate));}
+		
+		if(wheres.isEmpty()) {
+			return where;
+		} else {
+			where = "where ";
+			ListIterator<String> iter = wheres.listIterator();
+			while(iter.hasNext()) {
+				String whereClause = iter.next();
+				where += whereClause;
+				if(iter.hasNext()) {
+					if(!"".equals(iter.next())) {
+						where += " and ";
+						iter.previous();
+					} else {
+						iter.previous();					
+					}
+				}
+			where += " ";
+			}
+		return where;
+		}
+	}
+		
 
 	private String getSitesWheres(List<Site> sites) {
 		String where = new String();
@@ -144,4 +181,55 @@ public class ReportRowDao extends HibernateDaoSupport {
 		}
 		return where;
 	}
+
+
+	private String getStudiesWheres(List<Study> studies) {
+		String where = new String();
+		if(studies.isEmpty()) {
+			return where;
+		} else {
+			where = "st.id IN (";
+			ListIterator<Study> iter = studies.listIterator();
+			while(iter.hasNext()) {
+				Study study = iter.next();
+				where += study.getId();
+				if(iter.hasNext()) { where += ",";}
+			}
+			where += ") ";
+		}
+		return where;
+	}
+	
+	private String getParticipantsWheres(List<Participant> participants) {
+		String where = new String();
+		if(participants.isEmpty()) {
+			return where;
+		} else {
+			where = "p.id IN (";
+			ListIterator<Participant> iter = participants.listIterator();
+			while(iter.hasNext()) {
+				Participant participant = iter.next();
+				where += participant.getId();
+				if(iter.hasNext()) { where += ",";}
+			}
+			where += ") ";
+		}
+		return where;
+	}
+	
+	private String getDateWheres(String startDate, String endDate) {
+		String where = new String();
+		
+		if("".equals(startDate) && "".equals(endDate)) {
+			return where;
+		} else if ("".equals(startDate) && (!"".equals(endDate))) {
+			where = " se.current_state_date<='" + endDate + "'" ;
+		} else if (!"".equals(startDate) && ("".equals(endDate))) {
+			where = " se.current_state_date>='" + startDate + "'" ;
+		} else {
+			where = " se.current_state_date BETWEEN '" + startDate + "' AND '" + endDate + "' ";
+		}
+		return where;
+	}
+	
 }

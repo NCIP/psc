@@ -1,5 +1,6 @@
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 
 function replaceOptions(selectElt, text, value) {
 	var select = $(selectElt)
@@ -25,8 +26,8 @@ var studiesFilterList = "";
 </c:forEach> 
 $('studiesFilterDisplay').innerHTML = studiesFilterList;     
 
-var studiesFilterElements = new Array(); 
+<jsgen:insertHtml targetElement="reportBuilderForm" position="bottom">
 <c:forEach items="${studiesSelected}" var="selectedStudy"> 
-	studiesFilterElements.push(${selectedStudy.id}); 
+	<input type="hidden" name="studiesFilter" value="${selectedStudy.id}"/> 
 </c:forEach> 
-$('studiesFilter').value = studiesFilterElements
+</jsgen:insertHtml>

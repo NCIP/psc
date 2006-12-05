@@ -71,13 +71,6 @@ public class ReportBuilderController extends PscSimpleFormController {
         return refdata;
     }
 
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map map) throws Exception {
-		
-		log.debug("$$$$$$$$$$$$$$$$$$$" + errors.getMessage());
-		
-		return super.showForm(request, response, errors, map);
-	}
-
 
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
     	
@@ -90,15 +83,21 @@ public class ReportBuilderController extends PscSimpleFormController {
         List<Site> sites = reportCommand.getSitesFilter();
         List<Participant> participants = reportCommand.getParticipantsFilter();
         
-		Collection reportRows = initializeBeanCollection(sites);
+        if(startDate == null) {startDate = "";}
+        if(endDate == null) {endDate = "";}
+        if(sites == null) {sites = new ArrayList<Site>();}
+        if(studies == null) {studies = new ArrayList<Study>();}
+        if(participants == null) {participants = new ArrayList<Participant>();}
+        
+		Collection reportRows = initializeBeanCollection(sites, studies, participants, startDate, endDate);
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
 		model.put("datasource", dataSource);
     	  	
         return new ModelAndView(getSuccessView(), model);
     }
 
-	private Collection initializeBeanCollection(List<Site> sites) {	
-		List<ReportRow> reportRows = reportRowDao.getFilteredReport((List) sites, (List)  new ArrayList<Site>(),(List)  new ArrayList<Site>(), "", "");
+	private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {	
+		List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, participants, startDate, endDate);
 		
 		return reportRows;
 	}

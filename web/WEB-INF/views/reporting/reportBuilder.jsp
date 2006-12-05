@@ -202,12 +202,7 @@
 	</div>
 </form>
 
-<form:form id="reportBuilderForm" method="post">
-<form:hidden path="sitesFilter"/>
-<form:hidden path="studiesFilter"/>
-<form:hidden path="participantsFilter"/>
-<form:hidden path="startDate"/>
-<form:hidden path="endDate"/>
+<form id="reportBuilderForm" method="post">
 	<div class="row">
 		<div>You selected the following filters:</div>
 		<div><strong>Sites:</strong></div>
@@ -228,6 +223,6 @@
             <input type="submit" value="Report"/>
         </div>
     </div>
-</form:form>
+</form>
 </body>
 </html>

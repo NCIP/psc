@@ -42,120 +42,121 @@ import java.util.Date;
 )
 
 public class ReportRow extends HibernateDaoSupport {
-private Date date;
-private String dateStr;
-private String studyName;
-private String siteName;
-private String participantFirstName;
-private String participantLastName;
-private String eventName;
-private String epochName;
-private String armName;
-private String currentState;
-private Integer eventId;
+	private Date date;
+	private String studyName;
+	private String siteName;
+	private String participantFirstName;
+	private String participantLastName;
+	private String eventName;
+	private String epochName;
+	private String armName;
+	private String currentState;
+	private Integer eventId;
+	
+	
+	public void setEventId(Integer evid){
+	this.eventId = evid;
+	}
+	
+	@Id
+	public Integer getEventId(){
+	return this.eventId;
+	}
+	
+	public void setDate(Date date){
+	this.date = date;
+	}
+	
+	public Date getDate(){
+	return this.date;
+	}
+	
+	@Transient
+	public String getDateStr(){
+		String dateStr = new String();
+		if(this.date != null) {
+			dateStr = this.date.toString();
+		} else {
+			dateStr = "N/A";
+		}
+	return dateStr;
+	}
+	
+	public void setStudyName(String studyname) {
+	this.studyName = studyname;
+	}
+	
+	public String getStudyName() {
+	return this.studyName;
+	}
+	
+	public void setSiteName(String sitename) {
+	this.siteName = sitename;
+	}
+	
+	public String getSiteName() {
+	return this.siteName;
+	}
+	
+	public void setParticipantFirstName(String pfname) {
+	this.participantFirstName = pfname;
+	}
+	
+	public String getParticipantFirstName() {
+	return this.participantFirstName;
+	}
+	
+	public void setParticipantLastName(String plname) {
+	this.participantLastName = plname;
+	}
+	
+	public String getParticipantLastName() {
+	return this.participantLastName;
+	}
+	
+	@Transient
+	public String getParticipantName() {
+		return this.participantLastName + ", " + this.participantFirstName;
+	}
+	
+	public void setEventName(String eventname) {
+	this.eventName = eventname;
+	}
+	
+	public String getEventName() {
+	return this.eventName;
+	}
+	
+	public void setCurrentState(String state){
+	this.currentState = state;
+	}
+	
+	public String getCurrentState(){
+	return this.currentState;
+	}
+	
+	public void setEpochName(String epochname) {
+	this.epochName = epochname;
+	}
+	
+	public String getEpochName() {
+	return this.epochName;
+	}
+	
+	public void setArmName(String armname) {
+	this.armName = armname;
+	}
+	
+	public String getArmName() {
+	return this.armName;
+	}
 
-
-public void setEventId(Integer evid){
-this.eventId = evid;
 }
+/*public String dateToDateStr(){
 
-@Id
-public Integer getEventId(){
-return this.eventId;
-}
-
-public void setDate(Date date){
-this.date = date;
-}
-
-public Date getDate(){
-return this.date;
-}
-
-public void setDateStr(String date){
-this.dateStr = date;
-}
-
-@Transient
-public String getDateStr(){
-return this.dateStr;
-}
-
-public void setStudyName(String studyname) {
-this.studyName = studyname;
-}
-
-public String getStudyName() {
-return this.studyName;
-}
-
-public void setSiteName(String sitename) {
-this.siteName = sitename;
-}
-
-public String getSiteName() {
-return this.siteName;
-}
-
-public void setParticipantFirstName(String pfname) {
-this.participantFirstName = pfname;
-}
-
-public String getParticipantFirstName() {
-return this.participantFirstName;
-}
-
-public void setParticipantLastName(String plname) {
-this.participantLastName = plname;
-}
-
-public String getParticipantLastName() {
-return this.participantLastName;
-}
-
-@Transient
-public String getParticipantName() {
-	return this.participantLastName + ", " + this.participantFirstName;
-}
-
-public void setEventName(String eventname) {
-this.eventName = eventname;
-}
-
-public String getEventName() {
-return this.eventName;
-}
-
-public void setCurrentState(String state){
-this.currentState = state;
-}
-
-public String getCurrentState(){
-return this.currentState;
-}
-
-public void setEpochName(String epochname) {
-this.epochName = epochname;
-}
-
-public String getEpochName() {
-return this.epochName;
-}
-
-public void setArmName(String armname) {
-this.armName = armname;
-}
-
-public String getArmName() {
-return this.armName;
-}
-
-
-public String dateToDateStr(){
-/*
 DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT);
 return this.dateStr = df.format(this.date);
-*/
+
 return this.dateStr = this.date.toString();
 }
-}
+}*/

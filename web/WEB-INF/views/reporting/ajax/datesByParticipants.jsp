@@ -1,5 +1,6 @@
 <%@page contentType="text/javascript"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 
 function replaceOptions(selectElt, text, value) {
 	var select = $(selectElt)
@@ -18,8 +19,8 @@ var participantsFilterList = "";
 </c:forEach> 
 $('participantsFilterDisplay').innerHTML = participantsFilterList;    
 
-var participantsFilterElements = new Array(); 
+<jsgen:insertHtml targetElement="reportBuilderForm" position="bottom">
 <c:forEach items="${participantsSelected}" var="selectedParticipant"> 
-	participantsFilterElements.push(${selectedParticipant.id}); 
+	<input type="hidden" name="participantsFilter" value="${selectedParticipant.id}"/> 
 </c:forEach> 
-$('participantsFilter').value = participantsFilterElements
+</jsgen:insertHtml>
