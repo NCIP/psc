@@ -15,8 +15,12 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -24,6 +28,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.apache.log4j.Logger;
 
@@ -35,14 +40,24 @@ import org.apache.log4j.Logger;
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class ReportBuilderController extends PscSimpleFormController {
 	private SiteDao siteDao;
+	private StudyDao studyDao;
+	private ParticipantDao participantDao;
 	private static final Logger log = Logger.getLogger(ReportBuilderController.class.getName());
 	private ReportRowDao reportRowDao;
 
     public ReportBuilderController() {
         setCommandClass(ReportBuilderCommand.class);
         setFormView("reporting/reportBuilder");
-        setSuccessView("reporting/report");
+        setSuccessView("report");
     }
+    
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
+        ControllerTools.registerDomainObjectEditor(binder, "sitesFilter", siteDao);
+        ControllerTools.registerDomainObjectEditor(binder, "studiesFilter", studyDao);
+        ControllerTools.registerDomainObjectEditor(binder, "participantsFilter", participantDao);
+    }
+
     
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -104,6 +119,16 @@ public class ReportBuilderController extends PscSimpleFormController {
     @Required
 	public void setReportRowDao(ReportRowDao reportRowDao) {
 		this.reportRowDao = reportRowDao;
+	}
+
+    @Required
+	public void setParticipantDao(ParticipantDao participantDao) {
+		this.participantDao = participantDao;
+	}
+
+    @Required
+	public void setStudyDao(StudyDao studyDao) {
+		this.studyDao = studyDao;
 	}
 
 }
