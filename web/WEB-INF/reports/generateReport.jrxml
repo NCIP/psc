@@ -47,7 +47,7 @@
 		<staticText>
 			<reportElement width="70" height="40" x="210" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Paticipant]]>
+				<![CDATA[Participant]]>
 			</text>
 		</staticText>
 		<staticText>

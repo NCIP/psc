@@ -16,6 +16,7 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Transient;
 
 
+import java.text.DateFormat;
 import java.util.Date;
 
 /**
@@ -75,7 +76,7 @@ public class ReportRow extends HibernateDaoSupport {
 	public String getDateStr(){
 		String dateStr = new String();
 		if(this.date != null) {
-			dateStr = this.date.toString();
+			dateStr = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this.date);
 		} else {
 			dateStr = "N/A";
 		}
