@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
 import java.util.List;
 import java.util.Map;
@@ -78,6 +79,10 @@ public class DomainObjectTools {
             String[] objectIdStrings = objectId.split("\\.");
             return  Integer.parseInt(objectIdStrings[objectIdStrings.length - 1]);
         }
+    }
+
+    public static <T extends DomainObject> T loadFromExternalObjectId(String objectId, StudyCalendarDao<T> dao) {
+        return dao.getById(parseExternalObjectId(objectId));
     }
 
     public static boolean isMoreSpecific(Class<? extends DomainObject> more, Class<? extends DomainObject> less) {

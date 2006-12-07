@@ -17,11 +17,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
+
+import org.easymock.classextension.EasyMock;
 
 /**
  * @author Rhett Sutphin
@@ -83,6 +86,27 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
             assertEquals(
                 "Cannot create an external object ID for a transient instance of edu.northwestern.bioinformatics.studycalendar.domain.TestObject", iae.getMessage());
         }
+    }
+
+    public void testParseExternalObjectId() throws Exception {
+        assertEquals(34, DomainObjectTools
+            .parseExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.TestObject.34"));
+    }
+
+    public void testParseCreatedExternalObjectId() throws Exception {
+        String created = DomainObjectTools.createExternalObjectId(new TestObject(14));
+        assertEquals(14, DomainObjectTools.parseExternalObjectId(created));
+    }
+
+    public void testLoadFromExternalObjectId() throws Exception {
+        TestObject expected = new TestObject(66);
+        StudyCalendarDao<TestObject> dao = registerDaoMockFor(TestObject.MockableDao.class);
+        EasyMock.expect(dao.getById(66)).andReturn(expected);
+
+        replayMocks();
+        assertSame(expected, DomainObjectTools
+            .loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.TestObject.66", dao));
+        verifyMocks();
     }
 
     public void testOtherTypeSpecificity() throws Exception {
