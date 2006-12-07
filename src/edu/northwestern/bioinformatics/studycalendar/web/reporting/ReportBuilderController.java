@@ -1,13 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -93,16 +90,19 @@ public class ReportBuilderController extends PscSimpleFormController {
 		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
 		model.put("datasource", dataSource);
 		String format = new String();
+		
 		if(reportCommand.getExcelFormat()) {
 			format = "xls";
+	        model.put("format", format);   	  	
+	        return new ModelAndView("xlsReport", model);
 		} else {
 			format = "pdf";
+	        model.put("format", format);   	  	
+	        return new ModelAndView("pdfReport", model);
 		}
-        model.put("format", format);
-    	  	
-        return new ModelAndView(getSuccessView(), model);
-    }
-
+		
+	}
+	
 	private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {	
 		List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, participants, startDate, endDate);
 		

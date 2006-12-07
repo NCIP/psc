@@ -117,7 +117,7 @@ public class ReportRow extends HibernateDaoSupport {
 	
 	@Transient
 	public String getParticipantName() {
-		return this.participantLastName + ", " + this.participantFirstName;
+		return this.participantFirstName + " " + this.participantLastName;
 	}
 	
 	public void setEventName(String eventname) {

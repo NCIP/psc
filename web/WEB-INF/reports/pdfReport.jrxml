@@ -19,7 +19,7 @@
 		<staticText>
 			<reportElement width="555" height="50" x="0" y="0" style="Arial_Bold"/>
 			<text>
-				<![CDATA[Report]]>
+				<![CDATA[caBIG PSC Report]]>
 			</text>
 		</staticText>
 	</band>
@@ -47,7 +47,7 @@
 		<staticText>
 			<reportElement width="70" height="40" x="210" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Participant]]>
+				<![CDATA[Paticipant]]>
 			</text>
 		</staticText>
 		<staticText>

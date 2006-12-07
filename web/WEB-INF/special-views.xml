@@ -3,9 +3,14 @@
 <beans>
 
 	<!-- Intermediate views for JasperReports -->
-    <bean id="report" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
+    <bean id="xlsReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
 		<property name="url">
-			<value>/WEB-INF/reports/generateReport.jrxml</value>
+			<value>/WEB-INF/reports/xlsReport.jrxml</value>
+        </property>
+    </bean>
+    <bean id="pdfReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
+		<property name="url">
+			<value>/WEB-INF/reports/pdfReport.jrxml</value>
         </property>
     </bean>
     
