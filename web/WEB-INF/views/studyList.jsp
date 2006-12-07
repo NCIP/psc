@@ -89,12 +89,18 @@
 </ul>
 </c:if> 
 
+<security:secureOperation element="/pages/reportBuilder" operation="ACCESS">
+<h2>Reporting</h2>
+<ul class="menu">
+    <tags:restrictedListItem url="/pages/reportBuilder">Report Builder</tags:restrictedListItem>
+</ul>
+</security:secureOperation>
+
 <security:secureOperation element="/pages/manageSites" operation="ACCESS">
 <h2>Administration</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
-    <tags:restrictedListItem url="/pages/reportBuilder">Report Builder</tags:restrictedListItem>
-	<tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
+    <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
 </ul>
 </security:secureOperation>
 
