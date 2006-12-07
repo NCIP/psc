@@ -31,6 +31,7 @@ import java.util.Date;
 										@FieldResult( name = "eventName", column = "event_name"),
 										@FieldResult( name = "currentState", column = "state_name"),
 										@FieldResult( name = "date", column = "date"),
+										@FieldResult( name = "idealDate", column = "ideal_date"),
 										@FieldResult( name = "armName", column = "arm_name"),
 										@FieldResult( name = "epochName", column = "epoch_name"),
 										@FieldResult( name = "participantFirstName", column = "p_first_name"),
@@ -44,6 +45,7 @@ import java.util.Date;
 
 public class ReportRow extends HibernateDaoSupport {
 	private Date date;
+	private Date idealDate;
 	private String studyName;
 	private String siteName;
 	private String participantFirstName;
@@ -83,6 +85,25 @@ public class ReportRow extends HibernateDaoSupport {
 	return dateStr;
 	}
 	
+	public Date getIdealDate() {
+		return idealDate;
+	}
+
+	public void setIdealDate(Date idealDate) {
+		this.idealDate = idealDate;
+	}
+
+	@Transient
+	public String getIdealDateStr(){
+		String dateStr = new String();
+		if(this.idealDate != null) {
+			dateStr = DateFormat.getDateInstance(DateFormat.MEDIUM).format(this.idealDate);
+		} else {
+			dateStr = "N/A";
+		}
+	return dateStr;
+	}
+
 	public void setStudyName(String studyname) {
 	this.studyName = studyname;
 	}

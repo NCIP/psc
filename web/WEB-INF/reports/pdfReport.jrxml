@@ -2,11 +2,12 @@
 <!DOCTYPE jasperReport
   PUBLIC "-//JasperReports//DTD Report Design//EN"
   "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
-<jasperReport name="generateReport" >
+<jasperReport name="generateReport" pageWidth="795">
 	<style name="Arial_Normal_Default" isDefault="true" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica"/>
 	<style name="Arial_Normal_Header" isDefault="false" fontName="Arial" fontSize="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
 	<style name="Arial_Bold" isDefault="false" fontName="Arial" fontSize="18" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
 	<field name="dateStr" class="java.lang.String"/>
+	<field name="idealDateStr" class="java.lang.String"/>
 	<field name="studyName" class="java.lang.String"/>
 	<field name="siteName" class="java.lang.String"/>
 	<field name="participantName" class="java.lang.String"/>
@@ -17,7 +18,7 @@
 <title>
 	<band height="70">
 		<staticText>
-			<reportElement width="555" height="50" x="0" y="0" style="Arial_Bold"/>
+			<reportElement width="700" height="50" x="0" y="0" style="Arial_Bold"/>
 			<text>
 				<![CDATA[caBIG PSC Report]]>
 			</text>
@@ -29,7 +30,7 @@
 		<staticText>
 			<reportElement width="70" height="40" x="0" y="0" style="Arial_Normal_Header"/>
 			<text>
-				<![CDATA[Date]]>
+				<![CDATA[Scheduled Date]]>
 			</text>
 		</staticText>
 		<staticText>
@@ -74,6 +75,12 @@
 				<![CDATA[Arm]]>
 			</text>
 		</staticText>
+		<staticText>
+			<reportElement width="70" height="40" x="560" y="0" style="Arial_Normal_Header"/>
+			<text>
+				<![CDATA[Ideal Date]]>
+			</text>
+		</staticText>
 	</band>
 </pageHeader>
 <detail>
@@ -109,6 +116,10 @@
 		<textField>
 			<reportElement width="70" height="20" x="495" y="0"/>
 			<textFieldExpression><![CDATA[$F{armName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="565" y="0"/>
+			<textFieldExpression><![CDATA[$F{idealDateStr}]]></textFieldExpression>
 		</textField>
 	</band>
 </detail>

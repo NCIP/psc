@@ -38,6 +38,7 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"act.name as event_name, " +
 				"sem.name as state_name, " +
 				"se.current_state_date as date," +
+				"se.ideal_date as ideal_date," +
 				"a.name as arm_name," +
 				"e.name as epoch_name, " +
 				"p.first_name as p_first_name, " +
@@ -101,6 +102,7 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"act.name as event_name, " +
 				"sem.name as state_name, " +
 				"se.current_state_date as date," +
+				"se.ideal_date as ideal_date," +
 				"a.name as arm_name," +
 				"e.name as epoch_name, " +
 				"p.first_name as p_first_name, " +

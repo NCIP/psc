@@ -5,6 +5,7 @@
 <jasperReport name="generateReport" >
 	<style name="Arial_Normal_Default" isDefault="true" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica"/>
 	<field name="dateStr" class="java.lang.String"/>
+	<field name="idealDateStr" class="java.lang.String"/>
 	<field name="studyName" class="java.lang.String"/>
 	<field name="siteName" class="java.lang.String"/>
 	<field name="participantName" class="java.lang.String"/>
@@ -45,6 +46,10 @@
 		<textField>
 			<reportElement width="70" height="20" x="490" y="0"/>
 			<textFieldExpression><![CDATA[$F{armName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="560" y="0"/>
+			<textFieldExpression><![CDATA[$F{idealDateStr}]]></textFieldExpression>
 		</textField>
 	</band>
 </detail>
