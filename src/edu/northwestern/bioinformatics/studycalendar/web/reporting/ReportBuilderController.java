@@ -23,7 +23,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -34,8 +36,9 @@ import org.apache.log4j.Logger;
  * @author Jaron Sampson
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
+@AccessControl(protectionGroups = StudyCalendarProtectionGroup.BASE)
 public class ReportBuilderController extends PscSimpleFormController {
+	private SiteService siteService;
 	private SiteDao siteDao;
 	private StudyDao studyDao;
 	private ParticipantDao participantDao;
@@ -61,10 +64,8 @@ public class ReportBuilderController extends PscSimpleFormController {
         log.debug("referenceData"); 
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Site> sites = new ArrayList<Site>();
-        sites = siteDao.getAll();
-        
-    	refdata.put("sites", sites);        
-        
+        sites = siteService.getSitesForUser(ApplicationSecurityManager.getUser(httpServletRequest));
+    	refdata.put("sites", sites);                
         return refdata;
     }
 
@@ -135,6 +136,11 @@ public class ReportBuilderController extends PscSimpleFormController {
     @Required
 	public void setStudyDao(StudyDao studyDao) {
 		this.studyDao = studyDao;
+	}
+
+    @Required
+	public void setSiteService(SiteService siteService) {
+		this.siteService = siteService;
 	}
 
 }

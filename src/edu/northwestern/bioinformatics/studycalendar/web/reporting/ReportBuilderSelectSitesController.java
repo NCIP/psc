@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.ArrayList;
@@ -33,6 +35,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class ReportBuilderSelectSitesController extends AbstractController {
     private SiteDao siteDao;
+    private TemplateService templateService;
+    
 	private static final Logger log = Logger.getLogger(ReportBuilderSelectSitesController.class.getName());
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -44,8 +48,12 @@ public class ReportBuilderSelectSitesController extends AbstractController {
 			sites.add(siteDao.getById(id));
 		}
         model.put("sitesSelected", sites);
-        Set<Study> studies = getStudiesForSites(sites);
-        model.put("studies", studies);
+        Set<Study> studiesSet = getStudiesForSites(sites);
+        List<Study> studies = new ArrayList<Study>();
+        for(Study study : studiesSet) {
+        	studies.add(study);
+        }
+        model.put("studies", templateService.checkOwnership(ApplicationSecurityManager.getUser(request), (List) studies));
         
         return new ModelAndView("reporting/ajax/studiesBySites", model);
 	}
@@ -69,6 +77,11 @@ public class ReportBuilderSelectSitesController extends AbstractController {
 			}
 		}
 		return studies;
+	}
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+		this.templateService = templateService;
 	}
 
 

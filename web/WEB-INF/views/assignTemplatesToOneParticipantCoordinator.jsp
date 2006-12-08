@@ -23,7 +23,6 @@
 </head>
 <body>
 <h1>Assign Study Templates To Participant Coordinator ${participantcoordinator.name}</h1>
-<div><a href="<c:url value="/pages/studyList"/>">Calendar Menu</a></div>
 <c:url value="/pages/assignTemplatesToOneParticipantCoordinator?siteId=${site.id}.${participantcoordinator.userId}" var="formAction"/>
 
 <form:form action="${formAction}" method="post">
