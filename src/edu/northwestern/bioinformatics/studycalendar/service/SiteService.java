@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,9 +19,8 @@ import java.util.Set;
 
 /**
  * @author Padmaja Vedula
- *
+ * @author Rhett Sutphin
  */
-
 @Transactional
 public class SiteService {
 	public static final String BASE_SITE_PG = "BaseSitePG";
@@ -103,14 +103,17 @@ public class SiteService {
     
     ////// CONFIGURATION
 
+    @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
     }
 
+    @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
     }
-    
+
+    @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
