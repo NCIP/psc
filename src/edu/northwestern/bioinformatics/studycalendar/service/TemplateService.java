@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager.AVAILABLE_PES;
+
 import edu.nwu.bioinformatics.commons.StringUtils;
 
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.LinkedList;
 import java.util.Iterator;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -38,6 +41,7 @@ public class TemplateService {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
+    private SiteService siteService;
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         for (Site site : sites) {
@@ -145,8 +149,8 @@ public class TemplateService {
             assignedSites.add(ss.getSite());
         }
         availableSites = (List) ObjectSetUtil.minus(availableSites, assignedSites);
-        siteLists.put(authorizationManager.ASSIGNED_PGS, assignedSites);
-        siteLists.put(authorizationManager.AVAILABLE_PGS, availableSites);
+        siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
+        siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
 
         return siteLists;
     }
@@ -166,8 +170,8 @@ public class TemplateService {
         }
 
         availableTemplates = (List) ObjectSetUtil.minus(allTemplates, assignedTemplates);
-        templatesMap.put(authorizationManager.ASSIGNED_PES, assignedTemplates);
-        templatesMap.put(authorizationManager.AVAILABLE_PES, availableTemplates);
+        templatesMap.put(StudyCalendarAuthorizationManager.ASSIGNED_PES, assignedTemplates);
+        templatesMap.put(StudyCalendarAuthorizationManager.AVAILABLE_PES, availableTemplates);
         return templatesMap;
     }
     
@@ -175,24 +179,15 @@ public class TemplateService {
         return authorizationManager.getPGByName(siteName);
     }
     
-    public List getAllSiteProtectionGroups() throws Exception {
-        return authorizationManager.getSites();
-    }
-    
     public List checkOwnership(String userName, List<Study> studies) throws Exception {
         return authorizationManager.checkOwnership(userName, studies);
     }
     
-    public List getSitesForTemplateSiteCd(String userName, Study study) throws Exception {
-        List<Site> sites = new ArrayList<Site>();
+    public List getSitesForTemplateSiteCd(String userName, Study study) {
+        List<Site> sites = siteService.getSitesForSiteCd(userName);
         List<StudySite> allStudySites = study.getStudySites();
         List<Site> templateSites = new ArrayList<Site>();
 
-        List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
-
-        for (ProtectionGroup sitePG : sitePGs) {
-            sites.add(siteDao.getByName(sitePG.getProtectionGroupName()));
-        }
         for (Site site : sites) {
             for (StudySite studySite : allStudySites) {
                 if (studySite.getSite().getId() == site.getId()) {
@@ -238,5 +233,10 @@ public class TemplateService {
     
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }

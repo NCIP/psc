@@ -26,13 +26,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
  * @author Padmaja Vedula
+ * @author Rhett Sutphin
  */
+
+// TODO: None of these methods should throw checked exceptions
 
 public class StudyCalendarAuthorizationManager {
 	public static final String APPLICATION_CONTEXT_NAME = "study_calendar";
@@ -145,28 +149,21 @@ public class StudyCalendarAuthorizationManager {
 		List<User> availableUsers = new ArrayList<User>();
 		ProtectionGroup pGroup = getPGByName(pgName);
 		List<User> usersForSite = new ArrayList<User>();
-		for (User user : users)
-		{
-			Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());
-			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
-			if (pgRoleContextList.size() != 0) {
-				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
-					if (pgrc.getProtectionGroup().getProtectionGroupName().equals(pgName)) {
-						usersForSite.add(user);
-					} 
-				}
-			} 
+		for (User user : users) {
+			Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
+            for (ProtectionGroupRoleContext pgrc : pgRoleContext) {
+                if (pgrc.getProtectionGroup().getProtectionGroupName().equals(pgName)) {
+                    usersForSite.add(user);
+                }
+            }
 		}
 		for (User userSite : usersForSite) {
-			Set<ProtectionGroupRoleContext> userSiteRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userSite.getUserId().toString());
-			List<ProtectionGroupRoleContext> userSiteRoleContextList = new ArrayList(userSiteRoleContext);
-			if (userSiteRoleContextList.size() != 0) {
-				for (ProtectionGroupRoleContext pgrcSite : userSiteRoleContextList) {
-					if (pgrcSite.getProtectionGroup().getProtectionGroupName().equals(pgpeId)) {
-						assignedUsers.add(userSite);
-					}
-				}
-			}
+			Set<ProtectionGroupRoleContext> userSiteRoleContext = getProtectionGroupRoleContexts(userSite);
+            for (ProtectionGroupRoleContext pgrcSite : userSiteRoleContext) {
+                if (pgrcSite.getProtectionGroup().getProtectionGroupName().equals(pgpeId)) {
+                    assignedUsers.add(userSite);
+                }
+            }
 		}
 		availableUsers  = (List) ObjectSetUtil.minus(usersForSite, assignedUsers);
 		
@@ -214,7 +211,7 @@ public class StudyCalendarAuthorizationManager {
 			
 		if (pgList.size() > 0) {
 			for (ProtectionGroup requiredProtectionGroup : pgList) {
-			   if ((requiredProtectionGroup.getParentProtectionGroup()!=null) && (requiredProtectionGroup.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG))) {	
+			   if ((requiredProtectionGroup.getParentProtectionGroup()!=null) && (isSitePG(requiredProtectionGroup))) {
 				   siteList.add(requiredProtectionGroup);
 			   }
 			}
@@ -239,36 +236,26 @@ public class StudyCalendarAuthorizationManager {
 		List<ProtectionGroup> protectionGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
 			
 		if (protectionGroupList.size() > 0) {
-			requiredProtectionGroup = (ProtectionGroup) protectionGroupList.get(0);
+			requiredProtectionGroup = protectionGroupList.get(0);
 			
 		}
 		return requiredProtectionGroup;
     }
     
-    public List getUsersForGroup(String groupName) throws Exception {
+    public List<User> getUsersForGroup(String groupName) {
 		List<User> usersForRequiredGroup = new ArrayList<User>(); 
 		User user = new User();
         SearchCriteria userSearchCriteria = new UserSearchCriteria(user);
 		List<User> userList = userProvisioningManager.getObjects(userSearchCriteria);
-		if (userList.size() > 0)
-		{
-			
-		   for (User requiredUser : userList) {
-			   try {
-				   Set groups = userProvisioningManager.getGroups(requiredUser.getUserId().toString());
-				   Set<Group> userGroups = groups;
-				   if (userGroups.size() > 0) {	
-					   Group requiredGroup = (Group) userGroups.toArray()[0];
-					   if (groupName.equals(requiredGroup.getGroupName())) {
-						   usersForRequiredGroup.add(requiredUser);
-					   }
-				   }
-			   } catch (CSObjectNotFoundException cse){
-				   throw cse;
-			   }
-		   
-		   }
-		}
+        for (User requiredUser : userList) {
+            Set<Group> userGroups = getGroups(requiredUser);
+            for (Group userGroup : userGroups) {
+                if (userGroup.getGroupName().equals(groupName)) {
+                    usersForRequiredGroup.add(requiredUser);
+                    break;
+                }
+            }
+        }
 		return usersForRequiredGroup;
     }
     
@@ -281,12 +268,8 @@ public class StudyCalendarAuthorizationManager {
      * @throws Exception
      */
     public Map getUserPGLists(String group, String protectionGroupName) throws Exception {
-    	HashMap<String, List> usersMap = new HashMap<String, List>();
 		List<User> usersForRequiredGroup = getUsersForGroup(group);
-        usersMap = (HashMap) getUserListsForProtectionGroup(usersForRequiredGroup, protectionGroupName);
-				
-		return usersMap;
-    	
+		return getUserListsForProtectionGroup(usersForRequiredGroup, protectionGroupName);
     }
     
     /**
@@ -304,8 +287,7 @@ public class StudyCalendarAuthorizationManager {
 		for (User user : users)
 		{
 			boolean isAssigned = false;
-			String userId = user.getUserId().toString();
-			Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
+            Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
 			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
 			if (pgRoleContextList.size() != 0) {
 				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
@@ -374,7 +356,7 @@ public class StudyCalendarAuthorizationManager {
     		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
 			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
 				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+					if (isSitePG(protectionGroupForPE)) {
 						assignedPGs.add(protectionGroupForPE);
 					}
 				}
@@ -483,7 +465,7 @@ public class StudyCalendarAuthorizationManager {
 			Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
 			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
 				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+					if (isSitePG(protectionGroupForPE)) {
 						assignedPGs.add(protectionGroupForPE);
 					}
 				}
@@ -522,27 +504,27 @@ public class StudyCalendarAuthorizationManager {
 		
     }
     
-    public List getSitePGsForUser(String userName) throws Exception {
-    	List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
-    	User user = userProvisioningManager.getUser(userName);  
-    	Set<Group> groups = userProvisioningManager.getGroups(user.getUserId().toString());
-		if (groups.size() > 0) {	
-			   Group requiredGroup = (Group) groups.toArray()[0];
-			   if (requiredGroup.getGroupName().equals(SITE_COORDINATOR_GROUP)) {
-				   	Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());
-				   	List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
-				   	if (pgRoleContextList.size() != 0) {
-				   		for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
-				   			if (pgrc.getProtectionGroup().getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
-				   				sites.add(pgrc.getProtectionGroup());
-				   			}
-				   		}
-				   	}
-			   }
-		}
-    	return sites;
+    public List<ProtectionGroup> getSitePGsForUser(String userName) {
+        return getSitePGs(userProvisioningManager.getUser(userName));
     }
-    
+
+    public List<ProtectionGroup> getStudySitePGsForUser(String userName) {
+        User user = userProvisioningManager.getUser(userName);
+        List<ProtectionGroup> studySitePGs = new ArrayList<ProtectionGroup>();
+
+        for (Group group : getGroups(user)) {
+            if (group.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
+                Set<ProtectionGroupRoleContext> pgRoleContexts = getProtectionGroupRoleContexts(user);
+                for (ProtectionGroupRoleContext pgrc : pgRoleContexts) {
+                    if (isStudySitePG(pgrc.getProtectionGroup())) {
+                        studySitePGs.add(pgrc.getProtectionGroup());
+                    }
+                }
+           }
+        }
+        return studySitePGs;
+    }
+
     public void removeProtectionElementFromPGs(List<String> removePGs, String protectionElementObjectId) throws Exception {
     	List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
     	List<String> pgIds = new ArrayList<String>();
@@ -553,7 +535,7 @@ public class StudyCalendarAuthorizationManager {
     		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
 			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
 				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (protectionGroupForPE.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
+					if (isSitePG(protectionGroupForPE)) {
 						assignedPGs.add(protectionGroupForPE);
 					}
 				}
@@ -571,68 +553,39 @@ public class StudyCalendarAuthorizationManager {
     	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), newList.toArray(new String[0]));
     }
     
-    public List checkOwnership(String userName, List<Study> studies) throws Exception {
-    	Group requiredGroup = new Group();
-    	List<Study> assignedStudies = new ArrayList<Study>(); 
-		User user = new User();
-		user.setLoginName(userName);
-        SearchCriteria userSearchCriteria = new UserSearchCriteria(user);
+    public List<Study> checkOwnership(String userName, List<Study> studies) {
+        Set<Study> assignedStudies = new LinkedHashSet<Study>();
+        User userTemplate = new User();
+        userTemplate.setLoginName(userName);
+        SearchCriteria userSearchCriteria = new UserSearchCriteria(userTemplate);
         List<User> userList = userProvisioningManager.getObjects(userSearchCriteria);
-        if (userList.size() > 0)
-		{
-        	Set groups = userProvisioningManager.getGroups(userList.get(0).getUserId().toString());
-			Set<Group> userGroups = groups;
-			if (userGroups.size() > 0) {	
-				   requiredGroup = (Group) userGroups.toArray()[0];
-				   if (requiredGroup.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
-					   for (Study study : studies) {
-						   List<StudySite> studySites = study.getStudySites();
-						   for (StudySite studySite : studySites) {
-							   String protectionGroupName = DomainObjectTools.createExternalObjectId(studySite);
-							   Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userList.get(0).getUserId().toString());
-							   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
-							   if (pgRoleContextList.size() != 0) {
-								   for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
-										if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
-											assignedStudies.add(study);
-										}
-								   }
-							   }
-						   }
-						   if (userProvisioningManager.checkOwnership(userName, study.getClass().getName()+"."+study.getId())) {
-							   assignedStudies.add(study);
-						   }
-					   }
-					   
-				   } else if (requiredGroup.getGroupName().equals(SITE_COORDINATOR_GROUP)) {
-					   List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
-				   	   Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userList.get(0).getUserId().toString());
-					   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
-					   if (pgRoleContextList.size() != 0) {
-						   for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
-								if (pgrc.getProtectionGroup().getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG)) {
-									sites.add(pgrc.getProtectionGroup());
-								}
-						   }
-					   }
-					   for (Study study : studies) {
-						   List<StudySite> studySites = study.getStudySites();
-						   for (StudySite studySite : studySites) {
-					   		   for (ProtectionGroup site : sites) {
-					   			   if (studySite.getSite().getName().equals(site.getProtectionGroupName())) {
-					   				   if (!assignedStudies.contains(study)) assignedStudies.add(study);
-					   			   }
-					   		   }
-						   }
-					   }
-				   } else {
-					   assignedStudies = studies;
-				   }
-			}  
-		}
-        
-    	return assignedStudies;
+        if (userList.size() > 0) {
+            User user = userList.get(0);
+            Set<Group> userGroups = getGroups(user);
+            if (userGroups.size() > 0) {
+                   Group requiredGroup = userGroups.iterator().next();
+                   if (requiredGroup.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
+                       for (Study study : studies) {
+                           if (checkParticipantCoordinatorOwnership(user, study)) {
+                               assignedStudies.add(study);
+                           }
+                       }
+                   } else if (requiredGroup.getGroupName().equals(SITE_COORDINATOR_GROUP)) {
+                       List<ProtectionGroup> sites = getSitePGs(user);
+                       for (Study study : studies) {
+                           if (checkSiteCoordinatorOwnership(study, sites)) {
+                               assignedStudies.add(study);
+                           }
+                       }
+                   } else {
+                       assignedStudies.addAll(studies);
+                   }
+            }
+        }
+
+        return new ArrayList<Study>(assignedStudies);
     }
+
     public void removeProtectionGroup(String protectionGroupName) throws Exception {
 		ProtectionGroup pg = new ProtectionGroup();
 		pg.setProtectionGroupName(protectionGroupName);
@@ -671,8 +624,7 @@ public class StudyCalendarAuthorizationManager {
     }
     
     public boolean isUserPGAssigned(String pgName, String userId) throws Exception {
-    	List<ProtectionGroup> pGroups = new ArrayList<ProtectionGroup>();
-    	Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
+        Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
 		   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
 		   if (pgRoleContextList.size() != 0) {
 			   for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
@@ -688,13 +640,79 @@ public class StudyCalendarAuthorizationManager {
     	return userProvisioningManager.getUser(userName);
     }
 
+    ////// INTERNAL HELPERS
     
+    private List<ProtectionGroup> getSitePGs(User user) {
+        List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();
+        Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
+        if (pgRoleContext.size() != 0) {
+            for (ProtectionGroupRoleContext pgrc : pgRoleContext) {
+                 if (isSitePG(pgrc.getProtectionGroup())) {
+                     sites.add(pgrc.getProtectionGroup());
+                 }
+            }
+        }
+        return sites;
+    }
+
+    private boolean checkSiteCoordinatorOwnership(Study study, List<ProtectionGroup> sites) {
+        List<StudySite> studySites = study.getStudySites();
+        for (StudySite studySite : studySites) {
+            for (ProtectionGroup site : sites) {
+               if (studySite.getSite().getName().equals(site.getProtectionGroupName())) {
+                   return true;
+               }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkParticipantCoordinatorOwnership(User user, Study study) {
+        String userName = user.getLoginName();
+        List<StudySite> studySites = study.getStudySites();
+        for (StudySite studySite : studySites) {
+            String protectionGroupName = DomainObjectTools.createExternalObjectId(studySite);
+            Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
+            if (pgRoleContext.size() != 0) {
+                for (ProtectionGroupRoleContext pgrc : pgRoleContext) {
+                     if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
+                         return true;
+                     }
+                }
+            }
+        }
+        return userProvisioningManager.checkOwnership(userName, DomainObjectTools.createExternalObjectId(study));
+    }
+
+    private Set<Group> getGroups(User user) {
+        try {
+            return userProvisioningManager.getGroups(user.getUserId().toString());
+        } catch (CSObjectNotFoundException e) {
+            throw new StudyCalendarSystemException("Could not get groups for " + user.getLoginName(), e);
+        }
+    }
+
+    private Set<ProtectionGroupRoleContext> getProtectionGroupRoleContexts(User user) {
+        try {
+            return userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());
+        } catch (CSObjectNotFoundException e) {
+            throw new StudyCalendarSystemException("Could not find PGRCs for " + user.getLoginName(), e);
+        }
+    }
+
+    private boolean isSitePG(ProtectionGroup protectionGroup) {
+        return protectionGroup.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG);
+    }
+
+    private boolean isStudySitePG(ProtectionGroup protectionGroup) {
+        return protectionGroup.getProtectionGroupName().startsWith(StudySite.class.getName());
+    }
+
     ////// CONFIGURATION
     
     public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
         this.userProvisioningManager = userProvisioningManager;
     }
-    
 }
 
 
