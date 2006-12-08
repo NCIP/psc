@@ -701,7 +701,8 @@ public class StudyCalendarAuthorizationManager {
     }
 
     private boolean isSitePG(ProtectionGroup protectionGroup) {
-        return protectionGroup.getParentProtectionGroup().getProtectionGroupName().equals(BASE_SITE_PG);
+        ProtectionGroup parentPG = protectionGroup.getParentProtectionGroup();
+        return parentPG != null && parentPG.getProtectionGroupName().equals(BASE_SITE_PG);
     }
 
     private boolean isStudySitePG(ProtectionGroup protectionGroup) {
