@@ -31,16 +31,12 @@ import java.util.Arrays;
  public class AssignTemplatesToOneParticipantCoordinatorControllerTest extends ControllerTestCase {
  	private AssignTemplatesToOneParticipantCoordinatorController controller = new AssignTemplatesToOneParticipantCoordinatorController();
  	private SiteDao siteDao;
- 	private SiteService siteService;
  	private TemplateService templateService;
- 	private StudyCalendarAuthorizationManager authorizationManager;
- 	
+
  	protected void setUp() throws Exception {
  		super.setUp();
  		siteDao = registerMockFor(SiteDao.class);
  		controller.setSiteDao(siteDao);
- 		siteService = registerMockFor(SiteService.class);
- 		controller.setSiteService(siteService);
  		templateService = registerMockFor(TemplateService.class);
  		controller.setTemplateService(templateService);
  	}
