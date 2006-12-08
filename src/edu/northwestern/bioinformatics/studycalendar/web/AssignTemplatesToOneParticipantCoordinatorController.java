@@ -45,8 +45,7 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends PscSim
 	private Site site;
 	private SiteDao siteDao;
 	private StudyDao studyDao;
-	private SiteService siteService;
-	private TemplateService templateService;
+    private TemplateService templateService;
 	private StudyCalendarAuthorizationManager authorizationManager;
 	private static final Logger log = Logger.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
 
@@ -113,12 +112,6 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends PscSim
         this.studyDao = studyDao;
     }
     
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
-    }
-    
-     
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
