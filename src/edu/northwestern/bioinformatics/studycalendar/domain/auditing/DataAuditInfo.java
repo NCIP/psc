@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
 import org.hibernate.annotations.Type;
 
+import javax.persistence.Embeddable;
 import java.util.Date;
 import java.sql.Timestamp;
 
@@ -28,7 +29,6 @@ public class DataAuditInfo extends edu.nwu.bioinformatics.commons.DataAuditInfo 
         );
     }
 
-    @Type(type = "timestamp")
     public Date getTime() {
         return getOn();
     }

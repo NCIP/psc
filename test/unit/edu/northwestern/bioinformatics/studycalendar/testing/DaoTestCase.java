@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.testing;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import edu.nwu.bioinformatics.commons.DataAuditInfo;
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
+import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +13,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
+import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.toplink.LocalSessionFactory;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.dbunit.dataset.datatype.IDataTypeFactory;
+import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
+import org.dbunit.ext.oracle.OracleDataTypeFactory;
+import org.hibernate.SessionFactory;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -23,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * @author Rhett Sutphin
@@ -101,6 +109,19 @@ public abstract class DaoTestCase extends DbTestCase {
 
     public static ApplicationContext getApplicationContext() {
         return StudyCalendarTestCase.getDeployedApplicationContext();
+    }
+
+    // XXX: This is sort of a hack, but it works.  (A more declarative solution would be better.)
+    protected IDataTypeFactory createDataTypeFactory() {
+        Properties hibProps = (Properties) getApplicationContext().getBean("hibernateProperties");
+        String dialectName = hibProps.getProperty("hibernate.dialect").toLowerCase();
+        if (dialectName.contains("oracle")) {
+            return new OracleDataTypeFactory();
+        } else if (dialectName.contains("hsql")) {
+            return new HsqlDataTypeFactory();
+        } else {
+            return new DefaultDataTypeFactory();
+        }
     }
 
     protected final void dumpResults(String sql) {
