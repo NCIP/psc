@@ -10,7 +10,8 @@ class ModifyAuditEvents extends edu.northwestern.bioinformatics.bering.Migration
 
         // object id should be an int, not a string
         dropColumn("audit_events", "object_id")
-        addColumn("audit_events", "object_id", "integer", nullable: false)
+        addColumn("audit_events", "object_id", "integer")
+        setNullable("audit_events", "object_id", false)
     }
 
     void down() {
@@ -19,6 +20,7 @@ class ModifyAuditEvents extends edu.northwestern.bioinformatics.bering.Migration
         renameColumn("audit_event_values", "current_value", "new_value");
 
         dropColumn("audit_events", "object_id")
-        addColumn("audit_events", "object_id", "string", nullable: false)
+        addColumn("audit_events", "object_id", "string")
+        setNullable("audit_events", "object_id", false)
     }
 }
