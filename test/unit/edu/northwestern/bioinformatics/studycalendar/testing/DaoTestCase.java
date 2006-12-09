@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import edu.nwu.bioinformatics.commons.StringUtils;
+import edu.nwu.bioinformatics.commons.DataAuditInfo;
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +21,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -34,11 +37,13 @@ public abstract class DaoTestCase extends DbTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8"));
         beginSession();
     }
 
     protected void tearDown() throws Exception {
         endSession();
+        DataAuditInfo.setLocal(null);
         super.tearDown();
     }
 
@@ -56,16 +61,19 @@ public abstract class DaoTestCase extends DbTestCase {
 
     private void beginSession() {
         log.info("-- beginning DaoTestCase interceptor session --");
-        findOpenSessionInViewInterceptor().preHandle(webRequest);
+        for (OpenSessionInViewInterceptor interceptor : interceptors()) {
+            interceptor.preHandle(webRequest);
+        }
     }
 
     private void endSession() {
         log.info("--    ending DaoTestCase interceptor session --");
-        OpenSessionInViewInterceptor interceptor = findOpenSessionInViewInterceptor();
-        if (shouldFlush) {
-            interceptor.postHandle(webRequest, null);
+        for (OpenSessionInViewInterceptor interceptor : reverseInterceptors()) {
+            if (shouldFlush) {
+                interceptor.postHandle(webRequest, null);
+            }
+            interceptor.afterCompletion(webRequest, null);
         }
-        interceptor.afterCompletion(webRequest, null);
     }
 
     protected void interruptSession() {
@@ -74,10 +82,18 @@ public abstract class DaoTestCase extends DbTestCase {
         beginSession();
     }
 
-    private OpenSessionInViewInterceptor findOpenSessionInViewInterceptor() {
-        return (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor");
+    private List<OpenSessionInViewInterceptor> interceptors() {
+        return Arrays.asList(
+            (OpenSessionInViewInterceptor) getApplicationContext().getBean("auditOpenSessionInViewInterceptor"),
+            (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor")
+        );
     }
 
+    private List<OpenSessionInViewInterceptor> reverseInterceptors() {
+        List<OpenSessionInViewInterceptor> interceptors = interceptors();
+        Collections.reverse(interceptors);
+        return interceptors;
+    }
 
     protected DataSource getDataSource() {
         return (DataSource) getApplicationContext().getBean("dataSource");

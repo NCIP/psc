@@ -45,4 +45,24 @@ public abstract class DatedScheduledEventState extends ScheduledEventState {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    ////// OBJECT METHODS
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        DatedScheduledEventState that = (DatedScheduledEventState) o;
+
+        if (date != null ? !date.equals(that.date) : that.date != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        return result;
+    }
 }

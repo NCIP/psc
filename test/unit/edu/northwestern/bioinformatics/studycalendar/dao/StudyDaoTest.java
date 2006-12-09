@@ -1,22 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
+import edu.nwu.bioinformatics.commons.DataAuditInfo;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
+import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
  */
-public class StudyDaoTest extends DaoTestCase {
+public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
     private StudyDao dao = (StudyDao) getApplicationContext().getBean("studyDao");
 
     public void testGetById() throws Exception {
@@ -37,7 +38,7 @@ public class StudyDaoTest extends DaoTestCase {
     public void testGetAll() throws Exception {
         List<Study> actual = dao.getAll();
         assertEquals(2, actual.size());
-        List<Integer> ids = collectIds(actual);
+        Collection<Integer> ids = DomainObjectTools.collectIds(actual);
         assertContains("Wrong study found", ids, -100);
         assertContains("Wrong study found", ids, -101);
     }
@@ -61,11 +62,30 @@ public class StudyDaoTest extends DaoTestCase {
             assertNotNull("Grid ID not automatically added", loaded.getBigId());
         }
     }
+
+    public void testSaveNewStudyIsAudited() throws Exception {
+        Integer savedId;
+        {
+            Study study = new Study();
+            study.setName("New study");
+            dao.save(study);
+            savedId = study.getId();
+            assertNotNull("The saved study didn't get an id", savedId);
+        }
+
+        interruptSession();
+
+        List<DataAuditEvent> trail = getAuditDao().getAuditTrail(new DataReference(Study.class, savedId));
+        assertEquals("Wrong number of events in trail", 1, trail.size());
+        DataAuditEvent event = trail.get(0);
+        assertEquals("Wrong operation", Operation.CREATE, event.getOperation());
+        assertEquals("Wrong values for save", 0, event.getValues().size());
+    }
     
     public void testGetStudyParticipantAssigments() throws Exception {
         List<StudyParticipantAssignment> actual = dao.getAssignmentsForStudy(-100);
         assertEquals("Wrong number of assigments", 2, actual.size());
-        List<Integer> ids = collectIds(actual);
+        Collection<Integer> ids = DomainObjectTools.collectIds(actual);
 
         assertContains("Missing expected assignment", ids, -10);
         assertContains("Missing expected assignment", ids, -11);
@@ -78,11 +98,4 @@ public class StudyDaoTest extends DaoTestCase {
         assertEquals("Wrong grid ID", "long-GUID-string", actual.getBigId());
     }
 
-    private List<Integer> collectIds(List<? extends DomainObject> actual) {
-        List<Integer> ids = new ArrayList<Integer>(actual.size());
-        for (DomainObject object : actual) {
-            ids.add(object.getId());
-        }
-        return ids;
-    }
 }

@@ -20,6 +20,8 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
+    private static final String BEAN_NAME = "interceptor";
+
     private OpenSessionInViewInterceptorFilter filter;
     private ApplicationContext applicationContext;
     private OpenSessionInViewInterceptor interceptor;
@@ -31,13 +33,14 @@ public class OpenSessionInViewInterceptorFilterTest extends ControllerTestCase {
         applicationContext = registerMockFor(WebApplicationContext.class);
         interceptor = registerMockFor(OpenSessionInViewInterceptor.class);
         servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, applicationContext);
-        expect(applicationContext.getBean("openSessionInViewInterceptor")).andReturn(interceptor);
+        expect(applicationContext.getBean(BEAN_NAME)).andReturn(interceptor);
         filterChain = registerMockFor(FilterChain.class);
         // put a parameter on request for use by WebRequestMatcher
         request.addParameter("Salutation", "Friends, Romans, Countrymen");
 
         filter = new OpenSessionInViewInterceptorFilter();
         MockFilterConfig filterConfig = new MockFilterConfig(servletContext);
+        filterConfig.addInitParameter("interceptorBeanName", BEAN_NAME);
         filter.init(filterConfig);
     }
 

@@ -14,7 +14,7 @@ import java.util.Iterator;
 /**
  * Wrapper interceptor to add grid identifiers to objects which support them.
  * A cleaner implementation would be to have a separate compound interceptor implementation
- * that delegated to this class and to {@link AuditInterceptor}; unfortunately, Hibernate's
+ * that delegated to this class and to {@link edu.northwestern.bioinformatics.studycalendar.utils.auditing.AuditInterceptor}; unfortunately, Hibernate's
  * {@link org.hibernate.Interceptor} interface does not permit this.  (It passes single-use
  * objects as parameters -- specifically, {@link java.util.Iterator}s.  This is presumably why
  * hibernate itself only allows one interceptor at a time.)

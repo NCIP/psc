@@ -78,4 +78,20 @@ public abstract class ScheduledEventState extends AbstractDomainObject implement
             throw new StudyCalendarError("It is cloneable", e);
         }
     }
+
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ScheduledEventState that = (ScheduledEventState) o;
+
+        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (reason != null ? reason.hashCode() : 0);
+    }
 }

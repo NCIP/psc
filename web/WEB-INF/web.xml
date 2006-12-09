@@ -14,7 +14,7 @@
         </param-value>
     </context-param>
 
-	<filter>
+    <filter>
         <filter-name>AuditInfoFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
     </filter>
@@ -25,8 +25,26 @@
     </filter-mapping>
 
     <filter>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
+        <init-param>
+            <param-name>interceptorBeanName</param-name>
+            <param-value>auditOpenSessionInViewInterceptor</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
         <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
+        <init-param>
+            <param-name>interceptorBeanName</param-name>
+            <param-value>openSessionInViewInterceptor</param-value>
+        </init-param>
     </filter>
 
     <filter-mapping>

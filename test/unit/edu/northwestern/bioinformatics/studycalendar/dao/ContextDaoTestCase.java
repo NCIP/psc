@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
+import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
@@ -9,6 +10,10 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 public abstract class ContextDaoTestCase<D extends HibernateDaoSupport> extends DaoTestCase {
     protected D getDao() {
         return (D) getApplicationContext().getBean(getDaoBeanName());
+    }
+
+    protected DataAuditDao getAuditDao() {
+        return (DataAuditDao) getApplicationContext().getBean("dataAuditDao");
     }
 
     /**

@@ -9,6 +9,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,21 +24,23 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAdapter {
+    private String interceptorBeanName;
+
+    public void init(FilterConfig filterConfig) throws ServletException {
+        super.init(filterConfig);
+        setInterceptorBeanName(filterConfig.getInitParameter("interceptorBeanName"));
+    }
+
     /**
      * @see OpenSessionInViewInterceptor
      * @see org.springframework.web.servlet.HandlerInterceptor#afterCompletion
-     * @param request the request
-     * @param response the response
-     * @param chain the chain
-     * @throws IOException
-     * @throws ServletException
      */
     public void doFilter(
         ServletRequest request, ServletResponse response, FilterChain chain
     ) throws IOException, ServletException {
         log.debug("Opening session for request");
         OpenSessionInViewInterceptor interceptor
-            = (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor");
+            = (OpenSessionInViewInterceptor) getApplicationContext().getBean(getInterceptorBeanName());
         WebRequest webRequest = new ServletWebRequest((HttpServletRequest) request);
         interceptor.preHandle(webRequest);
         try {
@@ -47,5 +50,14 @@ public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAd
             interceptor.afterCompletion(webRequest, null);
             log.debug("Session closed");
         }
+    }
+
+
+    public String getInterceptorBeanName() {
+        return interceptorBeanName;
+    }
+
+    public void setInterceptorBeanName(String interceptorBeanName) {
+        this.interceptorBeanName = interceptorBeanName;
     }
 }

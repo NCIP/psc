@@ -52,16 +52,19 @@
         </property>
         <property name="entityInterceptor">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.GridIdentifierInterceptor" autowire="byType">
-                <property name="delegate"><bean class="edu.northwestern.bioinformatics.studycalendar.utils.AuditInterceptor"/></property>
+                <property name="delegate"><bean class="edu.northwestern.bioinformatics.studycalendar.utils.auditing.AuditInterceptor" autowire="byType"/></property>
             </bean>
         </property>
     </bean>
-    <bean id="logSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
         <property name="annotatedClasses">
             <list>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.AuditEvent</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.AuditEventValue</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent</value>
+                <value> edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue</value>
             </list>
+        </property>
+        <property name="namingStrategy">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StudyCalendarNamingStrategy"/>
         </property>
     </bean>
 
@@ -72,20 +75,17 @@
         <property name="flushModeName"><value>FLUSH_AUTO</value></property>
     </bean>
 
-    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" autowire="byName"/>
+    <bean id="auditOpenSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+        <property name="sessionFactory"><ref local="auditSessionFactory"/></property>
+        <property name="singleSession"><value>true</value></property>
+        <property name="flushModeName"><value>FLUSH_AUTO</value></property>
+    </bean>
 
-    <bean id="auditLogInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.AuditLogInterceptor" autowire="byName"/>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager" autowire="byName"/>
 
     <bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
         <property name="checkWriteOperations"><value>true</value></property>
         <property name="sessionFactory"><ref bean="sessionFactory"/></property>
-    </bean>
-
-    <bean id="auditLog"
-        class="edu.northwestern.bioinformatics.studycalendar.utils.AuditLog">
-        <property name="sessionFactory">
-            <ref local="logSessionFactory"/>
-        </property>
     </bean>
 
     <bean id="daoTemplate" abstract="true">
@@ -118,5 +118,9 @@
 
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>
     <bean id="reportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao"/>
+
+    <bean id="dataAuditDao" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao">
+        <property name="sessionFactory"><ref local="auditSessionFactory"/></property>
+    </bean>
 
 </beans>
