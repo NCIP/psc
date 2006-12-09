@@ -1,6 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
+import org.hibernate.annotations.Type;
+
 import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Subclass of core-commons' DataAuditInfo that aliases the "on" property as "time".
@@ -25,6 +28,7 @@ public class DataAuditInfo extends edu.nwu.bioinformatics.commons.DataAuditInfo 
         );
     }
 
+    @Type(type = "timestamp")
     public Date getTime() {
         return getOn();
     }
