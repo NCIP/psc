@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -43,7 +44,16 @@ public class AuditSession {
         dataAuditDao.save(event);
     }
 
+    public boolean deleted(DomainObject entity) {
+        DataAuditEvent event = events.get(entity);
+        return event != null && event.getOperation() == Operation.DELETE;
+    }
+
     public void close() {
+        for (DomainObject entity : events.keySet()) {
+            saveEvent(entity);
+        }
+        
         if (events.size() > 0) {
             throw new StudyCalendarSystemException("There are " + events.size() + " audit event(s) outstanding at the end of the hibernate session");
         }

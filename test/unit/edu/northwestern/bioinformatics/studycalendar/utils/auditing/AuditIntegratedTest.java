@@ -84,7 +84,7 @@ public class AuditIntegratedTest extends DaoTestCase {
         dumpResults("SELECT * FROM audit_event_values");
         assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE);
     }
-
+    */
     public void testDelete() throws Exception {
         // delete an arm
         Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
@@ -97,7 +97,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 
         assertDataLogged(arm1, Operation.DELETE);
     }
-    */
+
     private void assertAuditValue(
         int eventId, String attribute, String expectedPrev, String expectedCurr
     ) {

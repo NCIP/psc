@@ -37,10 +37,13 @@ public class AuditInterceptor extends EmptyInterceptor {
         String[] propertyNames, Type[] types
     ) {
         if (!auditable(entity)) return false;
+        DomainObject dEntity = (DomainObject) entity;
+        if (getAuditSession().deleted(dEntity)) return false;
+        
         List<Integer> differences = findDifferences(currentState, previousState);
         if (differences.size() == 0) return false;
 
-        DataAuditEvent event = registerEvent((DomainObject) entity, Operation.UPDATE);
+        DataAuditEvent event = registerEvent(dEntity, Operation.UPDATE);
 
         for (int index : differences) {
             event.addValue(new DataAuditEventValue(
