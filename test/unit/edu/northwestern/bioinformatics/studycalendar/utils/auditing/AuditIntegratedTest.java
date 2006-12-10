@@ -42,7 +42,7 @@ public class AuditIntegratedTest extends DaoTestCase {
         interruptSession();
     }
 
-    public void testCreationLogs() throws Exception {
+    public void testCreation() throws Exception {
         assertDataLogged(created, Operation.CREATE);
         assertDataLogged(created.getPlannedCalendar(), Operation.CREATE);
         for (Epoch epoch : created.getPlannedCalendar().getEpochs()) {
@@ -53,7 +53,7 @@ public class AuditIntegratedTest extends DaoTestCase {
         }
     }
 
-    public void testSimpleRenameLogs() throws Exception {
+    public void testSimpleRename() throws Exception {
         // rename an arm
         Arm arm2 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(2);
         {
@@ -118,6 +118,6 @@ public class AuditIntegratedTest extends DaoTestCase {
             new Object[] { operation.toString(), changed.getClass().getName(), changed.getId(), info.getOn() },
             new RowMapperResultSetExtractor(new ColumnMapRowMapper(), 1));
         assertEquals(operation.name() + " not logged for " + changed, 1, events.size());
-        return (Integer) events.get(0).get("id");
+        return ((Number) events.get(0).get("id")).intValue();
     }
 }
