@@ -45,9 +45,9 @@ public class ParticipantService {
         return spa;
     }
     
-    public List<StudyParticipantAssignment> getAssignedStudyParticipant(User participantCd, List<StudyParticipantAssignment> assignments) {
+    public List<StudyParticipantAssignment> getAssignedStudyParticipant(String userName, List<StudyParticipantAssignment> assignments) {
     	List<StudyParticipantAssignment> actualAssignments = new ArrayList<StudyParticipantAssignment>();
-    	List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(participantCd.getLoginName()));
+    	List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(userName));
     	for (StudyParticipantAssignment assignment : assignments) {
     		for (Site site : sites) {
     			if (site.getId()== assignment.getStudySite().getSite().getId()) 
