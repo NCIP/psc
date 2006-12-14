@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
@@ -14,11 +15,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import gov.nih.nci.security.authorization.domainobjects.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ParticipantService {
     private ParticipantDao participantDao;
+    private SiteService siteService;
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
@@ -39,7 +44,19 @@ public class ParticipantService {
         participantDao.save(participant);
         return spa;
     }
-
+    
+    public List<StudyParticipantAssignment> getAssignedStudyParticipant(User participantCd, List<StudyParticipantAssignment> assignments) {
+    	List<StudyParticipantAssignment> actualAssignments = new ArrayList<StudyParticipantAssignment>();
+    	List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(participantCd.getLoginName()));
+    	for (StudyParticipantAssignment assignment : assignments) {
+    		for (Site site : sites) {
+    			if (site.getId()== assignment.getStudySite().getSite().getId()) 
+    				actualAssignments.add(assignment);
+    		}
+        }
+    	return actualAssignments;
+    }
+    
     public ScheduledArm scheduleArm(
         StudyParticipantAssignment assignment, Arm arm, Date startDate, NextArmMode mode
     ) {
@@ -105,5 +122,9 @@ public class ParticipantService {
 
     public void setParticipantDao(ParticipantDao participantDao) {
         this.participantDao = participantDao;
+    }
+    
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }
