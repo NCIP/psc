@@ -90,7 +90,7 @@ public class SiteService {
         return sites;
     }
 
-    private Collection<Site> getSitesForParticipantCoordinator(String userName) {
+    public Collection<Site> getSitesForParticipantCoordinator(String userName) {
         List<ProtectionGroup> studySitePGs = authorizationManager.getStudySitePGsForUser(userName);
         Set<Site> sites = new LinkedHashSet<Site>();
         for (ProtectionGroup studySitePG : studySitePGs) {
