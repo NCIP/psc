@@ -25,23 +25,23 @@ public class AuditInterceptorTest extends StudyCalendarTestCase {
     }
 
     public void testDefaultAuditValueIsToString() throws Exception {
-        assertEquals("42", interceptor.auditValue(42));
+        assertEquals("42", interceptor.scalarAuditableValue(42));
     }
 
     public void testAuditValueNullSafe() throws Exception {
-        assertEquals(null, interceptor.auditValue(null));
+        assertEquals(null, interceptor.scalarAuditableValue(null));
     }
 
     public void testAuditCollection() throws Exception {
-        assertEquals("1, 4, 7", interceptor.auditValue(Arrays.asList(1, 4, 7)));
+        assertEquals("1, 4, 7", interceptor.scalarAuditableValue(Arrays.asList(1, 4, 7)));
     }
     
     public void testAuditDomainObjectIsId() throws Exception {
         Epoch domainObj = Fixtures.setId(55, new Epoch());
-        assertEquals("55", interceptor.auditValue(domainObj));
+        assertEquals("55", interceptor.scalarAuditableValue(domainObj));
     }
     
     public void testAuditDomainObjectWithoutId() throws Exception {
-        assertEquals("transient Epoch", interceptor.auditValue(new Epoch()));
+        assertEquals("transient Epoch", interceptor.scalarAuditableValue(new Epoch()));
     }
 }

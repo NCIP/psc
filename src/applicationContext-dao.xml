@@ -52,7 +52,7 @@
         </property>
         <property name="entityInterceptor">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.GridIdentifierInterceptor" autowire="byType">
-                <property name="delegate"><bean class="edu.northwestern.bioinformatics.studycalendar.utils.auditing.AuditInterceptor" autowire="byType"/></property>
+                <property name="delegate"><ref local="auditInterceptor"/></property>
             </bean>
         </property>
     </bean>
@@ -68,6 +68,7 @@
         </property>
     </bean>
 
+    <bean id="auditInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.auditing.AuditInterceptor" autowire="byType"/>
     <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.utils.LocalGridIdentifierCreator"/>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
