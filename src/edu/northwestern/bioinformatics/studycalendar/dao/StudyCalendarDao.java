@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

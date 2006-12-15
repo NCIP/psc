@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.auditing;
 
-import edu.nwu.bioinformatics.commons.DataAuditInfo;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
@@ -10,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class AuditIntegratedTest extends DaoTestCase {
     private static final DataAuditInfo INFO = new DataAuditInfo("dun", "127.1.2.7",
-        DateUtils.createDate(2004, Calendar.NOVEMBER, 2));
+        DateUtils.createDate(2004, Calendar.NOVEMBER, 2), "/studycalendar/zippo");
 
     private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
     private ArmDao armDao = (ArmDao) getApplicationContext().getBean("armDao");
@@ -112,7 +112,7 @@ public class AuditIntegratedTest extends DaoTestCase {
     }
 
     private int assertDataLogged(DomainObject changed, Operation operation) {
-        DataAuditInfo info = DataAuditInfo.getLocal();
+        DataAuditInfo info = (DataAuditInfo) DataAuditInfo.getLocal();
         List<Map<String, Object>> events = (List<Map<String, Object>>) getJdbcTemplate().query(
             "SELECT * FROM audit_events ae WHERE ae.operation = ? AND ae.object_class = ? AND ae.object_id = ? AND ae.time = ?",
             new Object[] { operation.toString(), changed.getClass().getName(), changed.getId(), info.getOn() },

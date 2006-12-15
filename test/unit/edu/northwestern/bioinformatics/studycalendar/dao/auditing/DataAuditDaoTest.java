@@ -29,7 +29,7 @@ public class DataAuditDaoTest extends ContextDaoTestCase<DataAuditDao> {
         assertEquals("Wrong ip", "127.1.2.7", update.getInfo().getIp());
         assertDayOfDate("Wrong time", 2006, Calendar.JULY, 22, update.getInfo().getOn());
         assertTimeOfDate("Wrong time", 18, 54, 0, 0, update.getInfo().getOn());
-        assertEquals("Wrong URL", "/studycalendar/update", update.getUrl());
+        assertEquals("Wrong URL", "/studycalendar/update", update.getInfo().getUrl());
 
         assertEquals("Wrong number of values", 1, update.getValues().size());
         DataAuditEventValue actualValue = update.getValues().get(0);
@@ -47,11 +47,11 @@ public class DataAuditDaoTest extends ContextDaoTestCase<DataAuditDao> {
 
     public void testSave() throws Exception {
         Integer savedId;
+        DataAuditInfo expectedAuditInfo = (DataAuditInfo) DataAuditInfo.getLocal();
         {
             Epoch epoch = setId(7, createNamedInstance("Treaterment", Epoch.class));
             DataAuditEvent newEvent = new DataAuditEvent(epoch, Operation.CREATE);
-            newEvent.setInfo(DataAuditInfo.copy(DataAuditInfo.getLocal()));
-            newEvent.setUrl("/what/ever");
+            newEvent.setInfo(DataAuditInfo.copy(expectedAuditInfo));
             getDao().save(newEvent);
             savedId = newEvent.getId();
             assertNotNull("No ID available", savedId);
@@ -61,10 +61,10 @@ public class DataAuditDaoTest extends ContextDaoTestCase<DataAuditDao> {
 
         DataAuditEvent reloaded = getDao().getById(savedId);
         assertEquals("Wrong operation", Operation.CREATE, reloaded.getOperation());
-        assertEquals("Wrong url", "/what/ever", reloaded.getUrl());
-        assertEquals("Wrong user", DataAuditInfo.getLocal().getBy(), reloaded.getInfo().getUsername());
-        assertEquals("Wrong ip", DataAuditInfo.getLocal().getIp(), reloaded.getInfo().getIp());
-        assertSameDay("Wrong time", DataAuditInfo.getLocal().getOn(), reloaded.getInfo().getTime());
+        assertEquals("Wrong url", expectedAuditInfo.getUrl(), reloaded.getInfo().getUrl());
+        assertEquals("Wrong user", expectedAuditInfo.getBy(), reloaded.getInfo().getUsername());
+        assertEquals("Wrong ip", expectedAuditInfo.getIp(), reloaded.getInfo().getIp());
+        assertSameDay("Wrong time", expectedAuditInfo.getOn(), reloaded.getInfo().getTime());
         assertEquals("Wrong object id", 7, (int) reloaded.getReference().getId());
         assertEquals("Wrong object class", Epoch.class.getName(), reloaded.getReference().getClassName());
     }

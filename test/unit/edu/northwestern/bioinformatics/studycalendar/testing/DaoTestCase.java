@@ -1,35 +1,33 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
+
 import edu.nwu.bioinformatics.commons.StringUtils;
-import edu.nwu.bioinformatics.commons.DataAuditInfo;
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
 import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
+import org.dbunit.dataset.datatype.IDataTypeFactory;
+import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
-import org.springframework.orm.toplink.LocalSessionFactory;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
-import org.dbunit.dataset.datatype.IDataTypeFactory;
-import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
-import org.dbunit.ext.oracle.OracleDataTypeFactory;
-import org.hibernate.SessionFactory;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Properties;
 
 /**
@@ -45,7 +43,7 @@ public abstract class DaoTestCase extends DbTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8"));
+        DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8", new Date(), "/the/url"));
         beginSession();
     }
 

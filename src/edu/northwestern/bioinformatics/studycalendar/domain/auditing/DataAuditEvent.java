@@ -64,14 +64,6 @@ public class DataAuditEvent extends AbstractDomainObject {
         this.operation = operation;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="username", column = @Column(name = "username")),

@@ -1,12 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Version;
-import java.util.Comparator;
-
 /**
  * @author Rhett Sutphin
  */

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.auditing;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
-import edu.nwu.bioinformatics.commons.DataAuditInfo;
 
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
@@ -18,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
@@ -117,12 +117,11 @@ public class AuditInterceptor extends EmptyInterceptor {
 
     private DataAuditEvent registerEvent(DomainObject entity, Operation operation) {
         DataAuditEvent event = new DataAuditEvent(entity, operation);
-        DataAuditInfo info = DataAuditInfo.getLocal();
+        DataAuditInfo info = (DataAuditInfo) DataAuditInfo.getLocal();
         if (info == null) {
             throw new StudyCalendarSystemException("Cannot audit; no local audit info available");
         }
-        event.setInfo(edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo.copy(info));
-        event.setUrl("TODO"); // TODO
+        event.setInfo(DataAuditInfo.copy(info));
         getAuditSession().addEvent(entity, event);
         return event;
     }
