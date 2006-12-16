@@ -37,12 +37,11 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
  *
  * @author Rhett Sutphin
  */
-public class AuditInterceptor extends EmptyInterceptor implements ApplicationContextAware {
+public class AuditInterceptor extends EmptyInterceptor {
     private static final Log log = LogFactory.getLog(AuditInterceptor.class);
     private static final ThreadLocal<AuditSession> sessions = new ThreadLocal<AuditSession>();
 
     private DataAuditDao dataAuditDao;
-    private ApplicationContext applicationContext;
     private static final EntityMode ENTITY_MODE = EntityMode.POJO;
 
     public boolean onFlushDirty(
@@ -59,10 +58,8 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
         DataAuditEvent event = registerEvent(dEntity, Operation.UPDATE);
 
         for (int index : differences) {
-            List<DataAuditEventValue> values
-                = createEventValues(entity.getClass(), propertyNames[index],
-                    previousState[index], currentState[index]);
-            for (DataAuditEventValue value : values) event.addValue(value);
+            appendEventValues(event, types[index], propertyNames[index],
+                previousState[index], currentState[index]);
         }
 
         return false;
@@ -73,7 +70,11 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
     ) {
         if (!auditable(entity)) return false;
 
-        registerEvent((DomainObject) entity, Operation.CREATE);
+        DataAuditEvent event = registerEvent((DomainObject) entity, Operation.CREATE);
+
+        for (int i = 0; i < state.length; i++) {
+            appendEventValues(event, types[i], propertyNames[i], null, state[i]);
+        }
 
         return false;
     }
@@ -83,7 +84,10 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
     ) {
         if (!auditable(entity)) return;
 
-        registerEvent((DomainObject) entity, Operation.DELETE);
+        DataAuditEvent delete = registerEvent((DomainObject) entity, Operation.DELETE);
+        for (int i = 0; i < state.length; i++) {
+            appendEventValues(delete, types[i], propertyNames[i], state[i], null);
+        }
     }
 
     public void postFlush(Iterator entities) {
@@ -102,26 +106,34 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
     // package-level for testing
     List<Integer> findDifferences(Object[] currentState, Object[] previousState) {
         List<Integer> differences = new ArrayList<Integer>();
-        for (int i = 0; i < currentState.length; i++) {
-            if (!ComparisonUtils.nullSafeEquals(currentState[i], previousState[i])) {
-                differences.add(i);
+        if (currentState == null || previousState == null) {
+            int len = currentState == null ? previousState.length : currentState.length;
+            while (differences.size() < len) {
+                differences.add(differences.size());
+            }
+        } else {
+            for (int i = 0; i < currentState.length; i++) {
+                if (!ComparisonUtils.nullSafeEquals(currentState[i], previousState[i])) {
+                    differences.add(i);
+                }
             }
         }
         return differences;
     }
 
-    private List<DataAuditEventValue> createEventValues(
-        Class<?> entityClass, String propertyName, Object previousState, Object currentState
+    private void appendEventValues(
+        DataAuditEvent parent,
+        Type propertyType, String propertyName, Object previousState, Object currentState
     ) {
-        ClassMetadata metadata = getMainSessionFactory().getClassMetadata(entityClass);
-        Type propertyType = metadata.getPropertyType(propertyName);
-        log.info("Type for " + entityClass + '.' + propertyName + " is " + propertyType);
         if (propertyType.isComponentType()) {
-            return decomposeComponent((AbstractComponentType) propertyType, propertyName, previousState, currentState);
+            List<DataAuditEventValue> values
+                = decomposeComponent((AbstractComponentType) propertyType,
+                    propertyName, previousState, currentState);
+            for (DataAuditEventValue value : values) parent.addValue(value);
         } else {
             String prevValue = scalarAuditableValue(previousState);
             String curValue = scalarAuditableValue(currentState);
-            return Arrays.asList(new DataAuditEventValue(
+            parent.addValue(new DataAuditEventValue(
                 propertyName, prevValue, curValue
             ));
         }
@@ -129,16 +141,16 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
 
     // TODO: this only handles one level of components
     private List<DataAuditEventValue> decomposeComponent(AbstractComponentType propertyType, String propertyName, Object previousState, Object currentState) {
-        Object[] componentPrevState = propertyType.getPropertyValues(previousState, ENTITY_MODE);
-        Object[] componentCurState = propertyType.getPropertyValues(currentState, ENTITY_MODE);
+        Object[] componentPrevState = previousState == null ? null : propertyType.getPropertyValues(previousState, ENTITY_MODE);
+        Object[] componentCurState = currentState == null ? null : propertyType.getPropertyValues(currentState, ENTITY_MODE);
         List<Integer> differences = findDifferences(componentCurState, componentPrevState);
         List<DataAuditEventValue> values = new ArrayList<DataAuditEventValue>(differences.size());
         for (Integer index : differences) {
             String compPropertyName = propertyName + '.' + propertyType.getPropertyNames()[index];
             values.add(new DataAuditEventValue(
                 compPropertyName,
-                scalarAuditableValue(componentPrevState[index]),
-                scalarAuditableValue(componentCurState[index])
+                previousState == null ? null : scalarAuditableValue(componentPrevState[index]),
+                currentState == null  ? null : scalarAuditableValue(componentCurState[index])
             ));
         }
         return values;
@@ -200,19 +212,8 @@ public class AuditInterceptor extends EmptyInterceptor implements ApplicationCon
 
     ////// CONFIGURATION
 
-    private SessionFactory getMainSessionFactory() {
-        // N.b.: this has to be implemented this way (instead of directly setting the
-        // sessionFactory as a property) because spring can't handle the circular ref
-        return (SessionFactory) applicationContext.getBean("sessionFactory");
-    }
-
     @Required
     public void setDataAuditDao(DataAuditDao dataAuditDao) {
         this.dataAuditDao = dataAuditDao;
-    }
-
-    @Required
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
     }
 }

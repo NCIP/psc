@@ -48,7 +48,8 @@ public class AuditIntegratedTest extends DaoTestCase {
     }
 
     public void testCreation() throws Exception {
-        assertDataLogged(created, Operation.CREATE);
+        int studyCreateId = assertDataLogged(created, Operation.CREATE);
+        assertAuditValue(studyCreateId, "name", null, "[Unnamed study]");
         assertDataLogged(created.getPlannedCalendar(), Operation.CREATE);
         for (Epoch epoch : created.getPlannedCalendar().getEpochs()) {
             assertDataLogged(epoch, Operation.CREATE);
@@ -100,7 +101,8 @@ public class AuditIntegratedTest extends DaoTestCase {
         }
         interruptSession();
 
-        assertDataLogged(arm1, Operation.DELETE);
+        int deleteId = assertDataLogged(arm1, Operation.DELETE);
+        assertAuditValue(deleteId, "name", "B", null);
     }
 
     public void testUpdateComponentHasSubpropertyValues() throws Exception {
