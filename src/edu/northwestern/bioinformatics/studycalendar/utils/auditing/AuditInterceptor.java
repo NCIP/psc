@@ -9,6 +9,7 @@ import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.type.Type;
 import org.hibernate.type.ComponentType;
 import org.hibernate.type.AbstractComponentType;
+import org.hibernate.type.VersionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Collections;
 import java.lang.reflect.InvocationTargetException;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
@@ -125,18 +127,20 @@ public class AuditInterceptor extends EmptyInterceptor {
         DataAuditEvent parent,
         Type propertyType, String propertyName, Object previousState, Object currentState
     ) {
-        if (propertyType.isComponentType()) {
-            List<DataAuditEventValue> values
-                = decomposeComponent((AbstractComponentType) propertyType,
+        List<DataAuditEventValue> values = Collections.emptyList();
+        if (propertyType instanceof VersionType) {
+            // none
+        } else if (propertyType.isComponentType()) {
+            values = decomposeComponent((AbstractComponentType) propertyType,
                     propertyName, previousState, currentState);
-            for (DataAuditEventValue value : values) parent.addValue(value);
         } else {
             String prevValue = scalarAuditableValue(previousState);
             String curValue = scalarAuditableValue(currentState);
-            parent.addValue(new DataAuditEventValue(
+            values = Arrays.asList(new DataAuditEventValue(
                 propertyName, prevValue, curValue
             ));
         }
+        for (DataAuditEventValue value : values) parent.addValue(value);
     }
 
     // TODO: this only handles one level of components
@@ -164,11 +168,13 @@ public class AuditInterceptor extends EmptyInterceptor {
             return id == null ? "transient " + getEntityTypeName(propertyValue) : id.toString();
         } else if (propertyValue instanceof Collection) {
             StringBuilder audit = new StringBuilder();
+            audit.append('[');
             for (Iterator<?> it = ((Iterable<?>) propertyValue).iterator(); it.hasNext();) {
                 Object element = it.next();
                 audit.append(scalarAuditableValue(element));
                 if (it.hasNext()) audit.append(", ");
             }
+            audit.append(']');
             return audit.toString();
         } else {
             return propertyValue.toString();

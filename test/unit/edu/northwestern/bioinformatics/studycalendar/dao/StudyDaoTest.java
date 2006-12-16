@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import java.util.List;
@@ -79,7 +80,6 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong number of events in trail", 1, trail.size());
         DataAuditEvent event = trail.get(0);
         assertEquals("Wrong operation", Operation.CREATE, event.getOperation());
-        assertEquals("Wrong values for save", 0, event.getValues().size());
     }
     
     public void testGetStudyParticipantAssigments() throws Exception {
