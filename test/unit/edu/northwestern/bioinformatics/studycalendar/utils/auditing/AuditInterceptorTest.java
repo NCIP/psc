@@ -33,7 +33,7 @@ public class AuditInterceptorTest extends StudyCalendarTestCase {
     }
 
     public void testAuditCollection() throws Exception {
-        assertEquals("1, 4, 7", interceptor.scalarAuditableValue(Arrays.asList(1, 4, 7)));
+        assertEquals("[1, 4, 7]", interceptor.scalarAuditableValue(Arrays.asList(1, 4, 7)));
     }
     
     public void testAuditDomainObjectIsId() throws Exception {
