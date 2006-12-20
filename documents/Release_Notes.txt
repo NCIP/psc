@@ -51,7 +51,7 @@
     software application that can be used by organizations that manage patients on cancer 
     clinical trials. The application also facilitates the efficient coordination between various 
     clinical study staff, including the clinical research coordinator, study nurses, pathologists, 
-    laboratory and administrative staff.Patient Study Calendar that can be implemented in 
+    laboratory and administrative staff. Patient Study Calendar can be implemented in 
     multiple clinical trial sites.
 
     This release of Patient Study Calendar supports caBIG compatibility level {bronze | silver | gold}.
