@@ -1,24 +1,8 @@
-# Release note authors: Lines beginning with # are explanatory comments for you. 
-# These lines should be deleted in their entirety before the release notes are published.
-
-# Updated release notes should be included with each software version release. Release 
-# notes should be created in plain ascii or unicode in a text editor like Notepad, or a 
-# programming editor. Save the file as a .txt document. Insert the only 
-# formatting manually, using dashes, equal signs, etc. 
-
-# Generally, release notes include notes on the topics listed in the Contents section, 
-# but you can adapt the content to your circumstances. Topics that are not applicable 
-# can be omitted and the list renumbered.
-
-# In the template text, curly brackets {} should be replaced with information about your 
-# product or other indicated information.
-
-                        
 
                          Release Notes
     
                           Patient Study Calendar
-                          Version #1
+                          Version 1.0
                           Date 12.08.2006
 
     Robert H. Lurie Comprehensive Cancer Center, Northwestern University
@@ -44,17 +28,12 @@
 ================================================================
 
    
-    This document contains the release notes for the Patient Study Calendar version# 1
-    release.  
+    This document contains the release notes for the Patient Study Calendar version 1.0.  
 
-    Patient Study Calendar : Patient Study Calendar is of an open source, standards-compliant 
-    software application that can be used by organizations that manage patients on cancer 
-    clinical trials. The application also facilitates the efficient coordination between various 
-    clinical study staff, including the clinical research coordinator, study nurses, pathologists, 
-    laboratory and administrative staff. Patient Study Calendar can be implemented in 
-    multiple clinical trial sites.
+    Patient Study Calendar is an open source, standards-compliant software application that can be used by organizations that manage patient activities on cancer clinical trials. Patient Study Calendar supports the application of a study template to study participants and enables the prospective forecasting of participant activities.  It also provides a framework for reviewing historical study calendar events. Patient Study Calendar records modifications to a participant's schedule and enables access control to the application across a multi-site environment.  
+    The Patient Study Calendar application is intended to be installed on a single server at a coordinating cancer center and accessed by any number of clients via a web browser.  
 
-    This release of Patient Study Calendar supports caBIG compatibility level {bronze | silver | gold}.
+    This release of Patient Study Calendar supports caBIG Silver Level Compatibility.
 
     The test site for Patient Study Calendar is hosted at :
      https://vera.bioinformatics.northwestern.edu/studycalendar/ 
@@ -72,73 +51,51 @@
 
     Main Features:
 
-    Creation of new Study Template
-    Creation of new period
-    Creation of new activity
-    Assigning activities to periods
-    View Study Template 
-    Mark Template as Complete
-    Create Sites
-    Assign Participant to Study	
-    Create new Participant	
-    Create calendar for participant	
-    Manage Scheduled Events for a participant
-
-    Administration and Access Control Features:
-
-    Login Authentication and Authorization
-    Assign Site Coordinators to Site
-    Assign Templates to Site
-    Assign Participant Coordinators to Site
-    Assign  Multiple Participant Coordinators to Templates
-    Assign Templates to Participant Coordinator
+Create a study template to represent the activities of a study protocol
+Create schedule of activities for a participant by assigning a study template
+Manage changes of schedule and state of activities for a participant
+Generate reports of participant activities
+Manage access to the application across a multi-site environment
 
  
 ================================================================
                       4.0 Bug fixes Since Last Release
 ================================================================
 
-     
+    This is the first release of Patient Study Calendar.     
   
 ================================================================
                      5.0 Known Issues Not Yet Fixed
 ================================================================
 
-# Provide a numbered list of known software problems or limitations that have not 
-# been fixed. Include known issues that new or upgrading users should know. This 
-# can include bugs, coding issues, error messages, and work-arounds and other 
-# resolutions, where known.
-
-Examples: 
+Known Issues: 
     
-    1.  {Product} freezes: A known bug in the ...
+    1.  Page refresh
 
-	This is a known bug that can be fixed by
-	downloading these modified jar files and placing them
-	in ... directory:
+	We have observed several instances of the result of user input not being displayed immediately in the user interface.  Using the "Refresh" button on the web browser will fix the issue.  If you encounter this, please report it here:
 
+	--  http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043
 
-	--  http://...
+    2.  Input validation
 
-    2.  The user might occasionally see LazyInitializationException either in the 
-        console or in the log file depending on the setting. It will not stop 
-        the program. This will be fixed in a future release.
+	We have received occasional notices of user input causing an error on the server.  If you encounter such an occurrence, please report it here:
+	
+	--  http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043 
+	
+	3.  Canceled activities do not display on reports generated by the report builder.  Some users prefer this, others do not.  We hope to provide a way to handle reports with canceled dates in the future.  
+	
+	4.  Export to XLS format contains too much formatting information.  This makes sorting the information awkward but not impossible for an expert Excel user.  
 
-# You can include General Comments in this section, if appropriate.
-
-
+		
 ================================================================
                 	6.0 Bug Reports and Support
 ================================================================
 
-    Send email to {email address} to request support or to report a bug.
-
-    In addition, mailing lists are used by the {Product} developer community to 
-    exchange ideas and make announcements. You can subscribe at these addresses:
-
-	{listserv address}
-
-	{listserv address}
+    Please post all bugs, support requests, and general inquiries to our GForge site:
+	
+	-- http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043
+	
+	Email notifications will be automatically sent to someone who can assist with the issue.
 
 
 ================================================================
@@ -148,28 +105,22 @@ Examples:
  
     Detailed documentation is available at the following locations:
 
-       Study Calendar Technical Guide: 
-
-        http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/Final/PSC_Final_Tech_Arch_Guide.doc?cvsroot=studycalendar
+       Patient Study Calendar Technical/Architecture Guide: 
+    http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/Final/PSC_Final_Tech_Arch_Guide.doc?cvsroot=studycalendar
     
-       Study Calendar Installation Guide:
-
+       Patient Study Calendar Installation Guide:
         http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/Final/PSC_Final_Install_Guide.doc?cvsroot=studycalendar
 
-       Study Calendar Admin Guide:
-	
-        http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/Final/PSC_Final_Admin_guide.doc?cvsroot=studycalendar
+       Patient Study Calendar Administration Guide:
+	        http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/Final/PSC_Final_Admin_guide.doc?cvsroot=studycalendar
 
 
 ================================================================
                     	8.0 References
 ================================================================
-    
-# List appropriate web pages with brief annotations.
 
-#Examples: 
 
-The following urls access web pages relevant to Product Study Calendar.
+The following urls access web pages relevant to Patient Study Calendar.
 
     caBIG Home Page
      
