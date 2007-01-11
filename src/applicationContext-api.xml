@@ -12,4 +12,6 @@
     >
     <bean id="plannedCalendarService" autowire="byType" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.api.impl.DefaultPlannedCalendarService"/>
+    <bean id="scheduledCalendarService" autowire="byType" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.api.impl.DefaultScheduledCalendarService"/>
 </beans>
