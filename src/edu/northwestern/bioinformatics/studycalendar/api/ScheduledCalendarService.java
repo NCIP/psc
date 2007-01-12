@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 import java.util.Collection;
@@ -31,7 +32,6 @@ public interface ScheduledCalendarService {
      * @see PlannedCalendarService#registerStudy(Study)
      */
     ScheduledCalendar assignParticipant(Study study, Participant participant, Site site, Arm firstArm, Date startDate);
-
 
     /**
      * Retrieve the full schedule for a participant on a study at a site.  Implementations may
@@ -88,4 +88,14 @@ public interface ScheduledCalendarService {
      */
     void scheduleNextArm(
         Study study, Participant participant, Site site, Arm nextArm, NextArmMode mode, Date startDate);
+
+    /**
+     * Notify the PSC about an adverse event for a participant.
+     *
+     * @param study
+     * @param participant
+     * @param site
+     * @param adverseEvent
+     */
+    void registerSevereAdverseEvent(Study study, Participant participant, Site site, AdverseEvent adverseEvent);
 }

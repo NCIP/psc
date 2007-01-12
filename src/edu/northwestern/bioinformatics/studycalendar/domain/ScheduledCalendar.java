@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Entity
 @Table
-@GenericGenerator(name="id-generator", strategy = "native",
+@GenericGenerator(name="id-generator", strategy="native",
     parameters = {
         @Parameter(name="sequence", value="seq_scheduled_calendars_id")
     }
@@ -28,13 +28,14 @@ import java.util.List;
 public class ScheduledCalendar extends AbstractDomainObject {
     private StudyParticipantAssignment assignment;
     private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
+    private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
+
+    ////// LOGIC
 
     public void addArm(ScheduledArm arm) {
         scheduledArms.add(arm);
         arm.setScheduledCalendar(this);
     }
-
-    ////// LOGIC
 
     @Transient
     public ScheduledArm getCurrentArm() {
