@@ -166,6 +166,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
     <bean name="/schedule/batch" id="batchRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchRescheduleController"/>
+    <bean name="/schedule/dismissAe" id="dismissAeController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
 
     <bean name="/scheduleEvent" id="scheduleEventController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController">

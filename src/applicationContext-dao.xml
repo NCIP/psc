@@ -118,6 +118,7 @@
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>
     <bean id="scheduledArmDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao"/>
     <bean id="scheduledEventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao"/>
+    <bean id="adverseEventNotificationDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.AdverseEventNotificationDao"/>
 
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>
     <bean id="reportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao"/>

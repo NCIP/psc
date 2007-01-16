@@ -44,10 +44,10 @@ public class StudyParticipantAssignment extends AbstractDomainObject {
     ////// LOGIC
 
     @Transient
-    public List<AdverseEvent> getCurrentAdverseEvents() {
-        List<AdverseEvent> aes = new LinkedList<AdverseEvent>();
+    public List<AdverseEventNotification> getCurrentAeNotifications() {
+        List<AdverseEventNotification> aes = new LinkedList<AdverseEventNotification>();
         for (AdverseEventNotification notification : getAeNotifications()) {
-            if (!notification.isDismissed()) aes.add(notification.getAdverseEvent());
+            if (!notification.isDismissed()) aes.add(notification);
         }
         return aes;
     }

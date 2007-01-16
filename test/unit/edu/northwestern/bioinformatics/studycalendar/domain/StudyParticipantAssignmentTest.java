@@ -32,14 +32,14 @@ public class StudyParticipantAssignmentTest extends StudyCalendarTestCase {
         assignment.getAeNotifications().get(1).setDismissed(true);
         assertEquals(3, assignment.getAeNotifications().size());
 
-        Collection<Integer> currentAeIds = DomainObjectTools.collectIds(assignment.getCurrentAdverseEvents());
+        Collection<Integer> currentAeIds = DomainObjectTools.collectIds(assignment.getCurrentAeNotifications());
         assertEquals(2, currentAeIds.size());
         assertContains(currentAeIds, 1);
         assertContains(currentAeIds, 3);
     }
 
     private void addAdverseEventNotification(int aeId) {
-        AdverseEventNotification notification = new AdverseEventNotification();
+        AdverseEventNotification notification = setId(aeId, new AdverseEventNotification());
         AdverseEvent event = setId(aeId, new AdverseEvent());
         notification.setAdverseEvent(event);
         assignment.addAeNotification(notification);

@@ -276,28 +276,41 @@
             })
         }
 
+        function registerDismissControl() {
+            $$(".ae .dismiss-control").each(function(control) {
+                Event.observe(control, "click", function(event) {
+                    Event.stop(event)
+                    var confirmMessage = "This will permanently clear this notification from this screen.  It will not affect any other record of the adverse event."
+                    if (window.confirm(confirmMessage)) {
+                        SC.doAsyncLink(control)
+                    }
+                })
+            })
+        }
+
         Event.observe(window, "load", registerSelectArmHandlers);
         Event.observe(window, "load", registerSelectNextArmHandlers);
         Event.observe(window, "load", registerBatchRescheduleHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
         Event.observe(window, "load", registerHeaderCollapse);
+        Event.observe(window, "load", registerDismissControl);
     </script>
 </head>
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
-<c:forEach items="${assignment.currentAdverseEvents}" var="ae">
-    <div id="sae-${ae.id}" class="section ae collapsible autoclear">
-        <h2 id="sae-${ae.id}-header">SAE on <tags:formatDate value="${ae.detectionDate}"/></h2>
+<c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+    <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+        <h2 id="sae-${aeNote.id}-header">SAE on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
         <div class="content" style="display: none">
             <p>
                 A severe adverse event was reported for this participant.  Please consider how
                 this should impact future scheduling.
             </p>
             <h3>Details</h3>
-            <p>${ae.description}</p>
+            <p>${aeNote.adverseEvent.description}</p>
             <p>
-                <a class="dismiss-control" href="#">Dismiss</a>
+                <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
                 <a class="caaers-link" href="javascript:alert('TODO')">View in caAERS</a>
             </p>
         </div>
