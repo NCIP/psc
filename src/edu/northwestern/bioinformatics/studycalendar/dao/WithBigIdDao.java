@@ -10,10 +10,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
  * @author Rhett Sutphin
  */
 public abstract class WithBigIdDao<T extends DomainObject & WithBigId> extends StudyCalendarDao<T> {
+    @SuppressWarnings("unchecked")
     public T getByBigId(String bigId) {
-        Study example = new Study();
-        example.setBigId(bigId);
-        return (T) CollectionUtils.firstElement(getHibernateTemplate().findByExample(example));
+        return (T) CollectionUtils.firstElement(
+            getHibernateTemplate().find("from " + domainClass().getName() + " where bigId = ?", bigId));
     }
 
     public T getByBigId(T template) {

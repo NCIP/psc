@@ -109,4 +109,10 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         assertNotNull("No assignment found", actual);
         assertEquals("Wrong assignment found", -10, (int) actual.getId());
     }
+    
+    public void testGetByBigId() throws Exception {
+        Participant participant = getDao().getByBigId("What is the");
+        assertNotNull("No participant matched", participant);
+        assertEquals("Wrong participant matched", -101, (int) participant.getId());
+    }
 }
