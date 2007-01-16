@@ -264,27 +264,25 @@
     
     <bean name="/reportBuilder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
-
     <bean name="/reportBuilder/selectStudies" id="reportBuilderSelectStudiesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectStudiesController"/>
-
     <bean name="/reportBuilder/selectParticipants" id="reportBuilderSelectParticipantsController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectParticipantsController"/>
-
     <bean name="/reportBuilder/selectDateRange" id="reportBuilderSelectDateRangeController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectDateRangeController"/>
-      
-     <bean name="/configure" id="configurationController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
-         <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name"><value>Configuration</value></property>
-                 <property name="parent"><ref local="studyListController"/></property>
-             </bean>
-         </property>
+    <bean name="/simpleReport" id="simpleReportController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.reporting.SimpleReportController"/>
+
+    <bean name="/configure" id="configurationController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Configuration</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
     
-    <bean name="/simpleReport" id="simpleReportController" autowire="byName"
-      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.SimpleReportController"/>
-    
+    <bean name="/api" id="apiController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
 </beans>
