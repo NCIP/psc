@@ -27,4 +27,13 @@
         gender="M"
         person_id="DC"
         />
+    <ADVERSE_EVENTS
+        id="-29"
+        description="Apocalyptic"
+        />
+    <AE_NOTIFICATIONS
+        id="-30"
+        assignment_id="-10"
+        adverse_event_id="-29"
+        dismissed="1"/>
 </dataset>

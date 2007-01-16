@@ -27,6 +27,7 @@ public class StudyParticipantAssignmentDaoTest extends ContextDaoTestCase<StudyP
     public void testAesSaved() throws Exception {
         {
             StudyParticipantAssignment assignment = getDao().getById(-10);
+            assertEquals("Should already be one", 1, assignment.getAeNotifications().size());
             AdverseEventNotification notification = new AdverseEventNotification();
             AdverseEvent event = new AdverseEvent();
             event.setDescription("Big bad");
@@ -39,8 +40,8 @@ public class StudyParticipantAssignmentDaoTest extends ContextDaoTestCase<StudyP
         interruptSession();
 
         StudyParticipantAssignment reloaded = getDao().getById(-10);
-        assertEquals("Wrong number of notifications", 1, reloaded.getAeNotifications().size());
-        AdverseEventNotification notification = reloaded.getAeNotifications().get(0);
+        assertEquals("Wrong number of notifications", 2, reloaded.getAeNotifications().size());
+        AdverseEventNotification notification = reloaded.getAeNotifications().get(1);
         assertNotNull(notification.getId());
         assertFalse(notification.isDismissed());
         assertEquals("Big bad", notification.getAdverseEvent().getDescription());
