@@ -28,7 +28,6 @@ import java.util.List;
 public class ScheduledCalendar extends AbstractDomainObject {
     private StudyParticipantAssignment assignment;
     private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
-    private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
 
     ////// LOGIC
 

@@ -23,6 +23,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -361,5 +362,26 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         replayMocks();
         service.scheduleNextArm(parameterStudy, parameterParticipant, parameterSite, parameterArm, expectedMode, START_DATE);
         verifyMocks();
+    }
+
+    ////// TESTS FOR registerSevereAdverseEvent
+
+    public void testBasic() throws Exception {
+        setAssigned();
+        StudyParticipantAssignment expectedAssignment
+            = loadedStudy.getStudySites().get(0).getStudyParticipantAssignments().get(0);
+        AdverseEvent expectedAe = new AdverseEvent();
+
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite))
+            .andReturn(expectedAssignment);
+        participantDao.save(loadedParticipant);
+
+        replayMocks();
+        service.registerSevereAdverseEvent(
+            parameterStudy, parameterParticipant, parameterSite, expectedAe);
+        verifyMocks();
+
+        assertEquals("Notification not added", 1, expectedAssignment.getAeNotifications().size());
+        assertSame("Notification is for wrong AE", expectedAe, expectedAssignment.getAeNotifications().get(0).getAdverseEvent());
     }
 }

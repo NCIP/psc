@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
@@ -50,7 +52,8 @@ public class AuditSession {
     }
 
     public void close() {
-        for (DomainObject entity : events.keySet()) {
+        Collection<DomainObject> keysCopy = new LinkedList<DomainObject>(events.keySet());
+        for (DomainObject entity : keysCopy) {
             saveEvent(entity);
         }
         

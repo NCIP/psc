@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -105,7 +106,17 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     public void registerSevereAdverseEvent(Study study, Participant participant, Site site, AdverseEvent adverseEvent) {
-        throw new UnsupportedOperationException("registerSevereAdverseEvent not implemented");
+        ParameterLoader loader = new ParameterLoader(study, participant, site);
+        StudyParticipantAssignment assignment = loader.findAssignment();
+        if (assignment == null) {
+            throw new IllegalArgumentException("Participant is not assigned to this study at this site");
+        }
+
+        AdverseEventNotification notification = new AdverseEventNotification();
+        notification.setAdverseEvent(adverseEvent);
+        assignment.addAeNotification(notification);
+
+        participantDao.save(assignment.getParticipant());
     }
 
     ////// CONFIGURATION

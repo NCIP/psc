@@ -150,6 +150,24 @@
             font-weight: normal;
             color: #006;
         }
+
+        .ae a.dismiss-control {
+            display: block;
+            float: right;
+            padding: 6px;
+            color: #ccc;
+            background-color: #444;
+        }
+        .ae.section {
+            border-color: #600;
+        }
+        .ae h2 {
+            background-color: #911;
+        }
+        .ae h3 {
+            background-color: #c99;
+            padding: 5px 1em;
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -267,6 +285,24 @@
 </head>
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
+
+<c:forEach items="${assignment.currentAdverseEvents}" var="ae">
+    <div id="sae-${ae.id}" class="section ae collapsible autoclear">
+        <h2 id="sae-${ae.id}-header">SAE on <tags:formatDate value="${ae.detectionDate}"/></h2>
+        <div class="content" style="display: none">
+            <p>
+                A severe adverse event was reported for this participant.  Please consider how
+                this should impact future scheduling.
+            </p>
+            <h3>Details</h3>
+            <p>${ae.description}</p>
+            <p>
+                <a class="dismiss-control" href="#">Dismiss</a>
+                <a class="caaers-link" href="javascript:alert('TODO')">View in caAERS</a>
+            </p>
+        </div>
+    </div>
+</c:forEach>
 
 <div id="schedule-next-arm" class="section autoclear collapsible">
     <h2 id="schedule-next-arm-header">Schedule next arm</h2>
