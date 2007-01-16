@@ -18,7 +18,7 @@ import javax.persistence.Table;
 @Table(name = "ae_notifications")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_adverse_event_notifications_id")
+        @Parameter(name="sequence", value="seq_ae_notifications_id")
     }
 )
 public class AdverseEventNotification extends AbstractDomainObject {
