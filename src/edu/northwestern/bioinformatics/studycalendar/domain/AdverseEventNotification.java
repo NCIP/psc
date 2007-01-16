@@ -9,11 +9,13 @@ import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * @author Rhett Sutphin
  */
 @Entity
+@Table(name = "ae_notifications")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_adverse_event_notifications_id")

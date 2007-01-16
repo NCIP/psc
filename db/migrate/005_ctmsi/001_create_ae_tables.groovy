@@ -7,7 +7,7 @@ class CreateAeTables extends edu.northwestern.bioinformatics.bering.Migration {
             t.addColumn("big_id", "string")
         }
 
-        createTable("adverse_event_notifications") { t ->
+        createTable("ae_notifications") { t ->
             t.addVersionColumn()
             t.addColumn("assignment_id", "integer", nullable: false)
             t.addColumn("adverse_event_id", "integer", nullable: false)
@@ -17,6 +17,6 @@ class CreateAeTables extends edu.northwestern.bioinformatics.bering.Migration {
 
     void down() {
         dropTable("adverse_events");
-        dropTable("adverse_event_notifications");
+        dropTable("ae_notifications");
     }
 }
