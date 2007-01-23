@@ -23,8 +23,8 @@ import org.hibernate.annotations.CascadeType;
 
 /**
  * @author Ram Chilukuri
+ * @author Rhett Sutphin
  */
-
 @Entity
 @Table (name = "participant_assignments")
 @GenericGenerator(name="id-generator", strategy = "native",
@@ -32,7 +32,7 @@ import org.hibernate.annotations.CascadeType;
         @Parameter(name="sequence", value="seq_participant_assignments_id")
     }
 )
-public class StudyParticipantAssignment extends AbstractDomainObject {
+public class StudyParticipantAssignment extends AbstractDomainObjectWithBigId {
     private String studyId;
     private StudySite studySite;
     private Participant participant;

@@ -149,7 +149,6 @@
     <target name="webapp" description="Merge created application into deployment directory" depends="compile, webapp.main, webapp.selenium"/>
 
     <target name="webapp.main" description="Copy basic webapp only, without recompiling">
-        <!-- basic application - just copy from web directory -->
         <copy todir="${build-dir.webapp}">
             <fileset dir="web">
                 <include name="**/*"/>
