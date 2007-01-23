@@ -25,7 +25,7 @@ public interface ScheduledCalendarService {
      * @param study The study to which the participant will be assigned.  PSC must already know about it.
      * @param participant  If the participant is unknown, it will be automatically registered.
      * @param site The site from which the participant is being assigned.  The PSC must already know about it and its association with the study.
-     * @param firstArm The arm of the template to which the participant should be initially assigned
+     * @param firstArm The arm of the template to which the participant should be initially assigned.  If null, the first arm of the first epoch will be used.
      * @param startDate
      * @return the newly created schedule
      *

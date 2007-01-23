@@ -224,7 +224,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         }
 
         private void loadArm(Arm parameterArm) {
-            this.arm = load(parameterArm, armDao);
+            this.arm = parameterArm == null ? null : load(parameterArm, armDao);
         }
 
         private void loadEvent(ScheduledEvent parameterEvent) {
@@ -272,7 +272,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         }
 
         public Arm getArm() {
-            return arm;
+            if (arm == null) {
+                return getStudy().getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+            } else {
+                return arm;
+            }
         }
 
         public ScheduledEvent getScheduledEvent() {

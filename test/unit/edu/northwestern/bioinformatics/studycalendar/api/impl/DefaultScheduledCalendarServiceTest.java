@@ -308,6 +308,23 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         }
         verifyMocks();
     }
+    
+    public void testAssignNullArm() throws Exception {
+        StudyParticipantAssignment newAssignment = new StudyParticipantAssignment();
+        newAssignment.setScheduledCalendar(new ScheduledCalendar());
+
+        Arm defaultArm = loadedStudy.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+
+        reset(armDao);
+
+        expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
+        expect(participantService.assignParticipant(
+            loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE)).andReturn(newAssignment);
+
+        replayMocks();
+        service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, null, START_DATE);
+        verifyMocks();
+    }
 
     ////// TESTS FOR getScheduledEvents
 
