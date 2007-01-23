@@ -30,6 +30,11 @@ public class Configuration extends HibernateDaoSupport {
     public static final ConfigurationProperty<Boolean>
         SHOW_DEBUG_INFORMATION = new ConfigurationProperty.Bool("showDebugInformation");
 
+    public static final ConfigurationProperty<String>
+        CAAERS_BASE_URL = new ConfigurationProperty.Text("caAERSBaseUrl");
+    public static final ConfigurationProperty<String>
+        LABVIEWER_BASE_URL = new ConfigurationProperty.Text("labViewerBaseUrl");
+
     private java.util.Map<String, Object> map;
     private Properties defaults;
 
