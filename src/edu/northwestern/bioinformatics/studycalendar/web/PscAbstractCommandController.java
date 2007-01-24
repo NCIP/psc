@@ -17,6 +17,7 @@ public abstract class PscAbstractCommandController<C> extends AbstractCommandCon
     private Crumb crumb;
 
     @Override
+    @SuppressWarnings("unchecked")
     protected final ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
         return handle((C) command, errors, request, response);
     }
