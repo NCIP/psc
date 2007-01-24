@@ -113,18 +113,20 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         if (assignment == null) {
             throw new IllegalArgumentException("Participant is not assigned to this study at this site");
         }
-        registerSevereAdverseEvent(assignment, adverseEvent);
+        registerAeInternal(assignment, adverseEvent);
     }
     
     public void registerSevereAdverseEvent(StudyParticipantAssignment assignment, AdverseEvent adverseEvent){
-        
         StudyParticipantAssignment loadedAssignment = load(assignment, studyParticipantAssignmentDao);
-        
+        registerAeInternal(loadedAssignment, adverseEvent);
+    }
+
+    private void registerAeInternal(StudyParticipantAssignment assignment, AdverseEvent adverseEvent) {
         AdverseEventNotification notification = new AdverseEventNotification();
         notification.setAdverseEvent(adverseEvent);
-        loadedAssignment.addAeNotification(notification);
-        
-        participantDao.save(loadedAssignment.getParticipant());        
+        assignment.addAeNotification(notification);
+
+        participantDao.save(assignment.getParticipant());
     }
 
     ////// CONFIGURATION
