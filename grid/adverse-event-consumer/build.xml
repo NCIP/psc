@@ -1,0 +1,232 @@
+<project name="adverse-event-consumer">
+
+	<property environment="env"/>
+
+	<property name="src.dir" value="src/java"/>
+	<property name="build.dir" value="build/classes"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="ext.lib.dir" value="ext/lib"></property>
+
+	<property name="test.src.dir" value="test/${src.dir}"/>
+	<property name="test.build.dir" value="test/${build.dir}"/>
+	<property name="test.lib.dir" value="test/${lib.dir}"/>
+	<property name="test.report.dir" value="test/report"/>
+	<property name="jar.name" value="psc-adverse-event-consumer.jar"/>
+	
+	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
+	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>	
+	
+	<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"> </taskdef>
+
+	
+    <target name="get-jars">
+
+        <mkdir dir="ext/lib"/>
+        <ant dir="../.." antfile="build.xml" target="compile" inheritAll="false"/>
+        <jar basedir="../../web/WEB-INF/classes" destfile="ext/lib/psc.jar" includes="**/*"/>
+
+        <copy todir="ext/lib" overwrite="true">
+            <!--
+            <fileset dir="../lib">
+                <include name="clm.jar"/>
+                <include name="csmapi.jar"/>
+            </fileset>
+            -->
+            
+            <fileset dir="../../web/WEB-INF/lib">
+                <include name="activation-1.0.2.jar"/>
+                <include name="antlr-2.7.6.jar"/>
+                <include name="asm-attr.jar"/>
+                <include name="asm.jar"/>
+                <include name="c3p0-0.9.1-pre10.jar"/>
+                <include name="cglib-2.1.3.jar"/>
+                <include name="clm.jar"/>
+                <include name="commons-dbcp-1.2.1.jar"/>
+                <!-- include name="commons-digester-1.7.jar"/ -->
+                <include name="commons-lang-2.1.jar"/>
+                <include name="commons-pool-1.2.jar"/>
+                <include name="core-commons.jar"/>
+                <include name="csmapi.jar"/>
+                <include name="dom4j-1.6.1.jar"/>
+                <include name="ehcache-1.2.3.jar"/>
+                <include name="ejb3-persistence.jar"/>
+                <include name="freemarker.jar"/>
+                <include name="hibernate-annotations.jar"/>
+                <include name="hibernate3.jar"/>
+                <include name="jdom.jar"/>
+                <include name="jgroups.jar"/>
+                <include name="jta.jar"/>
+                <include name="log4j-1.2.13.jar"/>
+                <include name="mail-1.3.2.jar"/>
+                <include name="postgresql-8.1-407.jdbc3.jar"/>
+                <include name="spring.jar"/>
+                <include name="xerces-2.6.2.jar"/>
+                <include name="xml-apis.jar"/>
+            </fileset>
+        </copy>
+    </target>
+	
+	<target name="checkGlobus" depends="setGlobus">
+		<condition property="globus.not.found">
+			<or>
+				<not>
+					<isset property="ext.globus.dir"/>
+				</not>
+				<equals arg1="${ext.globus.dir}" arg2=""/>
+			</or>
+		</condition>
+		<fail message="Globus installation is not set in either GLOBUS_LOCATION or ext.globus.dir"
+			if="globus.not.found"/>
+		<echo message="Globus: ${ext.globus.dir}"/>
+	</target>
+
+	<target name="setGlobus" if="env.GLOBUS_LOCATION">
+		<property name="ext.globus.dir" value="${env.GLOBUS_LOCATION}"/>
+	</target>
+
+	<target name="defineClasspaths">
+		<path id="compile.cp">
+			<fileset dir="${ext.lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${ext.globus.dir}/lib">
+				<include name="*.jar"/>
+			</fileset>
+			<pathelement location="../../tools/tomcat/lib/common/servlet-api.jar"/>
+		</path>
+
+		<path id="test.compile.cp">
+			<pathelement location="test/resources"/>
+			<path refid="compile.cp"/>
+			<fileset dir="${test.lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+
+			<pathelement location="${build.dir}"/>
+			
+		</path>
+
+		<path id="test.run.cp">
+			<path refid="test.compile.cp"/>
+			<pathelement location="${test.build.dir}"/>
+		</path>
+	</target>
+
+	<target name="compile" depends="checkGlobus, get-jars, defineClasspaths">
+		<mkdir dir="${build.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true">
+			<classpath refid="compile.cp"/>
+		</javac>
+		<copy todir="${build.dir}">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="compileTests" depends="compile">
+		<mkdir dir="${test.build.dir}"/>
+		<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="true">
+			<classpath refid="test.compile.cp"/>
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<jar basedir="${build.dir}" destfile="${jar.name}"/>
+	</target>
+	
+	<target name="deploy" depends="jar">
+		<copy todir="${deploy.lib.dir}" overwrite="true">
+			<fileset dir=".">
+				<include name="${jar.name}"/>
+			</fileset>
+			<fileset dir="${ext.lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+			<fileset dir="${lib.dir}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy file="etc/server-config.wsdd" todir="${deploy.etc.ext.dir}" overwrite="true"/>
+	</target>
+
+
+	<target name="test" depends="compileTests">
+		<mkdir dir="${test.report.dir}"/>
+
+		<!-- antcall target="insertTestData"/ -->
+
+		<junit printsummary="yes" showoutput="true">
+			
+			<jvmarg value="-Dgov.nih.nci.security.configFile=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/ApplicationSecurityConfig.xml"/>
+			<jvmarg value="-Djava.security.auth.login.config=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/csm_jaas.config"/>
+			
+			<classpath refid="test.run.cp"/>
+			<formatter type="xml"/>
+			<batchtest fork="yes" todir="${test.report.dir}">
+				<fileset dir="${test.src.dir}">
+					<include name="**/Test*.java"/>
+					<include name="**/*TestCase.java"/>
+					<include name="**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<junitreport todir="${test.report.dir}">
+			<fileset dir="${test.report.dir}">
+				<include name="TEST-*.xml"/>
+			</fileset>
+			<report format="frames" todir="${test.report.dir}"/>
+		</junitreport>
+
+		<!-- antcall target="deleteTestData"/ -->
+
+	</target>
+
+	<target name="insertTestData">
+		<dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
+			password="postgres">
+
+			<classpath>
+				<fileset dir="../../db/lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+
+			<operation type="INSERT" transaction="true"
+				src="test/resources/test_data.xml"
+			/>
+
+		</dbunit>
+	</target>
+
+	<target name="deleteTestData">
+		<dbunit driver="org.postgresql.Driver" url="jdbc:postgresql:study_calendar" userid="postgres"
+			password="postgres">
+
+			<classpath>
+				<fileset dir="../../db/lib">
+					<include name="*.jar"/>
+				</fileset>
+			</classpath>
+
+			<operation type="DELETE" transaction="true"
+				src="test/resources/test_data.xml"
+			/>
+
+		</dbunit>
+	</target>
+
+	<target name="clean">
+		
+		<delete dir="build"/>
+		<delete file="${jar.name}"/>
+		<delete dir="test/build"/>
+		
+	</target>
+
+</project>
