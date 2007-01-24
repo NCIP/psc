@@ -4,6 +4,6 @@
 
 <beans>
 
-	<bean id="registrationConsumer" class="edu.northwestern.bioinformatics.studycalendar.grid.RegistrationConsumer"/>
+	<bean id="registrationConsumer" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCRegistrationConsumer"/>
 
 </beans>

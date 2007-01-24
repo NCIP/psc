@@ -85,7 +85,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
     }
 
     protected DatabaseOperation getTearDownOperation() throws Exception {
-        return DatabaseOperation.DELETE;
+        return DatabaseOperation.NONE;
     }
 
     public void testCreateRegistrationLocal() {
@@ -137,8 +137,8 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
-//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
+        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
         return suite;
     }
 

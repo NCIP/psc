@@ -14,6 +14,7 @@
 	<property name="jar.name" value="psc-registration-consumer.jar"/>
 	
 	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
+	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_RegistrationConsumer"/>	
 	
 	<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"> </taskdef>
 
@@ -93,7 +94,8 @@
 			</fileset>
 			<fileset dir="${ext.globus.dir}/lib">
 				<include name="*.jar"/>
-			</fileset>			
+			</fileset>
+			<pathelement location="../../tools/tomcat/lib/common/servlet-api.jar"/>
 		</path>
 
 		<path id="test.compile.cp">
@@ -148,6 +150,8 @@
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
+		
+		<copy file="etc/server-config.wsdd" todir="${deploy.etc.ext.dir}" overwrite="true"/>
 	</target>
 
 
