@@ -25,18 +25,22 @@ public class ConfigurationController extends PscSimpleFormController {
         setFormView("admin/configure");
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new ConfigurationCommand(configuration);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        for (ConfigurationProperty property : ConfigurationProperty.values()) {
+        for (ConfigurationProperty<?> property : ConfigurationProperty.values()) {
             binder.registerCustomEditor(Object.class, "conf[" + property.getKey() + "].value",
                 new ConfigurationPropertyEditor(property));
         }
     }
 
+    @Override
     protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
         return new ModelAndView("redirectToStudyList");
     }

@@ -5,19 +5,22 @@ import java.beans.PropertyEditorSupport;
 /**
  * @author Rhett Sutphin
  */
-public class ConfigurationPropertyEditor extends PropertyEditorSupport {
-    private ConfigurationProperty property;
+public class ConfigurationPropertyEditor<V> extends PropertyEditorSupport {
+    private ConfigurationProperty<V> property;
 
-    public ConfigurationPropertyEditor(ConfigurationProperty property) {
+    public ConfigurationPropertyEditor(ConfigurationProperty<V> property) {
         this.property = property;
     }
 
+    @Override
     public void setAsText(String text) throws IllegalArgumentException {
         setValue(property.fromStorageFormat(text));
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
     public String getAsText() {
-        Object v = getValue();
+        V v = (V) getValue();
         return v == null ? null : property.toStorageFormat(v);
     }
 }
