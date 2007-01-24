@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 import java.util.Collection;
@@ -98,4 +99,12 @@ public interface ScheduledCalendarService {
      * @param adverseEvent
      */
     void registerSevereAdverseEvent(Study study, Participant participant, Site site, AdverseEvent adverseEvent);
+    
+    /**
+     * 
+     * @param assignment
+     * @param adverseEvent
+     * @see #registerSevereAdverseEvent(Study, Participant, Site, AdverseEvent)
+     */
+    void registerSevereAdverseEvent(StudyParticipantAssignment assignment, AdverseEvent adverseEvent);
 }
