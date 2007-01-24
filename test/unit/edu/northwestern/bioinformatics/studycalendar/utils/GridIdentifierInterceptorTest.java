@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
 import org.easymock.classextension.EasyMock;
@@ -65,7 +66,7 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
     }
 
     public void testNoErrorOnNonWithBigId() throws Exception {
-        TestObject entity = new TestObject();
+        NoBigIdTestObject entity = new NoBigIdTestObject();
         Object[] state = new Object[] { };
         String[] propertyNames = new String[] { };
         Type[] types = new Type[] { };
@@ -75,4 +76,6 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
         assertFalse(interceptor.onSave(entity, ENTITY_ID, state, propertyNames, types));
         verifyMocks();
     }
+
+    private static class NoBigIdTestObject extends AbstractDomainObject { }
 }
