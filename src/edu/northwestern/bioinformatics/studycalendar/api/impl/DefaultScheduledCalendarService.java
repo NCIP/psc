@@ -21,6 +21,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.WithBigIdDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
@@ -41,6 +42,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledEventDao scheduledEventDao;
+    private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
 
     public ScheduledCalendar assignParticipant(
         Study study, Participant participant, Site site, Arm firstArm, Date startDate
@@ -111,12 +113,18 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         if (assignment == null) {
             throw new IllegalArgumentException("Participant is not assigned to this study at this site");
         }
-
+        registerSevereAdverseEvent(assignment, adverseEvent);
+    }
+    
+    public void registerSevereAdverseEvent(StudyParticipantAssignment assignment, AdverseEvent adverseEvent){
+        
+        StudyParticipantAssignment loadedAssignment = load(assignment, studyParticipantAssignmentDao);
+        
         AdverseEventNotification notification = new AdverseEventNotification();
         notification.setAdverseEvent(adverseEvent);
-        assignment.addAeNotification(notification);
-
-        participantDao.save(assignment.getParticipant());
+        loadedAssignment.addAeNotification(notification);
+        
+        participantDao.save(loadedAssignment.getParticipant());        
     }
 
     ////// CONFIGURATION
@@ -154,6 +162,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     @Required
     public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
         this.scheduledEventDao = scheduledEventDao;
+    }
+    
+    @Required
+    public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
+        this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
     }
 
     //////
@@ -283,4 +296,5 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             return scheduledEvent;
         }
     }
+
 }
