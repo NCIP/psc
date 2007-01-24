@@ -1,4 +1,4 @@
-<project name="registration-consumer">
+<project name="psc-registration-consumer">
 
 	<property environment="env"/>
 
