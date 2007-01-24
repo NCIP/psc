@@ -10,12 +10,18 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.WithBigIdDaoBasedEditor;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,34 +36,28 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class DisplayScheduleController extends PscAbstractController {
+public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
     private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
-    private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+    private StudyParticipantAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;
 
-
     public DisplayScheduleController() {
         setCrumb(new Crumb());
+        setCommandClass(DisplayScheduleCommand.class);
     }
 
-    public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Integer assignmentId = ServletRequestUtils.getIntParameter(request, "assignment");
-        StudyParticipantAssignment assignment;
-        if (assignmentId != null) {
-            assignment = studyParticipantAssignmentDao.getById(assignmentId);
-        } else {
-            int calendarId = ServletRequestUtils.getRequiredIntParameter(request, "calendar");
-            assignment = scheduledCalendarDao.getById(calendarId).getAssignment();
-        }
+    @Override
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        ControllerTools.registerDomainObjectEditor(binder, "arm", scheduledArmDao);
+        ControllerTools.registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
+        binder.registerCustomEditor(StudyParticipantAssignment.class, "assignment",
+            new WithBigIdDaoBasedEditor(assignmentDao));
+    }
 
-        Integer armId = ServletRequestUtils.getIntParameter(request, "arm");
-        ScheduledArm selectedArm;
-        if (armId == null) {
-            selectedArm = assignment.getScheduledCalendar().getCurrentArm();
-        } else {
-            selectedArm = scheduledArmDao.getById(armId);
-        }
+    @Override
+    protected ModelAndView handle(DisplayScheduleCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        StudyParticipantAssignment assignment = command.getAssignment();
 
         ModelMap model = new ModelMap();
         model.addObject("assignment", assignment);
@@ -65,7 +65,7 @@ public class DisplayScheduleController extends PscAbstractController {
         model.addObject(assignment.getParticipant());
         model.addObject(assignment.getStudySite().getStudy().getPlannedCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
-        model.addObject("arm", selectedArm);
+        model.addObject("arm", command.getArm());
 
         return new ModelAndView("schedule/display", model);
     }
@@ -90,7 +90,7 @@ public class DisplayScheduleController extends PscAbstractController {
 
     @Required
     public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
-        this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
+        this.assignmentDao = studyParticipantAssignmentDao;
     }
 
     @Required
@@ -104,12 +104,14 @@ public class DisplayScheduleController extends PscAbstractController {
     }
 
     private static class Crumb extends DefaultCrumb {
+        @Override
         public String getName(BreadcrumbContext context) {
             return new StringBuilder()
                 .append("Schedule for ").append(context.getParticipant().getFullName())
                 .toString();
         }
 
+        @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = createParameters(
                 "calendar", context.getScheduledCalendar().getId().toString()

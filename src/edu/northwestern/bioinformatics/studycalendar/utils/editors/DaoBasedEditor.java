@@ -11,9 +11,9 @@ import java.beans.PropertyEditorSupport;
  * @author Rhett Sutphin
  */
 public class DaoBasedEditor extends PropertyEditorSupport {
-    private StudyCalendarDao dao;
+    private StudyCalendarDao<?> dao;
 
-    public DaoBasedEditor(StudyCalendarDao dao) {
+    public DaoBasedEditor(StudyCalendarDao<?> dao) {
         this.dao = dao;
     }
 

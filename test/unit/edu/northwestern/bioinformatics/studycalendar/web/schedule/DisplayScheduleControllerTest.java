@@ -25,6 +25,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
+@SuppressWarnings("unchecked")
 public class DisplayScheduleControllerTest extends ControllerTestCase {
     private DisplayScheduleController controller;
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
@@ -32,6 +33,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
     private ScheduledArmDao scheduledArmDao;
     private StudyParticipantAssignment assignment;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         studyParticipantAssignmentDao = registerDaoMockFor(StudyParticipantAssignmentDao.class);
@@ -77,6 +79,26 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertSame(assignment, actualModel.get("assignment"));
     }
     
+    public void testAssignmentMayBeBigId() throws Exception {
+        String bigId = "LE-BIG-ID";
+        expect(studyParticipantAssignmentDao.getByBigId(bigId)).andReturn(assignment);
+        request.setParameter("assignment", bigId);
+
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+
+        assertEquals("schedule/display", mv.getViewName());
+
+        Map<String, Object> actualModel = mv.getModel();
+
+        assertSame(assignment.getStudySite().getStudy().getPlannedCalendar(), actualModel.get("plannedCalendar"));
+        assertSame(assignment.getScheduledCalendar(), actualModel.get("calendar"));
+        assertSame(assignment.getParticipant(), actualModel.get("participant"));
+        assertSame(assignment.getScheduledCalendar().getCurrentArm(), actualModel.get("arm"));
+        assertSame(assignment, actualModel.get("assignment"));
+    }
+
     public void testCalendarParameterUsedWhenNoAssignment() throws Exception {
         assignment.getScheduledCalendar().setId(54);
         request.addParameter("calendar", "54");
@@ -125,6 +147,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         request.setParameter("assignment", assignment.getId().toString());
 
         ScheduledArm arm = new ScheduledArm();
+        arm.setId(14);
         request.addParameter("arm", "14");
         expect(scheduledArmDao.getById(14)).andReturn(arm);
 

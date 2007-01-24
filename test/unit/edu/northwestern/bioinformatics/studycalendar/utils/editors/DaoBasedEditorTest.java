@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.editors;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -12,17 +11,18 @@ public class DaoBasedEditorTest extends StudyCalendarTestCase {
     private static final Integer ID = 13;
     private static final TestObject OBJECT = new TestObject(ID);
 
-    private StubDao stubDao;
+    private TestObject.MockableDao dao;
     private DaoBasedEditor editor;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        stubDao = registerMockFor(StubDao.class, StubDao.class.getMethod("getById", Integer.TYPE));
-        editor = new DaoBasedEditor(stubDao);
+        dao = registerDaoMockFor(TestObject.MockableDao.class);
+        editor = new DaoBasedEditor(dao);
     }
 
     public void testSetAsTextWithValidId() throws Exception {
-        expect(stubDao.getById(ID)).andReturn(OBJECT);
+        expect(dao.getById(ID)).andReturn(OBJECT);
 
         replayMocks();
         editor.setAsText(ID.toString());
@@ -33,7 +33,7 @@ public class DaoBasedEditorTest extends StudyCalendarTestCase {
 
     public void testSetAsTextWithInvalidId() throws Exception {
         Integer expectedId = 23;
-        expect(stubDao.getById(expectedId)).andReturn(null);
+        expect(dao.getById(expectedId)).andReturn(null);
 
         replayMocks();
         try {
@@ -71,9 +71,5 @@ public class DaoBasedEditorTest extends StudyCalendarTestCase {
         editor.setValue(null);
         verifyMocks();
         assertNull(editor.getAsText());
-    }
-
-    private static class StubDao extends StudyCalendarDao<TestObject> {
-        public Class<TestObject> domainClass() { return TestObject.class; }
     }
 }
