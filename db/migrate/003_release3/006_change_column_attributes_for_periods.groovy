@@ -8,6 +8,6 @@ class ChangeColumnAttributesForPeriods extends edu.northwestern.bioinformatics.b
     void down() {
         setDefaultValue("periods", "duration_unit", null);
         setDefaultValue("periods", "start_day", null);
-        setNullable("periods", "name", false);
+        // setNullable("periods", "name", false);
     }
 }
