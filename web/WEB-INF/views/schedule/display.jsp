@@ -1,3 +1,4 @@
+
 <%@page pageEncoding="utf8" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -304,14 +305,16 @@
         <h2 id="sae-${aeNote.id}-header">SAE on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
         <div class="content" style="display: none">
             <p>
-                A severe adverse event was reported for this participant.  Please consider how
+                An adverse event was reported for this participant.  Please consider how
                 this should impact future scheduling.
             </p>
             <h3>Details</h3>
             <p>${aeNote.adverseEvent.description}</p>
             <p>
                 <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                <a class="caaers-link" href="javascript:alert('TODO')">View in caAERS</a>
+                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                    <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
+                </c:if>
             </p>
         </div>
     </div>
