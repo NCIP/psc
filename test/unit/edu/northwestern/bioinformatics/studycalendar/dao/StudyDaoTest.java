@@ -96,6 +96,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong id", -100, (int) actual.getId());
         assertEquals("Wrong name", "First Study", actual.getName());
         assertEquals("Wrong grid ID", "long-GUID-string", actual.getBigId());
+        assertEquals("Wrong protocol auth id", "NCI-IS-WATCHING", actual.getProtocolAuthorityId());
     }
 
 }

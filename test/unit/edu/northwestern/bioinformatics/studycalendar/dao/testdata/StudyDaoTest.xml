@@ -4,6 +4,7 @@
         version="0"
         name="First Study"
         big_id="long-GUID-string"
+        protocol_authority_id="NCI-IS-WATCHING"
         />
     <STUDIES
         id="-101"

@@ -28,6 +28,7 @@ import java.util.Collections;
 )
 public class Study extends AbstractDomainObjectWithBigId implements Named {
     private String name;
+    private String protocolAuthorityId;
     private PlannedCalendar plannedCalendar;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
@@ -63,6 +64,14 @@ public class Study extends AbstractDomainObjectWithBigId implements Named {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getProtocolAuthorityId() {
+        return protocolAuthorityId;
+    }
+
+    public void setProtocolAuthorityId(String protocolAuthorityId) {
+        this.protocolAuthorityId = protocolAuthorityId;
     }
 
     @OneToOne (mappedBy = "study")
