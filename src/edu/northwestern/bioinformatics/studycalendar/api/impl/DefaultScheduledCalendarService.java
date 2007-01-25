@@ -30,10 +30,12 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Rhett Sutphin
  */
+@Transactional
 public class DefaultScheduledCalendarService implements ScheduledCalendarService {
     private ParticipantDao participantDao;
     private ParticipantService participantService;

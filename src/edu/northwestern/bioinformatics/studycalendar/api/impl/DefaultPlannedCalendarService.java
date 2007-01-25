@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Rhett Sutphin
  */
+@Transactional
 public class DefaultPlannedCalendarService implements PlannedCalendarService {
     private StudyDao studyDao;
     private PlannedCalendarDao plannedCalendarDao;
