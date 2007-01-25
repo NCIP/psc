@@ -302,7 +302,7 @@
 
 <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
     <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-        <h2 id="sae-${aeNote.id}-header">SAE on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+        <h2 id="sae-${aeNote.id}-header">AE on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
         <div class="content" style="display: none">
             <p>
                 An adverse event was reported for this participant.  Please consider how
