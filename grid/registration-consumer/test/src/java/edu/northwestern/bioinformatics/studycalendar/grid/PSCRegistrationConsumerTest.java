@@ -137,8 +137,12 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
-//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
-        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+        /*
+         * NOTE: These tests CANNOT be run in succession because it will cause
+         * the maximum number of connections to be exceeded.
+         */
+        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
+//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
         return suite;
     }
 
