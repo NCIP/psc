@@ -61,8 +61,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     public void register(RegistrationType registration) throws RemoteException,
                     InvalidRegistration, RegistrationFailed {
 
-        openSession();
-
         Study study = new Study();
         Participant participant = new Participant();
         Site site = new Site();
@@ -98,21 +96,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         ScheduledCalendar scheduledCalendar = svc.assignParticipant(study, participant, site, null,
                         new Date());
         logger.debug("Created assignment " + scheduledCalendar.getId());
-
-        closeSession();
-    }
-
-    private void closeSession() {
-        SessionFactory fact = (SessionFactory) this.ctx.getBean("sessionFactory");
-        Session session = SessionFactoryUtils.getSession(fact, true);
-        TransactionSynchronizationManager.unbindResource(fact);
-        SessionFactoryUtils.releaseSession(session, fact);
-    }
-
-    private void openSession() {
-        SessionFactory fact = (SessionFactory) this.ctx.getBean("sessionFactory");
-        Session session = SessionFactoryUtils.getSession(fact, true);
-        TransactionSynchronizationManager.bindResource(fact, new SessionHolder(session));
     }
 
     public ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException {
