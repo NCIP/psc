@@ -3,32 +3,26 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import java.rmi.RemoteException;
-import java.util.Date;
-
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import gov.nih.nci.cabig.ctms.common.RegistrationConsumer;
 import gov.nih.nci.cabig.ctms.grid.IdentifierType;
 import gov.nih.nci.cabig.ctms.grid.ParticipantType;
 import gov.nih.nci.cabig.ctms.grid.RegistrationType;
+import gov.nih.nci.cabig.ctms.grid.StudyType;
 import gov.nih.nci.cabig.ctms.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.stubs.types.RegistrationFailed;
 import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
-import org.springframework.orm.hibernate3.SessionHolder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import java.rmi.RemoteException;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -40,7 +34,8 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 
     public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
 
-    private static final Object MRN_IDENTIFIER_TYPE = "MRN";
+    private static final String MRN_IDENTIFIER_TYPE = "MRN";
+    private static final String PROTOCOL_AUTHORITY_IDENTIFIER_TYPE = "Protocol Authority Identifier";
 
     private ApplicationContext ctx;
 
@@ -69,6 +64,9 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 
         site.setBigId(registration.getHealthCareSiteGridId());
         study.setBigId(registration.getStudyGridId());
+        StudyType studyBean = registration.getStudy();
+        study.setProtocolAuthorityId(
+            findIdentifierValue(studyBean.getIdentifier(), PROTOCOL_AUTHORITY_IDENTIFIER_TYPE));
 
         ParticipantType partBean = registration.getParticipant();
         participant.setBigId(partBean.getParticipantGridId());
@@ -78,24 +76,28 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         participant.setFirstName(partBean.getFirstName());
         participant.setLastName(partBean.getLastName());
 
-        String mrn = null;
-        IdentifierType[] idents = partBean.getIdentifier();
-        if (idents != null) {
-            for (int i = 0; i < idents.length; i++) {
-                if (idents[i].getType().equals(MRN_IDENTIFIER_TYPE)) {
-                    mrn = idents[i].getValue();
-                    break;
-                }
-            }
-        }
-        if (mrn == null) {
-            throw new InvalidRegistration();
-        }
+        String mrn = findIdentifierValue(partBean.getIdentifier(), MRN_IDENTIFIER_TYPE);
         participant.setPersonId(mrn);
 
         ScheduledCalendar scheduledCalendar = svc.assignParticipant(study, participant, site, null,
                         new Date());
         logger.debug("Created assignment " + scheduledCalendar.getId());
+    }
+
+    private String findIdentifierValue(IdentifierType[] idents, String desiredType) throws InvalidRegistration {
+        String value = null;
+        if (idents != null) {
+            for (IdentifierType ident : idents) {
+                if (ident.getType().equals(desiredType)) {
+                    value = ident.getValue();
+                    break;
+                }
+            }
+        }
+        if (value == null) {
+            throw new InvalidRegistration();
+        }
+        return value;
     }
 
     public ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException {
