@@ -197,7 +197,7 @@
 				</fileset>
 			</classpath>
 
-			<operation type="INSERT" transaction="true"
+			<operation type="CLEAN_INSERT" transaction="true"
 				src="test/resources/test_data.xml"
 			/>
 
