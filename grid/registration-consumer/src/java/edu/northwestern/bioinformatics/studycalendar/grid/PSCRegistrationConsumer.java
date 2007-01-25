@@ -12,7 +12,6 @@ import gov.nih.nci.cabig.ctms.common.RegistrationConsumer;
 import gov.nih.nci.cabig.ctms.grid.IdentifierType;
 import gov.nih.nci.cabig.ctms.grid.ParticipantType;
 import gov.nih.nci.cabig.ctms.grid.RegistrationType;
-import gov.nih.nci.cabig.ctms.grid.StudyType;
 import gov.nih.nci.cabig.ctms.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.stubs.types.RegistrationFailed;
 import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
@@ -35,7 +34,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
 
     private static final String MRN_IDENTIFIER_TYPE = "MRN";
-    private static final String PROTOCOL_AUTHORITY_IDENTIFIER_TYPE = "Protocol Authority Identifier";
 
     private ApplicationContext ctx;
 
@@ -64,9 +62,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 
         site.setBigId(registration.getHealthCareSiteGridId());
         study.setBigId(registration.getStudyGridId());
-        StudyType studyBean = registration.getStudy();
-        study.setProtocolAuthorityId(
-            findIdentifierValue(studyBean.getIdentifier(), PROTOCOL_AUTHORITY_IDENTIFIER_TYPE));
 
         ParticipantType partBean = registration.getParticipant();
         participant.setBigId(partBean.getParticipantGridId());
