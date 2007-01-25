@@ -33,26 +33,26 @@ import java.util.Properties;
 /**
  * @author Rhett Sutphin
  */
-public abstract class DaoTestCase extends DbTestCase {
-    protected final Log log = LogFactory.getLog(getClass());
+public abstract class DaoTestCase extends StudyCalendarDbTestCase {
 
     protected MockHttpServletRequest request = new MockHttpServletRequest();
     protected MockHttpServletResponse response = new MockHttpServletResponse();
     protected WebRequest webRequest = new ServletWebRequest(request);
     private boolean shouldFlush = true;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8", new Date(), "/the/url"));
         beginSession();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         endSession();
-        DataAuditInfo.setLocal(null);
         super.tearDown();
     }
 
+    @Override
     public void runBare() throws Throwable {
         setUp();
         try {
@@ -99,27 +99,6 @@ public abstract class DaoTestCase extends DbTestCase {
         List<OpenSessionInViewInterceptor> interceptors = interceptors();
         Collections.reverse(interceptors);
         return interceptors;
-    }
-
-    protected DataSource getDataSource() {
-        return (DataSource) getApplicationContext().getBean("dataSource");
-    }
-
-    public static ApplicationContext getApplicationContext() {
-        return StudyCalendarTestCase.getDeployedApplicationContext();
-    }
-
-    // XXX: This is sort of a hack, but it works.  (A more declarative solution would be better.)
-    protected IDataTypeFactory createDataTypeFactory() {
-        Properties hibProps = (Properties) getApplicationContext().getBean("hibernateProperties");
-        String dialectName = hibProps.getProperty("hibernate.dialect").toLowerCase();
-        if (dialectName.contains("oracle")) {
-            return new OracleDataTypeFactory();
-        } else if (dialectName.contains("hsql")) {
-            return new HsqlDataTypeFactory();
-        } else {
-            return new DefaultDataTypeFactory();
-        }
     }
 
     protected final void dumpResults(String sql) {
