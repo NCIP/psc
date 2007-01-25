@@ -98,11 +98,13 @@ form#login {
     width: 20em;
 }
 
+#sso-form { display: none; }
+
 /****** SPECIAL TYPES */
 
 /*
     'row' is a class for label: value type rows.  The intent is
-    that eash row would contain 2-3 subdivs:  a label (float: left), an optional extra
+    that each row would contain 2-3 subdivs:  a label (float: left), an optional extra
     (float: right), and the value (positioned naturally).  Pages which use these styles
     should also set the width of div.label.
  */

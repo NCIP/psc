@@ -34,6 +34,7 @@
         <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
         | <tags:logout/>
     </div>
+    <tags:ssoForm/>
     <tags:errorConsole/>
     <tags:debugInfo/>
   </body>
