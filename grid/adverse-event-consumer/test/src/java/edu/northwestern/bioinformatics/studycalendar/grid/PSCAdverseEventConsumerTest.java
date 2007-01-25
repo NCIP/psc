@@ -3,6 +3,7 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.grid.ae.beans.AENotificationType;
 import gov.nih.nci.cabig.ctms.grid.ae.client.AdverseEventConsumerClient;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumer;
@@ -13,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Date;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -76,8 +78,10 @@ public class PSCAdverseEventConsumerTest extends DBTestCase {
     public void testCreateNotificationLocal() {
         AENotificationType ae = getNotification();
         try {
+            DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
             AdverseEventConsumer consumer = new PSCAdverseEventConsumer();
             consumer.register(ae);
+            DataAuditInfo.setLocal(null);
         } catch (Exception ex) {
             ex.printStackTrace();
             fail("Error creating registration: " + ex.getMessage());
@@ -121,8 +125,13 @@ public class PSCAdverseEventConsumerTest extends DBTestCase {
 
     public static Test suite() {
         TestSuite suite = new TestSuite();
+        
+        /*
+         * NOTE: These tests CANNOT be run in succession because it will cause
+         * the maximum number of connections to be exceeded.
+         */
+//        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
         suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationLocal"));
-        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
         return suite;
     }
 
