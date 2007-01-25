@@ -37,64 +37,48 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumer {
 
     public PSCAdverseEventConsumer() {
         this.ctx = new ClassPathXmlApplicationContext(new String[] {
-                        "classpath:applicationContext.xml", "classpath:applicationContext-api.xml",
-                        "classpath:applicationContext-command.xml", "classpath:applicationContext-dao.xml",
-                        "classpath:applicationContext-security.xml",
-                        "classpath:applicationContext-service.xml",
-                        "classpath:applicationContext-spring.xml" });
+                "classpath:applicationContext.xml", "classpath:applicationContext-api.xml",
+                "classpath:applicationContext-command.xml", "classpath:applicationContext-dao.xml",
+                "classpath:applicationContext-security.xml",
+                "classpath:applicationContext-service.xml",
+                "classpath:applicationContext-spring.xml" });
     }
 
     public void register(AENotificationType aeNotification) throws InvalidRegistration,
                     RegistrationFailed {
-        openSession();
-        
-        //TODO: Change fault implementation to accept a reason message.
+
+        // TODO: Change fault implementation to accept a reason message.
         String gridId = aeNotification.getRegistrationGridId();
-        if(gridId == null){
+        if (gridId == null) {
             logger.error("No registrationGridId provided");
             throw new InvalidRegistration();
         }
         String description = aeNotification.getDescription();
-        if(description == null){
+        if (description == null) {
             logger.error("No description provided");
             throw new InvalidRegistration();
         }
         Date detectionDate = aeNotification.getDetectionDate();
-        if(detectionDate == null){
+        if (detectionDate == null) {
             logger.error("No detectionDate provided");
             throw new InvalidRegistration();
         }
-        
+
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         assignment.setBigId(gridId);
-        
+
         AdverseEvent event = new AdverseEvent();
         event.setDescription(description);
         event.setDetectionDate(detectionDate);
 
-        
-        try{
-            ScheduledCalendarService svc = (ScheduledCalendarService)ctx.getBean(SERVICE_BEAN_NAME);
+        try {
+            ScheduledCalendarService svc = (ScheduledCalendarService) ctx
+                            .getBean(SERVICE_BEAN_NAME);
             svc.registerSevereAdverseEvent(assignment, event);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             logger.error("Error registering adverse event: " + ex.getMessage(), ex);
             throw new RegistrationFailed();
         }
-        
-        closeSession();
-    }
-    
-    private void closeSession() {
-        SessionFactory fact = (SessionFactory) this.ctx.getBean("sessionFactory");
-        Session session = SessionFactoryUtils.getSession(fact, true);
-        TransactionSynchronizationManager.unbindResource(fact);
-        SessionFactoryUtils.releaseSession(session, fact);
-    }
-
-    private void openSession() {
-        SessionFactory fact = (SessionFactory) this.ctx.getBean("sessionFactory");
-        Session session = SessionFactoryUtils.getSession(fact, true);
-        TransactionSynchronizationManager.bindResource(fact, new SessionHolder(session));
     }
 
 }
