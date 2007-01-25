@@ -70,7 +70,7 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
     }
 
     void down() {
-        execute("DROP CONSTRAINT fk_event_activity")
+        execute("ALTER TABLE planned_events DROP CONSTRAINT fk_event_activity")
 
         execute("DELETE FROM activities")
         execute("DELETE FROM activity_types")
