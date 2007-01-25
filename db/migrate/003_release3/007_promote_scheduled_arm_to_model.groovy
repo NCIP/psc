@@ -32,6 +32,9 @@ class PromoteScheduledArmToModel extends edu.northwestern.bioinformatics.bering.
             execute("DROP SEQUENCE seq_scheduled_arms_id")
         }
 
+        // Since we are readding a nullable column, we need to clear out the data
+        execute("DELETE FROM scheduled_events")
+
         removeColumn("scheduled_events", "scheduled_arm_id")
         addColumn("scheduled_events", "scheduled_calendar_id", "integer")
         // DdlUtils has a problem with adding constrained columns under PostgreSQL (it tries to drop an recreate the table)
