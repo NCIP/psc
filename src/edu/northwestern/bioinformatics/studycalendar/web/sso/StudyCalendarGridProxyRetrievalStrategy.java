@@ -24,7 +24,12 @@ public class StudyCalendarGridProxyRetrievalStrategy extends DefaultGridProxyRet
             try {
                 String identity = Utils.getGridIdentity(proxy);
                 log.debug("Identity is: " + identity);
-                ApplicationSecurityManager.setUser(request, identity);
+                
+                //TODO: This is a hack. Should examine how to use group-based
+                //authorization.
+                int idx = identity.lastIndexOf('=');
+                String localUserId = identity.substring(idx + 1);
+                ApplicationSecurityManager.setUser(request, localUserId);
             } catch (Exception ex) {
                 log.warn("Couldn't get identity from proxy string", ex);
             }
