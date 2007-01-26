@@ -20,6 +20,8 @@
     <parameter name="springClasspathExpression" value="classpath:applicationContext-grid-ae.xml" />
     <parameter name="adverseEventConsumerBeanName" value="adverseEventConsumer" />
     
+    <parameter name="csmPDP-beansFile" value="etc/cagrid_AdverseEventConsumer/pdp-config.xml" />
+    
         <requestFlow>
         	<handler type="auditInfoRequestHandler"/>
         </requestFlow>
