@@ -229,6 +229,26 @@
         </dbunit>
     </target>
 
+    <target name="load-data" depends="init">
+        <fail message="Please specify a file of SQL statements (could not read ${load-data.file}).">
+            <condition>
+                <not><available file="${load-data.file}"/></not>
+            </condition>
+        </fail>
+        <sql src="${load-data.file}"
+            classpathRef="cp.jdbc"
+            driver="${datasource.driver}"
+            url="${datasource.url}"
+            userid="${datasource.username}"
+            password="${datasource.password}"
+            />
+    </target>
+
+    <target name="load-security-data">
+        <property name="load-data.file" value="${basedir}/conf/upt/uptdata_studycal.sql"/>
+        <antcall target="load-data"/>
+    </target>
+
     <!-- TEST SETUP & EXECUTION -->
 
     <target name="test.unit.select-all">
