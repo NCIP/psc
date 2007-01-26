@@ -151,7 +151,11 @@
 			</fileset>
 		</copy>
 		
-		<copy file="etc/server-config.wsdd" todir="${deploy.etc.ext.dir}" overwrite="true"/>
+		<copy todir="${deploy.etc.ext.dir}" overwrite="true">
+			<fileset dir="etc">
+				<include name="*"/>
+			</fileset>
+		</copy>
 	</target>
 
 
