@@ -32,7 +32,7 @@ public interface ScheduledCalendarService {
      *
      * @see PlannedCalendarService#registerStudy(Study)
      */
-    ScheduledCalendar assignParticipant(Study study, Participant participant, Site site, Arm firstArm, Date startDate);
+    ScheduledCalendar assignParticipant(Study study, Participant participant, Site site, Arm firstArm, Date startDate, String registrationGridId);
 
     /**
      * Retrieve the full schedule for a participant on a study at a site.  Implementations may
