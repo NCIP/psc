@@ -74,8 +74,9 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         String mrn = findIdentifierValue(partBean.getIdentifier(), MRN_IDENTIFIER_TYPE);
         participant.setPersonId(mrn);
 
+        String registrationGridId = registration.getStudyParticipantIdentifier();
         ScheduledCalendar scheduledCalendar = svc.assignParticipant(study, participant, site, null,
-                        new Date());
+                        new Date(), registrationGridId);
         logger.debug("Created assignment " + scheduledCalendar.getId());
     }
 
