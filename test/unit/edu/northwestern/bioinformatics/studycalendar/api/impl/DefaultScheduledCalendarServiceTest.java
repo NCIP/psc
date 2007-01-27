@@ -242,7 +242,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
-            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE));
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
         verifyMocks();
     }
 
@@ -260,7 +260,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
-            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE));
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
         verifyMocks();
     }
 
@@ -273,7 +273,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE);
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
             assertEquals("Participant already assigned to this study.  Use scheduleNextArm to change to the next arm.", iae.getMessage());
@@ -289,7 +289,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE);
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
             assertEquals("Site " + loadedSite.getBigId() + " not associated with study " + loadedStudy.getBigId(),
@@ -309,14 +309,14 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, badParameterArm, START_DATE);
+            service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, badParameterArm, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
             assertEquals("Arm BAD-NEWS not part of template for study " + STUDY_BIG_ID, iae.getMessage());
         }
         verifyMocks();
     }
-    
+
     public void testAssignNullArm() throws Exception {
         StudyParticipantAssignment newAssignment = new StudyParticipantAssignment();
         newAssignment.setScheduledCalendar(new ScheduledCalendar());
@@ -330,7 +330,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE)).andReturn(newAssignment);
 
         replayMocks();
-        service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, null, START_DATE);
+        service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);
         verifyMocks();
     }
 
