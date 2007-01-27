@@ -10,4 +10,8 @@ public class StudyParticipantAssignmentDao extends WithBigIdDao<StudyParticipant
     public Class<StudyParticipantAssignment> domainClass() {
         return StudyParticipantAssignment.class;
     }
+    
+    public void save(StudyParticipantAssignment studyParticipantAssignment) {
+    	getHibernateTemplate().saveOrUpdate(studyParticipantAssignment);
+    }
 }
