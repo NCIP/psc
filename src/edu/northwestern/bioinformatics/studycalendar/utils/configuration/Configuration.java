@@ -47,6 +47,14 @@ public class Configuration extends HibernateDaoSupport {
         }
     }
 
+    ////// PSC-SPECIFIC LOGIC
+
+    public boolean getExternalAppsConfigured() {
+        return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null;
+    }
+
+    ////// GET/SET TO DB
+
     public <V> V get(ConfigurationProperty<V> property) {
         return parseValue(property, getValue(property.getKey()));
     }

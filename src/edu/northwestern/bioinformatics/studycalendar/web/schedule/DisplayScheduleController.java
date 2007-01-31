@@ -56,14 +56,14 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected ModelAndView handle(DisplayScheduleCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         StudyParticipantAssignment assignment = command.getAssignment();
 
         ModelMap model = new ModelMap();
+        ControllerTools.addHierarchyToModel(assignment.getScheduledCalendar(), model);
         model.addObject("assignment", assignment);
         model.addObject("calendar", assignment.getScheduledCalendar());
-        model.addObject(assignment.getParticipant());
-        model.addObject(assignment.getStudySite().getStudy().getPlannedCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
         model.addObject("arm", command.getArm());
 

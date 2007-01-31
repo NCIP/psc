@@ -169,6 +169,14 @@
             background-color: #c99;
             padding: 5px 1em;
         }
+
+        #external-apps {
+            color: #666;
+            padding: 8px;
+        }
+        #external-apps a {
+            padding: 0 5px;
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -300,6 +308,18 @@
 <body>
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
+<c:if test="${configuration.externalAppsConfigured}">
+    <div class="section" id="external-apps">
+        View this person in other applications
+        <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">caAERS</a>
+        </c:if>
+        <c:if test="${not empty configuration.map.labViewerBaseUrl}">
+            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">CTOM Lab Viewer</a>
+        </c:if>
+    </div>
+</c:if>
+
 <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
     <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
         <h2 id="sae-${aeNote.id}-header">AE on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
@@ -312,8 +332,8 @@
             <p>${aeNote.adverseEvent.description}</p>
             <p>
                 <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                    <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
+                <c:if test="${not empty configuration.map.labViewerBaseUrl}">
+                    <a class="sso" href="${configuration.map.labViewerBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
                 </c:if>
             </p>
         </div>

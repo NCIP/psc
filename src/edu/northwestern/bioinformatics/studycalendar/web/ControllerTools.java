@@ -72,13 +72,13 @@ public class ControllerTools {
         }
     }
 
-    private static void addHierarchyToModel(ScheduledCalendar calendar, Map<String, Object> model) {
+    public static void addHierarchyToModel(ScheduledCalendar calendar, Map<String, Object> model) {
         model.put("scheduledCalendar", calendar);
         addHierarchyToModel(calendar.getAssignment().getStudySite().getStudy().getPlannedCalendar(), model);
         addHierarchyToModel(calendar.getAssignment(), model);
     }
 
-    private static void addHierarchyToModel(StudyParticipantAssignment assignment, Map<String, Object> model) {
+    public static void addHierarchyToModel(StudyParticipantAssignment assignment, Map<String, Object> model) {
         model.put("assignment", assignment);
         model.put("participant", assignment.getParticipant());
     }
