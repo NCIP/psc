@@ -48,18 +48,22 @@ public class LoginController extends AbstractFormController {
     }
 
     protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        LoginCommand loginCredentials = (LoginCommand) oCommand;
-        log.debug("Username: " + loginCredentials.getUsername());
-        log.debug("System Config file is: " + System.getProperty("gov.nih.nci.security.configFile"));
-        boolean loginSuccess = loginCredentials.login(request.getRemoteAddr());
-        
-        if (loginSuccess) {
-            ApplicationSecurityManager.setUser(request, loginCredentials.getUsername());
-            return new ModelAndView(getTargetView(request));
+        if (ApplicationSecurityManager.getUser(request) == null) {
+            LoginCommand loginCredentials = (LoginCommand) oCommand;
+            log.debug("Username: " + loginCredentials.getUsername());
+            log.debug("System Config file is: " + System.getProperty("gov.nih.nci.security.configFile"));
+            boolean loginSuccess = loginCredentials.login(request.getRemoteAddr());
+
+            if (loginSuccess) {
+                ApplicationSecurityManager.setUser(request, loginCredentials.getUsername());
+                return new ModelAndView(getTargetView(request));
+            } else {
+                Map<String, Object> model = errors.getModel();
+                model.put("failed", true);
+                return new ModelAndView(getFormView(request), model);
+            }
         } else {
-            Map<String, Object> model = errors.getModel();
-            model.put("failed", true);
-            return new ModelAndView(getFormView(request), model);
+            return new ModelAndView(getTargetView(request));
         }
     }
 

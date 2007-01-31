@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import static edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor.REQUESTED_URL_ATTRIBUTE;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.security.exceptions.CSException;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,6 +73,14 @@ public class LoginControllerTest extends ControllerTestCase {
 
         assertTrue("failed indicator missing", (Boolean) actual.getModel().get("failed"));
         assertEquals("login", actual.getViewName());
+    }
+    
+    public void testPostWhenLoggedInDoesNothing() throws Exception {
+        ApplicationSecurityManager.setUser(request, "someone");
+
+        replayMocks();
+        assertNotNull(controller.handleRequest(request, response));
+        verifyMocks();
     }
 
     public void testAjaxGet() throws Exception {
