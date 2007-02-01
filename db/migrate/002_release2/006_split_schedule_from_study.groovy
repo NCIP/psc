@@ -3,8 +3,7 @@ class CreateStudyParticipantAssignments extends edu.northwestern.bioinformatics.
         // create main table
         createTable('planned_schedules') { t ->
             t.addColumn('study_id', 'integer', nullable:false)
-            // default 0 has to be quoted for postgresql
-            t.addColumn('complete', 'boolean', nullable:false, defaultValue:"'0'")
+            t.addColumn('complete', 'boolean', nullable:false, defaultValue:"0")
             t.addColumn('version', 'integer', nullable:false)
         }
 
