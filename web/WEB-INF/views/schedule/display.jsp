@@ -312,10 +312,10 @@
     <div class="section" id="external-apps">
         View this person in other applications
         <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">caAERS</a>
+            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">Adverse Events Reporting</a>
         </c:if>
         <c:if test="${not empty configuration.map.labViewerBaseUrl}">
-            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">CTOM Lab Viewer</a>
+            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">Lab Results</a>
         </c:if>
     </div>
 </c:if>
