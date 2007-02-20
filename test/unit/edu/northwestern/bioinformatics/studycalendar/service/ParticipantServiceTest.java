@@ -38,6 +38,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
     private Arm arm;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         participantDao = registerMockFor(ParticipantDao.class);

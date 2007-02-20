@@ -238,7 +238,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
         expect(participantService.assignParticipant(
-            loadedParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE)).andReturn(newAssignment);
+            loadedParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID)).andReturn(newAssignment);
 
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
@@ -255,7 +255,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         participantDao.save(parameterParticipant);
         expect(participantService.assignParticipant(
-            parameterParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE)
+            parameterParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID)
             ).andReturn(newAssignment);
 
         replayMocks();
@@ -327,7 +327,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
         expect(participantService.assignParticipant(
-            loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE)).andReturn(newAssignment);
+            loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE, ASSIGNMENT_BIG_ID)).andReturn(newAssignment);
 
         replayMocks();
         service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);

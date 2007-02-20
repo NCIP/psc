@@ -47,7 +47,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
 
     public ScheduledCalendar assignParticipant(
-        Study study, Participant participant, Site site, Arm firstArm, Date startDate,String registrationGridId
+        Study study, Participant participant, Site site, Arm firstArm, Date startDate,String assignmentGridId
     ) {
         ParameterLoader loader = new ParameterLoader(study, site, firstArm);
 
@@ -69,11 +69,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         loader.validateArmInStudy();
 
         StudyParticipantAssignment newAssignment = participantService.assignParticipant(
-            loadedParticipant, join, loader.getArm(), startDate);
-        if(registrationGridId != null) {
-        	newAssignment.setBigId(registrationGridId);
-        	studyParticipantAssignmentDao.save(newAssignment);
-        }
+            loadedParticipant, join, loader.getArm(), startDate, assignmentGridId);
         return newAssignment.getScheduledCalendar();
     }
 

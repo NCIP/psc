@@ -35,10 +35,15 @@ public class ParticipantService {
     private SiteService siteService;
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
+        return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null);
+    }
+
+    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
+        spa.setBigId(assignmentGridIdentifier);
         participant.addAssignment(spa);
         scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
         participantDao.save(participant);
