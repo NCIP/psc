@@ -19,7 +19,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class StudyCalendarDbTestCase extends DbTestCase {
+public abstract class StudyCalendarDbTestCase extends DbTestCase {
     protected final Log log = LogFactory.getLog(getClass());
 
     @Override
