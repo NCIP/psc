@@ -27,7 +27,9 @@ public class StudyDao extends WithBigIdDao<Study> {
     }
 
     public List<StudyParticipantAssignment> getAssignmentsForStudy(Integer studyId) {
-        return getHibernateTemplate().find("select a from StudyParticipantAssignment a inner join a.studySite ss where ss.study.id = ?", studyId);
+        return getHibernateTemplate().find(
+            "select a from StudyParticipantAssignment a inner join a.studySite ss inner join a.participant p where ss.study.id = ? order by p.lastName, p.firstName", 
+            studyId);
     }
     
     public Study getById(int id) {

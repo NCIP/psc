@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import java.util.List;
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -85,10 +86,12 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
     public void testGetStudyParticipantAssigments() throws Exception {
         List<StudyParticipantAssignment> actual = dao.getAssignmentsForStudy(-100);
         assertEquals("Wrong number of assigments", 2, actual.size());
-        Collection<Integer> ids = DomainObjectTools.collectIds(actual);
+        List<Integer> ids = new ArrayList<Integer>(DomainObjectTools.collectIds(actual));
 
         assertContains("Missing expected assignment", ids, -10);
         assertContains("Missing expected assignment", ids, -11);
+        assertEquals("Assignments in wrong order", -10, (int) ids.get(0));
+        assertEquals("Assignments in wrong order", -11, (int) ids.get(1));
     }
 
     private void assertIsTestStudy100(Study actual) {
