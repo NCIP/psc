@@ -332,8 +332,8 @@
             <p>${aeNote.adverseEvent.description}</p>
             <p>
                 <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                <c:if test="${not empty configuration.map.labViewerBaseUrl}">
-                    <a class="sso" href="${configuration.map.labViewerBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
+                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                    <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
                 </c:if>
             </p>
         </div>
