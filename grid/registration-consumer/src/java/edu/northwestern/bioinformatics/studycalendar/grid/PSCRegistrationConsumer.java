@@ -75,6 +75,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         participant.setPersonId(mrn);
 
         String registrationGridId = registration.getStudyParticipantIdentifier();
+        // Using the informed consent date as the calendar start date 
         Date startDate = registration.getInformedConsentFormSignedDate();
         if (startDate == null){
             startDate = new Date();
