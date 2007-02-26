@@ -30,7 +30,7 @@ import java.util.Date;
 public class PSCRegistrationConsumer implements RegistrationConsumer {
 
     private static final Log logger = LogFactory.getLog(PSCRegistrationConsumer.class);
-
+    
     public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
 
     private static final String MRN_IDENTIFIER_TYPE = "MRN";
@@ -75,8 +75,12 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         participant.setPersonId(mrn);
 
         String registrationGridId = registration.getStudyParticipantIdentifier();
+        Date startDate = registration.getInformedConsentFormSignedDate();
+        if (startDate == null){
+            startDate = new Date();
+        }
         ScheduledCalendar scheduledCalendar = svc.assignParticipant(study, participant, site, null,
-                        new Date(), registrationGridId);
+                        startDate, registrationGridId);
         logger.debug("Created assignment " + scheduledCalendar.getId());
     }
 
