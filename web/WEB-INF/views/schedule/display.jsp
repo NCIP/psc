@@ -174,9 +174,6 @@
             color: #666;
             padding: 8px;
         }
-        #external-apps a {
-            padding: 0 5px;
-        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -310,12 +307,15 @@
 
 <c:if test="${configuration.externalAppsConfigured}">
     <div class="section" id="external-apps">
-        View this person in other applications
-        <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">Adverse Events Reporting</a>
+        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+        View this participant's
+        <c:if test="${caaersAvail}">
+            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">adverse events</a>
         </c:if>
-        <c:if test="${not empty configuration.map.labViewerBaseUrl}">
-            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">Lab Results</a>
+        <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
+        <c:if test="${labViewerAvail}">
+            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
         </c:if>
     </div>
 </c:if>
