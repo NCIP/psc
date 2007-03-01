@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
@@ -13,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Breadcrum
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.WithBigIdDaoBasedEditor;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
@@ -41,6 +43,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     private StudyParticipantAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;
+    private StudyDao studyDao;
 
     public DisplayScheduleController() {
         setCrumb(new Crumb());
@@ -66,6 +69,12 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
         model.addObject("arm", command.getArm());
+
+        Study study = assignment.getStudySite().getStudy();
+        if (study != null) {
+            List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
+            model.addObject("assignments", assignments);
+        }
 
         return new ModelAndView("schedule/display", model);
     }
@@ -101,6 +110,11 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     @Required
     public void setScheduledArmDao(ScheduledArmDao scheduledArmDao) {
         this.scheduledArmDao = scheduledArmDao;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
     }
 
     private static class Crumb extends DefaultCrumb {

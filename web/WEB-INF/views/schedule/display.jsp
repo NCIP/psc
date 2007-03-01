@@ -174,6 +174,11 @@
             color: #666;
             padding: 8px;
         }
+
+        #schedule-switch {
+            float: right;
+            margin: 1em;
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -303,6 +308,17 @@
     </script>
 </head>
 <body>
+<c:if test="${not empty assignments}">
+    <div id="schedule-switch">View schedule for
+        <select id="assigned-participant-selector">
+            <c:forEach items="${assignments}" var="a">
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+            </c:forEach>
+        </select>
+        <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
+    </div>
+</c:if>
+
 <h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
 
 <c:if test="${configuration.externalAppsConfigured}">
