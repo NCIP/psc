@@ -73,12 +73,13 @@ img#cabig-logo {
 #breadcrumbs a {
     color: #eee;
     text-decoration: none;
+    border-bottom: 1px solid #999;
     padding: 1px;
 }
 
 #breadcrumbs a:hover {
     background-color: #999;
-    border-bottom: 1px solid #eee;
+    border-bottom-color: #eee;
 }
 
 img.indicator {
