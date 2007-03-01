@@ -349,7 +349,7 @@
             <p>
                 <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
                 <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                    <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">View in caAERS</a>
+                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">all adverse events</a>
                 </c:if>
             </p>
         </div>
