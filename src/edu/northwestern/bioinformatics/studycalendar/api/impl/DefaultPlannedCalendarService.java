@@ -41,7 +41,13 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
             return existing;
         }
 
-        Study registered = defaultTemplateCreator.create();
+        Study registered;
+        if (study.getPlannedCalendar() == null) {
+            registered = defaultTemplateCreator.create();
+        } else {
+            registered = new Study();
+            registered.setPlannedCalendar(study.getPlannedCalendar());
+        }
         registered.setName(study.getName());
         registered.setBigId(study.getBigId());
         mergeSiteAssignments(study, registered);
