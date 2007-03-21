@@ -131,6 +131,18 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
                 parameterStudy.getStudySites().get(i), actualStudy.getStudySites().get(i));
         }
     }
+    
+    public void testNewRegistrationWithPlannedCalendar() throws Exception {
+        PlannedCalendar expectedPlannedCalendar = new PlannedCalendar();
+        parameterStudy.setPlannedCalendar(expectedPlannedCalendar);
+
+        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+            .andReturn(loadedStudy.getSites().get(0));
+
+        PlannedCalendar actual = expectRegisterMain(null).getPlannedCalendar();
+
+        assertSame(expectedPlannedCalendar, actual);
+    }
 
     public void testReregisterWithNewSite() throws Exception {
         addSite(parameterStudy, 2);
