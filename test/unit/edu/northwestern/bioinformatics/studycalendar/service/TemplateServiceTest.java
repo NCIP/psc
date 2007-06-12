@@ -1,25 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static org.easymock.EasyMock.expectLastCall;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import static org.easymock.EasyMock.expectLastCall;
+import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.checkOrder;
 
 import java.util.Arrays;
 import java.util.List;
-
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -44,6 +43,52 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setSiteDao(siteDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
+    }
+
+    public void testAssignTemplateToSites() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        Site site1 = createNamedInstance("aaa", Site.class);
+        Site site2 = createNamedInstance("bbb", Site.class);
+        List<Site> sitesTest = Arrays.asList(site1, site2);
+
+        checkOrder(studySiteDao, true);
+
+        studySiteDao.save(studySiteEq(study, site1));
+        studySiteDao.save(studySiteEq(study, site2));
+        replayMocks();
+        service.assignTemplateToSites(study, sitesTest);
+        verifyMocks();
+    }
+
+    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
+        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
+        return null;
+    }
+
+    private static class StudySiteMatcher implements IArgumentMatcher {
+        private Study expectedStudy;
+        private Site expectedSite;
+
+        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
+            this.expectedStudy = expectedStudy;
+            this.expectedSite = expectedSite;
+        }
+
+        public boolean matches(Object object) {
+            StudySite actual = (StudySite) object;
+
+            if (expectedStudy.equals(actual.getStudy())) {
+                if (expectedSite.equals(actual.getSite())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
+        }
     }
 
     public void testCannotRemoveStudySiteWithAssociatedAssignments() throws Exception {
