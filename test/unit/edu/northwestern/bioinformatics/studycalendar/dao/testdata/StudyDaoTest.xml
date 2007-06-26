@@ -54,7 +54,7 @@
         last_name="Houseman"
         birth_date="1950-01-01"
         gender="M"
-        person_id=""
+        person_id="11/8"
         />
     <PARTICIPANTS
         id="-21"
@@ -62,7 +62,7 @@
         last_name="Zeppo"
         birth_date="1950-01-01"
         gender="F"
-        person_id=""
+        person_id="42F"
         />
     <PARTICIPANTS
         id="-20"
@@ -70,6 +70,6 @@
         last_name="Fry"
         birth_date="1950-01-01"
         gender="M"
-        person_id=""
+        person_id="37B"
         />
 </dataset>
