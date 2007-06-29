@@ -13,9 +13,9 @@ public class SiteDaoTest extends DaoTestCase {
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
 
     public void testGetById() throws Exception {
-        Site actual = siteDao.getById(4);
+        Site actual = siteDao.getById(-4);
         assertNotNull("Study not found", actual);
-        assertEquals("Wrong id", 4, (int) actual.getId());
+        assertEquals("Wrong id", -4, (int) actual.getId());
         assertEquals("Wrong name", "default", actual.getName());
     }
 
@@ -34,5 +34,20 @@ public class SiteDaoTest extends DaoTestCase {
         } catch (StudyCalendarError error) {
             assertEquals("No default site in database (should have a site named '" + Site.DEFAULT_SITE_NAME + "')", error.getMessage());
         }
+    }
+
+    public void testDeleteHoliday() throws Exception {
+        {
+            Site actual = siteDao.getById(-4);
+            actual.getHolidaysAndWeekends().remove(1);
+            siteDao.save(actual);
+        }
+
+        interruptSession();
+
+        Site reloaded = siteDao.getById(-4);
+        assertEquals("Holiday not removed", 1, reloaded.getHolidaysAndWeekends().size());
+        assertEquals("Wrong holiday removed", -2,
+                (int) reloaded.getHolidaysAndWeekends().get(0).getId());
     }
 }

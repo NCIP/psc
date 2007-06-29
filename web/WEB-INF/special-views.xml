@@ -30,6 +30,12 @@
         <property name="url"><value>/pages/manageSites</value></property>
     </bean>
 
+
+    <bean id="redirectToManageHolidays" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/manageHolidays</value></property>
+    </bean>
+
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/template</value></property>

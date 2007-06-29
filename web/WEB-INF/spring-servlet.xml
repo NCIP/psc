@@ -284,7 +284,18 @@
             </bean>
         </property>
     </bean>
-    
+
+    <bean name="/manageHolidays" id="holidaysController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.HolidaysController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Manage Holidays</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+     </bean>
+
+     
     <bean name="/api" id="apiController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
 </beans>

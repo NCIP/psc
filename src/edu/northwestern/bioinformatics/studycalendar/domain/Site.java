@@ -14,6 +14,8 @@ import javax.persistence.Entity;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.OrderBy;
 
@@ -32,6 +34,8 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
 
     private String name;
     private List<StudySite> studySites = new ArrayList<StudySite>();
+
+    private List<AbstractHolidayState> holidaysAndWeekends = new ArrayList<AbstractHolidayState>();
 
     ////// LOGIC
 
@@ -59,6 +63,19 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySite> getStudySites() {
         return studySites;
+    }
+
+
+    public void setHolidaysAndWeekends (List<AbstractHolidayState> holidaysAndWeekends) {
+        this.holidaysAndWeekends = holidaysAndWeekends;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "site_id", nullable = false)
+    @OrderBy // order by ID for testing consistency
+    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<AbstractHolidayState> getHolidaysAndWeekends() {
+        return holidaysAndWeekends;
     }
 
     public boolean equals(Object o) {

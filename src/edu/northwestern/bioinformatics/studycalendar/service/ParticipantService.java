@@ -1,30 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import gov.nih.nci.security.authorization.domainobjects.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.apache.log4j.Logger;
+
+import javax.persistence.Transient;
 
 /**
  * @author Rhett Sutphin
@@ -33,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParticipantService {
     private ParticipantDao participantDao;
     private SiteService siteService;
+
+    private static final Logger log = Logger.getLogger(ParticipantService.class.getName());
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null);
@@ -110,9 +102,80 @@ public class ParticipantService {
             }
         });
 
+        Site site = calendar.getAssignment().getStudySite().getSite();
+        avoidWeekendsAndHolidays(site, scheduledArm);
         participantDao.save(assignment.getParticipant());
 
-        return scheduledArm;
+        return scheduledArm;                                                                                      
+    }
+
+    private void avoidWeekendsAndHolidays(Site site, ScheduledArm arm) {
+       List<ScheduledEvent> listOfEvents = arm.getEvents();
+        for (ScheduledEvent event : listOfEvents) {
+            resetEvent(event, site);
+        }
+    }
+
+
+    public void resetEvent(ScheduledEvent event, Site site) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar dateCalendar = Calendar.getInstance();
+        Date date = event.getActualDate();
+        dateCalendar.setTime(date);
+
+        int year = dateCalendar.get(Calendar.YEAR);
+        Calendar holidayCalendar = Calendar.getInstance();
+        List<AbstractHolidayState> holidayList = site.getHolidaysAndWeekends();
+
+        for(AbstractHolidayState holiday: holidayList) {
+            if (holiday instanceof Holiday) {
+                //month needs to be decremented, because we are using 00 for January in the Calendar
+                Holiday h = (Holiday)holiday;
+                if (h.getYear() == null) {
+                    holidayCalendar.set(year, h.getMonth()-1, h.getDay());
+                } else {
+                    holidayCalendar.set(h.getYear(), h.getMonth()-1, h.getDay());
+                }
+                String originalDateFormatted = df.format(date.getTime());
+                String holidayDateFormatted = df.format(holidayCalendar.getTime());
+                if (originalDateFormatted.equals(holidayDateFormatted)) {
+                    date = shiftDayByOne(date);
+                    String reason = "Rescheduled. " + holiday.getStatus();
+                    Scheduled s = new Scheduled(reason, date);
+                    event.changeState(s);
+                    resetEvent(event, site);
+                }
+            } else if(holiday instanceof DayOfTheWeek) {
+                DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
+                int intValueOfTheDay = dayOfTheWeek.mapDayStringToInt();
+                if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
+                    date = shiftDayByOne(date);
+                    String reason = "Rescheduled. " + holiday.getStatus();
+                    Scheduled s = new Scheduled(reason, date);
+                    event.changeState(s);
+                    resetEvent(event, site);
+                }
+            }
+        }
+    }
+
+
+
+    public Date shiftDayByOne(Date date) {
+        java.sql.Timestamp timestampTo = new java.sql.Timestamp(date.getTime());
+        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        timestampTo.setTime(timestampTo.getTime() + oneDay);
+        Date d = (Date)timestampTo;
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = df.format(d);
+        Date d1 = null;
+        try {
+            d1 = df.parse(dateString);
+        } catch (ParseException e) {
+            log.info("=======EXCEPTION==== " + e.getMessage());
+            d1 = date;
+        }
+        return d1;
     }
 
     private Date idealDate(int armDay, Date startDate) {
