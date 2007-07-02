@@ -263,6 +263,16 @@
              </bean>
          </property>
     </bean>
+
+    <bean name="/newUser" id="newUserController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.NewUserController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>New User</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
     
     <bean name="/reportBuilder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
@@ -298,4 +308,8 @@
      
     <bean name="/api" id="apiController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename"><value>messages</value></property>
+    </bean>
 </beans>

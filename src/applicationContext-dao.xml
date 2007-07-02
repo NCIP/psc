@@ -132,4 +132,5 @@
         <property name="sessionFactory"><ref local="auditSessionFactory"/></property>
     </bean>
 
+    <bean id="userDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserDao"/>
 </beans>

@@ -6,6 +6,8 @@ import java.sql.Types;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+
 public class StringCodedEnumType extends CodedEnumType {
 
     @Override
@@ -21,6 +23,5 @@ public class StringCodedEnumType extends CodedEnumType {
     @Override
     protected Object getKeyObject(ResultSet rs, String colname) throws SQLException {
         return rs.getString(colname);
-    }
-    
+    }    
 }
