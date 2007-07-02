@@ -1,0 +1,21 @@
+<dataset>
+    <USERS
+        id="-100"
+        name="Joey"
+        csm_user_id="-150"
+        />
+
+    <USERS
+        id="-200"
+        name="Shurabado"
+        csm_user_id="-250"
+        />
+
+    <USER_ROLES
+        id="-100"
+        csm_group_name="STUDY_ADMIN"
+        user_id="-200"
+        />
+        
+
+</dataset>
