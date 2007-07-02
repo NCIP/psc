@@ -20,7 +20,7 @@ public class UserDao extends StudyCalendarDao<User> {
     }
 
     public List getByName(String name) {
-        List<User> results = getHibernateTemplate().find("from User where name= ?", name);
+        List<User> results = getHibernateTemplate().find("from User where name = ?", name);
         return results;
     }
 
