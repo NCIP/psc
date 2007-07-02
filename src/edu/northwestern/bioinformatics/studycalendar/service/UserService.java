@@ -82,6 +82,10 @@ public class UserService {
         return usersResults.size() > 0 ? usersResults.iterator().next() : null;
     }
 
+    public List<User> getAllUsers() throws Exception {
+        return userDao.getAll();
+    }
+
 
     ////// CONFIGURATION
     @Required

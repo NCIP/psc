@@ -33,6 +33,10 @@ public class NewUserController extends PscSimpleFormController {
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Role> roles = Arrays.asList(Role.values());
         refdata.put("roles", roles);
+
+        List<User> users = userService.getAllUsers();
+        refdata.put("users", users);
+
         return refdata;
     }
 

@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.List;
+import java.util.Iterator;
 
 public class UserDaoTest extends ContextDaoTestCase<UserDao> {
 
@@ -51,5 +52,26 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong CSM User Id", 100L, (long) loaded.getCsmUserId());
             assertEquals("Wrong Role", Role.STUDY_COORDINATOR.getCode(), loaded.getRoles().iterator().next().getCode());
         }
+    }
+
+    public void getUserList() throws Exception {
+        List<User> actualUsers = getDao().getAll();
+        assertEquals("Wrong List Size", 2, actualUsers.size());
+        Iterator<User> actualUsersIter = actualUsers.iterator();
+
+        User actualUser = actualUsersIter.next();
+        assertNotNull("User not found", actualUser);
+        assertEquals("Wrong id", -200, (int) actualUser.getId());
+        assertEquals("Wrong name", "Shurabado", actualUser.getName());
+        assertEquals("Wrong csm user id", -250, (long)actualUser.getCsmUserId());
+        assertEquals("Wrong Role Size", 1, actualUser.getRoles().size());
+        assertEquals("Wrong Role", Role.STUDY_ADMIN.getCode(), actualUser.getRoles().iterator().next().getCode());
+
+        actualUser = actualUsersIter.next();
+        assertNotNull("User not found", actualUser);
+        assertEquals("Wrong id", -100, (int) actualUser.getId());
+        assertEquals("Wrong name", "Joey", actualUser.getName());
+        assertEquals("Wrong csm user id", -150, (long)actualUser.getCsmUserId());
+        assertEquals("Wrong Role Size", 0, actualUser.getRoles().size());
     }
 }

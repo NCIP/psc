@@ -10,13 +10,20 @@
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
-            width: 85%;
+            width: 50%;
         }
         div.submit {
             text-align: right;
         }
         form {
-            width: 20em;
+            width: 30em;
+        }
+        div {
+            /*border: 1px solid #000;*/
+        }
+        h2 {
+            margin-bottom:0px;
+            font-size:15px;
         }
     </style>
 </head>
@@ -27,17 +34,22 @@
 <form:form method="post">
     <form:errors path="*"/>
     <div class="row">
-        <div class="label">
-            <form:label path="name">User Name</form:label>
+        <div class="label" >
+            <form:label path="name">User Name:</form:label>
         </div>
         <div class="value">
             <form:input path="name"/>
         </div>
     </div>
+    <div class="row">
+        <div class="label">
+            <h2>Please select a role</h2>
+        </div>
+    </div>
     <c:forEach items="${roles}" var="role">
         <div class="row">
             <div class="label">
-                <form:label path="userRoles">${role.displayName}</form:label>
+                <form:label path="userRoles">${role.displayName}:</form:label>
             </div>
             <div class="value">
                     <form:checkbox path="userRoles" value="${role}"/>
@@ -48,6 +60,14 @@
         <div class="submit">
             <input type="submit" value="Create"/>
         </div>
+    </div>
+    <div class="row">
+        <h3>User List</h3>
+        <ul>
+            <c:forEach items="${users}" var="user">            
+                <li>${user.name}</li>
+            </c:forEach>
+        </ul>
     </div>
 </form:form>
 </body>
