@@ -103,11 +103,16 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         assignment.setParticipant(createParticipant("Alice", "Childress"));
         participantDao.save(assignment.getParticipant());
+
+        StudySite studySite = new StudySite();
+        studySite.setSite(new Site());
+        assignment.setStudySite(studySite);
+
         replayMocks();
 
-
         ScheduledArm returnedArm = service.scheduleArm(
-            assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1), NextArmMode.PER_PROTOCOL);
+                assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1),
+                NextArmMode.PER_PROTOCOL);
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
@@ -140,6 +145,11 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         assignment.setParticipant(createParticipant("Alice", "Childress"));
         participantDao.save(assignment.getParticipant());
+
+        StudySite studySite = new StudySite();
+        studySite.setSite(new Site());
+        assignment.setStudySite(studySite);        
+
         replayMocks();
 
 
@@ -184,6 +194,11 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         calendar.addArm(existingArm);
 
         participantDao.save(assignment.getParticipant());
+
+        StudySite studySite = new StudySite();
+        studySite.setSite(new Site());
+        assignment.setStudySite(studySite);        
+
         replayMocks();
         ScheduledArm returnedArm = service.scheduleArm(
             assignment, arm, DateUtils.createDate(2005, Calendar.SEPTEMBER, 1), NextArmMode.IMMEDIATE);
