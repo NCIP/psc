@@ -8,7 +8,6 @@ class CreateUserRoles extends edu.northwestern.bioinformatics.bering.Migration {
     }
 
     void down() {
-        dropTable('User_Roles', primaryKey: false))
-
+        dropTable('User_Roles', primaryKey: false)
     }
 }
