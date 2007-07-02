@@ -108,7 +108,7 @@ public class LoaderController implements Controller {
                 CompositeDataSet source = new CompositeDataSet(sets.toArray(new IDataSet[sets.size()]));
                 log("Merged dataset contains tables " + Arrays.asList(source.getTableNames()));
                 log("Ordering tables to prevent foreign key conflicts");
-                SequenceTableFilter filter = new ForeignKeySequenceFilter(conn);
+                SequenceTableFilter filter = new ForeignKeySequenceFilter(conn, source.getTableNames());
                 log(" - Filtered order is " + Arrays.asList(filter.getTableNames(source)));
                 IDataSet dataset = new NullAsNoValueDataSet(new FilteredDataSet(filter, source));
 

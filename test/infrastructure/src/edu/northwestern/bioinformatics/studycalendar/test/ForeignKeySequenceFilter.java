@@ -8,6 +8,8 @@ import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -18,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Arrays;
 
 /**
  * This is conceptually similar to dbunit's {@link org.dbunit.database.DatabaseSequenceFilter}
@@ -31,8 +34,11 @@ import java.util.Set;
  * @author Rhett Sutphin
  */
 public class ForeignKeySequenceFilter extends SequenceTableFilter {
+    private static final Log log = LogFactory.getLog(ForeignKeySequenceFilter.class);
+
     public ForeignKeySequenceFilter(IDatabaseConnection conn, String[] tableNames) throws SQLException {
         super(new Reorderer(conn, tableNames).newOrder());
+        if (log.isDebugEnabled()) log.debug("Table names received: " + Arrays.asList(tableNames));
     }
 
     public ForeignKeySequenceFilter(IDatabaseConnection conn) throws SQLException, DataSetException {
