@@ -2,22 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.test;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
-import org.dbunit.dataset.CompositeDataSet;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.FilteredDataSet;
-import org.dbunit.dataset.ITable;
 import org.dbunit.dataset.Column;
+import org.dbunit.dataset.CompositeDataSet;
 import org.dbunit.dataset.DataSetException;
-import org.dbunit.dataset.ITableMetaData;
-import org.dbunit.dataset.ITableIterator;
-import org.dbunit.dataset.DefaultTableIterator;
 import org.dbunit.dataset.DefaultTable;
+import org.dbunit.dataset.DefaultTableIterator;
+import org.dbunit.dataset.FilteredDataSet;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.ITableIterator;
+import org.dbunit.dataset.ITableMetaData;
 import org.dbunit.dataset.filter.SequenceTableFilter;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
-import org.dbunit.DatabaseUnitException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -29,13 +29,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedHashSet;
-import java.util.LinkedHashMap;
-import java.sql.SQLException;
 
 /**
  * @author Rhett Sutphin
@@ -117,7 +116,8 @@ public class LoaderController implements Controller {
 
                 log("Inserting test data");
                 if (log.isDebugEnabled()) {
-                    for (ITable table : dataset.getTables()) {
+                    for (ITableIterator it = dataset.iterator(); it.next();) {
+                        ITable table = it.getTable();
                         log.debug("Found " + table.getRowCount() + " row(s) for " + table.getTableMetaData().getTableName());
                         for (int i = 0 ; i < table.getRowCount() ; i++) {
                             log.debug("Row " + i);
@@ -182,8 +182,8 @@ public class LoaderController implements Controller {
 
         public NullAsNoValueDataSet(IDataSet source) throws DataSetException {
             byName = new LinkedHashMap<String, ITable>();
-            for (int i = 0; i < source.getTables().length; i++) {
-                ITable table = source.getTables()[i];
+            for (ITableIterator it = source.iterator(); it.next();) {
+                ITable table = it.getTable();
                 DefaultTable newTable = new DefaultTable(table.getTableMetaData());
                 newTable.addTableRows(table);
                 for (int r = 0; r < table.getRowCount(); r++) {
