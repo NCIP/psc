@@ -40,6 +40,14 @@ public class NewUserCommand implements Validatable {
                 errors.rejectValue("name", "error.user.name.already.exists");
             }
         }
+        if(userRoles == null || userRoles.size() <= 0) {
+            errors.rejectValue("userRoles", "error.user.role.not.specified");
+        }
+    }
+
+    public void reset() {
+        name = null;
+        userRoles = null;
     }
 
     public UserService getUserService() {

@@ -86,6 +86,9 @@ public class UserService {
         return userDao.getAll();
     }
 
+    public User getUserById(int id)  throws Exception {
+        return userDao.getById(id);
+    }
 
     ////// CONFIGURATION
     @Required

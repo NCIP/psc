@@ -62,10 +62,13 @@
         </div>
     </div>
     <div class="row">
+        <a href="<c:url value="/pages/newUser"/>">Create User</a>
+    </div>
+    <div class="row">
         <h3>User List</h3>
         <ul>
             <c:forEach items="${users}" var="user">            
-                <li>${user.name}</li>
+                <li>${user.name} - <a href="<c:url value="/pages/newUser?id=${user.id}"/>">Edit User</a> - Disable</li>
             </c:forEach>
         </ul>
     </div>

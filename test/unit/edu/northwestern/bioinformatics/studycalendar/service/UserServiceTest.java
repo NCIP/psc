@@ -97,7 +97,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
 
-    public void testGetUser() throws Exception {
+    public void testGetUserByName() throws Exception {
         User expectedUser = createUser("john", -200L, null);
         List expectedUsers = Collections.singletonList(expectedUser);
 
@@ -105,6 +105,18 @@ public class UserServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         User actualUser = service.getUserByName("john");
+        verifyMocks();
+
+        assertEquals(expectedUser, actualUser);
+    }
+
+    public void testGetUserById() throws Exception {
+        User expectedUser = createUser("john", -200L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR});
+
+        expect(userDao.getById(-200)).andReturn(expectedUser);
+        replayMocks();
+
+        User actualUser = service.getUserById(-200);
         verifyMocks();
 
         assertEquals(expectedUser, actualUser);

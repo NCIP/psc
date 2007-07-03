@@ -2,7 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.BaseCommandController;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.validation.BindException;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -37,6 +39,8 @@ public class NewUserController extends PscSimpleFormController {
         List<User> users = userService.getAllUsers();
         refdata.put("users", users);
 
+
+
         return refdata;
     }
 
@@ -59,12 +63,25 @@ public class NewUserController extends PscSimpleFormController {
             // user wasn't creaated
             throw new UnsupportedOperationException();
         }
-        return new ModelAndView("redirectToStudyList");
+
+        Map model = referenceData(request, oCommand, errors);
+        command.reset();
+        model.put(BaseCommandController.DEFAULT_COMMAND_NAME, command);
+
+        return new ModelAndView("createUser", model);
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
     	NewUserCommand command = new NewUserCommand();
         command.setUserService(userService);
+
+        Integer id = ServletRequestUtils.getIntParameter(request, "id");
+        if(id != null) {
+           User user = userService.getUserById(id);
+           command.setName(user.getName());
+           command.setUserRoles(user.getRoles());
+        }
+
         return command;
     }
 
