@@ -38,7 +38,6 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
 
     public ForeignKeySequenceFilter(IDatabaseConnection conn, String[] tableNames) throws SQLException {
         super(new Reorderer(conn, tableNames).newOrder());
-        if (log.isDebugEnabled()) log.debug("Table names received: " + Arrays.asList(tableNames));
     }
 
     public ForeignKeySequenceFilter(IDatabaseConnection conn) throws SQLException, DataSetException {
@@ -52,6 +51,7 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
         private DirectedGraph<String, DefaultEdge> graph;
 
         public Reorderer(IDatabaseConnection conn, String[] tableNames) throws SQLException {
+            if (log.isDebugEnabled()) log.debug("Table names received: " + Arrays.asList(tableNames));
             this.conn = conn;
             this.originalTableNames = tableNames;
             this.metadata = conn.getConnection().getMetaData();
@@ -74,6 +74,10 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
             List<String> ordered = new ArrayList<String>(graph.vertexSet().size());
             while (topo.hasNext()) ordered.add(topo.next());
 
+            if (ordered.size() != originalTableNames.length) {
+                throw new IllegalStateException("One or more tables disappeared during reordering.\nOriginal:  " + Arrays.asList(originalTableNames) + "\nReordered: " + ordered);
+            }
+
             return ordered.toArray(new String[ordered.size()]);
         }
 
@@ -86,8 +90,19 @@ public class ForeignKeySequenceFilter extends SequenceTableFilter {
 
             for (String parent : originalTableNames) {
                 for (String child : getChildTableNames(parent)) {
-                    graph.addEdge(parent, child);
+                    if (parent.equals(child)) {
+                        log.debug("Ignoring self-reference in " + parent);
+                    } else if (graph.containsVertex(child)) {
+                        graph.addEdge(parent, child);
+                    } else {
+                        log.debug("Skipping " + child + " (referenced by " + parent + ") as it is not in the dataset");
+                    }
                 }
+            }
+
+            log.debug("Graph contains " + graph.vertexSet().size() + " vertices: " + graph.vertexSet());
+            for (String vertex : graph.vertexSet()) {
+                log.debug("  " + vertex + " -> " + graph.outgoingEdgesOf(vertex));
             }
         }
 

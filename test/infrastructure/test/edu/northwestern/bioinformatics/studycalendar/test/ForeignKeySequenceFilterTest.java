@@ -79,6 +79,18 @@ public class ForeignKeySequenceFilterTest extends StudyCalendarTestCase {
         assertPartialOrder(actualOrder, "alpha", "beta", "gamma");
         assertPresent(actualOrder, "loner");
     }
+    
+    public void testReorderingRetainsSelfReferencingTable() throws Exception {
+        metadata.link("csm_protection_group", "csm_protection_group");
+        metadata.link("studies", "planned_calendars");
+
+        String[] actualOrder = doReorder(
+            "studies", "csm_protection_group", "planned_calendars"
+        );
+
+        assertPresent(actualOrder, "csm_protection_group");
+        assertPartialOrder(actualOrder, "studies", "planned_calendars");
+    }
 
     private String[] doReorder(String... tables) throws SQLException, DataSetException {
         filter = new ForeignKeySequenceFilter(conn(), tables);
