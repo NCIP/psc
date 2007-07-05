@@ -17,27 +17,16 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
  * @author Rhett Sutphin
 */
 public abstract class ConfigurationProperty<V> {
-    private static final Map<String, ConfigurationProperty<?>> INSTANCES = new TreeMap<String, ConfigurationProperty<?>>();
-    private static final String DETAILS_RESOURCE = "details.properties";
-    private static Properties details;
-
     private final String key;
+    private ConfigurationProperties collection;
 
     protected ConfigurationProperty(String key) {
         this.key = key;
-        INSTANCES.put(key, this);
     }
 
-    public static Collection<ConfigurationProperty<?>> values() {
-        return INSTANCES.values();
-    }
-
-    public static ConfigurationProperty<?> getPropertyForKey(String key) {
-        return INSTANCES.get(key);
-    }
-
-    public static Set<String> keys() {
-        return INSTANCES.keySet();
+    // collaborator access only
+    void setCollection(ConfigurationProperties collection) {
+        this.collection = collection;
     }
 
     public String getKey() {
@@ -45,13 +34,16 @@ public abstract class ConfigurationProperty<V> {
     }
 
     public String getName() {
-        loadDetails();
-        return details.getProperty(key + ".name");
+        return collection.getNameFor(getKey());
     }
 
     public String getDescription() {
-        loadDetails();
-        return details.getProperty(key + ".description");
+        return collection.getDescriptionFor(getKey());
+    }
+
+    public V getDefault() {
+        String stored = collection.getStoredDefaultFor(getKey());
+        return stored == null ? null : fromStorageFormat(stored);
     }
 
     public String getControlType() {
@@ -61,26 +53,17 @@ public abstract class ConfigurationProperty<V> {
     public abstract String toStorageFormat(V value);
     public abstract V fromStorageFormat(String stored);
 
-    private synchronized static void loadDetails() {
-        if (details == null) {
-            details = new Properties();
-            try {
-                details.load(ConfigurationProperty.class.getResourceAsStream(DETAILS_RESOURCE));
-            } catch (IOException e) {
-                throw new StudyCalendarSystemException("Failed to load property details " + DETAILS_RESOURCE, e);
-            }
-        }
-    }
-
     ////// IMPLEMENTATIONS
 
     public static class Text extends ConfigurationProperty<String> {
         public Text(String key) { super(key); }
 
+        @Override
         public String toStorageFormat(String value) {
             return value;
         }
 
+        @Override
         public String fromStorageFormat(String stored) {
             return stored;
         }
@@ -89,10 +72,12 @@ public abstract class ConfigurationProperty<V> {
     public static class Csv extends ConfigurationProperty<List<String>> {
         public Csv(String key) { super(key); }
 
+        @Override
         public String toStorageFormat(List<String> value) {
             return StringUtils.join(value.iterator(), ", ");
         }
 
+        @Override
         public List<String> fromStorageFormat(String stored) {
             String[] values = stored.split(",");
             for (int i = 0; i < values.length; i++) {
@@ -105,10 +90,12 @@ public abstract class ConfigurationProperty<V> {
     public static class Int extends ConfigurationProperty<Integer> {
         public Int(String key) { super(key); }
 
+        @Override
         public String toStorageFormat(Integer value) {
             return value.toString();
         }
 
+        @Override
         public Integer fromStorageFormat(String stored) {
             return new Integer(stored);
         }
@@ -119,14 +106,17 @@ public abstract class ConfigurationProperty<V> {
             super(key);
         }
 
+        @Override
         public String getControlType() {
             return "boolean";
         }
 
+        @Override
         public String toStorageFormat(Boolean value) {
             return value.toString();
         }
 
+        @Override
         public Boolean fromStorageFormat(String stored) {
             return Boolean.valueOf(stored);
         }
