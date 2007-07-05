@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 
 import java.util.Map;
 import java.util.TreeMap;

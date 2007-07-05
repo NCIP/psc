@@ -4,6 +4,10 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
+
 /**
  * @author Rhett Sutphin
  */

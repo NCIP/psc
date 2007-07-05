@@ -1,9 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
 
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+
 import java.util.Map;
 import java.util.HashMap;
 
 /**
+ * An in-memory-only version of {@link gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration}, suitable for testing
+ *
  * @author Rhett Sutphin
  */
 public class MockConfiguration extends Configuration {

@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.ConfigurationProperty;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.ConfigurationPropertyEditor;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationPropertyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;

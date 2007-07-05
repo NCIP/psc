@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.RowCallbackHandler;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 
 /**
  * @author Rhett Sutphin
@@ -38,10 +39,6 @@ public class ConfigurationTest extends DaoTestCase {
         assertEquals("Study Calendar", actual);
     }
     
-    public void testGetDefaultExplicitly() throws Exception {
-        assertEquals(25, (int) configuration.getDefault(SMTP_PORT));
-    }
-
     public void testSetStringProperty() throws Exception {
         configuration.set(DEPLOYMENT_NAME, "Test Deployment");
 
