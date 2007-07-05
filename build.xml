@@ -101,6 +101,8 @@
             </condition>
         </fail>
         <property file="${config.database.file}"/>
+        <!-- default UPT dialect to same as SC's, if not already set -->
+        <property name="datasource.dialect.upt" value="${datasource.dialect}"/>
         <echo>All database ops for this build will use ${datasource.url}</echo>
     </target>
 
@@ -137,7 +139,7 @@
             </fileset>
             <filterset>
                 <filter token="tomcat.security.dir" value="${build-dir.csm}"/>
-                <filter token="datasource.dialect.upt" value="org.hibernate.dialect.HSQLDialect"/>
+                <filter token="datasource.dialect.upt" value="${datasource.dialect.upt}"/>
                 <filtersfile file="${config.database.file}"/>
             </filterset>
         </copy>
@@ -522,8 +524,6 @@
         <echo>Configuring CSM and UPT for the Tomcat instance in ${catalina.home}</echo>
 
         <property name="tomcat.security.dir" value="${catalina.home}/conf/cabig"/>
-        <!-- default UPT dialect to same as SC's, if not already set -->
-        <property name="datasource.dialect.upt" value="${datasource.dialect}"/>
         <mkdir dir="${tomcat.security.dir}"/>
         <copy todir="${tomcat.security.dir}" overwrite="true">
             <filterset>
