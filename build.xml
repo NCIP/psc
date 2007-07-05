@@ -137,6 +137,7 @@
             </fileset>
             <filterset>
                 <filter token="tomcat.security.dir" value="${build-dir.csm}"/>
+                <filter token="datasource.dialect.upt" value="org.hibernate.dialect.HSQLDialect"/>
                 <filtersfile file="${config.database.file}"/>
             </filterset>
         </copy>
