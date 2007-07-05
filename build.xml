@@ -7,6 +7,7 @@
     <property name="build-dir.main"      value="web/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="build/test-classes"/>
     <property name="build-dir.webapp"    value="build/web"/>
+    <property name="build-dir.csm"       value="${basedir}/build/csm"/>
 
     <property name="api-dir"  value="build/api"/>
     <property name="metrics-dir"  value="build/metrics"/>
@@ -128,6 +129,16 @@
             <fileset dir="${src-dir.unit-test}">
                 <include name="**/*.xml"/>
             </fileset>
+        </copy>
+        <!-- Create valid CSM configuration for testing -->
+        <copy todir="${build-dir.csm}" filtering="true" overwrite="true">
+            <fileset dir="${basedir}/conf/upt">
+                <include name="*.xml"/>
+            </fileset>
+            <filterset>
+                <filter token="tomcat.security.dir" value="${build-dir.csm}"/>
+                <filtersfile file="${config.database.file}"/>
+            </filterset>
         </copy>
     </target>
 
