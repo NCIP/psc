@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static org.easymock.classextension.EasyMock.*;
 
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * @author Nataliya Shurupova
@@ -25,12 +26,13 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         site = new Site();
         site.getHolidaysAndWeekends().add(Fixtures.setId(1, new Holiday()));
         site.getHolidaysAndWeekends().add(Fixtures.setId(2, new DayOfTheWeek()));
+        site.getHolidaysAndWeekends().add(Fixtures.setId(3, new RelativeRecurringHoliday()));
         command.setSite(site);
     }
 
     public void testRemove() {
         command.setAction("Remove");
-        command.setListTypeOfHolidays(new Integer("1"));
+        command.setSelectedHoliday(new Integer("1"));
 
         siteDao.save(same(site));
 
@@ -38,7 +40,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         command.execute();
         verifyMocks();
 
-        assertEquals("Holiday not removed", 1, site.getHolidaysAndWeekends().size());
+        assertEquals("Holiday not removed", 2, site.getHolidaysAndWeekends().size());
         assertEquals("Wrong holiday remains", 2, (int) site.getHolidaysAndWeekends().get(0).getId());
     }
 
@@ -46,7 +48,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         String date= "12/23/2009";
         command.parse(date);
         assertEquals("Wrong day", new Integer(23), command.getDay());
-        assertEquals("Wrong month", 12, (int) command.getMonth());
+        assertEquals("Wrong month", Calendar.DECEMBER, (int) command.getMonth());
         assertEquals("Wrong year", new Integer(2009), command.getYear());
     }
 
@@ -54,7 +56,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         String date = "3/11";
         command.parse(date);
         assertEquals("Wrong day ", 11, (int) command.getDay());
-        assertEquals("Wrong month", 3, (int) command.getMonth());
+        assertEquals("Wrong month", Calendar.MARCH, (int) command.getMonth());
         assertEquals("Wrong year", null, command.getYear());
     }
 
@@ -70,11 +72,11 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         command.execute();
         verifyMocks();
 
-        assertEquals("Didn't add a non recur. date", 3, site.getHolidaysAndWeekends().size());
-        assertTrue(site.getHolidaysAndWeekends().get(2) instanceof Holiday);
-        Holiday holiday = (Holiday)site.getHolidaysAndWeekends().get(2);
+        assertEquals("Didn't add a non recur. date", 4, site.getHolidaysAndWeekends().size());
+        assertTrue(site.getHolidaysAndWeekends().get(3) instanceof Holiday);
+        Holiday holiday = (Holiday)site.getHolidaysAndWeekends().get(3);
         assertEquals("day doesn't match ", 1, (int) holiday.getDay());
-        assertEquals("month doesn't match ", 12, (int) holiday.getMonth());
+        assertEquals("month doesn't match ", Calendar.DECEMBER, (int) holiday.getMonth());
         assertEquals("year is wrong ", 2009, (int) holiday.getYear());
         assertEquals("description doesn't match ", expectedDescription, holiday.getStatus());
     }
@@ -90,10 +92,34 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         command.execute();
         verifyMocks();
 
-        assertEquals("didn't add the day", 3, site.getHolidaysAndWeekends().size());
+        assertEquals("didn't add the day", 4, site.getHolidaysAndWeekends().size());
         assertEquals("Wrong day of the week", dayOfTheWeek,
-                ((DayOfTheWeek)site.getHolidaysAndWeekends().get(2)).getDayOfTheWeek());
-        assertEquals("wrong description ", "off", site.getHolidaysAndWeekends().get(2).getStatus());
+                ((DayOfTheWeek)site.getHolidaysAndWeekends().get(3)).getDayOfTheWeek());
+        assertEquals("wrong description ", "off", site.getHolidaysAndWeekends().get(3).getStatus());
+    }
+
+    public void testAddRelativeRecurringHoliday() throws Exception {
+        command.setAction("Add");
+        command.setWeek(1);
+        command.setDayOfTheWeek("Monday");
+        command.setMonth(Calendar.SEPTEMBER);
+        String expectedDescription = "Memorial Day";
+        command.setHolidayDescription(expectedDescription);
+
+        siteDao.save(same(site));
+
+        replayMocks();
+        command.execute();
+        verifyMocks();
+
+        assertEquals("Didn't add a relative recurring holiday", 4, site.getHolidaysAndWeekends().size());
+        assertTrue(site.getHolidaysAndWeekends().get(3) instanceof RelativeRecurringHoliday);
+        RelativeRecurringHoliday relativeHoliday =
+                (RelativeRecurringHoliday)site.getHolidaysAndWeekends().get(3);
+        assertEquals("day of the week doesn't match ", "Monday", relativeHoliday.getDayOfTheWeek());
+        assertEquals("month doesn't match ", Calendar.SEPTEMBER, (int) relativeHoliday.getMonth());
+        assertEquals("description doesn't match ", expectedDescription, relativeHoliday.getStatus());
+
     }
 
     public void testUniqueDayOfTheWeek() throws Exception {

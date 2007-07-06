@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractHolidayState;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -37,11 +41,11 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testDeleteHoliday() throws Exception {
-        {
-            Site actual = siteDao.getById(-4);
-            actual.getHolidaysAndWeekends().remove(1);
-            siteDao.save(actual);
-        }
+        Site actual = siteDao.getById(-4);
+        List<AbstractHolidayState> list = actual.getHolidaysAndWeekends();
+        actual.getHolidaysAndWeekends().remove(1);
+        siteDao.save(actual);
+
 
         interruptSession();
 
@@ -50,4 +54,30 @@ public class SiteDaoTest extends DaoTestCase {
         assertEquals("Wrong holiday removed", -2,
                 (int) reloaded.getHolidaysAndWeekends().get(0).getId());
     }
+
+    public void testAddHoliday() throws Exception {
+        Site actual = siteDao.getById(-4);
+
+        RelativeRecurringHoliday holidayToAdd = new RelativeRecurringHoliday();
+        holidayToAdd.setNumberOfWeek(1);
+        holidayToAdd.setDayOfTheWeek("Monday");
+        holidayToAdd.setMonth(Calendar.SEPTEMBER);
+        holidayToAdd.setId(-3);
+        holidayToAdd.setStatus("Closed");
+
+        List<AbstractHolidayState> list = actual.getHolidaysAndWeekends();
+        int size = list.size();
+        list.add(holidayToAdd);
+        actual.setHolidaysAndWeekends(list);
+        siteDao.save(actual);
+
+
+        interruptSession();
+
+        Site reloaded = siteDao.getById(-4);
+        assertEquals("Holiday is not added", size + 1, reloaded.getHolidaysAndWeekends().size());
+        assertEquals("Wrong holiday added", holidayToAdd,
+                reloaded.getHolidaysAndWeekends().get(2));
+    }
+
 }

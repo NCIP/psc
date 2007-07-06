@@ -36,7 +36,7 @@ import javax.persistence.Transient;
 //  9 |       0 |       2 |     |       |      | Saturday     | Office is Closed
 // 10 |       0 |       2 |     |       |      | Sunday       | Office is Closed
 
-//insert into holidays (discriminator_id, site_id, day, month, year, day_of_the_week, status) 
+//insert into holidays (discriminator_id, site_id, day, month, year, day_of_the_week, status)
 // values (1, 1, 1, 1, null, null, 'New Year Day'),
 // (1, 1, 2, 4, null, null, 'Independence Day'),
 // (1, 1, 22, 11, null, null, 'Thanksgiving Day'),
@@ -50,40 +50,12 @@ import javax.persistence.Transient;
 
 
 public class DayOfTheWeek extends AbstractHolidayState {
-    private static final String SUNDAY = "sunday";
-    private static final String MONDAY = "monday";
-    private static final String TUESDAY = "tuesday";
-    private static final String WEDNESDAY = "wednesday";
-    private static final String THURSDAY = "thursday";
-    private static final String FRIDAY = "friday";
-    private static final String SATURDAY = "saturday";
-
     private String day_of_the_week;
 
     @Transient
     public String getDisplayName() {
         return getDayOfTheWeek();
     }
-
-    public int mapDayStringToInt () {
-        if (this.day_of_the_week.toLowerCase().equals(SUNDAY)){
-            return 1;
-        } else if (this.day_of_the_week.toLowerCase().equals(MONDAY)) {
-            return 2;
-        } else if (this.day_of_the_week.toLowerCase().equals(TUESDAY)) {
-            return 3;
-        } else if (this.day_of_the_week.toLowerCase().equals(WEDNESDAY)) {
-            return 4;
-        } else if (this.day_of_the_week.toLowerCase().equals(THURSDAY)) {
-            return 5;
-        } else if (this.day_of_the_week.toLowerCase().equals(FRIDAY)) {
-            return 6;
-        } else if (this.day_of_the_week.toLowerCase().equals(SATURDAY)) {
-            return 7;
-        }
-        return -1;
-    }
-
 
     public boolean equals(Object o) {
         if (this == o) return true;

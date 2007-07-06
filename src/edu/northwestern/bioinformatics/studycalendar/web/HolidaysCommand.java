@@ -14,7 +14,7 @@ import java.util.Iterator;
 
 public class HolidaysCommand {
     private static final Logger log = Logger.getLogger(HolidaysCommand.class.getName());
-    private Integer listTypeOfHolidays;
+    private Integer selectedHoliday;
     private String holidayDate;
     private String holidayDescription;
 
@@ -25,6 +25,8 @@ public class HolidaysCommand {
     private Integer day;
     private Integer month;
     private Integer year;
+
+    private Integer week;
 
     private String dayOfTheWeek;
 
@@ -37,7 +39,7 @@ public class HolidaysCommand {
             List<AbstractHolidayState> list = getSite().getHolidaysAndWeekends();
             for (Iterator<AbstractHolidayState> iterator = list.iterator(); iterator.hasNext();) {
                 AbstractHolidayState abstractHolidayState =  iterator.next();
-                if(abstractHolidayState.getId().equals(getListTypeOfHolidays())) {
+                if(abstractHolidayState.getId().equals(getSelectedHoliday())) {
                     iterator.remove();
                     siteDao.save(getSite());
                 }
@@ -53,10 +55,16 @@ public class HolidaysCommand {
                 holiday.setMonth(getMonth());
                 holiday.setYear(getYear());
                 toAdd = holiday;
-            } else {
+            } else if (getDayOfTheWeek() != null && getWeek() == null && getMonth() == null){
                 DayOfTheWeek dayOfTheWeek = new DayOfTheWeek();
                 dayOfTheWeek.setDayOfTheWeek(getDayOfTheWeek());
                 toAdd = dayOfTheWeek;
+            } else {
+                RelativeRecurringHoliday relativeRecurringHoliday = new RelativeRecurringHoliday();
+                relativeRecurringHoliday.setNumberOfWeek(getWeek());
+                relativeRecurringHoliday.setMonth(getMonth());
+                relativeRecurringHoliday.setDayOfTheWeek(getDayOfTheWeek());
+                toAdd = relativeRecurringHoliday;
             }
             if (getHolidayDescription()==null || getHolidayDescription().equals("")) {
                 setHolidayDescription("Office is Closed");
@@ -73,7 +81,8 @@ public class HolidaysCommand {
     public void parse (String date){
         String[] components = date.split("/");
         setDay(new Integer(components[1]));
-        setMonth(new Integer(components[0]));
+        //we need to store month as Calendar class - where January ==0
+        setMonth(new Integer(components[0])-1);
         if(components.length ==3){
             setYear(new Integer(components[2]));
         } else {
@@ -93,12 +102,12 @@ public class HolidaysCommand {
 
     ////// BOUND PROPERTIES
 
-    public Integer getListTypeOfHolidays() {
-        return listTypeOfHolidays;
+    public Integer getSelectedHoliday() {
+        return selectedHoliday;
     }
 
-    public void setListTypeOfHolidays(Integer holiday_to_delete) {
-        this.listTypeOfHolidays = holiday_to_delete;
+    public void setSelectedHoliday(Integer selectedHoliday) {
+        this.selectedHoliday = selectedHoliday;
     }
 
     public Site getSite() {
@@ -164,5 +173,13 @@ public class HolidaysCommand {
     public void setDayOfTheWeek(String dayOfTheWeek) {
         this.dayOfTheWeek = dayOfTheWeek;
     }
+
+    public Integer getWeek() {
+        return week;
+    }
+
+    public void setWeek(Integer week) {
+        this.week = week;
+    }    
 }
 

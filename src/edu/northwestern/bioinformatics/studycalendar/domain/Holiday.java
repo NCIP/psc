@@ -28,9 +28,9 @@ public class Holiday extends AbstractHolidayState {
     @Transient
     public String getDisplayName(){
         if (year==null) {
-            return getMonth()+"/" + getDay();
+            return (getMonth()+1)+"/" + getDay();
         } else {
-            return getMonth() +"/" + getDay() +"/" + getYear();
+            return (getMonth()+1) +"/" + getDay() +"/" + getYear();
         }
     }
 

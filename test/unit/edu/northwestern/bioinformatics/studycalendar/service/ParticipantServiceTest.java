@@ -4,28 +4,20 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import static org.easymock.classextension.EasyMock.*;
 
@@ -248,4 +240,126 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertEquals("Current and ideal date not same", actualEvent.getIdealDate(), currentState.getDate());
         assertEquals("Wrong reason", "Initialized from template", currentState.getReason());
     }
+
+    public void testFindRecurringHoliday() throws Exception {
+        Calendar cal = Calendar.getInstance();
+        List listOfDays = new ArrayList();
+        assertTrue(listOfDays.size()==0);
+        int dayOfTheWeek = Calendar.DAY_OF_WEEK;
+        listOfDays = service.findRecurringHoliday(cal, dayOfTheWeek);
+        assertTrue(listOfDays.size()>3 && listOfDays.size()<6);
+    }
+
+    public void testShiftDayByOne() throws Exception {
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        Date newDate = service.shiftDayByOne(date);
+        assertNotEquals("dates are equals", df.format(newDate), df.format(date));
+
+        java.sql.Timestamp timestampTo = new java.sql.Timestamp(newDate.getTime());
+        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        timestampTo.setTime(timestampTo.getTime() - oneDay);
+        assertEquals("dates are not equals", df.format(timestampTo), df.format(date));
+    }
+
+    public void testResetTheEvent() throws Exception {
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
+        assignment.setScheduledCalendar(scheduledCalendar);
+        ScheduledArm existingArm = new ScheduledArm();
+        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
+        scheduledCalendar.addArm(existingArm);
+
+        StudySite studySite = new StudySite();
+        studySite.setSite(new Site());
+        assignment.setStudySite(studySite);
+        List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
+        ScheduledEvent event = events.get(0);
+        Calendar holiday = Calendar.getInstance();
+        holiday.set(2005, Calendar.AUGUST, 1);
+        String status = "Closed";
+        Date dateBeforeReset = event.getActualDate();
+        assertNotEquals("descriptions are equals", event.getCurrentState().getReason(), status);
+        service.resetTheEvent(holiday.getTime(), event,
+                scheduledCalendar.getAssignment().getStudySite().getSite(),
+                status);
+        Date dateAfterReset = event.getActualDate();
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
+        assertNotEquals("dates are equals", df.format(dateAfterReset), df.format(dateBeforeReset));
+
+        java.sql.Timestamp timestampTo = new java.sql.Timestamp(dateAfterReset.getTime());
+        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        timestampTo.setTime(timestampTo.getTime() - oneDay);
+        assertEquals("dates are not equals", df.format(timestampTo), df.format(dateBeforeReset));        
+        assertEquals("descriptions are not equals", event.getCurrentState().getReason(), service.RESCHEDULED + status);
+    }
+
+    public void testAvoidWeekendsAndHolidays() throws Exception {
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
+        assignment.setScheduledCalendar(scheduledCalendar);
+
+        Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
+        Arm scheduledArm = epoch.getArms().get(0);
+        Period p1 = createPeriod("P1", 1, 7, 3);
+        scheduledArm.addPeriod(p1);
+        p1.addPlannedEvent(setId(1, createPlannedEvent("CBC", 1)));
+        
+        StudySite studySite = new StudySite();
+        Site site = new Site();
+
+        Holiday holidayOne = new Holiday();
+        holidayOne.setDay(1);
+        holidayOne.setMonth(Calendar.AUGUST);
+        holidayOne.setYear(2005);
+        Holiday holidayTwo = new Holiday();
+        holidayTwo.setDay(2);
+        holidayTwo.setMonth(Calendar.AUGUST);
+        holidayTwo.setYear(2005);
+        Holiday holidayThree = new Holiday();
+        holidayThree.setDay(3);
+        holidayThree.setMonth(Calendar.AUGUST);
+        holidayThree.setYear(2005);                
+        List<AbstractHolidayState> listOfHolidays = new ArrayList<AbstractHolidayState>();
+        listOfHolidays.add(holidayOne);
+        listOfHolidays.add(holidayTwo);
+        listOfHolidays.add(holidayThree);
+        site.setHolidaysAndWeekends(listOfHolidays);
+
+       studySite.setSite(site);
+        assignment.setStudySite(studySite);        
+
+        assignment.setParticipant(createParticipant("Alice", "Childress"));
+        participantDao.save(assignment.getParticipant());
+
+
+        replayMocks();
+
+        ScheduledArm returnedArm = service.scheduleArm(
+                assignment, scheduledArm, DateUtils.createDate(2005, Calendar.AUGUST , 1),
+                NextArmMode.PER_PROTOCOL);
+        verifyMocks();
+
+        List<ScheduledEvent> events = returnedArm.getEvents();
+
+        assertNotNull("Scheduled calendar not created", scheduledCalendar);
+        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
+        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
+        assertEquals("Wrong number of events added", 3, events.size());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(events.get(0).getActualDate());
+        assertEquals("Date is not reset ", calendar.get(Calendar.DAY_OF_MONTH), 4);
+        assertEquals("Month is not reset ", calendar.get(Calendar.MONTH), Calendar.AUGUST);
+        assertEquals("Date is not reset ", calendar.get(Calendar.YEAR), 2005);
+
+        assertNewlyScheduledEvent(2005, Calendar.AUGUST, 8, 1, events.get(1));
+        assertNewlyScheduledEvent(2005, Calendar.AUGUST, 15, 1, events.get(2));
+
+        
+    }
+
 }

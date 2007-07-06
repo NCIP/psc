@@ -24,6 +24,7 @@ public class ParticipantService {
     private ParticipantDao participantDao;
     private SiteService siteService;
 
+    public final String RESCHEDULED = "Rescheduled. ";
     private static final Logger log = Logger.getLogger(ParticipantService.class.getName());
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
@@ -116,7 +117,6 @@ public class ParticipantService {
         }
     }
 
-
     public void resetEvent(ScheduledEvent event, Site site) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar dateCalendar = Calendar.getInstance();
@@ -132,33 +132,70 @@ public class ParticipantService {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
                 Holiday h = (Holiday)holiday;
                 if (h.getYear() == null) {
-                    holidayCalendar.set(year, h.getMonth()-1, h.getDay());
+                    holidayCalendar.set(year, h.getMonth(), h.getDay());
                 } else {
-                    holidayCalendar.set(h.getYear(), h.getMonth()-1, h.getDay());
+                    holidayCalendar.set(h.getYear(), h.getMonth(), h.getDay());
                 }
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    date = shiftDayByOne(date);
-                    String reason = "Rescheduled. " + holiday.getStatus();
-                    Scheduled s = new Scheduled(reason, date);
-                    event.changeState(s);
-                    resetEvent(event, site);
+                    resetTheEvent(date, event, site, holiday.getStatus());
                 }
             } else if(holiday instanceof DayOfTheWeek) {
                 DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
-                int intValueOfTheDay = dayOfTheWeek.mapDayStringToInt();
+                int intValueOfTheDay = dayOfTheWeek.mapDayStringToInt(dayOfTheWeek.getDayOfTheWeek());
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
-                    date = shiftDayByOne(date);
-                    String reason = "Rescheduled. " + holiday.getStatus();
-                    Scheduled s = new Scheduled(reason, date);
-                    event.changeState(s);
-                    resetEvent(event, site);
+                    resetTheEvent(date, event, site, holiday.getStatus());
+                }
+            } else if (holiday instanceof RelativeRecurringHoliday) {
+                RelativeRecurringHoliday relativeRecurringHoliday =
+                        (RelativeRecurringHoliday) holiday;
+                Integer numberOfTheWeek = relativeRecurringHoliday.getNumberOfWeek();
+                Integer month = relativeRecurringHoliday.getMonth();
+                int dayOfTheWeekInt = 
+                        relativeRecurringHoliday.mapDayStringToInt(relativeRecurringHoliday.getDayOfTheWeek());
+                Calendar c = Calendar.getInstance();
+
+                try {
+                    c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse("01/" + month + "/"
+                            + year));
+                    List dates = findRecurringHoliday(c, dayOfTheWeekInt);
+                    //-1, since we start from position 0 in the list
+                    Date specificDay = (Date)dates.get(numberOfTheWeek-1);
+
+                    String originalDateFormatted = df.format(date.getTime());
+                    String holidayDateFormatted = df.format(specificDay);
+                    if (originalDateFormatted.equals(holidayDateFormatted)) {
+                        resetTheEvent(date, event, site, holiday.getStatus());
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
         }
     }
 
+    public void resetTheEvent(Date date, ScheduledEvent event, Site site,
+                              String reason) {
+        date = shiftDayByOne(date);
+        Scheduled s = new Scheduled(RESCHEDULED + reason, date);
+        event.changeState(s);
+        resetEvent(event, site);
+    }
+
+    //looking for a specific day = dayOfTheWeek (like Monday, or Tuesday)
+    public List findRecurringHoliday(Calendar cal, int dayOfTheWeek){
+        List weekendList = new ArrayList();
+        for (int i = cal.getActualMinimum(Calendar.DAY_OF_MONTH);
+             i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i ++) {
+            int dayOfTheWeekCal = cal.get(Calendar.DAY_OF_WEEK) ;
+	        if (dayOfTheWeekCal == dayOfTheWeek) {
+                weekendList.add(cal.getTime());
+            }
+            cal.add(Calendar.DAY_OF_MONTH, 1);
+        }
+        return weekendList;
+    }
 
 
     public Date shiftDayByOne(Date date) {
@@ -172,7 +209,7 @@ public class ParticipantService {
         try {
             d1 = df.parse(dateString);
         } catch (ParseException e) {
-            log.info("=======EXCEPTION==== " + e.getMessage());
+            log.debug("Exception " + e);
             d1 = date;
         }
         return d1;

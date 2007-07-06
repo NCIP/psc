@@ -25,9 +25,7 @@ public class HolidaysController extends PscSimpleFormController {
         setCommandClass(HolidaysCommand.class);
         setFormView("manageHolidays");
         setBindOnNewForm(true);
-
     }
-
 
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         return new HolidaysCommand(siteDao);          

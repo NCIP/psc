@@ -9,6 +9,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.log4j.Logger;
 
 import javax.persistence.Entity;
 import javax.persistence.Column;
@@ -30,6 +31,8 @@ import javax.persistence.OrderBy;
     }
 )
 public class Site extends AbstractDomainObjectWithBigId implements Named {
+    private static final Logger log = Logger.getLogger(AbstractDomainObjectWithBigId.class.getName());
+
     public static final String DEFAULT_SITE_NAME = "default";
 
     private String name;
