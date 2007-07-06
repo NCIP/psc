@@ -301,7 +301,7 @@
                     <%--<select name="listTypeOfHolidays" id="listTypeOfHolidays" size="10"  STYLE="width: 370px">--%>
                     <select name="selectedHoliday" id="selectedHoliday" size="10"  STYLE="width: 370px">
                     <c:forEach items="${command.site.holidaysAndWeekends}" var="holiday">
-                             <option value=${holiday.id}>${holiday.displayName} (${holiday.status})</option>
+                             <option value=${holiday.id}>${holiday.displayName} (${holiday.description})</option>
                     </c:forEach>
                     </select>
 

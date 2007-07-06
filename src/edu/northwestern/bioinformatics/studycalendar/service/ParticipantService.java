@@ -118,6 +118,8 @@ public class ParticipantService {
     }
 
     public void resetEvent(ScheduledEvent event, Site site) {
+        log.info("====== EVENT =====" + event.getActualDate());
+        log.info("====== SITE ===== " + site.getId() + " === " + site.getName());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar dateCalendar = Calendar.getInstance();
         Date date = event.getActualDate();
@@ -128,6 +130,7 @@ public class ParticipantService {
         List<AbstractHolidayState> holidayList = site.getHolidaysAndWeekends();
 
         for(AbstractHolidayState holiday: holidayList) {
+            log.info("====== HOLIDAY ===== " + holiday);
             if (holiday instanceof Holiday) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
                 Holiday h = (Holiday)holiday;
@@ -138,19 +141,21 @@ public class ParticipantService {
                 }
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
+                log.info("1. " + originalDateFormatted );
+                log.info("2. " + holidayDateFormatted);
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    resetTheEvent(date, event, site, holiday.getStatus());
+                    resetTheEvent(date, event, site, holiday.getDescription());
                 }
             } else if(holiday instanceof DayOfTheWeek) {
                 DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
                 int intValueOfTheDay = dayOfTheWeek.mapDayStringToInt(dayOfTheWeek.getDayOfTheWeek());
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
-                    resetTheEvent(date, event, site, holiday.getStatus());
+                    resetTheEvent(date, event, site, holiday.getDescription());
                 }
             } else if (holiday instanceof RelativeRecurringHoliday) {
                 RelativeRecurringHoliday relativeRecurringHoliday =
                         (RelativeRecurringHoliday) holiday;
-                Integer numberOfTheWeek = relativeRecurringHoliday.getNumberOfWeek();
+                Integer numberOfTheWeek = relativeRecurringHoliday.getWeekNumber();
                 Integer month = relativeRecurringHoliday.getMonth();
                 int dayOfTheWeekInt = 
                         relativeRecurringHoliday.mapDayStringToInt(relativeRecurringHoliday.getDayOfTheWeek());
@@ -166,7 +171,7 @@ public class ParticipantService {
                     String originalDateFormatted = df.format(date.getTime());
                     String holidayDateFormatted = df.format(specificDay);
                     if (originalDateFormatted.equals(holidayDateFormatted)) {
-                        resetTheEvent(date, event, site, holiday.getStatus());
+                        resetTheEvent(date, event, site, holiday.getDescription());
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();

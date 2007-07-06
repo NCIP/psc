@@ -78,7 +78,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         assertEquals("day doesn't match ", 1, (int) holiday.getDay());
         assertEquals("month doesn't match ", Calendar.DECEMBER, (int) holiday.getMonth());
         assertEquals("year is wrong ", 2009, (int) holiday.getYear());
-        assertEquals("description doesn't match ", expectedDescription, holiday.getStatus());
+        assertEquals("description doesn't match ", expectedDescription, holiday.getDescription());
     }
 
     public void testDayOfTheWeek() throws Exception {
@@ -95,7 +95,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         assertEquals("didn't add the day", 4, site.getHolidaysAndWeekends().size());
         assertEquals("Wrong day of the week", dayOfTheWeek,
                 ((DayOfTheWeek)site.getHolidaysAndWeekends().get(3)).getDayOfTheWeek());
-        assertEquals("wrong description ", "off", site.getHolidaysAndWeekends().get(3).getStatus());
+        assertEquals("wrong description ", "off", site.getHolidaysAndWeekends().get(3).getDescription());
     }
 
     public void testAddRelativeRecurringHoliday() throws Exception {
@@ -118,22 +118,22 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
                 (RelativeRecurringHoliday)site.getHolidaysAndWeekends().get(3);
         assertEquals("day of the week doesn't match ", "Monday", relativeHoliday.getDayOfTheWeek());
         assertEquals("month doesn't match ", Calendar.SEPTEMBER, (int) relativeHoliday.getMonth());
-        assertEquals("description doesn't match ", expectedDescription, relativeHoliday.getStatus());
+        assertEquals("description doesn't match ", expectedDescription, relativeHoliday.getDescription());
 
     }
 
     public void testUniqueDayOfTheWeek() throws Exception {
         DayOfTheWeek oneDayOfTheWeek = new DayOfTheWeek();
         oneDayOfTheWeek.setDayOfTheWeek("Monday");
-        oneDayOfTheWeek.setStatus("Closed");
+        oneDayOfTheWeek.setDescription("Closed");
 
         DayOfTheWeek anotherDayOfTheWeek = new DayOfTheWeek();
         anotherDayOfTheWeek.setDayOfTheWeek("Monday");
-        anotherDayOfTheWeek.setStatus("And definitely Closed");
+        anotherDayOfTheWeek.setDescription("And definitely Closed");
 
         DayOfTheWeek thirdDayOfTheWeek = new DayOfTheWeek();
         thirdDayOfTheWeek.setDayOfTheWeek("Tuesday");
-        thirdDayOfTheWeek.setStatus("whatever");
+        thirdDayOfTheWeek.setDescription("whatever");
 
         List<AbstractHolidayState> list = site.getHolidaysAndWeekends();
         list.add(oneDayOfTheWeek);

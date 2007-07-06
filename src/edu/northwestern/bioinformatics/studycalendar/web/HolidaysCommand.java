@@ -61,7 +61,7 @@ public class HolidaysCommand {
                 toAdd = dayOfTheWeek;
             } else {
                 RelativeRecurringHoliday relativeRecurringHoliday = new RelativeRecurringHoliday();
-                relativeRecurringHoliday.setNumberOfWeek(getWeek());
+                relativeRecurringHoliday.setWeekNumber(getWeek());
                 relativeRecurringHoliday.setMonth(getMonth());
                 relativeRecurringHoliday.setDayOfTheWeek(getDayOfTheWeek());
                 toAdd = relativeRecurringHoliday;
@@ -69,7 +69,7 @@ public class HolidaysCommand {
             if (getHolidayDescription()==null || getHolidayDescription().equals("")) {
                 setHolidayDescription("Office is Closed");
             }
-            toAdd.setStatus(getHolidayDescription());
+            toAdd.setDescription(getHolidayDescription());
             if(!isElementInTheList(list, toAdd)) {
 
                 list.add(toAdd);

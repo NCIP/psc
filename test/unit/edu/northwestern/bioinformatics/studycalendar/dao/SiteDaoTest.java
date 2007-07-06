@@ -59,11 +59,11 @@ public class SiteDaoTest extends DaoTestCase {
         Site actual = siteDao.getById(-4);
 
         RelativeRecurringHoliday holidayToAdd = new RelativeRecurringHoliday();
-        holidayToAdd.setNumberOfWeek(1);
+        holidayToAdd.setWeekNumber(1);
         holidayToAdd.setDayOfTheWeek("Monday");
         holidayToAdd.setMonth(Calendar.SEPTEMBER);
         holidayToAdd.setId(-3);
-        holidayToAdd.setStatus("Closed");
+        holidayToAdd.setDescription("Closed");
 
         List<AbstractHolidayState> list = actual.getHolidaysAndWeekends();
         int size = list.size();

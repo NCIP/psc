@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 )
 @DiscriminatorValue(value="3")
 public class RelativeRecurringHoliday extends AbstractHolidayState {
-    private Integer number_of_week;
+    private Integer week_number;
     private String day_of_the_week;
     private Integer month;
 
@@ -54,15 +54,15 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
     }
 
     public String numberOfTheWeekString() {
-        if (getNumberOfWeek() == 1){
+        if (getWeekNumber() == 1){
             return FIRST_WEEK;
-        } else if (getNumberOfWeek() == 2) {
+        } else if (getWeekNumber() == 2) {
             return SECOND_WEEK;
-        } else if (getNumberOfWeek() == 3) {
+        } else if (getWeekNumber() == 3) {
             return THIRD_WEEK;
-        } else if (getNumberOfWeek() == 4) {
+        } else if (getWeekNumber() == 4) {
             return FORTH_WEEK;
-        } else if (getNumberOfWeek() == 5) {
+        } else if (getWeekNumber() == 5) {
             return FIFTH_WEEK;
         }
         return null;
@@ -108,19 +108,19 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
         if (day_of_the_week != null ? !day_of_the_week.equals(that.day_of_the_week) : that.day_of_the_week != null)
             return false;
         if (month != null ? !month.equals(that.month) : that.month != null) return false;
-        if (number_of_week != null ? !number_of_week.equals(that.number_of_week) : that.number_of_week != null)
+        if (week_number != null ? !week_number.equals(that.week_number) : that.week_number != null)
             return false;
 
         return true;
     }
 
 
-    public Integer getNumberOfWeek() {
-        return number_of_week;
+    public Integer getWeekNumber() {
+        return week_number;
     }
 
-    public void setNumberOfWeek(Integer number_of_week) {
-        this.number_of_week = number_of_week;
+    public void setWeekNumber(Integer week_number) {
+        this.week_number = week_number;
     }
 
     public String getDayOfTheWeek() {

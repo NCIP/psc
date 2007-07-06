@@ -13,15 +13,15 @@ public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        holiday.setNumberOfWeek(3);
+        holiday.setWeekNumber(3);
         holiday.setDayOfTheWeek("Wednesday");
         holiday.setMonth(Calendar.JANUARY);
-        holiday.setStatus("Some day Off");
+        holiday.setDescription("Some day Off");
     }
 
-    public void testGetNumberOfWeek() {
-        assertEquals("Number of the week is not the same ", 3, (int) holiday.getNumberOfWeek());
-        assertEquals("Number of the week is the same ", false, (holiday.getNumberOfWeek() != 3));
+    public void testGetNumberOfTheWeek() {
+        assertEquals("Number of the week is not the same ", 3, (int) holiday.getWeekNumber());
+        assertEquals("Number of the week is the same ", false, (holiday.getWeekNumber() != 3));
     }
 
     public void testGetDayOfTheWeek() throws Exception {
@@ -43,12 +43,12 @@ public class RelativeRecurringHolidayTest extends StudyCalendarTestCase {
 
     public void testEquals() throws Exception {
         RelativeRecurringHoliday h1 = new RelativeRecurringHoliday();
-        h1.setNumberOfWeek(3);
+        h1.setWeekNumber(3);
         h1.setDayOfTheWeek("Wednesday");
         h1.setMonth(Calendar.JANUARY);
 
         RelativeRecurringHoliday h2 = new RelativeRecurringHoliday();
-        h2.setNumberOfWeek(4);
+        h2.setWeekNumber(4);
         h2.setDayOfTheWeek("Wednesday");
         h2.setMonth(Calendar.JANUARY);
 

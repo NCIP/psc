@@ -8,7 +8,7 @@
         site_id="-4"
         discriminator_id="1"
         day_of_the_week="Monday"
-        status="Closed"
+        description="Closed"
         />
     <HOLIDAYS
         id="-2"
@@ -16,6 +16,6 @@
         discriminator_id="2"
         day="25"
         month="12"
-        status="Xmas"
+        description="Xmas"
         />
 </dataset>

@@ -16,12 +16,12 @@ public class HolidayTest extends StudyCalendarTestCase {
         super.setUp();
         recurringHoliday.setMonth(Calendar.JUNE);
         recurringHoliday.setDay(2);
-        recurringHoliday.setStatus("holiday1");
+        recurringHoliday.setDescription("holiday1");
 
         nonRecurringHoliday.setMonth(Calendar.JULY);
         nonRecurringHoliday.setDay(7);
         nonRecurringHoliday.setYear(2007);
-        nonRecurringHoliday.setStatus("holiday2");
+        nonRecurringHoliday.setDescription("holiday2");
     }
 
     public void testDay() throws Exception {
@@ -46,9 +46,9 @@ public class HolidayTest extends StudyCalendarTestCase {
 
     public void testStatus() throws Exception {
         assertEquals("recurring descriptions are not equal", "holiday1",
-                recurringHoliday.getStatus());
+                recurringHoliday.getDescription());
         assertEquals("non recurring descriptions are not equal", "holiday2",
-                nonRecurringHoliday.getStatus());
+                nonRecurringHoliday.getDescription());
     }
 
     public void testGetDisplayName() throws Exception {

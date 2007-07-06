@@ -12,7 +12,7 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         dayOfTheWeek.setDayOfTheWeek("Monday");
-        dayOfTheWeek.setStatus("Office is Closed");
+        dayOfTheWeek.setDescription("Office is Closed");
     }
 
     public void testDayOfTheWeek() throws Exception {
@@ -24,7 +24,7 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
 
     public void testDescription() throws Exception {
         assertEquals("descriptions are the same", "Office is Closed",
-                dayOfTheWeek.getStatus());
+                dayOfTheWeek.getDescription());
     }
 
     public void testMapDayStringToInt() throws Exception {
@@ -60,15 +60,15 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
     public void testEquals() throws Exception {
         DayOfTheWeek d1 = new DayOfTheWeek();
         d1.setDayOfTheWeek("Monday");
-        d1.setStatus("Office is Closed");
+        d1.setDescription("Office is Closed");
 
         DayOfTheWeek d2 = new DayOfTheWeek();
         d2.setDayOfTheWeek("Tuesday");
-        d2.setStatus("Office is Closed");
+        d2.setDescription("Office is Closed");
 
         DayOfTheWeek d3 = new DayOfTheWeek();
         d3.setDayOfTheWeek("Monday");
-        d3.setStatus("Something");
+        d3.setDescription("Something");
 
         assertEquals("days of the week are not equal", true, d1.equals(dayOfTheWeek));
         assertNotEquals("days of the week are equals", true, d2.equals(dayOfTheWeek));

@@ -25,7 +25,7 @@ import javax.persistence.Table;
 
 public class AbstractHolidayState extends AbstractDomainObject {
 
-    private String status;
+    private String description;
     private static final String SUNDAY = "sunday";
     private static final String MONDAY = "monday";
     private static final String TUESDAY = "tuesday";
@@ -34,12 +34,12 @@ public class AbstractHolidayState extends AbstractDomainObject {
     private static final String FRIDAY = "friday";
     private static final String SATURDAY = "saturday";
 
-    public String getStatus() {
-        return this.status;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int mapDayStringToInt (String day_of_the_week) {
@@ -63,8 +63,8 @@ public class AbstractHolidayState extends AbstractDomainObject {
 
     public String toString(){
         StringBuffer sb = new StringBuffer();
-        sb.append(" Status = ");
-        sb.append(getStatus());
+        sb.append(" Description = ");
+        sb.append(getDescription());
         return sb.toString();
     }
 }

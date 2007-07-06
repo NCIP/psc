@@ -48,7 +48,6 @@ public class Holiday extends AbstractHolidayState {
     }
 
     public String toString(){
-        String status = super.toString();
         StringBuffer sb = new StringBuffer();
         sb.append("Id = ");
         sb.append(getId());
@@ -58,7 +57,7 @@ public class Holiday extends AbstractHolidayState {
         sb.append(getMonth());
         sb.append(" Year = ");
         sb.append(getYear());
-        sb.append(status);
+        sb.append(super.toString());
         return sb.toString();
     }    
 
