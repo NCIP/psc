@@ -300,7 +300,7 @@
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name"><value>Manage Holidays</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
+                <property name="parent"><ref local="manageSitesController"/></property>
             </bean>
         </property>
      </bean>
