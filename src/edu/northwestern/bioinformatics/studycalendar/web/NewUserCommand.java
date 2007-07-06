@@ -4,17 +4,17 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.validation.Errors;
-import org.springframework.validation.FieldError;
 import org.apache.commons.lang.StringUtils;
 
 public class NewUserCommand implements Validatable {
     private String name;
     private Set<Role> userRoles;
     private UserService userService;
+    private Boolean activeFlag;
+    private Integer id;
 
     public String getName() {
         return name;
@@ -32,11 +32,27 @@ public class NewUserCommand implements Validatable {
         this.userRoles = userRoles;
     }
 
+    public Boolean getActiveFlag() {
+        return activeFlag;
+    }
+
+    public void setActiveFlag(Boolean activeFlag) {
+        this.activeFlag = activeFlag;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public void validate(Errors errors) {
         if(StringUtils.isEmpty(name)) {
             errors.rejectValue("name", "error.user.name.not.specified");
         } else {
-            if(userService.getUserByName(name) != null){
+            if(id == null && userService.getUserByName(name) != null){
                 errors.rejectValue("name", "error.user.name.already.exists");
             }
         }
@@ -48,6 +64,7 @@ public class NewUserCommand implements Validatable {
     public void reset() {
         name = null;
         userRoles = null;
+        activeFlag = new Boolean(true);
     }
 
     public UserService getUserService() {

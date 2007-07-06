@@ -9,10 +9,8 @@ import org.springframework.validation.BindException;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
@@ -39,30 +37,27 @@ public class NewUserController extends PscSimpleFormController {
         List<User> users = userService.getAllUsers();
         refdata.put("users", users);
 
-
+        String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "editId") == null ? "Create" : "Edit";
+        refdata.put("actionText", actionText);
 
         return refdata;
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(Role.class, "userRoles",
-            new RoleEditor());
+        binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         NewUserCommand command = (NewUserCommand) oCommand;
+        
+        User user = command.getId() != null ? userService.getUserById(command.getId()) : new User();
 
-        User user = new User();
         user.setName(command.getName());
         user.setRoles(command.getUserRoles());
+        user.setActiveFlag(command.getActiveFlag());
 
-        user = userService.createUser(user);
-
-        if(user == null) {
-            // user wasn't creaated
-            throw new UnsupportedOperationException();
-        }
+        userService.saveUser(user);
 
         Map model = referenceData(request, oCommand, errors);
         command.reset();
@@ -74,12 +69,15 @@ public class NewUserController extends PscSimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
     	NewUserCommand command = new NewUserCommand();
         command.setUserService(userService);
+        command.setActiveFlag(new Boolean(true));
 
-        Integer id = ServletRequestUtils.getIntParameter(request, "id");
-        if(id != null) {
-           User user = userService.getUserById(id);
+        Integer editId = ServletRequestUtils.getIntParameter(request, "editId");
+        if(editId != null) {
+           User user = userService.getUserById(editId);
+           command.setId(user.getId());
            command.setName(user.getName());
            command.setUserRoles(user.getRoles());
+           command.setActiveFlag(user.getActiveFlag());
         }
 
         return command;

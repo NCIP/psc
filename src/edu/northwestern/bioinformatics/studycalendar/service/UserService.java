@@ -3,7 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -21,16 +24,19 @@ public class UserService {
     private UserProvisioningManager userProvisioningManager;
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
 
-    public User createUser(User user) throws Exception {
-        gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user);
-
-        if(csmUser.getUserId() == null || StringUtils.isBlank(csmUser.getUserId().toString()))
+    public User saveUser(User user) throws Exception {
+        if(user == null)
             return null;
 
-        assignCsmGroups(csmUser.getUserId().toString(), user.getRoles());
-        user.setCsmUserId(csmUser.getUserId());
-        userDao.save(user);
+        if(user.getCsmUserId() == null) {
+            gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user);
+            user.setCsmUserId(csmUser.getUserId());
+            if(csmUser.getUserId() == null)
+                throw new StudyCalendarSystemException("Csm User Id is null");
+        }
 
+        assignCsmGroups(user.getCsmUserId().toString(), user.getRoles());
+        userDao.save(user);
         return user;
     }
 
@@ -46,15 +52,16 @@ public class UserService {
 
     private void assignCsmGroups(String userId, Set<Role> roles) throws Exception {
         List<String> csmRoles = rolesToCsmGroups(roles);
+        String[] strCsmRoles = csmRoles.toArray(new String[csmRoles.size()]);
         if(csmRoles.size() > 0) {
-            userProvisioningManager.assignGroupsToUser(userId, csmRoles.toArray(new String[csmRoles.size()]));
+            userProvisioningManager.assignGroupsToUser(userId, strCsmRoles);
         }
     }
 
     private List<String> rolesToCsmGroups(Set<Role> roles) throws Exception{
         List csmGroupsForUser = new ArrayList<String>();
         if(roles != null) {
-            Set<Group> allCsmGroups = getAllCsmGroups();
+            List<Group> allCsmGroups = getAllCsmGroups();
 
             for(Role role: roles) {
                 for(Group group: allCsmGroups) {
@@ -67,13 +74,17 @@ public class UserService {
         return csmGroupsForUser;
     }
 
-    private Set<Group> getAllCsmGroups() throws Exception {
-        Set<Group> groups = userProvisioningManager.getApplicationById(STUDY_CALENDAR_APPLICATION_ID).getGroups();
-        return groups == null ? new HashSet<Group>() : groups;
+    private List<Group> getAllCsmGroups() throws Exception {
+        SearchCriteria searchCriteria = new GroupSearchCriteria(new Group());
+        List<Group> groups = userProvisioningManager.getObjects(searchCriteria);
+        if(groups == null) {
+            throw new StudyCalendarSystemException("Get Csm Groups is null");
+        }
+        return groups;
     }
 
-    private boolean isGroupEqualToRole(Group group, Role role) {
-        return group.toString().equals(role.getCode());
+    protected boolean isGroupEqualToRole(Group group, Role role) {
+        return group.getGroupName().equals(role.getCode());
     }
 
     @SuppressWarnings("unchecked")

@@ -28,10 +28,11 @@
     </style>
 </head>
 <body>
-<h1>New User</h1>
+<h1>${actionText} User</h1>
 
-
-<form:form method="post">
+<c:url value="/pages/newUser" var="formAction"/>
+<form:form method="post" action="${formAction}">
+    <form:hidden path="id"/>
     <form:errors path="*"/>
     <div class="row">
         <div class="label" >
@@ -39,6 +40,14 @@
         </div>
         <div class="value">
             <form:input path="name"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="label" >
+            <form:label path="name">Enable User:</form:label>
+        </div>
+        <div class="value">
+            <form:checkbox path="activeFlag" value=""/>
         </div>
     </div>
     <div class="row">
@@ -58,7 +67,9 @@
     </c:forEach>
     <div class="row">
         <div class="submit">
-            <input type="submit" value="Create"/>
+            <input type="submit"
+                   name="action"
+                   value="<c:if test="${actionText=='Create'}">Create</c:if><c:if test="${actionText=='Edit'}">Save</c:if>"/>
         </div>
     </div>
     <div class="row">
@@ -67,10 +78,20 @@
     <div class="row">
         <h3>User List</h3>
         <ul>
-            <c:forEach items="${users}" var="user">            
-                <li>${user.name} - <a href="<c:url value="/pages/newUser?id=${user.id}"/>">Edit User</a> - Disable</li>
+            <c:forEach items="${users}" var="user">               
+                <li>${user.name} - <a href="<c:url value="/pages/newUser?editId=${user.id}"/>">Edit User</a> -
+                    <c:if test="${user.activeFlag}">
+                        Enabled
+                    </c:if>
+                    <c:if test="${not user.activeFlag}">
+                        Disabled
+                    </c:if>                    
+               </li>
             </c:forEach>
         </ul>
+    </div>
+    <div class="row">
+        <
     </div>
 </form:form>
 </body>

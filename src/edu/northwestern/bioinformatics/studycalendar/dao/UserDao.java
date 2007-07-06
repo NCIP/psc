@@ -12,7 +12,7 @@ public class UserDao extends StudyCalendarDao<User> {
     }
 
     public List<User> getAll() {
-        return getHibernateTemplate().find("from User");
+        return getHibernateTemplate().find("from User order by name");
     }
 
     public void save(User user) {
