@@ -118,8 +118,6 @@ public class ParticipantService {
     }
 
     public void resetEvent(ScheduledEvent event, Site site) {
-        log.info("====== EVENT =====" + event.getActualDate());
-        log.info("====== SITE ===== " + site.getId() + " === " + site.getName());
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar dateCalendar = Calendar.getInstance();
         Date date = event.getActualDate();
@@ -130,7 +128,6 @@ public class ParticipantService {
         List<AbstractHolidayState> holidayList = site.getHolidaysAndWeekends();
 
         for(AbstractHolidayState holiday: holidayList) {
-            log.info("====== HOLIDAY ===== " + holiday);
             if (holiday instanceof Holiday) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
                 Holiday h = (Holiday)holiday;
@@ -141,8 +138,6 @@ public class ParticipantService {
                 }
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
-                log.info("1. " + originalDateFormatted );
-                log.info("2. " + holidayDateFormatted);
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
                     resetTheEvent(date, event, site, holiday.getDescription());
                 }
