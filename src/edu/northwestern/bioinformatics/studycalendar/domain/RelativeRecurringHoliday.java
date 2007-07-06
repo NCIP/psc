@@ -141,4 +141,3 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
 }
 
 
-//insert into holidays(discriminator_id, site_id, day, month, year, day_of_the_week, status, number_of_week) values (3, 2, null, 9, null, 'Monday', 'Labor Day', 'First')
