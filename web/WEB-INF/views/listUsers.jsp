@@ -10,12 +10,13 @@
     <tags:includeScriptaculous/>
     <style type="text/css">
         #container {
-            width: 50em;background-color:#eee;
+            width: 50em;background-color:#ddd; border:1px solid #999;
         }
         h2 {
             margin-bottom:0px;
             font-size:15px;
         }
+        .nameColumn, .rolesColumn, .statusColumn {border-bottom:1px solid #999;}
         .nameColumn {
             width:20%;font-weight:bold;
         }
@@ -24,6 +25,12 @@
         }
         .statusColumn {
             width:10%;font-weight:bold;
+        }
+        #container td {
+            vertical-align:top; padding:2px;
+        }
+        tr.oddrow {
+            background-color:#fff;
         }
     </style>
 </head>
@@ -43,13 +50,13 @@
             <td class="statusColumn">Status</td>
         </tr>    
 
-        <c:forEach items="${users}" var="user">
-            <tr>
+        <c:forEach items="${users}" var="user" varStatus="outterCounter">
+            <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
             <td>
                 <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">${user.name}</a></td>
             <td>
-                <c:forEach items="${user.roles}" var="role" varStatus="counter">
-                    ${role.displayName}<c:if test="${not counter.last}">,</c:if>                                                                
+                <c:forEach items="${user.roles}" var="role" varStatus="innerCounter">
+                    ${role.displayName}<c:if test="${not innerCounter.last}">,</c:if>
                 </c:forEach>
             </td>
             <td>

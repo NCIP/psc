@@ -100,6 +100,7 @@
 <h2>Administration</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
+    <tags:restrictedListItem url="/pages/listUsers">Manage Users</tags:restrictedListItem>
     <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
 </ul>
 </security:secureOperation>
