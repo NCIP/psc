@@ -18,9 +18,6 @@
         form {
             width: 30em;
         }
-        div {
-            /*border: 1px solid #000;*/
-        }
         h2 {
             margin-bottom:0px;
             font-size:15px;
@@ -35,10 +32,15 @@
     <form:errors path="*"/>
     <div class="row">
         <div class="label" >
-            <form:label path="name">User Name:</form:label>
+            <form:label path="name" >User Name:</form:label>
         </div>
         <div class="value">
-            <form:input path="name"/>
+            <c:if test="${actionText=='Create'}">
+                <form:input path="name"/>
+            </c:if>
+            <c:if test="${actionText=='Edit'}">
+                ${command.name}
+            </c:if>
         </div>
     </div>
     <div class="row">
@@ -83,31 +85,12 @@
     <div class="row">
         <div class="submit">
             <input type="submit"
-                   name="action"
+                   name="_cancel"
+                   value="Cancel"/>
+            <input type="submit"
                    value="<c:if test="${actionText=='Create'}">Create</c:if><c:if test="${actionText=='Edit'}">Save</c:if>"/>
         </div>
     </div>
-    <div class="row">
-        <a href="<c:url value="/pages/createUser"/>">Create User</a>
-    </div>
-    <div class="row">
-        <h3>User List</h3>
-        <ul>
-            <c:forEach items="${users}" var="user">               
-                <li>${user.name} - <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">Edit User</a> -
-                    <c:if test="${user.activeFlag}">
-                        Enabled
-                    </c:if>
-                    <c:if test="${not user.activeFlag}">
-                        Disabled
-                    </c:if>                    
-               </li>
-            </c:forEach>
-        </ul>
-    </div>
-    <!--<div class="row">
-        <
-    </div> -->
 </form:form>
 </body>
 </html>

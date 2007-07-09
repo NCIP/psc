@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.CancellableFormController;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -19,14 +20,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class CreateUserController extends PscSimpleFormController {
+public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
         setFormView("createUser");
         setValidator(new ValidatableValidator());
-        setSuccessView("createUser");
+        setSuccessView("listUsers");
+        setCancelView("listUsers");
     }
 
 
@@ -34,9 +36,6 @@ public class CreateUserController extends PscSimpleFormController {
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Role> roles = Arrays.asList(Role.values());
         refdata.put("roles", roles);
-
-        List<User> users = userService.getAllUsers();
-        refdata.put("users", users);
 
         String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "editId") == null ? "Create" : "Edit";
         refdata.put("actionText", actionText);
@@ -82,6 +81,10 @@ public class CreateUserController extends PscSimpleFormController {
 
         return command;
     }
+
+    protected ModelAndView onCancel(Object command) throws Exception {
+		return new ModelAndView(new RedirectView(getCancelView()));
+	}
 
     
 
