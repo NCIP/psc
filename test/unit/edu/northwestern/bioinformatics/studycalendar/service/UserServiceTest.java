@@ -49,7 +49,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     public void testSaveUser() throws Exception {
         service.setUserProvisioningManager(testUserProvisioningManager);
-        User expectedUser = createUser(200, "john", 100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, true);
+        User expectedUser = createUser(200, "john", 100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, true, "pass123");
         String[] expectedCsmGroups = {"2", "6"};
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
@@ -71,7 +71,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
      public void testSaveUser_2() throws Exception {
         service.setUserProvisioningManager(testUserProvisioningManager);
-        User expectedUser = createUser(200, "john", 100L, null, false);
+        User expectedUser = createUser(200, "john", 100L, null, false, null);
         String[] expectedCsmGroups = {};
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
@@ -93,7 +93,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
 
     public void testGetUserByName() throws Exception {
-        User expectedUser = createUser(-100, "john", -100L, null, true);
+        User expectedUser = createUser(-100, "john", -100L, null, true, "pass123");
         List expectedUsers = Collections.singletonList(expectedUser);
 
         expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUsers);
@@ -106,7 +106,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetUserById() throws Exception {
-        User expectedUser = createUser(-200, "john", -100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, false);
+        User expectedUser = createUser(-200, "john", -100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, false, "pass123");
 
         expect(userDao.getById(-200)).andReturn(expectedUser);
         replayMocks();
@@ -215,12 +215,13 @@ public class UserServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    private User createUser(Integer id, String name, Long csmUserId, Role[] roles, boolean activeFlag) {
+    private User createUser(Integer id, String name, Long csmUserId, Role[] roles, boolean activeFlag, String password) {
         User user = new User();
         user.setId(id);
         user.setName(name);
         user.setCsmUserId(csmUserId);
         user.setActiveFlag(new Boolean(activeFlag));
+        user.setPassword(password);
         if(roles != null) {
             user.setRoles(new HashSet<Role>());
             Collections.addAll(user.getRoles(), roles); 
