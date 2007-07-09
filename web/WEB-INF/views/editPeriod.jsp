@@ -73,6 +73,54 @@
             else return q;
         }
 
+        function resetElement(elementId, text, color) {
+            var element = document.getElementById(elementId);
+            element.style.color = color;
+            element.innerHTML = text;
+        }
+
+        function isCorrectStartDay() {
+            var startDay = document.getElementById("period.startDay").value;
+            var isDataCorrect = true;
+            if(startDay.length <= 0 || (isNaN(startDay*1))) {
+                isDataCorrect = false;
+                resetElement("periodError",
+                  "ERROR: Start Day must be positive, negative, or zero.", "red");
+            }
+            return isDataCorrect;
+        }
+
+        function isCorrectDuration() {
+            var duration = document.getElementById("period.duration.quantity").value;
+            var isDataCorrect = true;
+            if (duration.length <=0 || ((isNaN(duration*1)) || (duration <=0))) {
+                isDataCorrect = false;
+                resetElement("periodError",
+                  "ERROR: Duration must be a positive number.", "red");
+            }
+            return isDataCorrect;
+        }
+
+        function isCorrectRepetitions() {
+            var repetitions = document.getElementById("period.repetitions").value;
+            var isDataCorrect = true;
+            if (repetitions.length <=0 || ((isNaN(repetitions*1)) || (repetitions <=0))) {
+                isDataCorrect = false;
+                resetElement("periodError",
+                                  "ERROR: Repetitions must be a positive number.", "red");
+            }
+            return isDataCorrect;
+        }
+
+        function isCorrectInput() {
+            var isDataCorrect = true;
+            isDataCorrect = isCorrectStartDay();
+            if(!isDataCorrect) { return isDataCorrect; }
+            isDataCorrect = isCorrectDuration();
+            if(!isDataCorrect) { return isDataCorrect; }
+            return isCorrectRepetitions();
+        }
+
         Element.observe(window, "load", function() {
             $$("#period-form input").each(function(elt) {
                 Element.observe(elt, "change", updateSummary)
@@ -87,6 +135,7 @@
 <body>
 <h2>${commons:capitalize(verb)} Period</h2>
 <form:form method="post" id="period-form">
+    <h5 id="periodError"></h5>
     <div class="row odd">
         <div class="label">
             <form:label path="period.name">Name</form:label>
@@ -102,7 +151,7 @@
         <div class="label">
             <form:label path="period.startDay">Start day</form:label>
         </div>
-        <div class="tip">
+        <div class="tip" id="startDayText">
             The relative day of the start of this period.  This may be positive, negative, or zero.
         </div>
         <div class="value">
@@ -113,7 +162,7 @@
         <div class="label">
             <form:label path="period.duration.quantity">Duration</form:label>
         </div>
-        <div class="tip">
+        <div class="tip" id="durationText">
             The length of a single repetition of this period.  This must be a positive number,
             and may be expressed in days or weeks.
         </div>
@@ -128,7 +177,7 @@
         <div class="label">
             <form:label path="period.repetitions">Repetitions</form:label>
         </div>
-        <div class="tip">
+        <div class="tip" id="repetitionsText">
             The number of times the days of this period will occur.
         </div>
         <div class="value">
@@ -145,7 +194,10 @@
             </span>
         </div>
     </div>
-    <div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>
+    <div class="even row submit">
+        <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
+    </div>
+    <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
 </form:form>
 </body>
 </html>
