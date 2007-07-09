@@ -22,6 +22,7 @@ public class User extends AbstractDomainObject implements Named {
     private Long csmUserId;
     private Set<Role> roles = new HashSet<Role>();
     private Boolean activeFlag;
+    private String password;
 
     public String getName() {
         return name;
@@ -45,6 +46,14 @@ public class User extends AbstractDomainObject implements Named {
 
     public void setActiveFlag(Boolean activeFlag) {
         this.activeFlag = activeFlag;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @CollectionOfElements
@@ -80,6 +89,7 @@ public class User extends AbstractDomainObject implements Named {
         if (csmUserId != null ?
                 !csmUserId.equals(user.csmUserId) : user.csmUserId != null) return false;
         if (activeFlag != null ? !activeFlag.equals(user.activeFlag) : user.activeFlag != null) return false;
+        if (password != null ? !password.equals(user.password) : user.password != null) return false;
         if (roles.size() != user.getRoles().size()) return false;
         return !(roles != null ? !roles.equals(user.getRoles()) : user.getRoles() != null);
 

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.BaseCommandController;
+import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.validation.BindException;
@@ -19,13 +19,14 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
-public class NewUserController extends PscSimpleFormController {
+public class CreateUserController extends PscSimpleFormController {
     private UserService userService;
 
-    public NewUserController() {
-        setCommandClass(NewUserCommand.class);
+    public CreateUserController() {
+        setCommandClass(CreateUserCommand.class);
         setFormView("createUser");
         setValidator(new ValidatableValidator());
+        setSuccessView("createUser");
     }
 
 
@@ -49,25 +50,22 @@ public class NewUserController extends PscSimpleFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        NewUserCommand command = (NewUserCommand) oCommand;
+        CreateUserCommand command = (CreateUserCommand) oCommand;
         
         User user = command.getId() != null ? userService.getUserById(command.getId()) : new User();
 
         user.setName(command.getName());
         user.setRoles(command.getUserRoles());
         user.setActiveFlag(command.getActiveFlag());
+        user.setPassword(command.getPassword());
 
         userService.saveUser(user);
 
-        Map model = referenceData(request, oCommand, errors);
-        command.reset();
-        model.put(BaseCommandController.DEFAULT_COMMAND_NAME, command);
-
-        return new ModelAndView("createUser", model);
+        return new ModelAndView(new RedirectView(getSuccessView()));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	NewUserCommand command = new NewUserCommand();
+    	CreateUserCommand command = new CreateUserCommand();
         command.setUserService(userService);
         command.setActiveFlag(new Boolean(true));
 
@@ -78,6 +76,8 @@ public class NewUserController extends PscSimpleFormController {
            command.setName(user.getName());
            command.setUserRoles(user.getRoles());
            command.setActiveFlag(user.getActiveFlag());
+           command.setPassword(user.getPassword());
+           command.setRePassword(user.getPassword());
         }
 
         return command;

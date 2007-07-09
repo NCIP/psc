@@ -30,8 +30,7 @@
 <body>
 <h1>${actionText} User</h1>
 
-<c:url value="/pages/newUser" var="formAction"/>
-<form:form method="post" action="${formAction}">
+<form:form method="post">
     <form:hidden path="id"/>
     <form:errors path="*"/>
     <div class="row">
@@ -40,6 +39,22 @@
         </div>
         <div class="value">
             <form:input path="name"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="label" >
+            <form:label path="name">Password:</form:label>
+        </div>
+        <div class="value">
+            <form:password path="password"/>
+        </div>
+    </div>
+        <div class="row">
+        <div class="label" >
+            <form:label path="name">Re-Enter Password:</form:label>
+        </div>
+        <div class="value">
+            <form:password path="rePassword"/>
         </div>
     </div>
     <div class="row">
@@ -73,13 +88,13 @@
         </div>
     </div>
     <div class="row">
-        <a href="<c:url value="/pages/newUser"/>">Create User</a>
+        <a href="<c:url value="/pages/createUser"/>">Create User</a>
     </div>
     <div class="row">
         <h3>User List</h3>
         <ul>
             <c:forEach items="${users}" var="user">               
-                <li>${user.name} - <a href="<c:url value="/pages/newUser?editId=${user.id}"/>">Edit User</a> -
+                <li>${user.name} - <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">Edit User</a> -
                     <c:if test="${user.activeFlag}">
                         Enabled
                     </c:if>
@@ -90,9 +105,9 @@
             </c:forEach>
         </ul>
     </div>
-    <div class="row">
+    <!--<div class="row">
         <
-    </div>
+    </div> -->
 </form:form>
 </body>
 </html>

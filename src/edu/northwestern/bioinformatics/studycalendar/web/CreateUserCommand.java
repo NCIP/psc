@@ -9,12 +9,14 @@ import java.util.Set;
 import org.springframework.validation.Errors;
 import org.apache.commons.lang.StringUtils;
 
-public class NewUserCommand implements Validatable {
+public class CreateUserCommand implements Validatable {
     private String name;
     private Set<Role> userRoles;
     private UserService userService;
     private Boolean activeFlag;
     private Integer id;
+    private String password;
+    private String rePassword;
 
     public String getName() {
         return name;
@@ -48,6 +50,22 @@ public class NewUserCommand implements Validatable {
         this.id = id;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRePassword() {
+        return rePassword;
+    }
+
+    public void setRePassword(String rePassword) {
+        this.rePassword = rePassword;
+    }
+
     public void validate(Errors errors) {
         if(StringUtils.isEmpty(name)) {
             errors.rejectValue("name", "error.user.name.not.specified");
@@ -56,15 +74,17 @@ public class NewUserCommand implements Validatable {
                 errors.rejectValue("name", "error.user.name.already.exists");
             }
         }
+        if(password == null || StringUtils.isBlank(password)){
+            errors.rejectValue("password", "error.user.password.not.specified");
+        } else {
+            if(!password.equals(rePassword)) {
+                errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
+                //errors.rejectValue("password"); reject normall password too
+            }
+        }
         if(userRoles == null || userRoles.size() <= 0) {
             errors.rejectValue("userRoles", "error.user.role.not.specified");
         }
-    }
-
-    public void reset() {
-        name = null;
-        userRoles = null;
-        activeFlag = new Boolean(true);
     }
 
     public UserService getUserService() {

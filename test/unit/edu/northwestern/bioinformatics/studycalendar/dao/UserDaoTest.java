@@ -16,6 +16,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong csm user id", -150, (long)actualUser.getCsmUserId());
         assertEquals("Wrong Role Size", 0, actualUser.getRoles().size());
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
+        assertEquals("Wrong password", "pass123", actualUser.getPassword());
     }
 
     public void testGetByName() throws Exception {
@@ -30,6 +31,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong Role Size", 1, actualUser.getRoles().size());
         assertEquals("Wrong Role", Role.STUDY_ADMIN.getCode(), actualUser.getRoles().iterator().next().getCode());
         assertEquals("Wrong active flag value", new Boolean(true), actualUser.getActiveFlag());
+        assertEquals("Wrong password", "pass321", actualUser.getPassword());
     }
 
     public void testSave() throws Exception {
@@ -40,6 +42,8 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             user.setCsmUserId(100L);
             user.addRole(Role.STUDY_COORDINATOR);
             user.setActiveFlag(new Boolean(true));
+            user.setPassword("password333");
+
             getDao().save(user);
             savedId = user.getId();
             assertNotNull("The saved user didn't get an id", savedId);
@@ -54,6 +58,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong CSM User Id", 100L, (long) loaded.getCsmUserId());
             assertEquals("Wrong Role", Role.STUDY_COORDINATOR.getCode(), loaded.getRoles().iterator().next().getCode());
             assertEquals("Wrong active flag value", new Boolean(true), loaded.getActiveFlag());
+            assertEquals("Wrong password", "password333", loaded.getPassword());
         }
     }
 
@@ -70,6 +75,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong Role Size", 1, actualUser.getRoles().size());
         assertEquals("Wrong Role", Role.STUDY_ADMIN.getCode(), actualUser.getRoles().iterator().next().getCode());
         assertEquals("Wrong active flag value", new Boolean(true), actualUser.getActiveFlag());
+        assertEquals("Wrong password", "pass123", actualUser.getPassword());
 
         actualUser = actualUsersIter.next();
         assertNotNull("User not found", actualUser);
@@ -78,6 +84,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong csm user id", -150, (long)actualUser.getCsmUserId());
         assertEquals("Wrong Role Size", 0, actualUser.getRoles().size());
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
+        assertEquals("Wrong password", "pass321", actualUser.getPassword());
     }
 
     public void testLoadAndSave() throws Exception {
@@ -90,6 +97,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong csm user id", -150, (long)actualUser.getCsmUserId());
             assertEquals("Wrong Role Size", 0, actualUser.getRoles().size());
             assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
+            assertEquals("Wrong password", "pass123", actualUser.getPassword());
 
             actualUser.setName("UpdatedName");
             getDao().save(actualUser);
@@ -106,6 +114,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong csm user id", -150, (long)loaded.getCsmUserId());
             assertEquals("Wrong Role Size", 0, loaded.getRoles().size());
             assertEquals("Wrong active flag value", new Boolean(false), loaded.getActiveFlag());
+            assertEquals("Wrong password", "pass123", loaded.getPassword());
         }
     }
 }

@@ -264,8 +264,8 @@
          </property>
     </bean>
 
-    <bean name="/newUser" id="newUserController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.NewUserController">
+    <bean name="/createUser" id="createUserController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
            <property name="crumb">
              <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                  <property name="name"><value>New User</value></property>
