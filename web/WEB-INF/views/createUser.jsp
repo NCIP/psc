@@ -13,10 +13,10 @@
             width: 50%;
         }
         div.submit {
-            text-align: right;
+            text-align: left;
         }
         form {
-            width: 30em;
+            width: 28em;
         }
         h2 {
             margin-bottom:0px;
@@ -83,12 +83,13 @@
         </div>
     </c:forEach>
     <div class="row">
+        <div class="label">&nbsp;</div>
         <div class="submit">
             <input type="submit"
-                   name="_cancel"
-                   value="Cancel"/>
-            <input type="submit"
                    value="<c:if test="${actionText=='Create'}">Create</c:if><c:if test="${actionText=='Edit'}">Save</c:if>"/>
+            <input type="submit"
+                   name="_cancel"
+                   value="Cancel"/>            
         </div>
     </div>
 </form:form>

@@ -44,6 +44,7 @@ public class UserService {
         gov.nih.nci.security.authorization.domainobjects.User csmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
         csmUser.setLoginName(user.getName());
+        csmUser.setPassword(user.getPassword());
         csmUser.setFirstName("");   // Attribute can't be null
         csmUser.setLastName("");    // Attribute can't be null
         userProvisioningManager.createUser(csmUser);
