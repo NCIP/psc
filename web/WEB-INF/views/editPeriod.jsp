@@ -85,7 +85,7 @@
             if(startDay.length <= 0 || (isNaN(startDay*1))) {
                 isDataCorrect = false;
                 resetElement("periodError",
-                  "ERROR: Start Day must be positive, negative, or zero.", "red");
+                  "ERROR: Start Day must be positive, negative, or zero.", "black");
             }
             return isDataCorrect;
         }
@@ -96,7 +96,7 @@
             if (duration.length <=0 || ((isNaN(duration*1)) || (duration <=0))) {
                 isDataCorrect = false;
                 resetElement("periodError",
-                  "ERROR: Duration must be a positive number.", "red");
+                  "ERROR: Duration must be a positive number.", "black");
             }
             return isDataCorrect;
         }
@@ -107,7 +107,7 @@
             if (repetitions.length <=0 || ((isNaN(repetitions*1)) || (repetitions <=0))) {
                 isDataCorrect = false;
                 resetElement("periodError",
-                                  "ERROR: Repetitions must be a positive number.", "red");
+                                  "ERROR: Repetitions must be a positive number.", "black");
             }
             return isDataCorrect;
         }
