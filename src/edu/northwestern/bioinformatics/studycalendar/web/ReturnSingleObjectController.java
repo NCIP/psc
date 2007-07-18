@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 
 import java.util.Map;
 import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * This controller loads a single domain object and passes it to the configured view.
@@ -35,9 +36,12 @@ public class ReturnSingleObjectController<T extends DomainObject> implements Con
 
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int armId = ServletRequestUtils.getRequiredIntParameter(request, getParameterName());
-        Map<String, Object> model
-            = Collections.singletonMap(getParameterName(), wrapObject(dao.getById(armId)));
-
+        Map<String, Object> model = new HashMap();
+        model.put(getParameterName(), wrapObject(dao.getById(armId)));
+        Map referenceData = referenceData(request);
+		if (referenceData != null) {
+			model.putAll(referenceData);
+		}
         return new ModelAndView(getViewName(), model);
     }
 
@@ -47,6 +51,10 @@ public class ReturnSingleObjectController<T extends DomainObject> implements Con
 
     private String getViewName() {
         return viewName;
+    }
+
+    protected Map referenceData(HttpServletRequest request) {
+        return null;
     }
 
     ////// TEMPLATE METHODS

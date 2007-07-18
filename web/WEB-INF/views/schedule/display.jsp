@@ -299,12 +299,25 @@
             })
         }
 
+        function registerBatchScheduleEventHandlers() {
+            Event.observe('changeEventStatus', "change", function(e) {
+                $('batch-change-events-status-indicator').reveal()
+                Event.stop(e)
+                SC.asyncSubmit('batch-change-events-status-form', {
+                    onComplete: function() {
+                        $('batch-change-events-status-indicator').conceal()
+                    }
+                })
+            });
+        }
+
         Event.observe(window, "load", registerSelectArmHandlers);
         Event.observe(window, "load", registerSelectNextArmHandlers);
         Event.observe(window, "load", registerBatchRescheduleHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
         Event.observe(window, "load", registerHeaderCollapse);
         Event.observe(window, "load", registerDismissControl);
+        Event.observe(window, "load", registerBatchScheduleEventHandlers);
     </script>
 </head>
 <body>
@@ -431,7 +444,7 @@
 </div>
 
 <div id="selected-arm" class="section">
-    <sched:scheduledArm arm="${arm}" visible="true"/>
+    <sched:scheduledArm arm="${arm}" visible="true" modes="${modes}"/>
 </div>
 </body>
 </html>

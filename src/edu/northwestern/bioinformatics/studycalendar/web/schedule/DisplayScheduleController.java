@@ -4,17 +4,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignm
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.WithBigIdDaoBasedEditor;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
@@ -69,6 +66,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
         model.addObject("arm", command.getArm());
+        model.addObject("modes", ScheduledEventMode.values());
 
         Study study = assignment.getStudySite().getStudy();
         if (study != null) {
