@@ -3,6 +3,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
     <title>Set up Period ${period.name} of ${arm.qualifiedName} in ${study.name}</title>
@@ -29,13 +30,13 @@
                 input = Event.findElement(source, "INPUT")
             }
             var cell = input.parentNode
-            var value = $F(input).strip()
+//            var value = $F(input).strip()
             var nonzero;
-            if (value <= 0 || value.length == 0) {
-                Element.removeClassName(cell, "nonzero")
-            } else {
+//            if (value <= 0 || value.length == 0) {
+//                Element.removeClassName(cell, "nonzero")
+//            } else {
                 Element.addClassName(cell, "nonzero")
-            }
+//            }
         }
 
         function selectedActivity() {
@@ -60,15 +61,27 @@
             var activityName = 'grid[' + rowCount + '].activity';
             var activityInput = Builder.node("input", { id: activityName, name: activityName, type: 'hidden', value: activity.id })
             cells.push(Builder.node('th', {className: 'activity'}, activity.name), [activityInput]);
+
             // input cells
             for (var i = 0; i < dayCount; i++) {
+                var namePlusOne = 'grid[' + rowCount + '].counts[' + i + ']'+1
                 var name = 'grid[' + rowCount + '].counts[' + i + ']'
-                var input = Builder.node('input', { id: name, name: name, 'class': 'counter', size: 2, type: 'text', value: 0 })
+                var input = Builder.node('input', {
+                                            type:'checkbox',
+                                            id:namePlusOne,
+                                            name:name,
+                                            value:'true'
+                });
                 registerCellInputHandlers(input)
                 cells.push(Builder.node('td', {}, [input]))
             }
             var detailsName = 'grid[' + rowCount + '].details'
-            var detailsInput = Builder.node('input', { id: detailsName, name: detailsName, type: 'text' });
+            var detailsInput = Builder.node('input', {
+                                            id: detailsName,
+                                            name: detailsName,
+                                            type: 'text',
+//                                            onChange:"return ajaxformOne(this);" });
+                                            onChange:"return ajaxform(null, this);"});
             cells.push(Builder.node('td', {}, [detailsInput]))
 
             var rowId = 'activity' + activity.id;
@@ -101,8 +114,67 @@
 
         function registerCellInputHandlers(input) {
             highlightNonZero(input);
+            Event.observe(input, "click", function(e){return ajaxform(input, null)})
             Event.observe(input, "change", highlightNonZero)
             Event.observe(input, "keyup", highlightNonZero)
+        }
+
+        function parseInput(input) {
+            var substring1 = input.substring(input.indexOf("[")+1, input.indexOf("]"));
+            var substring2 = input.substring(input.indexOf("]") + 1);
+            var substring3 = substring2.substring(substring2.indexOf("[")+1, substring2.indexOf("]"));
+            var rowNumber = input.substring(input.length-1, input.length);
+
+            var array = new Array();
+            array[0] = substring1;
+            array[1] = substring3;
+            return array;
+        }
+
+        function parseDetailName(name) {
+            return name.substring(name.indexOf("[")+1, name.indexOf("]"));
+
+        }
+
+        function ajaxform(checkbox, details) {
+            // Set up data variable
+            var formdata = "";
+            formdata = formdata + 'id='+${period.id}+"&";
+            var arrayOfIndexes
+            if (checkbox != null) {
+                arrayOfIndexes = parseInput(checkbox.name);
+                var details = 'grid[' + arrayOfIndexes[0] + '].details';
+                formdata = formdata + details + "=" + escape($(details).value) + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + arrayOfIndexes[1] + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].status' + "=" + escape($(checkbox).checked) + "&";
+            } else {
+                arrayOfIndexes = parseInput($(details).name);
+                formdata = formdata + $(details).name + "=" + escape($(details).value) + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].status' + "=" + escape(false) + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + escape(-1) + "&";                
+            }
+            var activity = 'grid[' + arrayOfIndexes[0] + '].activity';
+            formdata = formdata + activity + "=" + escape($(activity).value) +"&";
+
+            var arrayOfCounts = 'grid[' + arrayOfIndexes[0] + '].counts';
+            for (var i = 0; i < ${period.duration.days}; i++) {
+                var singleElement = arrayOfCounts +'[' +i + ']'+1;
+                if ($(singleElement) == null) {
+                    singleElement = arrayOfCounts +'[' +i + ']';
+                }
+                formdata = formdata + $(singleElement).name +  "=" +
+                      $(singleElement).checked + "&" ;
+            }
+            formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].rowNumber'+ "=" + arrayOfIndexes[0] + "&";
+            formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].updated' + "=" + escape(true) + "&";
+
+            var href = '<c:url value="/pages/managePeriod"/>'
+
+            var lastRequest = new Ajax.Request(href,
+                {
+                    postBody: formdata
+                });
+            return true;
         }
 
         function registerHandlers() {
@@ -142,7 +214,7 @@
 
         .input-row td input {
             border-width: 0; /*border-bottom: 1px dotted #666;*/
-            text-align: right;
+            text-align: center;
             padding: 2px;
         }
 
@@ -211,10 +283,14 @@
             <form:hidden path="grid[${gridStatus.index}].activity"/>
         </th>
         <c:forEach items="${gridRow.counts}" var="count" varStatus="cStatus">
-            <td class="counter"><form:input path="grid[${gridStatus.index}].counts[${cStatus.index}]" size="2"/></td>
+            <td class="counter">
+                    <form:checkbox path="grid[${gridStatus.index}].counts[${cStatus.index}]"
+                                   value="true" />
+            </td>
         </c:forEach>
         <td>
-            <form:input path="grid[${gridStatus.index}].details"/>
+            <form:input path="grid[${gridStatus.index}].details"
+                    onchange="ajaxform(null, this);" />
         </td>
     </tr>
     </c:forEach>
@@ -233,11 +309,6 @@
     <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
     <span class="tip">(Be sure to save your changes before leaving this page)</span>
 </div>
-
-
-<p class="submit">
-    <input type="submit" value="Save Changes"/>
-</p>
 </form:form>
 
 </body>

@@ -76,23 +76,23 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     }
 
     public void testBindingGridCount() throws Exception {
-        request.addParameter("grid[7].counts[4]", "1");
+        request.addParameter("grid[7].counts[4]", "true");
         replayMocks();
 
         ManagePeriodEventsCommand command
             = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
-        Integer actual = command.getGrid().get(7).getCounts().get(4);
-        assertEquals("Value not bound", 1, (int) actual);
+        Boolean actual = command.getGrid().get(7).getCounts().get(4);
+        assertEquals("Value not bound", true, (boolean) actual);
     }
 
     public void testBindingGridCountBlankIsZero() throws Exception {
-        request.addParameter("grid[7].counts[4]", " ");
+        request.addParameter("grid[7].counts[4]", "");
         replayMocks();
 
         ManagePeriodEventsCommand command
             = (ManagePeriodEventsCommand) controller.handleRequest(request, response).getModel().get("command");
-        Integer actual = command.getGrid().get(7).getCounts().get(4);
-        assertEquals("Value not bound", 0, (int) actual);
+        Boolean actual = command.getGrid().get(7).getCounts().get(4);
+        assertEquals("Value not bound", false, (boolean) actual);
     }
 
     public void testBindingGridActivity() throws Exception {
