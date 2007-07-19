@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -19,7 +20,7 @@ public class BatchRescheduleCommand {
     private ScheduledEventMode<?> newMode;
     private Integer dateOffset;
     private String newReason;
-    private ScheduledCalendar scheduledCalendar;
+    private Set<ScheduledEvent> events;
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
@@ -29,13 +30,13 @@ public class BatchRescheduleCommand {
 
     public void apply() {
         if (getNewMode() == null) return;
-        for (ScheduledArm scheduledArm : getScheduledCalendar().getScheduledArms()) {
-            for (ScheduledEvent event : scheduledArm.getEvents()) {
-                if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
-                    changeState(event);
-                }
+
+        for (ScheduledEvent event : events) {
+            if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
+                changeState(event);
             }
         }
+
         scheduledCalendarDao.save(getScheduledCalendar());
     }
 
@@ -66,12 +67,8 @@ public class BatchRescheduleCommand {
 
     ////// BOUND PROPERTIES
 
-    public ScheduledCalendar getScheduledCalendar() {
-        return scheduledCalendar;
-    }
-
-    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
-        this.scheduledCalendar = scheduledCalendar;
+    public ScheduledCalendar getScheduledCalendar(){
+        return events.iterator().next().getScheduledArm().getScheduledCalendar();
     }
 
     public String getNewReason() {
@@ -96,5 +93,13 @@ public class BatchRescheduleCommand {
 
     public void setDateOffset(Integer dateOffset) {
         this.dateOffset = dateOffset;
+    }
+
+    public Set<ScheduledEvent> getEvents() {
+        return events;
+    }
+
+    public void setEvents(Set<ScheduledEvent> events) {
+        this.events = events;
     }
 }

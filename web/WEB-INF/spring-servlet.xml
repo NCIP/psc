@@ -157,7 +157,7 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
     <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.SelectScheduledArmController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
         <property name="parameterName"><value>arm</value></property>
         <property name="viewName"><value>schedule/ajax/selectScheduledArm</value></property>
         <property name="dao"><ref bean="scheduledArmDao"/></property>
@@ -283,9 +283,7 @@
              </bean>
          </property>
     </bean>
-
-    <bean name="/schedule/batchChangeEventsStatus" id="batchChangeEventsStatus" autowire="byName" lazy-init="true"
-        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchChangeEventsStatusController"/>    
+    
 
     <bean name="/reportBuilder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>

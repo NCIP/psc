@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
@@ -21,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class BatchRescheduleController extends AbstractCommandController {
+
+    private ScheduledEventDao scheduledEventDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
     public BatchRescheduleController() {
@@ -33,7 +36,8 @@ public class BatchRescheduleController extends AbstractCommandController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
+
+        ControllerTools.registerDomainObjectEditor(binder, "events", scheduledEventDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode", new ControlledVocabularyEditor(ScheduledEventMode.class));
     }
@@ -47,6 +51,10 @@ public class BatchRescheduleController extends AbstractCommandController {
     ////// CONFIGURATION
 
     @Required
+    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
+        this.scheduledEventDao = scheduledEventDao;
+    }
+
     public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
         this.scheduledCalendarDao = scheduledCalendarDao;
     }
