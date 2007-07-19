@@ -3,15 +3,19 @@ function updateFormForState() {
     if ("" == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
+        $("new-mode-submit").hide()
     } else if (3 == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").show()
+        $("new-mode-submit").show()
     } else if (1 == v){
         $("new-date-input-group").show()
         $("new-reason-input-group").show()
+        $("new-mode-submit").show()
     } else if (2 == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
+        $("new-mode-submit").show()
     }
 }
 

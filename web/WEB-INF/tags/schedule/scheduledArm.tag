@@ -8,7 +8,7 @@
 <%@attribute name="modes" type="java.util.Collection" %>
 
 <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
-<input type="hidden" name="scheduledCalendar" value="${calendar.id}"/>
+<input type="hidden" name="scheduledCalendar" value="${arm.scheduledCalendar.id}"/>
 <h2 id="selected-arm-header">${arm.name}
     <label id="new-mode-selector-group">
         <select name="newMode" id="new-mode-selector">
@@ -22,8 +22,8 @@
     <label id="new-reason-input-group">
         Why? <input type="text" name="newReason"/>
         <tags:activityIndicator id="batch-indicator"/>
-        <input type="submit" value="Submit"/>
     </label>
+    <input type="submit" value="Submit" id="new-mode-submit"/>
     <tags:activityIndicator id="batch-change-events-status-indicator"/>
 </h2>
 
