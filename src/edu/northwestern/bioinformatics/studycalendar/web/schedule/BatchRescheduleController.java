@@ -38,6 +38,7 @@ public class BatchRescheduleController extends AbstractCommandController {
         super.initBinder(request, binder);
 
         ControllerTools.registerDomainObjectEditor(binder, "events", scheduledEventDao);
+        ControllerTools.registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode", new ControlledVocabularyEditor(ScheduledEventMode.class));
     }

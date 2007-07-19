@@ -21,6 +21,7 @@ public class BatchRescheduleCommand {
     private Integer dateOffset;
     private String newReason;
     private Set<ScheduledEvent> events;
+    private ScheduledCalendar scheduledCalendar;
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
@@ -33,6 +34,11 @@ public class BatchRescheduleCommand {
 
         for (ScheduledEvent event : events) {
             if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
+                changeState(event);
+            } else if (ScheduledEventMode.OCCURRED == event.getCurrentState().getMode() && ScheduledEventMode.SCHEDULED == getNewMode()) {
+                changeState(event);
+            }
+            else if (ScheduledEventMode.CANCELED == event.getCurrentState().getMode() && ScheduledEventMode.SCHEDULED == getNewMode()) {
                 changeState(event);
             }
         }
@@ -68,7 +74,11 @@ public class BatchRescheduleCommand {
     ////// BOUND PROPERTIES
 
     public ScheduledCalendar getScheduledCalendar(){
-        return events.iterator().next().getScheduledArm().getScheduledCalendar();
+        return scheduledCalendar;
+    }
+
+    public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
+        this.scheduledCalendar = scheduledCalendar;
     }
 
     public String getNewReason() {

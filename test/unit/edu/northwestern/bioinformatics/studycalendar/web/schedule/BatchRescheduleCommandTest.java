@@ -13,8 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -23,6 +22,7 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
     private BatchRescheduleCommand command;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledCalendar calendar;
+    private ScheduledEvent e1, e2, e3, e4, e5, e6;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -32,26 +32,37 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         calendar.addArm(new ScheduledArm());
         calendar.addArm(new ScheduledArm());
 
+        e1 =  createScheduledEvent("C", 2005, Calendar.APRIL, 1, new Canceled());
+        e2 =  createScheduledEvent("O", 2005, Calendar.APRIL, 3, new Occurred());
+        e3 =  createScheduledEvent("S", 2005, Calendar.APRIL, 4);
+
         addEvents(
             calendar.getScheduledArms().get(0),
-            createScheduledEvent("C", 2005, Calendar.APRIL, 1, new Canceled()),
-            createScheduledEvent("O", 2005, Calendar.APRIL, 3, new Occurred()),
-            createScheduledEvent("S", 2005, Calendar.APRIL, 4)
+            e1 ,
+            e2,
+            e3
         );
+
+
+        e4 = createScheduledEvent("C", 2005, Calendar.APRIL, 10, new Canceled());
+        e5 = createScheduledEvent("O", 2005, Calendar.APRIL, 13, new Occurred());
+        e6 = createScheduledEvent("S", 2005, Calendar.APRIL, 14);
 
         addEvents(
             calendar.getScheduledArms().get(1),
-            createScheduledEvent("C", 2005, Calendar.APRIL, 10, new Canceled()),
-            createScheduledEvent("O", 2005, Calendar.APRIL, 13, new Occurred()),
-            createScheduledEvent("S", 2005, Calendar.APRIL, 14)
+            e4,
+            e5,
+            e6
         );
 
         command.setScheduledCalendar(calendar);
     }
-
     public void testApplyCancel() throws Exception {
         command.setNewMode(ScheduledEventMode.CANCELED);
         command.setNewReason("Died");
+        Set events = new HashSet();
+        Collections.addAll(events, e3, e6);
+        command.setEvents(events);
 
         doApply();
 
@@ -70,6 +81,9 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         command.setNewMode(ScheduledEventMode.SCHEDULED);
         command.setNewReason("Vacation");
         command.setDateOffset(7);
+        Set events = new HashSet();
+        Collections.addAll(events, e3, e6);
+        command.setEvents(events);
 
         doApply();
 
@@ -91,6 +105,9 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
     public void testReasonWhenNewReasonBlank() throws Exception {
         command.setNewMode(ScheduledEventMode.CANCELED);
         command.setNewReason(null);
+        Set events = new HashSet();
+        Collections.addAll(events, e3, e6);
+        command.setEvents(events);
 
         doApply();
 

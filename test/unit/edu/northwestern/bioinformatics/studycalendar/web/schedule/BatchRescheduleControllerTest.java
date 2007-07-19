@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
@@ -14,12 +15,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class BatchRescheduleControllerTest extends ControllerTestCase {
     private ScheduledCalendarDao scheduledCalendarDao;
+    private ScheduledEventDao scheduledEventDao;
     private BatchRescheduleController controller;
     private BatchRescheduleCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
+        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
         command = registerMockFor(BatchRescheduleCommand.class, BatchRescheduleCommand.class.getMethod("apply"));
         controller = new BatchRescheduleController() {
             @Override
@@ -27,10 +30,13 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
                 return command;
             }
         };
+        
         controller.setScheduledCalendarDao(scheduledCalendarDao);
+        controller.setScheduledEventDao(scheduledEventDao);
     }
 
     public void testBindMode() throws Exception {
+        
         request.addParameter("newMode", "1");
         doHandle();
         assertEquals(ScheduledEventMode.SCHEDULED, command.getNewMode());
