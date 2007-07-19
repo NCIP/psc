@@ -8,6 +8,7 @@
 <%@attribute name="modes" type="java.util.Collection" %>
 
 <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
+<input type="hidden" name="scheduledCalendar" value="${calendar.id}"/>
 <h2 id="selected-arm-header">${arm.name}
     <label id="new-mode-selector-group">
         <select name="newMode" id="new-mode-selector">

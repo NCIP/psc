@@ -66,7 +66,6 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
         model.addObject("arm", command.getArm());
-        model.addObject("modes", ScheduledEventMode.values());
 
         Study study = assignment.getStudySite().getStudy();
         if (study != null) {
