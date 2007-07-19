@@ -13,7 +13,7 @@
     <label id="new-mode-selector-group">
         <select name="newMode" id="new-mode-selector">
             <option></option>
-            <option value="1">Keep as scheduled</option>
+            <option value="1">Mark/Keep as scheduled</option>
             <option value="2">Mark occurred</option>
             <option value="3">Mark canceled</option>
         </select>
