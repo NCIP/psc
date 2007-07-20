@@ -1,5 +1,5 @@
 function updateFormForState() {
-    var v = $F("new-mode-selector")
+    var v = $("new-mode-selector").value
     if ("" == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
