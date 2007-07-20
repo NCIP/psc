@@ -62,8 +62,18 @@ function registerSubheaderCollapse() {
     })
 }
 
+function registerCheckAllEvents() {
+    Event.observe('check-all-events', "click", function(event){$('batch-form').checkCheckboxes('events')})
+}
+
+function registerUncheckAllEvents() {
+    Event.observe('uncheck-all-events', "click", function(event){$('batch-form').uncheckCheckboxes('events')})
+}
+
 
 Event.observe(window, "load", registerStateBasedFormMutator)
 Event.observe(window, "load", updateFormForState)
 Event.observe(window, "load", registerBatchRescheduleHandlers)
 Event.observe(window, "load", registerSubheaderCollapse)
+Event.observe(window, "load", registerCheckAllEvents)
+Event.observe(window, "load", registerUncheckAllEvents)

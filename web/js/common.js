@@ -82,6 +82,24 @@ Element.addMethods( {
     }
 } );
 
+// Extend Prototype Form object to have toggle checkboxes method
+Form.Methods.checkCheckboxes = function(form, checkboxName) {
+    Form.Methods.setCheckboxesChecked(form, checkboxName, true)
+}
+Form.Methods.uncheckCheckboxes = function(form, checkboxName) {
+    Form.Methods.setCheckboxesChecked(form, checkboxName, false)
+}
+Form.Methods.setCheckboxesChecked = function(form, checkboxName, isChecked) {
+    var events = $(form).getInputs('checkbox',checkboxName)
+    events.each(function(event) {
+        event.checked = isChecked;
+    })
+    return form
+}
+
+Element.addMethods();
+
+
 ////// DOM EXTENSIONS
 
 // Adds an IE-like click() fn for other browsers

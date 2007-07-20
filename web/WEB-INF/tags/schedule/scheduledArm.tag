@@ -27,6 +27,10 @@
         </label>
         <tags:activityIndicator id="batch-indicator"/>
         <input type="submit" value="Submit" id="new-mode-submit"/>
+        <div class="content-sub-section">
+            <a id="check-all-events">Check All Events</a>
+            <a id="uncheck-all-events">Uncheck All Events</a>
+        </div>
     </div>
 </div>
 
