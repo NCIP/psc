@@ -9,23 +9,26 @@
 
 <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
 <input type="hidden" name="scheduledCalendar" value="${arm.scheduledCalendar.id}"/>
-<h2 id="selected-arm-header">${arm.name}
-    <label id="new-mode-selector-group">
-        <select name="newMode" id="new-mode-selector">
-            <option></option>
-            <option value="1">Mark/Keep as scheduled</option>
-            <option value="2">Mark occurred</option>
-            <option value="3">Mark canceled</option>
-        </select>
-    </label>
-    <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
-    <label id="new-reason-input-group">
-        Why? <input type="text" name="newReason"/>
+<h2 id="selected-arm-header">${arm.name}</h2>
+<div id="batch-reschedule" class="subsection subcollapsible">
+    <h3>Batch reschedule</h3>
+    <div class="content" style="display: none">
+        <label id="new-mode-selector-group">
+            <select name="newMode" id="new-mode-selector">
+                <option></option>
+                <option value="1">Mark/Keep as scheduled</option>
+                <option value="2">Mark occurred</option>
+                <option value="3">Mark canceled</option>
+            </select>
+        </label>
+        <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
+        <label id="new-reason-input-group">
+            Why? <input type="text" name="newReason"/>
+        </label>
         <tags:activityIndicator id="batch-indicator"/>
-    </label>
-    <input type="submit" value="Submit" id="new-mode-submit"/>
-    <tags:activityIndicator id="batch-change-events-status-indicator"/>
-</h2>
+        <input type="submit" value="Submit" id="new-mode-submit"/>
+    </div>
+</div>
 
 <div class="content" id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
     <div class="legend">
@@ -53,3 +56,4 @@
     </c:forEach>
 </div>
 </form>
+

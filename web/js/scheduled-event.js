@@ -35,6 +35,35 @@ function registerBatchRescheduleHandlers() {
     })
 }
 
+function registerSubheaderCollapse() {
+    $$(".subcollapsible").each(function(section) {
+        var header = section.getElementsByTagName("H3")[0]
+        header.innerHTML += " <span class='collapse-icon'>&#9660;</span>"
+        header.title = "Click to reveal"
+        Event.observe(header, 'click', function() {
+            var content = section.getElementsByClassName("content")[0]
+            var icon = section.getElementsByClassName("collapse-icon")[0]
+            if (content.visible()) {
+                SC.slideAndHide(content, {
+                    afterFinish: function() {
+                        header.title = "Click to reveal form"
+                        Element.update(icon, '&#9660;')
+                    }
+                });
+            } else {
+                SC.slideAndShow(content, {
+                    afterFinish: function() {
+                        header.title = "Click to conceal form"
+                        Element.update(icon, '&#9650;')
+                    }
+                });
+            }
+        })
+    })
+}
+
+
 Event.observe(window, "load", registerStateBasedFormMutator)
 Event.observe(window, "load", updateFormForState)
-Event.observe(window, "load", registerBatchRescheduleHandlers);
+Event.observe(window, "load", registerBatchRescheduleHandlers)
+Event.observe(window, "load", registerSubheaderCollapse)
