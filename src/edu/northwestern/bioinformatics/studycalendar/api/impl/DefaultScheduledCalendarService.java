@@ -179,7 +179,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     private <T extends GridIdentifiable & DomainObject> T load(T parameter, StudyCalendarGridIdentifiableDao<T> dao, boolean required) {
-        checkForBigId(parameter);
+        checkForGridId(parameter);
         T loaded = dao.getByGridId(parameter);
         if (required && loaded == null) {
             throw new IllegalArgumentException("No " + parameter.getClass().getSimpleName().toLowerCase() +
@@ -188,7 +188,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         return loaded;
     }
 
-    private void checkForBigId(GridIdentifiable gridIdentifiable) {
+    private void checkForGridId(GridIdentifiable gridIdentifiable) {
         if (!gridIdentifiable.hasGridId()) {
             throw new IllegalArgumentException(
                 "No gridId on " + gridIdentifiable.getClass().getSimpleName().toLowerCase() + " parameter");

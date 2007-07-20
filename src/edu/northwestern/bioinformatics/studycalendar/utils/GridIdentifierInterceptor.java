@@ -30,13 +30,13 @@ public class GridIdentifierInterceptor implements Interceptor {
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
         boolean localMod = false;
         if (entity instanceof GridIdentifiable) {
-            int bigIdIdx = findBigId(propertyNames);
-            if (bigIdIdx < 0) {
+            int gridIdIdx = findGridId(propertyNames);
+            if (gridIdIdx < 0) {
                 throw new StudyCalendarError(
                     "Object implements GridIdentifiable but doesn't have gridId property; class: " + entity.getClass().getName() + "; properties: " + Arrays.asList(propertyNames));
             }
-            if (state[bigIdIdx] == null) {
-                state[bigIdIdx] = gridIdentifierCreator.getGridIdentifier();
+            if (state[gridIdIdx] == null) {
+                state[gridIdIdx] = gridIdentifierCreator.getGridIdentifier();
                 localMod = true;
             }
         }
@@ -44,7 +44,7 @@ public class GridIdentifierInterceptor implements Interceptor {
         return localMod || delegateMod;
     }
 
-    private int findBigId(String[] propertyNames) {
+    private int findGridId(String[] propertyNames) {
         for (int i = 0; i < propertyNames.length; i++) {
             if ("gridId".equals(propertyNames[i])) return i;
         }

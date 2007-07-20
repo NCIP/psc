@@ -63,9 +63,9 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         Fixtures.createStudySite(target, site);
     }
 
-    public void testRegisterRequiresBigId() throws Exception {
+    public void testRegisterRequiresGridId() throws Exception {
         parameterStudy.setGridId(null);
-        assertRegistrationError("study missing bigId");
+        assertRegistrationError("study missing gridId");
     }
 
     public void testRegisterRequiresName() throws Exception {
@@ -73,10 +73,10 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         assertRegistrationError("study missing name");
     }
 
-    public void testRegisterRequiresSiteBigId() throws Exception {
+    public void testRegisterRequiresSiteGridId() throws Exception {
         parameterStudy.getStudySites().get(0).getSite().setGridId(null);
         expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
-        assertRegistrationError("site missing bigId");
+        assertRegistrationError("site missing gridId");
     }
 
     public void testRegisterNewSiteRequiresSiteName() throws Exception {
@@ -200,12 +200,12 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         assertNull(service.getPlannedCalendar(parameterStudy));
     }
 
-    public void testGetWithoutBigId() throws Exception {
+    public void testGetWithoutGridId() throws Exception {
         parameterStudy.setGridId(null);
         try {
             service.getPlannedCalendar(parameterStudy);
         } catch (IllegalArgumentException iae) {
-            assertEquals("Cannot locate planned calendar for a study without a bigId", iae.getMessage());
+            assertEquals("Cannot locate planned calendar for a study without a gridId", iae.getMessage());
         }
     }
 
@@ -224,13 +224,13 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     private void expectSaveStudy() {
         EasyMock.reportMatcher(new IArgumentMatcher() {
             public boolean matches(Object argument) {
-                assertEquals("Mismatched bigIds", parameterStudy.getGridId(), ((GridIdentifiable) argument).getGridId());
+                assertEquals("Mismatched gridIds", parameterStudy.getGridId(), ((GridIdentifiable) argument).getGridId());
                 assertEquals("Mismatched names", parameterStudy.getName(), ((Named) argument).getName());
                 return true;
             }
 
             public void appendTo(StringBuffer buffer) {
-                buffer.append(" (by bigId)");
+                buffer.append(" (by gridId)");
             }
         });
         studyDao.save(null);
@@ -246,7 +246,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     private static void assertStudySitesSameSite(String message, StudySite expected, StudySite actual) {
-        assertEquals(message + ": site bigIds differ", expected.getSite().getGridId(), actual.getSite().getGridId());
+        assertEquals(message + ": site gridIds differ", expected.getSite().getGridId(), actual.getSite().getGridId());
         assertEquals(message + ": site names differ", expected.getSite().getName(), actual.getSite().getName());
     }
 }

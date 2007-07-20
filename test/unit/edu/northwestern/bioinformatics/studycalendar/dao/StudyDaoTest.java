@@ -25,12 +25,12 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertIsTestStudy100(study);
     }
     
-    public void testGetByBigId() throws Exception {
+    public void testGetByGridId() throws Exception {
         Study actual = dao.getByGridId("long-GUID-string");
         assertIsTestStudy100(actual);
     }
 
-    public void testGetByBigIdByTemplate() throws Exception {
+    public void testGetByGridIdByTemplate() throws Exception {
         Study actual = dao.getByGridId(Fixtures.setGridId("long-GUID-string", new Study()));
         assertIsTestStudy100(actual);
     }

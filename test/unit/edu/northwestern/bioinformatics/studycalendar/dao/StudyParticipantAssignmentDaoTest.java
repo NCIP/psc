@@ -24,7 +24,7 @@ public class StudyParticipantAssignmentDaoTest extends ContextDaoTestCase<StudyP
         assertEquals("Wrong study id", "004-12", assignment.getStudyId());
     }
 
-    public void testGetByBigId() throws Exception {
+    public void testGetByGridId() throws Exception {
         StudyParticipantAssignment assignment = getDao().getByGridId("NOT-SMALL");
         assertNotNull(assignment);
         assertEquals("Wrong obj returned", -10, (int) assignment.getId());

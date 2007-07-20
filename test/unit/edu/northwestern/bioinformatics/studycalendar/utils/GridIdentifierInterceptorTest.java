@@ -35,7 +35,7 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
         interceptor.setDelegate(delegate);
     }
 
-    public void testIdSetOnWithBigIdWithoutGridId() throws Exception {
+    public void testIdSetOnWithGridIdWithoutGridId() throws Exception {
         Study study = Fixtures.createSingleEpochStudy("A", "E");
         Object[] state = new Object[] { null, "A", null };
 
@@ -62,7 +62,7 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
         assertEquals("Grid ID changed", "Preexisting", state[2]);
     }
 
-    public void testNoErrorOnNonWithBigId() throws Exception {
+    public void testNoErrorOnNonWithGridId() throws Exception {
         NoGridIdTestObject entity = new NoGridIdTestObject();
         Object[] state = new Object[] { ENTITY_ID };
         String[] propertyNames = new String[] { "id" };

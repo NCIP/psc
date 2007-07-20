@@ -11,7 +11,7 @@ public class TestObject extends AbstractMutableDomainObject {
 
     public TestObject(int id) { setId(id); }
 
-    public TestObject(int id, String bigId) { setId(id); setGridId(bigId); }
+    public TestObject(int id, String gridId) { setId(id); setGridId(gridId); }
 
     public static class MockableDao extends StudyCalendarGridIdentifiableDao<TestObject> {
         @Override

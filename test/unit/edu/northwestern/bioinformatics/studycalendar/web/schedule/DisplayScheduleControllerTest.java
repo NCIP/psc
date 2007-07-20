@@ -89,10 +89,10 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         expect(studyDao.getAssignmentsForStudy(STUDY_ID)).andReturn(Arrays.asList(assignment));
     }
 
-    public void testAssignmentMayBeBigId() throws Exception {
-        String bigId = "LE-BIG-ID";
-        expect(studyParticipantAssignmentDao.getByGridId(bigId)).andReturn(assignment);
-        request.setParameter("assignment", bigId);
+    public void testAssignmentMayBeGridId() throws Exception {
+        String gridId = "LE-BIG-ID";
+        expect(studyParticipantAssignmentDao.getByGridId(gridId)).andReturn(assignment);
+        request.setParameter("assignment", gridId);
 
         ModelAndView mv = doHandle();
 

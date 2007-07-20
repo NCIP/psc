@@ -16,8 +16,8 @@ public class Fixtures {
         return target;
     }
 
-    public static <T extends GridIdentifiable> T setGridId(String bigId, T target) {
-        target.setGridId(bigId);
+    public static <T extends GridIdentifiable> T setGridId(String gridId, T target) {
+        target.setGridId(gridId);
         return target;
     }
 

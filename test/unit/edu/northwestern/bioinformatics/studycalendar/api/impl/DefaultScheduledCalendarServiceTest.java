@@ -192,7 +192,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetWithNoStudyBigId() throws Exception {
+    public void testGetWithNoStudyGridId() throws Exception {
         parameterStudy.setGridId(null);
 
         replayMocks();
@@ -205,7 +205,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetWithNoParticpantBigId() throws Exception {
+    public void testGetWithNoParticpantGridId() throws Exception {
         parameterParticipant.setGridId(null);
 
         replayMocks();
@@ -218,7 +218,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetWithNoSiteBigId() throws Exception {
+    public void testGetWithNoSiteGridId() throws Exception {
         parameterSite.setGridId(null);
 
         replayMocks();
