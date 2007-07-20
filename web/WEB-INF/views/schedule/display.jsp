@@ -314,7 +314,7 @@
         <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
         View this participant's
         <c:if test="${caaersAvail}">
-            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">adverse events</a>
+            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
         </c:if>
         <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
         <c:if test="${labViewerAvail}">
@@ -336,7 +336,7 @@
             <p>
                 <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
                 <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.bigId}">all adverse events</a>
+                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
                 </c:if>
             </p>
         </div>
