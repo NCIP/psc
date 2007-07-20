@@ -32,7 +32,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     }
 
     public PlannedCalendar registerStudy(Study study) {
-        if (study.getBigId() == null) throw createRegistrationError("study missing bigId");
+        if (study.getGridId() == null) throw createRegistrationError("study missing bigId");
         if (study.getName() == null) throw createRegistrationError("study missing name");
         PlannedCalendar existing = getPlannedCalendar(study);
         if (existing != null) {
@@ -49,7 +49,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
             registered.setPlannedCalendar(study.getPlannedCalendar());
         }
         registered.setName(study.getName());
-        registered.setBigId(study.getBigId());
+        registered.setGridId(study.getGridId());
         mergeSiteAssignments(study, registered);
         studyDao.save(registered);
 
@@ -81,10 +81,10 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     private List<Site> loadOrCreate(List<Site> parameterSites) {
         List<Site> loaded = new ArrayList<Site>(parameterSites.size());
         for (Site parameterSite : parameterSites) {
-            if (parameterSite.getBigId() == null) {
+            if (parameterSite.getGridId() == null) {
                 throw createRegistrationError("site missing bigId");
             }
-            Site loadedSite = siteDao.getByBigId(parameterSite.getBigId());
+            Site loadedSite = siteDao.getByGridId(parameterSite.getGridId());
             if (loadedSite == null) {
                 if (parameterSite.getName() == null) {
                     throw createRegistrationError("new site missing name");
@@ -104,8 +104,8 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
     }
 
     public PlannedCalendar getPlannedCalendar(Study study) {
-        if (study.getBigId() == null) throw new IllegalArgumentException("Cannot locate planned calendar for a study without a bigId");
-        Study systemStudy = studyDao.getByBigId(study.getBigId());
+        if (study.getGridId() == null) throw new IllegalArgumentException("Cannot locate planned calendar for a study without a bigId");
+        Study systemStudy = studyDao.getByGridId(study.getGridId());
         if (systemStudy == null) return null;
 
         plannedCalendarDao.initialize(systemStudy.getPlannedCalendar());

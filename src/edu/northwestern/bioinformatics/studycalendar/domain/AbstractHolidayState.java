@@ -8,6 +8,8 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 
 /**
  * @author Nataliya Shurupova
@@ -23,7 +25,7 @@ import javax.persistence.Table;
 
 @DiscriminatorColumn(name="discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
 
-public class AbstractHolidayState extends AbstractDomainObject {
+public class AbstractHolidayState extends AbstractMutableDomainObject {
 
     private String description;
     private static final String SUNDAY = "sunday";
@@ -61,6 +63,7 @@ public class AbstractHolidayState extends AbstractDomainObject {
         return -1;
     }
 
+    @Override
     public String toString(){
         StringBuffer sb = new StringBuffer();
         sb.append(" Description = ");

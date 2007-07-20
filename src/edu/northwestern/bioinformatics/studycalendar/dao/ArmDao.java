@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
-public class ArmDao extends WithBigIdDao<Arm> {
+public class ArmDao extends StudyCalendarGridIdentifiableDao<Arm> {
     public Class<Arm> domainClass() {
         return Arm.class;
     }

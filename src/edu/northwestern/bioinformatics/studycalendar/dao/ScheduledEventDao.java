@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledEventDao extends WithBigIdDao<ScheduledEvent> {
+public class ScheduledEventDao extends StudyCalendarGridIdentifiableDao<ScheduledEvent> {
     public Class<ScheduledEvent> domainClass() { return ScheduledEvent.class; }
 
     public Collection<ScheduledEvent> getEventsByDate(ScheduledCalendar calendar, Date start, Date end) {

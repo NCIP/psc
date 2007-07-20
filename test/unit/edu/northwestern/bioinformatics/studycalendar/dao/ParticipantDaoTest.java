@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
 
 import java.util.Date;
@@ -111,7 +110,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
     }
     
     public void testGetByBigId() throws Exception {
-        Participant participant = getDao().getByBigId("What is the");
+        Participant participant = getDao().getByGridId("What is the");
         assertNotNull("No participant matched", participant);
         assertEquals("Wrong participant matched", -101, (int) participant.getId());
     }

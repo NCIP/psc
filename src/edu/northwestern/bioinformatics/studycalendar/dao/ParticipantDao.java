@@ -4,16 +4,13 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
-import javax.servlet.http.HttpSession;
 
-
-public class ParticipantDao extends WithBigIdDao<Participant> {
+public class ParticipantDao extends StudyCalendarGridIdentifiableDao<Participant> {
     public Class<Participant> domainClass() {
         return Participant.class;
     }

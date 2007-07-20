@@ -16,6 +16,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
@@ -27,7 +29,7 @@ import javax.persistence.FetchType;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class Activity extends AbstractDomainObject implements Comparable<Activity>, Named {
+public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named {
     private String name;
     private String description;
     private ActivityType type;

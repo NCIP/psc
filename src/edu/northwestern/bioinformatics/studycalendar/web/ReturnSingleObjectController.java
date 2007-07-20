@@ -1,22 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestUtils;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.Controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-
-import java.util.Map;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * This controller loads a single domain object and passes it to the configured view.

@@ -15,6 +15,8 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -25,7 +27,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_planned_calendars_id")
     }
 )
-public class PlannedCalendar extends AbstractDomainObject {
+public class PlannedCalendar extends AbstractMutableDomainObject {
     private Study study;
     private List<Epoch> epochs = new ArrayList<Epoch>();
     private boolean complete;

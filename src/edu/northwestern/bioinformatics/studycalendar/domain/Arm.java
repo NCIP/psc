@@ -20,6 +20,7 @@ import java.util.TreeSet;
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -31,7 +32,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
         @Parameter(name="sequence", value="seq_arms_id")
     }
 )
-public class Arm extends AbstractDomainObjectWithBigId implements Named {
+public class Arm extends AbstractMutableDomainObject implements Named {
     private Epoch epoch;
     private String name;
     private SortedSet<Period> periods = new TreeSet<Period>();

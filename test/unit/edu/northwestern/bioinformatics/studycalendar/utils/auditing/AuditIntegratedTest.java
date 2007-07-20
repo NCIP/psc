@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -23,6 +22,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -36,6 +37,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 
     private Study created;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -151,6 +153,7 @@ public class AuditIntegratedTest extends DaoTestCase {
         assertEquals("Did not expect to find " + attribute + " change: " + actual, 0, actual.size());
     }
 
+    @SuppressWarnings({ "unchecked" })
     private List<Map<String, Object>> findAuditValues(int eventId, String attribute) {
         List<Map<String, Object>> values = (List<Map<String, Object>>) getJdbcTemplate().query(
             "SELECT * FROM audit_event_values aev WHERE aev.audit_event_id = ? AND aev.attribute_name = ?",
@@ -159,6 +162,7 @@ public class AuditIntegratedTest extends DaoTestCase {
         return values;
     }
 
+    @SuppressWarnings({ "unchecked" })
     private int assertDataLogged(DomainObject changed, Operation operation) {
         DataAuditInfo info = (DataAuditInfo) DataAuditInfo.getLocal();
         List<Map<String, Object>> events = (List<Map<String, Object>>) getJdbcTemplate().query(

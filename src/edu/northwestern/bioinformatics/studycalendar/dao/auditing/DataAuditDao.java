@@ -3,9 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 
 import java.util.List;
+
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin

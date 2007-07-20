@@ -1,15 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import gov.nih.nci.cabig.ctms.dao.AbstractDomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
  */
-public abstract class StudyCalendarDao<T extends DomainObject> extends HibernateDaoSupport {
-    public T getById(int id) {
-        return (T) getHibernateTemplate().get(domainClass(), id);
-    }
-    
-    public abstract Class<T> domainClass();
+public abstract class StudyCalendarDao<T extends DomainObject> extends AbstractDomainObjectDao<T> {
 }

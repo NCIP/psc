@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.utils.auditing;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
@@ -11,6 +10,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Collection;
 import java.util.LinkedList;
+
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin

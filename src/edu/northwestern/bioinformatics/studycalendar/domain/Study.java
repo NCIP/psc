@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -26,7 +28,7 @@ import java.util.Collections;
         @Parameter(name="sequence", value="seq_studies_id")
     }
 )
-public class Study extends AbstractDomainObjectWithBigId implements Named {
+public class Study extends AbstractMutableDomainObject implements Named {
     private String name;
     private String protocolAuthorityId;
     private PlannedCalendar plannedCalendar;

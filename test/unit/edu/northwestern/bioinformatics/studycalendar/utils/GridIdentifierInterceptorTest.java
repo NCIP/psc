@@ -3,13 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.utils;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import org.hibernate.Interceptor;
 import org.hibernate.type.Type;
-import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -21,7 +18,7 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
     private Interceptor delegate;
 
     private static final String[] STUDY_PROPERTIES = new String[] {
-        "id", "name", "bigId"
+        "id", "name", "gridId"
     };
     private static final Type[] STUDY_TYPES = new Type[3]; // Don't care about the values
 
@@ -53,7 +50,7 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
 
     public void testNotSetIfAlreadyPresent() throws Exception {
         Study study = Fixtures.createSingleEpochStudy("A", "E");
-        study.setBigId("Preexisting");
+        study.setGridId("Preexisting");
         Object[] state = new Object[] { null, "A", "Preexisting" };
 
         expect(delegate.onSave(study, ENTITY_ID, state, STUDY_PROPERTIES, STUDY_TYPES)).andReturn(false);
@@ -66,10 +63,10 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
     }
 
     public void testNoErrorOnNonWithBigId() throws Exception {
-        NoBigIdTestObject entity = new NoBigIdTestObject();
-        Object[] state = new Object[] { };
-        String[] propertyNames = new String[] { };
-        Type[] types = new Type[] { };
+        NoGridIdTestObject entity = new NoGridIdTestObject();
+        Object[] state = new Object[] { ENTITY_ID };
+        String[] propertyNames = new String[] { "id" };
+        Type[] types = new Type[] { null /* DC */ };
         expect(delegate.onSave(entity, ENTITY_ID, state, propertyNames, types)).andReturn(false);
 
         replayMocks();
@@ -77,5 +74,13 @@ public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    private static class NoBigIdTestObject extends AbstractDomainObject { }
+    private static class NoGridIdTestObject implements DomainObject {
+        public Integer getId() {
+            throw new UnsupportedOperationException("getId not implemented");
+        }
+
+        public void setId(Integer integer) {
+            throw new UnsupportedOperationException("setId not implemented");
+        }
+    }
 }

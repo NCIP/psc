@@ -14,7 +14,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -92,7 +91,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
 
     public void testAssignmentMayBeBigId() throws Exception {
         String bigId = "LE-BIG-ID";
-        expect(studyParticipantAssignmentDao.getByBigId(bigId)).andReturn(assignment);
+        expect(studyParticipantAssignmentDao.getByGridId(bigId)).andReturn(assignment);
         request.setParameter("assignment", bigId);
 
         ModelAndView mv = doHandle();

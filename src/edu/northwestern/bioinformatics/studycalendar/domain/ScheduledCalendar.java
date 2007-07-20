@@ -15,6 +15,8 @@ import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -25,7 +27,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_scheduled_calendars_id")
     }
 )
-public class ScheduledCalendar extends AbstractDomainObject {
+public class ScheduledCalendar extends AbstractMutableDomainObject {
     private StudyParticipantAssignment assignment;
     private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
 

@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
-import edu.nwu.bioinformatics.commons.DataAuditInfo;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -9,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import java.util.List;
@@ -28,12 +26,12 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
     }
     
     public void testGetByBigId() throws Exception {
-        Study actual = dao.getByBigId("long-GUID-string");
+        Study actual = dao.getByGridId("long-GUID-string");
         assertIsTestStudy100(actual);
     }
 
     public void testGetByBigIdByTemplate() throws Exception {
-        Study actual = dao.getByBigId(Fixtures.setBigId("long-GUID-string", new Study()));
+        Study actual = dao.getByGridId(Fixtures.setGridId("long-GUID-string", new Study()));
         assertIsTestStudy100(actual);
     }
 
@@ -61,7 +59,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
             Study loaded = dao.getById(savedId);
             assertNotNull("Could not reload study with id " + savedId, loaded);
             assertEquals("Wrong name", "New study", loaded.getName());
-            assertNotNull("Grid ID not automatically added", loaded.getBigId());
+            assertNotNull("Grid ID not automatically added", loaded.getGridId());
         }
     }
 
@@ -98,7 +96,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertNotNull("Could not locate", actual);
         assertEquals("Wrong id", -100, (int) actual.getId());
         assertEquals("Wrong name", "First Study", actual.getName());
-        assertEquals("Wrong grid ID", "long-GUID-string", actual.getBigId());
+        assertEquals("Wrong grid ID", "long-GUID-string", actual.getGridId());
         assertEquals("Wrong protocol auth id", "NCI-IS-WATCHING", actual.getProtocolAuthorityId());
     }
 

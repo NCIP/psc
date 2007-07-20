@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
@@ -28,7 +30,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_participants_id")
     }
 )
-public class Participant extends AbstractDomainObjectWithBigId {
+public class Participant extends AbstractMutableDomainObject {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;

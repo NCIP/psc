@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -21,7 +23,7 @@ import javax.persistence.Table;
         @Parameter(name="sequence", value="seq_ae_notifications_id")
     }
 )
-public class AdverseEventNotification extends AbstractDomainObject {
+public class AdverseEventNotification extends AbstractMutableDomainObject {
     private StudyParticipantAssignment assignment;
     private AdverseEvent adverseEvent;
     private boolean dismissed;

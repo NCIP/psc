@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin

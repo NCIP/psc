@@ -4,18 +4,20 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
  */
 public class Fixtures {
-    public static <T extends AbstractDomainObject> T setId(Integer id, T target) {
+    public static <T extends DomainObject> T setId(Integer id, T target) {
         target.setId(id);
         return target;
     }
 
-    public static <T extends WithBigId> T setBigId(String bigId, T target) {
-        target.setBigId(bigId);
+    public static <T extends GridIdentifiable> T setGridId(String bigId, T target) {
+        target.setGridId(bigId);
         return target;
     }
 

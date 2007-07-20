@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.util.Date;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -16,7 +18,7 @@ import java.util.Date;
         @Parameter(name="sequence", value="seq_adverse_events_id")
     }
 )
-public class AdverseEvent extends AbstractDomainObjectWithBigId {
+public class AdverseEvent extends AbstractMutableDomainObject {
     private Date detectionDate;
     private String description;
 

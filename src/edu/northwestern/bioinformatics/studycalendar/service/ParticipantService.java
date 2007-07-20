@@ -14,8 +14,6 @@ import java.text.ParseException;
 import org.springframework.transaction.annotation.Transactional;
 import org.apache.log4j.Logger;
 
-import javax.persistence.Transient;
-
 /**
  * @author Rhett Sutphin
  */
@@ -36,7 +34,7 @@ public class ParticipantService {
         spa.setParticipant(participant);
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
-        spa.setBigId(assignmentGridIdentifier);
+        spa.setGridId(assignmentGridIdentifier);
         participant.addAssignment(spa);
         scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
         participantDao.save(participant);

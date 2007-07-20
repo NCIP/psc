@@ -1,39 +1,36 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.StringTokenizer;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
-import java.util.LinkedHashSet;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
  */
 public class DomainObjectTools {
-    private static final List<Class<? extends AbstractDomainObject>> DETAIL_ORDER = Arrays.asList(
+    private static final List<Class<? extends DomainObject>> DETAIL_ORDER = Arrays.<Class<? extends DomainObject>>asList(
         Site.class,
         StudySite.class,
 
@@ -51,7 +48,7 @@ public class DomainObjectTools {
         ScheduledEvent.class
     );
 
-    public static <T extends AbstractDomainObject> Map<Integer, T> byId(List<T> objs) {
+    public static <T extends DomainObject> Map<Integer, T> byId(List<T> objs) {
         Map<Integer, T> map = new LinkedHashMap<Integer, T>();
         for (T t : objs) {
             map.put(t.getId(), t);

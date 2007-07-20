@@ -24,6 +24,7 @@ import java.util.Collections;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -35,7 +36,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
         @Parameter(name="sequence", value="seq_scheduled_events_id")
     }
 )
-public class ScheduledEvent extends AbstractDomainObjectWithBigId {
+public class ScheduledEvent extends AbstractMutableDomainObject {
     private ScheduledArm scheduledArm;
     private PlannedEvent plannedEvent;
     private Date idealDate;

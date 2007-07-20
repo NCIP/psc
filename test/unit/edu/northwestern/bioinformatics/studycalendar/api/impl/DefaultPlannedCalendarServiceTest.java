@@ -12,14 +12,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.WithBigId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import java.util.Arrays;
+
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 /**
  * @author Rhett Sutphin
@@ -49,23 +48,23 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         service.setTemplateService(templateService);
 
         parameterStudy = Fixtures.createNamedInstance("S1", Study.class);
-        parameterStudy.setBigId("UNIQUE!");
+        parameterStudy.setGridId("UNIQUE!");
         addSite(parameterStudy, 1);
 
         loadedStudy = Fixtures.createNamedInstance("S1", Study.class);
-        loadedStudy.setBigId("UNIQUE!");
+        loadedStudy.setGridId("UNIQUE!");
         loadedStudy.setPlannedCalendar(new PlannedCalendar());
         addSite(loadedStudy, 1);
     }
 
     private void addSite(Study target, int n) {
         Site site = Fixtures.createNamedInstance("Site " + n, Site.class);
-        site.setBigId("SITE" + n + "-GUID");
+        site.setGridId("SITE" + n + "-GUID");
         Fixtures.createStudySite(target, site);
     }
 
     public void testRegisterRequiresBigId() throws Exception {
-        parameterStudy.setBigId(null);
+        parameterStudy.setGridId(null);
         assertRegistrationError("study missing bigId");
     }
 
@@ -75,21 +74,21 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRegisterRequiresSiteBigId() throws Exception {
-        parameterStudy.getStudySites().get(0).getSite().setBigId(null);
-        expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(null);
+        parameterStudy.getStudySites().get(0).getSite().setGridId(null);
+        expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
         assertRegistrationError("site missing bigId");
     }
 
     public void testRegisterNewSiteRequiresSiteName() throws Exception {
         parameterStudy.getStudySites().get(0).getSite().setName(null);
-        expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(null);
-        expect(siteDao.getByBigId(parameterStudy.getStudySites().get(0).getSite().getBigId())).andReturn(null);
+        expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
+        expect(siteDao.getByGridId(parameterStudy.getStudySites().get(0).getSite().getGridId())).andReturn(null);
         assertRegistrationError("new site missing name");
     }
 
     public void testRegisterExistingSiteDoesNotRequireSiteName() throws Exception {
         parameterStudy.getStudySites().get(0).getSite().setName(null);
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         expectBasicGet();
         studyDao.save(loadedStudy);
@@ -109,9 +108,9 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         TemplateSkeletonCreator defaultCreator = registerMockFor(TemplateSkeletonCreator.class);
         service.setDefaultTemplateCreator(defaultCreator);
 
-        expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(null);
+        expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
         expect(defaultCreator.create()).andReturn(created);
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         studyDao.save(created);
         replayMocks();
@@ -122,7 +121,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testBasicNewRegistration() throws Exception {
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         Study actualStudy = expectRegisterMain(null);
         assertEquals("sites not copied to created study", parameterStudy.getStudySites().size(), actualStudy.getStudySites().size());
@@ -136,7 +135,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         PlannedCalendar expectedPlannedCalendar = new PlannedCalendar();
         parameterStudy.setPlannedCalendar(expectedPlannedCalendar);
 
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
 
         PlannedCalendar actual = expectRegisterMain(null).getPlannedCalendar();
@@ -146,10 +145,10 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
 
     public void testReregisterWithNewSite() throws Exception {
         addSite(parameterStudy, 2);
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         Site newSite = parameterStudy.getSites().get(1);
-        expect(siteDao.getByBigId(newSite.getBigId())).andReturn(null);
+        expect(siteDao.getByGridId(newSite.getGridId())).andReturn(null);
         siteDao.save(newSite);
 
         Study actualStudy = expectRegisterMain(loadedStudy);
@@ -162,7 +161,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
 
     public void testReregisterRemovingUnusedSite() throws Exception {
         addSite(loadedStudy, 2);
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         templateService.removeTemplateFromSites(loadedStudy, Arrays.asList(loadedStudy.getSites().get(1)));
         expectRegisterMain(loadedStudy);
@@ -171,7 +170,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     
     private Study expectRegisterMain(Study existing) {
         if (existing == null) {
-            expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(null);
+            expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
         } else {
             expectBasicGet();
         }
@@ -185,7 +184,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRegisterReturnsExistingIfAlreadyRegistered() throws Exception {
-        expect(siteDao.getByBigId(parameterStudy.getSites().get(0).getBigId()))
+        expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         expectBasicGet();
         studyDao.save(loadedStudy);
@@ -195,14 +194,14 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     public void testNullIfNoStudy() throws Exception {
-        expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(null);
+        expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
         replayMocks();
 
         assertNull(service.getPlannedCalendar(parameterStudy));
     }
 
     public void testGetWithoutBigId() throws Exception {
-        parameterStudy.setBigId(null);
+        parameterStudy.setGridId(null);
         try {
             service.getPlannedCalendar(parameterStudy);
         } catch (IllegalArgumentException iae) {
@@ -218,14 +217,14 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     private void expectBasicGet() {
-        expect(studyDao.getByBigId(parameterStudy.getBigId())).andReturn(loadedStudy);
+        expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(loadedStudy);
         plannedCalendarDao.initialize(loadedStudy.getPlannedCalendar());
     }
 
     private void expectSaveStudy() {
         EasyMock.reportMatcher(new IArgumentMatcher() {
             public boolean matches(Object argument) {
-                assertEquals("Mismatched bigIds", parameterStudy.getBigId(), ((WithBigId) argument).getBigId());
+                assertEquals("Mismatched bigIds", parameterStudy.getGridId(), ((GridIdentifiable) argument).getGridId());
                 assertEquals("Mismatched names", parameterStudy.getName(), ((Named) argument).getName());
                 return true;
             }
@@ -247,7 +246,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
     }
 
     private static void assertStudySitesSameSite(String message, StudySite expected, StudySite actual) {
-        assertEquals(message + ": site bigIds differ", expected.getSite().getBigId(), actual.getSite().getBigId());
+        assertEquals(message + ": site bigIds differ", expected.getSite().getGridId(), actual.getSite().getGridId());
         assertEquals(message + ": site names differ", expected.getSite().getName(), actual.getSite().getName());
     }
 }

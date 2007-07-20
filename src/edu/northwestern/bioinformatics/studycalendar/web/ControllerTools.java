@@ -9,9 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
 
 import java.util.Map;
 import java.util.Date;
@@ -27,6 +25,8 @@ import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 /**
  * @author Rhett Sutphin

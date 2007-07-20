@@ -25,6 +25,7 @@ import java.util.ArrayList;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Moses Hohman
@@ -37,7 +38,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends AbstractDomainObject implements Named, Comparable<Period> {
+public class Period extends AbstractMutableDomainObject implements Named, Comparable<Period> {
     private static final int DEFAULT_REPETITIONS = 1;
     private static final int DEFAULT_START_DAY = 1;
     private static final int DEFAULT_DURATION_QUANTITY = 1;

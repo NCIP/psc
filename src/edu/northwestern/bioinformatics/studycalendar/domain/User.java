@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 @Entity
 @Table (name = "users")
 @GenericGenerator(name="id-generator", strategy = "native",
@@ -17,7 +19,7 @@ import java.util.Set;
     }
 )
 
-public class User extends AbstractDomainObject implements Named {
+public class User extends AbstractMutableDomainObject implements Named {
     private String name;
     private Long csmUserId;
     private Set<Role> roles = new HashSet<Role>();

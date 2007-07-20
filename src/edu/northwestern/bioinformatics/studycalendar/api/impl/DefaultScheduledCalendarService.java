@@ -1,36 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.WithBigId;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObjectWithBigId;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarGridIdentifiableDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.WithBigIdDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Rhett Sutphin
@@ -175,24 +174,24 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
 
     //////
 
-    private <T extends AbstractDomainObjectWithBigId> T load(T parameter, WithBigIdDao<T> dao) {
+    private <T extends GridIdentifiable & DomainObject> T load(T parameter, StudyCalendarGridIdentifiableDao<T> dao) {
         return load(parameter, dao, true);
     }
 
-    private <T extends AbstractDomainObjectWithBigId> T load(T parameter, WithBigIdDao<T> dao, boolean required) {
+    private <T extends GridIdentifiable & DomainObject> T load(T parameter, StudyCalendarGridIdentifiableDao<T> dao, boolean required) {
         checkForBigId(parameter);
-        T loaded = dao.getByBigId(parameter);
+        T loaded = dao.getByGridId(parameter);
         if (required && loaded == null) {
             throw new IllegalArgumentException("No " + parameter.getClass().getSimpleName().toLowerCase() +
-                " with bigId " + parameter.getBigId());
+                " with gridId " + parameter.getGridId());
         }
         return loaded;
     }
 
-    private void checkForBigId(AbstractDomainObjectWithBigId withBigId) {
-        if (!withBigId.hasBigId()) {
+    private void checkForBigId(GridIdentifiable gridIdentifiable) {
+        if (!gridIdentifiable.hasGridId()) {
             throw new IllegalArgumentException(
-                "No bigId on " + withBigId.getClass().getSimpleName().toLowerCase() + " parameter");
+                "No gridId on " + gridIdentifiable.getClass().getSimpleName().toLowerCase() + " parameter");
         }
     }
 
@@ -256,8 +255,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                     return studySite;
                 }
             }
-            throw new IllegalArgumentException("Site " + this.getSite().getBigId()
-                + " not associated with study " + this.getStudy().getBigId());
+            throw new IllegalArgumentException("Site " + this.getSite().getGridId()
+                + " not associated with study " + this.getStudy().getGridId());
         }
 
         public void validateArmInStudy() {
@@ -266,8 +265,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                     return;
                 }
             }
-            throw new IllegalArgumentException("Arm " + getArm().getBigId()
-                + " not part of template for study " + getStudy().getBigId());
+            throw new IllegalArgumentException("Arm " + getArm().getGridId()
+                + " not part of template for study " + getStudy().getGridId());
         }
 
         public StudyParticipantAssignment findAssignment() {

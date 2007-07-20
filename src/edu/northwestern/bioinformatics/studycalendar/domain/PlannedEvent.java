@@ -12,6 +12,8 @@ import javax.persistence.Transient;
 import java.util.List;
 import java.util.ArrayList;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  * @author Yufang Wang
@@ -23,7 +25,7 @@ import java.util.ArrayList;
         @Parameter(name="sequence", value="seq_planned_events_id")
     }
 )
-public class PlannedEvent extends AbstractDomainObject implements Comparable<PlannedEvent> {
+public class PlannedEvent extends AbstractMutableDomainObject implements Comparable<PlannedEvent> {
     private Activity activity;
     private Period period;
     private Integer day;

@@ -29,7 +29,7 @@ public interface PlannedCalendarService {
      *
      * @param study The study for which to return the calendar.  For purposes of matching,
      * implementations are only required to consider the study's
-     * {@link edu.northwestern.bioinformatics.studycalendar.domain.Study#getBigId() grid ID}.
+     * {@link edu.northwestern.bioinformatics.studycalendar.domain.Study#getGridId() grid ID}.
      * @return The full calendar template as it currently exists in the system.  
      * @see PlannedCalendar
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Epoch

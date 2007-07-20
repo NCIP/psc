@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -19,6 +17,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.apache.commons.lang.StringUtils;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -32,7 +31,7 @@ import org.apache.commons.lang.StringUtils;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Table(name = "scheduled_event_states")
 @DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class ScheduledEventState extends AbstractDomainObject implements Cloneable, Serializable {
+public abstract class ScheduledEventState extends AbstractMutableDomainObject implements Cloneable, Serializable {
     private String reason;
 
     protected ScheduledEventState() { }

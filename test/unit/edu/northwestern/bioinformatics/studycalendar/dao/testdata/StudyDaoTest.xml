@@ -3,7 +3,7 @@
         id="-100"
         version="0"
         name="First Study"
-        big_id="long-GUID-string"
+        grid_id="long-GUID-string"
         protocol_authority_id="NCI-IS-WATCHING"
         />
     <STUDIES

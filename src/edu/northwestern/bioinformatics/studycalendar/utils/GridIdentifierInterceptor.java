@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.WithBigId;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import org.hibernate.type.Type;
 import org.hibernate.EntityMode;
@@ -10,6 +9,9 @@ import org.hibernate.Interceptor;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.Arrays;
+
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 /**
  * Wrapper interceptor to add grid identifiers to objects which support them.
@@ -27,9 +29,12 @@ public class GridIdentifierInterceptor implements Interceptor {
 
     public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) {
         boolean localMod = false;
-        if (entity instanceof WithBigId) {
+        if (entity instanceof GridIdentifiable) {
             int bigIdIdx = findBigId(propertyNames);
-            if (bigIdIdx < 0) throw new StudyCalendarError("Object implements WithBigId but doesn't have bigId property; class: " + entity.getClass().getName());
+            if (bigIdIdx < 0) {
+                throw new StudyCalendarError(
+                    "Object implements GridIdentifiable but doesn't have gridId property; class: " + entity.getClass().getName() + "; properties: " + Arrays.asList(propertyNames));
+            }
             if (state[bigIdIdx] == null) {
                 state[bigIdIdx] = gridIdentifierCreator.getGridIdentifier();
                 localMod = true;
@@ -41,7 +46,7 @@ public class GridIdentifierInterceptor implements Interceptor {
 
     private int findBigId(String[] propertyNames) {
         for (int i = 0; i < propertyNames.length; i++) {
-            if ("bigId".equals(propertyNames[i])) return i;
+            if ("gridId".equals(propertyNames[i])) return i;
         }
         return -1; // defer throwing exception so we can report class
     }

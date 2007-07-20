@@ -25,7 +25,7 @@ public class StudyParticipantAssignmentDaoTest extends ContextDaoTestCase<StudyP
     }
 
     public void testGetByBigId() throws Exception {
-        StudyParticipantAssignment assignment = getDao().getByBigId("NOT-SMALL");
+        StudyParticipantAssignment assignment = getDao().getByGridId("NOT-SMALL");
         assertNotNull(assignment);
         assertEquals("Wrong obj returned", -10, (int) assignment.getId());
     }

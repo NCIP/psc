@@ -1,38 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.auditing;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
+import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
-import org.hibernate.EmptyInterceptor;
-import org.hibernate.SessionFactory;
-import org.hibernate.EntityMode;
-import org.hibernate.metadata.ClassMetadata;
-import org.hibernate.type.Type;
-import org.hibernate.type.ComponentType;
-import org.hibernate.type.AbstractComponentType;
-import org.hibernate.type.VersionType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.hibernate.EmptyInterceptor;
+import org.hibernate.EntityMode;
+import org.hibernate.type.AbstractComponentType;
+import org.hibernate.type.Type;
+import org.hibernate.type.VersionType;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationContext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.List;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEventValue;
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
-import edu.northwestern.bioinformatics.studycalendar.dao.auditing.DataAuditDao;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  *

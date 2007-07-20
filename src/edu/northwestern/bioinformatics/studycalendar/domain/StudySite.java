@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Ram Chilukuri
  * @author Rhett Sutphin
@@ -25,7 +27,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_study_sites_id")
     }
 )
-public class StudySite extends AbstractDomainObject {
+public class StudySite extends AbstractMutableDomainObject {
     private Site site;
     private Study study;
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();

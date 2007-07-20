@@ -16,6 +16,8 @@ import javax.persistence.FetchType;
 import java.util.List;
 import java.util.ArrayList;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Rhett Sutphin
  */
@@ -26,7 +28,7 @@ import java.util.ArrayList;
         @Parameter(name="sequence", value="seq_epochs_id")
     }
 )
-public class Epoch extends AbstractDomainObject implements Named {
+public class Epoch extends AbstractMutableDomainObject implements Named {
     private PlannedCalendar plannedCalendar;
     private List<Arm> arms = new ArrayList<Arm>();
     private String name;

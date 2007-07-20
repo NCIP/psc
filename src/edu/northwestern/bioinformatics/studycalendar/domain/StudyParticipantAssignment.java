@@ -1,24 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
+import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.OneToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.persistence.Transient;
-
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -32,7 +32,7 @@ import org.hibernate.annotations.CascadeType;
         @Parameter(name="sequence", value="seq_participant_assignments_id")
     }
 )
-public class StudyParticipantAssignment extends AbstractDomainObjectWithBigId {
+public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     private String studyId;
     private StudySite studySite;
     private Participant participant;
@@ -121,6 +121,7 @@ public class StudyParticipantAssignment extends AbstractDomainObjectWithBigId {
 
     ////// OBJECT METHODS
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -132,11 +133,12 @@ public class StudyParticipantAssignment extends AbstractDomainObjectWithBigId {
         if (studySite != null ? !studySite.equals(that.studySite) : that.studySite != null)
             return false;
         // Participant#equals calls this method, so we can't use it here
-        if (!AbstractDomainObject.equalById(participant, that.participant)) return false;
+        if (!DomainObjectTools.equalById(participant, that.participant)) return false;
 
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (studySite != null ? studySite.hashCode() : 0);

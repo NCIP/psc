@@ -40,7 +40,7 @@
 
     <studies
         id="-23"
-        big_id="UNIQUE!"
+        grid_id="UNIQUE!"
         name="ECOG 1234"
         />
     <planned_calendars

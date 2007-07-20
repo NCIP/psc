@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 /**
  * @author Rhett Sutphin
  */
-public class StudyParticipantAssignmentDao extends WithBigIdDao<StudyParticipantAssignment> {
+public class StudyParticipantAssignmentDao extends StudyCalendarGridIdentifiableDao<StudyParticipantAssignment> {
     @Override
     public Class<StudyParticipantAssignment> domainClass() {
         return StudyParticipantAssignment.class;

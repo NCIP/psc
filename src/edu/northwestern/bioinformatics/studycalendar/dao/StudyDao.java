@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import gov.nih.nci.security.authorization.domainobjects.Group;
 
 import java.util.List;
 
@@ -12,7 +10,7 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class StudyDao extends WithBigIdDao<Study> {
+public class StudyDao extends StudyCalendarGridIdentifiableDao<Study> {
     public Class<Study> domainClass() {
         return Study.class;
     }

@@ -12,13 +12,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Date;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.Calendar;
+
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -29,7 +30,7 @@ import java.util.Calendar;
         @Parameter(name="sequence", value="seq_scheduled_arms_id")
     }
 )
-public class ScheduledArm extends AbstractDomainObject {
+public class ScheduledArm extends AbstractMutableDomainObject {
     private ScheduledCalendar scheduledCalendar;
     private List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
 
@@ -149,6 +150,7 @@ public class ScheduledArm extends AbstractDomainObject {
 
     ///// OBJECT METHODS
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName()).append('[')

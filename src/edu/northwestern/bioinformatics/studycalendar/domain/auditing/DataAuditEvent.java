@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.auditing;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractDomainObject;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -20,6 +18,9 @@ import javax.persistence.EnumType;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
@@ -31,7 +32,7 @@ import java.util.List;
         @Parameter(name = "sequence", value = "seq_audit_events_id")
     }
 )
-public class DataAuditEvent extends AbstractDomainObject {
+public class DataAuditEvent extends AbstractMutableDomainObject {
     private DataAuditInfo info = new DataAuditInfo();
     private DataReference reference = new DataReference();
     private Operation operation;

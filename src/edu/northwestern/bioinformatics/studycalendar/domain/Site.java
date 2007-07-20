@@ -1,24 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.apache.log4j.Logger;
 
 import javax.persistence.Entity;
-import javax.persistence.Column;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.JoinColumn;
-import javax.persistence.Table;
+import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Padmaja Vedula
@@ -30,9 +25,7 @@ import javax.persistence.OrderBy;
         @Parameter(name="sequence", value="seq_sites_id")
     }
 )
-public class Site extends AbstractDomainObjectWithBigId implements Named {
-    private static final Logger log = Logger.getLogger(AbstractDomainObjectWithBigId.class.getName());
-
+public class Site extends AbstractMutableDomainObject implements Named {
     public static final String DEFAULT_SITE_NAME = "default";
 
     private String name;
@@ -68,7 +61,6 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
         return studySites;
     }
 
-
     public void setHolidaysAndWeekends (List<AbstractHolidayState> holidaysAndWeekends) {
         this.holidaysAndWeekends = holidaysAndWeekends;
     }
@@ -81,6 +73,7 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
         return holidaysAndWeekends;
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -92,6 +85,7 @@ public class Site extends AbstractDomainObjectWithBigId implements Named {
         return true;
     }
 
+    @Override
     public int hashCode() {
         return (name != null ? name.hashCode() : 0);
     }

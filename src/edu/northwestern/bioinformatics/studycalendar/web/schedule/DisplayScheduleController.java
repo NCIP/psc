@@ -8,15 +8,10 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.DaoBasedEditor;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.WithBigIdDaoBasedEditor;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
@@ -30,6 +25,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
+
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 
 /**
  * @author Rhett Sutphin
@@ -52,7 +49,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         ControllerTools.registerDomainObjectEditor(binder, "arm", scheduledArmDao);
         ControllerTools.registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
         binder.registerCustomEditor(StudyParticipantAssignment.class, "assignment",
-            new WithBigIdDaoBasedEditor(assignmentDao));
+            new GridIdentifiableDaoBasedEditor(assignmentDao));
     }
 
     @Override

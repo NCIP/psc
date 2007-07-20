@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.DomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-
-import java.util.Map;
-import java.util.List;
-
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.ui.ModelMap;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
