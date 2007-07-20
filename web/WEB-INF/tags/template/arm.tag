@@ -3,11 +3,17 @@
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <c:set var="editable" value="${not arm.base.epoch.plannedCalendar.complete}"/>
+
 <h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
     <c:if test="${editable}">
-    <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a></p>
+    <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>  
+ 		<c:if test="${editable and !empty arm.months}">
+			<a id="show_button" href="#" class = "control">Show All</a>
+			<a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
+		</c:if>
+	</p>
     </c:if>
     <c:if test="${editable and empty arm.months}">
         <p class="tip">
@@ -45,6 +51,21 @@
                     </c:forEach>
                 </tr>
             </c:forEach>
+
+			<tr class="arrows"> 
+				<td></td>
+				<td></td>
+            	<c:forEach items="${month.days}" var="entry">
+                	<c:if test="${empty entry.value.events}">
+				 		<td class="hideDay"></td>
+					</c:if>
+					<c:if test="${not empty entry.value.events}">
+				 		<td class="showDay">
+							<a href="#" class="control" id="showArrow">&#9660;</a></td>
+					</c:if>
+				</c:forEach>
+			</tr>	
+			
         </table>
         <c:if test="${editable and not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
             <p class="tip">
@@ -56,7 +77,7 @@
         <div class="days">
             <c:forEach items="${month.days}" var="entry">
                 <c:if test="${not empty entry.value.events}">
-                    <div class="day autoclear">
+                    <div class="day autoclear" style="display: none;">
                         <h3>Day ${entry.key}</h3>
                         <ul>
                         <c:forEach items="${entry.value.events}" var="event">

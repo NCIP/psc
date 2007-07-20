@@ -81,6 +81,10 @@
                 border-width: 0 !important;
                 padding: 3px;
             }
+            table.periods tr.arrows td {
+                border-width: 0 !important;
+				border-top-width: 1px;
+            }
 
             .days {
                 margin: 0 3em 3em 5em;
@@ -162,6 +166,63 @@
                     } });
                 })
             }
+			function registerShowHandler(){
+				var show = $("show_button")
+				Event.observe(show, "click", function(e) {
+		            Event.stop(e)
+				    $$(".day").each(SC.slideAndShow)
+					visibility = false
+					$('show_button').conceal()
+					$('hide_button').reveal();
+					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9650;</a>');});
+				}							
+				);	
+			
+			}
+			function showSetup(){
+				registerShowHandler()
+			}
+			
+			function registerHideHandler(){
+				var hide = $("hide_button")
+				Event.observe(hide, "click", function(e) {
+		            Event.stop(e)
+				    $$(".day").each(SC.slideAndHide)
+					$('hide_button').conceal()
+					$('show_button').reveal();
+					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9660;</a>');});
+				}							
+				);	
+			
+			}
+			function hideSetup(){
+				registerHideHandler()
+			}
+			
+			function registerArrowHandler(a, counter){
+				var aElement = $(a)
+				Event.observe(aElement, "click", function(e) {
+                    Event.stop(e)
+					if ($('showArrow').innerHTML == '▲'){
+                		Element.update(this, '<a href="#" class="control" id="showArrow">&#9660;</a>')
+						SC.slideAndHide($$(".day")[counter])
+						$('show_button').reveal()
+						
+					}
+                	else{
+						Element.update(this, '<a href="#" class="control" id="showArrow">&#9650;</a>')
+						SC.slideAndShow($$(".day")[counter])
+						$('hide_button').reveal()
+						
+					}
+                })
+			}
+			function registerArrowHandlers(){
+				var counter = 0;
+                $$(".showDay").each(function(num) {registerArrowHandler(num, counter); counter++;});
+
+            }
+			
 
             function epochsAreaSetup() {
                 registerSelectArmHandlers()
@@ -170,11 +231,18 @@
                 createAllEpochControls()
                 </c:if>
             }
+			function arrowSetup(){
+				registerArrowHandlers()
+			}
 
             <c:if test="${not plannedCalendar.complete}">
             Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
+			Event.observe(window, "load", showSetup)
+			Event.observe(window, "load", hideSetup)
+			Event.observe(window, "load", arrowSetup)
+			
         </script>
     </head>
     <body>
