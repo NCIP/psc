@@ -32,7 +32,10 @@ h2 {
 
 .subcollapsible h3 {
     cursor: pointer;
-    
+}
+
+.subcollapsible h3 .collapse-icon {
+    font-size:.8em;
 }
 
 .subsection .content {
