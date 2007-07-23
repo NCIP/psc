@@ -89,6 +89,26 @@
             resetInputValue();
         }
 
+        function trim(inputString) {
+           if (typeof inputString != "string") { return inputString; }
+           var retValue = inputString;
+           var ch = retValue.substring(0, 1);
+           while (ch == " ") {
+              retValue = retValue.substring(1, retValue.length);
+              ch = retValue.substring(0, 1);
+           }
+           ch = retValue.substring(retValue.length-1, retValue.length);
+           while (ch == " ") {
+              retValue = retValue.substring(0, retValue.length-1);
+              ch = retValue.substring(retValue.length-1, retValue.length);
+           }
+           while (retValue.indexOf("  ") != -1) {
+              retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
+           }
+           return retValue;
+        }
+
+
         function resetElement(elementId, text, color) {
             var element = document.getElementById(elementId);
             element.style.color = color;
@@ -97,6 +117,7 @@
 
         function isCorrectOcurringInput() {
             var date = document.getElementById("holidayDate").value
+            date = trim(date);
             var description = document.getElementById("holidayDescription").value;
             var isDataCorrect = true;
             if (isDataCorrect && (date.length < 3 || date.length >5)) {
@@ -104,13 +125,20 @@
                 resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
                 resetElement("recurringDateText", "Error enterring the date -<br>"+
                 "Please verify the format is mm/dd", "red");
-            } else if (isDataCorrect && (date.length == 5 || date.length ==3)) {
-                date = date.split("/");
-                if (isNaN(date[0]*1) || isNaN(date[1]*1)) {
+            } else if (isDataCorrect && (date.length <= 5 && date.length >= 3)) {
+                if (date.indexOf("/") < 0) {
                     isDataCorrect = false;
                     resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
                     resetElement("recurringDateText", "Error enterring the date -<br>"+
-                    "Please verify the format is mm/dd", "red" );
+                        "Please verify the format is mm/dd", "red" );
+                } else {
+                    date = date.split("/");
+                    if (isNaN(date[0]*1) || isNaN(date[1]*1)) {
+                        isDataCorrect = false;
+                        resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
+                        resetElement("recurringDateText", "Error enterring the date -<br>"+
+                        "Please verify the format is mm/dd", "red" );
+                    }
                 }
             }
             if (isDataCorrect && description.length == 0) {
@@ -129,6 +157,7 @@
 
         function isCorrectNonOccuringInput(){
             var date = document.getElementById("nonOcurringDate").value
+            date = trim(date);
             var description = document.getElementById("nonOcurringDescription").value
             var isDataCorrect = true;
             if (isDataCorrect &&(date.length < 8 || date.length > 10)) {
@@ -136,14 +165,21 @@
               resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
               resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
                 "Please verify the format is mm/dd/yyyy", "red");
-            } else if (isDataCorrect && (date.length == 8 || date.length ==10)){
-              date = date.split("/");
-              if(date.length != 3 || ((isNaN(date[0]*1) || isNaN(date[1]*1) || isNaN(date[2]*1)))) {
-                isDataCorrect = false;
-                resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
-                resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
-                "Please verify the format is mm/dd/yyyy", "red" );
-              }
+            } else if (isDataCorrect && (date.length >= 8 && date.length <=10)){
+                if (date.indexOf("/") < 0) {
+                    isDataCorrect = false;
+                    resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
+                    resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
+                    "Please verify the format is mm/dd/yyyy", "red" );
+                } else {
+                    date = date.split("/");
+                    if(date.length != 3 || ((isNaN(date[0]*1) || isNaN(date[1]*1) || isNaN(date[2]*1)))) {
+                        isDataCorrect = false;
+                        resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
+                        resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
+                            "Please verify the format is mm/dd/yyyy", "red" );
+                    }
+                }
             }
             if (isDataCorrect && description.length == 0) {
                 isDataCorrect = false;
@@ -198,7 +234,7 @@
                     <h5>Please select days when office is closed. <br>Multiple selection is allowed</h5>
                     <form:form id="dayOfTheWeekForm" name="dayOfTheWeekForm">
                         <select name="dayOfTheWeek" id="dayOfTheWeek" size="7">
-                            <option value="Monday" >Monday</option>
+                            <option value="Monday" selected="yes" >Monday</option>
                             <option value="Tuesday">Tuesday</option>
                             <option value="Wednesday">Wednesday</option>
                             <option value="Thursday">Thursday</option>
@@ -247,7 +283,7 @@
                             <td valign="top">
                                 <h5>Week:</h5>
                                 <select name="week" size="5">
-                                    <option value="1">First</option>
+                                    <option value="1" selected="yes">First</option>
                                     <option value="2">Second</option>
                                     <option value="3">Third</option>
                                     <option value="4">Fourth</option>
@@ -257,7 +293,7 @@
                             <td>
                                 <h5>Day of the Week:</h5>
                                 <select name="dayOfTheWeek" size="7">
-                                    <option value="Monday">Monday</option>
+                                    <option value="Monday" selected="yes">Monday</option>
                                     <option value="Tuesday">Tuesday</option>
                                     <option value="Wednesday">Wednesday</option>
                                     <option value="Thursday">Thursday</option>
@@ -269,7 +305,7 @@
                             <td>
                                 <h5>Month:</h5>
                                 <select name="month" size="7">
-                                    <option value="0">January</option>
+                                    <option value="0" selected="yes">January</option>
                                     <option value="1">February</option>
                                     <option value="2">March</option>
                                     <option value="3">April</option>
