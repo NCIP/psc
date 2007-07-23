@@ -5,10 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -66,6 +68,19 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
         request.addParameter("dateOffset", "5");
         doHandle();
         assertEquals(5, (int) command.getDateOffset());
+    }
+
+    public void testBindScheduledEvents() throws Exception {
+        ScheduledEvent expectedEvent = Fixtures.setId(7, new ScheduledEvent());
+        ScheduledEvent expectedEvent2 = Fixtures.setId(8, new ScheduledEvent());
+        request.addParameter("events", "7");
+        request.addParameter("events", "8");
+        expect(scheduledEventDao.getById(7)).andReturn(expectedEvent);
+        expect(scheduledEventDao.getById(8)).andReturn(expectedEvent2);
+        doHandle();
+        Iterator actualEvents = command.getEvents().iterator();
+        assertSame(expectedEvent, actualEvents.next());
+        assertSame(expectedEvent2, actualEvents.next());
     }
 
     private void doHandle() throws Exception {
