@@ -376,37 +376,6 @@
     </div>
 </div>
 
-<%--<div id="batch-reschedule" class="section collapsible">--%>
-    <%--<h2>Batch reschedule</h2>--%>
-    <%--<div class="content" style="display: none">--%>
-        <%--<p class="tip">--%>
-            <%--To change all currently scheduled events, first select to what you'd like to change them.--%>
-            <%--Then fill in the rest of the form.--%>
-        <%--</p>--%>
-        <%--<form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">--%>
-            <%--<input type="hidden" name="scheduledCalendar" value="${calendar.id}"/>--%>
-            <%--<label id="new-mode-selector-group">--%>
-                <%--<select name="newMode" id="new-mode-selector">--%>
-                    <%--<option></option>--%>
-                    <%--<option value="1">Keep as scheduled</option>--%>
-                    <%--<option value="3">Mark canceled</option>--%>
-                <%--</select>--%>
-            <%--</label>--%>
-            <%--<label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>--%>
-            <%--<label id="new-reason-input-group">--%>
-                <%--Why? <input type="text" name="newReason"/>--%>
-                <%--<tags:activityIndicator id="batch-indicator"/>--%>
-                <%--<input type="submit" value="Submit"/>--%>
-            <%--</label>--%>
-        <%--</form>--%>
-        <%--<p class="tip">--%>
-            <%--This change will affect all events for this participant that have not been canceled or--%>
-            <%--marked "occurred."  To change a single event, click it in the full schedule display--%>
-            <%--below.--%>
-        <%--</p>--%>
-    <%--</div>--%>
-<%--</div>--%>
-
 <div id="scheduled-arms" class="section">
     <h2>Arms scheduled</h2>
     <p class="tip">Select an arm to show its detailed schedule below.</p>
