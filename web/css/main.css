@@ -48,7 +48,8 @@ h2 {
 }
 
 .content-sub-section a {
-    margin: 0 .6em 0 0
+    margin: 0 .6em 0 0;
+    cursor: pointer;
 }
 
 .day {

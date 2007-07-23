@@ -33,16 +33,10 @@ public class BatchRescheduleCommand {
         if (getNewMode() == null) return;
 
         for (ScheduledEvent event : events) {
-            if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
-                changeState(event);
-            } else if (ScheduledEventMode.OCCURRED == event.getCurrentState().getMode() && ScheduledEventMode.SCHEDULED == getNewMode()) {
-                changeState(event);
-            }
-            else if (ScheduledEventMode.CANCELED == event.getCurrentState().getMode() && ScheduledEventMode.SCHEDULED == getNewMode()) {
+            if (isValidEventModeChange(event.getCurrentState().getMode(), getNewMode())) {
                 changeState(event);
             }
         }
-
         scheduledCalendarDao.save(getScheduledCalendar());
     }
 
@@ -71,6 +65,16 @@ public class BatchRescheduleCommand {
             reason.append(": ").append(message);
         }
         return reason.toString();
+    }
+
+    private boolean isValidEventModeChange(ScheduledEventMode current, ScheduledEventMode future) {
+        boolean result = false;
+        if ((ScheduledEventMode.OCCURRED == current && ScheduledEventMode.SCHEDULED == future)
+                || (ScheduledEventMode.CANCELED == current && ScheduledEventMode.SCHEDULED == future)
+                ||  ScheduledEventMode.SCHEDULED == current) {
+            result = true;
+        }
+        return result;
     }
 
     ////// BOUND PROPERTIES
