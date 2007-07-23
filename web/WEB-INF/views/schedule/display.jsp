@@ -11,6 +11,7 @@
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
     <tags:javascriptLink name="scheduled-event"/>
+    <tags:javascriptLink name="scheduled-event-batch"/>
     <style type="text/css">
         .epochs-and-arms, #next-arm-form {
             margin: 1em;

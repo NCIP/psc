@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.*;
@@ -100,6 +101,27 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong new state for previously scheduled event", "Batch change: Vacation", prevSched1.getCurrentState().getReason());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 21,
             ((DatedScheduledEventState) prevSched1.getCurrentState()).getDate());
+    }
+
+    public void testApplyOccured() throws Exception {
+        command.setNewMode(ScheduledEventMode.OCCURRED);
+        command.setDateOffset(7);
+        command.setNewReason("Vacation");
+        Set events = new HashSet();
+        Collections.addAll(events, e3, e4);
+        command.setEvents(events);
+
+        doApply();
+
+        ScheduledEvent prevSched0 = calendar.getScheduledArms().get(0).getEvents().get(2);
+        assertEquals("New state not added to scheduled event in arm 0", 2, prevSched0.getAllStates().size());
+        assertEquals("Wrong new state for previously scheduled event", ScheduledEventMode.OCCURRED, prevSched0.getCurrentState().getMode());
+        assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 4,
+            ((DatedScheduledEventState) prevSched0.getCurrentState()).getDate());
+
+        ScheduledEvent prevSched1 = calendar.getScheduledArms().get(1).getEvents().get(0);
+        assertEquals("New state added to scheduled event in arm 1", 2, prevSched1.getAllStates().size());
+        assertEquals("Wrong new state for previously scheduled event", ScheduledEventMode.CANCELED, prevSched1.getCurrentState().getMode());
     }
 
     public void testReasonWhenNewReasonBlank() throws Exception {

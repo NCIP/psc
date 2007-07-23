@@ -58,7 +58,9 @@ public class BatchRescheduleCommand {
     private Date createDate(Date baseDate) {
         Calendar c = Calendar.getInstance();
         c.setTime(baseDate);
-        c.add(Calendar.DATE, getDateOffset());
+        if(ScheduledEventMode.OCCURRED != getNewMode()) {
+            c.add(Calendar.DATE, getDateOffset());
+        }
         return c.getTime();
     }
 
