@@ -138,44 +138,51 @@
             }
 			function check()
 			{
+				var days = $$(".days")
+				var showButton = $('show_button')
+				var hideButton = $('hide_button')
+				var showMonth =  $$(".showMonth")
+				var hideMonth =  $$(".hideMonth")
+				
 				// Will figure out when the Show All button should be visible
 				if (areAllDaysPresent()){
-					$('show_button').conceal()
+					showButton.conceal()
 				}
 				else{
-					$('show_button').reveal()
+					showButton.reveal()
 				}
 				
 				// Will figure out when the Hide All button should be visible
 				if (!areAllDaysHidden()){
-					$('hide_button').reveal();
+					hideButton.reveal();
 				}
 				else{
-					$('hide_button').conceal()
+					hideButton.conceal()
 				}
 			
 				// Will figure out when the Show Month Arrows should be visible
-				for(var counter = 0; counter < $$(".days").length; counter++)				
-				{
-					if (isMonthPresent(counter)){
-						$$(".hideMonth")[counter].reveal();
-						$$(".showMonth")[counter].conceal();
-					}
-					else
-					$$(".showMonth")[counter].reveal();
-				}
+			    days.each(function(dc, counter) {
+			                    if (isMonthPresent(counter)){
+			                        hideMonth[counter].reveal();
+			                        showMonth[counter].conceal();
+			                    }
+			 					else {
+			                        showMonth[counter].reveal();
+			                    }
+			     })
+
 				
 				// Will figure out when the Hide Month Arrows should be visible
-
-				for(var counter = 0; counter < $$(".days").length; counter++)
-				{				
-					if (isMonthHidden(counter)){
-					$$(".hideMonth")[counter].conceal();
-					$$(".showMonth")[counter].reveal();
-					}
-					else
-					 $$(".hideMonth")[counter].reveal();
-				}
+				
+				days.each(function(dc, counter) {
+			                    if (isMonthPresent(counter)){
+			                        hideMonth[counter].conceal();
+			                        showMonth[counter].reveal();
+			                    }
+			 					else {
+			                        showMonth[counter].reveal();
+			                    }
+			     })
 			}
 
 			function isDayPresent(day){
