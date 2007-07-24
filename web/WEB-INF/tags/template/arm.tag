@@ -48,6 +48,8 @@
                         </c:when>
                         <c:otherwise><td class="empty<c:if test="${dStatus.last || day.lastDayOfSpan}"> last</c:if>">&nbsp;</td></c:otherwise>
                     </c:choose>
+					
+
                     </c:forEach>
                 </tr>
             </c:forEach>
@@ -64,20 +66,15 @@
 							<a href="#" class="control" id="showArrow">&#9660;</a></td>
 					</c:if>
 				</c:forEach>
-			</tr>	
-			
+			</tr>
         </table>
-        <c:if test="${editable and not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
-            <p class="tip">
-                Now that you have a period, you can add activities to it.  Click in any shaded
-                part of the grid above to begin.
-            </p>
-        </c:if>
+		<a href="#" class="control showMonth">&#9660;</a>
+		<a href="#" class="control hideMonth" style="visibility: hidden;">&#9650;</a>
 
         <div class="days">
             <c:forEach items="${month.days}" var="entry">
                 <c:if test="${not empty entry.value.events}">
-                    <div class="day autoclear" style="display: none;">
+                    <div class="day autoclear" id="day" style="display: none;">
                         <h3>Day ${entry.key}</h3>
                         <ul>
                         <c:forEach items="${entry.value.events}" var="event">
@@ -91,5 +88,12 @@
                 </c:if>
             </c:forEach>
         </div>
+		
+        <c:if test="${editable and not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
+            <p class="tip">
+                Now that you have a period, you can add activities to it.  Click in any shaded
+                part of the grid above to begin.
+            </p>
+        </c:if>
     </c:forEach>
 </div>

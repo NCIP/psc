@@ -85,13 +85,13 @@
                 border-width: 0 !important;
 				border-top-width: 1px;
             }
-
             .days {
                 margin: 0 3em 3em 5em;
             }
 
             li.arm, #epochs h4 {
                 position: relative;
+
             }
             /* For IE */
             * html #epochs h4 { height: 1px; }
@@ -136,6 +136,109 @@
             function registerSelectArmHandlers() {
                 $$('#epochs a').each(registerSelectArmHandler)
             }
+			function check()
+			{
+				// Will figure out when the Show All button should be visible
+				if (areAllDaysPresent()){
+					$('show_button').conceal()
+				}
+				else{
+					$('show_button').reveal()
+				}
+				
+				// Will figure out when the Hide All button should be visible
+				if (!areAllDaysHidden()){
+					$('hide_button').reveal();
+				}
+				else{
+					$('hide_button').conceal()
+				}
+			
+				// Will figure out when the Show Month Arrows should be visible
+				for(var counter = 0; counter < $$(".days").length; counter++)				
+				{
+					if (isMonthPresent(counter)){
+						$$(".hideMonth")[counter].reveal();
+						$$(".showMonth")[counter].conceal();
+					}
+					else
+					$$(".showMonth")[counter].reveal();
+				}
+				
+				// Will figure out when the Hide Month Arrows should be visible
+
+				for(var counter = 0; counter < $$(".days").length; counter++)
+				{				
+					if (isMonthHidden(counter)){
+					$$(".hideMonth")[counter].conceal();
+					$$(".showMonth")[counter].reveal();
+					}
+					else
+					 $$(".hideMonth")[counter].reveal();
+				}
+			}
+
+			function isDayPresent(day){
+				var present
+				if ($(day).style.display == "none")
+					present = false
+				else present = true
+				return present
+			}
+			function areAllDaysPresent(){
+				var continue1 = true
+				
+				$$(".day").each(function(e){ 
+				
+					if (isDayPresent($(e)) && continue1){
+					continue1 = true
+					}
+					else continue1 = false
+		
+				})
+				return continue1
+			}
+			function areAllDaysHidden(){
+				var continue1 = true
+				
+				$$(".day").each(function(e){ 
+				
+					if (!isDayPresent($(e)) && continue1){
+					continue1 = true
+					}
+					else continue1 = false
+		
+				})
+				return continue1
+			}
+			function isMonthPresent(num)
+			{
+				var continue1 = true
+				
+				$$(".days")[num].getElementsByClassName('day').each(function(e){ 
+				
+					if (isDayPresent($(e)) && continue1){
+					continue1 = true
+					}
+					else continue1 = false
+		
+				})
+				return continue1
+			}
+			function isMonthHidden(num)
+			{
+				var continue1 = true
+
+				$$(".days")[num].getElementsByClassName('day').each(function(e){ 
+				
+					if (!isDayPresent($(e)) && continue1){
+					continue1 = true
+					}
+					else continue1 = false
+		
+				})
+				return continue1
+			}
 
             function registerSelectArmHandler(a) {
                 var aElement = $(a)
@@ -169,16 +272,15 @@
 			function registerShowHandler(){
 				var show = $("show_button")
 				Event.observe(show, "click", function(e) {
-		            Event.stop(e)
-				    $$(".day").each(SC.slideAndShow)
-					visibility = false
-					$('show_button').conceal()
-					$('hide_button').reveal();
+		            Event.stop(e);
+				    $$(".day").each(function(e){SC.slideAndShow(e, { afterFinish: check});});
+					
 					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9650;</a>');});
+					
 				}							
-				);	
-			
+				);				
 			}
+			
 			function showSetup(){
 				registerShowHandler()
 			}
@@ -186,10 +288,8 @@
 			function registerHideHandler(){
 				var hide = $("hide_button")
 				Event.observe(hide, "click", function(e) {
-		            Event.stop(e)
-				    $$(".day").each(SC.slideAndHide)
-					$('hide_button').conceal()
-					$('show_button').reveal();
+		            Event.stop(e);
+				    $$(".day").each(function(e){SC.slideAndHide(e, { afterFinish: check});});
 					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9660;</a>');});
 				}							
 				);	
@@ -201,18 +301,20 @@
 			
 			function registerArrowHandler(a, counter){
 				var aElement = $(a)
+				
 				Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
 					if ($('showArrow').innerHTML == '▲'){
                 		Element.update(this, '<a href="#" class="control" id="showArrow">&#9660;</a>')
-						SC.slideAndHide($$(".day")[counter])
-						$('show_button').reveal()
+						SC.slideAndHide($$(".day")[counter], {afterFinish: check})
+				
 						
 					}
                 	else{
 						Element.update(this, '<a href="#" class="control" id="showArrow">&#9650;</a>')
-						SC.slideAndShow($$(".day")[counter])
-						$('hide_button').reveal()
+						SC.slideAndShow($$(".day")[counter], {afterFinish: check})
+					
+				
 						
 					}
                 })
@@ -220,9 +322,24 @@
 			function registerArrowHandlers(){
 				var counter = 0;
                 $$(".showDay").each(function(num) {registerArrowHandler(num, counter); counter++;});
-
             }
 			
+			function registerShowMonthHandler(a, counter){
+				var aElement = $(a)
+				Event.observe(aElement, "click", function(e) {
+		            Event.stop(e)          		
+						$$(".days")[counter].getElementsByClassName('day').each(function(e){SC.slideAndShow(e, { afterFinish: check});})
+				})
+			}
+			function registerHideMonthHandler(a, counter){
+				var aElement = $(a)
+				Event.observe(aElement, "click", function(e) {
+		            Event.stop(e)          		
+						$$(".days")[counter].getElementsByClassName('day').each(function(e){SC.slideAndHide(e, { afterFinish: check});})
+						$$(".hideMonth")[counter].conceal()
+						$$(".showMonth")[counter].reveal()
+				})
+			}
 
             function epochsAreaSetup() {
                 registerSelectArmHandlers()
@@ -234,6 +351,15 @@
 			function arrowSetup(){
 				registerArrowHandlers()
 			}
+			function showMonthSetup(){
+				var counter = 0;
+				$$(".showMonth").each(function(num) {registerShowMonthHandler(num, counter); counter++;});
+			}
+			function hideMonthSetup(){
+				var counter = 0;
+				$$(".hideMonth").each(function(num) {registerHideMonthHandler(num, counter); counter++;});
+			}
+			
 
             <c:if test="${not plannedCalendar.complete}">
             Event.observe(window, "load", createStudyControls)
@@ -242,6 +368,9 @@
 			Event.observe(window, "load", showSetup)
 			Event.observe(window, "load", hideSetup)
 			Event.observe(window, "load", arrowSetup)
+			Event.observe(window, "load", showMonthSetup)
+			Event.observe(window, "load", hideMonthSetup)
+			
 			
         </script>
     </head>
