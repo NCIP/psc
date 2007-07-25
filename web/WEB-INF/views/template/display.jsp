@@ -143,46 +143,72 @@
 				var hideButton = $('hide_button')
 				var showMonth =  $$(".showMonth")
 				var hideMonth =  $$(".hideMonth")
+				var presentMonths = []
+				var hiddenMonths = []
+				var allDaysArePresent = false
+				var allDaysAreHidden = true
 				
-				// Will figure out when the Show All button should be visible
-				if (areAllDaysPresent()){
-					showButton.conceal()
-				}
-				else{
-					showButton.reveal()
-				}
-				
-				// Will figure out when the Hide All button should be visible
-				if (!areAllDaysHidden()){
-					hideButton.reveal();
-				}
-				else{
-					hideButton.conceal()
-				}
 			
 				// Will figure out when the Show Month Arrows should be visible
 			    days.each(function(dc, counter) {
-			                    if (isMonthPresent(counter)){
-			                        hideMonth[counter].reveal();
-			                        showMonth[counter].conceal();
-			                    }
-			 					else {
-			                        showMonth[counter].reveal();
-			                    }
-			     })
+					
+		            if (isMonthPresent(counter)){
+                        hideMonth[counter].reveal();
+                        showMonth[counter].conceal();
+						presentMonths[counter] = true;
+                    }
+ 					else {
+                        showMonth[counter].reveal();
+						presentMonths[counter] = false;
+						
+                    }
+				})
 
 				
 				// Will figure out when the Hide Month Arrows should be visible
 				
 				days.each(function(dc, counter) {
-			                    if (isMonthPresent(counter)){
-			                        hideMonth[counter].conceal();
-			                        showMonth[counter].reveal();
-			                    }
-			 					else {
-			                        showMonth[counter].reveal();
-			                    }
+                   if (isMonthHidden(counter)){
+                       hideMonth[counter].conceal();
+                       showMonth[counter].reveal();
+					   hiddenMonths[counter] = true;
+					
+                   }
+					else {
+                       hideMonth[counter].reveal();
+					   hiddenMonths[counter] = false;
+					
+                   }
 			     })
+			
+			
+				// Will figure out when the Show All button should be visible
+				areAllDaysPresent = true
+				for (var i=0; i < presentMonths.length; i++)
+				{
+					if (allDaysArePresent && presentMonths[i])
+						allDaysArePresent = true
+					else allDaysArePresent = false
+					
+				}
+				
+				if (allDaysArePresent)	$('show_button').conceal()
+				else $('show_button').reveal()
+
+				// Will figure out when the Hide All button should be visible
+				
+				areAllDaysHidden = true
+				for (var i=0; i < hiddenMonths.length; i++)
+				{
+					if (allDaysAreHidden && hiddenMonths[i])
+						allDaysAreHidden = true
+					else allDaysAreHidden = false
+					
+				}
+				
+				if (allDaysAreHidden) $('hide_button').conceal()
+				else $('hide_button').reveal()
+				
 			}
 
 			function isDayPresent(day){

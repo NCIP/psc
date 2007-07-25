@@ -1,0 +1,438 @@
+
+
+
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>caBIG Study Calendar Module - Template for [Unnamed study]</title>
+    
+<link rel="stylesheet" type="text/css" href="/studycalendar/css/debug.css"/>
+    
+<link rel="stylesheet" type="text/css" href="/studycalendar/css/lightbox.css"/>
+    
+<link rel="stylesheet" type="text/css" href="/studycalendar/css/error-console.css"/>
+
+    
+<link rel="stylesheet" type="text/css" href="/studycalendar/css/common.css"/>
+    
+<script type="text/javascript" src="/studycalendar/js/prototype.js"></script>
+    
+<script type="text/javascript" src="/studycalendar/js/lightbox.js"></script>
+    
+<script type="text/javascript" src="/studycalendar/js/error-console.js"></script>
+    
+<script type="text/javascript" src="/studycalendar/js/common.js"></script>
+    <style type="text/css" xml:space="preserve">
+        body { behavior: url('/studycalendar/css/csshover.htc') }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="/studycalendar/css/main.css"/>
+        
+
+<script type="text/javascript" src="/studycalendar/js/scriptaculous/effects.js"></script>
+
+<script type="text/javascript" src="/studycalendar/js/scriptaculous/builder.js"></script>
+
+<script type="text/javascript" src="/studycalendar/js/scriptaculous/controls.js"></script>
+
+<script type="text/javascript" src="/studycalendar/js/scriptaculous/dragdrop.js"></script>
+
+<script type="text/javascript" src="/studycalendar/js/scriptaculous/slider.js"></script>
+
+<script type="text/javascript" src="/studycalendar/js/common-scriptaculous.js"></script>
+        
+<script type="text/javascript" src="/studycalendar/js/main.js"></script>
+        <style type="text/css">
+            .epochs-and-arms {
+                margin: 1em;
+            }
+
+            #epochs-indicator {
+                margin: 0.5em 0.5em 0 0;
+                float: left;
+            }
+
+            table.periods, table.periods tr, table.periods td, table.periods th {
+                border-spacing: 0;
+                border: 0 solid #666;
+                margin: 1em;
+            }
+            table.periods td, table.periods th {
+                width: 2em;
+            }
+            table.periods th {
+                padding: 2px;
+                border-right-width: 1px;
+            }
+            table.periods th.row {
+                padding-right: 0.5em;
+                text-align: right;
+                white-space: nowrap;
+            }
+            table.periods th.column {
+                border-top-width: 1px;
+            }
+            table.periods tr.resume th {
+                border-right: 1px solid #ddd;
+            }
+            table.periods td {
+                padding: 0;
+                border-width: 1px 1px 0 0;
+                text-align: center;
+            }
+            table.periods td.repetition a {
+                text-decoration: none;
+                margin: 0;
+                padding: 2px;
+                display: block;
+                color: #444;
+                /* For IE */
+                height: 1%;
+            }
+            table.periods a:hover {
+                color: #000;
+            }
+            table.periods td.repetition:hover {
+                background-color: #ccc;
+            }
+            table.periods td.repetition {
+                background-color: #ddd;
+                border-right-width: 0;
+            }
+            table.periods td.empty {
+                background-color: #fff;
+                border-right-width: 0;
+            }
+            table.periods td.last {
+                border-right-width: 1px;
+            }
+            table.periods tr.last td {
+                border-bottom-width: 1px;
+            }
+            table.periods td.controls {
+                border-width: 0 !important;
+                padding: 3px;
+            }
+
+            .days {
+                margin: 0 3em 3em 5em;
+            }
+
+            li.arm, #epochs h4 {
+                position: relative;
+            }
+            /* For IE */
+            * html #epochs h4 { height: 1px; }
+            .controls, table.periods a.control {
+                font-family: Arial, sans-serif;
+                font-size: 7.5pt;
+            }
+            div.arm-controls, div.epoch-controls {
+                position: absolute;
+                bottom: 4px;
+                right: 2px;
+                text-align: right;
+            }
+            span.study-controls {
+                margin-left: 4px;
+            }
+
+            .inplaceeditor-form a {
+                font-size: 11pt;
+                border: 1px solid #444;
+                padding: 3px;
+            }
+
+            ul#admin-options {
+                padding: 0;
+                margin: 0;
+            }
+            ul#admin-options li {
+                display: inline;
+                padding: 2px 4px;
+                margin: 0;
+                list-style-type: none;
+            }
+        </style>
+        
+        <script type="text/javascript" src="/studycalendar/pages/template/edit.js?study=28"></script>
+        
+        <script type="text/javascript">
+            var lastRequest;
+            var selectedArmId = 136;
+
+            function registerSelectArmHandlers() {
+                $$('#epochs a').each(registerSelectArmHandler)
+            }
+
+            function registerSelectArmHandler(a) {
+                var aElement = $(a)
+                Event.observe(aElement, "click", function(e) {
+                    Event.stop(e)
+                    $("epochs-indicator").reveal();
+                    SC.slideAndHide('selected-arm-content', { afterFinish: function() {
+                        // deselect current
+                        var sel = $$("#epochs .selected")
+                        if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
+
+                        var armId = aElement.id.substring(4)
+                        selectedArmId = armId
+                        aElement.href = '/studycalendar/pages/template/select?arm=' + armId
+
+                        lastRequest = new Ajax.Request(aElement.href,
+                            {
+                                onComplete: function(req) {
+                                    $("epochs-indicator").conceal()
+                                },
+                                onFailure: function() {
+                                    Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
+                                    Element.update('selected-arm-header', "Error")
+                                    SC.slideAndShow('selected-arm-content')
+                                }
+                            }
+                        );
+                    } });
+                })
+            }
+
+            function epochsAreaSetup() {
+                registerSelectArmHandlers()
+                
+                createAllArmControls()
+                createAllEpochControls()
+                
+            }
+
+            
+            Event.observe(window, "load", createStudyControls)
+            
+            Event.observe(window, "load", epochsAreaSetup)
+        </script>
+  </head>
+
+  <body>
+    <div id="header" class="autoclear">
+        <img id="cabig-logo" src="/studycalendar/images/cabig.jpg" alt="caBIG" width="739" height="45"/>
+        <div id="psc-module">Patient Study Calendar</div>
+    </div>
+    
+
+<div id="breadcrumbs">
+
+    <a href="/studycalendar/pages/studyList">Home</a> /
+
+    <a href="/studycalendar/pages/template?study=28">[Unnamed study]</a> 
+
+
+
+</div>
+    <div id="body">
+    <h1>Template for <span id="study-name">[Unnamed study]</span></h1>
+
+        <ul id="admin-options">
+            
+                
+
+
+
+
+
+
+
+<li><a href="/studycalendar/pages/markComplete?study=28" class="control">Mark this template complete</a></li>
+
+
+            
+            
+
+
+
+
+
+
+
+<li><a href="/studycalendar/pages/assignSite?id=28" class="control">Assign sites</a></li>
+
+
+            
+            
+        </ul>
+
+        <div id="epochs" class="section">
+            <h2>Epochs and arms</h2>
+            
+
+
+
+
+
+
+<div id="epochs-container" class="epochs-and-arms autoclear" style="height: 8em">
+    
+
+<img id="epochs-indicator" class="indicator" src="/studycalendar/images/indicator.white.gif" alt="activity indicator"/>
+    
+        
+
+
+
+
+
+
+<div class="epoch" style="width: 31.333333333333336%" id="epoch-82">
+    <h4 title="Epoch Screening has no arms" id="epoch-82-header"><span id="epoch-82-name">Screening</span></h4>
+
+    <ul class="arms" id="epoch-82-arms">
+    
+        
+
+
+
+<li id="arm-136-item" class="arm selected">
+    <a href="#" class="arm" id="arm-136" title="Screening">Screening</a>
+</li>
+
+    
+    </ul>
+</div>
+
+    
+        
+
+
+
+
+
+
+<div class="epoch" style="width: 31.333333333333336%" id="epoch-83">
+    <h4 title="Epoch Treatment has 3 arms" id="epoch-83-header"><span id="epoch-83-name">Treatment</span></h4>
+
+    <ul class="arms" id="epoch-83-arms">
+    
+        
+
+
+
+<li id="arm-137-item" class="arm ">
+    <a href="#" class="arm" id="arm-137" title="Treatment: A">A</a>
+</li>
+
+    
+        
+
+
+
+<li id="arm-138-item" class="arm ">
+    <a href="#" class="arm" id="arm-138" title="Treatment: B">B</a>
+</li>
+
+    
+        
+
+
+
+
+<li id="arm-139-item" class="arm ">
+    <a href="#" class="arm" id="arm-139" title="Treatment: C">C</a>
+</li>
+
+    
+    </ul>
+</div>
+
+    
+        
+
+
+
+
+
+
+<div class="epoch last" style="width: 31.333333333333336%" id="epoch-84">
+    <h4 title="Epoch Follow up has no arms" id="epoch-84-header"><span id="epoch-84-name">Follow up</span></h4>
+    <ul class="arms" id="epoch-84-arms">
+
+    
+        
+
+
+
+<li id="arm-140-item" class="arm ">
+    <a href="#" class="arm" id="arm-140" title="Follow up">Follow up</a>
+</li>
+
+    
+    </ul>
+</div>
+
+    
+</div>
+        </div>
+
+        <div id="selected-arm" class="section">
+
+            
+
+
+
+
+<h2 id="selected-arm-header">Screening</h2>
+
+<div id="selected-arm-content">
+    
+    <p class="controls"><a href="/studycalendar/pages/newPeriod?arm=136" class="control">Add period</a></p>
+    
+    
+        <p class="tip">
+            To begin placing activities in this part of the protocol template, click
+            <a href="/studycalendar/pages/newPeriod?arm=136" class="control">add period</a>.
+            This will allow you to add a <em>period</em>, which is a (possibly repeating) series of
+            days.  You will then have the opportunity to associate activities with days in your new
+            period.
+        </p>
+
+    
+    
+</div>
+
+        </div>
+    </div>
+    <div id="footmenu">
+        <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
+        | 
+<a href="/studycalendar/public/logout">Logout</a>
+    </div>
+
+    <form action="#" id="sso-form" target="_blank" method="post">
+    <input type="hidden" name="gridProxy" value=""/>
+</form>
+
+    
+<div id="error-console" style="display: none">
+    <div id="error-console-shown" style="display: none">
+        <h1>Asynchronous request error(s)</h1>
+        <ul id="error-console-errors"></ul>
+        <div class="links">
+
+            <a href="#" id="error-console-clear">Clear</a> | <a href="#" id="error-console-hide">Hide</a>
+        </div>
+    </div>
+    <div id="error-console-hidden">
+        <div class="links">
+            <a href="#" id="error-console-show">Show error</a>
+
+        </div>
+    </div>
+</div>
+
+    
+
+
+
+
+
+
+  </body>
+</html>
