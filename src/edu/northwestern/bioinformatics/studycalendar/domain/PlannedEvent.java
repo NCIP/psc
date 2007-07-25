@@ -25,9 +25,8 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_planned_events_id")
     }
 )
-public class PlannedEvent extends AbstractMutableDomainObject implements Comparable<PlannedEvent> {
+public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<PlannedEvent> {
     private Activity activity;
-    private Period period;
     private Integer day;
     private String details;
 
@@ -67,11 +66,11 @@ public class PlannedEvent extends AbstractMutableDomainObject implements Compara
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "period_id")
     public Period getPeriod() {
-        return period;
+        return getParent();
     }
 
     public void setPeriod(Period period) {
-        this.period = period;
+        setParent(period);
     }
 
     public Integer getDay() {

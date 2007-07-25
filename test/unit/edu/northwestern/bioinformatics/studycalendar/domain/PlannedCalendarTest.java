@@ -38,11 +38,11 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
     public void testLength() throws Exception {
         Epoch e1 = registerMockFor(Epoch.class);
         expect(e1.getLengthInDays()).andReturn(45);
-        e1.setPlannedCalendar(calendar);
+        e1.setParent(calendar);
 
         Epoch e2 = registerMockFor(Epoch.class);
         expect(e2.getLengthInDays()).andReturn(13);
-        e2.setPlannedCalendar(calendar);
+        e2.setParent(calendar);
 
         replayMocks();
 

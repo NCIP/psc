@@ -25,11 +25,11 @@ public class EpochTest extends StudyCalendarTestCase {
     public void testLength() throws Exception {
         Arm a1 = registerMockFor(Arm.class);
         EasyMock.expect(a1.getLengthInDays()).andReturn(45);
-        a1.setEpoch(epoch);
+        a1.setParent(epoch);
 
         Arm a2 = registerMockFor(Arm.class);
         EasyMock.expect(a2.getLengthInDays()).andReturn(13);
-        a2.setEpoch(epoch);
+        a2.setParent(epoch);
 
         replayMocks();
 

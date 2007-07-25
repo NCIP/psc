@@ -25,7 +25,6 @@ import java.util.ArrayList;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Moses Hohman
@@ -38,32 +37,35 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends AbstractMutableDomainObject implements Named, Comparable<Period> {
+public class Period extends PlanTreeInnerNode<Arm, PlannedEvent, List<PlannedEvent>>
+    implements Named, Comparable<Period>
+{
     private static final int DEFAULT_REPETITIONS = 1;
     private static final int DEFAULT_START_DAY = 1;
     private static final int DEFAULT_DURATION_QUANTITY = 1;
     private static final Duration.Unit DEFAULT_DURATION_UNIT = Duration.Unit.day;
 
     private String name;
-    private Arm arm;
     private Integer startDay;
     private Duration duration;
     private int repetitions;
-    private List<PlannedEvent> plannedEvents;
 
     public Period() {
-        plannedEvents = new LinkedList<PlannedEvent>();
         startDay = DEFAULT_START_DAY;
         repetitions = DEFAULT_REPETITIONS;
         getDuration().setQuantity(DEFAULT_DURATION_QUANTITY);
         getDuration().setUnit(DEFAULT_DURATION_UNIT);
     }
 
+    @Override
+    protected List<PlannedEvent> createChildrenCollection() {
+        return new LinkedList<PlannedEvent>();
+    }
+
     ////// LOGIC
 
     public void addPlannedEvent(PlannedEvent event) {
-        getPlannedEvents().add(event);
-        event.setPeriod(this);
+        addChild(event);
     }
 
     @Transient
@@ -132,11 +134,11 @@ public class Period extends AbstractMutableDomainObject implements Named, Compar
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "arm_id")
     public Arm getArm() {
-        return arm;
+        return getParent();
     }
 
     public void setArm(Arm arm) {
-        this.arm = arm;
+        setParent(arm);
     }
 
     @Column(name = "start_day")
@@ -174,10 +176,10 @@ public class Period extends AbstractMutableDomainObject implements Named, Compar
     @OrderBy // order by ID for testing consistency
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<PlannedEvent> getPlannedEvents() {
-        return plannedEvents;
+        return getChildren();
     }
 
     public void setPlannedEvents(List<PlannedEvent> plannedEvents) {
-        this.plannedEvents = plannedEvents;
+        setChildren(plannedEvents);
     }
 }

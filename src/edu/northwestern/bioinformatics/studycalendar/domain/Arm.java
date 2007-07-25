@@ -20,7 +20,6 @@ import java.util.TreeSet;
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -32,23 +31,25 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_arms_id")
     }
 )
-public class Arm extends AbstractMutableDomainObject implements Named {
-    private Epoch epoch;
+public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
     private String name;
-    private SortedSet<Period> periods = new TreeSet<Period>();
 
     // business methods
 
+    @Override
+    protected SortedSet<Period> createChildrenCollection() {
+        return new TreeSet<Period>();
+    }
+
     public void addPeriod(Period period) {
-        periods.add(period);
-        period.setArm(this);
+        addChild(period);
     }
 
     @Transient
     public String getQualifiedName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(epoch.getName());
-        if (epoch.isMultipleArms()) {
+        sb.append(getEpoch().getName());
+        if (getEpoch().isMultipleArms()) {
             sb.append(": ").append(getName());
         }
         return sb.toString();
@@ -87,21 +88,21 @@ public class Arm extends AbstractMutableDomainObject implements Named {
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(insertable=false, updatable=false, nullable=false)
     public Epoch getEpoch() {
-        return epoch;
+        return getParent();
     }
 
     public void setEpoch(Epoch epoch) {
-        this.epoch = epoch;
+        setParent(epoch);
     }
 
     @OneToMany (mappedBy = "arm")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @Sort (type = SortType.NATURAL)
     public SortedSet<Period> getPeriods() {
-        return periods;
+        return getChildren();
     }
 
     public void setPeriods(SortedSet<Period> periods) {
-        this.periods = periods;
+        setChildren(periods);
     }
 }

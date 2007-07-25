@@ -14,9 +14,7 @@ import javax.persistence.Transient;
 import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import java.util.List;
-import java.util.ArrayList;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
@@ -28,10 +26,13 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_epochs_id")
     }
 )
-public class Epoch extends AbstractMutableDomainObject implements Named {
-    private PlannedCalendar plannedCalendar;
-    private List<Arm> arms = new ArrayList<Arm>();
+public class Epoch extends PlanTreeInnerNode<PlannedCalendar, Arm, List<Arm>> implements Named {
     private String name;
+
+    @Override
+    protected List<Arm> createChildrenCollection() {
+        return new LinkedList<Arm>();
+    }
 
     ////// FACTORY
 
@@ -57,8 +58,7 @@ public class Epoch extends AbstractMutableDomainObject implements Named {
     ////// LOGIC
 
     public void addArm(Arm arm) {
-        arms.add(arm);
-        arm.setEpoch(this);
+        addChild(arm);
     }
 
     @Transient
@@ -84,11 +84,11 @@ public class Epoch extends AbstractMutableDomainObject implements Named {
     @IndexColumn(name="list_index")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<Arm> getArms() {
-        return arms;
+        return getChildren();
     }
 
     public void setArms(List<Arm> arms) {
-        this.arms = arms;
+        setChildren(arms);
     }
 
     // This is annotated this way so that the IndexColumn in the parent
@@ -96,11 +96,11 @@ public class Epoch extends AbstractMutableDomainObject implements Named {
     @ManyToOne (fetch = FetchType.LAZY)
     @JoinColumn(insertable=false, updatable=false, nullable=false)
     public PlannedCalendar getPlannedCalendar() {
-        return plannedCalendar;
+        return getParent();
     }
 
     public void setPlannedCalendar(PlannedCalendar plannedCalendar) {
-        this.plannedCalendar = plannedCalendar;
+        setParent(plannedCalendar);
     }
 
     public String getName() {
