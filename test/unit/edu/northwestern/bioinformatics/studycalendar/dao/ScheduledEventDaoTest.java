@@ -42,6 +42,8 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         assertEquals("Wrong current mode", ScheduledEventMode.OCCURRED, loaded.getCurrentState().getMode());
 
         assertEquals("Wrong number of previous states", 3, loaded.getPreviousStates().size());
+
+        assertEquals("Wrong details", "Nice Details", loaded.getDetails());
     }
 
     public void testGetByRangeFinite() throws Exception {

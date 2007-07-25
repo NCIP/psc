@@ -52,6 +52,8 @@
         current_state_reason="Success"
         ideal_date="2006-10-31"
         notes="Boo!"
+        activity_id="-100"
+        details="Nice Details"
         />
     <SCHEDULED_EVENT_STATES
         id="-11"

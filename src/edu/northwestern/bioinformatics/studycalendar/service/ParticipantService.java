@@ -86,6 +86,8 @@ public class ParticipantService {
                     event.setIdealDate(idealDate(armDay + normalizationFactor, startDate));
                     event.setPlannedEvent(plannedEvent);
                     event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
+                    event.setDetails(plannedEvent.getDetails());
+                    event.setActivity(plannedEvent.getActivity());
                     scheduledArm.addEvent(event);
                 }
             }

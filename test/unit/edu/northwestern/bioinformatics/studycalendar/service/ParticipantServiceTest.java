@@ -46,12 +46,16 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         arm.addPeriod(p1);
         arm.addPeriod(p2);
         arm.addPeriod(p3);
-                                                                              // days
-        p1.addPlannedEvent(setId(1, createPlannedEvent("CBC", 1)));           // 1, 8, 15
-        p1.addPlannedEvent(setId(2, createPlannedEvent("Vitals", 3)));        // 3, 10, 17
-        p2.addPlannedEvent(setId(3, createPlannedEvent("Questionnaire", 1))); // 3
-        p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1)));      // 8, 36
-        p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18)));     // 25, 53
+
+        Activity a1 = new Activity();
+        a1.setId(1);
+        a1.setName("CBC");
+                                                                                                        // days
+        p1.addPlannedEvent(setId(1, createPlannedEvent("CBC", 1, "CBC Details")));                      // 1, 8, 15
+        p1.addPlannedEvent(setId(2, createPlannedEvent("Vitals", 3, "Vitals Details")));                // 3, 10, 17
+        p2.addPlannedEvent(setId(3, createPlannedEvent("Questionnaire", 1, "Questionnaire Details")));  // 3
+        p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1, "Infusion Details")));            // 8, 36
+        p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18, "Infusion Details")));           // 25, 53
     }
 
     public void testAssignParticipant() throws Exception {
@@ -115,17 +119,22 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
 
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  1, 1, events.get(0));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 2, events.get(1));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 3, events.get(2));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 1, events.get(3));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 4, events.get(4));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 10, 2, events.get(5));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 15, 1, events.get(6));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 17, 2, events.get(7));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, events.get(8));
-        assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, events.get(9));
-        assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, events.get(10));
+        Activity a1 = createNamedInstance("CBC", Activity.class);
+        Activity a2 = createNamedInstance("Vitals", Activity.class);
+        Activity a3 = createNamedInstance("Questionnaire", Activity.class);
+        Activity a4 = createNamedInstance("Infusion", Activity.class);
+
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  1, 1, "CBC Details",           a1, events.get(0));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 2, "Vitals Details",        a2, events.get(1));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 3, "Questionnaire Details", a3, events.get(2));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 1, "CBC Details",           a1, events.get(3));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 4, "Infusion Details",      a4, events.get(4));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 10, 2, "Vitals Details",        a2, events.get(5));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 15, 1, "CBC Details",           a1, events.get(6));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 17, 2, "Vitals Details",        a2, events.get(7));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, "Infusion Details",      a4, events.get(8));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, "Infusion Details",      a4, events.get(9));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, "Infusion Details",      a4, events.get(10));
     }
     
     public void testScheduleFirstArmWithNegativeDays() throws Exception {
@@ -239,6 +248,17 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         Scheduled currentState = (Scheduled) actualEvent.getCurrentState();
         assertEquals("Current and ideal date not same", actualEvent.getIdealDate(), currentState.getDate());
         assertEquals("Wrong reason", "Initialized from template", currentState.getReason());
+    }
+
+    private void assertNewlyScheduledEvent(
+         int expectedYear, int expectedMonth, int expectedDayOfMonth,
+         int expectedPlannedEventId, String expectedDetails,
+         Activity expectedActivity, ScheduledEvent actualEvent
+    ){
+        assertNewlyScheduledEvent(expectedYear, expectedMonth, expectedDayOfMonth, expectedPlannedEventId, actualEvent);
+        assertEquals("Wrong details", expectedDetails, actualEvent.getDetails());
+        assertNotNull("Actual Event Activity Null", actualEvent.getActivity());
+        assertEquals("Wrong Activity", expectedActivity.getName(), actualEvent.getActivity().getName());
     }
 
     public void testFindRecurringHoliday() throws Exception {

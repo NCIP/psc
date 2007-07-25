@@ -9,13 +9,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.NotNull;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
-import javax.persistence.Column;
-import javax.persistence.Transient;
-import javax.persistence.OneToMany;
-import javax.persistence.JoinColumn;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -43,6 +37,8 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     private String notes;
     private ScheduledEventState currentState;
     private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
+    private String details;
+    private Activity activity;
 
     ////// LOGIC
 
@@ -136,5 +132,23 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
+    }
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id")
+    public Activity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(Activity activity) {
+        this.activity = activity;
     }
 }

@@ -44,6 +44,12 @@ public class Fixtures {
         return event;
     }
 
+    public static PlannedEvent createPlannedEvent(String activityName, int day, String details) {
+        PlannedEvent event = createPlannedEvent(activityName, day);
+        event.setDetails(details);
+        return event;
+    }
+
     public static Study createSingleEpochStudy(String studyName, String epochName, String... armNames) {
         Study study = createNamedInstance(studyName, Study.class);
         study.setPlannedCalendar(new PlannedCalendar());
