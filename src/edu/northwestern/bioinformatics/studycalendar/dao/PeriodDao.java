@@ -17,4 +17,8 @@ public class PeriodDao extends StudyCalendarDao<Period> {
     public void save(Period period) {
         getHibernateTemplate().saveOrUpdate(period);
     }
+    
+    public void evict(Period period) {
+        getHibernateTemplate().evict(period);
+    }
 }

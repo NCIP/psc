@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 
 import java.util.*;
 import java.util.List;
@@ -18,6 +19,8 @@ import org.apache.log4j.Logger;
 public class ManagePeriodEventsCommand {
     private static final Logger log = Logger.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
+    private PlannedEventDao plannedEventDao;
+
 
     /** Representation of the activity/day grid.
      * Map keys are activity IDs,
@@ -26,9 +29,14 @@ public class ManagePeriodEventsCommand {
      */
     private List<GridRow> grid;
 
-    public ManagePeriodEventsCommand(Period period) {
+    public ManagePeriodEventsCommand(Period period, PlannedEventDao plannedEventDao) {
         this.period = period;
-        grid = createGrid(period);
+        this.plannedEventDao = plannedEventDao;
+        grid = createGrid();
+    }
+
+    protected List<GridRow> createGrid() {
+        return createGrid(period);
     }
 
     /**
@@ -37,12 +45,19 @@ public class ManagePeriodEventsCommand {
     private List<GridRow> createGrid(Period src) {
         Map<String, GridRow> bins = new LinkedHashMap<String, GridRow>();
         Integer dayCount = src.getDuration().getDays();
+        Map<String, int[]> counts = new HashMap<String, int[]>();
         for (PlannedEvent event : src.getPlannedEvents()) {
-            String binKey = GridRow.key(event);
+            String activityAndDetails = GridRow.key(event);
+            if (counts.get(activityAndDetails) == null) {
+                counts.put(activityAndDetails, new int[dayCount]);
+            }
+            int countI = event.getDay() - 1;
+            String binKey = activityAndDetails + counts.get(activityAndDetails)[countI];
+            counts.get(activityAndDetails)[countI]++;
             if (!bins.containsKey(binKey)) {
                 bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount));
             }
-            bins.get(binKey).incrementDay(event.getDay());
+            bins.get(binKey).addId(event);
         }
         return new ExpandingList<GridRow>(
             new GridFiller(dayCount),
@@ -52,62 +67,75 @@ public class ManagePeriodEventsCommand {
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public void apply() {
+    public GridRow apply() {
         List<GridRow> existingGrid = createGrid(period);
-        Map<String, GridRow> difference = new LinkedHashMap<String, GridRow>();
-        // Initialize difference from existing events
+        Map<String, GridRow> rowMap = new LinkedHashMap<String, GridRow>();
+        // Maps the existing Grid
         for (GridRow diffRow : existingGrid) {
-            difference.put(diffRow.key(), diffRow);
+            rowMap.put(diffRow.key(), diffRow);
         }
         // calculate difference from bound grid
          for (GridRow bound : getGrid()) {
             //just need to update details on the row
-            if (bound.getColumnNumber() <0 && bound.isUpdated()) {
+            if (!bound.isUpdated()) continue;
+            if (bound.isDetailsUpdated()) {
                 GridRow existing = existingGrid.get(bound.getRowNumber());
                 updateDetails(existing, bound.getDetails());
-            } else {
-                int day = bound.getColumnNumber()+1;
-                if (difference.containsKey(bound.key())) {
+            }
+            else {
+                log.debug("Processing grid " + bound.getRowNumber() + ", " + bound.getColumnNumber());
+                if (rowMap.containsKey(bound.key())) {
                     // if this is an update to an existing row calculate the difference
-                    if (bound.isUpdated()) {
-                        if (bound.getStatus()) {
-                            addEvent(bound, day);
+                    if (!bound.isAddition()) {
+                        log.debug("Action is remove from an existing row");
+                        System.out.println("bound.getColumnNumber" + bound.getColumnNumber());
+                        Integer id = bound.getEventIds().get(bound.getColumnNumber());
+                        if (id != null) {
+                            removeEvent(id);
                         } else {
-                            removeEvent(bound, day);
+                            log.debug("Attempted to remove event twice: " + bound.getRowNumber() + ", " + bound.getColumnNumber() + " (r, c)");
                         }
+                    } else {
+                        log.debug("Action is add to existing row");
+                        addEvent(bound);
                     }
                  } else {
                    // otherwise, it is all new
-                    difference.put(bound.key(), bound);
-                    addEvent(bound, day);
+                    log.debug("Action is add into new row");
+                    rowMap.put(bound.key(), bound);
+                    addEvent(bound);
                 }
             }
+            return bound;
         }
+        return null;
     }
 
-    private void addEvent(GridRow row, int day) {
+    private void addEvent(GridRow row) {
         PlannedEvent newEvent = new PlannedEvent();
-        newEvent.setDay(day);
+        newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
         period.addPlannedEvent(newEvent);
+        plannedEventDao.save(newEvent);
     }
 
-    private void removeEvent(GridRow row, int day) {
-         for (Iterator<PlannedEvent> it = period.getPlannedEvents().iterator(); it.hasNext();) {
-             PlannedEvent event = it.next();
-             if (row.matchesEvent(event) && day == event.getDay()) {
-                 it.remove();
-                break;  // only remove one
+    private void removeEvent(Integer eventId) {
+        for (Iterator<PlannedEvent> iterator = period.getPlannedEvents().iterator(); iterator.hasNext();) {
+            PlannedEvent event = iterator.next();
+            if(eventId.equals(event.getId())) {
+                iterator.remove();
+                plannedEventDao.delete(event);
             }
         }
     }
 
     private void updateDetails(GridRow row, String details){
-        for (Iterator<PlannedEvent> it = period.getPlannedEvents().iterator(); it.hasNext();) {
-            PlannedEvent event = it.next();
-              if(row.matchesEvent(event)) {
+        for (Integer id: row.getEventIds()) {
+            if (id != null) {
+                PlannedEvent event = plannedEventDao.getById(id);
                 event.setDetails(details);
+                plannedEventDao.save(event);
             }
         }
     }
@@ -134,17 +162,18 @@ public class ManagePeriodEventsCommand {
 
     public static class GridRow {
         private Activity activity;
-        private List<Boolean> counts;
+        private List<Integer> eventIds;
+
         private String details;
         private int rowNumber;
         private int columnNumber;
-        private boolean status;
+        private boolean addition;
         private boolean updated;
 
         public GridRow(int length) {
-            counts = new ArrayList<Boolean>(length);
-            while (counts.size() < length) {
-                counts.add(false);
+            eventIds = new ArrayList<Integer>(length);
+            while (eventIds.size() < length) {
+                eventIds.add(null);
             }
         }
         
@@ -155,14 +184,6 @@ public class ManagePeriodEventsCommand {
         }
 
         ////// LOGIC
-
-        public void incrementDay(Integer day) {
-            getCounts().set(day-1, true);
-        }
-
-        public void decrementDay(Integer day) {
-            getCounts().set(day-1, false);
-        }
 
         public String key() {
             return key(getActivity(), getDetails());
@@ -181,6 +202,18 @@ public class ManagePeriodEventsCommand {
                 && ComparisonUtils.nullSafeEquals(event.getDetails(), getDetails());
         }
 
+
+        public void addId(PlannedEvent event) {
+            int id = event.getId();
+            int day = event.getDay();
+            this.getEventIds().set(day-1, id);
+            //To change body of created methods use File | Settings | File Templates.
+        }
+
+        public boolean isDetailsUpdated() {
+            return getColumnNumber() <0;
+        }
+
         ////// BOUND PROPERTIES
 
         public Activity getActivity() {
@@ -191,12 +224,12 @@ public class ManagePeriodEventsCommand {
             this.activity = activity;
         }
 
-        public List<Boolean> getCounts() {
-            return counts;
+        public List<Integer> getEventIds() {
+            return eventIds;
         }
 
-        public void setCounts(List<Boolean> counts) {
-            this.counts = counts;
+        public void setEventIds(List<Integer> eventIds) {
+            this.eventIds = eventIds;
         }
 
         public String getDetails() {
@@ -223,12 +256,12 @@ public class ManagePeriodEventsCommand {
             this.columnNumber = columnNumber;
         }
 
-        public boolean getStatus() {
-            return status;
+        public boolean isAddition() {
+            return addition;
         }
 
-        public void setStatus(boolean status) {
-            this.status = status;
+        public void setAddition(boolean addition) {
+            this.addition = addition;
         }
 
         public boolean isUpdated() {
@@ -237,6 +270,7 @@ public class ManagePeriodEventsCommand {
 
         public void setUpdated(boolean updated) {
             this.updated = updated;
-        }        
+        }
+
     }
 }

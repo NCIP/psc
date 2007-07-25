@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
@@ -42,6 +43,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
 
     private PeriodDao periodDao;
     private ActivityDao activityDao;
+    private PlannedEventDao plannedEventDao;
 
     public ManagePeriodEventsController() {
         setBindOnNewForm(true);
@@ -52,7 +54,13 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        return new ManagePeriodEventsCommand(periodDao.getById(id));
+        if (plannedEventDao == null) {
+            throw new NullPointerException("MY NULL POINTER EXCEPTION");
+        }
+        Period period = periodDao.getById(id);
+        period.getPlannedEvents().size();
+        periodDao.evict(period);
+        return new ManagePeriodEventsCommand(period, plannedEventDao);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -85,14 +93,18 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response,
                                                  Object oCommand, BindException errors) throws Exception {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
-        command.apply();
+        ManagePeriodEventsCommand.GridRow row = command.apply();
 
-        periodDao.save(command.getPeriod());
         Arm arm = command.getPeriod().getArm();
         Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
 
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("grid", command.createGrid());
+        map.put("rowNumber", row.getRowNumber());
+        map.put("columnNumber", row.getColumnNumber());
 
-        return ControllerTools.redirectToCalendarTemplate(studyId, arm.getId());
+        ControllerTools.addHierarchyToModel(command.getPeriod(), map);
+        return new ModelAndView("template/ajax/updateManagePeriod", map);
     }
 
 
@@ -106,6 +118,11 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    @Required
+    public void setPlannedEventDao(PlannedEventDao plannedEventDao) {
+        this.plannedEventDao = plannedEventDao;
     }
 
     private static class Crumb extends DefaultCrumb {

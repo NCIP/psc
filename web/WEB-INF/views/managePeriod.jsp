@@ -64,13 +64,13 @@
 
             // input cells
             for (var i = 0; i < dayCount; i++) {
-                var namePlusOne = 'grid[' + rowCount + '].counts[' + i + ']'+1
-                var name = 'grid[' + rowCount + '].counts[' + i + ']'
+                var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
+                var namePlusOne = name+1
                 var input = Builder.node('input', {
                                             type:'checkbox',
                                             id:namePlusOne,
                                             name:name,
-                                            value:'true'
+                                            value:'-1'
                 });
                 registerCellInputHandlers(input)
                 cells.push(Builder.node('td', {}, [input]))
@@ -137,6 +137,7 @@
         }
 
         function ajaxform(checkbox, details) {
+            console.log("Click= " + checkbox.name)
             // Set up data variable
             var formdata = "";
             formdata = formdata + 'id='+${period.id}+"&";
@@ -146,24 +147,24 @@
                 var details = 'grid[' + arrayOfIndexes[0] + '].details';
                 formdata = formdata + details + "=" + escape($(details).value) + "&";
                 formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + arrayOfIndexes[1] + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].status' + "=" + escape($(checkbox).checked) + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].addition' + "=" + escape($(checkbox).checked) + "&";
             } else {
                 arrayOfIndexes = parseInput($(details).name);
                 formdata = formdata + $(details).name + "=" + escape($(details).value) + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].status' + "=" + escape(false) + "&";
+                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].addition' + "=" + escape(false) + "&";
                 formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + escape(-1) + "&";                
             }
             var activity = 'grid[' + arrayOfIndexes[0] + '].activity';
             formdata = formdata + activity + "=" + escape($(activity).value) +"&";
 
-            var arrayOfCounts = 'grid[' + arrayOfIndexes[0] + '].counts';
+            var arrayOfCounts = 'grid[' + arrayOfIndexes[0] + '].eventIds';
             for (var i = 0; i < ${period.duration.days}; i++) {
                 var singleElement = arrayOfCounts +'[' +i + ']'+1;
                 if ($(singleElement) == null) {
                     singleElement = arrayOfCounts +'[' +i + ']';
                 }
-                formdata = formdata + $(singleElement).name +  "=" +
-                      $(singleElement).checked + "&" ;
+                 formdata = formdata + $(singleElement).name +  "=" +
+                          $(singleElement).value + "&" ;
             }
             formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].rowNumber'+ "=" + arrayOfIndexes[0] + "&";
             formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].updated' + "=" + escape(true) + "&";
@@ -282,10 +283,10 @@
             ${gridRow.activity.name}
             <form:hidden path="grid[${gridStatus.index}].activity"/>
         </th>
-        <c:forEach items="${gridRow.counts}" var="count" varStatus="cStatus">
+        <c:forEach items="${gridRow.eventIds}" varStatus="cStatus">
             <td class="counter">
-                    <form:checkbox path="grid[${gridStatus.index}].counts[${cStatus.index}]"
-                                   value="true" />
+                <form:checkbox path="grid[${gridStatus.index}].eventIds[${cStatus.index}]"
+                               value="${empty gridRow.eventIds[cStatus.index] ? -1 : gridRow.eventIds[cStatus.index]}"/>
             </td>
         </c:forEach>
         <td>

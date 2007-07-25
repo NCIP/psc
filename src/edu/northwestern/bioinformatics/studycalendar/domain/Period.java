@@ -174,7 +174,9 @@ public class Period extends PlanTreeInnerNode<Arm, PlannedEvent, List<PlannedEve
 
     @OneToMany(mappedBy = "period")
     @OrderBy // order by ID for testing consistency
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade(value = { CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
+            CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.REPLICATE,
+            CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN })
     public List<PlannedEvent> getPlannedEvents() {
         return getChildren();
     }
