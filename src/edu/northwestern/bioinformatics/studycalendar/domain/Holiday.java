@@ -11,14 +11,7 @@ import javax.persistence.*;
 
 
 @Entity
-@Table (name = "holidays")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_holidays_id")
-    }
-)
 @DiscriminatorValue(value="1")
-
 public class Holiday extends AbstractHolidayState {
 
     private Integer day;

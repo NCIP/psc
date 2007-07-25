@@ -14,14 +14,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table (name = "holidays")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_holidays_id")
-    }
-)
 @DiscriminatorValue(value="2")
-
 public class DayOfTheWeek extends AbstractHolidayState {
     private String day_of_the_week;
 
