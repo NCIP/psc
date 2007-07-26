@@ -57,7 +57,9 @@
             </c:forEach>
 
 			<tr class="arrows"> 
-				<c:if test="{editable}"><td></td></c:if>
+				<c:if test="${editable}">
+					<td></td>
+				</c:if>
 				<td></td>
             	<c:forEach items="${month.days}" var="entry">
                 	<c:if test="${empty entry.value.events}">

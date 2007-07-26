@@ -227,20 +227,11 @@ module StudyCalendar
     click_link_with_text("Add epoch")
     @epoch_count= @epoch_count + 1
   end
-  def add_period(name, number)
-     click_nth_link_with_text(name, number)
-     wait_for_condition_text(" #{name}")
-     click_link_with_text("Add period")
-     wait_for_page_to_load "30000"
+
+   # ep is a temporary method for quick development
+   def ep(xpath)
+     @browser.is_element_present("#{xpath}")
    end
-   def initialize_period(name, start_day, duration_quantity, duration_unit, repetitions)
-     type("xpath=//input[@type='text' and @id='period.name']", "#{name}")
-     type("xpath=//input[@type='text' and @id='period.startDay']", "#{start_day}")
-     type("xpath=//input[@type='text' and @id='period.duration.quantity']", "#{duration_quantity}")
-     select_from_combobox("xpath=//select[@id='period.duration.unit']", "#{duration_unit}")
-     type("xpath=//input[@type='text' and @id='period.repetitions']", "#{repetitions}")
-   end
-   
    def go_back_to_template
      click_link_with_text(@study_name)
      wait_for_page_to_load "30000"
@@ -291,6 +282,28 @@ module StudyCalendar
    def get_study_name()
      return get_text("xpath=//div[@id='body']/h1/span[@id='study-name']")
    end
+   def get_number_of_arms(epoch_number)
+     continue = true
+     arm_number = 1
+     while (continue)
+             arm_number += 1
+       continue = @browser.is_element_present("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @ class = 'arm selected'][#{arm_number}]")
+
+       if !(@browser.is_element_present("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @class ='arm selected'][#{arm_number}]"))
+         arm_number -=1
+       else
+         arm_number = arm_number
+       end
+
+     end
+     return arm_number
+    end
+    def get_epoch_name(epoch_number)
+      return get_text("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class='epoch last'][#{epoch_number}]/h4/span[child::text()]")
+    end
+    def get_arm_name(epoch_number, arm_number)
+      return get_text("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @class= 'arm selected'][#{arm_number}]//a[child::text()]")
+    end
    #navigation methods that help go back to the template or the home page
    #warning: changes may not save
    def go_up_one_level()

@@ -7,44 +7,30 @@ class PeriodTest < Test::Unit::TestCase
   
   def test_period
     init()
-    
-    add_period('A', 1)
-    initialize_period('Alexis', 3, 4, 'day', 4)
-    click_button_with_text('Submit', 'submit')
-    wait_for_page_to_load "30000"
-    add_period('A', 1)
-    initialize_period('Alexis2', 1, 6, 'day', 2)
-    click_button_with_text('Submit', 'submit')
-    wait_for_page_to_load "30000"
-    add_period('A', 1)
-    initialize_period('Alexis3', 2, 3, 'day', 3)
-    click_button_with_text('Submit', 'submit')
-    wait_for_page_to_load "30000"
-    edit_period_activities(2)
-    create_activity('Cat Scan', 'Patients wants to get a-head' , 'Lab Test')
-    create_activity('Adrenaline', 'For Cocaine Overdose', 'Intervention')
-    create_activity('Bone scan', 'No bones about it', 'Disease Measure')
-    add_activity('Intervention', 'Adrenaline')
-    add_activity('Lab Test', 'Cat Scan')
-    add_activity('Disease Measure', 'Bone scan')
-    set_activity_frequency(0, 2, 2)
-    set_activity_frequency(0, 4, 1)
-    set_activity_frequency(0, 1, 1)
-    set_activity_frequency(2, 2, 4)
-    set_activity_frequency(1,2, 5)
-    set_activity_frequency(1, 3, 4)
-    set_activity_frequency(1, 3, 2)
-    set_activity_details( 0, 'Detail1')
-    set_activity_details( 1, 'Detail2')
-    save_changes 
+    add_period(2, 2)
+    initialize_period('Period1', 2, 5, 'day', 4)
+    add_period(3, 1)
+    initialize_period('Period1', -3, 15, 'day', 3)
+    add_period(2, 2)
+    initialize_period('Period2', -2, 2, 'week', 3)
   end
-  
+  # sh work/psc/trunk/test/bin/selenium-interactive.sh 
+   
     #for now, name is the name of the arm; number is to identify which name is the one being specified (in case there
     # are repeated names).  If it is the time the name appears, enter 1. If 2nd, 2 and so forth.
-   def add_period(name, number)
-     assert_page_contains(name)
-     click_nth_link_with_text(name, number)
-     wait_for_condition_text(" #{name}")
+   def add_period(epoch_number, arm_number)
+     assert_element_exists("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @class= 'arm selected'][#{arm_number}]//a[@class='arm']")
+     arm_name = get_arm_name(epoch_number, arm_number)
+     click_xpath("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @class= 'arm selected'][#{arm_number}]//a[@class='arm']")
+     num = get_number_of_arms(epoch_number)
+     if (num <= 1)
+       wait_for_condition_element("xpath=//div[@id = 'selected-arm']//*[child::text() = '#{arm_name}']")
+       assert_element_exists("xpath=//div[@id = 'selected-arm']//*[child::text() = '#{arm_name}']")
+     else
+       epoch_name = get_epoch_name(epoch_number)
+       wait_for_condition_element("xpath=//div[@id = 'selected-arm']//*[child::text() = '#{epoch_name}: #{arm_name}']")
+       assert_element_exists("xpath=//div[@id = 'selected-arm']//*[child::text() = '#{epoch_name}: #{arm_name}']")
+     end
      click_link_with_text("Add period")
      wait_for_page_to_load "30000"
      assert_page_contains("Add period")
@@ -64,7 +50,9 @@ class PeriodTest < Test::Unit::TestCase
     # unit = 'duration_unit'
   #   if (str == name) name.to_i
   #   if (unit.eql?('day'))
-     assert_page_contains("The configured period will last for #{duration_quantity * repetitions} days (#{start_day} to #{start_day + (duration_quantity*repetitions) - 1}).")
+     assert_page_contains("The configured period will last for" )
+     click_button_with_text('Submit')
+     wait_for_page_to_load "30000"
    end
    def create_new_activity
      assert_page_contains('Create new activity')

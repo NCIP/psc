@@ -71,6 +71,7 @@ class EpochTest < Test::Unit::TestCase
       wait_for_condition_element("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class='epoch last'][#{position}]/h4/span[child::text() = '#{name}']")
       # checks to see that the epoch being modified now holds the new name.
       assert_element_exists("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class='epoch last'][#{position}]/h4/span[child::text() = '#{name}']")
+      # return get_text("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class='epoch last'][#{epoch_number}]/h4/span[child::text()]")
     end
     def name_epoch2(name, position)
       
