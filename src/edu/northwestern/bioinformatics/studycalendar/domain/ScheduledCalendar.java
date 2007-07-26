@@ -12,10 +12,10 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 /**
  * @author Rhett Sutphin
@@ -45,6 +45,20 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
         }
         return getScheduledArms().get(getScheduledArms().size() - 1);
     }
+
+    @Transient
+    public Date getNextScheduledEventTime() {
+        for (ScheduledArm arm : getScheduledArms()) {
+            if (!arm.isComplete()) {
+                // Get ScheduledEvents in order
+                Date d = arm.getNextScheduledEventDate();
+                return null;
+            }
+        }
+        return null;
+    }
+
+
 
     ////// BEAN PROPERTIES
 

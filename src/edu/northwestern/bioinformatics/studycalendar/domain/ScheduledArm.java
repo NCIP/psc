@@ -12,12 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
@@ -112,6 +107,34 @@ public class ScheduledArm extends AbstractMutableDomainObject {
             }
         }
         return true;
+    }
+
+    @Transient
+    public Date getNextScheduledEventDate() {
+        Map<Date, List<ScheduledEvent>> eventsByDate = getEventsByDate();
+        for(Date date: eventsByDate.keySet()) {
+            List<ScheduledEvent> events = eventsByDate.get(date);
+            for(ScheduledEvent event : events) {
+                if(ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()){
+                    if(date.after(getCurrentDate())){
+                        return date;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    @Transient
+    public Date getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+
+        return c.getTime();
     }
 
     ////// BEAN PROPERTIES

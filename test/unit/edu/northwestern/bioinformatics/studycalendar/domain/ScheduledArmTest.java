@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 import java.util.List;
 import java.util.Calendar;
@@ -156,5 +157,30 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
 
         assertTrue(scheduledArm.isComplete());
+    }
+
+    public void testGetCurrentDate() throws Exception {
+        Date currentDate = scheduledArm.getCurrentDate();
+
+        Calendar c2 = Calendar.getInstance();
+
+        assertSameDay(currentDate, c2.getTime());
+    }
+
+    public void testGetNextScheduledDate() {
+        Calendar c = Calendar.getInstance();
+
+        c.add(Calendar.MONTH, -1);
+        scheduledArm.addEvent(createScheduledEvent("ABC", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
+        c.add(Calendar.MONTH, 2);
+        scheduledArm.addEvent(createScheduledEvent("DEF", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Occurred()));
+        c.add(Calendar.MONTH, 1);
+        scheduledArm.addEvent(createScheduledEvent("GHI", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
+        c.add(Calendar.MONTH, 1);
+        scheduledArm.addEvent(createScheduledEvent("JKL", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));      
+
+        Date d = scheduledArm.getNextScheduledEventDate();
+
+        assertTrue(scheduledArm.getEvents().get(2).getActualDate() == d);
     }
 }
