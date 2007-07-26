@@ -115,26 +115,10 @@ public class ScheduledArm extends AbstractMutableDomainObject {
         for(Date date: eventsByDate.keySet()) {
             List<ScheduledEvent> events = eventsByDate.get(date);
             for(ScheduledEvent event : events) {
-                if(ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()){
-                    if(date.after(getCurrentDate())){
-                        return date;
-                    }
-                }
+                if(event.isFutureScheduled()) return date;
             }
         }
         return null;
-    }
-
-    @Transient
-    public Date getCurrentDate() {
-        Calendar c = Calendar.getInstance();
-
-        c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
-
-        return c.getTime();
     }
 
     ////// BEAN PROPERTIES

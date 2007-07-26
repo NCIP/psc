@@ -159,14 +159,6 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         assertTrue(scheduledArm.isComplete());
     }
 
-    public void testGetCurrentDate() throws Exception {
-        Date currentDate = scheduledArm.getCurrentDate();
-
-        Calendar c2 = Calendar.getInstance();
-
-        assertSameDay(currentDate, c2.getTime());
-    }
-
     public void testGetNextScheduledDate() {
         Calendar c = Calendar.getInstance();
 
@@ -177,7 +169,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         c.add(Calendar.MONTH, 1);
         scheduledArm.addEvent(createScheduledEvent("GHI", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
         c.add(Calendar.MONTH, 1);
-        scheduledArm.addEvent(createScheduledEvent("JKL", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));      
+        scheduledArm.addEvent(createScheduledEvent("JKL", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
 
         Date d = scheduledArm.getNextScheduledEventDate();
 

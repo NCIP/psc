@@ -89,4 +89,12 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
         assertEquals("B", all.get(1).getReason());
         assertEquals("C", all.get(2).getReason());
     }
+
+    public void testGetCurrentDate() throws Exception {
+        Date currentDate = scheduledEvent.getCurrentDate();
+
+        Calendar c2 = Calendar.getInstance();
+
+        assertSameDay(currentDate, c2.getTime());
+    }
 }

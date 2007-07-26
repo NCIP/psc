@@ -10,11 +10,7 @@ import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.NotNull;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
@@ -69,6 +65,28 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
             actualDate = getIdealDate();
         }
         return actualDate;
+    }
+
+    @Transient
+    public boolean isFutureScheduled() {
+        if(ScheduledEventMode.SCHEDULED == getCurrentState().getMode()){
+            if(getActualDate().after(getCurrentDate())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transient
+    public Date getCurrentDate() {
+        Calendar c = Calendar.getInstance();
+
+        c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+
+        return c.getTime();
     }
 
     ////// BEAN PROPERTIES
