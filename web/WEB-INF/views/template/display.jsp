@@ -132,22 +132,39 @@
         <script type="text/javascript">
             var lastRequest;
             var selectedArmId = ${arm.base.id};
-
+			var days;
+			var day;
+			var showButton;
+			var hideButton;
+			var showDay;
+			var showMonth;
+			var hideMonth;
+			var presentMonths;
+			var hiddenMonths;
+			var allDaysArePresent = false;
+			var allDaysAreHidden = true;
+			var init;
+			
             function registerSelectArmHandlers() {
                 $$('#epochs a').each(registerSelectArmHandler)
             }
+			function initialize_arrows()
+			{
+				 days = $$(".days");
+				 day = $$(".day");
+				 showButton = $('show_button');
+				 hideButton = $('hide_button');
+				 showMonth =  $$(".showMonth");
+				 hideMonth =  $$(".hideMonth");
+				 presentMonths = [];
+				 showDay = $$(".showDay");
+				 hiddenMonths = [];
+				 allDaysArePresent = false;
+				 allDaysAreHidden = true;
+				 init = true;
+			}
 			function check()
 			{
-				var days = $$(".days")
-				var showButton = $('show_button')
-				var hideButton = $('hide_button')
-				var showMonth =  $$(".showMonth")
-				var hideMonth =  $$(".hideMonth")
-				var presentMonths = []
-				var hiddenMonths = []
-				var allDaysArePresent = false
-				var allDaysAreHidden = true
-				
 			
 				// Will figure out when the Show Month Arrows should be visible
 			    days.each(function(dc, counter) {
@@ -170,7 +187,7 @@
 				days.each(function(dc, counter) {
                    if (isMonthHidden(counter)){
                        hideMonth[counter].conceal();
-                       showMonth[counter].reveal();
+					   if(!isMonthPresent(counter)) showMonth[counter].reveal();
 					   hiddenMonths[counter] = true;
 					
                    }
@@ -183,7 +200,7 @@
 			
 			
 				// Will figure out when the Show All button should be visible
-				areAllDaysPresent = true
+				allDaysArePresent = true
 				for (var i=0; i < presentMonths.length; i++)
 				{
 					if (allDaysArePresent && presentMonths[i])
@@ -192,12 +209,12 @@
 					
 				}
 				
-				if (allDaysArePresent)	$('show_button').conceal()
-				else $('show_button').reveal()
+				if (allDaysArePresent)	showButton.conceal()
+				else showButton.reveal()
 
 				// Will figure out when the Hide All button should be visible
 				
-				areAllDaysHidden = true
+				allDaysAreHidden = true
 				for (var i=0; i < hiddenMonths.length; i++)
 				{
 					if (allDaysAreHidden && hiddenMonths[i])
@@ -206,22 +223,22 @@
 					
 				}
 				
-				if (allDaysAreHidden) $('hide_button').conceal()
-				else $('hide_button').reveal()
+				if (allDaysAreHidden) hideButton.conceal()
+				else hideButton.reveal()
 				
 			}
 
-			function isDayPresent(day){
+			function isDayPresent(day1){
 				var present
-				if ($(day).style.display == "none")
+				if ($(day1).style.display == "none")
 					present = false
 				else present = true
 				return present
 			}
-			function areAllDaysPresent(){
+			function allDaysArePresent(){
 				var continue1 = true
 				
-				$$(".day").each(function(e){ 
+				day.each(function(e){ 
 				
 					if (isDayPresent($(e)) && continue1){
 					continue1 = true
@@ -231,10 +248,10 @@
 				})
 				return continue1
 			}
-			function areAllDaysHidden(){
+			function allDaysAreHidden(){
 				var continue1 = true
 				
-				$$(".day").each(function(e){ 
+				day.each(function(e){ 
 				
 					if (!isDayPresent($(e)) && continue1){
 					continue1 = true
@@ -248,7 +265,7 @@
 			{
 				var continue1 = true
 				
-				$$(".days")[num].getElementsByClassName('day').each(function(e){ 
+				days[num].getElementsByClassName('day').each(function(e){ 
 				
 					if (isDayPresent($(e)) && continue1){
 					continue1 = true
@@ -262,7 +279,7 @@
 			{
 				var continue1 = true
 
-				$$(".days")[num].getElementsByClassName('day').each(function(e){ 
+				days[num].getElementsByClassName('day').each(function(e){ 
 				
 					if (!isDayPresent($(e)) && continue1){
 					continue1 = true
@@ -272,8 +289,43 @@
 				})
 				return continue1
 			}
+			function quickSlideAndShow(elementArray, options)
+			{
+				var eA = elementArray
+				var effects = []
+				eA.each(function(e) {
+					effects = effects.concat([
+						new Effect.BlindDown(e, {sync:true}),
+			        	new Effect.Appear(e, {sync:true})
+					])
+				})
 
-            function registerSelectArmHandler(a) {
+			   	 	new Effect.Parallel(
+				       	effects,
+						$H(options).merge({
+					         duration: 1.0
+					    })
+					);
+			}			
+			function quickSlideAndHide(elementArray, options)
+			{
+				var eA = elementArray
+				var effects = []
+				eA.each(function(e) {
+					effects = effects.concat([
+						new Effect.BlindUp(e, {sync:true}),
+			        	new Effect.Fade(e, {sync:true})
+					])
+				})
+
+			   	 	new Effect.Parallel(
+				       	effects,
+						$H(options).merge({
+					         duration: 1.0
+					    })
+					);
+			}
+	            function registerSelectArmHandler(a) {
                 var aElement = $(a)
                 Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
@@ -303,18 +355,23 @@
                 })
             }
 			function registerShowHandler(){
-				var show = $("show_button")
-				Event.observe(show, "click", function(e) {
+				Event.observe(showButton, "click", function(e) {
 		            Event.stop(e);
-				    $$(".day").each(function(e){SC.slideAndShow(e, { afterFinish: check});});
+				    day.each(SC.slideAndShow);
+				   	showMonth.each(function(e){e.conceal();});
+  					hideMonth.each(function(e){e.reveal();});
+					showButton.conceal()
+					hideButton.reveal()
 					
-					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9650;</a>');});
+					showDay.each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9650;</a>');});
 					
 				}							
 				);				
 			}
 			
 			function showSetup(){
+				if (init == null) initialize_arrows();
+				check()
 				registerShowHandler()
 			}
 			
@@ -322,8 +379,13 @@
 				var hide = $("hide_button")
 				Event.observe(hide, "click", function(e) {
 		            Event.stop(e);
-				    $$(".day").each(function(e){SC.slideAndHide(e, { afterFinish: check});});
-					$$(".showDay").each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9660;</a>');});
+				    day.each(SC.slideAndHide);
+					showMonth.each(function(e){e.reveal();});
+  					hideMonth.each(function(e){e.conceal();});
+					showButton.conceal()
+					hideButton.reveal()
+					
+					showDay.each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9660;</a>');});
 				}							
 				);	
 			
@@ -339,13 +401,13 @@
                     Event.stop(e)
 					if ($('showArrow').innerHTML == '▲'){
                 		Element.update(this, '<a href="#" class="control" id="showArrow">&#9660;</a>')
-						SC.slideAndHide($$(".day")[counter], {afterFinish: check})
+						SC.slideAndHide(day[counter], {afterFinish: check})
 				
 						
 					}
                 	else{
 						Element.update(this, '<a href="#" class="control" id="showArrow">&#9650;</a>')
-						SC.slideAndShow($$(".day")[counter], {afterFinish: check})
+						SC.slideAndShow(day[counter], {afterFinish: check})
 					
 				
 						
@@ -354,23 +416,21 @@
 			}
 			function registerArrowHandlers(){
 				var counter = 0;
-                $$(".showDay").each(function(num) {registerArrowHandler(num, counter); counter++;});
+                showDay.each(function(num) {registerArrowHandler(num, counter); counter++;});
             }
 			
 			function registerShowMonthHandler(a, counter){
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
 		            Event.stop(e)          		
-						$$(".days")[counter].getElementsByClassName('day').each(function(e){SC.slideAndShow(e, { afterFinish: check});})
+						quickSlideAndShow(days[counter].getElementsByClassName('day'), {afterFinish: check})
 				})
 			}
 			function registerHideMonthHandler(a, counter){
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
 		            Event.stop(e)          		
-						$$(".days")[counter].getElementsByClassName('day').each(function(e){SC.slideAndHide(e, { afterFinish: check});})
-						$$(".hideMonth")[counter].conceal()
-						$$(".showMonth")[counter].reveal()
+						quickSlideAndHide(days[counter].getElementsByClassName('day'), {afterFinish: check})
 				})
 			}
 
@@ -386,11 +446,12 @@
 			}
 			function showMonthSetup(){
 				var counter = 0;
-				$$(".showMonth").each(function(num) {registerShowMonthHandler(num, counter); counter++;});
+				showMonth.each(function(num) {registerShowMonthHandler(num, counter); counter++;});
 			}
 			function hideMonthSetup(){
 				var counter = 0;
-				$$(".hideMonth").each(function(num) {registerHideMonthHandler(num, counter); counter++;});
+				hideMonth.each(function(num) {registerHideMonthHandler(num, counter); counter++;});
+				
 			}
 			
 
@@ -398,11 +459,13 @@
             Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
-			Event.observe(window, "load", showSetup)
-			Event.observe(window, "load", hideSetup)
-			Event.observe(window, "load", arrowSetup)
-			Event.observe(window, "load", showMonthSetup)
-			Event.observe(window, "load", hideMonthSetup)
+			<c:if test="${not empty arm.months}">
+				Event.observe(window, "load", showSetup)
+				Event.observe(window, "load", hideSetup)
+				Event.observe(window, "load", arrowSetup)
+				Event.observe(window, "load", showMonthSetup)
+				Event.observe(window, "load", hideMonthSetup)
+		    </c:if>
 			
 			
         </script>

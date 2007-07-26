@@ -7,14 +7,15 @@
 <h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
-    <c:if test="${editable}">
-    <p class="controls"><a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>  
- 		<c:if test="${editable and !empty arm.months}">
-			<a id="show_button" href="#" class = "control">Show All</a>
+    <p class="controls">
+		<c:if test="${editable}">
+			<a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>  
+		</c:if>
+ 		<c:if test="${not empty arm.months}">
+			<a id="show_button" href="#" class = "control" style="visibility: hidden;">Show All</a>
 			<a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
 		</c:if>
 	</p>
-    </c:if>
     <c:if test="${editable and empty arm.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
@@ -24,7 +25,9 @@
             period.
         </p>
     </c:if>
+	
     <c:forEach items="${arm.months}" var="month" varStatus="monthStatus">
+		
         <table class="periods" cellspacing="0">
             <tr>
                 <c:if test="${editable}"><td class="controls"></td></c:if>
@@ -48,14 +51,13 @@
                         </c:when>
                         <c:otherwise><td class="empty<c:if test="${dStatus.last || day.lastDayOfSpan}"> last</c:if>">&nbsp;</td></c:otherwise>
                     </c:choose>
-					
 
                     </c:forEach>
                 </tr>
             </c:forEach>
 
 			<tr class="arrows"> 
-				<td></td>
+				<c:if test="{editable}"><td></td></c:if>
 				<td></td>
             	<c:forEach items="${month.days}" var="entry">
                 	<c:if test="${empty entry.value.events}">
@@ -68,13 +70,14 @@
 				</c:forEach>
 			</tr>
         </table>
-		<a href="#" class="control showMonth">&#9660;</a>
+		
+		<a href="#" class="control showMonth" style="visibility: hidden;">&#9660;</a>
 		<a href="#" class="control hideMonth" style="visibility: hidden;">&#9650;</a>
 
         <div class="days">
             <c:forEach items="${month.days}" var="entry">
                 <c:if test="${not empty entry.value.events}">
-                    <div class="day autoclear" id="day" style="display: none;">
+                    <div class="day autoclear" style="display: none;">
                         <h3>Day ${entry.key}</h3>
                         <ul>
                         <c:forEach items="${entry.value.events}" var="event">
@@ -96,4 +99,5 @@
             </p>
         </c:if>
     </c:forEach>
+
 </div>
