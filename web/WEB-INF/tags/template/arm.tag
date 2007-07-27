@@ -87,6 +87,10 @@
                                 <a href="<c:url value="/pages/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
                                 <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
                             </li>
+                            <li class="event-details">
+                                <c:if test="${event.conditional}">Conditional </c:if>
+                                    <c:if test="${not empty event.conditionalDetails}"> (${event.conditionalDetails})</c:if>
+                            </li>
                         </c:forEach>
                         </ul>
                     </div>

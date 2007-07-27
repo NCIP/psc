@@ -55,7 +55,8 @@ public class ManagePeriodEventsCommand {
             String binKey = activityAndDetails + counts.get(activityAndDetails)[countI];
             counts.get(activityAndDetails)[countI]++;
             if (!bins.containsKey(binKey)) {
-                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount));
+                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount,
+                        event.getConditional(), event.getConditionalDetails()));
             }
             bins.get(binKey).addId(event);
         }
@@ -81,6 +82,10 @@ public class ManagePeriodEventsCommand {
             if (bound.isDetailsUpdated()) {
                 GridRow existing = existingGrid.get(bound.getRowNumber());
                 updateDetails(existing, bound.getDetails());
+            } else if (bound.isConditionalUpdated()) {
+                GridRow existing = existingGrid.get(bound.getRowNumber());
+                updateConditionalParameters(existing, bound.isConditionalCheckbox(), bound.getConditionalDetails());
+                bound.setColumnNumber(-1);
             }
             else {
                 log.debug("Processing grid " + bound.getRowNumber() + ", " + bound.getColumnNumber());
@@ -88,7 +93,6 @@ public class ManagePeriodEventsCommand {
                     // if this is an update to an existing row calculate the difference
                     if (!bound.isAddition()) {
                         log.debug("Action is remove from an existing row");
-                        System.out.println("bound.getColumnNumber" + bound.getColumnNumber());
                         Integer id = bound.getEventIds().get(bound.getColumnNumber());
                         if (id != null) {
                             removeEvent(id);
@@ -111,11 +115,28 @@ public class ManagePeriodEventsCommand {
         return null;
     }
 
+    private void updateConditionalParameters(GridRow row, boolean conditional, String conditionalDetails) {
+        for (Integer id: row.getEventIds()) {
+            if (id != null) {
+                PlannedEvent event = plannedEventDao.getById(id);
+                event.setConditional(conditional);
+                if (conditional) {
+                    event.setConditionalDetails(conditionalDetails);
+                } else {
+                    event.setConditionalDetails(null);
+                }
+                plannedEventDao.save(event);
+            }
+        }
+    }
+
     private void addEvent(GridRow row) {
         PlannedEvent newEvent = new PlannedEvent();
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
+        newEvent.setConditional(row.isConditionalCheckbox());
+        newEvent.setConditionalDetails(row.getConditionalDetails());
         period.addPlannedEvent(newEvent);
         plannedEventDao.save(newEvent);
     }
@@ -170,6 +191,10 @@ public class ManagePeriodEventsCommand {
         private boolean addition;
         private boolean updated;
 
+        private boolean conditionalCheckbox;
+        private String conditionalDetails;
+        private boolean conditionalUpdated;
+
         public GridRow(int length) {
             eventIds = new ArrayList<Integer>(length);
             while (eventIds.size() < length) {
@@ -177,10 +202,12 @@ public class ManagePeriodEventsCommand {
             }
         }
         
-        public GridRow(Activity activity, String details, int length) {
+        public GridRow(Activity activity, String details, int length, Boolean conditional, String conditionalDetails) {
             this(length);
             setActivity(activity);
             setDetails(details);
+            setConditionalDetails(conditionalDetails);
+            setConditionalCheckbox(conditional);
         }
 
         ////// LOGIC
@@ -272,5 +299,29 @@ public class ManagePeriodEventsCommand {
             this.updated = updated;
         }
 
+        public boolean isConditionalCheckbox() {
+            return conditionalCheckbox;
+        }
+
+        public void setConditionalCheckbox(boolean conditionalCheckbox) {
+            this.conditionalCheckbox = conditionalCheckbox;
+        }
+
+        public String getConditionalDetails() {
+            return conditionalDetails;
+        }
+
+        public void setConditionalDetails(String conditionalDetails) {
+            this.conditionalDetails = conditionalDetails;
+        }
+
+
+        public boolean isConditionalUpdated() {
+            return conditionalUpdated;
+        }
+
+        public void setConditionalUpdated(boolean conditionalUpdated) {
+            this.conditionalUpdated = conditionalUpdated;
+        }
     }
 }

@@ -18,9 +18,9 @@
         </c:forEach>
         var initiallySelectedActivity = ${empty selectedActivity ? 0 : selectedActivity.id}
 
-            function currentActivityCount() {
-                return $$('.input-row').length;
-            }
+        function currentActivityCount() {
+            return $$('.input-row').length;
+        }
 
         function highlightNonZero(source) {
             var input;
@@ -30,13 +30,13 @@
                 input = Event.findElement(source, "INPUT")
             }
             var cell = input.parentNode
-//            var value = $F(input).strip()
+            var value = $F(input)
             var nonzero;
-//            if (value <= 0 || value.length == 0) {
-//                Element.removeClassName(cell, "nonzero")
-//            } else {
+            if (value == null) {
+                Element.removeClassName(cell, "nonzero")
+            } else {
                 Element.addClassName(cell, "nonzero")
-//            }
+            }
         }
 
         function selectedActivity() {
@@ -55,7 +55,9 @@
         function addActivityRow() {
             var activity = selectedActivity()
             var cells = []
-            var dayCount = $$("#days-header th").length - 1
+            //var dayCount = $$("#days-header th").length - 1 //8
+//            var dayCount = $$('th.day-number').length -1 //6
+            var dayCount = ${period.dayRanges[0].days}.length
             var rowCount = $$("#input-body tr").length - 1
             // header
             var activityName = 'grid[' + rowCount + '].activity';
@@ -80,12 +82,42 @@
                                             id: detailsName,
                                             name: detailsName,
                                             type: 'text',
-//                                            onChange:"return ajaxformOne(this);" });
-                                            onChange:"return ajaxform(null, this);"});
+                                            onChange:"return ajaxform(null, this, null);"
+//                                            onChange:"return ajaxform(null, this);"
+            });
             cells.push(Builder.node('td', {}, [detailsInput]))
+
+            //corresponding to the conditional behavior
+            cells.push(Builder.node('td', {id:'emptyCell'}));
+
+            //conditionCheckBox
+            var name = 'grid[' + rowCount + '].conditionalCheckbox'
+            var namePlusOne = name+1
+            var input = Builder.node('input', {
+                                     type:'checkbox',
+                                     id:namePlusOne,
+                                     name:name,
+                                     value:'true'
+//                                     ,
+//                                     onChange:"return ajaxformTwo(this, null);"
+
+            });
+            registerCellInputHandlers(input)
+            cells.push(Builder.node('td', {}, [input]))            
+
+            //conditionalDetails
+            var conditionDetailsName = 'grid[' + rowCount + '].conditionalDetails'
+            var conditionDetailsInput = Builder.node('input', {
+                                            id: conditionDetailsName,
+                                            name: conditionDetailsName,
+                                            type: 'text',
+                                            disabled: 'true',
+                                            onChange:"return ajaxform(null, null, this);"});
+            cells.push(Builder.node('td', {}, [conditionDetailsInput]))
 
             var rowId = 'activity' + activity.id;
             var row = Builder.node('tr', {className: 'input-row', id:rowId}, cells);
+
             row.style.display = 'none';
             $('input-body').appendChild(row)
             showEmptyMessage()
@@ -114,7 +146,7 @@
 
         function registerCellInputHandlers(input) {
             highlightNonZero(input);
-            Event.observe(input, "click", function(e){return ajaxform(input, null)})
+            Event.observe(input, "click", function(e){return ajaxform(input, null, null)})
             Event.observe(input, "change", highlightNonZero)
             Event.observe(input, "keyup", highlightNonZero)
         }
@@ -136,24 +168,66 @@
 
         }
 
-        function ajaxform(checkbox, details) {
-            console.log("Click= " + checkbox.name)
+		function getInfoFromConditionalDetails(formdata, conditionalDetails, index) {
+            formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(true) + "&";
+            formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
+			return formdata
+		}
+
+		function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
+            var checkboxName = 'grid[' + index + '].conditionalCheckbox1';
+            var isChecked = $(checkboxName).checked;
+            var details = 'grid[' +  index + '].conditionalDetails';
+            if(!isChecked) {
+                $(details).value ="";
+                $(details).disabled = true;
+            } else {
+               $(details).disabled = false;
+            }
+
+            formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(true) + "&";
+            formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
+			return formdata
+		}
+
+		function getInfoFromEventCheckbox(formdata, checkbox, index1, index2) {
+            var details = 'grid[' + index1 + '].details';
+            formdata = formdata + details + "=" + escape($(details).value) + "&";
+            formdata = formdata + 'grid[' + index1 + '].columnNumber'+ "=" + index2 + "&";
+            formdata = formdata + 'grid[' + index1 + '].addition' + "=" + escape($(checkbox).checked) + "&";
+			formdata = formdata + 'grid[' + index1 + '].conditionalUpdated' + "=" + escape(false) + "&";
+			return formdata;
+		}
+
+		function getInfoFromEventDetails(formdata, details, index) {
+        	formdata = formdata + $(details).name + "=" + escape($(details).value) + "&";
+        	formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
+        	formdata = formdata + 'grid[' + index + '].columnNumber'+ "=" + escape(-1) + "&";
+			formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(false) + "&";
+			return formdata;
+		}
+
+        function ajaxform(checkbox, details, conditionalDetails) {
             // Set up data variable
             var formdata = "";
             formdata = formdata + 'id='+${period.id}+"&";
             var arrayOfIndexes
-            if (checkbox != null) {
-                arrayOfIndexes = parseInput(checkbox.name);
-                var details = 'grid[' + arrayOfIndexes[0] + '].details';
-                formdata = formdata + details + "=" + escape($(details).value) + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + arrayOfIndexes[1] + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].addition' + "=" + escape($(checkbox).checked) + "&";
-            } else {
-                arrayOfIndexes = parseInput($(details).name);
-                formdata = formdata + $(details).name + "=" + escape($(details).value) + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].addition' + "=" + escape(false) + "&";
-                formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].columnNumber'+ "=" + escape(-1) + "&";                
+
+			if (checkbox != null){
+                 arrayOfIndexes = parseInput(checkbox.name)
+                 if (checkbox.name.indexOf(".conditionalCheckbox")>=0) {
+					formdata = getInfoFromConditionalCheckbox(formdata, checkbox, arrayOfIndexes[0])
+            	} else {
+					formdata = getInfoFromEventCheckbox(formdata, checkbox, arrayOfIndexes[0], arrayOfIndexes[1])
+				}
+            } else if (details != null) {
+				arrayOfIndexes = parseInput($(details).name);
+				formdata = getInfoFromEventDetails(formdata, details, arrayOfIndexes[0]);
+            } else if (conditionalDetails != null) {
+				arrayOfIndexes = parseInput(conditionalDetails.name)
+				formdata = getInfoFromConditionalDetails(formdata, conditionalDetails, arrayOfIndexes[0])
             }
+
             var activity = 'grid[' + arrayOfIndexes[0] + '].activity';
             formdata = formdata + activity + "=" + escape($(activity).value) +"&";
 
@@ -163,23 +237,34 @@
                 if ($(singleElement) == null) {
                     singleElement = arrayOfCounts +'[' +i + ']';
                 }
-                 formdata = formdata + $(singleElement).name +  "=" +
-                          $(singleElement).value + "&" ;
+                formdata = formdata + $(singleElement).name +  "=" + $(singleElement).value + "&" ;
             }
+
             formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].rowNumber'+ "=" + arrayOfIndexes[0] + "&";
             formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].updated' + "=" + escape(true) + "&";
+
+
+            var checkboxName = 'grid[' + arrayOfIndexes[0] + '].conditionalCheckbox1';
+            formdata = formdata + $(checkboxName).name +  "=" + $(checkboxName).checked + "&" ;
+
+            var details1 = 'grid[' +  arrayOfIndexes[0] + '].conditionalDetails';
+            formdata = formdata + $(details1).name +  "=" + $(details1).value + "&";
 
             var href = '<c:url value="/pages/managePeriod"/>'
 
             var lastRequest = new Ajax.Request(href,
-                {
-                    postBody: formdata
-                });
+            {
+            	postBody: formdata
+            });
             return true;
         }
 
         function registerHandlers() {
             $$('.input-row td.counter').each(function(cell) {
+                var input = cell.getElementsByTagName("INPUT")[0]
+                registerCellInputHandlers(input)
+            });
+            $$('.input-row td.conditional').each(function(cell) {
                 var input = cell.getElementsByTagName("INPUT")[0]
                 registerCellInputHandlers(input)
             });
@@ -240,6 +325,22 @@
             background-color: #ddd;
             padding: 0.5em;
         }
+        #gridTable  div {
+            float: left;
+            margin-left:0%;
+            margin-top: 0%;
+            padding: 10px;
+        }
+        td#emptyCell {
+            empty-cells:hide;
+            border:none;
+            width:100px;
+        }
+        td#emptyCellNoWidth {
+            empty-cells:hide;
+            border:none;
+        }
+        
     </style>
 </head>
 <body>
@@ -259,6 +360,7 @@
         <td></td>
         <th colspan="${tableWidth - 2}">Days of arm (${commons:pluralize(period.repetitions, "repetition")})</th>
         <td></td>
+        <td id="emptyCellNoWidth"> </td>
     </tr>
     <tr id="days-header">
         <td></td>
@@ -271,6 +373,10 @@
             </th>
         </c:forEach>
         <th>Details</th>
+
+        <td id="emptyCell" ></td>
+        <td id="emptyCellNoWidth"></td>
+        <th>Condition Details</th>
     </tr>
     <tbody id="input-body">
     <tr id="no-activities-message" style="display:none">
@@ -291,7 +397,20 @@
         </c:forEach>
         <td>
             <form:input path="grid[${gridStatus.index}].details"
-                    onchange="ajaxform(null, this);" />
+                    onchange="ajaxform(null, this, null);" />
+        </td>
+         <!--corresponds to the conditional behavior-->
+        <td id="emptyCell" ></td>
+        <td class="conditional">
+            <form:checkbox path="grid[${gridStatus.index}].conditionalCheckbox"
+                    value="${gridRow.conditionalCheckbox}" />
+
+        </td>
+        <td>
+            <form:input path="grid[${gridStatus.index}].conditionalDetails"
+                    onchange="return ajaxform(null, null, this);"
+                    disabled="${!gridRow.conditionalCheckbox}"
+                    />
         </td>
     </tr>
     </c:forEach>

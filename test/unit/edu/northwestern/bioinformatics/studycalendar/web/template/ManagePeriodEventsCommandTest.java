@@ -44,28 +44,29 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testInitializeGrid() throws Exception {
-        period.addPlannedEvent(createPlannedEvent( 0, 2, "Det A", 02));
-        period.addPlannedEvent(createPlannedEvent( 0, 5, "Det B", 05));
+        period.addPlannedEvent(createPlannedEvent( 0, 2, "Det A", 02, false, null));
+        period.addPlannedEvent(createPlannedEvent( 0, 5, "Det B", 05, false, null));
         period.addPlannedEvent(createPlannedEvent( 2, 7, 27));
         period.addPlannedEvent(createPlannedEvent( 3, 5, 35));
-        period.addPlannedEvent(createPlannedEvent( 4, 3, "Det C", 43));
-        period.addPlannedEvent(createPlannedEvent( 4, 3, "Det C", 143));
-        period.addPlannedEvent(createPlannedEvent( 4, 4, "Det C", 44));
+        period.addPlannedEvent(createPlannedEvent( 4, 3, "Det C", 43, false, null));
+        period.addPlannedEvent(createPlannedEvent( 4, 3, "Det C", 143, false, null));
+        period.addPlannedEvent(createPlannedEvent( 4, 4, "Det C", 44, false, null));
         assertEquals(7, period.getPlannedEvents().size());
 
         initCommand();
         assertEquals("Wrong number of rows in grid", 6, command.getGrid().size());
 
-        assertGridRow(command.getGrid().get(0), activities.get(0), "Det A", null, 02, null, null, null, null, null);
-        assertGridRow(command.getGrid().get(1), activities.get(0), "Det B", null, null, null, null, 05, null, null);
-        assertGridRow(command.getGrid().get(2), activities.get(2), null,    null, null, null, null, null, null, 27);
-        assertGridRow(command.getGrid().get(3), activities.get(3), null,    null, null, null, null, 35, null, null);
-        assertGridRow(command.getGrid().get(5), activities.get(4), "Det C",    null, null, 143, null, null, null, null);
-        assertGridRow(command.getGrid().get(4), activities.get(4), "Det C", null, null, 43, 44, null, null, null);
+        assertGridRow(command.getGrid().get(0), activities.get(0), "Det A", false, null, null, 02, null, null, null, null, null);
+        assertGridRow(command.getGrid().get(1), activities.get(0), "Det B", false, null, null, null, null, null, 05, null, null);
+        assertGridRow(command.getGrid().get(2), activities.get(2), null, false, null, null, null, null, null, null, null, 27);
+        assertGridRow(command.getGrid().get(3), activities.get(3), null, false, null, null, null, null, null, 35, null, null);
+        assertGridRow(command.getGrid().get(5), activities.get(4), "Det C", false, null, null, null, 143, null, null, null, null);
+        assertGridRow(command.getGrid().get(4), activities.get(4), "Det C", false, null, null, null, 43, 44, null, null, null);
     }
 
     private void assertGridRow(
-        ManagePeriodEventsCommand.GridRow actual, Activity expectedActivity, String expectedDetails, Integer... eventIds
+        ManagePeriodEventsCommand.GridRow actual, Activity expectedActivity, String expectedDetails,
+        Boolean conditional, String conditionalDetails, Integer... eventIds
     ) {
         assertEquals("Wrong activity", expectedActivity, actual.getActivity());
         assertEquals("Wrong details", expectedDetails, actual.getDetails());
@@ -74,7 +75,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
 
     public void testApplyToBlank() throws Exception {
         ManagePeriodEventsCommand.GridRow row1 =
-                createGridRow(activities.get(0), "Det A", null, 02, null, null, null, null, null);
+                createGridRow(activities.get(0), "Det A", false, null, null, 02, null, null, null, null, null );
         row1.setUpdated(true);
         row1.setAddition(true);
 
@@ -92,6 +93,32 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
 
         assertEquals("Event was not added" , 1, period.getPlannedEvents().size());
         assertEquals("Details not updated", "Det A", period.getPlannedEvents().get(0).getDetails());
+    }
+
+    public void testConditionalCheckbox() throws Exception {
+        ManagePeriodEventsCommand.GridRow row1 =
+                createGridRow(activities.get(0), "Det A", true, null, null, 02, null, null, null, null, null );
+        row1.setUpdated(true);
+        row1.setAddition(true);
+        //row1.setConditionalUpdated(true);
+
+        initCommand();
+
+        command.getGrid().add(row1);
+        PlannedEvent event1 = new PlannedEvent();
+        event1.setDetails(row1.getDetails());
+        event1.setActivity(row1.getActivity());
+        event1.setConditional(true);
+        event1.setConditionalDetails(null);
+        plannedEventDao.save(eqPlannedEvent(event1));
+
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals("Event was not added" , 1, period.getPlannedEvents().size());
+        assertEquals("Details not updated", "Det A", period.getPlannedEvents().get(0).getDetails());
+        assertEquals("Conditional is not applied", true, (boolean) period.getPlannedEvents().get(0).getConditional());
     }
 
 //    public void testApplyDoesNotAddOverExisting() throws Exception {
@@ -145,7 +172,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyChangeDetailsDirectly() throws Exception {
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 23);
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 23, false, null);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -164,17 +191,82 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         assertEquals("Details not updated", "Det B", actual.getDetails());
     }
 
+    public void testApplyConditionalDetailsDirectly() throws Exception {
+        String initialConditionalDetails = "InitialConditionalDetails";
+        String expectedConditionalDetails = "ExpectedConditionalDetails";
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 23, true, initialConditionalDetails);
+        period.addPlannedEvent(existingEvent);
+        initCommand();
+
+        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
+        rowToUpdate.setUpdated(true);
+        rowToUpdate.setConditionalUpdated(true);
+        rowToUpdate.setConditionalDetails(expectedConditionalDetails);
+        expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
+        plannedEventDao.save(eqPlannedEvent(existingEvent));
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals(1, period.getPlannedEvents().size());
+        PlannedEvent actual = period.getPlannedEvents().get(0);
+        assertEquals("ConditionalDetails not updated", expectedConditionalDetails, actual.getConditionalDetails());
+    }
+
+
+    public void testApplyConditionalDetailsWithUncheckedCheckbox() throws Exception {
+        String expectedConditionalDetails = "ExpectedConditionalDetails";
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, 23);
+        period.addPlannedEvent(existingEvent);
+        initCommand();
+
+        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
+        rowToUpdate.setUpdated(true);
+        rowToUpdate.setConditionalUpdated(true);
+        rowToUpdate.setConditionalDetails(expectedConditionalDetails);
+        expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
+        plannedEventDao.save(eqPlannedEvent(existingEvent));
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals(1, period.getPlannedEvents().size());
+        PlannedEvent actual = period.getPlannedEvents().get(0);
+        assertEquals("ConditionalDetails not updated", null, actual.getConditionalDetails());
+    }
+
+    public void testApplyConditionalCheckbox() throws Exception {
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, 23);
+        period.addPlannedEvent(existingEvent);
+        initCommand();
+
+        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
+        rowToUpdate.setUpdated(true);
+        rowToUpdate.setConditionalUpdated(true);
+        rowToUpdate.setConditionalCheckbox(true);
+        expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
+        plannedEventDao.save(eqPlannedEvent(existingEvent));
+        replayMocks();
+        command.apply();
+        verifyMocks();
+
+        assertEquals(1, period.getPlannedEvents().size());
+        PlannedEvent actual = period.getPlannedEvents().get(0);
+        assertEquals("ConditionalCheckbox is not updated", true, (boolean) actual.getConditional());
+    }
+
+
     public void testApplyAnotherWithDifferentDetails() throws Exception {
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 02);
+        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 02, false, null);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
         ManagePeriodEventsCommand.GridRow row =
-                createGridRow(activities.get(4), "Det B", null, null, 03, null, null, null, null);
+                createGridRow(activities.get(4), "Det B", false, null, null, null, 03, null, null, null, null);
         row.setUpdated(true);
         row.setAddition(true);
         command.getGrid().add(row);
-        PlannedEvent addedEvent = createPlannedEvent(4, 2, row.getDetails(), 03);
+        PlannedEvent addedEvent = createPlannedEvent(4, 2, row.getDetails(), 03, false, null);
         plannedEventDao.save(eqPlannedEvent(addedEvent));
         replayMocks();
         command.apply();
@@ -229,20 +321,25 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     private PlannedEvent createPlannedEvent(int activityId, int day, Integer id) {
-        return createPlannedEvent(activityId, day, null, id);
+        return createPlannedEvent(activityId, day, null, id, false, null);
     }
 
-    private PlannedEvent createPlannedEvent(int activityIndex, int day, String details, Integer id) {
+    private PlannedEvent createPlannedEvent(int activityIndex, int day, String details, Integer id,
+                                            Boolean conditional, String conditionalDetails) {
         Activity activity = activities.get(activityIndex);
         PlannedEvent evt = Fixtures.createPlannedEvent(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
+        evt.setConditional(conditional);
+        evt.setConditionalDetails(conditionalDetails);
         return evt;
     }
 
-    private ManagePeriodEventsCommand.GridRow createGridRow(Activity activity, String details, Integer... eventIds) {
-        ManagePeriodEventsCommand.GridRow row = new ManagePeriodEventsCommand.GridRow(activity, details, eventIds.length);
+    private ManagePeriodEventsCommand.GridRow createGridRow(Activity activity, String details,
+                                                            Boolean conditional, String conditionalDetails, Integer... eventIds) {
+        ManagePeriodEventsCommand.GridRow row = new ManagePeriodEventsCommand.GridRow(activity, details, eventIds.length,
+                conditional, conditionalDetails);
         for (int i = 0; i < eventIds.length; i++) {
             row.getEventIds().set(i, eventIds[i]);
         }

@@ -66,6 +66,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
         binder.registerCustomEditor(String.class, "grid.details", new StringTrimmerEditor(true));
+        binder.registerCustomEditor(String.class, "grid.conditionalDetails", new StringTrimmerEditor(true));
         ControllerTools.registerDomainObjectEditor(binder, "grid.activity", activityDao);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
     }
