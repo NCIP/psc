@@ -89,10 +89,18 @@ public class Fixtures {
         PlannedEvent baseEvent = createPlannedEvent(activityName, 0);
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(baseEvent);
+        event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
         event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
         return event;
     }
+
+    public static Activity createActivity(String name) {
+        Activity activity = createNamedInstance(name, Activity.class);
+        activity.setType(ActivityType.LAB_TEST);
+        return activity;
+    }
+
 
     public static void addEvents(ScheduledArm scheduledArm, ScheduledEvent... events) {
         for (ScheduledEvent event : events) {

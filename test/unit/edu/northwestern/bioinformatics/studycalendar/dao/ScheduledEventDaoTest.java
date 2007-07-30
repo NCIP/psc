@@ -35,6 +35,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
 
         assertEquals("Wrong planned event", -6, (int) loaded.getPlannedEvent().getId());
         assertEquals("Wrong scheduled arm", -22, (int) loaded.getScheduledArm().getId());
+        assertEquals("Wrong activity id", -100, (int) loaded.getActivity().getId());
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, loaded.getIdealDate());
         assertEquals("Wrong notes", "Boo!", loaded.getNotes());
 
@@ -43,7 +44,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
 
         assertEquals("Wrong number of previous states", 3, loaded.getPreviousStates().size());
 
-        assertEquals("Wrong details", "Nice Details", loaded.getDetails());
+        assertEquals("Wrong details", "Nice Details!!", loaded.getDetails());
     }
 
     public void testGetByRangeFinite() throws Exception {

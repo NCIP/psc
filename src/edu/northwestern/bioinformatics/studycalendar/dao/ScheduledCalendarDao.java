@@ -26,7 +26,6 @@ public class ScheduledCalendarDao extends StudyCalendarDao<ScheduledCalendar> {
             Hibernate.initialize(scheduledArm.getArm().getEpoch());
             for (ScheduledEvent event : scheduledArm.getEvents()) {
                 Hibernate.initialize(event);
-                Hibernate.initialize(event.getPlannedEvent());
                 Hibernate.initialize(event.getPreviousStates());
             }
         }

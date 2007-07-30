@@ -1,0 +1,60 @@
+<dataset>
+    <CSM_APPLICATION
+        application_id="1"
+        application_name="csm_upt"
+        application_description="UPT Super Admin Application"
+        declarative_flag="0"
+        active_flag="0"/>
+
+    <CSM_APPLICATION
+        application_id="2"
+        application_name="study_calendar"
+        application_description="study calendar"
+        active_flag="1"
+        update_date="2006-08-29 10:00:00.000000000"/>
+
+    <CSM_GROUP
+        group_id="1"
+        group_name="STUDY_COORDINATOR"
+        group_desc="study coordinator group"
+        update_date="2006-09-18 10:00:00.000000000"
+        application_id="2"/>
+
+     <CSM_GROUP
+        group_id="2"
+        group_name="STUDY_ADMIN"
+        group_desc="study administrators group"
+        update_date="2006-09-18 10:00:00.000000000"
+        application_id="2"/>
+
+    <CSM_GROUP
+        group_id="3"
+        group_name="PARTICIPANT_COORDINATOR"
+        group_desc="participant coordinator group"
+        update_date="2006-09-18 10:00:00.000000000"
+        application_id="2"/>
+
+    <CSM_GROUP
+        group_id="4"
+        group_name="SUPER_USER"
+        group_desc="super user group"
+        update_date="2006-09-18 10:00:00.000000000"
+        application_id="2"/>
+
+
+    <CSM_GROUP
+        group_id="5"
+        group_name="RESEARCH_ASSOCIATE"
+        group_desc="research associate group"
+        update_date="2006-09-18 10:00:00.000000000"
+        application_id="2"/>
+
+    <CSM_GROUP
+        group_id="6"
+        group_name="SITE_COORDINATOR"
+        group_desc="site coordinator group"
+        update_date="2006-10-31 10:00:00.000000000"
+        application_id="2"/>
+
+
+</dataset>

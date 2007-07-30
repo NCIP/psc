@@ -79,6 +79,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     public Date getStartDate() {
         if (getEvents().size() == 0) return null;
         ScheduledEvent anEvent = getEvents().get(0);
+        if(anEvent.getPlannedEvent() == null) return null;              // Reconsent won't have planned event
         int relativeDay = anEvent.getPlannedEvent().getDay();
         Calendar startDate = Calendar.getInstance();
         startDate.setTime(anEvent.getIdealDate());
@@ -110,12 +111,12 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public Date getNextScheduledEventDate() {
+    public ScheduledEvent getNextScheduledEvent(Date currentDate) {
         Map<Date, List<ScheduledEvent>> eventsByDate = getEventsByDate();
         for(Date date: eventsByDate.keySet()) {
             List<ScheduledEvent> events = eventsByDate.get(date);
             for(ScheduledEvent event : events) {
-                if(event.isFutureScheduled()) return date;
+                if(event.isFutureScheduled(currentDate)) return event;
             }
         }
         return null;

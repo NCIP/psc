@@ -77,11 +77,11 @@
     <form:form>
         <div class="row even">
             <div class="label">Activity</div>
-            <div class="value">${plannedEvent.activity.name}</div>
+            <div class="value">${scheduledEvent.activity.name}</div>
         </div>
         <div class="row odd">
             <div class="label">Details</div>
-            <div class="value">${plannedEvent.details}</div>
+            <div class="value">${scheduledEvent.details}</div>
         </div>
 
         <div class="row even">

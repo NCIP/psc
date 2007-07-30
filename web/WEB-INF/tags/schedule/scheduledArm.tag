@@ -51,8 +51,8 @@
                 <c:forEach items="${entry.value}" var="event">
                     <li class="${event.currentState.mode.name}">
                         <input type="checkbox" value="${event.id}" name="events"/>
-                        <a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.plannedEvent.activity.name}</a>
-                        <c:if test="${not empty event.plannedEvent.details}"><span class="event-details">(${event.plannedEvent.details})</span></c:if> 
+                        <a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
+                        <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if> 
                     </li>
                 </c:forEach>
             </ul>

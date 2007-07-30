@@ -87,7 +87,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of activities", expectedActivities.length, actualEvents.size());
         for (int i = 0; i < actualEvents.size(); i++) {
             ScheduledEvent actualEvent = actualEvents.get(i);
-            assertEquals("Event mismatch at " + i, expectedActivities[i], actualEvent.getPlannedEvent().getActivity().getName());
+            assertEquals("Event mismatch at " + i, expectedActivities[i], actualEvent.getActivity().getName());
         }
     }
 
@@ -160,18 +160,20 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     }
 
     public void testGetNextScheduledDate() {
-        Calendar c = Calendar.getInstance();
+        Calendar now = Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
 
-        c.add(Calendar.MONTH, -1);
-        scheduledArm.addEvent(createScheduledEvent("ABC", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
-        c.add(Calendar.MONTH, 2);
-        scheduledArm.addEvent(createScheduledEvent("DEF", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Occurred()));
-        c.add(Calendar.MONTH, 1);
-        scheduledArm.addEvent(createScheduledEvent("GHI", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
-        c.add(Calendar.MONTH, 1);
-        scheduledArm.addEvent(createScheduledEvent("JKL", c.get(Calendar.YEAR), c.get(Calendar.MONTH), 4, new Scheduled()));
 
-        Date d = scheduledArm.getNextScheduledEventDate();
+        calendar.add(Calendar.MONTH, -1);
+        scheduledArm.addEvent(createScheduledEvent("ABC", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+        calendar.add(Calendar.MONTH, 2);
+        scheduledArm.addEvent(createScheduledEvent("DEF", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Occurred()));
+        calendar.add(Calendar.MONTH, 1);
+        scheduledArm.addEvent(createScheduledEvent("GHI", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+        calendar.add(Calendar.MONTH, 1);
+        scheduledArm.addEvent(createScheduledEvent("JKL", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+
+        Date d = scheduledArm.getNextScheduledEvent(now.getTime()).getActualDate();
 
         assertTrue(scheduledArm.getEvents().get(2).getActualDate() == d);
     }

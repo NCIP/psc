@@ -1,20 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.Columns;
-import org.hibernate.annotations.Cascade;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.IndexColumn;
 import org.hibernate.validator.NotNull;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.*;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -35,6 +32,7 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
     private String details;
     private Activity activity;
+    private NowFactory nowFactory;
 
     ////// LOGIC
 
@@ -68,25 +66,13 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public boolean isFutureScheduled() {
+    public boolean isFutureScheduled(Date currentDate) {
         if(ScheduledEventMode.SCHEDULED == getCurrentState().getMode()){
-            if(getActualDate().after(getCurrentDate())){
+            if(getActualDate().after(currentDate) || getActualDate().equals(currentDate)){
                 return true;
             }
         }
         return false;
-    }
-
-    @Transient
-    public Date getCurrentDate() {
-        Calendar c = Calendar.getInstance();
-
-        c.set(Calendar.HOUR_OF_DAY, 0);
-		c.set(Calendar.MINUTE, 0);
-		c.set(Calendar.SECOND, 0);
-		c.set(Calendar.MILLISECOND, 0);
-
-        return c.getTime();
     }
 
     ////// BEAN PROPERTIES

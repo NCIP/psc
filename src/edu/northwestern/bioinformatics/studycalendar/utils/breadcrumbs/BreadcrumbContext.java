@@ -95,7 +95,9 @@ public class BreadcrumbContext {
     }
 
     public void setPlannedEvent(PlannedEvent plannedEvent) {
-        setPeriod(plannedEvent.getPeriod());
+        if(plannedEvent != null) {
+            setPeriod(plannedEvent.getPeriod());
+        }
         this.plannedEvent = plannedEvent;
     }
 

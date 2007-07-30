@@ -25,4 +25,8 @@ public class ActivityDao extends StudyCalendarDao<Activity> {
     public void save(Activity activity) {
         getHibernateTemplate().saveOrUpdate(activity);
     }
+
+    public Activity getByName(String name) {
+        return (Activity) getHibernateTemplate().find("from Activity where name = ?", name).get(0);
+    }
 }

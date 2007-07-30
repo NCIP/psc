@@ -99,6 +99,13 @@ public class ParticipantService {
                 int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
                 if (dateCompare != 0) return dateCompare;
 
+                if(e1.getPlannedEvent() == null && e2.getPlannedEvent() == null)
+                    return 0;
+                else if(e1.getPlannedEvent() == null)
+                    return -1;
+                else if(e2.getPlannedEvent() == null)
+                    return 1;
+
                 return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
             }
         });

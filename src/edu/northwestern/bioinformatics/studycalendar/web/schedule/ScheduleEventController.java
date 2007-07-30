@@ -85,7 +85,7 @@ public class ScheduleEventController extends PscSimpleFormController {
         public String getName(BreadcrumbContext context) {
             ScheduledEvent evt = context.getScheduledEvent();
             return new StringBuilder()
-                .append(evt.getPlannedEvent().getActivity().getName())
+                .append(evt.getActivity().getName())
                 .append(" on ")
                 .append(ControllerTools.formatDate(evt.getActualDate()))
                 .toString();

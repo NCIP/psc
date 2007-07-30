@@ -18,7 +18,7 @@
     <ARMS id="-3" epoch_id="-2" name="A"/>
     <ARMS id="-4" epoch_id="-2" name="B"/>
     <PERIODS id="-5" arm_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
-    <PLANNED_EVENTS id="-6" period_id="-5" day="2" activity_id="-100"/>
+    <PLANNED_EVENTS id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
     <PLANNED_EVENTS id="-7" period_id="-5" day="4" activity_id="-100"/>
 
     <SCHEDULED_CALENDARS
@@ -53,7 +53,7 @@
         ideal_date="2006-10-31"
         notes="Boo!"
         activity_id="-100"
-        details="Nice Details"
+        details="Nice Details!!"
         />
     <SCHEDULED_EVENT_STATES
         id="-11"
@@ -85,6 +85,8 @@
         current_state_mode_id="1"
         current_state_date="2006-10-29"
         ideal_date="2006-11-01"
+        activity_id="-100"
+        details="Nice Details!!"
         />
     <SCHEDULED_EVENTS
         id="-16"
@@ -93,6 +95,8 @@
         current_state_mode_id="1"
         current_state_date="2006-10-30"
         ideal_date="2006-11-02"
+        activity_id="-100"
+        details="Nice Details!!"
         />
     <SCHEDULED_EVENTS
         id="-17"
@@ -100,6 +104,8 @@
         planned_event_id="-6"
         current_state_mode_id="3"
         ideal_date="2006-11-01"
+        activity_id="-100"
+        details="Nice Details!!"
         />
     <SCHEDULED_EVENTS
         id="-18"
@@ -108,5 +114,7 @@
         current_state_mode_id="3"
         current_state_date="2006-11-07"
         ideal_date="2006-11-08"
+        activity_id="-100"
+        details="Nice Details!!"
         />
 </dataset>

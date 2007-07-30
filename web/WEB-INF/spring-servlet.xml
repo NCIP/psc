@@ -283,6 +283,18 @@
              </bean>
          </property>
     </bean>
+
+    <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
+    
+    <bean name="/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Schedule Reconsent</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
     
 
     <bean name="/reportBuilder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"

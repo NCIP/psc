@@ -85,7 +85,9 @@ public class ControllerTools {
 
     public static void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {
         model.put("plannedEvent", event);
-        addHierarchyToModel(event.getPeriod(), model);
+        if(event != null) {
+            addHierarchyToModel(event.getPeriod(), model);
+        }        
     }
 
     public static void addHierarchyToModel(Period period, Map<String, Object> model) {
