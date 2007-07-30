@@ -83,7 +83,6 @@
                                             name: detailsName,
                                             type: 'text',
                                             onChange:"return ajaxform(null, this, null);"
-//                                            onChange:"return ajaxform(null, this);"
             });
             cells.push(Builder.node('td', {}, [detailsInput]))
 
@@ -98,8 +97,6 @@
                                      id:namePlusOne,
                                      name:name,
                                      value:'true'
-//                                     ,
-//                                     onChange:"return ajaxformTwo(this, null);"
 
             });
             registerCellInputHandlers(input)
@@ -348,9 +345,7 @@
 
 <p>
     This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
-    It begins on day ${period.startDay} of the ${arm.qualifiedName}.  The numbers in the grid below
-    show how many times each activity should be performed on each day of the period
-    (most of the time this will be 1 or 0).
+    It begins on day ${period.startDay} of the ${arm.qualifiedName}.
 </p>
 
 <form:form>
