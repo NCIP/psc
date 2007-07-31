@@ -25,7 +25,7 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
     private final String FIRST_WEEK = "First";
     private final String SECOND_WEEK = "Second";
     private final String THIRD_WEEK = "Third";
-    private final String FORTH_WEEK = "Forth";
+    private final String FOURTH_WEEK = "Fourth";
     private final String FIFTH_WEEK = "Fifth";
 
     @Transient
@@ -55,7 +55,7 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
         } else if (getWeekNumber() == 3) {
             return THIRD_WEEK;
         } else if (getWeekNumber() == 4) {
-            return FORTH_WEEK;
+            return FOURTH_WEEK;
         } else if (getWeekNumber() == 5) {
             return FIFTH_WEEK;
         }
