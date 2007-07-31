@@ -20,6 +20,7 @@ public class ManagePeriodEventsCommand {
     private static final Logger log = Logger.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
     private PlannedEventDao plannedEventDao;
+    private GridRow oldRow;
 
 
     /** Representation of the activity/day grid.
@@ -68,60 +69,52 @@ public class ManagePeriodEventsCommand {
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public GridRow apply() {
-        List<GridRow> existingGrid = createGrid(period);
-        Map<String, GridRow> rowMap = new LinkedHashMap<String, GridRow>();
-        // Maps the existing Grid
-        for (GridRow diffRow : existingGrid) {
-            rowMap.put(diffRow.key(), diffRow);
-        }
+    public PlannedEvent apply() {
         // calculate difference from bound grid
          for (GridRow bound : getGrid()) {
+            setOldRow(bound);
             //just need to update details on the row
             if (!bound.isUpdated()) continue;
             if (bound.isDetailsUpdated()) {
-                GridRow existing = existingGrid.get(bound.getRowNumber());
-                updateDetails(existing, bound.getDetails());
+                updateDetails(bound, bound.getDetails());
             } else if (bound.isConditionalUpdated()) {
-                GridRow existing = existingGrid.get(bound.getRowNumber());
-                updateConditionalParameters(existing, bound.isConditionalCheckbox(), bound.getConditionalDetails());
+                log.info("updating conditional details");
+                updateConditionalParameters(bound);
                 bound.setColumnNumber(-1);
-            }
-            else {
+            } else {
                 log.debug("Processing grid " + bound.getRowNumber() + ", " + bound.getColumnNumber());
-                if (rowMap.containsKey(bound.key())) {
-                    // if this is an update to an existing row calculate the difference
-                    if (!bound.isAddition()) {
-                        log.debug("Action is remove from an existing row");
-                        Integer id = bound.getEventIds().get(bound.getColumnNumber());
-                        if (id != null) {
-                            removeEvent(id);
-                        } else {
-                            log.debug("Attempted to remove event twice: " + bound.getRowNumber() + ", " + bound.getColumnNumber() + " (r, c)");
-                        }
+                if (!bound.isAddition()) {
+                    log.debug("Action is remove from an existing row");
+                    Integer id = bound.getEventIds().get(bound.getColumnNumber());
+                    if (id != null) {
+                        removeEvent(id);
                     } else {
-                        log.debug("Action is add to existing row");
-                        addEvent(bound);
+                        log.debug("Attempted to remove event twice: " + bound.getRowNumber() + ", " + bound.getColumnNumber() + " (r, c)");
                     }
-                 } else {
-                   // otherwise, it is all new
-                    log.debug("Action is add into new row");
-                    rowMap.put(bound.key(), bound);
-                    addEvent(bound);
+                    return null;
+                } else {
+                    return addEvent(bound);
                 }
             }
-            return bound;
         }
         return null;
     }
 
-    private void updateConditionalParameters(GridRow row, boolean conditional, String conditionalDetails) {
+    public void setOldRow (GridRow row) {
+        this.oldRow = row;
+    }
+
+    public GridRow getOldRow() {
+        return this.oldRow;
+    }
+
+    private void updateConditionalParameters(GridRow row) {
         for (Integer id: row.getEventIds()) {
-            if (id != null) {
+            if (id != null && id>-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
-                event.setConditional(conditional);
-                if (conditional) {
-                    event.setConditionalDetails(conditionalDetails);
+                event.setConditional(row.isConditionalCheckbox());
+                if (row.isConditionalCheckbox()) {
+                    event.setConditionalDetails(row.getConditionalDetails());
                 } else {
                     event.setConditionalDetails(null);
                 }
@@ -130,7 +123,7 @@ public class ManagePeriodEventsCommand {
         }
     }
 
-    private void addEvent(GridRow row) {
+    private PlannedEvent addEvent(GridRow row) {
         PlannedEvent newEvent = new PlannedEvent();
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
@@ -139,6 +132,7 @@ public class ManagePeriodEventsCommand {
         newEvent.setConditionalDetails(row.getConditionalDetails());
         period.addPlannedEvent(newEvent);
         plannedEventDao.save(newEvent);
+        return newEvent;
     }
 
     private void removeEvent(Integer eventId) {
@@ -153,7 +147,7 @@ public class ManagePeriodEventsCommand {
 
     private void updateDetails(GridRow row, String details){
         for (Integer id: row.getEventIds()) {
-            if (id != null) {
+            if (id != null && id >-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
                 event.setDetails(details);
                 plannedEventDao.save(event);
@@ -213,15 +207,15 @@ public class ManagePeriodEventsCommand {
         ////// LOGIC
 
         public String key() {
-            return key(getActivity(), getDetails());
+            return key(getActivity(), getDetails(), isConditionalCheckbox(), getConditionalDetails());
         }
 
-        private static String key(Activity activity, String details) {
-            return activity.getId() + details;
+        private static String key(Activity activity, String details, Boolean isConditional, String conditionalDetails) {
+            return activity.getId() + details + isConditional + conditionalDetails;
         }
 
         public static String key(PlannedEvent event) {
-            return key(event.getActivity(), event.getDetails());
+            return key(event.getActivity(), event.getDetails(), event.getConditional(), event.getConditionalDetails());
         }
 
         public boolean matchesEvent(PlannedEvent event) {

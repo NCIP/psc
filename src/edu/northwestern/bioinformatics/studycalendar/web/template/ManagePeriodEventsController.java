@@ -94,16 +94,15 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response,
                                                  Object oCommand, BindException errors) throws Exception {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
-        ManagePeriodEventsCommand.GridRow row = command.apply();
-
-        Arm arm = command.getPeriod().getArm();
-        Integer studyId = arm.getEpoch().getPlannedCalendar().getStudy().getId();
-
+        PlannedEvent event = command.apply();
+        ManagePeriodEventsCommand.GridRow row = command.getOldRow();
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("grid", command.createGrid());
+        //map.put("grid", command.createGrid());
+        if (event!=null) {
+            map.put("id", event.getId());
+        }
         map.put("rowNumber", row.getRowNumber());
         map.put("columnNumber", row.getColumnNumber());
-
         ControllerTools.addHierarchyToModel(command.getPeriod(), map);
         return new ModelAndView("template/ajax/updateManagePeriod", map);
     }
