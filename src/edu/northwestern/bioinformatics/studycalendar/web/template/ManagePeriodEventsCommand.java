@@ -123,7 +123,7 @@ public class ManagePeriodEventsCommand {
         }
     }
 
-    private PlannedEvent addEvent(GridRow row) {
+    protected PlannedEvent addEvent(GridRow row) {
         PlannedEvent newEvent = new PlannedEvent();
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
@@ -206,10 +206,6 @@ public class ManagePeriodEventsCommand {
 
         ////// LOGIC
 
-        public String key() {
-            return key(getActivity(), getDetails(), isConditionalCheckbox(), getConditionalDetails());
-        }
-
         private static String key(Activity activity, String details, Boolean isConditional, String conditionalDetails) {
             return activity.getId() + details + isConditional + conditionalDetails;
         }
@@ -217,12 +213,6 @@ public class ManagePeriodEventsCommand {
         public static String key(PlannedEvent event) {
             return key(event.getActivity(), event.getDetails(), event.getConditional(), event.getConditionalDetails());
         }
-
-        public boolean matchesEvent(PlannedEvent event) {
-            return event.getActivity().equals(getActivity())
-                && ComparisonUtils.nullSafeEquals(event.getDetails(), getDetails());
-        }
-
 
         public void addId(PlannedEvent event) {
             int id = event.getId();
