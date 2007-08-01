@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import static org.easymock.classextension.EasyMock.*;
 import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
+import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
 import java.util.*;
@@ -118,14 +119,14 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     // Since roles are stored in Set, order changes.  Write custom comparator to sort and compare
-    /*public void testGetByIdAndSave() throws Exception {
-        User expectedUser = createUser(-100,"john", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true);
-        User expectedUpdatedUser = createUser(-100, "updated", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true);
+    public void testGetByIdAndSave() throws Exception {
+        User expectedUser = createUser(-100,"john", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
+        User expectedUpdatedUser = createUser(-100, "updated", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
         String[] expectedCsmGroups = new String[] {"6", "2"};
 
         expect(userDao.getById(-100)).andReturn(expectedUser);
         expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
-        userProvisioningManager.assignGroupsToUser(eq("-200"), aryEq(expectedCsmGroups));
+        userProvisioningManager.assignGroupsToUser(eq("-200"), eqSortRoleArEq(expectedCsmGroups));
         //userProvisioningManager.assignGroupsToUser("-200", expectedCsmGroups);
         userDao.save(expectedUpdatedUser);
 
@@ -137,7 +138,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals(expectedUser, actual);
-    } */
+    } 
 
     public void testIsGroupEqualToRole() {
         UserService us = new UserService();
@@ -212,6 +213,24 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         public void appendTo(StringBuffer sb) {
             sb.append("Group with message =").append(expectedGroup.getMessage());
+        }
+    }
+
+    public static <T> T eqSortRoleArEq(T t) {
+        EasyMock.reportMatcher(new SortedArrayEquals(t));
+        return null;
+    }
+
+    private static class SortedArrayEquals extends ArrayEquals {
+        public SortedArrayEquals(Object expected) {
+            super(expected);
+            Arrays.sort((String[])expected);
+        }
+
+
+        public boolean matches(Object actual) {
+            Arrays.sort((String[])actual);
+            return super.matches(actual);    //To change body of overridden methods use File | Settings | File Templates.
         }
     }
 

@@ -12,35 +12,29 @@ import gov.nih.nci.security.authorization.domainobjects.Group;
 import java.util.Set;
 import java.util.List;
 import java.io.FileInputStream;
+import java.net.URL;
 
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class UserProvisioningManagerTest extends DaoTestCase {
-    String dataFileName = "uptdata_studycal.xml";
-    //String path="/Users/johndzak/studycalendar/trunk/test/unit/edu/northwestern/bioinformatics/studycalendar/database/";
-
-    // Can set database and ApplicationSecurityConfig through runtime params too
-    // -Dconfig.database=studycalendar_test
-    // -Dgov.nih.nci.security.configFile=/Users/johndzak/studycalendar/trunk/build/csm/ApplicationSecurityConfig.xml
+    String dataFileName = "uptdata_studycal.xml";    
 
     @Override
     protected void setUp() throws Exception {
-        super.setUp();    //To change body of overridden methods use File | Settings | File Templates.
-       // System.setProperty("gov.nih.nci.security.configFile", "/Users/johndzak/studycalendar/trunk/build/csm/ApplicationSecurityConfig.xml");
+        super.setUp();
+        URL url = getClass().getClassLoader().getResource("ApplicationSecurityConfig.xml");
+        System.setProperty("gov.nih.nci.security.configFile", url.getFile());
     }
 
     protected String getTestDataFileName() {
         return dataFileName;
     }
 
-
-   /* protected IDataSet getDataSet() throws Exception {
-        return new FlatXmlDataSet(new FileInputStream(getTestDataFileName()));
-    }*/
-
     public void testGetCsmGroups() throws Exception {
-    /*    UserProvisioningManager up = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
+        UserProvisioningManager up = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
         assertNotNull("User Provisioning Manager Null", up);
 
         Application ap = up.getApplicationById("2");
@@ -48,11 +42,10 @@ public class UserProvisioningManagerTest extends DaoTestCase {
 
         Set groups = ap.getGroups();
         assertNull("Groups are null" , groups);  // Assert Csm is broken
-     */
     }
 
     public void testGetCsmGroups_2() throws Exception {
-    /*    UserProvisioningManager up = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
+        UserProvisioningManager up = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
         Group group = new Group();
 
         SearchCriteria searchCriteria = new GroupSearchCriteria(group);
@@ -60,6 +53,6 @@ public class UserProvisioningManagerTest extends DaoTestCase {
 
         assertNotNull("Groups are null" , groups);
         assertTrue(groups.size() > 0);
-     */
+
     }
 }
