@@ -8,10 +8,11 @@ import java.util.Calendar;
  * @author Nataliya Shurupova
  */
 
-public class HolidayTest extends StudyCalendarTestCase {
+public class MonthDayHolidayTest extends StudyCalendarTestCase {
     private MonthDayHoliday recurringHoliday = new MonthDayHoliday();
     private MonthDayHoliday nonRecurringHoliday = new MonthDayHoliday();
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         recurringHoliday.setMonth(Calendar.JUNE);

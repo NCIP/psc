@@ -31,7 +31,7 @@ public class Site extends AbstractMutableDomainObject implements Named {
     private String name;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    private List<BlackoutDate> holidaysAndWeekends = new ArrayList<BlackoutDate>();
+    private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
 
     ////// LOGIC
 
@@ -61,7 +61,7 @@ public class Site extends AbstractMutableDomainObject implements Named {
         return studySites;
     }
 
-    public void setHolidaysAndWeekends (List<BlackoutDate> holidaysAndWeekends) {
+    public void setHolidaysAndWeekends (List<Holiday> holidaysAndWeekends) {
         this.holidaysAndWeekends = holidaysAndWeekends;
     }
 
@@ -69,7 +69,7 @@ public class Site extends AbstractMutableDomainObject implements Named {
     @JoinColumn(name = "site_id", nullable = false)
     @OrderBy // order by ID for testing consistency
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<BlackoutDate> getHolidaysAndWeekends() {
+    public List<Holiday> getHolidaysAndWeekends() {
         return holidaysAndWeekends;
     }
 

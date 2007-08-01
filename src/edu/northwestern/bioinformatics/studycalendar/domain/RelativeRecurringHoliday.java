@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue(value="3")
-public class RelativeRecurringHoliday extends BlackoutDate {
+public class RelativeRecurringHoliday extends Holiday {
     private Integer weekNumber;
     private String dayOfTheWeek;
     private Integer month;

@@ -23,7 +23,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
     }
 )
 @DiscriminatorColumn(name="discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
-public class BlackoutDate extends AbstractMutableDomainObject {
+public abstract class Holiday extends AbstractMutableDomainObject {
     private String description;
 
     public String getDescription() {

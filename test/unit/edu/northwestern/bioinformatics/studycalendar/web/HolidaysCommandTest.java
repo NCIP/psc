@@ -135,7 +135,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         thirdDayOfTheWeek.setDayOfTheWeek("Tuesday");
         thirdDayOfTheWeek.setDescription("whatever");
 
-        List<BlackoutDate> list = site.getHolidaysAndWeekends();
+        List<Holiday> list = site.getHolidaysAndWeekends();
         list.add(oneDayOfTheWeek);
         list.add(thirdDayOfTheWeek);
 

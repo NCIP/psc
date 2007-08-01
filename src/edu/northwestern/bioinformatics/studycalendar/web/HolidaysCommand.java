@@ -36,9 +36,9 @@ public class HolidaysCommand {
 
     public void execute() {
         if (getAction().equals("Remove")) {
-            List<BlackoutDate> list = getSite().getHolidaysAndWeekends();
-            for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
-                BlackoutDate abstractHolidayState =  iterator.next();
+            List<Holiday> list = getSite().getHolidaysAndWeekends();
+            for (Iterator<Holiday> iterator = list.iterator(); iterator.hasNext();) {
+                Holiday abstractHolidayState =  iterator.next();
                 if(abstractHolidayState.getId().equals(getSelectedHoliday())) {
                     iterator.remove();
                     siteDao.save(getSite());
@@ -46,8 +46,8 @@ public class HolidaysCommand {
 
             }
         } else if (getAction().equals("Add")) {
-            List<BlackoutDate> list = getSite().getHolidaysAndWeekends();
-            BlackoutDate toAdd = null;
+            List<Holiday> list = getSite().getHolidaysAndWeekends();
+            Holiday toAdd = null;
             if (getHolidayDate() != null ) {
                 parse(getHolidayDate());
                 MonthDayHoliday holiday = new MonthDayHoliday();
@@ -90,9 +90,9 @@ public class HolidaysCommand {
         }
     }
 
-    public boolean isElementInTheList(List<BlackoutDate> list, BlackoutDate value) {
-        for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
-            BlackoutDate abstractHolidayState = iterator.next();
+    public boolean isElementInTheList(List<Holiday> list, Holiday value) {
+        for (Iterator<Holiday> iterator = list.iterator(); iterator.hasNext();) {
+            Holiday abstractHolidayState = iterator.next();
             if(abstractHolidayState.equals(value)){
                 return true;
             }

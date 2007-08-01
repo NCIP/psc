@@ -342,7 +342,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         holidayThree.setDay(3);
         holidayThree.setMonth(Calendar.AUGUST);
         holidayThree.setYear(2005);                
-        List<BlackoutDate> listOfHolidays = new ArrayList<BlackoutDate>();
+        List<Holiday> listOfHolidays = new ArrayList<Holiday>();
         listOfHolidays.add(holidayOne);
         listOfHolidays.add(holidayTwo);
         listOfHolidays.add(holidayThree);

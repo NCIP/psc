@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @DiscriminatorValue(value="1")
-public class MonthDayHoliday extends BlackoutDate {
+public class MonthDayHoliday extends Holiday {
 
     private Integer day;
 	private Integer month;

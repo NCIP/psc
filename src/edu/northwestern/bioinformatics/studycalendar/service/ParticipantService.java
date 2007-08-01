@@ -133,9 +133,9 @@ public class ParticipantService {
 
         int year = dateCalendar.get(Calendar.YEAR);
         Calendar holidayCalendar = Calendar.getInstance();
-        List<BlackoutDate> holidayList = site.getHolidaysAndWeekends();
+        List<Holiday> holidayList = site.getHolidaysAndWeekends();
 
-        for(BlackoutDate holiday: holidayList) {
+        for(Holiday holiday: holidayList) {
             // TODO: instanceof indicates abstraction failure -- this logic should be in each BlackoutDate class
             if (holiday instanceof MonthDayHoliday) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
