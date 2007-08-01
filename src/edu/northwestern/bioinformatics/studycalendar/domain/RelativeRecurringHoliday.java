@@ -1,10 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
 
@@ -15,9 +11,9 @@ import javax.persistence.Transient;
 
 @Entity
 @DiscriminatorValue(value="3")
-public class RelativeRecurringHoliday extends AbstractHolidayState {
-    private Integer week_number;
-    private String day_of_the_week;
+public class RelativeRecurringHoliday extends BlackoutDate {
+    private Integer weekNumber;
+    private String dayOfTheWeek;
     private Integer month;
 
     private final String SPACE = " ";
@@ -34,7 +30,12 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
                     getDayOfTheWeek() + SPACE + "of " + monthString();
     }
 
+    @Transient
+    public int getDayOfTheWeekInteger() {
+        return mapDayNameToInteger(getDayOfTheWeek());
+    }
 
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append("NumberOfWeek = ");
@@ -91,38 +92,36 @@ public class RelativeRecurringHoliday extends AbstractHolidayState {
         return null;
     }
 
-
-
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         RelativeRecurringHoliday that = (RelativeRecurringHoliday) o;
 
-        if (day_of_the_week != null ? !day_of_the_week.equals(that.day_of_the_week) : that.day_of_the_week != null)
+        if (dayOfTheWeek != null ? !dayOfTheWeek.equals(that.dayOfTheWeek) : that.dayOfTheWeek != null)
             return false;
         if (month != null ? !month.equals(that.month) : that.month != null) return false;
-        if (week_number != null ? !week_number.equals(that.week_number) : that.week_number != null)
+        if (weekNumber != null ? !weekNumber.equals(that.weekNumber) : that.weekNumber != null)
             return false;
 
         return true;
     }
 
-
     public Integer getWeekNumber() {
-        return week_number;
+        return weekNumber;
     }
 
     public void setWeekNumber(Integer week_number) {
-        this.week_number = week_number;
+        this.weekNumber = week_number;
     }
 
     public String getDayOfTheWeek() {
-        return this.day_of_the_week;
+        return this.dayOfTheWeek;
     }
 
     public void setDayOfTheWeek(String dayOfTheWeek) {
-        this.day_of_the_week = dayOfTheWeek;
+        this.dayOfTheWeek = dayOfTheWeek;
     }
 
     public Integer getMonth() {

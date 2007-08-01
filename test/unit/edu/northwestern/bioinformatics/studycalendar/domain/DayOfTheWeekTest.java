@@ -31,25 +31,25 @@ public class DayOfTheWeekTest extends StudyCalendarTestCase {
         DayOfTheWeek dayOfTheWeekTwo = new DayOfTheWeek();
         dayOfTheWeekTwo.setDayOfTheWeek("Monday");
         assertEquals("descriptions are the same", 2,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Tuesday");
         assertEquals("descriptions are the same", 3,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Wednesday");
         assertEquals("descriptions are the same", 4,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Thursday");
         assertEquals("descriptions are the same", 5,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Friday");
         assertEquals("descriptions are the same", 6,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Saturday");
         assertEquals("descriptions are the same", 7,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
         dayOfTheWeekTwo.setDayOfTheWeek("Sunday");
         assertEquals("descriptions are the same", 1,
-                dayOfTheWeekTwo.mapDayStringToInt(dayOfTheWeekTwo.getDayOfTheWeek()));
+                dayOfTheWeekTwo.getDayOfTheWeekInteger());
     }
 
     public void testGetDisplayName() throws Exception {

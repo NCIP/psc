@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.*;
 import java.text.DateFormat;
@@ -132,12 +133,13 @@ public class ParticipantService {
 
         int year = dateCalendar.get(Calendar.YEAR);
         Calendar holidayCalendar = Calendar.getInstance();
-        List<AbstractHolidayState> holidayList = site.getHolidaysAndWeekends();
+        List<BlackoutDate> holidayList = site.getHolidaysAndWeekends();
 
-        for(AbstractHolidayState holiday: holidayList) {
-            if (holiday instanceof Holiday) {
+        for(BlackoutDate holiday: holidayList) {
+            // TODO: instanceof indicates abstraction failure -- this logic should be in each BlackoutDate class
+            if (holiday instanceof MonthDayHoliday) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
-                Holiday h = (Holiday)holiday;
+                MonthDayHoliday h = (MonthDayHoliday)holiday;
                 if (h.getYear() == null) {
                     holidayCalendar.set(year, h.getMonth(), h.getDay());
                 } else {
@@ -150,7 +152,7 @@ public class ParticipantService {
                 }
             } else if(holiday instanceof DayOfTheWeek) {
                 DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
-                int intValueOfTheDay = dayOfTheWeek.mapDayStringToInt(dayOfTheWeek.getDayOfTheWeek());
+                int intValueOfTheDay = dayOfTheWeek.getDayOfTheWeekInteger();
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
                     resetTheEvent(date, event, site, holiday.getDescription());
                 }
@@ -159,8 +161,7 @@ public class ParticipantService {
                         (RelativeRecurringHoliday) holiday;
                 Integer numberOfTheWeek = relativeRecurringHoliday.getWeekNumber();
                 Integer month = relativeRecurringHoliday.getMonth();
-                int dayOfTheWeekInt = 
-                        relativeRecurringHoliday.mapDayStringToInt(relativeRecurringHoliday.getDayOfTheWeek());
+                int dayOfTheWeekInt = relativeRecurringHoliday.getDayOfTheWeekInteger();
                 Calendar c = Calendar.getInstance();
 
                 try {
@@ -176,7 +177,7 @@ public class ParticipantService {
                         resetTheEvent(date, event, site, holiday.getDescription());
                     }
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    throw new StudyCalendarSystemException(e);
                 }
             }
         }

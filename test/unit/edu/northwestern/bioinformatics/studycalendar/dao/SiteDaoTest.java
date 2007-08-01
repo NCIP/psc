@@ -2,11 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.AbstractHolidayState;
+import edu.northwestern.bioinformatics.studycalendar.domain.BlackoutDate;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Calendar;
 
@@ -42,7 +41,7 @@ public class SiteDaoTest extends DaoTestCase {
 
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
-        List<AbstractHolidayState> list = actual.getHolidaysAndWeekends();
+        List<BlackoutDate> list = actual.getHolidaysAndWeekends();
         actual.getHolidaysAndWeekends().remove(1);
         siteDao.save(actual);
 
@@ -65,7 +64,7 @@ public class SiteDaoTest extends DaoTestCase {
         holidayToAdd.setId(-3);
         holidayToAdd.setDescription("Closed");
 
-        List<AbstractHolidayState> list = actual.getHolidaysAndWeekends();
+        List<BlackoutDate> list = actual.getHolidaysAndWeekends();
         int size = list.size();
         list.add(holidayToAdd);
         actual.setHolidaysAndWeekends(list);

@@ -36,9 +36,9 @@ public class HolidaysCommand {
 
     public void execute() {
         if (getAction().equals("Remove")) {
-            List<AbstractHolidayState> list = getSite().getHolidaysAndWeekends();
-            for (Iterator<AbstractHolidayState> iterator = list.iterator(); iterator.hasNext();) {
-                AbstractHolidayState abstractHolidayState =  iterator.next();
+            List<BlackoutDate> list = getSite().getHolidaysAndWeekends();
+            for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
+                BlackoutDate abstractHolidayState =  iterator.next();
                 if(abstractHolidayState.getId().equals(getSelectedHoliday())) {
                     iterator.remove();
                     siteDao.save(getSite());
@@ -46,11 +46,11 @@ public class HolidaysCommand {
 
             }
         } else if (getAction().equals("Add")) {
-            List<AbstractHolidayState> list = getSite().getHolidaysAndWeekends();
-            AbstractHolidayState toAdd = null;
+            List<BlackoutDate> list = getSite().getHolidaysAndWeekends();
+            BlackoutDate toAdd = null;
             if (getHolidayDate() != null ) {
                 parse(getHolidayDate());
-                Holiday holiday = new Holiday();
+                MonthDayHoliday holiday = new MonthDayHoliday();
                 holiday.setDay(getDay());
                 holiday.setMonth(getMonth());
                 holiday.setYear(getYear());
@@ -90,9 +90,9 @@ public class HolidaysCommand {
         }
     }
 
-    public boolean isElementInTheList(List<AbstractHolidayState> list, AbstractHolidayState value) {
-        for (Iterator<AbstractHolidayState> iterator = list.iterator(); iterator.hasNext();) {
-            AbstractHolidayState abstractHolidayState = iterator.next();
+    public boolean isElementInTheList(List<BlackoutDate> list, BlackoutDate value) {
+        for (Iterator<BlackoutDate> iterator = list.iterator(); iterator.hasNext();) {
+            BlackoutDate abstractHolidayState = iterator.next();
             if(abstractHolidayState.equals(value)){
                 return true;
             }

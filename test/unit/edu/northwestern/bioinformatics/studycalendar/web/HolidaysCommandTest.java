@@ -24,7 +24,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         command = new HolidaysCommand(siteDao);
 
         site = new Site();
-        site.getHolidaysAndWeekends().add(Fixtures.setId(1, new Holiday()));
+        site.getHolidaysAndWeekends().add(Fixtures.setId(1, new MonthDayHoliday()));
         site.getHolidaysAndWeekends().add(Fixtures.setId(2, new DayOfTheWeek()));
         site.getHolidaysAndWeekends().add(Fixtures.setId(3, new RelativeRecurringHoliday()));
         command.setSite(site);
@@ -73,8 +73,8 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Didn't add a non recur. date", 4, site.getHolidaysAndWeekends().size());
-        assertTrue(site.getHolidaysAndWeekends().get(3) instanceof Holiday);
-        Holiday holiday = (Holiday)site.getHolidaysAndWeekends().get(3);
+        assertTrue(site.getHolidaysAndWeekends().get(3) instanceof MonthDayHoliday);
+        MonthDayHoliday holiday = (MonthDayHoliday)site.getHolidaysAndWeekends().get(3);
         assertEquals("day doesn't match ", 1, (int) holiday.getDay());
         assertEquals("month doesn't match ", Calendar.DECEMBER, (int) holiday.getMonth());
         assertEquals("year is wrong ", 2009, (int) holiday.getYear());
@@ -135,7 +135,7 @@ public class HolidaysCommandTest extends StudyCalendarTestCase {
         thirdDayOfTheWeek.setDayOfTheWeek("Tuesday");
         thirdDayOfTheWeek.setDescription("whatever");
 
-        List<AbstractHolidayState> list = site.getHolidaysAndWeekends();
+        List<BlackoutDate> list = site.getHolidaysAndWeekends();
         list.add(oneDayOfTheWeek);
         list.add(thirdDayOfTheWeek);
 

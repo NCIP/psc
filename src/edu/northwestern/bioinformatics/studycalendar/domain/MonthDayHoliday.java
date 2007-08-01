@@ -1,8 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
 import javax.persistence.*;
 
 /**
@@ -12,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @DiscriminatorValue(value="1")
-public class Holiday extends AbstractHolidayState {
+public class MonthDayHoliday extends BlackoutDate {
 
     private Integer day;
 	private Integer month;
@@ -31,7 +28,7 @@ public class Holiday extends AbstractHolidayState {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Holiday holiday = (Holiday) o;
+        MonthDayHoliday holiday = (MonthDayHoliday) o;
 
         if (day != null ? !day.equals(holiday.day) : holiday.day != null) return false;
         if (month != null ? !month.equals(holiday.month) : holiday.month != null) return false;

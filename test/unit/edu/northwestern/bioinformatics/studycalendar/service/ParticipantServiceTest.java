@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.Calendar;
@@ -17,7 +16,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 
 import static org.easymock.classextension.EasyMock.*;
 
@@ -332,19 +330,19 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         StudySite studySite = new StudySite();
         Site site = new Site();
 
-        Holiday holidayOne = new Holiday();
+        MonthDayHoliday holidayOne = new MonthDayHoliday();
         holidayOne.setDay(1);
         holidayOne.setMonth(Calendar.AUGUST);
         holidayOne.setYear(2005);
-        Holiday holidayTwo = new Holiday();
+        MonthDayHoliday holidayTwo = new MonthDayHoliday();
         holidayTwo.setDay(2);
         holidayTwo.setMonth(Calendar.AUGUST);
         holidayTwo.setYear(2005);
-        Holiday holidayThree = new Holiday();
+        MonthDayHoliday holidayThree = new MonthDayHoliday();
         holidayThree.setDay(3);
         holidayThree.setMonth(Calendar.AUGUST);
         holidayThree.setYear(2005);                
-        List<AbstractHolidayState> listOfHolidays = new ArrayList<AbstractHolidayState>();
+        List<BlackoutDate> listOfHolidays = new ArrayList<BlackoutDate>();
         listOfHolidays.add(holidayOne);
         listOfHolidays.add(holidayTwo);
         listOfHolidays.add(holidayThree);
