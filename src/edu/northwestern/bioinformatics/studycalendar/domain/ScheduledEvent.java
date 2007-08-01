@@ -32,7 +32,6 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
     private String details;
     private Activity activity;
-    private NowFactory nowFactory;
 
     ////// LOGIC
 
