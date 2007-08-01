@@ -56,5 +56,353 @@
         update_date="2006-10-31 10:00:00.000000000"
         application_id="2"/>
 
+    <CSM_PRIVILEGE
+        privilege_id="1"
+        privilege_name="CREATE"
+        privilege_description="This privilege grants permission to a user to create an entity. This entity can be an object, a database entry, or a resource such as a network connection"/>
+
+    <CSM_PRIVILEGE
+        privilege_id="2"
+        privilege_name="ACCESS"
+        privilege_description="This privilege allows a user to access a particular resource.  Examples of resources include a network or database connection, socket, module of the application, or even the application itself"/>
+
+    <CSM_PRIVILEGE
+        privilege_id="3"
+        privilege_name="READ"
+        privilege_description="This privilege permits the user to read data from a file, URL, database, an object, etc. This can be used at an entity level signifying that the user is allowed to read data about a particular entry"/>
+
+    <CSM_PRIVILEGE
+        privilege_id="4"
+        privilege_name="WRITE"
+        privilege_description="This privilege allows a user to write data to a file, URL, database, an object, etc. This can be used at an entity level signifying that the user is allowed to write data about a particular entity"/>
+
+    <CSM_PRIVILEGE
+        privilege_id="5"
+        privilege_name="UPDATE"
+        privilege_description="This privilege grants permission at an entity level and signifies that the user is allowed to update data for a particular entity. Entities may include an object, object attribute, database row etc"/>
+
+
+    <CSM_PRIVILEGE
+        privilege_id="6"
+        privilege_name="DELETE"
+        privilege_description="This privilege permits a user to delete a logical entity. This entity can be an object, a database entry, a resource such as a network connection, etc"/>
+
+    <CSM_PRIVILEGE
+        privilege_id="7"
+        privilege_name="EXECUTE"
+        privilege_description="This privilege allows a user to execute a particular resource. The resource can be a method, function, behavior of the application, URL, button etc"/>
+
+    <CSM_PROTECTION_ELEMENT
+        protection_element_id="1"
+        protection_element_name="csm_upt"
+        protection_element_description="UPT Super Admin Application"
+        object_id="csm_upt"
+        application_id="1"
+        />
+
+    <CSM_PROTECTION_ELEMENT
+        protection_element_id="2"
+        protection_element_name="study_calendar"
+        object_id="study_calendar"
+        application_id="1"
+        update_date="8/29/2006"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="9"
+        protection_group_name="BaseAccess"
+        protection_group_description="group of features which all users have access to"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-09-14"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="10"
+        protection_group_name="CreateStudyAccess"
+        protection_group_description="access to create study, epochs, arms and associate periods to arms"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-09-14"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="11"
+        protection_group_name="AdministrativeAccess"
+        protection_group_description="access to mark template complete"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-10-13"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="12"
+        protection_group_name="ParticipantAssignmentAccess"
+        protection_group_description="access to create and assign participants"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-09-14"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="13"
+        protection_group_name="SiteCoordinatorAccess"
+        protection_group_description="access for site coordinators"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-10-31"
+        />
+
+    <CSM_PROTECTION_GROUP
+        protection_group_id="15"
+        protection_group_name="BaseSitePG"
+        protection_group_description="Base site protection group"
+        application_id="2"
+        large_element_count_flag="0"
+        update_date="2006-10-31"
+        />
+
+    <CSM_ROLE
+        role_id="2"
+        role_name="STUDY_ADMIN"
+        role_description="study administrator"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-08-30"
+        />
+
+    <CSM_ROLE
+        role_id="3"
+        role_name="STUDY_COORDINATOR"
+        role_description="study coordinator"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-09-07"
+        />
+
+    <CSM_ROLE
+        role_id="4"
+        role_name="PARTICIPANT_COORDINATOR"
+        role_description="participant coordinator"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-09-07"
+        />
+
+    <CSM_ROLE
+        role_id="5"
+        role_name="RESEARCH_ASSOCIATE"
+        role_description="clinical research associate"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-09-07"
+        />
+
+    <CSM_ROLE
+        role_id="6"
+        role_name="SUPERUSER"
+        role_description="super user for this application for testing purposes"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-09-14"
+        />
+
+    <CSM_ROLE
+        role_id="7"
+        role_name="SITE_COORDINATOR"
+        role_description="site coordinator role"
+        application_id="2"
+        active_flag="1"
+        update_date="2006-10-31"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="7"
+        role_id="2"
+        privilege_id="2"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="9"
+        role_id="3"
+        privilege_id="2"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="10"
+        role_id="4"
+        privilege_id="2"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="11"
+        role_id="5"
+        privilege_id="2"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="12"
+        role_id="6"
+        privilege_id="7"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="13"
+        role_id="6"
+        privilege_id="6"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="14"
+        role_id="6"
+        privilege_id="5"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="15"
+        role_id="6"
+        privilege_id="3"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="16"
+        role_id="6"
+        privilege_id="2"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="17"
+        role_id="6"
+        privilege_id="4"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="18"
+        role_id="6"
+        privilege_id="1"
+        />
+
+    <CSM_ROLE_PRIVILEGE
+        role_privilege_id="19"
+        role_id="7"
+        privilege_id="2"
+        />
+
+    <CSM_USER
+        user_id="1"
+        login_name="SYSTEM_ADMIN"
+        first_name="SYSTEM_ADMIN"
+        last_name="SYSTEM_ADMIN"
+        password="system_admin"
+        update_date="2006-08-30"
+        />
+
+    <CSM_USER
+        user_id="5"
+        login_name="ra_1"
+        first_name="Research"
+        last_name="Associate1"
+        password="ra_1"
+        update_date="2006-08-30"
+        />
+
+    <CSM_USER
+        user_id="6"
+        login_name="ra_2"
+        first_name="Research"
+        last_name="Associate2"
+        password="ra_2"
+        update_date="2006-08-30"
+        />
+
+    <CSM_USER
+        user_id="7"
+        login_name="study_admin1"
+        first_name="study"
+        last_name="admin1"
+        password="study_admin1"
+        update_date="2006-08-30"
+        />
+
+    <CSM_USER
+        user_id="8"
+        login_name="study_admin2"
+        first_name="Study"
+        last_name="Admin2"
+        password="study_admin2"
+        update_date="2006-08-30"
+        />
+
+    <CSM_USER
+        user_id="3"
+        login_name="studycd_1"
+        first_name="Clinical_Research"
+        last_name="StudyCoordinator1"
+        password="studycd_1"
+        update_date="2006-09-07"
+        />
+
+    <CSM_USER
+        user_id="4"
+        login_name="studycd_2"
+        first_name="Clinical Research"
+        last_name="StudyCoordinator2"
+        password="studycd_2"
+        update_date="2006-09-07"
+        />
+
+    <CSM_USER
+        user_id="9"
+        login_name="participantcd_1"
+        first_name="participant"
+        last_name="coordinator"
+        password="participantcd_1"
+        update_date="2006-09-07"
+        />
+
+    <CSM_USER
+        user_id="10"
+        login_name="participantcd_2"
+        first_name="Participant"
+        last_name="Coordinator2"
+        password="participantcd_2"
+        update_date="2006-09-07"
+        />
+
+    <CSM_USER
+        user_id="2"
+        login_name="sc_systemadmin"
+        first_name="STUDYCAL_SYSTEMADMIN"
+        last_name="STUDYCAL_SYSTEMADMIN"
+        password="systemadmin"
+        update_date="2006-09-12"
+        />
+
+    <CSM_USER
+        user_id="11"
+        login_name="superuser"
+        first_name="super"
+        last_name="superuser"
+        password="superuser"
+        update_date="2006-09-14"
+        />
+
+    <CSM_USER
+        user_id="12"
+        login_name="sitecd_1"
+        first_name="sitecd_1"
+        last_name="coordinator1"
+        password="sitecd_1"
+        update_date="2006-10-31"
+        />
+
+    <CSM_USER
+        user_id="13"
+        login_name="sitecd_2"
+        first_name="sitecd_2"
+        last_name="coordinator2"
+        password="sitecd_2"
+        update_date="2006-10-31"
+        />
 
 </dataset>
