@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+    </bean>
+
+    <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass">
+            <value>org.springframework.web.servlet.view.InternalResourceView</value>
+        </property>
+        <property name="prefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
+        <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
+        <property name="urlPrefix"><value>/studycalendar/pages</value></property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
+        <property name="interceptors">
+            <list>
+                <ref bean="loginCheckInterceptor"/>
+                <ref bean="URLAccessCheckInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor" lazy-init="true"/>
+
+    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor" lazy-init="true"/>
+
+    <bean id="noCacheTemplate" abstract="true">
+        <property name="cacheSeconds"><value>0</value></property>
+    </bean>
+
+    <bean name="/studyList" id="studyListController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
+
+    <bean name="/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController"/>
+    <bean name="/template/select" id="selectArmController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
+        <property name="parameterName"><value>arm</value></property>
+        <property name="viewName"><value>template/ajax/selectArm</value></property>
+        <property name="dao"><ref bean="armDao"/></property>
+    </bean>
+    <bean name="/template/rename" id="renameController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>renameCommand</value></property>
+    </bean>
+    <bean name="/template/addTo" id="addToController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addToTemplateCommand</value></property>
+    </bean>
+    <bean name="/template/delete" id="deleteController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>deleteCommand</value></property>
+    </bean>
+    <bean name="/template/move" id="moveController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>moveCommand</value></property>
+    </bean>
+    <bean name="/template/edit.js" id="editJsController"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
+        <property name="viewName"><value>template/edit.js</value></property>
+    </bean>
+
+    <bean name="/newStudy" id="newStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
+
+    <bean name="/newPeriod" id="newPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController"/>
+
+    <bean name="/newActivity" id="newActivityController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController"/>
+
+    <bean name="/createParticipant" id="newParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
+
+    <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
+
+    <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController"/>
+
+    <bean name="/managePeriod" id="managePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController"/>
+          
+    <bean name="/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController"/>
+          
+    <bean name="/assignParticipantCoordinator/selectSite" id="ParticipantCoordinatorsBySiteController" autowire="byName"
+    	  class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
+
+    <bean name="/schedule" id="displayScheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController"/>
+    <bean name="/schedule/select" id="selectScheduledArmController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
+        <property name="parameterName"><value>arm</value></property>
+        <property name="viewName"><value>schedule/ajax/selectScheduledArm</value></property>
+        <property name="dao"><ref bean="scheduledArmDao"/></property>
+    </bean>
+    <bean name="/schedule/nextArm" id="scheduleNextArmController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
+
+    <bean name="/scheduleEvent" id="scheduleEventController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController"/>
+
+    <bean name="/manageSites" id="manageSitesController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController"/>
+
+    <bean name="/newSite" id="newSiteController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController"/>
+
+    <bean name="/assignSite" id="assignSiteController" autowire="byName"  lazy-init="true" class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
+    </bean>
+
+    <bean name="/assignSiteCoordinator" id="assignSiteCoordinatorController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteCoordinatorController">
+    </bean>
+    
+    <bean name="/sitesForAssignParticipantCoordinators" id="sitesForAssignParticipantCoordinatorsController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.SitesForAssignParticipantCoordinatorsController">
+    </bean>
+
+    <bean name="/assignParticipantCoordinatorsToSite" id="assignParticipantCoordinatorsToSiteController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantCoordinatorsToSiteController">
+    </bean>
+
+    <bean name="/siteParticipantCoordinatorList" id="siteParticipantCoordinatorListController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.SiteParticipantCoordinatorListController">
+    </bean>
+    
+     <bean name="/assignTemplatesToOneParticipantCoordinator" id="assignTemplatesToOneParticipantCoordinatorController" autowire="byName" lazy-init="true"
+		  class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
+    </bean>
+    
+    <bean name="/assignTemplatesToParticipantCoordinators" id="assignTemplatesToParticipantCoordinatorsController" 
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+      <property name="viewName"><value>assignTemplatesToParticipantCoordinators</value></property>
+    </bean>
+
+</beans>

@@ -1,0 +1,7 @@
+commons-logging.jar             
+core-commons.jar                r6830
+hibernate3.jar                  3.2.0cr4
+hibernate-annotations.jar       3.2.0cr2
+jstl.jar and standard.jar       for standard taglib
+sitemesh-2.2.1.jar
+spring.jar                      pre-2.0.1 (built from CVS with fix for SPR-2738)

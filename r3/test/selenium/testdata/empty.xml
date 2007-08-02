@@ -1,0 +1,17 @@
+<!DOCTYPE dataset SYSTEM "@DTD_PATH@">
+
+<dataset>
+    <studies/>
+    <epochs/>
+    <planned_calendars/>
+    <arms/>
+    <activities/>
+    <participants/>
+    <periods/>
+    <planned_events/>
+    <sites 
+    	id="-1"
+    	name="default"/>
+    <study_sites/>
+    <participant_assignments/>
+</dataset>

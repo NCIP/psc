@@ -1,0 +1,24 @@
+<dataset>
+    <STUDIES id="-150" version="0" name="Study"/>
+    <PLANNED_CALENDARS
+        id="-100"
+        version="0"
+        study_id="-150"
+        />
+
+    <EPOCHS
+        id="-200"
+        name="Dexter"
+        list_index="0"
+        planned_calendar_id="-100"/>
+    <EPOCHS
+        id="-199"
+        name="Sinister"
+        list_index="2"
+        planned_calendar_id="-100"/>
+    <EPOCHS
+        id="-201"
+        name="Gripping"
+        list_index="1"
+        planned_calendar_id="-100"/>
+</dataset>

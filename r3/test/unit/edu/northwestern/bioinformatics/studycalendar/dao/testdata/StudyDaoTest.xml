@@ -1,0 +1,48 @@
+<dataset>
+    <STUDIES
+        id="-100"
+        version="0"
+        name="First Study"
+        />
+    <STUDIES
+        id="-101"
+        version="0"
+        name="Study #2"
+        />
+
+    <SITES id="-40" name="North Pole"/>
+
+    <STUDY_SITES
+        id="-15"
+        study_id="-100"
+        site_id="-40"
+        />
+
+    <STUDY_SITES
+        id="-16"
+        study_id="-101"
+        site_id="-40"
+        />
+
+    <PARTICIPANT_ASSIGNMENTS
+        id="-10"
+        participant_id="-20"
+        study_site_id="-15"
+        first_epoch_stdate="2003-02-01"
+        study_id="004-12"
+        />
+    <PARTICIPANT_ASSIGNMENTS
+        id="-11"
+        participant_id="-21"
+        study_site_id="-15"
+        first_epoch_stdate="2003-02-07"
+        study_id="004-13"
+        />
+    <PARTICIPANT_ASSIGNMENTS
+        id="-12"
+        participant_id="-22"
+        study_site_id="-16"
+        first_epoch_stdate="2003-02-07"
+        study_id="005-01"
+        />
+</dataset>

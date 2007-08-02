@@ -1,0 +1,35 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <!-- Redirect views -->
+
+    <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/public/login</value></property>
+    </bean>
+    
+    <bean id="redirectToStudyList" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/studyList</value></property>
+    </bean>
+
+    <bean id="redirectToManageSites" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/manageSites</value></property>
+    </bean>
+
+    <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/template</value></property>
+    </bean>
+
+    <bean id="redirectToManagePeriod" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/managePeriod</value></property>
+    </bean>
+
+    <bean id="redirectToSchedule" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/schedule</value></property>
+    </bean>
+</beans>
