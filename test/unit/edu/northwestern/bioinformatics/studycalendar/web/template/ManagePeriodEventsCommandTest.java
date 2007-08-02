@@ -100,8 +100,6 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
                 createGridRow(activities.get(0), "Det A", true, null, null, 02, null, null, null, null, null );
         row1.setUpdated(true);
         row1.setAddition(true);
-        //row1.setConditionalUpdated(true);
-
         initCommand();
 
         command.getGrid().add(row1);
@@ -147,12 +145,15 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         plannedEventDao.save(eqPlannedEvent(expectedEvent));
 
         replayMocks();
-        command.apply();
+        PlannedEvent event = command.apply();
         verifyMocks();
 
         assertEquals(2, period.getPlannedEvents().size());
         assertSame(period.getPlannedEvents().get(0), expectedEvent);
         assertNotSame(period.getPlannedEvents().get(1), expectedEvent);
+        assertEquals("Activities are not the same", event.getActivity(), expectedEvent.getActivity());
+        assertEquals("Details are not the same",event.getDetails(), expectedEvent.getDetails());
+        assertNotEquals("Ids are same", event.getId(), expectedEvent.getId());
     }
 
     public void testApplyRemove() throws Exception {
@@ -247,12 +248,12 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
         plannedEventDao.save(eqPlannedEvent(existingEvent));
         replayMocks();
-        command.apply();
+        PlannedEvent event = command.apply();
         verifyMocks();
-
         assertEquals(1, period.getPlannedEvents().size());
         PlannedEvent actual = period.getPlannedEvents().get(0);
         assertEquals("ConditionalCheckbox is not updated", true, (boolean) actual.getConditional());
+        assertEquals("Event is not null", null, event);
     }
 
 
@@ -265,6 +266,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
                 createGridRow(activities.get(4), "Det B", false, null, null, null, 03, null, null, null, null);
         row.setUpdated(true);
         row.setAddition(true);
+        command.setOldRow(row);
         command.getGrid().add(row);
         PlannedEvent addedEvent = createPlannedEvent(4, 2, row.getDetails(), 03, false, null);
         plannedEventDao.save(eqPlannedEvent(addedEvent));
@@ -303,6 +305,12 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
                     actual.getActivity() != null
                 && expectedPlannedEvent.getDetails() != null ?
                     !expectedPlannedEvent.getDetails().equals(actual.getDetails()) :
+                    actual.getDetails() != null
+                && expectedPlannedEvent.getConditionalDetails() != null ?
+                    !expectedPlannedEvent.getConditionalDetails().equals(actual.getConditionalDetails()) :
+                    actual.getDetails() != null
+                && expectedPlannedEvent.getConditional() != null ?
+                    !expectedPlannedEvent.getConditional().equals(actual.getConditional()) :
                     actual.getDetails() != null
                 )
                 return false;
