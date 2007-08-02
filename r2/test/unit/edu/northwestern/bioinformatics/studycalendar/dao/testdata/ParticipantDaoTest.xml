@@ -1,0 +1,24 @@
+<dataset>
+    <PARTICIPANTS
+        id="-100"
+        version="0"
+        first_name="Dilbert"
+        last_name="Scott"
+        birth_date="2006-01-02"
+        gender="Female"
+        person_id="123-45-6789"/>
+    <SITES
+    	id="-1001"
+    	version="0"
+    	name="New Site"/>
+    <STUDIES
+    	id="-2001"
+    	version="0"
+    	name="New Study"/>
+	<STUDY_SITES
+		id="-3001"
+		version="0"
+		site_id="-1001"
+		study_id="-2001"
+		study_identifier="study_identifier1"/>    		    
+</dataset>

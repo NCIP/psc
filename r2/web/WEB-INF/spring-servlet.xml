@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+    </bean>
+
+    <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass">
+            <value>org.springframework.web.servlet.view.InternalResourceView</value>
+        </property>
+        <property name="prefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="loginCheckInterceptor"/>
+                <ref bean="URLAccessCheckInterceptor"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
+
+    <bean id="URLAccessCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
+        
+    <bean name="/studyList" id="studyListController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
+
+    <bean name="/newStudy" id="newStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewStudyController"/>
+
+    <bean name="/viewArm" id="viewArmController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ViewArmController"/>
+
+    <bean name="/newPeriod" id="newPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewPeriodController"/>
+
+    <bean name="/newActivity" id="newActivityController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewActivityController"/>
+
+    <bean name="/createParticipant" id="newParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController"/>
+
+    <bean name="/assignParticipant" id="assignParticipantController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController"/>
+
+    <bean name="/calendarTemplate" id="displayCalendarTemplateController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.DisplayCalendarTemplateController"/>
+
+    <bean name="/markComplete" id="MarkCompleteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.MarkCompleteController"/>
+
+    <bean name="/newPlannedEvent" id="NewPlannedEventController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewPlannedEventController"/>
+
+    <bean name="/managePeriod" id="managePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManagePeriodEventsController"/>
+
+</beans>
