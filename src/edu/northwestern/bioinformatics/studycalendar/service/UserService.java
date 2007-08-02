@@ -75,6 +75,7 @@ public class UserService {
         return csmGroupsForUser;
     }
 
+    @SuppressWarnings("unchecked")
     private List<Group> getAllCsmGroups() throws Exception {
         SearchCriteria searchCriteria = new GroupSearchCriteria(new Group());
         List<Group> groups = userProvisioningManager.getObjects(searchCriteria);
