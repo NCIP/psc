@@ -50,12 +50,19 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         spa.setScheduledCalendar(calendar);
         spa.setParticipant(createParticipant("Alice", "Childress"));
         
-        ScheduledArm existingArm = new ScheduledArm();
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1,
+        ScheduledArm arm1 = new ScheduledArm();
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 1,
+            new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 3));
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 8));
+        calendar.addArm(arm1);
+
+        ScheduledArm arm2 = new ScheduledArm();
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1,
             new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3));
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 8));
-        calendar.addArm(existingArm);
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3));
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 8));
+        calendar.addArm(arm2);
 
         List<StudyParticipantAssignment> assignments = Collections.singletonList(spa);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
@@ -68,7 +75,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Details");
         verifyMocks();
 
-        List<ScheduledEvent> list = calendar.getCurrentArm().getEventsByDate().get(
+        List<ScheduledEvent> list = calendar.getScheduledArms().get(1).getEventsByDate().get(
                 DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
         
         assertEquals(2, list.size());

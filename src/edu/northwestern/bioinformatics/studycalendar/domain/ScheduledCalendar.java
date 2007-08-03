@@ -44,7 +44,9 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
     public ScheduledEvent getNextScheduledEvent(Date currentDate) {
         for (ScheduledArm arm : getScheduledArms()) {
             if (!arm.isComplete()) {
-                return arm.getNextScheduledEvent(currentDate);
+                ScheduledEvent event =  arm.getNextScheduledEvent(currentDate);
+                if(event != null)
+                    return event;
             }
         }
         return null;
