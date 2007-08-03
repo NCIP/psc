@@ -12,7 +12,7 @@
 			<a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>  
 		</c:if>
  		<c:if test="${not empty arm.months}">
-			<a id="show_button" href="#" class = "control" style="visibility: hidden;">Show All</a>
+			<a id="show_button" href="#" class = "control">Show All</a>
 			<a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
 		</c:if>
 	</p>
@@ -73,7 +73,7 @@
 			</tr>
         </table>
 		
-		<a href="#" class="control showMonth" style="visibility: hidden;">&#9660;</a>
+		<a href="#" class="control showMonth">&#9660;</a>
 		<a href="#" class="control hideMonth" style="visibility: hidden;">&#9650;</a>
 
         <div class="days">
@@ -105,5 +105,4 @@
             </p>
         </c:if>
     </c:forEach>
-
 </div>

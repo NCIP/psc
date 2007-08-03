@@ -371,7 +371,6 @@
 			
 			function showSetup(){
 				if (init == null) initialize_arrows();
-				check()
 				registerShowHandler()
 			}
 			
@@ -453,7 +452,14 @@
 				hideMonth.each(function(num) {registerHideMonthHandler(num, counter); counter++;});
 				
 			}
-			
+			function foo(){
+			    initialize_arrows()
+				showSetup()
+				hideSetup()
+				arrowSetup()
+				showMonthSetup()
+				hideMonthSetup()
+			}
 
             <c:if test="${not plannedCalendar.complete}">
             Event.observe(window, "load", createStudyControls)

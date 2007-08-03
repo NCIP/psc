@@ -205,6 +205,7 @@
 		}
 
         function ajaxform(checkbox, details, conditionalDetails) {
+
             // Set up data variable
             var formdata = "";
             formdata = formdata + 'id='+${period.id}+"&";

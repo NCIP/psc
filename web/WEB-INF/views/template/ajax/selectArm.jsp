@@ -6,3 +6,4 @@
 </jsgen:replaceHtml>
 Element.addClassName("arm-${arm.base.id}-item", "selected")
 SC.slideAndShow('selected-arm-content')
+foo()
