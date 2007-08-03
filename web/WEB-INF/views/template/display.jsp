@@ -452,7 +452,7 @@
 				hideMonth.each(function(num) {registerHideMonthHandler(num, counter); counter++;});
 				
 			}
-			function foo(){
+			function initializeNewArm(){
 			    initialize_arrows()
 				showSetup()
 				hideSetup()
