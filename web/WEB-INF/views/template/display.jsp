@@ -453,12 +453,15 @@
 				
 			}
 			function initializeNewArm(){
-			    initialize_arrows()
-				showSetup()
-				hideSetup()
-				arrowSetup()
-				showMonthSetup()
-				hideMonthSetup()
+			    if ($$(".day").length != 0){
+			    	initialize_arrows()
+					showSetup()
+					hideSetup()
+					arrowSetup()
+					showMonthSetup()
+					hideMonthSetup()
+				}
+					
 			}
 
             <c:if test="${not plannedCalendar.complete}">
