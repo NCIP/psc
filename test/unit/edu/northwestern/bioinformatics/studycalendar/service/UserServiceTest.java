@@ -1,30 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.dao.SearchCriteria;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.exceptions.CSTransactionException;
-import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.authorization.domainobjects.*;
 import gov.nih.nci.security.authorization.jaas.AccessPermission;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static org.easymock.classextension.EasyMock.*;
-import org.easymock.classextension.EasyMock;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.eq;
+import static org.easymock.classextension.EasyMock.expect;
 import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
-import java.util.*;
 import java.security.Principal;
+import java.util.*;
 
 public class UserServiceTest extends StudyCalendarTestCase {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
-    private TestUserProvisioningManager testUserProvisioningManager;
+    private UserProvisioningManagerStub userProvisioningManagerStub;
     private UserService service;
     private List<Group> allCsmGroups;
 
@@ -34,7 +36,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         userDao = registerMockFor(UserDao.class);
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
-        testUserProvisioningManager = new TestUserProvisioningManager();
+        userProvisioningManagerStub = new UserProvisioningManagerStub();
 
         service = new UserService();
         service.setUserDao(userDao);
@@ -49,18 +51,16 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSaveUser() throws Exception {
-        service.setUserProvisioningManager(testUserProvisioningManager);
+        service.setUserProvisioningManager(userProvisioningManagerStub);
         User expectedUser = createUser(200, "john", 100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, true, "pass123");
-        String[] expectedCsmGroups = {"2", "6"};
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
         expectedCsmUser.setLoginName("john");
         expectedCsmUser.setUserId(1L);
 
-        testUserProvisioningManager.createUser(expectedCsmUser);
+        userProvisioningManagerStub.createUser(expectedCsmUser);
 
-        testUserProvisioningManager.assignGroupsToUser("100", expectedCsmGroups);
         userDao.save(expectedUser);
         replayMocks();
 
@@ -70,19 +70,17 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertEquals(expectedUser, actual);
     }
 
-     public void testSaveUser_2() throws Exception {
-        service.setUserProvisioningManager(testUserProvisioningManager);
+    public void testSaveUser_2() throws Exception {
+        service.setUserProvisioningManager(userProvisioningManagerStub);
         User expectedUser = createUser(200, "john", 100L, null, false, null);
-        String[] expectedCsmGroups = {};
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
         expectedCsmUser.setLoginName("john");
         expectedCsmUser.setUserId(1L);
 
-        testUserProvisioningManager.createUser(expectedCsmUser);
+        userProvisioningManagerStub.createUser(expectedCsmUser);
 
-        testUserProvisioningManager.assignGroupsToUser("100", expectedCsmGroups);
         userDao.save(expectedUser);
         replayMocks();
 
@@ -118,7 +116,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertEquals(expectedUser, actualUser);
     }
 
-    // Since roles are stored in Set, order changes.  Write custom comparator to sort and compare
     public void testGetByIdAndSave() throws Exception {
         User expectedUser = createUser(-100,"john", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
         User expectedUpdatedUser = createUser(-100, "updated", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
@@ -126,8 +123,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         expect(userDao.getById(-100)).andReturn(expectedUser);
         expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
-        userProvisioningManager.assignGroupsToUser(eq("-200"), eqSortRoleArEq(expectedCsmGroups));
-        //userProvisioningManager.assignGroupsToUser("-200", expectedCsmGroups);
+        userProvisioningManager.assignGroupsToUser(eq("-200"), unsortedAryEq(expectedCsmGroups));
         userDao.save(expectedUpdatedUser);
 
         replayMocks();
@@ -146,45 +142,9 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertFalse(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.SITE_COORDINATOR));
     }
 
-    public static gov.nih.nci.security.authorization.domainobjects.User
-            eqCsmUser(gov.nih.nci.security.authorization.domainobjects.User user) {
-        EasyMock.reportMatcher(new CsmUserMatcher(user));
-        return null;
-    }
-
-    public static GroupSearchCriteria
-            eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
+    public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
         EasyMock.reportMatcher(new CsmGroupSearchCriteriaMatcher(group));
         return null;
-    }
-    
-    private static class CsmUserMatcher implements IArgumentMatcher {
-        private gov.nih.nci.security.authorization.domainobjects.User expectedUser;
-
-        public CsmUserMatcher(gov.nih.nci.security.authorization.domainobjects.User expectedUser) {
-            this.expectedUser = expectedUser;
-        }
-
-        public boolean matches(Object object) {
-            if(!(object instanceof gov.nih.nci.security.authorization.domainobjects.User)) {
-                return false;
-            }
-
-            gov.nih.nci.security.authorization.domainobjects.User actual =
-                    (gov.nih.nci.security.authorization.domainobjects.User) object;
-
-            if (expectedUser.getLoginName() != null ?
-                    !expectedUser.getLoginName().equals(actual.getLoginName()) :
-                    actual.getLoginName() != null)
-                return false;
-
-
-            return true;
-        }
-
-        public void appendTo(StringBuffer sb) {
-            sb.append("User with login name=").append(expectedUser.getLoginName());
-        }
     }
 
     private static class CsmGroupSearchCriteriaMatcher implements IArgumentMatcher {
@@ -199,14 +159,10 @@ public class UserServiceTest extends StudyCalendarTestCase {
                 return false;
             }
 
-            GroupSearchCriteria actual =
-                    (GroupSearchCriteria) object;
+            GroupSearchCriteria actual = (GroupSearchCriteria) object;
 
-            if (expectedGroup.getMessage() != null ?
-                    !expectedGroup.getMessage().equals(actual.getMessage()) :
-                    actual.getMessage() != null)
+            if (expectedGroup.getMessage() != null ? !expectedGroup.getMessage().equals(actual.getMessage()) : actual.getMessage() != null)
                 return false;
-
 
             return true;
         }
@@ -216,37 +172,21 @@ public class UserServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public static <T> T eqSortRoleArEq(T t) {
-        EasyMock.reportMatcher(new SortedArrayEquals(t));
+    public static <T> T unsortedAryEq(T t) {
+        EasyMock.reportMatcher(new UnsortedArrayEquals(t));
         return null;
     }
 
-    private static class SortedArrayEquals extends ArrayEquals {
-        public SortedArrayEquals(Object expected) {
+    private static class UnsortedArrayEquals extends ArrayEquals {
+        public UnsortedArrayEquals(Object expected) {
             super(expected);
-            Arrays.sort((String[])expected);
+            Arrays.sort((Object[])expected);
         }
-
 
         public boolean matches(Object actual) {
-            Arrays.sort((String[])actual);
-            return super.matches(actual);    //To change body of overridden methods use File | Settings | File Templates.
+            Arrays.sort((Object[])actual);
+            return super.matches(actual);
         }
-    }
-
-    private User createUser(Integer id, String name, Long csmUserId, Role[] roles, boolean activeFlag, String password) {
-        User user = new User();
-        user.setId(id);
-        user.setName(name);
-        user.setCsmUserId(csmUserId);
-        user.setActiveFlag(new Boolean(activeFlag));
-        user.setPassword(password);
-        if(roles != null) {
-            user.setRoles(new HashSet<Role>());
-            Collections.addAll(user.getRoles(), roles); 
-        }
-
-        return user;
     }
 
     private Group createCsmGroup(Long id, String name) {
@@ -256,13 +196,25 @@ public class UserServiceTest extends StudyCalendarTestCase {
         return g;
     }
 
-    private class TestUserProvisioningManager implements UserProvisioningManager {
+    private class UserProvisioningManagerStub implements UserProvisioningManager {
 
+        public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
+
+        public List getObjects(SearchCriteria searchCriteria) {
+            return allCsmGroups;
+        }
+
+        public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
+            user.setUserId(1L);
+        }
+
+        public Application getApplicationById(String string) throws CSObjectNotFoundException {
+            return new Application();
+        }
 
         public void createProtectionGroup(ProtectionGroup protectionGroup) throws CSTransactionException {
             throw new UnsupportedOperationException();
         }
-
 
         public void modifyProtectionGroup(ProtectionGroup protectionGroup) throws CSTransactionException {
             throw new UnsupportedOperationException();
@@ -324,10 +276,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
             throw new UnsupportedOperationException();
         }
 
-        public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {
-            // assignGroupsToUser
-        }
-
         public void assignUserToGroup(String string, String string1) throws CSTransactionException {
             throw new UnsupportedOperationException();
         }
@@ -362,14 +310,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         public Set getPrivileges(String string) throws CSObjectNotFoundException {
             throw new UnsupportedOperationException();
-        }
-
-        public List getObjects(SearchCriteria searchCriteria) {
-            return allCsmGroups;
-        }
-
-        public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
-            user.setUserId(1L);
         }
 
         public ProtectionGroup getProtectionGroupById(String string) throws CSObjectNotFoundException {
@@ -446,11 +386,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         public void removeApplication(String string) throws CSTransactionException {
             throw new UnsupportedOperationException();
-        }
-
-        public Application getApplicationById(String string) throws CSObjectNotFoundException {
-            Application ap = new Application();
-            return ap;
         }
 
         public void assignOwners(String string, String[] strings) throws CSTransactionException {

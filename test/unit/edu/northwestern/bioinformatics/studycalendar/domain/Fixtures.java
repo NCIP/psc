@@ -7,6 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
+import java.util.HashSet;
+import java.util.Collections;
+
 /**
  * @author Rhett Sutphin
  */
@@ -106,6 +109,20 @@ public class Fixtures {
         for (ScheduledEvent event : events) {
             scheduledArm.addEvent(event);
         }
+    }
+
+    public static User createUser(Integer id, String name, Long csmUserId, Role[] roles, boolean activeFlag, String password) {
+        User user = new User();
+        user.setId(id);
+        user.setName(name);
+        user.setCsmUserId(csmUserId);
+        user.setActiveFlag(new Boolean(activeFlag));
+        user.setPassword(password);
+        if(roles != null) {
+            user.setRoles(new HashSet<Role>());
+            Collections.addAll(user.getRoles(), roles);
+        }
+        return user;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {
