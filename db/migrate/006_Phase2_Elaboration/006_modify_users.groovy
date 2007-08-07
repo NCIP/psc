@@ -4,6 +4,6 @@ class ModifyAuditEvents extends edu.northwestern.bioinformatics.bering.Migration
     }
 
     void down() {
-        dropColumn("users", "active_flag", "boolean")
+        dropColumn("users", "active_flag")
     }
 }

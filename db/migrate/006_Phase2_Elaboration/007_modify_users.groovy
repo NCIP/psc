@@ -4,7 +4,7 @@ class ModifyAuditEvents extends edu.northwestern.bioinformatics.bering.Migration
     }
 
     void down() {
-        dropColumn("users", "password", "string")
+        dropColumn("users", "password")
     }
 }
  
