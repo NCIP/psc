@@ -88,7 +88,6 @@
             .days {
                 margin: 0 3em 3em 5em;
             }
-
             li.arm, #epochs h4 {
                 position: relative;
 
@@ -125,6 +124,9 @@
                 margin: 0;
                 list-style-type: none;
             }
+	//		 tr.arrows td.showDay a.showArrow {
+	//		  font-size: 10pt;
+	//		}
         </style>
         <c:if test="${not plannedCalendar.complete}">
         <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}"/>"></script>
@@ -363,7 +365,7 @@
 					showButton.conceal()
 					hideButton.reveal()
 					
-					showDay.each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9650;</a>');});
+					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>');});
 					
 				}							
 				);				
@@ -384,7 +386,7 @@
 					showButton.conceal()
 					hideButton.reveal()
 					
-					showDay.each(function (e){$(e).update('<a href="#" class="control" id="showArrow">&#9660;</a>');});
+					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#65291;</a>');});
 				}							
 				);	
 			
@@ -398,18 +400,15 @@
 				
 				Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
-					if ($('showArrow').innerHTML == '▲'){
-                		Element.update(this, '<a href="#" class="control" id="showArrow">&#9660;</a>')
+					if ($('showArrow').innerHTML == '<b>—</b>'){
+                		Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#65291;</a>')
 						SC.slideAndHide(day[counter], {afterFinish: check})
 				
 						
 					}
                 	else{
-						Element.update(this, '<a href="#" class="control" id="showArrow">&#9650;</a>')
-						SC.slideAndShow(day[counter], {afterFinish: check})
-					
-				
-						
+						Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>')
+						SC.slideAndShow(day[counter], {afterFinish: check})	
 					}
                 })
 			}
