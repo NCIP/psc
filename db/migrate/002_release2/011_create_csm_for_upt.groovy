@@ -31,12 +31,18 @@ class CreateCsmForUpt extends edu.northwestern.bioinformatics.bering.Migration {
             File input = new File(fileName)
             String content = input.text
             execute(content)
+            File restore = new File("db/migrate/001_release1/CSMOracleSQL.sql")
+            execute(restore.text)
         } else if (databaseMatches('postgresql')) {
             File input = new File("db/migrate/002_release2/CsmUptPostgreSQL_drop.sql")
             execute(input.text)
+            File restore = new File("db/migrate/001_release1/CSMPostgreSQL.sql")
+            execute(restore.text)
         } else {
             File input = new File("db/migrate/002_release2/CsmUptHsqldbSQL_drop.sql")
             execute(input.text)
+            File restore = new File("db/migrate/001_release1/CSMPostgreSQL.sql")
+            execute(restore.text)
         }
     }
 }
