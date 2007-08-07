@@ -16,8 +16,10 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +35,8 @@ import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
-    private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
+//    private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
+    private static final Logger log = LoggerFactory.getLogger(DisplayScheduleController.class);
     private StudyParticipantAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;

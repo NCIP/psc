@@ -7,8 +7,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +39,8 @@ public class ParticipantCoordinatorsBySiteController extends AbstractController 
     private SiteDao siteDao;
     private StudyDao studyDao;
     private TemplateService templateService;
-    static Log log = LogFactory.getLog(ParticipantCoordinatorsBySiteController.class);
+//    static Log log = LogFactory.getLog(ParticipantCoordinatorsBySiteController.class);
+    static Logger log = LoggerFactory.getLogger(ParticipantCoordinatorsBySiteController.class);
 
     public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Site site = siteDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "site"));

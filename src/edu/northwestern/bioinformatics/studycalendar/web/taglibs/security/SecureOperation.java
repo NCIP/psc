@@ -5,8 +5,10 @@ import gov.nih.nci.security.SecurityServiceProvider;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 
@@ -15,7 +17,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
  */
 
 public class SecureOperation extends TagSupport {
-    private static Log log = LogFactory.getLog(SecureOperation.class);
+//    private static Log log = LogFactory.getLog(SecureOperation.class);
+    private static Logger log = LoggerFactory.getLogger(SecureOperation.class);
 
     private String operation;
     private String element;

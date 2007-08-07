@@ -5,7 +5,9 @@ import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import org.hibernate.usertype.UserType;
 import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.HibernateException;
-import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.lang.reflect.Method;
@@ -48,7 +50,8 @@ public class ControlledVocabularyObjectType implements UserType, ParameterizedTy
 
     private static final Class[] NO_PARAMS = new Class[0];
 
-    private Log log = HibernateTypeUtils.getLog(getClass());
+//    private Log log = HibernateTypeUtils.getLog(getClass());
+    private Logger log = HibernateTypeUtils.getLog(getClass());
 
     private Properties parameterValues;
 

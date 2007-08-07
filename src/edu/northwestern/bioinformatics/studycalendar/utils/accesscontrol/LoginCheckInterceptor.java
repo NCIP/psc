@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -19,7 +21,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
  * @author Rhett Sutphin
  */
 public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
-    private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
+//    private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
+    private static Logger log = LoggerFactory.getLogger(LoginCheckInterceptor.class);
 
     public static final String REQUESTED_URL_ATTRIBUTE = LoginCheckInterceptor.class.getName() + ".REQUESTED_URL";
 

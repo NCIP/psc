@@ -8,16 +8,18 @@ import gov.nih.nci.security.exceptions.CSException;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
 public class LoginCommand {
-    private static final Log log = LogFactory.getLog(LoginCommand.class);
+//    private static final Log log = LogFactory.getLog(LoginCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginCommand.class);
     private String username;
     private String password;
 

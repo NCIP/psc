@@ -3,8 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlResolver;
 import edu.northwestern.bioinformatics.studycalendar.utils.spring.ResolvedControllerReference;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -20,7 +22,8 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class ControllerProtectionElementCreator implements BeanFactoryPostProcessor, Ordered {
-    private static Log log = LogFactory.getLog(ControllerProtectionElementCreator.class);
+//    private static Log log = LogFactory.getLog(ControllerProtectionElementCreator.class);
+    private static Logger log = LoggerFactory.getLogger(ControllerProtectionElementCreator.class);    
 
     private ControllerUrlResolver urlResolver;
     private StudyCalendarAuthorizationManager studyCalendarAuthorizationManager;

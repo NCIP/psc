@@ -5,8 +5,11 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,7 +28,8 @@ import gov.nih.nci.security.AuthenticationManager;
  */
 public class LoginController extends AbstractFormController {
     private static final String DEFAULT_TARGET_VIEW = "/pages/studyList";
-    private static final Log log = LogFactory.getLog(LoginController.class);
+//    private static final Log log = LogFactory.getLog(LoginController.class);
+    private static final Logger log = LoggerFactory.getLogger(LoginController.class);
     private LoginAuditDao loginAuditDao;
 
     private AuthenticationManager authenticationManager;

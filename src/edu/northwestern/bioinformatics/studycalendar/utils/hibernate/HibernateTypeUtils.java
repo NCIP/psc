@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * Utilities to assist {@link org.hibernate.usertype.UserType}s in behaving more like
  * built in types.
@@ -12,8 +13,8 @@ import org.apache.commons.logging.LogFactory;
 public final class HibernateTypeUtils {
     private HibernateTypeUtils() { }
 
-    public static Log getLog(Class clazz) {
-        return LogFactory.getLog(getLogCategory(clazz));
+    public static Logger getLog(Class clazz) {
+        return LoggerFactory.getLogger(getLogCategory(clazz));
     }
 
     /**
@@ -29,12 +30,12 @@ public final class HibernateTypeUtils {
             .toString();
     }
 
-    public static void logBind(Log log, int index, Object value) {
+    public static void logBind(Logger log, int index, Object value) {
         if (log.isDebugEnabled()) {
             StringBuffer msg = new StringBuffer("binding ");
             appendBoundValue(value, msg);
             msg.append(" to parameter: ").append(index);
-            log.debug(msg);
+            log.debug(msg.toString());
         }
     }
 
@@ -47,12 +48,12 @@ public final class HibernateTypeUtils {
         return msg;
     }
 
-    public static void logReturn(Log log, String column, Object value) {
+    public static void logReturn(Logger log, String column, Object value) {
         if (log.isDebugEnabled()) {
             StringBuffer msg = new StringBuffer("returning ");
             appendBoundValue(value, msg);
             msg.append(" as column: ").append(column);
-            log.debug(msg);
+            log.debug(msg.toString());
         }
     }
 }

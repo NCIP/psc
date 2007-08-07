@@ -6,8 +6,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.BeansException;
 import org.springframework.core.Ordered;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +23,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlR
  * @author Rhett Sutphin
  */
 public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
-    private static final Log log = LogFactory.getLog(BreadcrumbCreator.class);
+//    private static final Log log = LogFactory.getLog(BreadcrumbCreator.class);
+    private static final Logger log = LoggerFactory.getLogger(BreadcrumbCreator.class);
 
     private ControllerUrlResolver urlResolver;
     private Map<Crumb, String> names;

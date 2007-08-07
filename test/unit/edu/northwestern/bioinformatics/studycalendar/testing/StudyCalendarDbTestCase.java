@@ -10,8 +10,10 @@ import org.springframework.context.ApplicationContext;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.util.Date;
@@ -20,7 +22,8 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public abstract class StudyCalendarDbTestCase extends DbTestCase {
-    protected final Log log = LogFactory.getLog(getClass());
+//    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     protected void setUp() throws Exception {

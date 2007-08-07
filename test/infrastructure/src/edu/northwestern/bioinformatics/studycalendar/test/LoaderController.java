@@ -1,7 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.test;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -40,7 +43,8 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class LoaderController implements Controller {
-    private static Log log = LogFactory.getLog(LoaderController.class);
+//    private static Log log = LogFactory.getLog(LoaderController.class);
+    private static Logger log = LoggerFactory.getLogger(LoaderController.class);    
     private String resourcePrefix;
     private DataSource dataSource;
 

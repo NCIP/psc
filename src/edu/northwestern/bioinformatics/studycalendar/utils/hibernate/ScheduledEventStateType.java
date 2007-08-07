@@ -8,7 +8,9 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionImplementor;
 import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ControlledVocabularyObjectType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
@@ -34,7 +36,8 @@ import java.io.Serializable;
  * @author Rhett Sutphin
  */
 public class ScheduledEventStateType implements CompositeUserType {
-    private static Log log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
+//    private static Log log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
+    private static Logger log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
     private static final Type MODE_TYPE = Hibernate.custom(ControlledVocabularyObjectType.class, new String[] { "enumClass" }, new String[] { ScheduledEventMode.class.getName() });
 
     private static final String[] PROPERTY_NAMES = new String[] { "mode", "reason", "date" };

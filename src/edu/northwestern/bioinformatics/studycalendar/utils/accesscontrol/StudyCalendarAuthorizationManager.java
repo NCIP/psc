@@ -28,8 +28,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.LinkedHashSet;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Padmaja Vedula
@@ -50,8 +53,9 @@ public class StudyCalendarAuthorizationManager {
     public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
     
-    private static Log log = LogFactory.getLog(StudyCalendarAuthorizationManager.class);
-    
+//    private static Log log = LogFactory.getLog(StudyCalendarAuthorizationManager.class);
+    private static Logger log = LoggerFactory.getLogger(StudyCalendarAuthorizationManager.class);
+
     private UserProvisioningManager userProvisioningManager;
   
     public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception

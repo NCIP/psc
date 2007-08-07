@@ -8,8 +8,10 @@ import org.jgrapht.alg.StrongConnectivityInspector;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -34,7 +36,8 @@ import java.util.Arrays;
  * @author Rhett Sutphin
  */
 public class ForeignKeySequenceFilter extends SequenceTableFilter {
-    private static final Log log = LogFactory.getLog(ForeignKeySequenceFilter.class);
+//    private static final Log log = LogFactory.getLog(ForeignKeySequenceFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(ForeignKeySequenceFilter.class);
 
     public ForeignKeySequenceFilter(IDatabaseConnection conn, String[] tableNames) throws SQLException {
         super(new Reorderer(conn, tableNames).newOrder());

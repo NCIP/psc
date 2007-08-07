@@ -7,8 +7,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEv
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.Operation;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.EntityMode;
 import org.hibernate.type.AbstractComponentType;
@@ -32,7 +34,8 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @author Rhett Sutphin
  */
 public class AuditInterceptor extends EmptyInterceptor {
-    private static final Log log = LogFactory.getLog(AuditInterceptor.class);
+//    private static final Log log = LogFactory.getLog(AuditInterceptor.class);
+    private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);
     private static final ThreadLocal<AuditSession> sessions = new ThreadLocal<AuditSession>();
 
     private DataAuditDao dataAuditDao;

@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.utils;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
@@ -27,7 +29,8 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public abstract class ContextRetainingFilterAdapter extends FilterAdapter {
-    protected final Log log = LogFactory.getLog(getClass());
+//    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());    
 
     private ServletContext servletContext;
 

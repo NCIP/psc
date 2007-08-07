@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 import org.hibernate.metadata.ClassMetadata;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 
 import java.util.Map;

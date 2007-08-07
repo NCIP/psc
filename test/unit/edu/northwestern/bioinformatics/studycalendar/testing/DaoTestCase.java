@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditIn
 import edu.nwu.bioinformatics.commons.StringUtils;
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
 import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
 import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
 import org.dbunit.dataset.datatype.IDataTypeFactory;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;

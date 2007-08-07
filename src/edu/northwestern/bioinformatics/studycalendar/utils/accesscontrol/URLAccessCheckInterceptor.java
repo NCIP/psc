@@ -2,8 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -17,7 +21,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author Rhett Sutphin
  */
 public class URLAccessCheckInterceptor extends HandlerInterceptorAdapter {
-    private static Log log = LogFactory.getLog(URLAccessCheckInterceptor.class);
+//    private static Log log = LogFactory.getLog(URLAccessCheckInterceptor.class);
+    private static Logger log = LoggerFactory.getLogger(URLAccessCheckInterceptor.class);
     private static final String ACCESS_OPERATION = "ACCESS";
 
     private AuthorizationManager authorizationManager;

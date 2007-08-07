@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ServletContextAware;
 
 import javax.servlet.ServletContext;
@@ -13,7 +15,8 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public class MailMessageFactory implements ServletContextAware {
-    private static Log log = LogFactory.getLog(MailMessageFactory.class);
+//    private static Log log = LogFactory.getLog(MailMessageFactory.class);
+    private static Logger log = LoggerFactory.getLogger(MailMessageFactory.class);
 
     private freemarker.template.Configuration freemarkerConfiguration;
     private ServletContext servletContext;

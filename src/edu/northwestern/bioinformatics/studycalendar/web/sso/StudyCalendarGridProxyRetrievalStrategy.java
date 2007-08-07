@@ -2,8 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.sso;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import gov.nih.nci.cabig.ctms.web.sso.DefaultGridProxyRetrievalStrategy;
 import gov.nih.nci.cabig.ctms.web.sso.Utils;
@@ -14,7 +16,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
  * @author Rhett Sutphin
  */
 public class StudyCalendarGridProxyRetrievalStrategy extends DefaultGridProxyRetrievalStrategy {
-    private static final Log log = LogFactory.getLog(StudyCalendarGridProxyRetrievalStrategy.class);
+//    private static final Log log = LogFactory.getLog(StudyCalendarGridProxyRetrievalStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(StudyCalendarGridProxyRetrievalStrategy.class);
 
     @Override
     public String processRequest(HttpServletRequest request) {

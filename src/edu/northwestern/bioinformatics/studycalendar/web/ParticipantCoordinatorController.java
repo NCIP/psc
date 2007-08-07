@@ -9,8 +9,10 @@ import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.validation.BindException;
@@ -36,7 +38,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class ParticipantCoordinatorController extends PscSimpleFormController {
-    private static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
+//    private static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
+    private static Logger log = LoggerFactory.getLogger(ParticipantCoordinatorController.class);
 
 	private TemplateService templateService;
 	private StudyDao studyDao;
