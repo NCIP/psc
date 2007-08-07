@@ -76,6 +76,6 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
         execute("DELETE FROM activity_types")
 
         // from 1|7
-        execute("ALTER TABLE planned_events ADD CONSTRAINT fk_event_activity FOREIGN KEY (activity_id) REFERENCES activities")
+        // execute("ALTER TABLE planned_events ADD CONSTRAINT fk_event_activity FOREIGN KEY (activity_id) REFERENCES activities")
     }
 }
