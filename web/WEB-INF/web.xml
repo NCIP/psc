@@ -140,6 +140,16 @@
         <url-pattern>/public/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ctms-assets</servlet-name>
+        <servlet-class>gov.nih.nci.cabig.ctms.lookandfeel.AssetServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ctms-assets</servlet-name>
+        <url-pattern>/ctms-laf/*</url-pattern>
+    </servlet-mapping>
+
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
