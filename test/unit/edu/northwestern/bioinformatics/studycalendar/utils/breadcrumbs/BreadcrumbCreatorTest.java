@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlResolver;
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.ResolvedControllerReference;
+import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
+import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
 
 import java.util.Map;
 import java.util.Collections;
@@ -91,7 +91,7 @@ public class BreadcrumbCreatorTest extends StudyCalendarTestCase {
         for (TestCrumb expectedCrumb : expectedCrumbs) {
             String name = expectedCrumb.getName(null);
             EasyMock.expect(urlResolver.resolve(name))
-                .andReturn(new ResolvedControllerReference(name, TestCrumb.class.getName(), "/url/" + name.toLowerCase()));
+                .andReturn(new ResolvedControllerReference(name, TestCrumb.class.getName(), "", "/url/" + name.toLowerCase()));
         }
     }
 
@@ -102,7 +102,7 @@ public class BreadcrumbCreatorTest extends StudyCalendarTestCase {
     private void assertAnchorForCrumb(TestCrumb expected, String expectedQueryString, Anchor actual) {
         String expectedName = expected.getName(context);
         assertEquals("Wrong anchor text", expectedName, actual.getText());
-        assertEquals("Wrong url", "/url/" + expectedName.toLowerCase() + expectedQueryString, actual.getUrl());
+        assertEquals("Wrong url", "//url/" + expectedName.toLowerCase() + expectedQueryString, actual.getUrl());
     }
 
 }

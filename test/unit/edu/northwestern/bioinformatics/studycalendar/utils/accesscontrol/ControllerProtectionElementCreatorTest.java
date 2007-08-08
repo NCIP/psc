@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.BeanNameControllerUrlResolver;
+
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -12,6 +12,8 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+
+import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 
 /**
  * @author Rhett Sutphin

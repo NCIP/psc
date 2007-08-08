@@ -26,7 +26,7 @@ public class DefaultCrumb implements Crumb {
 
     public String getName(BreadcrumbContext context) {
         return name;
-    }
+    }                                                       
 
     public void setName(String name) {
         this.name = name;

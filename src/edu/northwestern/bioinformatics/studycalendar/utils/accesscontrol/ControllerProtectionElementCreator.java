@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlResolver;
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.ResolvedControllerReference;
+import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
+import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -37,7 +35,7 @@ public class ControllerProtectionElementCreator implements BeanFactoryPostProces
             ResolvedControllerReference controller = urlResolver.resolve(controllerName);
             List<String> groupNames = getRequiredProtectionGroupNames(controller);
             if (groupNames != null) {
-                studyCalendarAuthorizationManager.registerUrl(controller.getUrl(), groupNames);
+                studyCalendarAuthorizationManager.registerUrl(controller.getUrl(true), groupNames);
             }
         }
     }

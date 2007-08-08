@@ -1,41 +1,60 @@
 <%-- This is the standard decorator for all study calendar pages --%>
+<%--<%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>--%>
+<%--<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
+<%--<%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>--%>
 <%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <!DOCTYPE html
     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
     <title>caBIG Study Calendar Module - <decorator:title/></title>
-    <tags:stylesheetLink name="debug"/>
-    <tags:stylesheetLink name="lightbox"/>
-    <tags:stylesheetLink name="error-console"/>
-    <tags:stylesheetLink name="common"/>
-    <tags:javascriptLink name="prototype"/>
-    <tags:javascriptLink name="lightbox"/>
-    <tags:javascriptLink name="error-console"/>
-    <tags:javascriptLink name="common"/>
+    <laf:stylesheetLink name="debug"/>
+    <laf:stylesheetLink name="lightbox"/>
+    <laf:stylesheetLink name="error-console"/>
+    <laf:stylesheetLink name="common"/>
+    <laf:javascriptLink name="prototype"/>
+    <laf:javascriptLink name="lightbox"/>
+    <laf:javascriptLink name="error-console"/>
+    <laf:javascriptLink name="common"/>
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
     </style>
     <decorator:head/>
   </head>
   <body>
-    <div id="header" class="autoclear">
-        <img id="cabig-logo" src="<c:url value="/images/cabig.jpg"/>" alt="caBIG" width="739" height="45"/>
-        <div id="psc-module">Patient Study Calendar</div>
-    </div>
-    <tags:breadcrumbs anchors="${breadcrumbs}"/>
-    <div id="body">
+<%-- In a real application, this block would probably be defined in another tagfile
+    and shared among decorators --%>
+<laf:header>
+    <jsp:attribute name="logoText">Patient Study Calendar</jsp:attribute>
+    <jsp:attribute name="logoImageUrl"><c:url value="/images/cabig.jpg"/></jsp:attribute>
+    <jsp:attribute name="tagline">Patient Study Calendar</jsp:attribute>
+    <jsp:attribute name="taglineImageUrl"><c:url value="/images/chrome/tagline.png"/></jsp:attribute>
+    <jsp:attribute name="logoutUrl"><c:url value="/logout"/></jsp:attribute>
+    <jsp:attribute name="renderSection">
+        <laf:sectionTab section="${section}" currentSection="${currentSection}"/>
+    </jsp:attribute>
+    <jsp:attribute name="renderTask">
+        <laf:taskLink task="${task}"/>
+    </jsp:attribute>
+</laf:header>
+
+<c:set var="__decorator_title"><decorator:title/></c:set>
+<laf:body title="${__decorator_title}">
+    <laf:flashMessage/>
     <decorator:body/>
-    </div>
-    <div id="footmenu">
-        <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
-        | <tags:logout/>
-    </div>
-    <tags:ssoForm/>
-    <tags:errorConsole/>
-    <tags:debugInfo/>
-  </body>
-</html>
+</laf:body>
+
+<laf:footer>
+        <div id="footmenu">
+            <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
+        </div>
+</laf:footer>
+<%-- in a real application, you'd probably want to make this dependent on a config option --%>
+<c:if test="${true}">
+    <laf:debugInfo/>
+</c:if>
+</body>
+</html>  

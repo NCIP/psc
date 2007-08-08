@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Iterator;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.spring.ControllerUrlResolver;
-
+import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 /**
  * @author Rhett Sutphin
  */
@@ -58,7 +57,7 @@ public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
     }
 
     private String createUrl(String controllerName, Map<String, String> params) {
-        StringBuilder baseUrl = new StringBuilder(urlResolver.resolve(controllerName).getUrl());
+        StringBuilder baseUrl = new StringBuilder(urlResolver.resolve(controllerName).getUrl(true));
         if (params != null && params.size() > 0) {
             baseUrl.append('?');
             for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext();) {

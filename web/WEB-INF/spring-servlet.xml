@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
 
-<beans>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
     <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
         <property name="location"><value>/WEB-INF/special-views.xml</value></property>
     </bean>
@@ -22,7 +29,7 @@
         </property>
     </bean>
 
-    <bean id="urlResolver" class="edu.northwestern.bioinformatics.studycalendar.utils.spring.BeanNameControllerUrlResolver">
+    <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
         <property name="servletName"><value>pages</value></property>
     </bean>
 
@@ -39,6 +46,7 @@
                 <ref bean="loginCheckInterceptor"/>
                 <ref bean="URLAccessCheckInterceptor"/>
                 <ref bean="breadcrumbInterceptor"/>
+                <ref bean="sectionInterceptor"/>
             </list>
         </property>
     </bean>
@@ -335,4 +343,37 @@
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename"><value>messages</value></property>
     </bean>
+
+    <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
+          abstract="true">
+        <property name="urlResolver">
+            <ref bean="urlResolver"/>
+        </property>
+    </bean>
+
+    <bean id="sectionInterceptor" class="gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor">
+        <property name="sections">
+            <list>
+                <bean parent="sectionTemplate" >
+                    <property name="displayName"><value>Calendars</value></property>
+                    <property name="mainController"><value>studyListController</value></property>
+
+                    <property name="pathMapping"><value>/pages/studyList</value></property>
+                </bean>
+                <bean parent="sectionTemplate">
+                    <property name="displayName"><value>Report</value></property>
+                    <property name="mainController"><value>studyListController</value></property>
+
+                    <property name="pathMapping"><value>/pages/studyList</value></property>
+                </bean>
+                <bean parent="sectionTemplate">
+                    <property name="displayName"><value>Administrationc</value></property>
+                    <property name="mainController"><value>studyListController</value></property>
+
+                    <property name="pathMapping"><value>/pages/studyList</value></property>
+                </bean>
+            </list>
+
+        </property>
+</bean>
 </beans>

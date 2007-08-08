@@ -2,7 +2,6 @@
 
 <html>
 <head>
-    <title>Patient Study Calendar - Public Test Site</title>
     <style type="text/css">
         #roles-swimlanes {
             display: block;
@@ -33,6 +32,7 @@
         }
     </style>
 </head>
+
 
 <body>
 <h1>Patient Study Calendar - Public Test Site</h1>
