@@ -344,6 +344,12 @@
         <property name="basename"><value>messages</value></property>
     </bean>
 
+    <bean name="/administration" id="administrationController" autowire="byType"
+        class="edu.northwestern.bioinformatics.studycalendar.web.AdministrationController">
+        <property name="viewName"><value>administration</value></property>
+    </bean>
+
+
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">
         <property name="urlResolver">
@@ -357,19 +363,16 @@
                 <bean parent="sectionTemplate" >
                     <property name="displayName"><value>Calendars</value></property>
                     <property name="mainController"><value>studyListController</value></property>
-
                     <property name="pathMapping"><value>/pages/studyList</value></property>
                 </bean>
                 <bean parent="sectionTemplate">
                     <property name="displayName"><value>Report</value></property>
                     <property name="mainController"><value>studyListController</value></property>
-
                     <property name="pathMapping"><value>/pages/studyList</value></property>
                 </bean>
                 <bean parent="sectionTemplate">
-                    <property name="displayName"><value>Administrationc</value></property>
-                    <property name="mainController"><value>studyListController</value></property>
-
+                    <property name="displayName"><value>Administration</value></property>
+                    <property name="mainController"><value>administrationController</value></property>
                     <property name="pathMapping"><value>/pages/studyList</value></property>
                 </bean>
             </list>

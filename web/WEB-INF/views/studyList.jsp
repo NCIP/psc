@@ -4,7 +4,6 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <html>
 <head>
-    <title>Patient Study Calendar Menu</title>
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
         ul ul.controls {
@@ -94,15 +93,6 @@
 <h2>Reporting</h2>
 <ul class="menu">
     <tags:restrictedListItem url="/pages/reportBuilder">Report Builder</tags:restrictedListItem>
-</ul>
-</security:secureOperation>
-
-<security:secureOperation element="/pages/manageSites" operation="ACCESS">
-<h2>Administration</h2>
-<ul class="menu">
-    <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
-    <tags:restrictedListItem url="/pages/listUsers">Manage Users</tags:restrictedListItem>
-    <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
 </ul>
 </security:secureOperation>
 
