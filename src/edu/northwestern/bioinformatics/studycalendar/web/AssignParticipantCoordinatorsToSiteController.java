@@ -29,7 +29,9 @@ import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yufang Wang
@@ -39,7 +41,7 @@ public class AssignParticipantCoordinatorsToSiteController extends PscSimpleForm
 	private static final String GROUP_NAME = "PARTICIPANT_COORDINATOR";
 	private SiteDao siteDao;
 	private SiteService siteService;
-    private static final Logger log = Logger.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
 
     public AssignParticipantCoordinatorsToSiteController() {
         setCommandClass(AssignParticipantCoordinatorsToSiteCommand.class);

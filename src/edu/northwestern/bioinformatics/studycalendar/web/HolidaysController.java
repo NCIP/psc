@@ -10,7 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Nataliya Shurupova
@@ -19,7 +20,7 @@ import org.apache.log4j.Logger;
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
 public class HolidaysController extends PscSimpleFormController {
     private SiteDao siteDao;
-    private static final Logger log = Logger.getLogger(HolidaysController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HolidaysController.class.getName());
 
     public HolidaysController() {
         setCommandClass(HolidaysCommand.class);

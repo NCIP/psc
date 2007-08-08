@@ -11,13 +11,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import java.util.*;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
  */
 public class ManagePeriodEventsCommand {
-    private static final Logger log = Logger.getLogger(ManagePeriodEventsCommand.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
     private PlannedEventDao plannedEventDao;
     private GridRow oldRow;

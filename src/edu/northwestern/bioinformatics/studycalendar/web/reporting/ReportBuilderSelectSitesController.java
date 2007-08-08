@@ -20,7 +20,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,7 +38,7 @@ public class ReportBuilderSelectSitesController extends AbstractController {
     private SiteDao siteDao;
     private TemplateService templateService;
     
-	private static final Logger log = Logger.getLogger(ReportBuilderSelectSitesController.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(ReportBuilderSelectSitesController.class.getName());
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map model = new HashMap();

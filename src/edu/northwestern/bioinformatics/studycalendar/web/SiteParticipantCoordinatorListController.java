@@ -8,7 +8,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import gov.nih.nci.security.authorization.domainobjects.User;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,7 +37,7 @@ public class SiteParticipantCoordinatorListController extends PscAbstractControl
     //private Map<String, List> participantcoordinators;
 	private SiteDao siteDao;
 	private SiteService siteService;
-	private static final Logger log = Logger.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();

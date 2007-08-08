@@ -17,14 +17,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yufang Wang
  * @author Jaron Sampson
  */
 public class ReportRowDao extends HibernateDaoSupport { 
-	private static final Logger log = Logger.getLogger(ReportRowDao.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(ReportRowDao.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	public List<ReportRow> getAll(){

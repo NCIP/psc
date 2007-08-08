@@ -33,7 +33,8 @@ import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yufang Wang
@@ -47,7 +48,7 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends PscSim
 	private StudyDao studyDao;
     private TemplateService templateService;
 	private StudyCalendarAuthorizationManager authorizationManager;
-	private static final Logger log = Logger.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
 
     public AssignTemplatesToOneParticipantCoordinatorController() {
         setCommandClass(AssignTemplatesToOneParticipantCoordinatorCommand.class);

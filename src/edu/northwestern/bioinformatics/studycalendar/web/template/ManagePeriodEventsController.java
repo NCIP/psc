@@ -25,7 +25,8 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -39,7 +40,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class ManagePeriodEventsController  extends PscSimpleFormController {
-    private static final Logger log = Logger.getLogger(ManagePeriodEventsController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ManagePeriodEventsController.class.getName());
 
     private PeriodDao periodDao;
     private ActivityDao activityDao;

@@ -29,7 +29,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Yufang Wang
@@ -42,7 +43,7 @@ public class ReportBuilderController extends PscSimpleFormController {
 	private SiteDao siteDao;
 	private StudyDao studyDao;
 	private ParticipantDao participantDao;
-	private static final Logger log = Logger.getLogger(ReportBuilderController.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(ReportBuilderController.class.getName());
 	private ReportRowDao reportRowDao;
 
     public ReportBuilderController() {

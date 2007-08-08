@@ -1,24 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 
 /**
  * @author Jaron Sampson

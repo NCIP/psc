@@ -2,7 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Iterator;
@@ -13,7 +14,7 @@ import java.util.Iterator;
 
 
 public class HolidaysCommand {
-    private static final Logger log = Logger.getLogger(HolidaysCommand.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(HolidaysCommand.class.getName());
     private Integer selectedHoliday;
     private String holidayDate;
     private String holidayDescription;
