@@ -1,9 +1,9 @@
 class ModifyStudy extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
         if (databaseMatches('oracle')) {
-            execute('ALTER TABLE studies ADD completed integer NOT NULL DEFAULT \'0\'')
+            execute('ALTER TABLE studies ADD completed integer DEFAULT \'0\' NOT NULL')
         } else {
-            execute('ALTER TABLE studies ADD completed BOOLEAN NOT NULL DEFAULT false')
+            execute('ALTER TABLE studies ADD completed BOOLEAN DEFAULT false NOT NULL')
         }
     }
 
