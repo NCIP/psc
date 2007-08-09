@@ -3,6 +3,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
@@ -25,6 +26,7 @@
     </style>
 </head>
 <body>
+<laf:box title="List User">
 <h1>${actionText} User</h1>
 
 <form:form method="post">
@@ -93,5 +95,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>

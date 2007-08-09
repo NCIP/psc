@@ -1,9 +1,9 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Configure application</title>
     <style type="text/css">
         div.row {
             padding: 5px 3px;
@@ -28,7 +28,7 @@
     </style>
 </head>
 <body>
-    <h1>Configure application</h1>
+<laf:box title="Configure application">
     <form:form>
         <c:forEach items="${command.conf}" var="entry" varStatus="status">
             <div class="row ${commons:parity(status.count)}">
@@ -60,5 +60,6 @@
             <input type="submit" value="Save"/>
         </div>
     </form:form>
+</laf:box>
 </body>
 </html>

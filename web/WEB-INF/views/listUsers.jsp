@@ -3,6 +3,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
@@ -35,9 +36,7 @@
     </style>
 </head>
 <body>
-
-    <h1>List User</h1>
-    
+<laf:box title="List User">    
     <div class="row">
         <a href="<c:url value="/pages/createUser"/>">Create User</a>
     </div>
@@ -70,5 +69,6 @@
             </tr>
         </c:forEach>
     </table>
+</laf:box>
 </body>
 </html>
