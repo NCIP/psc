@@ -44,7 +44,7 @@
         <laf:taskLink task="${task}"/>
     </jsp:attribute>
 </laf:header>
-
+<tags:breadcrumbs anchors="${breadcrumbs}"/>
 <c:set var="__decorator_title"><decorator:title/></c:set>
 <laf:body title="${__decorator_title}">
     <laf:flashMessage/>
