@@ -15,11 +15,6 @@
             list-style-type: none;
             margin: 0.5em;
         }
-        ul.menu li .primary {
-            display: block;
-            float: left;
-            width: 20%;
-        }
         h2 {
             margin-top: 2em;
         }

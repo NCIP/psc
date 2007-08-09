@@ -88,13 +88,5 @@
     </c:forEach>
 </ul>
 </c:if> 
-
-<security:secureOperation element="/pages/reportBuilder" operation="ACCESS">
-<h2>Reporting</h2>
-<ul class="menu">
-    <tags:restrictedListItem url="/pages/reportBuilder">Report Builder</tags:restrictedListItem>
-</ul>
-</security:secureOperation>
-
 </body>
 </html>

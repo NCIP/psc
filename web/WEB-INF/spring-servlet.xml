@@ -367,7 +367,7 @@
                 </bean>
                 <bean parent="sectionTemplate">
                     <property name="displayName"><value>Report</value></property>
-                    <property name="mainController"><value>studyListController</value></property>
+                    <property name="mainController"><value>reportBuilderController</value></property>
                     <property name="pathMapping"><value>/pages/studyList</value></property>
                 </bean>
                 <bean parent="sectionTemplate">
