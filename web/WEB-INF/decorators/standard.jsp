@@ -57,6 +57,8 @@
         </div>
 </laf:footer>
 <%-- in a real application, you'd probably want to make this dependent on a config option --%>
+<tags:ssoForm/>
+<tags:errorConsole/>
 <c:if test="${true}">
     <laf:debugInfo/>
 </c:if>
