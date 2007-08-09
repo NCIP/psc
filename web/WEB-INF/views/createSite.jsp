@@ -1,12 +1,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>${action} site</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -21,9 +18,8 @@
     </style>
 </head>
 <body>
-<h1>New Site</h1>
 
-
+<laf:box title="${action} site">
 <form:form method="post">
     <form:errors path="*"/>
     <div class="row">
@@ -40,5 +36,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>

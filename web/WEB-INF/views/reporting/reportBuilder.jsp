@@ -3,10 +3,10 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>Report Builder</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -119,8 +119,8 @@
 	</script>
 </head>
 <body>
-<h1>Report Builder</h1>
 
+<laf:box title="Report Builder">
 <c:url value="/pages/reportBuilder/selectSites" var="siteSelectorFormAction"/>
 <form method="post" action="${siteSelectorFormAction}" id="siteSelectorForm">
 	<div class="row">
@@ -203,7 +203,7 @@
 	    <div class="value">
 	        <input type="button" id="dateRangeSelectorFormBack" value="Back"/><input type="button" id="dateRangeSelectorFormFinish" value="Finish"/>            
 	    </div>
-	</div>
+	
 </form>
 
 <form id="reportBuilderForm" method="post">
@@ -238,5 +238,6 @@
         </div>
     </div>
 </form>
+</laf:box>
 </body>
 </html>

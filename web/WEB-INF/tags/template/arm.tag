@@ -2,11 +2,15 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+
+<%--<laf:box title="${arm.base.qualifiedName}">--%>
 <c:set var="editable" value="${not arm.base.epoch.plannedCalendar.complete}"/>
 
-<h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>
+<%--<h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>--%>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
+    <laf:box title="${arm.base.qualifiedName}">
     <p class="controls">
 		<c:if test="${editable}">
 			<a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>  
@@ -105,4 +109,5 @@
             </p>
         </c:if>
     </c:forEach>
+    </laf:box>
 </div>

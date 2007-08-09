@@ -4,9 +4,10 @@
 <%@ taglib prefix="templ" tagdir="/WEB-INF/tags/template" %>
 <%@ taglib prefix="security"
            uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
-        <title>Template for ${study.name}</title>
+        <%--<title>Template for ${study.name}</title>--%>
         <tags:stylesheetLink name="main"/>
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
@@ -505,15 +506,16 @@
                 </security:secureOperation>
             </c:if>
         </ul>
-
-        <div id="epochs" class="section">
-            <h2>Epochs and arms</h2>
-            <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
+        <br>
+        <br>
+        <div >
+            <laf:box title="Epochs and arms">
+                <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
+            </laf:box>
         </div>
 
-        <div id="selected-arm" class="section">
+        <div>
             <templ:arm arm="${arm}" visible="true"/>
         </div>
-
     </body>
 </html>

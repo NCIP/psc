@@ -1,12 +1,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>Assign Site Coordinators to Site</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -22,7 +19,7 @@
 
 </head>
 <body>
-<h1>Assign Site Coordinators to ${site.name}</h1>
+<laf:box title="Assign Site Coordinators to ${site.name}">
 
 <form:form action="${formAction}" method="post">
 <input type="hidden" name="siteId" value="${site.id}"/>
@@ -63,5 +60,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>
