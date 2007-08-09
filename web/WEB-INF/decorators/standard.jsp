@@ -12,14 +12,17 @@
   <head>
     <title>caBIG Study Calendar Module - <decorator:title/></title>
     <laf:stylesheetLink name="debug"/>
-    <laf:stylesheetLink name="lightbox"/>
-    <laf:stylesheetLink name="error-console"/>
     <laf:stylesheetLink name="common"/>
+    <tags:stylesheetLink name="lightbox"/>
+    <tags:stylesheetLink name="error-console"/>
+    <tags:stylesheetLink name="common"/>
+
     <laf:javascriptLink name="prototype"/>
-    <laf:javascriptLink name="lightbox"/>
-    <laf:javascriptLink name="error-console"/>
     <laf:javascriptLink name="common"/>
+    <tags:javascriptLink name="lightbox"/>
+    <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
+
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
     </style>
