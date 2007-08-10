@@ -7,7 +7,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
-        <%--<title>Template for ${study.name}</title>--%>
+        <title>Template for ${study.name}</title>
         <tags:stylesheetLink name="main"/>
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
@@ -465,6 +465,8 @@
 			}
 
             <c:if test="${not plannedCalendar.complete}">
+
+                <%--var element = Builder.node('h1', 'Template for',[Builder.node('span',{id:'study-name', value:${study.name} })])--%>
             Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
@@ -480,6 +482,7 @@
         </script>
     </head>
     <body>
+
     <h1>Template for <span id="study-name">${study.name}</span></h1>
 
         <ul id="admin-options">

@@ -4,7 +4,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
-        <tags:stylesheetLink name="main"/>
+        <%--<tags:stylesheetLink name="main"/>--%>
         <style type="text/css">
             ul.menu {
                 margin: 0;
