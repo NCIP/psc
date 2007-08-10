@@ -3,10 +3,10 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>Assign Participant Coordinators</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -84,7 +84,7 @@
     </script>
 </head>
 <body>
-<h1>Assign Participant Coordinators</h1>
+<laf:box title="Assign Participant Coordinators">
 
 <p>
     Study: ${study.name}
@@ -142,5 +142,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>

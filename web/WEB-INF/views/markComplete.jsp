@@ -1,11 +1,11 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Mark template for ${study.name} complete</title>
 </head>
 <body>
-<h1>Mark template for ${study.name} complete</h1>
+<laf:box title="Mark template for ${study.name} complete">
 <p>You are about to mark the ${study.name} template complete. Are you sure you want to do this?</p>
 <form:form method="post">
    <input type="hidden" name="studyId" value="${study.id}"/>
@@ -24,5 +24,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>

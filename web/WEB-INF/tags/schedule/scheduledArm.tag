@@ -6,10 +6,13 @@
 <%@attribute name="arm" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm" %>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@attribute name="modes" type="java.util.Collection" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
+
+<laf:box title="${arm.name}">
 <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
 <input type="hidden" name="scheduledCalendar" value="${arm.scheduledCalendar.id}"/>
-<h2 id="selected-arm-header">${arm.name}</h2>
+<%--<h2 id="selected-arm-header">${arm.name}</h2>--%>
 <div id="batch-reschedule" class="subsection subcollapsible">
     <h3>Batch reschedule</h3>
     <div class="content" style="display: none">
@@ -33,6 +36,7 @@
         </div>
     </div>
 </div>
+
 
 <div class="content" id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
     <div class="legend">
@@ -60,4 +64,4 @@
     </c:forEach>
 </div>
 </form>
-
+ </laf:box>

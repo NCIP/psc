@@ -3,10 +3,11 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>${action} Participant</title>
+    <%--<title>${action} Participant</title>--%>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -21,7 +22,8 @@
     </style>
 </head>
 <body>
-<h1>Assign Participant</h1>
+<laf:box title="Assign Participant">
+<!--<h1>Assign Participant</h1>-->
 <p>
     Study: ${study.name}
 </p>
@@ -68,5 +70,6 @@
         </div>
     </div>
 </form:form>
+</laf:box>
 </body>
 </html>

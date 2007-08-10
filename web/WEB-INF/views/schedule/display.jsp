@@ -4,9 +4,10 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="sched" tagdir="/WEB-INF/tags/schedule"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
+    <%--<title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>--%>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
@@ -104,9 +105,9 @@
             height: 0;
         }
 
-        #selected-arm h3 {
-            margin: 0 1em;
-        }
+        /*#selected-arm h3 {*/
+            /*margin: 0 1em;*/
+        /*}*/
 
         #selected-arm .legend {
             position: absolute;
@@ -289,13 +290,15 @@
         }
 
         Event.observe(window, "load", registerSelectArmHandlers);
-        Event.observe(window, "load", registerSelectNextArmHandlers);        
+        Event.observe(window, "load", registerSelectNextArmHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
         Event.observe(window, "load", registerHeaderCollapse);
         Event.observe(window, "load", registerDismissControl);
     </script>
 </head>
 <body>
+
+<laf:box>
 <c:if test="${not empty assignments}">
     <div id="schedule-switch">View schedule for
         <select id="assigned-participant-selector">
@@ -307,7 +310,9 @@
     </div>
 </c:if>
 
-<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
+
+
+<%--<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>--%>
 
 <c:if test="${configuration.externalAppsConfigured}">
     <div class="section" id="external-apps">
@@ -343,8 +348,12 @@
         </div>
     </div>
 </c:forEach>
+    </laf:box>
 
+
+<laf:box>
 <div id="schedule-next-arm" class="section autoclear collapsible">
+
     <h2 id="schedule-next-arm-header">Schedule next arm</h2>
     <div class="content" style="display: none">
         <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
@@ -374,18 +383,24 @@
         </form>
         <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
     </div>
+
 </div>
+</laf:box>
+
 
 <div id="scheduled-arms" class="section">
-    <h2>Arms scheduled</h2>
-    <p class="tip">Select an arm to show its detailed schedule below.</p>
-    <ul id="scheduled-arms-list">
-        <li id="scheduled-arms-indicator-item"><tags:activityIndicator id="scheduled-arms-indicator"/></li>
-    <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
-        <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
-    </c:forEach>
-    </ul>
+    <laf:box title="Arms scheduled">
+        <!--<h2>Arms scheduled</h2>-->
+        <p class="tip">Select an arm to show its detailed schedule below.</p>
+        <ul id="scheduled-arms-list">
+            <li id="scheduled-arms-indicator-item"><tags:activityIndicator id="scheduled-arms-indicator"/></li>
+            <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
+                <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
+            </c:forEach>
+        </ul>
+    </laf:box>
 </div>
+
 
 <div id="selected-arm" class="section">
     <sched:scheduledArm arm="${arm}" visible="true"/>
