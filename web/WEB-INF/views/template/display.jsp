@@ -130,7 +130,7 @@
 	//		}
         </style>
         <c:if test="${not plannedCalendar.complete}">
-        <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}"/>"></script>
+        <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
         </c:if>
         <script type="text/javascript">
             var lastRequest;
@@ -483,7 +483,7 @@
     </head>
     <body>
 
-    <h1>Template for <span id="study-name">${study.name}</span></h1>
+    <%--<h1>Template for <span id="study-name">${study.name}</span></h1>--%>
 
         <ul id="admin-options">
             <c:if test="${not plannedCalendar.complete}">
