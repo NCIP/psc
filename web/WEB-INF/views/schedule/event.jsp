@@ -3,9 +3,10 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Edit event for ${participant.fullName}</title>
+    <%--<title>Edit event for ${participant.fullName}</title>--%>
     <style type="text/css">
         #states li.previous {
             display: none;
@@ -53,7 +54,7 @@
             margin-left: 9em;
         }
     </style>
-    <tags:javascriptLink name="scheduled-event"/>
+    < tags:javascriptLink name="scheduled-event"/>
     <script type="text/javascript">
         function registerStateHistoryControl() {
             Event.observe("show-history-control", "click", function(e) {
@@ -72,52 +73,54 @@
     </script>
 </head>
 <body>
-    <h1>Edit event for ${participant.fullName}</h1>
-
-    <form:form>
-        <div class="row even">
-            <div class="label">Activity</div>
-            <div class="value">${scheduledEvent.activity.name}</div>
-        </div>
-        <div class="row odd">
-            <div class="label">Details</div>
-            <div class="value">${scheduledEvent.details}</div>
-        </div>
-
-        <div class="row even">
-            <div class="label">
-                Status
-                <a href="#" class="control" id="show-history-control">Show history</a>
+<%--<h1>Edit event for ${participant.fullName}</h1>--%>
+<laf:box title="Edit event for ${participant.fullName}">
+    <laf:division>
+        <form:form>
+            <div class="row even">
+                <div class="label">Activity</div>
+                <div class="value">${scheduledEvent.activity.name}</div>
             </div>
-            <div class="value">
-                <ul id="states">
-                    <c:forEach items="${scheduledEvent.previousStates}" var="state">
-                        <li class="previous">${state.textSummary}</li>
-                    </c:forEach>
-                    <li class="current">${scheduledEvent.currentState.textSummary}</li>
-                </ul>
-                <label id="new-mode-selector-group">Change to
-                    <form:select path="newMode" id="new-mode-selector">
-                        <form:option value="" label=""/>
-                        <form:options items="${modes}" itemValue="id" itemLabel="name"/>
-                    </form:select>
-                </label>
-                <label id="new-date-input-group">Date <form:input path="newDate"/></label>
-                <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
+            <div class="row odd">
+                <div class="label">Details</div>
+                <div class="value">${scheduledEvent.details}</div>
             </div>
-        </div>
 
-        <div class="row odd">
-            <div class="label"><form:label path="newNotes">Notes</form:label></div>
-            <div class="value">
-                <form:textarea path="newNotes" rows="6" cols="30"/>
+            <div class="row even">
+                <div class="label">
+                    Status
+                    <a href="#" class="control" id="show-history-control">Show history</a>
+                </div>
+                <div class="value">
+                    <ul id="states">
+                        <c:forEach items="${scheduledEvent.previousStates}" var="state">
+                            <li class="previous">${state.textSummary}</li>
+                        </c:forEach>
+                        <li class="current">${scheduledEvent.currentState.textSummary}</li>
+                    </ul>
+                    <label id="new-mode-selector-group">Change to
+                        <form:select path="newMode" id="new-mode-selector">
+                            <form:option value="" label=""/>
+                            <form:options items="${modes}" itemValue="id" itemLabel="name"/>
+                        </form:select>
+                    </label>
+                    <label id="new-date-input-group">Date <form:input path="newDate"/></label>
+                    <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
+                </div>
             </div>
-        </div>
 
-        <div class="row submit">
-            <input type="submit" value="Save"/>
-        </div>
-    </form:form>
+            <div class="row odd">
+                <div class="label"><form:label path="newNotes">Notes</form:label></div>
+                <div class="value">
+                    <form:textarea path="newNotes" rows="6" cols="30"/>
+                </div>
+            </div>
 
+            <div class="row submit">
+                <input type="submit" value="Save"/>
+            </div>
+        </form:form>
+    </laf:division>
+</laf:box>
 </body>
 </html>

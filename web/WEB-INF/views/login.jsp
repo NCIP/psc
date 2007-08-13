@@ -1,8 +1,9 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
-    <title>Account login</title>
+    <!--<title>Account login</title>-->
     <style type="text/css">
         body {
             background-color: #666;
@@ -26,7 +27,13 @@
     </style>
 </head>
 <body>
-<h1>Please log in</h1>
-<tags:loginForm/>
+<laf:box title="Account login">
+    <laf:division>
+
+        <h1>Please log in</h1>
+        <tags:loginForm/>
+
+    </laf:division>
+</laf:box>
 </body>
 </html>

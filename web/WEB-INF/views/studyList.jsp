@@ -5,7 +5,6 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Report Builder</title>
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
         ul ul.controls {
@@ -38,7 +37,8 @@
     </style>
 </head>
 <body>
-<laf:box title="Report Builder">
+<laf:box title="Calendars">
+    <laf:division>
     <security:secureOperation element="/pages/newStudy" operation="ACCESS">
         <p><a href="<c:url value="/pages/newStudy"/>">Create a new template</a></p>
     </security:secureOperation>
@@ -88,6 +88,7 @@
             </c:forEach>
         </ul>
     </c:if>
+    </laf:division>
 </laf:box>
 </body>
 </html>

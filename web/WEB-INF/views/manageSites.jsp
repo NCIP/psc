@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <title>Manage sites</title>
+    <!--<title>Manage sites</title>-->
     <tags:includeScriptaculous/>
     <style type="text/css">
         form {
@@ -16,7 +16,8 @@
     </style>
 </head>
 <body>
-    <laf:box title="Manage Sites">
+<laf:box title="Manage Sites">
+    <laf:division>
         <p><a href="<c:url value="/pages/newSite"/>">Create New Site</a></p>
 
         <table>
@@ -27,6 +28,7 @@
                 </tr>
             </c:forEach>
         </table>
-    </laf:box>
+    </laf:division>
+</laf:box>
 </body>
 </html>

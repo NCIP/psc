@@ -513,7 +513,9 @@
         <br>
         <div >
             <laf:box title="Epochs and arms">
-                <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
+                <laf:division>
+                    <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
+                </laf:division>
             </laf:box>
         </div>
 

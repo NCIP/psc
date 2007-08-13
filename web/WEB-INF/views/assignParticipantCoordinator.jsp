@@ -85,63 +85,64 @@
 </head>
 <body>
 <laf:box title="Assign Participant Coordinators">
+    <laf:division>
+        <p>
+            Study: ${study.name}
+        </p>
 
-<p>
-    Study: ${study.name}
-</p>
+        <form id="siteSelectorForm" action="<c:url value="/pages/assignParticipantCoordinator/selectSite"/>">
+            <input type="hidden" name="study" value="${study.id}">
+            <div class="row">
+                <div class="label">
+                    <label for="siteSelector">Site</label>
+                </div>
+                <div class="value">
+                    <tags:activityIndicator id="site-indicator"/>
+                    <select name="site" id="siteSelector">
+                        <option value="">Select...</option>
+                        <c:forEach items="${sites}" var="site">
+                            <option value="${site.id}">${site.name}</option>
+                        </c:forEach>
+                    </select>
+                </div>
+            </div>
+        </form>
 
-<form id="siteSelectorForm" action="<c:url value="/pages/assignParticipantCoordinator/selectSite"/>">
-    <input type="hidden" name="study" value="${study.id}">
-    <div class="row">
-        <div class="label">
-            <label for="siteSelector">Site</label>
-        </div>
-        <div class="value">
-            <tags:activityIndicator id="site-indicator"/>
-            <select name="site" id="siteSelector">
-                <option value="">Select...</option>
-                <c:forEach items="${sites}" var="site">
-                    <option value="${site.id}">${site.name}</option>
-                </c:forEach>
-            </select>
-        </div>
-    </div>
-</form>
+        <form:form method="post" id="assignmentForm" cssStyle="display: none">
+            <input type="hidden" name="studyId" value="${study.id}"/>
+            <input type="hidden" name="siteId" id="site-id-forwarder" value="NOT SET"/>
+            <div class="row">
+                <div class="label">
+                    <form:label path="availableCoordinators">Available Participant Coordinators</form:label>
+                </div>
+                <div class="value">
+                    <form:select path="availableCoordinators" multiple="true">
+                    </form:select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="value submit">
+                    <input type="button" value="Assign" id="assign-button">
+                    <input type="button" value="Remove" id="remove-button">
+                </div>
 
-<form:form method="post" id="assignmentForm" cssStyle="display: none">
-    <input type="hidden" name="studyId" value="${study.id}"/>
-    <input type="hidden" name="siteId" id="site-id-forwarder" value="NOT SET"/>
-    <div class="row">
-        <div class="label">
-            <form:label path="availableCoordinators">Available Participant Coordinators</form:label>
-        </div>
-        <div class="value">
-            <form:select path="availableCoordinators" multiple="true">
-            </form:select>
-        </div>
-    </div>
-    <div class="row">
-        <div class="value submit">
-            <input type="button" value="Assign" id="assign-button">
-            <input type="button" value="Remove" id="remove-button">
-        </div>
-
-    </div>
-    <div class="row">
-        <div class="label">
-            <form:label path="assignedCoordinators">Assigned Participant Coordinators</form:label>
-        </div>
-        <div class="value">
-            <form:select path="assignedCoordinators" multiple="true">
-            </form:select>
-        </div>
-    </div>
-    <div class="row">
-        <div class="submit">
-            <input type="submit" value="Update Associations"/>
-        </div>
-    </div>
-</form:form>
+            </div>
+            <div class="row">
+                <div class="label">
+                    <form:label path="assignedCoordinators">Assigned Participant Coordinators</form:label>
+                </div>
+                <div class="value">
+                    <form:select path="assignedCoordinators" multiple="true">
+                    </form:select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="submit">
+                    <input type="submit" value="Update Associations"/>
+                </div>
+            </div>
+        </form:form>
+    </laf:division>
 </laf:box>
 </body>
 </html>

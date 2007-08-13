@@ -20,22 +20,24 @@
 <body>
 
 <laf:box title="${action} site">
-<form:form method="post">
-    <form:errors path="*"/>
-    <div class="row">
-        <div class="label">
-            <form:label path="name">Site Name</form:label>
-        </div>
-        <div class="value">
-            <form:input path="name"/>
-        </div>
-    </div>
-    <div class="row">
-        <div class="submit">
-            <input type="submit" value="Create"/>
-        </div>
-    </div>
-</form:form>
+    <laf:division>
+        <form:form method="post">
+            <form:errors path="*"/>
+            <div class="row">
+                <div class="label">
+                    <form:label path="name">Site Name</form:label>
+                </div>
+                <div class="value">
+                    <form:input path="name"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="submit">
+                    <input type="submit" value="Create"/>
+                </div>
+            </div>
+        </form:form>
+    </laf:division>
 </laf:box>
 </body>
 </html>

@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
 <head>
@@ -35,7 +36,9 @@
 
 
 <body>
-<h1>Patient Study Calendar - Public Test Site</h1>
+<laf:box title="Patient Study Calendar - Public Test Site">
+    <laf:division>
+<!--<h1>Patient Study Calendar - Public Test Site</h1>-->
 
 <p>
     Thank you for testing the Patient Study Calendar. The PSC team is developing this
@@ -113,6 +116,7 @@
     Thank you for your participation. Please send feedback to <a
     href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>.
 </p>
-
+    </laf:division>
+</laf:box>
 </body>
 </html>

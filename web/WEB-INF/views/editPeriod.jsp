@@ -3,9 +3,10 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>${commons:capitalize(verb)} Period</title>
+    <%--<title>${commons:capitalize(verb)} Period</title>--%>
     <style type="text/css">
         form { width: 45em; }
         div.label { width: 9em; }
@@ -133,71 +134,76 @@
     </script>
 </head>
 <body>
-<h2>${commons:capitalize(verb)} Period</h2>
-<form:form method="post" id="period-form">
-    <h5 id="periodError"></h5>
-    <div class="row odd">
-        <div class="label">
-            <form:label path="period.name">Name</form:label>
-        </div>
-        <div class="tip">
-            (Optional) A name by which you can refer to this period later
-        </div>
-        <div class="value">
-            <form:input path="period.name"/>
-        </div>
-    </div>
-    <div class="row even">
-        <div class="label">
-            <form:label path="period.startDay">Start day</form:label>
-        </div>
-        <div class="tip" id="startDayText">
-            The relative day of the start of this period.  This may be positive, negative, or zero.
-        </div>
-        <div class="value">
-            <form:input path="period.startDay" size="3" maxlength="3"/>
-        </div>
-    </div>
-    <div class="row odd">
-        <div class="label">
-            <form:label path="period.duration.quantity">Duration</form:label>
-        </div>
-        <div class="tip" id="durationText">
-            The length of a single repetition of this period.  This must be a positive number,
-            and may be expressed in days or weeks.
-        </div>
-        <div class="value">
-            <form:input path="period.duration.quantity" size="3" maxlength="3"/>
-            <form:select path="period.duration.unit">
-                <form:options items="${durationUnits}"/>
-            </form:select>
-        </div>
-    </div>
-    <div class="row even">
-        <div class="label">
-            <form:label path="period.repetitions">Repetitions</form:label>
-        </div>
-        <div class="tip" id="repetitionsText">
-            The number of times the days of this period will occur.
-        </div>
-        <div class="value">
-            <form:input path="period.repetitions" size="3" maxlength="3"/>
-        </div>
-    </div>
-    <div class="row odd" id="summary">
-        <div class="label">Summary</div>
-        <div class="value">
-            The configured period will last for <span id="summary-days">1 day</span>
-            <span id="summary-day-range">(day 1)</span>.
+<laf:box title="${commons:capitalize(verb)} Period">
+    <laf:division>
+        <%--<h2>${commons:capitalize(verb)} Period</h2>--%>
+        <form:form method="post" id="period-form">
+            <h5 id="periodError"></h5>
+            <div class="row odd">
+                <div class="label">
+                    <form:label path="period.name">Name</form:label>
+                </div>
+                <div class="tip">
+                    (Optional) A name by which you can refer to this period later
+                </div>
+                <div class="value">
+                    <form:input path="period.name"/>
+                </div>
+            </div>
+            <div class="row even">
+                <div class="label">
+                    <form:label path="period.startDay">Start day</form:label>
+                </div>
+                <div class="tip" id="startDayText">
+                    The relative day of the start of this period.  This may be positive, negative, or zero.
+                </div>
+                <div class="value">
+                    <form:input path="period.startDay" size="3" maxlength="3"/>
+                </div>
+            </div>
+            <div class="row odd">
+                <div class="label">
+                    <form:label path="period.duration.quantity">Duration</form:label>
+                </div>
+                <div class="tip" id="durationText">
+                    The length of a single repetition of this period.  This must be a positive number,
+                    and may be expressed in days or weeks.
+                </div>
+                <div class="value">
+                    <form:input path="period.duration.quantity" size="3" maxlength="3"/>
+                    <form:select path="period.duration.unit">
+                        <form:options items="${durationUnits}"/>
+                    </form:select>
+                </div>
+            </div>
+            <div class="row even">
+                <div class="label">
+                    <form:label path="period.repetitions">Repetitions</form:label>
+                </div>
+                <div class="tip" id="repetitionsText">
+                    The number of times the days of this period will occur.
+                </div>
+                <div class="value">
+                    <form:input path="period.repetitions" size="3" maxlength="3"/>
+                </div>
+            </div>
+            <div class="row odd" id="summary">
+                <div class="label">Summary</div>
+                <div class="value">
+                    The configured period will last for <span id="summary-days">1 day</span>
+                    <span id="summary-day-range">(day 1)</span>.
             <span id="summary-repetitions">
                 It will have the same events on days <span id="summary-event-days"></span>.
             </span>
-        </div>
-    </div>
-    <div class="even row submit">
-        <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
-    </div>
-    <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
-</form:form>
+                </div>
+            </div>
+            <div class="even row submit">
+                <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
+            </div>
+            <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
+        </form:form>
+
+    </laf:division>
+</laf:box>
 </body>
 </html>

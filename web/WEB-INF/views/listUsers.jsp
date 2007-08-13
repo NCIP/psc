@@ -36,39 +36,41 @@
     </style>
 </head>
 <body>
-<laf:box title="List User">    
-    <div class="row">
-        <a href="<c:url value="/pages/createUser"/>">Create User</a>
-    </div>
+<laf:box title="List User">
+    <laf:division>
+        <div class="row">
+            <a href="<c:url value="/pages/createUser"/>">Create User</a>
+        </div>
 
         <h3>User List</h3>
-    <table cellspacing="0" cellpadding="0" border="0" id="container">
-        <tr>
-            <td class="nameColumn">Name</td>
-            <td class="rolesColumn">Role(s)</td>
-            <td class="statusColumn">Status</td>
-        </tr>    
-
-        <c:forEach items="${users}" var="user" varStatus="outterCounter">
-            <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
-            <td>
-                <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">${user.name}</a></td>
-            <td>
-                <c:forEach items="${user.roles}" var="role" varStatus="innerCounter">
-                    ${role.displayName}<c:if test="${not innerCounter.last}">,</c:if>
-                </c:forEach>
-            </td>
-            <td>
-                <c:if test="${user.activeFlag}">
-                    Enabled
-                </c:if>
-                <c:if test="${not user.activeFlag}">
-                    Disabled
-                </c:if>
-            </td>
+        <table cellspacing="0" cellpadding="0" border="0" id="container">
+            <tr>
+                <td class="nameColumn">Name</td>
+                <td class="rolesColumn">Role(s)</td>
+                <td class="statusColumn">Status</td>
             </tr>
-        </c:forEach>
-    </table>
+
+            <c:forEach items="${users}" var="user" varStatus="outterCounter">
+                <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
+                    <td>
+                        <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">${user.name}</a></td>
+                    <td>
+                        <c:forEach items="${user.roles}" var="role" varStatus="innerCounter">
+                            ${role.displayName}<c:if test="${not innerCounter.last}">,</c:if>
+                        </c:forEach>
+                    </td>
+                    <td>
+                        <c:if test="${user.activeFlag}">
+                            Enabled
+                        </c:if>
+                        <c:if test="${not user.activeFlag}">
+                            Disabled
+                        </c:if>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </laf:division>
 </laf:box>
 </body>
 </html>
