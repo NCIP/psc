@@ -299,92 +299,92 @@
 <body>
 
 <laf:box>
-<c:if test="${not empty assignments}">
-    <div id="schedule-switch">View schedule for
-        <select id="assigned-participant-selector">
-            <c:forEach items="${assignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
-            </c:forEach>
-        </select>
-        <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
-    </div>
-</c:if>
-
-
-
-<%--<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>--%>
-
-<c:if test="${configuration.externalAppsConfigured}">
-    <div class="section" id="external-apps">
-        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
-        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-        View this participant's
-        <c:if test="${caaersAvail}">
-            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
-        </c:if>
-        <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
-        <c:if test="${labViewerAvail}">
-            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
-        </c:if>
-    </div>
-</c:if>
-
-<c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-    <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-        <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
-        <div class="content" style="display: none">
-            <p>
-                An adverse event was reported for this participant.  Please consider how
-                this should impact future scheduling.
-            </p>
-            <h3>Details</h3>
-            <p>${aeNote.adverseEvent.description}</p>
-            <p>
-                <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
-                </c:if>
-            </p>
+    <c:if test="${not empty assignments}">
+        <div id="schedule-switch">View schedule for
+            <select id="assigned-participant-selector">
+                <c:forEach items="${assignments}" var="a">
+                    <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+                </c:forEach>
+            </select>
+            <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
         </div>
-    </div>
-</c:forEach>
-    </laf:box>
+    </c:if>
+
+
+
+    <%--<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>--%>
+
+    <c:if test="${configuration.externalAppsConfigured}">
+        <div class="section" id="external-apps">
+            <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+            <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+            View this participant's
+            <c:if test="${caaersAvail}">
+                <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
+            </c:if>
+            <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
+            <c:if test="${labViewerAvail}">
+                <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
+            </c:if>
+        </div>
+    </c:if>
+
+    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+            <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+            <div class="content" style="display: none">
+                <p>
+                    An adverse event was reported for this participant.  Please consider how
+                    this should impact future scheduling.
+                </p>
+                <h3>Details</h3>
+                <p>${aeNote.adverseEvent.description}</p>
+                <p>
+                    <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                    <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                        View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                    </c:if>
+                </p>
+            </div>
+        </div>
+    </c:forEach>
+</laf:box>
 
 
 <laf:box>
-<div id="schedule-next-arm" class="section autoclear collapsible">
+    <div id="schedule-next-arm" class="section autoclear collapsible">
 
-    <h2 id="schedule-next-arm-header">Schedule next arm</h2>
-    <div class="content" style="display: none">
-        <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
-        <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
-            <div class="row">
-                <div class="label">Next arm</div>
-                <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
-            </div>
-            <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
-            <input type="hidden" name="calendar" value="${calendar.id}"/>
-            <div class="row" id="mode-row">
-                <div class="label">When?</div>
-                <div class="value">
-                    <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
-                                  name="mode" value="IMMEDIATE"/> Immediately</label>
-                    <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
-                                  name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+        <h2 id="schedule-next-arm-header">Schedule next arm</h2>
+        <div class="content" style="display: none">
+            <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
+            <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
+                <div class="row">
+                    <div class="label">Next arm</div>
+                    <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="label"><label for="start-date-input">Start date</label></div>
-                <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
-            </div>
-            <div class="row">
-                <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
-            </div>
-        </form>
-        <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
-    </div>
+                <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+                <input type="hidden" name="calendar" value="${calendar.id}"/>
+                <div class="row" id="mode-row">
+                    <div class="label">When?</div>
+                    <div class="value">
+                        <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
+                                      name="mode" value="IMMEDIATE"/> Immediately</label>
+                        <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                                      name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label"><label for="start-date-input">Start date</label></div>
+                    <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
+                </div>
+                <div class="row">
+                    <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
+                </div>
+            </form>
+            <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+        </div>
 
-</div>
+    </div>
 </laf:box>
 
 
