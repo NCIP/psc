@@ -18,13 +18,13 @@
 <body>
 <laf:box title="Manage Sites">
     <laf:division>
-        <p><a href="<c:url value="/pages/newSite"/>">Create New Site</a></p>
+        <p><a href="<c:url value="/pages/admin/manage/newSite"/>">Create New Site</a></p>
 
         <table>
             <c:forEach items="${sites}" var="site">
                 <tr>
-                    <td>${site.name}  <a href="<c:url value="/pages/assignSiteCoordinator?id=${site.id}"/>">  Assign Site Coordinators to Site  </a> </td>
-                    <td><a href="<c:url value="/pages/manageHolidays?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
+                    <td>${site.name}  <a href="<c:url value="/pages/admin/manage/assignSiteCoordinator?id=${site.id}"/>">  Assign Site Coordinators to Site  </a> </td>
+                    <td><a href="<c:url value="/pages/admin/manage/holidays?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
                 </tr>
             </c:forEach>
         </table>

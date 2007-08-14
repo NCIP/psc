@@ -14,7 +14,7 @@
 <laf:division>
     <p class="controls">
         <c:if test="${editable}">
-            <a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>
+            <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>
         </c:if>
         <c:if test="${not empty arm.months}">
             <a id="show_button" href="#" class = "control">Show All</a>
@@ -24,7 +24,7 @@
     <c:if test="${editable and empty arm.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
-            <a href="<c:url value="/pages/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.
+            <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.
             This will allow you to add a <em>period</em>, which is a (possibly repeating) series of
             days.  You will then have the opportunity to associate activities with days in your new
             period.
@@ -51,7 +51,7 @@
                         <c:choose>
                             <c:when test="${day.inPeriod}">
                                 <td class="repetition<c:if test="${day.lastDayOfSpan}"> last</c:if>">
-                                    <a href="<c:url value="/pages/managePeriod?id=${day.id}"/>">${day['empty'] ? '&nbsp;' : '&times;'}</a>
+                                    <a href="<c:url value="/pages/cal/managePeriod?id=${day.id}"/>">${day['empty'] ? '&nbsp;' : '&times;'}</a>
                                 </td>
                             </c:when>
                             <c:otherwise><td class="empty<c:if test="${dStatus.last || day.lastDayOfSpan}"> last</c:if>">&nbsp;</td></c:otherwise>
@@ -89,7 +89,7 @@
                         <ul>
                             <c:forEach items="${entry.value.events}" var="event">
                                 <li>
-                                    <a href="<c:url value="/pages/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
+                                    <a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
                                     <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
                                 </li>
                                 <li class="event-details">

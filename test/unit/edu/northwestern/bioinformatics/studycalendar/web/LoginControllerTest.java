@@ -46,7 +46,7 @@ public class LoginControllerTest extends ControllerTestCase {
 
         assertTrue("Default view not a redirect", actual.getView() instanceof RedirectView);
         RedirectView actualView = (RedirectView) actual.getView();
-        assertEquals("/pages/studyList", actualView.getUrl());
+        assertEquals("/pages/cal/studyList", actualView.getUrl());
     }
 
     public void testPostWithValidCredentialsAndRequestedUrl() throws Exception {

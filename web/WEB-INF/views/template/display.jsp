@@ -130,7 +130,7 @@
 	//		}
         </style>
         <c:if test="${not plannedCalendar.complete}">
-        <script type="text/javascript" src="<c:url value="/pages/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
+        <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
         </c:if>
         <script type="text/javascript">
             var lastRequest;
@@ -340,7 +340,7 @@
 
                         var armId = aElement.id.substring(4)
                         selectedArmId = armId
-                        aElement.href = '<c:url value="/pages/template/select"/>?arm=' + armId
+                        aElement.href = '<c:url value="/pages/cal/template/select"/>?arm=' + armId
 
                         lastRequest = new Ajax.Request(aElement.href,
                             {
@@ -487,24 +487,24 @@
 
         <ul id="admin-options">
             <c:if test="${not plannedCalendar.complete}">
-                <tags:restrictedListItem url="/pages/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/cal/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
             </c:if>
-            <tags:restrictedListItem cssClass="control" url="/pages/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
             <c:if test="${not empty study.studySites}">
-                <tags:restrictedListItem url="/pages/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
+                <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
                     >Assign Participant Coordinators</tags:restrictedListItem>
-                <tags:restrictedListItem url="/pages/assignParticipant" queryString="id=${study.id}" cssClass="control"
+                <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
                     >Assign Participant</tags:restrictedListItem>
             </c:if>
             <c:if test="${not empty assignments}">
-                <security:secureOperation element="/pages/schedule" operation="ACCESS">
+                <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
                 <li>View schedule for
                     <select id="assigned-participant-selector">
                         <c:forEach items="${assignments}" var="assignment">
                             <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
                         </c:forEach>
                     </select>
-                    <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
+                    <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
                 </li>
                 </security:secureOperation>
             </c:if>

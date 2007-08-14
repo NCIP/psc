@@ -42,7 +42,7 @@
                     </form:select>
                 </div>
             </div>
-            <p><a href="<c:url value="/pages/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
+            <p><a href="<c:url value="/pages/cal/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
 
             <c:if test="${not empty arms}">
                 <div class="row">

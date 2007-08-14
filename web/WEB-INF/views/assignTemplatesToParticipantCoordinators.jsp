@@ -6,7 +6,7 @@
 <body>
 <h1>Assign Templates to Participant Coordinators</h1>
 
-<a href="<c:url value="/pages/studyList"/>">Calendar Menu</a>.<br>
+<a href="<c:url value="/pages/cal/studyList"/>">Calendar Menu</a>.<br>
 
 <p>
 </p>

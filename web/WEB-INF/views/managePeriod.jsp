@@ -249,7 +249,7 @@ function ajaxform(checkbox, details, conditionalDetails) {
     var details1 = 'grid[' +  arrayOfIndexes[0] + '].conditionalDetails';
     formdata = formdata + $(details1).name +  "=" + $(details1).value + "&";
 
-    var href = '<c:url value="/pages/managePeriod"/>'
+    var href = '<c:url value="/pages/cal/managePeriod"/>'
 
     var lastRequest = new Ajax.Request(href,
     {

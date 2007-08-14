@@ -27,7 +27,7 @@ import gov.nih.nci.security.AuthenticationManager;
  * @author Rhett Sutphin
  */
 public class LoginController extends AbstractFormController {
-    private static final String DEFAULT_TARGET_VIEW = "/pages/studyList";
+    private static final String DEFAULT_TARGET_VIEW = "/pages/cal/studyList";
 //    private static final Log log = LogFactory.getLog(LoginController.class);
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
     private LoginAuditDao loginAuditDao;

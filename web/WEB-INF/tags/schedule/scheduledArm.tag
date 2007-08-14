@@ -11,7 +11,7 @@
 
 <laf:box title="${arm.name}">
     <laf:division>
-        <form id="batch-form" action="<c:url value="/pages/schedule/batch"/>">
+        <form id="batch-form" action="<c:url value="/pages/cal/schedule/batch"/>">
             <input type="hidden" name="scheduledCalendar" value="${arm.scheduledCalendar.id}"/>
                 <%--<h2 id="selected-arm-header">${arm.name}</h2>--%>
             <div id="batch-reschedule" class="subsection subcollapsible">
@@ -56,7 +56,7 @@
                             <c:forEach items="${entry.value}" var="event">
                                 <li class="${event.currentState.mode.name}">
                                     <input type="checkbox" value="${event.id}" name="events"/>
-                                    <a href="<c:url value="/pages/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
+                                    <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
                                     <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
                                 </li>
                             </c:forEach>

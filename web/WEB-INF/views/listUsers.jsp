@@ -39,7 +39,7 @@
 <laf:box title="List User">
     <laf:division>
         <div class="row">
-            <a href="<c:url value="/pages/createUser"/>">Create User</a>
+            <a href="<c:url value="/pages/admin/manage/createUser"/>">Create User</a>
         </div>
 
         <h3>User List</h3>
@@ -53,7 +53,7 @@
             <c:forEach items="${users}" var="user" varStatus="outterCounter">
                 <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
                     <td>
-                        <a href="<c:url value="/pages/createUser?editId=${user.id}"/>">${user.name}</a></td>
+                        <a href="<c:url value="/pages/admin/manage/createUser?editId=${user.id}"/>">${user.name}</a></td>
                     <td>
                         <c:forEach items="${user.roles}" var="role" varStatus="innerCounter">
                             ${role.displayName}<c:if test="${not innerCounter.last}">,</c:if>

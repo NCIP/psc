@@ -39,16 +39,16 @@
 <body>
 <laf:box title="Calendars">
     <laf:division>
-    <security:secureOperation element="/pages/newStudy" operation="ACCESS">
-        <p><a href="<c:url value="/pages/newStudy"/>">Create a new template</a></p>
+    <security:secureOperation element="/pages/cal/newStudy" operation="ACCESS">
+        <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
     </security:secureOperation>
 
-    <security:secureOperation element="/pages/markComplete" operation="ACCESS">
+    <security:secureOperation element="/pages/cal/markComplete" operation="ACCESS">
         <h3>Templates in design</h3>
         <ul class="menu">
             <c:forEach items="${incompleteStudies}" var="study" varStatus="status">
                 <li class="autoclear ${commons:parity(status.count)}">
-                    <a href="<c:url value="/pages/template?study=${study.id}"/>">${study.name}</a>
+                    <a href="<c:url value="/pages/cal/template?study=${study.id}"/>">${study.name}</a>
                 </li>
             </c:forEach>
         </ul>
@@ -58,13 +58,13 @@
     <ul class="menu">
         <c:forEach items="${completeStudies}" var="study" varStatus="status">
             <li class="autoclear ${commons:parity(status.count)}">
-                <a href="<c:url value="/pages/template?study=${study.id}"/>" class="primary">${study.name}</a>
+                <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">${study.name}</a>
                 <ul class="controls">
-                    <tags:restrictedListItem cssClass="control" url="/pages/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                     <c:if test="${not empty study.studySites}">
-                        <tags:restrictedListItem cssClass="control" url="/pages/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
-                        <tags:restrictedListItem cssClass="control" url="/pages/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
-                        <tags:restrictedListItem cssClass="control" url="/pages/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
+                        <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
+                        <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+                        <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
                     </c:if>
                 </ul>
             </li>
@@ -77,10 +77,10 @@
             <c:forEach items="${sites}" var="site" varStatus="status">
                 <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span>
                     <ul class="controls">
-                        <tags:restrictedListItem url="/pages/assignParticipantCoordinatorsToSite" queryString="id=${site.id}" cssClass="control">
+                        <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinatorsToSite" queryString="id=${site.id}" cssClass="control">
                             Assign participant coordinators
                         </tags:restrictedListItem>
-                        <tags:restrictedListItem url="/pages/siteParticipantCoordinatorList" queryString="id=${site.id}" cssClass="control">
+                        <tags:restrictedListItem url="/pages/cal/siteParticipantCoordinatorList" queryString="id=${site.id}" cssClass="control">
                             Assign study templates to participant coordinators
                         </tags:restrictedListItem>
                     </ul>

@@ -22,32 +22,32 @@
     
     <bean id="redirectToStudyList" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/studyList</value></property>
+        <property name="url"><value>/pages/cal/studyList</value></property>
     </bean>
 
     <bean id="redirectToManageSites" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/manageSites</value></property>
+        <property name="url"><value>/pages/admin/manage/sites</value></property>
     </bean>
 
 
     <bean id="redirectToManageHolidays" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/manageHolidays</value></property>
+        <property name="url"><value>/pages/admin/manage/holidays</value></property>
     </bean>
 
     <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/template</value></property>
+        <property name="url"><value>/pages/cal/template</value></property>
     </bean>
 
     <bean id="redirectToManagePeriod" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/managePeriod</value></property>
+        <property name="url"><value>/pages/cal/managePeriod</value></property>
     </bean>
 
     <bean id="redirectToSchedule" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
-        <property name="url"><value>/pages/schedule</value></property>
+        <property name="url"><value>/pages/cal/schedule</value></property>
     </bean>
 </beans>

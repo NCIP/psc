@@ -27,7 +27,7 @@
 <laf:box title="Schedule Reconsent">
     <laf:division>
         <!--<h1>Schedule Reconsent</h1>-->
-        <c:url value="/pages/scheduleReconsent" var="action"/>
+        <c:url value="/pages/cal/scheduleReconsent" var="action"/>
         <form:form method="post"action="${action}">
             <form:hidden path="study"/>
             <form:errors path="*"/>

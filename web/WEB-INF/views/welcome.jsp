@@ -67,7 +67,7 @@
 </ol>
 
 <p class="demo-link">
-    Let the testing begin: <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Test Site - start
+    Let the testing begin: <a href="<c:url value="/pages/cal/studyList"/>" target="_blank">Public Test Site - start
     page</a>
 </p>
 
@@ -109,7 +109,7 @@
 
 <p class="demo-link">
     In case you missed the first one:
-    <a href="<c:url value="/pages/studyList"/>" target="_blank">Public Test Site - start page</a>
+    <a href="<c:url value="/pages/cal/studyList"/>" target="_blank">Public Test Site - start page</a>
 </p>
 
 <p>

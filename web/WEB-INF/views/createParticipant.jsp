@@ -25,7 +25,7 @@
 <laf:box title="${action} Participant">
     <laf:division>
         <%--<h1>${action} Participant</h1>--%>
-        <c:url value="/pages/createParticipant?id=${studyId}" var="formAction"/>
+        <c:url value="/pages/cal/createParticipant?id=${studyId}" var="formAction"/>
         <form:form action="${formAction}" method="post">
             <div class="row">
                 <div class="label">

@@ -79,7 +79,7 @@
         <p>
             Study: ${study.name}
         </p>
-        <c:url value="/pages/assignSite?id=${study.id}" var="formAction"/>
+        <c:url value="/pages/cal/assignSite?id=${study.id}" var="formAction"/>
 
         <form:form action="${formAction}" method="post">
             <input type="hidden" name="studyId" value="${study.id}"/>

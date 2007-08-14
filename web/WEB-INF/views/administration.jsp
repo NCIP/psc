@@ -22,13 +22,13 @@
     </head>
     <body>
 
-    <security:secureOperation element="/pages/manageSites" operation="ACCESS">
+    <security:secureOperation element="/pages/admin/manage/sites" operation="ACCESS">
         <laf:box title="Administration">
             <laf:division>
                 <ul class="menu">
-                    <tags:restrictedListItem url="/pages/manageSites">Manage sites</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/listUsers">Manage Users</tags:restrictedListItem>
-                    <tags:restrictedListItem url="/pages/configure">Configure PSC</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage Users</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
                 </ul>
             </laf:division>
         </laf:box>

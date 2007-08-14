@@ -299,16 +299,16 @@
 <body>
 
 <laf:box>
-    <c:if test="${not empty assignments}">
-        <div id="schedule-switch">View schedule for
-            <select id="assigned-participant-selector">
-                <c:forEach items="${assignments}" var="a">
-                    <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
-                </c:forEach>
-            </select>
-            <a class="control" href="<c:url value="/pages/schedule"/>" id="go-to-schedule-control">Go</a>
-        </div>
-    </c:if>
+<c:if test="${not empty assignments}">
+    <div id="schedule-switch">View schedule for
+        <select id="assigned-participant-selector">
+            <c:forEach items="${assignments}" var="a">
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+            </c:forEach>
+        </select>
+        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+    </div>
+</c:if>
 
 
 
@@ -329,23 +329,22 @@
         </div>
     </c:if>
 
-    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-            <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
-            <div class="content" style="display: none">
-                <p>
-                    An adverse event was reported for this participant.  Please consider how
-                    this should impact future scheduling.
-                </p>
-                <h3>Details</h3>
-                <p>${aeNote.adverseEvent.description}</p>
-                <p>
-                    <a class="dismiss-control" href="<c:url value="/pages/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                    <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                        View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
-                    </c:if>
-                </p>
-            </div>
+<c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+    <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+        <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+        <div class="content" style="display: none">
+            <p>
+                An adverse event was reported for this participant.  Please consider how
+                this should impact future scheduling.
+            </p>
+            <h3>Details</h3>
+            <p>${aeNote.adverseEvent.description}</p>
+            <p>
+                <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                </c:if>
+            </p>
         </div>
     </c:forEach>
 </laf:box>
@@ -354,13 +353,23 @@
 <laf:box>
     <div id="schedule-next-arm" class="section autoclear collapsible">
 
-        <h2 id="schedule-next-arm-header">Schedule next arm</h2>
-        <div class="content" style="display: none">
-            <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
-            <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/schedule/nextArm"/>">
-                <div class="row">
-                    <div class="label">Next arm</div>
-                    <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
+    <h2 id="schedule-next-arm-header">Schedule next arm</h2>
+    <div class="content" style="display: none">
+        <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
+        <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextArm"/>">
+            <div class="row">
+                <div class="label">Next arm</div>
+                <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
+            </div>
+            <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+            <input type="hidden" name="calendar" value="${calendar.id}"/>
+            <div class="row" id="mode-row">
+                <div class="label">When?</div>
+                <div class="value">
+                    <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
+                                  name="mode" value="IMMEDIATE"/> Immediately</label>
+                    <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                                  name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
                 </div>
                 <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
                 <input type="hidden" name="calendar" value="${calendar.id}"/>

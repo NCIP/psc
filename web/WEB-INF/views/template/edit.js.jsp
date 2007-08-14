@@ -145,19 +145,19 @@ function updateAllEpochsControlVisibility() {
 }
 
 function createRenameControl(objectType, objectId) {
-    return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/template/rename"/>', objectType, objectId)
+    return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
 }
 
 function createDeleteControl(objectType, objectId) {
-    return createControlAnchor("delete", "Delete", "Delete this " + objectType, '<c:url value="/pages/template/delete"/>', objectType, objectId)
+    return createControlAnchor("delete", "Delete", "Delete this " + objectType, '<c:url value="/pages/cal/template/delete"/>', objectType, objectId)
 }
 
 function createAddControl(text, objectType, objectId) {
-    return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/template/addTo"/>', objectType, objectId)
+    return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/cal/template/addTo"/>', objectType, objectId)
 }
 
 function createMoveControl(offset, text, objectType, objectId) {
-    return createControlAnchor("move" + offset, text, "Reorder the " + objectType + "s", '<c:url value="/pages/template/move?offset="/>' + offset, objectType, objectId)
+    return createControlAnchor("move" + offset, text, "Reorder the " + objectType + "s", '<c:url value="/pages/cal/template/move?offset="/>' + offset, objectType, objectId)
 }
 
 function createControlAnchor(controlName, text, title, baseHref, objectType, objectId) {

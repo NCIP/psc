@@ -121,7 +121,7 @@
 <body>
 
 <laf:box title="Report Builder">
-<c:url value="/pages/reportBuilder/selectSites" var="siteSelectorFormAction"/>
+<c:url value="/pages/report/builder/selectSites" var="siteSelectorFormAction"/>
 <form method="post" action="${siteSelectorFormAction}" id="siteSelectorForm">
 	<div class="row">
         <div class="label">
@@ -141,7 +141,7 @@
     </div>    
 </form>
 
-<c:url value="/pages/reportBuilder/selectStudies" var="studySelectorFormAction"/>
+<c:url value="/pages/report/builder/selectStudies" var="studySelectorFormAction"/>
 <form method="post" action="${studySelectorFormAction}" id="studySelectorForm" style="display: none">
 	<div class="row">
         <div class="label">
@@ -158,7 +158,7 @@
     </div>    
 </form>
 
-<c:url value="/pages/reportBuilder/selectParticipants" var="partipantSelectorFormAction"/>    
+<c:url value="/pages/report/builder/selectParticipants" var="partipantSelectorFormAction"/>
 <form method="post" action="${partipantSelectorFormAction}" id="participantSelectorForm" style="display: none">
 	<div class="row">
         <div class="label">
@@ -175,7 +175,7 @@
     </div>
 </form>
 
-<c:url value="/pages/reportBuilder/selectDateRange" var="dateRangeSelectorFormAction"/>
+<c:url value="/pages/report/builder/selectDateRange" var="dateRangeSelectorFormAction"/>
 <form method="post" id="dateRangeSelectorForm" action="${dateRangeSelectorFormAction}" style="display: none">
 	    <div class="row">
 	        <div class="label">
