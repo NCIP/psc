@@ -7,7 +7,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <%--<title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>--%>
+    <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
@@ -298,7 +298,7 @@
 </head>
 <body>
 
-<laf:box>
+
 <c:if test="${not empty assignments}">
     <div id="schedule-switch">View schedule for
         <select id="assigned-participant-selector">
@@ -309,8 +309,11 @@
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
     </div>
 </c:if>
+<br style="clear:both"/>
 
-
+<c:if test="${configuration.externalAppsConfigured and not empty assignment.currentAeNotifications}">
+<laf:box>
+<laf:division>
 
     <%--<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>--%>
 
@@ -346,11 +349,14 @@
                 </c:if>
             </p>
         </div>
+    </div>
     </c:forEach>
+     </laf:division>
 </laf:box>
-
+</c:if>
 
 <laf:box>
+    <laf:division>
     <div id="schedule-next-arm" class="section autoclear collapsible">
 
     <h2 id="schedule-next-arm-header">Schedule next arm</h2>
@@ -371,17 +377,7 @@
                     <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
                                   name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
                 </div>
-                <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
-                <input type="hidden" name="calendar" value="${calendar.id}"/>
-                <div class="row" id="mode-row">
-                    <div class="label">When?</div>
-                    <div class="value">
-                        <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
-                                      name="mode" value="IMMEDIATE"/> Immediately</label>
-                        <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
-                                      name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
-                    </div>
-                </div>
+
                 <div class="row">
                     <div class="label"><label for="start-date-input">Start date</label></div>
                     <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
@@ -389,16 +385,19 @@
                 <div class="row">
                     <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
                 </div>
+            </div>
             </form>
             <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
         </div>
 
     </div>
+    </laf:division>
 </laf:box>
 
 
 <div id="scheduled-arms" class="section">
     <laf:box title="Arms scheduled">
+        <laf:division>
         <!--<h2>Arms scheduled</h2>-->
         <p class="tip">Select an arm to show its detailed schedule below.</p>
         <ul id="scheduled-arms-list">
@@ -407,6 +406,7 @@
                 <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
             </c:forEach>
         </ul>
+        </laf:division>
     </laf:box>
 </div>
 

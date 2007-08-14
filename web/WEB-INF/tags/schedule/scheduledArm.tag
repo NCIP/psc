@@ -17,24 +17,27 @@
             <div id="batch-reschedule" class="subsection subcollapsible">
                 <h3>Batch reschedule</h3>
                 <div class="content" style="display: none">
-                    <label id="new-mode-selector-group">
-                        <select name="newMode" id="new-mode-selector">
-                            <option value="">Select an action...</option>
-                            <option value="1">Mark/Keep as scheduled</option>
-                            <option value="2">Mark occurred</option>
-                            <option value="3">Mark canceled</option>
-                        </select>
-                    </label>
-                    <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
-                    <label id="new-reason-input-group">
-                        Why? <input type="text" name="newReason"/>
-                    </label>
-                    <tags:activityIndicator id="batch-indicator"/>
-                    <input type="submit" value="Submit" id="new-mode-submit"/>
-                    <div class="content-sub-section">
-                        <a id="check-all-events">Check All Events</a>
-                        <a id="uncheck-all-events">Uncheck All Events</a>
-                    </div>
+                    <laf:division>
+                        <label id="new-mode-selector-group">
+                            <select name="newMode" id="new-mode-selector">
+                                <option value="">Select an action...</option>
+                                <option value="1">Mark/Keep as scheduled</option>
+                                <option value="2">Mark occurred</option>
+                                <option value="3">Mark canceled</option>
+                            </select>
+                        </label>
+                        <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
+                        <label id="new-reason-input-group">
+                            Why? <input type="text" name="newReason"/>
+                        </label>
+                        <tags:activityIndicator id="batch-indicator"/>
+                        <input type="submit" value="Submit" id="new-mode-submit"/>
+
+                        <div class="links-row">
+                            <a id="check-all-events" href="#">Check All Events</a>
+                            <a id="uncheck-all-events"  href="#">Uncheck All Events</a>
+                        </div>
+                    </laf:division>
                 </div>
             </div>
 
@@ -50,7 +53,7 @@
                 </div>
                 <c:forEach items="${arm.eventsByDate}" var="entry" varStatus="status">
                     <div class="day autoclear ${commons:parity(status.index)}">
-                        <h3><tags:formatDate value="${entry.key}"/></h3>
+                        <h3 class="day"><tags:formatDate value="${entry.key}"/></h3>
 
                         <ul>
                             <c:forEach items="${entry.value}" var="event">
