@@ -38,13 +38,11 @@ function registerSubheaderCollapse() {
 }
 
 function registerCheckAllEvents() {
-    Event.observe('check-all-events', "click", function(event){$('batch-form').checkCheckboxes('events')})
-    Event.stop(e);
+    Event.observe('check-all-events', "click", function(event){$('batch-form').checkCheckboxes('events');Event.stop(event);})    
 }
 
 function registerUncheckAllEvents() {
-    Event.observe('uncheck-all-events', "click", function(event){$('batch-form').uncheckCheckboxes('events')})
-    Event.stop(e);
+    Event.observe('uncheck-all-events', "click", function(event){$('batch-form').uncheckCheckboxes('events');Event.stop(event);})
 }
 
 Event.observe(window, "load", registerBatchRescheduleHandlers)
