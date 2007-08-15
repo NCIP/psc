@@ -44,7 +44,9 @@
     font-size: 1em;
     padding-top: 2px;
       /*position: relative;*/
-  border-top:0px;
+    border-top:0px;
+    background:none;
+    font-weight:bold;
   /*background: url(../images/chrome/boxsubhead_BG.png) repeat-x bottom #c9e3eb;*/
   /*padding: 4px 8px;*/
 }
