@@ -62,6 +62,13 @@ public class PlannedCalendar extends PlanTreeInnerNode<Study, Epoch, List<Epoch>
         return max;
     }
 
+    @Override
+    public PlannedCalendar contentClone() {
+        PlanTreeNode<Study> clone = super.contentClone();
+        clone.setParent(null);
+        return (PlannedCalendar) clone;
+    }
+
     ////// BEAN PROPERTIES
 
     public boolean isComplete() {

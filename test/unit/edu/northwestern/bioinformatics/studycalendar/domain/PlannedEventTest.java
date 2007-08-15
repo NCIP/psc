@@ -73,4 +73,9 @@ public class PlannedEventTest extends StudyCalendarTestCase {
             assertEquals("Days mismatched at index " + i, expectedDay, actualDay);
         }
     }
+
+    public void testCloneDoesNotDeepCloneActivity() throws Exception {
+        PlannedEvent clone = (PlannedEvent) e0.clone();
+        assertSame("Activity is not same object", e0.getActivity(), clone.getActivity());
+    }
 }

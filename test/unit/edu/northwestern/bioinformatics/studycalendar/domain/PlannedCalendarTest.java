@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
@@ -65,5 +66,39 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         calendar.addEpoch(Epoch.create("E3", "A", "B"));
 
         assertEquals(3, calendar.getMaxArmCount());
+    }
+
+    public void testContentClone() throws Exception {
+        PlannedCalendar cal = TemplateSkeletonCreator.BASIC.create().getPlannedCalendar();
+        int id = 4;
+        cal.setId(id++);
+        for (Epoch epoch : cal.getEpochs()) {
+            epoch.setId(id++);
+            for (Arm arm : epoch.getArms()) {
+                arm.setId(id);
+            }
+        }
+        assertNotNull("Test setup failure", cal.getParent());
+
+        PlannedCalendar clone = (PlannedCalendar) cal.contentClone();
+        assertNotSame("Clone is not a different object", cal, clone);
+        assertNull("Id retained on cal", clone.getId());
+        assertNull("parent not cleared from cloned cal", clone.getParent());
+        assertEquals("Wrong number of epochs in clone", cal.getEpochs().size(), clone.getEpochs().size());
+        for (int i = 0; i < clone.getEpochs().size(); i++) {
+            Epoch cloneEpoch = clone.getEpochs().get(i);
+            Epoch calEpoch = cal.getEpochs().get(i);
+            assertNotSame("Epoch " + i + " is not a different object", calEpoch, cloneEpoch);
+            assertEquals("Epoch " + i + " has a different name", calEpoch.getName(), cloneEpoch.getName());
+            assertSame("Epoch " + i + " does not reference its cloned parent", clone, cloneEpoch.getParent());
+            assertEquals("Epoch " + i + " has a different number of arms", calEpoch.getArms().size(), cloneEpoch.getArms().size());
+            for (int j = 0; j < cloneEpoch.getArms().size(); j++) {
+                Arm cloneArm = cloneEpoch.getArms().get(j);
+                Arm calArm = calEpoch.getArms().get(j);
+                assertNotSame("Arm " + i + " is not a different object", calArm, cloneArm);
+                assertEquals("Arm " + i + " has a different name", calArm.getName(), cloneArm.getName());
+                assertSame("Arm " + i + " does not reference its cloned parent", cloneEpoch, cloneArm.getParent());
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ import java.util.Collection;
  * @param <C> type of the children of this element
  * @param <G> type of the collection of children (will be either List or SortedSet)
  */
-public abstract class PlanTreeInnerNode<P extends DomainObject, C extends Child, G extends Collection<C>>
+public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTreeNode, G extends Collection<C>>
     extends PlanTreeNode<P>
 {
     private G children;
@@ -32,5 +32,16 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends Child,
 
     public void setChildren(G children) {
         this.children = children;
+    }
+
+    @Override
+    protected PlanTreeInnerNode<P, C, G> clone() {
+        PlanTreeInnerNode<P, C, G> clone = (PlanTreeInnerNode<P, C, G>) super.clone();
+        // deep clone the children
+        clone.setChildren(clone.createChildrenCollection());
+        for (C child : getChildren()) {
+            clone.addChild((C) child.clone());
+        }
+        return clone;
     }
 }

@@ -17,7 +17,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 /**
  * @author Rhett Sutphin
  * @author Yufang Wang
- *  */
+ */
 @Entity
 @Table (name = "planned_events")
 @GenericGenerator(name="id-generator", strategy = "native",
