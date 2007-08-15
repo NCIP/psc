@@ -51,7 +51,7 @@
         }
 
         div.row div.value {
-            margin-left: 9em;
+            margin-left: 10em;
         }
     </style>
     < tags:javascriptLink name="scheduled-event"/>
