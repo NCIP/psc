@@ -3,19 +3,19 @@ function updateFormForState() {
     if ("" == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
-        if (typeof($("new-mode-submit")) != 'undefined') $("new-mode-submit").hide()
+        if ($("new-mode-submit") != null) $("new-mode-submit").hide()
     } else if (3 == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").show()
-        if (typeof($("new-mode-submit")) != 'undefined') $("new-mode-submit").show()
+        if ($("new-mode-submit") != null) $("new-mode-submit").show()
     } else if (1 == v){
         $("new-date-input-group").show()
         $("new-reason-input-group").show()
-        if (typeof($("new-mode-submit")) != 'undefined') $("new-mode-submit").show()
+        if ($("new-mode-submit") != null) $("new-mode-submit").show()
     } else if (2 == v) {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
-        if (typeof($("new-mode-submit")) != 'undefined') $("new-mode-submit").show()
+        if ($("new-mode-submit") != null) $("new-mode-submit").show()
     }
 }
 
