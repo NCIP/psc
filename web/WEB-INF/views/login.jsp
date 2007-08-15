@@ -16,13 +16,20 @@
             margin: 3em auto;
         }
         h1 {
-            background-color: #000;
-            color: #fff;
-            padding: 0.5em 2em;
+            /*background-color: #000;*/
+            /*color: #fff;*/
+            /*padding: 0.5em 2em;*/
             text-align: center;
         }
         form#login {
             margin: 1em 2em;
+        }
+        /* need for fomatting the login box */
+        .box {
+            width:40%;
+            margin-left:30%;
+            margin-right:30%;
+            
         }
     </style>
 </head>
