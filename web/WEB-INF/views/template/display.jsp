@@ -511,7 +511,7 @@
         </ul>
         <br>
         <br>
-        <div >
+        <div id="epochs" class="section">
             <laf:box title="Epochs and arms">
                 <laf:division>
                     <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
@@ -519,7 +519,7 @@
             </laf:box>
         </div>
 
-        <div>
+        <div id="selected-arm" class="section">
             <templ:arm arm="${arm}" visible="true"/>
         </div>
     </body>
