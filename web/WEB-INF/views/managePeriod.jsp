@@ -344,7 +344,6 @@ Event.observe(window, "load", updateActivitySelector)
 </head>
 <body>
 <laf:box title="Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}">
-    <%--<h1>Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}</h1>--%>
     <laf:division>
         <p>
             This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
@@ -403,11 +402,13 @@ Event.observe(window, "load", updateActivitySelector)
                                 <form:checkbox path="grid[${gridStatus.index}].conditionalCheckbox"
                                                value="${gridRow.conditionalCheckbox}" />
 
+                                <%--<input type=checkbox <c:if test="${gridRow.conditionalDetails != null}">checked</c:if> name="grid[${gridStatus.index}].conditionalCheckbox"/>--%>
+
                             </td>
                             <td>
                                 <form:input path="grid[${gridStatus.index}].conditionalDetails"
                                             onchange="return ajaxform(null, null, this);"
-                                            disabled="${!gridRow.conditionalCheckbox}"
+                                            disabled="${empty gridRow.conditionalDetails}"
                                         />
                             </td>
                         </tr>

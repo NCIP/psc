@@ -30,7 +30,6 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
     private Integer day;
     private String details;
     private String conditionalDetails;
-    private Boolean conditional;
 
     ////// LOGIC
 
@@ -97,13 +96,5 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
 
     public void setConditionalDetails(String conditionalDetails) {
         this.conditionalDetails = conditionalDetails;
-    }
-
-    public Boolean getConditional() {
-        return conditional;
-    }
-
-    public void setConditional(Boolean conditional) {
-        this.conditional = conditional;
     }
 }

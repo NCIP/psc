@@ -57,8 +57,7 @@ public class ManagePeriodEventsCommand {
             String binKey = activityAndDetails + counts.get(activityAndDetails)[countI];
             counts.get(activityAndDetails)[countI]++;
             if (!bins.containsKey(binKey)) {
-                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount,
-                        event.getConditional(), event.getConditionalDetails()));
+                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount, event.getConditionalDetails()));
             }
             bins.get(binKey).addId(event);
         }
@@ -113,12 +112,7 @@ public class ManagePeriodEventsCommand {
         for (Integer id: row.getEventIds()) {
             if (id != null && id>-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
-                event.setConditional(row.isConditionalCheckbox());
-                if (row.isConditionalCheckbox()) {
-                    event.setConditionalDetails(row.getConditionalDetails());
-                } else {
-                    event.setConditionalDetails(null);
-                }
+                event.setConditionalDetails(row.getConditionalDetails());
                 plannedEventDao.save(event);
             }
         }
@@ -129,7 +123,6 @@ public class ManagePeriodEventsCommand {
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
-        newEvent.setConditional(row.isConditionalCheckbox());
         newEvent.setConditionalDetails(row.getConditionalDetails());
         period.addPlannedEvent(newEvent);
         plannedEventDao.save(newEvent);
@@ -186,7 +179,6 @@ public class ManagePeriodEventsCommand {
         private boolean addition;
         private boolean updated;
 
-        private boolean conditionalCheckbox;
         private String conditionalDetails;
         private boolean conditionalUpdated;
 
@@ -197,22 +189,21 @@ public class ManagePeriodEventsCommand {
             }
         }
         
-        public GridRow(Activity activity, String details, int length, Boolean conditional, String conditionalDetails) {
+        public GridRow(Activity activity, String details, int length, String conditionalDetails) {
             this(length);
             setActivity(activity);
             setDetails(details);
             setConditionalDetails(conditionalDetails);
-            setConditionalCheckbox(conditional);
         }
 
         ////// LOGIC
 
-        private static String key(Activity activity, String details, Boolean isConditional, String conditionalDetails) {
-            return activity.getId() + details + isConditional + conditionalDetails;
+         private static String key(Activity activity, String details, String conditionalDetails) {
+            return activity.getId() + details + conditionalDetails;
         }
 
         public static String key(PlannedEvent event) {
-            return key(event.getActivity(), event.getDetails(), event.getConditional(), event.getConditionalDetails());
+            return key(event.getActivity(), event.getDetails(), event.getConditionalDetails());
         }
 
         public void addId(PlannedEvent event) {
@@ -285,11 +276,10 @@ public class ManagePeriodEventsCommand {
         }
 
         public boolean isConditionalCheckbox() {
-            return conditionalCheckbox;
-        }
-
-        public void setConditionalCheckbox(boolean conditionalCheckbox) {
-            this.conditionalCheckbox = conditionalCheckbox;
+            if (getConditionalDetails()!=null && getConditionalDetails().length()>0) {
+                return true;
+            }
+            return false;
         }
 
         public String getConditionalDetails() {
