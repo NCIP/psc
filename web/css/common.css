@@ -114,3 +114,13 @@ form#login {
 #lightbox-content {
     margin: 1em 2em;
 }
+
+/****** CTMS COMMONS OVERRIDES */
+
+#header {
+    background-image: url("../images/header_BG.png")
+}
+
+#header .background-R {
+    background-image: url("../images/header_BG_R.png")
+}

@@ -33,9 +33,9 @@
     and shared among decorators --%>
 <laf:header>
     <jsp:attribute name="logoText">Patient Study Calendar</jsp:attribute>
-    <jsp:attribute name="logoImageUrl"><c:url value="/images/cabig.jpg"/></jsp:attribute>
+    <jsp:attribute name="logoImageUrl"><c:url value="/images/logo.png"/></jsp:attribute>
     <jsp:attribute name="tagline">Patient Study Calendar</jsp:attribute>
-    <jsp:attribute name="taglineImageUrl"><c:url value="/images/chrome/tagline.png"/></jsp:attribute>
+    <jsp:attribute name="taglineImageUrl"><c:url value="/images/tagline.png"/></jsp:attribute>
     <jsp:attribute name="logoutUrl"><c:url value="/public/login"/></jsp:attribute>
     <jsp:attribute name="renderSection">
         <laf:sectionTab section="${section}" currentSection="${currentSection}"/>
