@@ -24,13 +24,13 @@
 <body>
 <laf:box title="Add a planned event">
     <laf:division>
-<!--<h2>Add a planned event</h2>-->
+        <!--<h2>Add a planned event</h2>-->
 
         <p>You are about to create a planned event for the period: ${period.name}. Please choose an activity for this event and the day of the period that the event should occur.</p>
         <c:url value="/pages/newPlannedEvent?id=${period.id}" var="formAction"/>
         <form:form action="${formAction}" method="post">
-               <input type="hidden" name="periodId" value="${period.id}"/>
-               <div class="row">
+            <input type="hidden" name="periodId" value="${period.id}"/>
+            <div class="row">
                 <div class="label">
                     <form:label path="activityId">Activity</form:label>
                 </div>
@@ -57,10 +57,10 @@
                     <input type="submit" value="Create"/>
                 </div>
             </div>
+
+        </form:form>
     </laf:division>
 </laf:box>
-</form:form>
-
 
 </body>
 </html>
