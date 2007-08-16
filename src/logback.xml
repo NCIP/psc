@@ -33,7 +33,7 @@
 
     <logger name="org.hibernate.type">         <level value="trace"/></logger>
     <logger name="org.apache.commons.digester"><level value="info"/></logger>
-    <logger name="org.springframework">        <level value="debug"/></logger>
+    <logger name="org.springframework">        <level value="info"/></logger>
     <logger name="org.apache.catalina">        <level value="info"/></logger>
     <logger name="org.apache.jasper">          <level value="info"/></logger>
 
