@@ -4,6 +4,8 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
@@ -135,6 +137,30 @@ public class Fixtures {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Creating domain obj of class " + clazz.getName() + " failed", e);
         }
+    }
+
+    /**
+     * Creates a chain of amendments with the given names, returning the one at the end of the
+     * chain (the most recent one).
+     */
+    public static Amendment createAmendments(String... nameHistory) {
+        Amendment current = new Amendment();
+        for (int i = 0; i < nameHistory.length - 1; i++) {
+            String name = nameHistory[i];
+            current.setName(name);
+            Amendment next = new Amendment();
+            next.setPreviousAmendment(current);
+            current = next;
+        }
+        current.setName(nameHistory[nameHistory.length - 1]);
+        return current;
+    }
+
+    public static Add createAddChange(Integer newChildId, Integer index) {
+        Add add = new Add();
+        add.setNewChildId(newChildId);
+        add.setIndex(index);
+        return add;
     }
 
     // static class

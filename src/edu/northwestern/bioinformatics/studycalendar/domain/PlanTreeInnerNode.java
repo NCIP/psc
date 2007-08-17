@@ -20,6 +20,7 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
     }
 
     protected abstract G createChildrenCollection();
+    public abstract Class<C> childClass();
 
     public void addChild(C child) {
         children.add(child);

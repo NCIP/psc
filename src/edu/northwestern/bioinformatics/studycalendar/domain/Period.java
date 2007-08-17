@@ -19,7 +19,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -37,7 +36,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends PlanTreeInnerNode<Arm, PlannedEvent, List<PlannedEvent>>
+public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
     implements Named, Comparable<Period>
 {
     private static final int DEFAULT_REPETITIONS = 1;
@@ -57,12 +56,10 @@ public class Period extends PlanTreeInnerNode<Arm, PlannedEvent, List<PlannedEve
         getDuration().setUnit(DEFAULT_DURATION_UNIT);
     }
 
-    @Override
-    protected List<PlannedEvent> createChildrenCollection() {
-        return new LinkedList<PlannedEvent>();
-    }
-
     ////// LOGIC
+
+    @Override
+    public Class<PlannedEvent> childClass() { return PlannedEvent.class; }
 
     public void addPlannedEvent(PlannedEvent event) {
         addChild(event);

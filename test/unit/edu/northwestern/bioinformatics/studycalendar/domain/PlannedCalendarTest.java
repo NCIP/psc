@@ -10,6 +10,7 @@ import static org.easymock.classextension.EasyMock.*;
 public class PlannedCalendarTest extends StudyCalendarTestCase {
     private PlannedCalendar calendar;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         calendar = new PlannedCalendar();
@@ -80,9 +81,9 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         }
         assertNotNull("Test setup failure", cal.getParent());
 
-        PlannedCalendar clone = (PlannedCalendar) cal.contentClone();
+        PlannedCalendar clone = cal.transientClone();
         assertNotSame("Clone is not a different object", cal, clone);
-        assertNull("Id retained on cal", clone.getId());
+        assertTrue("Cal not marked mem-only", clone.isMemoryOnly());
         assertNull("parent not cleared from cloned cal", clone.getParent());
         assertEquals("Wrong number of epochs in clone", cal.getEpochs().size(), clone.getEpochs().size());
         for (int i = 0; i < clone.getEpochs().size(); i++) {

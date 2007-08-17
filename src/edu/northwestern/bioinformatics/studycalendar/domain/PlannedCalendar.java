@@ -13,7 +13,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.List;
-import java.util.LinkedList;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
 /**
  * @author Rhett Sutphin
@@ -25,15 +26,18 @@ import java.util.LinkedList;
         @Parameter(name="sequence", value="seq_planned_calendars_id")
     }
 )
-public class PlannedCalendar extends PlanTreeInnerNode<Study, Epoch, List<Epoch>> {
+public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
     private boolean complete;
+    private Amendment amendment;
 
-    @Override
-    protected List<Epoch> createChildrenCollection() {
-        return new LinkedList<Epoch>();
+    public PlannedCalendar() {
+        amendment = new Amendment("[Original]");
     }
 
     ////// LOGIC
+
+    @Override
+    public Class<Epoch> childClass() { return Epoch.class; }
 
     public void addEpoch(Epoch epoch) {
         addChild(epoch);
@@ -63,8 +67,8 @@ public class PlannedCalendar extends PlanTreeInnerNode<Study, Epoch, List<Epoch>
     }
 
     @Override
-    public PlannedCalendar contentClone() {
-        PlanTreeNode<Study> clone = super.contentClone();
+    public PlannedCalendar transientClone() {
+        PlanTreeNode<Study> clone = super.transientClone();
         clone.setParent(null);
         return (PlannedCalendar) clone;
     }
@@ -106,4 +110,12 @@ public class PlannedCalendar extends PlanTreeInnerNode<Study, Epoch, List<Epoch>
         setParent(study);
     }
 
+    @Transient // TODO: persistence
+    public Amendment getAmendment() {
+        return amendment;
+    }
+
+    public void setAmendment(Amendment amendment) {
+        this.amendment = amendment;
+    }
 }

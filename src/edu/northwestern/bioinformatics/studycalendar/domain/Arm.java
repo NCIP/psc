@@ -34,12 +34,12 @@ import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
 public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
     private String name;
 
-    // business methods
+    ////// LOGIC
+
+    @Override protected SortedSet<Period> createChildrenCollection() { return new TreeSet<Period>(); }
 
     @Override
-    protected SortedSet<Period> createChildrenCollection() {
-        return new TreeSet<Period>();
-    }
+    public Class<Period> childClass() { return Period.class; }
 
     public void addPeriod(Period period) {
         addChild(period);
@@ -73,7 +73,7 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
         }
     }
 
-    // bean methods
+    ////// BEAN PROPERTIES
 
     public String getName() {
         return name;

@@ -14,7 +14,6 @@ import javax.persistence.Transient;
 import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import java.util.List;
-import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
@@ -26,13 +25,8 @@ import java.util.LinkedList;
         @Parameter(name="sequence", value="seq_epochs_id")
     }
 )
-public class Epoch extends PlanTreeInnerNode<PlannedCalendar, Arm, List<Arm>> implements Named {
+public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implements Named {
     private String name;
-
-    @Override
-    protected List<Arm> createChildrenCollection() {
-        return new LinkedList<Arm>();
-    }
 
     ////// FACTORY
 
@@ -56,6 +50,9 @@ public class Epoch extends PlanTreeInnerNode<PlannedCalendar, Arm, List<Arm>> im
     }
 
     ////// LOGIC
+
+    @Override
+    public Class<Arm> childClass() { return Arm.class; }
 
     public void addArm(Arm arm) {
         addChild(arm);
