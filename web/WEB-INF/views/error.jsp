@@ -1,9 +1,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
         <title>Error - ${statusName}</title>
-        <tags:stylesheetLink name="debug"/>
+        <laf:stylesheetLink name="debug"/>
         <tags:stylesheetLink name="common"/>
         <style type="text/css">
             body {
@@ -61,7 +62,7 @@
     <c:if test="${showDetail}">
         ${stackTrace}
     
-        <tags:debugInfo force="true"/>
+        <laf:debugInfo/>
     </c:if>
 
     </body>

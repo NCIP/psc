@@ -1,6 +1,4 @@
 <%-- This is the standard decorator for all study calendar pages --%>
-<%--<%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>--%>
-<%--<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>--%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
