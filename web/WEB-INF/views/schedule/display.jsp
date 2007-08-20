@@ -153,6 +153,14 @@
             font-weight: normal;
             color: #006;
         }
+        li.conditional a {
+            font-weight: bold;
+            color: darkslategray;
+        }
+        li.NA a {
+            font-weight: normal;
+            color: steelblue;
+        }
 
         .ae a.dismiss-control {
             display: block;

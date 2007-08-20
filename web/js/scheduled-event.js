@@ -16,6 +16,14 @@ function updateFormForState() {
         $("new-date-input-group").hide()
         $("new-reason-input-group").hide()
         if ($("new-mode-submit") != null) $("new-mode-submit").show()
+    } else if (4 == v) {
+        $("new-date-input-group").show()
+        $("new-reason-input-group").show()
+        if ($("new-mode-submit") != null) $("new-mode-submit").show()
+    } else if (5 == v) {
+        $("new-date-input-group").hide()
+        $("new-reason-input-group").hide()
+        if ($("new-mode-submit") != null) $("new-mode-submit").show()
     }
 }
 

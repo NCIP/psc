@@ -3,11 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 
@@ -67,6 +63,17 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
         assertScheduledEventState(Canceled.class, REASON, state);
     }
 
+    public void testNullSafeGetConditional() throws Exception {
+        expectGetStateFields(CONDITIONAL, true);
+        ScheduledEventState state = doNullSafeGet();
+        assertScheduledEventState(Conditional.class, REASON, DATE, state);
+    }
+
+    public void testNullSafeGetNotAvailable() throws Exception {
+        expectGetStateFields(NOT_AVAILABLE, false);
+        ScheduledEventState state = doNullSafeGet();
+        assertScheduledEventState(NotAvailable.class, REASON, state);
+    }
     // TODO (requires changes to ControlledVocabularyObjectType)
 //    public void testNullSafeGetNull() throws Exception {
 //        expect(rs.getInt(COLUMN_NAMES[0])).andReturn(null);
@@ -111,6 +118,16 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
     public void testNullSafeSetCanceled() throws Exception {
         expectSetStateFields(CANCELED, 7, false);
         doNullSafeSet(new Canceled(REASON), 7);
+    }
+
+    public void testNullSafeSetConditional() throws Exception {
+        expectSetStateFields(CONDITIONAL, 5, true);
+        doNullSafeSet(new Conditional(REASON, DATE), 5);
+    }
+
+    public void testNullSafeSetNotAvailable() throws Exception {
+        expectSetStateFields(NOT_AVAILABLE, 6, false);
+        doNullSafeSet(new NotAvailable(REASON), 6);
     }
 
     private void doNullSafeSet(ScheduledEventState expectedState, int index) throws SQLException {

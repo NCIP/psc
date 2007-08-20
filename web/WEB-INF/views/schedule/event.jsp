@@ -47,11 +47,11 @@
         }
 
         div.row div.label {
-            width: 8em;
+            width: 10em;
         }
 
         div.row div.value {
-            margin-left: 10em;
+            margin-left: 12em;
         }
     </style>
     < tags:javascriptLink name="scheduled-event"/>
@@ -85,7 +85,12 @@
                 <div class="label">Details</div>
                 <div class="value">${scheduledEvent.details}</div>
             </div>
-
+            <c:if test="${not empty scheduledEvent.plannedEvent.conditionalDetails}">
+                <div class="row even">
+                    <div class="label">Conditional Details</div>
+                    <div class="value">${scheduledEvent.plannedEvent.conditionalDetails}</div>
+                </div>
+            </c:if>
             <div class="row even">
                 <div class="label">
                     Status

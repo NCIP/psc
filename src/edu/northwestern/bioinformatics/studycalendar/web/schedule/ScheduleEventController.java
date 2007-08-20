@@ -57,7 +57,8 @@ public class ScheduleEventController extends PscSimpleFormController {
         Map<String, Object> model = errors.getModel();
         ScheduleEventCommand command = (ScheduleEventCommand) errors.getTarget();
         ControllerTools.addHierarchyToModel(command.getEvent(), model);
-        model.put("modes", ScheduledEventMode.values());
+//        model.put("modes", ScheduledEventMode.values());
+        model.put("modes", command.getEventSpecificMode());
         return new ModelAndView("schedule/event", model);
     }
 

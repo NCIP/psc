@@ -49,6 +49,8 @@
                         <li class="scheduled even"><a>Scheduled</a></li>
                         <li class="occurred  odd" ><a>Occurred</a></li>
                         <li class="canceled even" ><a>Canceled</a></li>
+                        <li class="conditional odd"><a>Conditional</a></li>
+                        <li class="NA even"><a>NA</a></li>
                     </ul>
                 </div>
                 <c:forEach items="${arm.eventsByDate}" var="entry" varStatus="status">
@@ -61,6 +63,10 @@
                                     <input type="checkbox" value="${event.id}" name="events"/>
                                     <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
                                     <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
+                                </li>
+                                <li class="event-details">
+                                    <c:if test="${not empty event.plannedEvent.conditionalDetails}">Conditional </c:if>
+                                    <c:if test="${not empty event.plannedEvent.conditionalDetails}"> (${event.plannedEvent.conditionalDetails})</c:if>
                                 </li>
                             </c:forEach>
                         </ul>

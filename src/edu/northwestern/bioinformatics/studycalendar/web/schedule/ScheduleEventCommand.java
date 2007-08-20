@@ -7,11 +7,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author Rhett Sutphin
  */
 public class ScheduleEventCommand {
+    private static final Logger log = Logger.getLogger(ScheduleEventCommand.class.getName());
+
     private ScheduledEvent event;
     private ScheduledEventMode newMode;
     private String newReason;
@@ -63,6 +70,49 @@ public class ScheduleEventCommand {
 
     public void setNewMode(ScheduledEventMode newMode) {
         this.newMode = newMode;
+    }
+
+    public Collection<ScheduledEventMode> getEventSpecificMode(){
+        List<ScheduledEventMode> listOfModes = new ArrayList<ScheduledEventMode>();
+        if (getEvent() != null) {
+            if (getEvent().getPlannedEvent().getConditionalDetails() != null) {
+                //case when event is conditional
+                if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CONDITIONAL)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
+                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.OCCURRED);
+                    listOfModes.add(ScheduledEventMode.CANCELED);
+                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
+                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.NOT_AVAILABLE)) {
+                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.OCCURRED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.OCCURRED);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CANCELED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.CANCELED);
+                }
+            } else {
+                if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.OCCURRED);
+                    listOfModes.add(ScheduledEventMode.CANCELED);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.OCCURRED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.OCCURRED);
+                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CANCELED)) {
+                    listOfModes.add(ScheduledEventMode.SCHEDULED);
+                    listOfModes.add(ScheduledEventMode.CANCELED);
+                }
+            }
+        }
+        return listOfModes;
     }
 
     public String getNewReason() {

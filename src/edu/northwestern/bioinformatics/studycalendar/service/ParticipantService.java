@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -13,8 +14,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 /**
  * @author Rhett Sutphin
@@ -25,7 +25,7 @@ public class ParticipantService {
     private SiteService siteService;
 
     public final String RESCHEDULED = "Rescheduled. ";
-    private static final Logger log = LoggerFactory.getLogger(ParticipantService.class.getName());
+    private static final Logger log = Logger.getLogger(ParticipantService.class.getName());
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null);
@@ -42,19 +42,19 @@ public class ParticipantService {
         participantDao.save(participant);
         return spa;
     }
-    
+
     public List<StudyParticipantAssignment> getAssignedStudyParticipant(String userName, List<StudyParticipantAssignment> assignments) {
     	List<StudyParticipantAssignment> actualAssignments = new ArrayList<StudyParticipantAssignment>();
     	List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(userName));
     	for (StudyParticipantAssignment assignment : assignments) {
     		for (Site site : sites) {
-    			if (site.getId()== assignment.getStudySite().getSite().getId()) 
+    			if (site.getId()== assignment.getStudySite().getSite().getId())
     				actualAssignments.add(assignment);
     		}
         }
     	return actualAssignments;
     }
-    
+
     public ScheduledArm scheduleArm(
         StudyParticipantAssignment assignment, Arm arm, Date startDate, NextArmMode mode
     ) {
@@ -87,7 +87,12 @@ public class ParticipantService {
                     ScheduledEvent event = new ScheduledEvent();
                     event.setIdealDate(idealDate(armDay + normalizationFactor, startDate));
                     event.setPlannedEvent(plannedEvent);
-                    event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
+                    if (plannedEvent.getConditionalDetails() == null || plannedEvent.getConditionalDetails().length()<0) {
+                        //setting mode to conditional
+                        event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
+                    } else {
+                        event.changeState(new Conditional("Initialized from template", event.getIdealDate()));
+                    }
                     event.setDetails(plannedEvent.getDetails());
                     event.setActivity(plannedEvent.getActivity());
                     scheduledArm.addEvent(event);
@@ -116,7 +121,7 @@ public class ParticipantService {
         avoidWeekendsAndHolidays(site, scheduledArm);
         participantDao.save(assignment.getParticipant());
 
-        return scheduledArm;                                                                                      
+        return scheduledArm;
     }
 
     private void avoidWeekendsAndHolidays(Site site, ScheduledArm arm) {
@@ -237,7 +242,7 @@ public class ParticipantService {
     public void setParticipantDao(ParticipantDao participantDao) {
         this.participantDao = participantDao;
     }
-    
+
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
     }

@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -89,4 +90,23 @@ public class ScheduleEventCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong reason for current state", NEW_REASON, event.getCurrentState().getReason());
         assertEquals("Wrong notes", "Change-o", event.getNotes());
     }
+
+    public void testEventSpecificModesForNonConditionalEvent() throws Exception {
+        command.setNewMode(ScheduledEventMode.SCHEDULED);
+        replayMocks();
+        Collection<ScheduledEventMode> collection = command.getEventSpecificMode();
+        System.out.println("collection " + collection);
+        assertEquals("Wrong number of modes", 3, collection.size());
+    }
+
+
+    public void testEventSpecificModesForConditionalEvent() throws Exception {
+        event.getPlannedEvent().setConditionalDetails("conditional Details");
+        command.setNewMode(ScheduledEventMode.SCHEDULED);
+        replayMocks();
+        Collection<ScheduledEventMode> collection = command.getEventSpecificMode();
+        System.out.println("collection " + collection);
+        assertEquals("Wrong number of modes", 5, collection.size());
+    }
+
 }

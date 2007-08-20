@@ -17,6 +17,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 
 import java.lang.reflect.InvocationTargetException;
@@ -137,6 +139,10 @@ public class ScheduledEventStateType implements CompositeUserType {
             return new Occurred();
         } else if (ScheduledEventMode.CANCELED == mode) {
             return new Canceled();
+        } else if (ScheduledEventMode.CONDITIONAL == mode) {
+            return new Conditional();
+        } else if (ScheduledEventMode.NOT_AVAILABLE == mode) {
+            return new NotAvailable();
         } else {
             return null;
         }
