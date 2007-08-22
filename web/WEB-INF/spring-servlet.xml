@@ -294,6 +294,17 @@
              </bean>
          </property>
     </bean>
+
+
+    <bean name="/cal/amendmentLogin" id="amendmentLoginController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.AmendmentLoginController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Amendment Login</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
     
 
     <bean name="/report/builder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"

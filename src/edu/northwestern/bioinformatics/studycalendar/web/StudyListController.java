@@ -44,8 +44,12 @@ public class StudyListController extends PscAbstractController {
 
         List<Study> complete = new ArrayList<Study>();
         List<Study> incomplete = new ArrayList<Study>();
+        List<Study> amended = new ArrayList<Study>();
+
         for (Study ownedStudy : ownedStudies) {
-            if (ownedStudy.getPlannedCalendar().isComplete()) {
+            if (ownedStudy.getAmended()){
+                amended.add(ownedStudy);
+            } else if (ownedStudy.getPlannedCalendar().isComplete()) {
                 complete.add(ownedStudy);
             } else {
                 incomplete.add(ownedStudy);
@@ -55,6 +59,7 @@ public class StudyListController extends PscAbstractController {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("completeStudies", complete);
         model.put("incompleteStudies", incomplete);
+        model.put("amendedStudies", amended);
         model.put("sites", ownedSites);
         
         return new ModelAndView("studyList", model);

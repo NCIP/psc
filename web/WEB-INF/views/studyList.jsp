@@ -70,6 +70,7 @@
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendmentLogin" queryString="study=${study.id}">Amend Template</tags:restrictedListItem>
                                 </c:if>
                             </ul>
                         </li>
@@ -77,6 +78,28 @@
                 </ul>
             </laf:division>
         </c:if>
+
+    <c:if test="${not empty amendedStudies}">
+        <h3>Amended templates</h3>
+        <laf:division>
+            <ul class="menu">
+                <c:forEach items="${amendedStudies}" var="study" varStatus="status">
+                    <li class="autoclear ${commons:parity(status.count)}">
+                        <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">${study.name}</a>
+                        <ul class="controls">
+                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Amend sites</tags:restrictedListItem>
+                            <c:if test="${not empty study.studySites}">
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
+                            </c:if>
+                        </ul>
+                    </li>
+                </c:forEach>
+            </ul>
+        </laf:division>
+    </c:if>
+
 
         <c:if test="${not empty sites}">
             <h3>Sites</h3>

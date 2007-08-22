@@ -43,6 +43,16 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertContains("Wrong study found", ids, -101);
     }
 
+    public void testSaveWithAmended() throws Exception {
+        Study study = dao.getById(-100);
+        Boolean amended = study.getAmended();
+        study.setAmended(true);
+        dao.save(study);
+        Study studyAfterAmended = dao.getById(-100);
+        assertEquals("Not same ", false, (boolean) amended);
+        assertEquals("Not amended ", true, (boolean) studyAfterAmended.getAmended());
+    }
+
     public void testSaveNewStudy() throws Exception {
         Integer savedId;
         {

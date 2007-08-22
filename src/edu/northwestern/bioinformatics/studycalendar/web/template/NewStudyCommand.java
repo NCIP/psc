@@ -17,6 +17,7 @@ public class NewStudyCommand {
 
     public Study create() {
         Study study = getBase().create();
+        study.setAmended(false);
         studyDao.save(study);
         return study;
     }

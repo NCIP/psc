@@ -34,6 +34,8 @@ public class Study extends AbstractMutableDomainObject implements Named {
     private PlannedCalendar plannedCalendar;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
+    private Boolean amended;
+
     ////// LOGIC
 
     public void addStudySite(StudySite studySite){
@@ -97,5 +99,13 @@ public class Study extends AbstractMutableDomainObject implements Named {
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySite> getStudySites() {
         return studySites;
+    }
+
+    public Boolean getAmended() {
+        return amended;
+    }
+
+    public void setAmended(Boolean amended) {
+        this.amended = amended;
     }
 }
