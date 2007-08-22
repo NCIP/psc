@@ -37,8 +37,10 @@ public class StudyListControllerTest extends ControllerTestCase {
 
     public void testModelAndView() throws Exception {
         Study complete = Fixtures.createSingleEpochStudy("Complete", "E1");
+        complete.setAmended(false);
         complete.getPlannedCalendar().setComplete(true);
         Study incomplete = Fixtures.createSingleEpochStudy("Incomplete", "E1");
+        incomplete.setAmended(false);
         incomplete.getPlannedCalendar().setComplete(false);
         List<Study> studies = Arrays.asList(incomplete, complete);
         List<Site> sites = new ArrayList<Site>();
