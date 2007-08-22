@@ -58,6 +58,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         {
             Study study = new Study();
             study.setName("New study");
+            study.setAmended(false);
             dao.save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);
@@ -78,6 +79,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         {
             Study study = new Study();
             study.setName("New study");
+            study.setAmended(false);
             dao.save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);

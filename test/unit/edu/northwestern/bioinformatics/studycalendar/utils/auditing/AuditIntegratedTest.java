@@ -45,6 +45,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 
         // create initial study
         created = TemplateSkeletonCreator.BASIC.create();
+        created.setAmended(false);
         studyDao.save(created);
         interruptSession();
     }

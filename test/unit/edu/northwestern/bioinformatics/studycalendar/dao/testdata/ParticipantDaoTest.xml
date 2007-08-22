@@ -22,10 +22,12 @@
         name="New Site"/>
     <STUDIES
         id="-2001"
-        name="New Study"/>
+        name="New Study"
+        amended="false"    />
     <STUDIES
         id="-2000"
-        name="Old Study"/>
+        name="Old Study"
+        amended="false"/>
     <STUDY_SITES
         id="-3001"
         site_id="-1001"
