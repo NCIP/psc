@@ -38,9 +38,9 @@ public class SecureOperation extends TagSupport {
     public String getElement() {
         return this.element;
     }
-
-    public int doStartTag() throws JspTagException {
-        AuthorizationManager authorizationManager = null;
+   //TODO: remove this class
+    public int doStartTag() throws JspTagException {   return  EVAL_BODY_INCLUDE;
+        /*AuthorizationManager authorizationManager = null;
 
         String userName = (String) pageContext.getSession().getAttribute(ApplicationSecurityManager.USER);
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
@@ -57,7 +57,7 @@ public class SecureOperation extends TagSupport {
         } catch (Exception e) {
             log.error("Exception evaluating SecureOperation startTag", e);
             throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
-        }
+        }*/
     }
 
     public int doEndTag() throws JspTagException {

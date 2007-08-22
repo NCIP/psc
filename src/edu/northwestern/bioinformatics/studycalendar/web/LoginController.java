@@ -18,7 +18,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor;
 import gov.nih.nci.security.AuthenticationManager;
 
 /**
@@ -72,7 +71,9 @@ public class LoginController extends AbstractFormController {
     }
 
     private RedirectView getTargetView(HttpServletRequest request) {
-        String targetUrl = LoginCheckInterceptor.getRequestedUrlOnce(request.getSession());
+        // TODO: Use new security intercepter to get originally requested URL
+        //String targetUrl = LoginCheckInterceptor.getRequestedUrlOnce(request.getSession());
+        String targetUrl = null;
 
         if (targetUrl == null) {
             return new RedirectView(DEFAULT_TARGET_VIEW, true);

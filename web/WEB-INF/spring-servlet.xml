@@ -33,28 +33,19 @@
         <property name="servletName"><value>pages</value></property>
     </bean>
 
-    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
-        <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
-        <property name="urlResolver"><ref local="urlResolver"/></property>
-    </bean>
-
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
         <property name="interceptors">
             <list>
                 <ref bean="loginCheckInterceptor"/>
-                <ref bean="URLAccessCheckInterceptor"/>
                 <ref bean="breadcrumbInterceptor"/>
                 <ref bean="sectionInterceptor"/>
             </list>
         </property>
     </bean>
-    
-    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
-    <bean id="URLAccessCheckInterceptor" lazy-init="true" autowire="byType" 
-          class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.URLAccessCheckInterceptor"/>
+    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
     <bean id="breadcrumbInterceptor" autowire="byType"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
