@@ -4,6 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Column;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
@@ -39,6 +40,7 @@ public class AmendmentLogin extends AbstractMutableDomainObject {
         this.amendmentNumber = amendmentNumber;
     }
 
+    @Column(name = "amendment_date")
     public String getDate() {
         return date;
     }
