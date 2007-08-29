@@ -1,10 +1,8 @@
 class ModifyAmendmentLoginTable extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        renameTable("amendment_logins", "amendments", primaryKey: false)
-        //renameTable("amendment_logins_id_seq", "amendments_id_seq", primaryKey: false)
-        //renameTable("amendment_logins_pkey", "amendment_pkey", primaryKey: false)
+        renameTable("amendment_logins", "amendments")
 
-        addColumn("amendments", "previous_amendment", "integer", nullable:true)
+        addColumn("amendments", "previous_amendment", "integer")
         addColumn("amendments", "name", "string")
 
         dropColumn("amendments", "amendment_number")
@@ -15,10 +13,8 @@ class ModifyAmendmentLoginTable extends edu.northwestern.bioinformatics.bering.M
         dropColumn("amendments", "previous_amendment")
         dropColumn("amendments", "name")
 
-        //renameTable("amendments_id_seq", "amendment_logins_id_seq", primaryKey: false)
-        //renameTable("amendment_pkey", "amendment_logins_pkey", primaryKey: false)
-        renameTable("amendments", "amendment_logins", primaryKey: false)
+        renameTable("amendments", "amendment_logins")
 
-        addColumn("amendment_logins", "amendment_number", "integer", nullable: false)
+        addColumn("amendment_logins", "amendment_number", "integer")
     }
 }
