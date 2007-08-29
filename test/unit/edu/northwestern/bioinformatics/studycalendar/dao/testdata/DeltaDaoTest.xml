@@ -1,0 +1,40 @@
+<dataset>
+    <DELTAS
+        id="-100"
+        discriminator_id="1"
+        change_id="-4"
+        node_id="-1"
+        amendment_id="-1"
+
+        />
+    <DELTAS
+         id="-200"
+         discriminator_id="1"
+         change_id="-6"
+         node_id="-1"
+         amendment_id="-1"
+        />
+    <CHANGES
+        id="-6"
+        action="add"
+        old_value="-1"
+        new_value="-2"
+        attribute="-3"
+        delta_id="-100"
+    />
+    <CHANGES
+        id="-4"
+        action="add"
+        old_value="-1"
+        new_value="-2"
+        attribute="-4"
+        delta_id="-100"
+    />
+    <STUDIES id="-2" name="Protocol"/>
+    <PLANNED_CALENDARS id="-2" study_id="-2"/>    
+    <EPOCHS
+        id="-1"
+        planned_calendar_id="-2"
+        name="Treatment"
+        />    
+</dataset>

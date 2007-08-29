@@ -1,10 +1,12 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.AmendmentLoginDao;
-import edu.northwestern.bioinformatics.studycalendar.web.AmendmentLoginCommand;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,20 +21,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
 
 @AccessControl(protectionGroups = {StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR, StudyCalendarProtectionGroup.SITE_COORDINATOR})
-public class AmendmentLoginController extends PscCancellableFormController {
+public class AmendmentController extends PscCancellableFormController {
     private StudyDao studyDao;
 
 
 
-    private AmendmentLoginDao amendmentLoginDao;
-    private static final Logger log = LoggerFactory.getLogger(AmendmentLoginController.class.getName());
+    private AmendmentDao amendmentDao;
+    private static final Logger log = LoggerFactory.getLogger(AmendmentController.class.getName());
 
-    public AmendmentLoginController() {
-        setCommandClass(AmendmentLoginCommand.class);
+    public AmendmentController() {
+        setCommandClass(AmendmentCommand.class);
         setFormView("amendmentLogin");
         setValidator(new ValidatableValidator());
 
@@ -47,13 +47,13 @@ public class AmendmentLoginController extends PscCancellableFormController {
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        AmendmentLoginCommand command = (AmendmentLoginCommand) oCommand;
+        AmendmentCommand command = (AmendmentCommand) oCommand;
         command.apply();
         return new ModelAndView( new RedirectView(getSuccessView()));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new AmendmentLoginCommand(studyDao, amendmentLoginDao);
+        return new AmendmentCommand(studyDao, amendmentDao);
     }
 
     protected ModelAndView onCancel(Object command) throws Exception {
@@ -65,12 +65,12 @@ public class AmendmentLoginController extends PscCancellableFormController {
         this.studyDao = studyDao;
     }
 
-    public AmendmentLoginDao getAmendmentLoginDao() {
-        return amendmentLoginDao;
+    public AmendmentDao getAmendmentDao() {
+        return amendmentDao;
     }
 
     @Required
-    public void setAmendmentLoginDao(AmendmentLoginDao amendmentLoginDao) {
-        this.amendmentLoginDao = amendmentLoginDao;
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
     }
 }

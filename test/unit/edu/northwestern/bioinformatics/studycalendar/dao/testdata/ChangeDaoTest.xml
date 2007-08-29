@@ -1,0 +1,18 @@
+<dataset>
+    <CHANGES
+        id="-6"
+        action="add"
+        old_value="-1"
+        new_value="-2"
+        attribute="-3"
+        delta_id='-6'
+    />
+    <CHANGES
+        id="-4"
+        action="add"
+        old_value="-4"
+        new_value="-5"
+        attribute="-6"
+        delta_id="-4"
+    />
+</dataset>

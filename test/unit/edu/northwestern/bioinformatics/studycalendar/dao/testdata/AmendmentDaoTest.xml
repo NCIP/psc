@@ -1,16 +1,17 @@
 <dataset>
-    <AMENDMENT_LOGINS
+    <AMENDMENTS
         id="-100"
         study_id="-11"
-        amendment_number="-4"
+        name="abc"
         amendment_date="02/2006"
 
         />
-    <AMENDMENT_LOGINS
+    <AMENDMENTS
         id="-200"
         study_id="-22"
-        amendment_number="-5"
-        amendment_date="05/2008"             
+        name="def"
+        amendment_date="05/2008"
+        previous_amendment='-100'
         />
 
 </dataset>

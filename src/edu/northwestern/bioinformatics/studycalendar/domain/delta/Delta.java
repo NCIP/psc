@@ -6,13 +6,30 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
+import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 
+import org.hibernate.annotations.*;
+
 /**
  * @author Rhett Sutphin
  */
+
+@Entity
+@Table(name = "deltas")
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequence", value="seq_deltas_id")
+    }
+)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDomainObject {
     private Revision revision;
     private List<Change> changes;
@@ -47,6 +64,11 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
 
     ////// BEAN PROPERTIES
 
+    public void addChange(Change change ) {
+        changes.add(change);
+    }
+
+    @Transient
     public T getNode() {
         return node;
     }
@@ -55,6 +77,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         this.node = node;
     }
 
+    @Transient
     public Revision getRevision() {
         return revision;
     }
@@ -62,12 +85,15 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
     public void setRevision(Revision revision) {
         this.revision = revision;
     }
-
+    @OneToMany
+    @JoinColumn(name = "delta_id", nullable = false)
+    @OrderBy // order by ID for testing consistency
+    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public List<Change> getChanges() {
         return changes;
     }
 
     public void setChanges(List<Change> changes) {
         this.changes = changes;
-    }
+    }                 
 }

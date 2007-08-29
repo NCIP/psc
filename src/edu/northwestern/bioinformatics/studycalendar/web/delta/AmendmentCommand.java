@@ -1,37 +1,37 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.AmendmentLogin;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.AmendmentLoginDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 
 import org.springframework.validation.Errors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AmendmentLoginCommand implements Validatable {
-    private static final Logger log = LoggerFactory.getLogger(AmendmentLoginCommand.class.getName());
+public class AmendmentCommand implements Validatable {
+    private static final Logger log = LoggerFactory.getLogger(AmendmentCommand.class.getName());
 
     private Study study;
     private Integer amendmentNumber;
     private String date;
-    private AmendmentLoginDao amendmentLoginDao;
+    private AmendmentDao amendmentDao;
     private StudyDao studyDao;
     private String action;
 
 
-    public AmendmentLoginCommand(StudyDao studyDao, AmendmentLoginDao amendmentLoginDao) {
+    public AmendmentCommand(StudyDao studyDao, AmendmentDao amendmentDao) {
         this.studyDao = studyDao;
-        this.amendmentLoginDao = amendmentLoginDao;
+        this.amendmentDao = amendmentDao;
     }
 
     public void apply() throws Exception{
         if (getAction().equals("Submit")) {
-            AmendmentLogin a = new AmendmentLogin();
-            a.setAmendmentNumber(getAmendmentNumber());
+            Amendment a = new Amendment();
             a.setDate(getDate());
             a.setStudyId(getStudy().getId());
+            a.setPreviousAmendment(null);
     //        amendmentLoginDao.save(a);
             study.setAmended(true);
             studyDao.save(study);
@@ -67,12 +67,12 @@ public class AmendmentLoginCommand implements Validatable {
         this.study = study;
     }
 
-    public AmendmentLoginDao getAmendmentDao() {
-        return amendmentLoginDao;
+    public AmendmentDao getAmendmentDao() {
+        return amendmentDao;
     }
 
-    public void setAmendmentDao(AmendmentLoginDao amendmentLoginDao) {
-        this.amendmentLoginDao = amendmentLoginDao;
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
     }
 
     public String getAction() {

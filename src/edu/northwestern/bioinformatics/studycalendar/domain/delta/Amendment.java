@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Cascade;
 
 /**
  * An amendment is a revision containing all the {@link edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator}s needed to
@@ -19,11 +23,23 @@ import java.util.ArrayList;
  * @author Rhett Sutphin
  * @see Customization
  */
-@MappedSuperclass // TODO: persistence
-public class Amendment extends AbstractMutableDomainObject implements Revision {
+
+//@MappedSuperclass // TODO: persistence
+
+@Entity
+@Table(name = "amendments")
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequence", value="seq_amendments_id")
+    }
+)
+public class  Amendment extends AbstractMutableDomainObject implements Revision {
     private Amendment previousAmendment;
     private String name;
     private List<Delta> deltas;
+
+    private Integer studyId;
+    private String date;
 
     public Amendment() {
         this(null);
@@ -54,7 +70,10 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     }
 
     ////// BEAN PROPERTIES
-
+    @OneToMany
+    @JoinColumn(name = "amendment_id", nullable = false)
+    @OrderBy // order by ID for testing consistency
+    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public List<Delta> getDeltas() {
         return deltas;
     }
@@ -63,6 +82,8 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         this.deltas = deltas;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "previous_amendment")
     public Amendment getPreviousAmendment() {
         return previousAmendment;
     }
@@ -78,4 +99,38 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Integer getStudyId() {
+        return studyId;
+    }
+
+
+    public void setStudyId(Integer studyId) {
+        this.studyId = studyId;
+    }
+
+
+    @Column(name = "amendment_date")
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    @Override
+    public String toString(){
+        StringBuffer sb = new StringBuffer();
+        sb.append(" StudyId = ");
+        sb.append(getStudyId());
+        sb.append(" Date = ");
+        sb.append(getDate());
+        sb.append(" Name = ");
+        sb.append(getName());
+        sb.append(" Previous Amendment = ");
+        sb.append(getPreviousAmendment());
+        return sb.toString();
+    }
+
 }
