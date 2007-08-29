@@ -5,13 +5,11 @@
         name="First Study"
         grid_id="long-GUID-string"
         protocol_authority_id="NCI-IS-WATCHING"
-        amended="false"
         />
     <STUDIES
         id="-101"
         version="0"
         name="Study #2"
-        amended="false"
         />
 
     <SITES id="-40" name="North Pole"/>

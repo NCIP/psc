@@ -3,14 +3,14 @@
         id="-100"
         study_id="-11"
         amendment_number="-4"
-        date="02/2006"
+        amendment_date="02/2006"
 
         />
     <AMENDMENT_LOGINS
         id="-200"
         study_id="-22"
         amendment_number="-5"
-        date="05/2008"             
+        amendment_date="05/2008"             
         />
 
 </dataset>
