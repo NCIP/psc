@@ -36,24 +36,13 @@
 
 
 <body>
-<laf:box title="Patient Study Calendar - Public Test Site">
+<laf:box title="Patient Study Calendar Phase II - Public Test Site">
     <laf:division>
 <!--<h1>Patient Study Calendar - Public Test Site</h1>-->
 
 <p>
-    Thank you for testing the Patient Study Calendar. The PSC team is developing this
-    software over a six-month period which has been divided into four releases--one every six weeks.
-    The software you are about to test is the result of Release 3. Your feedback will help guide our
-    development efforts.
+    Thank you for testing the Patient Study Calendar.  The software you are about to test is the result of the Elaboration Phase. Your feedback will help guide our development efforts.
 </p>
-
-<p>
-	This release has two major components:
-</p>
-<ol>
-	<li>Improved user interface for the creation and management of study templates and participant calendars.</li>
-	<li>All interfaces to manage access rights to the various components of the application across a multi-site environment.</li>
-</ol>
 
 <p>
     Two considerations before you begin:
@@ -62,8 +51,7 @@
     <li>This is a public instance. You may encounter sample study calendars created by other users.
         Other users will be able to see data that you enter. Please do not enter any confidential
         information.</li>
-    <li>The big, beautiful green box at the bottom of each screen contains debugging information and
-        will not be visible in the final release of the Patient Study Calendar.</li>
+    <li>With each release, we may delete information from our database in order to prevent the site from getting cluttered with incomplete templates and abandoned calendars.</li>
 </ol>
 
 <p class="demo-link">
@@ -71,7 +59,7 @@
     page</a>
 </p>
 
-<h2>To test the creation and management of study templates and participant calendars:</h2>
+<h2>To test the creation and management of study templates:</h2>
 
 <ol>
     <li>Login using <kbd>superuser</kbd> as both the username and password.</li>
@@ -82,30 +70,32 @@
     <li>Click "Mark this template as complete" when you have finished creating the template.</li>
 	<li>Because a template must be associated with a site before participants can be added, find your template in the list of completed templates and click the "Assign Sites" link next to the template.  Assign a Site to your template.</li>  
     <li>You can click on your template in the list of "Completed Templates" and then click "Assign Participants" within the Template view.</li>
-    <li>Assign a participant, schedule arms, and click on the activities to see how more information can be recorded.</li>
-    <li>Please record any bugs, suggestions, or requests for new features in our <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">GForge tracking system</a>.</li>
-    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
+    <li>Please send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
 </ol>
 
-<h2>To test access rights management (see diagram below for more details):</h2>
+<h2>To test the creation and management of participant calendars:</h2>
 
 <ol>
-	<li>Login as a Study Coordinator (username and password of <kbd>studycd_1</kbd>), create a study template, and mark it as complete.  Logout.</li>
-	<li>Login as a Study Administrator (username and password of <kbd>study_admin1</kbd>).  Click "Manage Sites" and add your site to the list by creating a new site.</li>
-	<li>Click the "Assign Site Coordinator" link next to your site and add a Site Coordinator to your Site.  Return to the Study Menu.</li>
-	<li>Click on the "Assign to Site" link next to the study template that you created above.  Assign it to your Site.  Logout.</li>
-	<li>Login as the Site Coordinator from above (username and password of <kbd>sitecd_1</kbd>).  Near the bottom of the screen click Assign Participant Coordinators to Site and assign one to your Site.</li>
-	<li>Next to the template that you created, click "Assign Participant Coordinator" and assign a Participant Coordinator.  Logout.</li>
-	<li>Login as the Participant Coordinator (username and password of <kbd>participantcd_1</kbd>)and click "assign participants."</li>
-    <li>Please record any bugs, suggestions, or requests for new features in our <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">GForge tracking system</a>.</li>
-    <li>You may also send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
+	<li>Find a template that is listed under "Completed templates".</li>
+	<li>If "Assign sites" is your only option, select that and assign access to the template to a site.</li>
+	<li>Otherwise, select "Assign participants" and follow the steps in order to generate a calendar.</li>
+	<li>To view or manage calendars that already exist, simply click on the template and then select the patient's calendar from the list.</li>
+	<li>Once inside a patient's calendar, try rescheduling, canceling, and marking activities as having occurred.  These actions can be done individually or to groups of activities using the "Batch reschedule" option.</li>
+	<li>Please send feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
 </ol>
-<p>
-    This Activity Diagram explains the way that each user interacts with the Patient Study Calendar:
-</p>
-<a id="roles-swimlanes" href="https://svn.bioinformatics.northwestern.edu/studycalendar/trunk/documents/SRS_FR_SwimLanes.jpg"> <img
-    src="https://svn.bioinformatics.northwestern.edu/studycalendar/trunk/documents/SRS_FR_SwimLanes.jpg"
-    alt="PSC roles"  width="800"/> </a>
+	
+
+<h2>New features on this site:</h2>
+
+<ol>
+	<li>The user can mark events on the template as being conditional and supply the condition.  These are then available to be scheduled on a patient's calendar.</li>
+	<li>Activities added to a period are now automatically saved.</li>
+	<li>The user can add a reconsent to the schedule of every patient calendar on a particular study.</li>
+	<li>The user can hide or show the activities on the template.</li>
+	<li>In a patient's calendar, the user can use checkboxes to select any number of activities and change their state or reschedule them.</li>
+	<li>A new look and feel has been adopted to more closely match other applications within the CTMS Workspace.</li>
+</ol>
+
 
 <p class="demo-link">
     In case you missed the first one:
