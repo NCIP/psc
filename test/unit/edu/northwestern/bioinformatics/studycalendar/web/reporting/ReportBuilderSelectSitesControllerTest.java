@@ -18,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import gov.nih.nci.security.AuthorizationManager;
 
 /**
  * @author Jaron Sampson
@@ -40,7 +41,9 @@ public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 		controller.setSiteDao(siteDao);
 		controller.setTemplateService(templateService);
 
-	}
+        ApplicationSecurityManager.removeUserSession(request);
+
+    }
 	
 	public void testHandleRequest() throws Exception {
 		List<Site> sites = new ArrayList<Site>();
