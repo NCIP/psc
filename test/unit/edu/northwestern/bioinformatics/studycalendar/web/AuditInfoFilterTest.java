@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
 
 import javax.servlet.FilterChain;
@@ -16,6 +17,7 @@ import java.util.Date;
 public class AuditInfoFilterTest extends WebTestCase {
     private static final String REMOTE_ADDR = "123.45.67.8";
     private static final String USERNAME = "jimbo";
+    private static final String PASSWORD = "password";
     private static final String URL = "/personal/jimbo";
 
     private AuditInfoFilter filter;
@@ -25,12 +27,15 @@ public class AuditInfoFilterTest extends WebTestCase {
         filter = new AuditInfoFilter();
         request.setRemoteAddr(REMOTE_ADDR);
         request.setRequestURI(URL);
-        ApplicationSecurityManager.setUser(request, USERNAME);
+        SecurityContextHolderTestHelper.setSecurityContext(USERNAME, PASSWORD);
     }
+
+
 
     protected void tearDown() throws Exception {
         super.tearDown();
         DataAuditInfo.setLocal(null);
+        ApplicationSecurityManager.removeUserSession(request);
     }
 
     public void testAuditInfoSetForChainHandling() throws Exception {

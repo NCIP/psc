@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,7 +45,7 @@ public class StudyListControllerTest extends ControllerTestCase {
         incomplete.getPlannedCalendar().setComplete(false);
         List<Study> studies = Arrays.asList(incomplete, complete);
         List<Site> sites = new ArrayList<Site>();
-        ApplicationSecurityManager.setUser(request, "jimbo");
+        SecurityContextHolderTestHelper.setSecurityContext("jimbo", "password");
 
         expect(studyDao.getAll()).andReturn(studies);
         expect(templateService.checkOwnership("jimbo", studies)).andReturn(studies);

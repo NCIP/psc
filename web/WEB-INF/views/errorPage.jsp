@@ -6,6 +6,6 @@
 </head>
 <body>
 <h1>Access Denied for this user.</h1>
-<p><a href="<c:url value="/public/logout"/>">Login as a different user.</a></p>
+<p><a href="<c:url value="/j_acegi_logout"/>">Login as a different user.</a></p>
 </body>
 </html>

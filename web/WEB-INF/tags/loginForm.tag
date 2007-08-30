@@ -5,24 +5,28 @@
 <%@attribute name="failed" type="java.lang.Boolean"%>
 <%@attribute name="ajax" type="java.lang.Boolean"%>
 
-<form:form method="post" id="login">
-    <c:if test="${failed}">
+
+
+<form method="post" id="login" action="<c:url value="/j_acegi_security_check"/>">
+    <c:if test="${not empty param.login_error}">
         <p class="error"> Incorrect username and/or password.  Please try again. </p>
     </c:if>
     <div class="row">
         <div class="label">
-            <form:label path="username">Username</form:label>
+            Username
         </div>
         <div class="value">
-            <form:input path="username"/>
+            <input type="text" name="j_username"
+                    value="${sessionScope['ACEGI_SECURITY_LAST_USERNAME']}"
+                    />
         </div>
     </div>
     <div class="row">
         <div class="label">
-            <form:label path="password">Password</form:label>
+            Password
         </div>
         <div class="value">
-            <form:password path="password"/>
+            <input type="password" name="j_password"/>
         </div>
     </div>
     <div class="row">
@@ -34,4 +38,4 @@
             <input type="submit" value="Log in"/>
         </div>
     </div>
-</form:form>
+</form>

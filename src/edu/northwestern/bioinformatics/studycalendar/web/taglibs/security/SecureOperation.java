@@ -9,6 +9,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 //import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.acegisecurity.context.SecurityContextHolder;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 
@@ -39,10 +40,10 @@ public class SecureOperation extends TagSupport {
         return this.element;
     }
    //TODO: remove this class
-    public int doStartTag() throws JspTagException {   return  EVAL_BODY_INCLUDE;
-        /*AuthorizationManager authorizationManager = null;
+    public int doStartTag() throws JspTagException {
+        AuthorizationManager authorizationManager = null;
 
-        String userName = (String) pageContext.getSession().getAttribute(ApplicationSecurityManager.USER);
+        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
         
         try {
@@ -57,7 +58,7 @@ public class SecureOperation extends TagSupport {
         } catch (Exception e) {
             log.error("Exception evaluating SecureOperation startTag", e);
             throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
-        }*/
+        }
     }
 
     public int doEndTag() throws JspTagException {

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 
 import javax.servlet.FilterChain;
 
@@ -31,7 +32,7 @@ public class UserInRequestFilterTest extends StudyCalendarTestCase {
     }
     
     public void testAttributeSetWhenLoggedIn() throws Exception {
-        ApplicationSecurityManager.setUser(request, "cab");
+        SecurityContextHolderTestHelper.setSecurityContext("cab", "pass");
 
         filter.doFilter(request, response, filterChain);
         verifyMocks();

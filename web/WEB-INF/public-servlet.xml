@@ -30,8 +30,10 @@
 
     <bean name="/error" id="errorController"
           class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
-          
-    <bean name="/logout" id="logoutController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.LogoutController"/>
+
+    <bean name="/accessDenied" id="accessDeniedController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>accessDenied</value></property>
+    </bean>
           
 </beans>

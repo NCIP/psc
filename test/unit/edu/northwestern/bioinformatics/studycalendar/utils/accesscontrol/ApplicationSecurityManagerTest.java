@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.acegisecurity.context.SecurityContextHolder;
 
 /**
  * @author Rhett Sutphin
@@ -18,13 +19,19 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
         request.setSession(session);
     }
 
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        ApplicationSecurityManager.removeUserSession(request);
+    }
+
     public void testSetUser() throws Exception {
-        ApplicationSecurityManager.setUser(request, "jim");
-        assertNotNull("Session attribute not set", session.getAttribute(ApplicationSecurityManager.USER));
+        SecurityContextHolderTestHelper.setSecurityContext("jim" , "pass");
+        assertNotNull("Session attribute not set", ApplicationSecurityManager.getUser(request));
     }
 
     public void testGetUser() throws Exception {
-        session.setAttribute(ApplicationSecurityManager.USER, "james");
+        SecurityContextHolderTestHelper.setSecurityContext("james" , "pass");
         assertEquals("james", ApplicationSecurityManager.getUser(request));
     }
 
@@ -39,8 +46,8 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
     }
 
     public void testRemoveUser() throws Exception {
-        session.setAttribute(ApplicationSecurityManager.USER, "leaving");
+        SecurityContextHolderTestHelper.setSecurityContext("leaving" , "pass");
         ApplicationSecurityManager.removeUserSession(request);
-        assertNull("Session attribute not cleared", session.getAttribute(ApplicationSecurityManager.USER));
+        assertNull("Session attribute not cleared", SecurityContextHolder.getContext().getAuthentication());
     }
 }

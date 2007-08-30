@@ -7,6 +7,7 @@ import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.authorization.domainobjects.Application;
 import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.UserProvisioningManager;
 
 
 import java.util.Set;
@@ -45,11 +46,13 @@ public class UserProvisioningManagerTest extends DaoTestCase {
     }
 
     public void testGetCsmGroups_2() throws Exception {
-        UserProvisioningManager up = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
-        Group group = new Group();
-
-        SearchCriteria searchCriteria = new GroupSearchCriteria(group);
-        List<Group> groups = up.getObjects(searchCriteria);
+        UserProvisioningManager mgr = (UserProvisioningManager) getApplicationContext().getBean("userProvisioningManager");
+        Application appProt = new Application();
+		appProt.setApplicationName("study_calendar");
+		Group grpProt = new Group();
+		grpProt.setApplication(appProt);
+		GroupSearchCriteria sc = new GroupSearchCriteria(grpProt);
+		List groups = mgr.getObjects(sc);
 
         assertNotNull("Groups are null" , groups);
         assertTrue(groups.size() > 0);

@@ -38,7 +38,7 @@
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
         <property name="interceptors">
             <list>
-                <ref bean="loginCheckInterceptor"/>
+                <!--<ref bean="loginCheckInterceptor"/>-->
                 <ref bean="breadcrumbInterceptor"/>
                 <ref bean="sectionInterceptor"/>
             </list>
@@ -296,11 +296,11 @@
     </bean>
 
 
-    <bean name="/cal/amendmentLogin" id="amendmentLoginController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.AmendmentLoginController">
+    <bean name="/cal/amendment" id="amendmentLoginController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentController">
            <property name="crumb">
              <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name"><value>Amendment Login</value></property>
+                 <property name="name"><value>Amendment</value></property>
                  <property name="parent"><ref local="studyListController"/></property>
              </bean>
          </property>

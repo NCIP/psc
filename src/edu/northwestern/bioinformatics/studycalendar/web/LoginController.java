@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractFormController;
+import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao;
@@ -25,49 +26,13 @@ import gov.nih.nci.security.AuthenticationManager;
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-public class LoginController extends AbstractFormController {
+public class LoginController extends AbstractController {
     private static final String DEFAULT_TARGET_VIEW = "/pages/cal/studyList";
-//    private static final Log log = LogFactory.getLog(LoginController.class);
     private static final Logger log = LoggerFactory.getLogger(LoginController.class);
-    private LoginAuditDao loginAuditDao;
 
-    private AuthenticationManager authenticationManager;
-
-    public LoginController() {
-        setCommandClass(LoginCommand.class);
-        setBindOnNewForm(true);
-    }
-
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new LoginCommand(authenticationManager, loginAuditDao);
-    }
-
-    protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
-        return new ModelAndView(getFormView(request), errors.getModel());
-    }
 
     private String getFormView(HttpServletRequest request) {
         return request.getParameter("ajax") == null ? "login" : "relogin";
-    }
-
-    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        if (ApplicationSecurityManager.getUser(request) == null) {
-            LoginCommand loginCredentials = (LoginCommand) oCommand;
-            log.debug("Username: " + loginCredentials.getUsername());
-            log.debug("System Config file is: " + System.getProperty("gov.nih.nci.security.configFile"));
-            boolean loginSuccess = loginCredentials.login(request.getRemoteAddr());
-
-            if (loginSuccess) {
-                ApplicationSecurityManager.setUser(request, loginCredentials.getUsername());
-                return new ModelAndView(getTargetView(request));
-            } else {
-                Map<String, Object> model = errors.getModel();
-                model.put("failed", true);
-                return new ModelAndView(getFormView(request), model);
-            }
-        } else {
-            return new ModelAndView(getTargetView(request));
-        }
     }
 
     private RedirectView getTargetView(HttpServletRequest request) {
@@ -82,16 +47,8 @@ public class LoginController extends AbstractFormController {
         }
     }
 
-    ////// CONFIGURATION
-
-    @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-    
-    @Required
-    public void setLoginAuditDao(LoginAuditDao loginAuditDao) {
-        this.loginAuditDao = loginAuditDao;
+    protected ModelAndView handleRequestInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
+        return new ModelAndView(getFormView(httpServletRequest));  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
 

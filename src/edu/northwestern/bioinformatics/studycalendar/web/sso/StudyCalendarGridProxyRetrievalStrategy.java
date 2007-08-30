@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 //import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import org.acegisecurity.context.SecurityContextHolder;
 
 import gov.nih.nci.cabig.ctms.web.sso.DefaultGridProxyRetrievalStrategy;
 import gov.nih.nci.cabig.ctms.web.sso.Utils;
@@ -32,7 +34,8 @@ public class StudyCalendarGridProxyRetrievalStrategy extends DefaultGridProxyRet
                 //authorization.
                 int idx = identity.lastIndexOf('=');
                 String localUserId = identity.substring(idx + 1);
-                ApplicationSecurityManager.setUser(request, localUserId);
+                UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(localUserId, "");
+                SecurityContextHolder.getContext().setAuthentication(authRequest);
             } catch (Exception ex) {
                 log.warn("Couldn't get identity from proxy string", ex);
             }

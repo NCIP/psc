@@ -198,6 +198,46 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     private class UserProvisioningManagerStub implements UserProvisioningManager {
 
+        public void assignUsersToGroup(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getUsers(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeOwnerForProtectionElement(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermissionForGroup(String string, String string1, String string2, String string3) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermissionForGroup(String string, String string1, String string2) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getAccessibleGroups(String string, String string1) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getAccessibleGroups(String string, String string1, String string2) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeOwnerForProtectionElement(String string, String string1, String string2) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setEncryptionEnabled(boolean b) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Application getApplication(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
         public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
 
         public List getObjects(SearchCriteria searchCriteria) {
@@ -495,6 +535,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         public void setAuditUserInfo(String string, String string1) {
             throw new UnsupportedOperationException();
         }
+
     }
 
 }

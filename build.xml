@@ -16,6 +16,8 @@
     <property name="war-name" value="studycalendar.war"/>
     <property name="dbunit-dtd-filename" value="build/dbunit-sc.dtd"/>
 
+    <property name="csm-security-policy" value="CSM_policy.xml"/>
+
     <!-- emma needs this -->
     <path id="cp.compiled-source">
         <pathelement location="${build-dir.main}"/>
@@ -339,6 +341,7 @@
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
         </propertyfile>
 
+        <echo >${create-hsqldb.temp-url}</echo>
         <mkdir dir="${hsqldb-dir}"/>
         <ant antfile="${basedir}/build.xml">
             <property name="datasource.url" value="${create-hsqldb.temp-url}"/>
@@ -547,9 +550,7 @@ done so already, please perform the following manual actions.
 * In ${catalina.home}/conf/catalina.properties, add two lines:
   gov.nih.nci.security.configFile=${tomcat.security.dir}/ApplicationSecurityConfig.xml
   java.security.auth.login.config=${tomcat.security.dir}/csm_jaas.config
-
-* Execute ${basedir}/conf/upt/uptdata_studycal.sql
-  against your target database (${datasource.url}).
+            
 ========= END ==========
 ===== MANUAL STEPS =====</echo>
     </target>
@@ -591,5 +592,33 @@ done so already, please perform the following manual actions.
     </target>
 
     <target name="reports" depends="test.unit.report"/>
+
+
+	<target name="insert-csm-policy" depends="init">
+		<dbunit driver="${datasource.driver}"
+			url="${datasource.url}"
+			userid="${datasource.username}"
+			password="${datasource.password}">
+
+			<classpath refid="cp.unit-test" />
+
+			<operation type="INSERT" src="tools/csm/CSM_policy.xml" />
+			<!--<operation type="CLEAN_INSERT" src="tools/csm/CSM_policy.xml" />-->
+
+		</dbunit>
+	</target>
+
+	<target name="delete-csm-policy" depends="init">
+		<dbunit driver="${datasource.driver}"
+			url="${datasource.url}"
+			userid="${datasource.username}"
+			password="${datasource.password}">
+
+			<classpath refid="cp.unit-test" />
+
+			<operation type="DELETE_ALL" src="tools/csm/CSM_policy.xml" />
+
+		</dbunit>
+	</target>
 
 </project>

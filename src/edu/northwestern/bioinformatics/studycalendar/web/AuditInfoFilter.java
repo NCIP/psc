@@ -21,8 +21,8 @@ public class AuditInfoFilter extends FilterAdapter {
         HttpServletRequest httpReq = (HttpServletRequest) request;
         String username = ApplicationSecurityManager.getUser(httpReq);
         if (username != null) {
-            DataAuditInfo.setLocal(
-                new DataAuditInfo(username, request.getRemoteAddr(), new Date(),
+            edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo.setLocal(
+                new edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo(username, request.getRemoteAddr(), new Date(),
                     httpReq.getRequestURI()));
         }
         chain.doFilter(request, response);
