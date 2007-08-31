@@ -84,7 +84,7 @@ public class DeltaService {
                     "Could not find a node in the cloned tree matching the node in delta: %s", delta);
             }
             for (Change change : delta.getChanges()) {
-                log.debug("Rolling back change {} on {}", change, affected);
+                log.debug("Applying change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).apply(affected);
             }
         }
