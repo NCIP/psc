@@ -7,13 +7,14 @@
 <%--<laf:box title="${arm.base.qualifiedName}">--%>
 <c:set var="editable" value="${not arm.base.epoch.plannedCalendar.complete}"/>
 
+<c:set var="amended" value="${arm.base.epoch.plannedCalendar.study.amended}"/>
 <%--<h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>--%>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
 <laf:box title="${arm.base.qualifiedName}">
 <laf:division>
     <p class="controls">
-        <c:if test="${editable}">
+        <c:if test="${amended or editable}">
             <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>
         </c:if>
         <c:if test="${not empty arm.months}">
@@ -21,7 +22,7 @@
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
         </c:if>
     </p>
-    <c:if test="${editable and empty arm.months}">
+    <c:if test="${amended or editable and empty arm.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
             <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.

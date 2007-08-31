@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -25,6 +28,7 @@ import java.util.HashMap;
 @AccessControl(protectionGroups = { StudyCalendarProtectionGroup.STUDY_COORDINATOR, StudyCalendarProtectionGroup.BASE })
 public class DisplayTemplateController extends PscAbstractController {
     private StudyDao studyDao;
+    private AmendmentDao amendmentDao;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -43,6 +47,10 @@ public class DisplayTemplateController extends PscAbstractController {
 
         if (study.getPlannedCalendar().isComplete()) {
             model.addObject("assignments", studyDao.getAssignmentsForStudy(studyId));
+        }
+
+        if (study.getAmended()) {
+            model.addObject("amendment", amendmentDao.getByStudyId(study.getId()));
         }
 
         return new ModelAndView("template/display", model);
@@ -66,6 +74,10 @@ public class DisplayTemplateController extends PscAbstractController {
 
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
     }
 
     private static class Crumb extends DefaultCrumb {

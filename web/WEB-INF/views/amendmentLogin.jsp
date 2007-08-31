@@ -24,16 +24,16 @@
 <body>
 <laf:box title="Amendment Login">
     <laf:division>
-        <c:url value="/pages/cal/amendmentLogin" var="action"/>
+        <c:url value="/pages/cal/amendment" var="action"/>
         <form:form method="post"action="${action}">
             <form:hidden path="study"/>
             <%--<form:errors path="*"/>--%>
             <div class="row">
                 <div class="label">
-                    Amendment Number:
+                    Amendment Name:
                 </div>
                 <div class="value">
-                    <form:input path="amendmentNumber"/>
+                    <form:input path="name"/>
                 </div>
             </div>
             <div class="row">

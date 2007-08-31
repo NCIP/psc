@@ -129,8 +129,8 @@
 	//		  font-size: 10pt;
 	//		}
         </style>
-        <c:if test="${not plannedCalendar.complete}">
-        <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
+        <c:if test="${study.amended or (not plannedCalendar.complete)}">
+            <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
         </c:if>
         <script type="text/javascript">
             var lastRequest;
@@ -435,9 +435,9 @@
 
             function epochsAreaSetup() {
                 registerSelectArmHandlers()
-                <c:if test="${not plannedCalendar.complete}">
-                createAllArmControls()
-                createAllEpochControls()
+                <c:if test="${study.amended or (not plannedCalendar.complete)}">
+                    createAllArmControls()
+                    createAllEpochControls()
                 </c:if>
             }
 			function arrowSetup(){
@@ -464,10 +464,13 @@
 					
 			}
 
-            <c:if test="${not plannedCalendar.complete}">
 
+            <c:if test="${not plannedCalendar.complete}">
                 <%--var element = Builder.node('h1', 'Template for',[Builder.node('span',{id:'study-name', value:${study.name} })])--%>
-            Event.observe(window, "load", createStudyControls)
+                Event.observe(window, "load", createStudyControls)
+            </c:if>
+            <c:if test="${study.amended}">
+                Event.observe(window, "load", createAddEpochControl)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
 			<c:if test="${not empty arm.months}">
@@ -486,31 +489,50 @@
     <%--<h1>Template for <span id="study-name">${study.name}</span></h1>--%>
 
         <ul id="admin-options">
-            <c:if test="${not plannedCalendar.complete}">
-                <tags:restrictedListItem url="/pages/cal/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
-            </c:if>
-            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-            <c:if test="${not empty study.studySites}">
-                <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
-                    >Assign Participant Coordinators</tags:restrictedListItem>
-                <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
-                    >Assign Participant</tags:restrictedListItem>
-            </c:if>
-            <c:if test="${not empty assignments}">
-                <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
-                <li>View schedule for
-                    <select id="assigned-participant-selector">
-                        <c:forEach items="${assignments}" var="assignment">
-                            <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
-                        </c:forEach>
-                    </select>
-                    <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
-                </li>
-                </security:secureOperation>
+            <c:if test="${not study.amended}">
+                <c:if test="${not plannedCalendar.complete}">
+                    <tags:restrictedListItem url="/pages/cal/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
+                </c:if>
+                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+                <c:if test="${not empty study.studySites}">
+                    <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
+                        >Assign Participant Coordinators</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
+                        >Assign Participant</tags:restrictedListItem>
+                </c:if>
+                <c:if test="${not empty assignments}">
+                    <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
+                    <li>View schedule for
+                        <select id="assigned-participant-selector">
+                            <c:forEach items="${assignments}" var="assignment">
+                                <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
+                            </c:forEach>
+                        </select>
+                        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+                    </li>
+                    </security:secureOperation>
+                </c:if>
             </c:if>
         </ul>
         <br>
         <br>
+        <div>
+            <laf:box title="Amendments Template">
+                <laf:division>
+                     <form:form name="listOfChanges" method="post">
+                        <select name="selectChange" id="selectChange" size="5"  STYLE="width:100%">
+                           <c:forEach items="${amendment.deltas}" var="delta">
+                                <c:forEach items="${delta.changes}" var="change">
+                                    <option value=${change.id}>
+                                        ${change} ${delta}
+                                    </option>
+                                </c:forEach>
+                            </c:forEach>
+                        </select>
+                    </form:form>
+                </laf:division>
+            </laf:box>
+        </div>
         <div id="epochs" class="section">
             <laf:box title="Epochs and arms">
                 <laf:division>

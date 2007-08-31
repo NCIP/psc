@@ -91,7 +91,7 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implem
     // This is annotated this way so that the IndexColumn in the parent
     // will work with the bidirectional mapping
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(insertable=false, updatable=false, nullable=false)
+    @JoinColumn(insertable=false, updatable=false, nullable=true)
     public PlannedCalendar getPlannedCalendar() {
         return getParent();
     }

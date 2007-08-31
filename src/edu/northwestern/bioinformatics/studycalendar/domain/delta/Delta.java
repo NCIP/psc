@@ -95,5 +95,5 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
 
     public void setChanges(List<Change> changes) {
         this.changes = changes;
-    }                 
+    }
 }

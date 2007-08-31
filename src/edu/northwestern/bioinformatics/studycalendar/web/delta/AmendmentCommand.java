@@ -14,8 +14,10 @@ public class AmendmentCommand implements Validatable {
     private static final Logger log = LoggerFactory.getLogger(AmendmentCommand.class.getName());
 
     private Study study;
-    private Integer amendmentNumber;
+    private String name;
     private String date;
+    private Integer previousAmendment;
+
     private AmendmentDao amendmentDao;
     private StudyDao studyDao;
     private String action;
@@ -29,10 +31,11 @@ public class AmendmentCommand implements Validatable {
     public void apply() throws Exception{
         if (getAction().equals("Submit")) {
             Amendment a = new Amendment();
+            a.setName(getName());
             a.setDate(getDate());
             a.setStudyId(getStudy().getId());
             a.setPreviousAmendment(null);
-    //        amendmentLoginDao.save(a);
+            amendmentDao.save(a);
             study.setAmended(true);
             studyDao.save(study);
         }
@@ -42,12 +45,21 @@ public class AmendmentCommand implements Validatable {
     }
 
 
-    public Integer getAmendmentNumber() {
-        return amendmentNumber;
+    public String getName() {
+        return name;
     }
 
-    public void setAmendmentNumber(Integer amendmentNumber) {
-        this.amendmentNumber = amendmentNumber;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+
+    public Integer getPreviousAmendment() {
+        return previousAmendment;
+    }
+
+    public void setPreviousAmendment(Integer previousAmendment) {
+        this.previousAmendment = previousAmendment;
     }
 
     public String getDate() {

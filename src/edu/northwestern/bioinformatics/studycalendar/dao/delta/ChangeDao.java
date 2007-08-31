@@ -29,4 +29,9 @@ public class ChangeDao extends StudyCalendarDao<Change> {
         List<Change> results = getHibernateTemplate().find("from Change a where a.id= ?", id);
         return results.get(0);
     }
+
+//    public Change getByNewValue(String newValue) {
+//        List<Change> results = getHibernateTemplate().find("from Change a where a.newValue= ?", newValue);
+//        return results.get(0);
+//    }
 }

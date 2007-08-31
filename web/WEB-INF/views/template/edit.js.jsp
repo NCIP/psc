@@ -91,6 +91,25 @@ function createStudyControls() {
     controlBox.appendChild(addEpochControl)
 }
 
+function createAddEpochControl() {
+    var h1 = $$("h1")[0];
+    var studyId = ${param.study}
+    var studyName = "${param.studyName}"
+    var studyNameSpan = Builder.node("span", {id: 'study-name'}, studyName)
+    var controlBox = Builder.node("span", {className: 'study-controls controls'})
+
+    h1.innerHTML = h1.innerHTML.truncate(h1.innerHTML.length - studyName.length, '')
+    h1.appendChild(studyNameSpan)
+
+    h1.appendChild(controlBox)
+
+    //var addEpochControl = createAddControl("Add epoch", 'study', studyId)
+    var addEpochControl = createAddControlForAmendment("Add epoch", 'study', studyId)
+    SC.asyncLink(addEpochControl, {}, "epochs-indicator")
+//    Event.observe($(addEpochControl), "click", function(e){return ajaxform(addEpochControl)})
+    controlBox.appendChild(addEpochControl)
+}
+
 function createAllEpochControls() {
     $$("#epochs h4").each(createEpochControls)
 }
@@ -154,6 +173,10 @@ function createDeleteControl(objectType, objectId) {
 
 function createAddControl(text, objectType, objectId) {
     return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/cal/template/addTo"/>', objectType, objectId)
+}
+
+function createAddControlForAmendment(text, objectType, objectId) {
+    return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/cal/template/amend/addTo"/>', objectType, objectId)
 }
 
 function createMoveControl(offset, text, objectType, objectId) {

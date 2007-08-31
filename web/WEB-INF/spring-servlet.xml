@@ -50,7 +50,7 @@
     <bean id="breadcrumbInterceptor" autowire="byType"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
 
-    <bean id="breadcrumbCreator" autowire="byName" 
+    <bean id="breadcrumbCreator" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbCreator"/>
 
     <bean id="noCacheTemplate" abstract="true">
@@ -78,6 +78,11 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>addToTemplateCommand</value></property>
     </bean>
+    <bean name="/cal/template/amend/addTo" id="addToAmendController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.delta.AmendEditController">
+        <property name="commandBeanName"><value>addToAmendTemplateCommand</value></property>
+    </bean>
+
     <bean name="/cal/template/delete" id="deleteController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>deleteCommand</value></property>
@@ -138,7 +143,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
-          
+
     <bean name="/cal/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController">
         <property name="crumb">
@@ -212,7 +217,7 @@
             </bean>
         </property>
     </bean>
-    
+
     <bean name="/sitesForAssignParticipantCoordinators" id="sitesForAssignParticipantCoordinatorsController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.SitesForAssignParticipantCoordinatorsController">
         <property name="crumb">
@@ -242,7 +247,7 @@
             </bean>
         </property>
     </bean>
-    
+
      <bean name="/assignTemplatesToOneParticipantCoordinator" id="assignTemplatesToOneParticipantCoordinatorController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
          <property name="crumb">
@@ -252,7 +257,7 @@
              </bean>
          </property>
     </bean>
-    
+
      <bean name="/report/builder" id="reportBuilderController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderController">
            <property name="crumb">
@@ -284,7 +289,7 @@
     </bean>
 
     <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
-    
+
     <bean name="/cal/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
            <property name="crumb">

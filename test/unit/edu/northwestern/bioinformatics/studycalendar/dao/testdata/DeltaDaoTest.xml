@@ -2,7 +2,6 @@
     <DELTAS
         id="-100"
         discriminator_id="1"
-        change_id="-4"
         node_id="-1"
         amendment_id="-1"
 
@@ -10,7 +9,6 @@
     <DELTAS
          id="-200"
          discriminator_id="1"
-         change_id="-6"
          node_id="-1"
          amendment_id="-1"
         />

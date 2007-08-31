@@ -40,12 +40,14 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         e2b = setId(11, epoch2.getArms().get(1));
         study.getPlannedCalendar().addEpoch(epoch1);
         study.getPlannedCalendar().addEpoch(epoch2);
+        study.setAmended(false);
 
         controller = new DisplayTemplateController();
         controller.setStudyDao(studyDao);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
+
         expect(studyDao.getById(study.getId())).andReturn(study);
     }
 
