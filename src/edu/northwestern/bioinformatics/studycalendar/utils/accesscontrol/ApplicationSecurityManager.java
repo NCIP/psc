@@ -13,16 +13,16 @@ import javax.servlet.http.HttpSession;
  */
 public class ApplicationSecurityManager {
     
-    public static String getUser(HttpServletRequest request) {
+    public static String getUser() {
         String user = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-            user = (String) authentication.getName();
+            user = authentication.getName();
         }
         return user;
     }
 
-    public static void removeUserSession(HttpServletRequest request) {
+    public static void removeUserSession() {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

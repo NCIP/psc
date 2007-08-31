@@ -46,7 +46,7 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 
 	public void testRefData() throws Exception {
         List<Site> sites = new ArrayList<Site>();
-        expect(siteService.getSitesForUser(ApplicationSecurityManager.getUser(request))).andReturn(sites);
+        expect(siteService.getSitesForUser(ApplicationSecurityManager.getUser())).andReturn(sites);
 
 		replayMocks();
 

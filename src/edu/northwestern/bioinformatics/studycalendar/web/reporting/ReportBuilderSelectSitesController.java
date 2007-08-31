@@ -54,7 +54,7 @@ public class ReportBuilderSelectSitesController extends AbstractController {
         for(Study study : studiesSet) {
         	studies.add(study);
         }
-        model.put("studies", templateService.checkOwnership(ApplicationSecurityManager.getUser(request), (List) studies));
+        model.put("studies", templateService.checkOwnership(ApplicationSecurityManager.getUser(), (List) studies));
         
         return new ModelAndView("reporting/ajax/studiesBySites", model);
 	}

@@ -65,7 +65,7 @@ public class ReportBuilderController extends PscSimpleFormController {
         log.debug("referenceData"); 
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Site> sites = new ArrayList<Site>();
-        sites = siteService.getSitesForUser(ApplicationSecurityManager.getUser(httpServletRequest));
+        sites = siteService.getSitesForUser(ApplicationSecurityManager.getUser());
     	refdata.put("sites", sites);                
         return refdata;
     }

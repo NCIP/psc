@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -17,7 +16,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -38,7 +36,7 @@ public class StudyListController extends PscAbstractController {
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
-        String userName = ApplicationSecurityManager.getUser(request);
+        String userName = ApplicationSecurityManager.getUser();
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
 

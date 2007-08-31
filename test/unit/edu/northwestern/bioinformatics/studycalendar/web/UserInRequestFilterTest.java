@@ -41,7 +41,7 @@ public class UserInRequestFilterTest extends StudyCalendarTestCase {
     }
 
     public void testAttributeNotSetWhenNotLoggedIn() throws Exception {
-        ApplicationSecurityManager.removeUserSession(request);
+        ApplicationSecurityManager.removeUserSession();
 
         filter.doFilter(request, response, filterChain);
         verifyMocks();

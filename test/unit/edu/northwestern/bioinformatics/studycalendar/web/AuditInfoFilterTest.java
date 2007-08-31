@@ -35,7 +35,7 @@ public class AuditInfoFilterTest extends WebTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         DataAuditInfo.setLocal(null);
-        ApplicationSecurityManager.removeUserSession(request);
+        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testAuditInfoSetForChainHandling() throws Exception {
@@ -54,7 +54,7 @@ public class AuditInfoFilterTest extends WebTestCase {
     }
 
     public void testAuditInfoNotSetIfNotLoggedIn() throws Exception {
-        ApplicationSecurityManager.removeUserSession(request);
+        ApplicationSecurityManager.removeUserSession();
 
         filter.doFilter(request, response, new FilterChain() {
             public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) throws IOException, ServletException {

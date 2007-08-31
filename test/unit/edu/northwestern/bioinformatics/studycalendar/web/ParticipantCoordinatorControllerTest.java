@@ -6,7 +6,6 @@ import java.util.Map;
 
 import static org.easymock.classextension.EasyMock.expect;
 
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
@@ -39,7 +38,7 @@ public class ParticipantCoordinatorControllerTest extends ControllerTestCase {
 
     protected void tearDown() throws Exception {
         super.tearDown();
-        ApplicationSecurityManager.removeUserSession(request);
+        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testRefData() throws Exception {

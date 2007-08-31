@@ -42,7 +42,7 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(
         HttpServletRequest request, HttpServletResponse response, Object handler
     ) throws Exception {
-        String userName = ApplicationSecurityManager.getUser(request);
+        String userName = ApplicationSecurityManager.getUser();
         if (userName == null) {
             if (log.isDebugEnabled()) {
                 log.debug("request path " + request.getPathInfo() + " request url " + request.getRequestURI() + " username in interceptor " + userName);

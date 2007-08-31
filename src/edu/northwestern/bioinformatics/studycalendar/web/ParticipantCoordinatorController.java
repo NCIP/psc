@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Collections;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,12 +13,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -51,7 +47,7 @@ public class ParticipantCoordinatorController extends PscSimpleFormController {
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
-    	String userName = ApplicationSecurityManager.getUser(httpServletRequest);
+    	String userName = ApplicationSecurityManager.getUser();
     	
     	Map<String, Object> refdata = new HashMap<String, Object>();
     	Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
