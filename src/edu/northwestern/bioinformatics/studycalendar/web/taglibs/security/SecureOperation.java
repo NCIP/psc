@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
 import gov.nih.nci.security.AuthorizationManager;
 import gov.nih.nci.security.SecurityServiceProvider;
+import gov.nih.nci.security.acegi.csm.authorization.DelegatingObjectPrivilegeCSMAuthorizationCheck;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -10,7 +11,17 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.Authentication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.BeansException;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.context.WebApplicationContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+
+import java.util.Set;
+import java.util.HashSet;
 
 
 /**
@@ -39,22 +50,19 @@ public class SecureOperation extends TagSupport {
     public String getElement() {
         return this.element;
     }
-   //TODO: remove this class
-    public int doStartTag() throws JspTagException {
-        AuthorizationManager authorizationManager = null;
 
+    public int doStartTag() throws JspTagException {
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
-        
-        try {
-            authorizationManager = SecurityServiceProvider.getAuthorizationManager("study_calendar");
-        } catch (Exception e) {
-            log.error("Exception when acquiring authorization manager", e);
-            throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
-        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(pageContext.getServletContext());
+        DelegatingObjectPrivilegeCSMAuthorizationCheck authorizationCheck =
+                (DelegatingObjectPrivilegeCSMAuthorizationCheck) context.getBean("stringAuthorizationCheck");
 
         try {
-            return isAllowed(authorizationManager, userName, getElement(), getOperation());
+            return isAllowed(authorizationCheck, authentication, getOperation(), getElement());
         } catch (Exception e) {
             log.error("Exception evaluating SecureOperation startTag", e);
             throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
@@ -65,8 +73,9 @@ public class SecureOperation extends TagSupport {
         return EVAL_PAGE;
     }
 
-    private int isAllowed(AuthorizationManager i_authorizationManager, String i_userName, String i_element, String i_operation) throws Exception {
-        boolean allowed = i_authorizationManager.checkPermission(i_userName, i_element, i_operation);
+    protected int isAllowed(DelegatingObjectPrivilegeCSMAuthorizationCheck i_authorizationCheck, Authentication i_authentication, String i_operation, String i_element) throws Exception {
+        boolean allowed = i_authorizationCheck.checkAuthorization(i_authentication, i_operation, i_element);
+        
         int k = 0;
         if (!allowed) {
             k = SKIP_BODY;

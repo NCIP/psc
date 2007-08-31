@@ -217,4 +217,27 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			<!--value="edu.northwestern.bioinformatics.studycalendar.domain.Site:READ" />-->
     </util:map>
 
+
+    <bean id="stringAuthorizationCheck" autowire="byType"
+		class="gov.nih.nci.security.acegi.csm.authorization.DelegatingObjectPrivilegeCSMAuthorizationCheck">
+		<property name="csmAuthorizationCheck">
+			<bean
+				class="gov.nih.nci.security.acegi.grid.authorization.CSMGridGroupAuthorizationCheck">
+				<property name="csmUserProvisioningManager"
+					ref="userProvisioningManager" />
+                <property name="authorizationSwitch" ref="authorizationSwitch"/>
+            </bean>
+		</property>
+		<property name="objectIdGenerator"
+			ref="stringPrivilegeAndObjectIdGenerator" />
+		<property name="privilegeGenerator"
+			ref="stringPrivilegeAndObjectIdGenerator" />
+	</bean>
+
+    <bean id="stringPrivilegeAndObjectIdGenerator"
+        class="edu.northwestern.bioinformatics.studycalendar.security.RegexPrivilegeAndObjectIdGenerator">
+        <property name="objectPrivilegeMap"
+			ref="filterObjectPrivilegeMap" />
+    </bean>
+
 </beans>
