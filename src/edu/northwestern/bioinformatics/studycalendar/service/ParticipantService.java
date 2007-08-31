@@ -14,7 +14,8 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
@@ -25,7 +26,7 @@ public class ParticipantService {
     private SiteService siteService;
 
     public final String RESCHEDULED = "Rescheduled. ";
-    private static final Logger log = Logger.getLogger(ParticipantService.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ParticipantService.class.getName());
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
         return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null);
