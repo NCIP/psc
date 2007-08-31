@@ -6,5 +6,5 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 public interface Revision {
-    List<Delta> getDeltas();
+    List<Delta<?>> getDeltas();
 }

@@ -33,10 +33,10 @@ import org.hibernate.annotations.Cascade;
         @Parameter(name="sequence", value="seq_amendments_id")
     }
 )
-public class  Amendment extends AbstractMutableDomainObject implements Revision {
+public class Amendment extends AbstractMutableDomainObject implements Revision {
     private Amendment previousAmendment;
     private String name;
-    private List<Delta> deltas;
+    private List<Delta<?>> deltas;
 
     private Integer studyId;
     private String date;
@@ -47,7 +47,7 @@ public class  Amendment extends AbstractMutableDomainObject implements Revision 
 
     public Amendment(String name) {
         this.name = name;
-        deltas = new ArrayList<Delta>();
+        deltas = new ArrayList<Delta<?>>();
     }
 
     ////// LOGIC
@@ -65,7 +65,7 @@ public class  Amendment extends AbstractMutableDomainObject implements Revision 
                 || this.getPreviousAmendment().hasPreviousAmendment(candidate));
     }
 
-    public void addDelta(Delta delta) {
+    public void addDelta(Delta<?> delta) {
         getDeltas().add(delta);
     }
 
@@ -74,11 +74,11 @@ public class  Amendment extends AbstractMutableDomainObject implements Revision 
     @JoinColumn(name = "amendment_id", nullable = false)
     @OrderBy // order by ID for testing consistency
     @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public List<Delta> getDeltas() {
+    public List<Delta<?>> getDeltas() {
         return deltas;
     }
 
-    public void setDeltas(List<Delta> deltas) {
+    public void setDeltas(List<Delta<?>> deltas) {
         this.deltas = deltas;
     }
 

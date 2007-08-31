@@ -70,6 +70,27 @@ public class DeltaService {
         return amended;
     }
 
+    /**
+     * Applies all the deltas in the given revision to source calendar,
+     * returning a new, transient PlannedCalendar.  The revision might be
+     * and in-progress amendment or a customization.
+     */
+    public PlannedCalendar revise(PlannedCalendar source, Revision revision) {
+        PlannedCalendar revised = source.transientClone();
+        for (Delta<?> delta : revision.getDeltas()) {
+            PlanTreeNode<?> affected = findEquivalentChild(revised, delta.getNode());
+            if (affected == null) {
+                throw new StudyCalendarSystemException(
+                    "Could not find a node in the cloned tree matching the node in delta: %s", delta);
+            }
+            for (Change change : delta.getChanges()) {
+                log.debug("Rolling back change {} on {}", change, affected);
+                mutatorFactory.createMutator(affected, change).apply(affected);
+            }
+        }
+        return revised;
+    }
+
     private PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
         if (isEquivalent(node, toMatch)) return node;
         if (node instanceof PlanTreeInnerNode) {

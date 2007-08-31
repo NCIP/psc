@@ -118,4 +118,23 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         assertEquals("Amended calendar reflects incorrect level", "A1",
             amended.getAmendment().getName());
     }
+
+    public void testReviseToInProgressAmendment() throws Exception {
+        assertEquals("Wrong number of epochs to start with", 3, calendar.getEpochs().size());
+
+        Amendment inProgress = new Amendment();
+        Epoch newEpoch = setGridId("E-NEW", setId(8, Epoch.create("Long term")));
+        inProgress.addDelta(Delta.createDeltaFor(calendar, createAddChange(8, null)));
+
+        expect(epochDao.getById(8)).andReturn(newEpoch).anyTimes();
+
+        replayMocks();
+        PlannedCalendar revised = service.revise(calendar, inProgress);
+        verifyMocks();
+
+        assertEquals("Epoch not added", 4, revised.getEpochs().size());
+        assertEquals("Epoch not added in the expected location", 8, (int) revised.getEpochs().get(3).getId());
+
+        assertEquals("Original calendar modified", 3, calendar.getEpochs().size());
+    }
 }
