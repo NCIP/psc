@@ -11,13 +11,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
  */
 public class ScheduleEventCommand {
-    private static final Logger log = Logger.getLogger(ScheduleEventCommand.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(ScheduleEventCommand.class.getName());
 
     private ScheduledEvent event;
     private ScheduledEventMode newMode;
