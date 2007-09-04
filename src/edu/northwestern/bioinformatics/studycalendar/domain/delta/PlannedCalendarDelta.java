@@ -23,11 +23,4 @@ public class PlannedCalendarDelta extends Delta<PlannedCalendar> {
     public PlannedCalendar getNode() {
         return super.getNode();
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" to PlannedCalendar");
-        return sb.toString();
-    }
 }

@@ -63,8 +63,11 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta</value>
                 <!--<value>edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode</value>-->
 
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.ArmDelta</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedEventDelta</value>
             </list>
         </property>
         <property name="entityInterceptor">

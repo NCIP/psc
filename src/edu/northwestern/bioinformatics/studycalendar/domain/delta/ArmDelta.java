@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 import javax.persistence.Entity;
 import javax.persistence.DiscriminatorValue;
@@ -14,16 +14,17 @@ import org.slf4j.LoggerFactory;
  * @author Rhett Sutphin
  */
 @Entity
-@DiscriminatorValue(value="epoch")
-public class EpochDelta extends Delta<Epoch> {
-    public EpochDelta() { }
+@DiscriminatorValue(value="arm")
+public class ArmDelta extends Delta<Arm> {
+    private static final Logger log = LoggerFactory.getLogger(ArmDelta.class.getName());
+    public ArmDelta() { }
 
-    public EpochDelta(Epoch node) { super(node); }
+    public ArmDelta(Arm node) { super(node); }
 
     @ManyToOne
     @JoinColumn(name = "node_id")
     @Override
-    public Epoch getNode() {
+    public Arm getNode() {
         return super.getNode();
     }
 }

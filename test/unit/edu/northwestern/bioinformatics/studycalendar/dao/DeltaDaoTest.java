@@ -5,10 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.EpochDeltaDao;
 
@@ -77,23 +79,23 @@ public class DeltaDaoTest extends DaoTestCase {
     }
 
     public void testGetByChangeId() throws Exception {
-        Delta actual = deltaDao.getById(-100);
+        Delta<?> actual = deltaDao.getById(-100);
         assertNotNull("Delta was not found", actual);
     }
 
     public void testGetChanges() throws Exception {
-        Delta actual = deltaDao.getById(-100);
+        Delta<?> actual = deltaDao.getById(-100);
         List<Change> changes = actual.getChanges();
         assertEquals("Changes not found", 2, changes.size());
         Change changeOne = changes.get(0);
-        assertEquals("Wrong change action", "add", changeOne.getAction().getCode());
+        assertEquals("Wrong change action", ChangeAction.ADD, changeOne.getAction());
         if (changeOne instanceof Add) {
             Add addChange = (Add)changeOne;
             assertEquals("Wrong change index ", -3, (int) addChange.getIndex());
             assertEquals("Wrong change newChildId ", -2, (int) addChange.getNewChildId());
         }
         Change changeTwo = changes.get(1);
-        assertEquals("Wrong change action", "add", changeTwo.getAction().getCode());
+        assertEquals("Wrong change action", ChangeAction.ADD, changeTwo.getAction());
         if (changeTwo instanceof Add) {
             Add addChange = (Add)changeTwo;
             assertEquals("Wrong change index ", -4, (int) addChange.getIndex());
@@ -106,9 +108,10 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Node is not found", -1, (int) actual.getNode().getId());
     }
 
-    public void testGetAllDeltas() throws Exception {
-        List<Delta<?>> deltas = deltaDao.getAll();
-        assertEquals("Deltas are null", 2, deltas.size());
+    public void testGetPlannedEventDelta() throws Exception {
+        Delta<?> actual = deltaDao.getById(-210);
+        assertTrue("Delta's node is not a planned event",
+            PlannedEvent.class.isAssignableFrom(actual.getNode().getClass()));
     }
 
     public void testSetDelta() throws Exception {

@@ -96,4 +96,12 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
     public void setChanges(List<Change> changes) {
         this.changes = changes;
     }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public String toString() {
+        return  new StringBuilder(getClass().getSimpleName())
+            .append("[node=").append(getNode()).append(']').toString();
+    }
 }

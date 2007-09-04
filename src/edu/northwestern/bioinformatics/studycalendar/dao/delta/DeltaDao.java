@@ -16,10 +16,6 @@ public class DeltaDao extends StudyCalendarDao<Delta> {
         return Delta.class;
     }
 
-    public List<Delta<?>> getAll() {
-        return getHibernateTemplate().find("from Delta");
-    }
-
     @Transactional(readOnly = false)
     public void save(Delta<?> delta) {
         getHibernateTemplate().saveOrUpdate(delta);
