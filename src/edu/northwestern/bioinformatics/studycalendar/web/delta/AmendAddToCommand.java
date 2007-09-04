@@ -89,7 +89,6 @@ public class AmendAddToCommand extends AmendModalEditCommand {
             //TODO - need to modify the index... 
             change.setIndex(null);
             change.setNewChildId(epoch.getId());
-            change.setOldValue(null);
 
             Delta delta = new PlannedCalendarDelta();
             delta.setNode(study.getPlannedCalendar());
