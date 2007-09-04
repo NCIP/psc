@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
@@ -56,13 +57,24 @@ public class DeltaDaoTest extends DaoTestCase {
     public void testLoadReorder() throws Exception {
         Delta<?> actualDelta = deltaDao.getById(-200);
         List<Change> changes = actualDelta.getChanges();
-        assertEquals("Changes not found", 1, changes.size());
+        assertEquals("Changes not found", 2, changes.size());
         Change actual = changes.get(0);
         assertEquals("Wrong change action", ChangeAction.REORDER, actual.getAction());
         assertTrue("Wrong change subtype", actual instanceof Reorder);
         Reorder reorder = (Reorder) actual;
         assertEquals("Wrong old index", 1, (int) reorder.getOldIndex());
         assertEquals("Wrong new index", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testLoadRemove() throws Exception {
+        Delta<?> actualDelta = deltaDao.getById(-200);
+        List<Change> changes = actualDelta.getChanges();
+        assertEquals("Changes not found", 2, changes.size());
+        Change actual = changes.get(1);
+        assertEquals("Wrong change action", ChangeAction.REMOVE, actual.getAction());
+        assertTrue("Wrong change subtype", actual instanceof Remove);
+        Remove remove = (Remove) actual;
+        assertEquals("Wrong child id", -3, (int) remove.getChildId());
     }
 
     public void testLoadPropertyChange() throws Exception {
