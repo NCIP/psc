@@ -14,7 +14,7 @@ import org.hibernate.validator.NotNull;
 /**
  * @author Rhett Sutphin
  */
-@Entity // TODO
+@Entity
 @DiscriminatorValue("add")
 public class Add extends Change {
     private Integer newChildId;
