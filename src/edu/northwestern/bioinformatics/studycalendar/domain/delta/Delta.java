@@ -87,7 +87,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
     }
     @OneToMany
     @JoinColumn(name = "delta_id", nullable = false)
-    @OrderBy // order by ID for testing consistency
+    @OrderBy // order by ID for testing consistency // TODO: explicit ordering
     @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public List<Change> getChanges() {
         return changes;

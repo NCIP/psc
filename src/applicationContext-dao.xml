@@ -60,9 +60,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Change</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Add</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta</value>
-                <!--<value>edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode</value>-->
-
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.ArmDelta</value>

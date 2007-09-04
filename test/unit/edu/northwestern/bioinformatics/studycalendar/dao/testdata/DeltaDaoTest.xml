@@ -17,7 +17,8 @@
          node_id="-4"
          amendment_id="-1"
         />
-    <!--
+    <!-- note that this declaration needs to go first due to dbunit's odd
+        ignore-columns-not-present-in-first-row-used behavior -->
     <CHANGES id="-10"
         action="property"
         new_value="4"
@@ -25,18 +26,19 @@
         attribute="day"
         delta_id="-210"
         />
+    <!--
     <CHANGES id="-11"
         action="remove"
         old_value="-3"
         delta_id="-200"
         />
+    -->
     <CHANGES id="-12"
         action="reorder"
         new_value="0"
         old_value="1"
-        delta_id="-100"
+        delta_id="-200"
         />
-    -->
     <CHANGES
         id="-6"
         action="add"
