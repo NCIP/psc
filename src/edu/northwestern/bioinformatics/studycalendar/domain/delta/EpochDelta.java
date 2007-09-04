@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
  * @author Rhett Sutphin
  */
 @Entity
-@DiscriminatorValue(value="1")
+@DiscriminatorValue(value="epoch")
 public class EpochDelta extends Delta<Epoch> {
     private static final Logger log = LoggerFactory.getLogger(EpochDelta.class.getName());
     public EpochDelta() { }

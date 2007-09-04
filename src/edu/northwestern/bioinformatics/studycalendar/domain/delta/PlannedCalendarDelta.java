@@ -11,7 +11,7 @@ import javax.persistence.DiscriminatorValue;
  * @author Rhett Sutphin
  */
 @Entity
-@DiscriminatorValue(value="2")
+@DiscriminatorValue(value="cal")
 public class PlannedCalendarDelta extends Delta<PlannedCalendar> {
     public PlannedCalendarDelta() { }
 

@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -100,13 +102,12 @@ public class DeltaDaoTest extends DaoTestCase {
     }
 
     public void testGetNode() throws Exception {
-        Delta actual = deltaDao.getById(-100);
-        PlanTreeNode<Epoch> node = actual.getNode();
-        assertEquals("Node is not found", -1, (int) node.getId());
+        Delta<Epoch> actual = deltaDao.getById(-100);
+        assertEquals("Node is not found", -1, (int) actual.getNode().getId());
     }
 
     public void testGetAllDeltas() throws Exception {
-        List<Delta> deltas = deltaDao.getAll();
+        List<Delta<?>> deltas = deltaDao.getAll();
         assertEquals("Deltas are null", 2, deltas.size());
     }
 

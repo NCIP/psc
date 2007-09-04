@@ -8,22 +8,20 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
 import java.util.List;
 
-
 @Transactional(readOnly = true)
-
 public class DeltaDao extends StudyCalendarDao<Delta> {
-        private static final Logger log = LoggerFactory.getLogger(DeltaDao.class.getName());
-
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    @Override
     public Class<Delta> domainClass() {
         return Delta.class;
     }
 
-    public List<Delta> getAll() {
+    public List<Delta<?>> getAll() {
         return getHibernateTemplate().find("from Delta");
     }
 
     @Transactional(readOnly = false)
-    public void save(Delta delta) {
+    public void save(Delta<?> delta) {
         getHibernateTemplate().saveOrUpdate(delta);
     }
 

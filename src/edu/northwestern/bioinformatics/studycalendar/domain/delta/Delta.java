@@ -29,7 +29,7 @@ import org.hibernate.annotations.*;
     }
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name="discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name="node_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDomainObject {
     private Revision revision;
     private List<Change> changes;

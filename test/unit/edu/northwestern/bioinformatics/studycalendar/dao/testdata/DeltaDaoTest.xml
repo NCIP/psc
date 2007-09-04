@@ -1,14 +1,14 @@
 <dataset>
     <DELTAS
         id="-100"
-        discriminator_id="1"
+        node_type="epoch"
         node_id="-1"
         amendment_id="-1"
 
         />
     <DELTAS
          id="-200"
-         discriminator_id="1"
+         node_type="epoch"
          node_id="-1"
          amendment_id="-1"
         />
