@@ -21,8 +21,8 @@
         ignore-columns-not-present-in-first-row-used behavior -->
     <CHANGES id="-10"
         action="property"
-        new_value="4"
         old_value="7"
+        new_value="4"
         attribute="day"
         delta_id="-210"
         />
@@ -35,8 +35,8 @@
     -->
     <CHANGES id="-12"
         action="reorder"
-        new_value="0"
         old_value="1"
+        new_value="0"
         delta_id="-200"
         />
     <CHANGES

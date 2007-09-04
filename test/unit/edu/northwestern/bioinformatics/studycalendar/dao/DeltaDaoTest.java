@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
@@ -62,6 +63,19 @@ public class DeltaDaoTest extends DaoTestCase {
         Reorder reorder = (Reorder) actual;
         assertEquals("Wrong old index", 1, (int) reorder.getOldIndex());
         assertEquals("Wrong new index", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testLoadPropertyChange() throws Exception {
+        Delta<?> actualDelta = deltaDao.getById(-210);
+        List<Change> changes = actualDelta.getChanges();
+        assertEquals("Changes not found", 1, changes.size());
+        Change actual = changes.get(0);
+        assertEquals("Wrong change action", ChangeAction.CHANGE_PROPERTY, actual.getAction());
+        assertTrue("Wrong change subtype", actual instanceof PropertyChange);
+        PropertyChange prop = (PropertyChange) actual;
+        assertEquals("Wrong old value", "7", prop.getOldValue());
+        assertEquals("Wrong new value", "4", prop.getNewValue());
+        assertEquals("Wrong property", "day", prop.getPropertyName());
     }
 
     public void testGetNode() throws Exception {
