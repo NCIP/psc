@@ -75,6 +75,7 @@
         arm_id="-2"
         duration_quantity="14"
         />
+    <ACTIVITIES id="12" name="Twelve" activity_type_id="1"/>
     <PLANNED_EVENTS
         id="-4"
         period_id="-3"
