@@ -18,14 +18,13 @@ import org.hibernate.annotations.Cascade;
  * For example, if you have a calendar C with amendments A0, A1, A2, and A3,
  * the calendar loaded from the database will reflect amendment A3.  If you want
  * to see the calendar as it existed at A1, you need to do a reverse merge from 3 to 2
- * and then from 2 to 1.  TODO: code sample.
+ * and then from 2 to 1.  {@link edu.northwestern.bioinformatics.studycalendar.service.DeltaService#getAmendedCalendar}
+ * implements this process.
  *
  * @author Rhett Sutphin
  * @see Customization
+ * @see edu.northwestern.bioinformatics.studycalendar.service.DeltaService
  */
-
-//@MappedSuperclass // TODO: persistence
-
 @Entity
 @Table(name = "amendments")
 @GenericGenerator(name="id-generator", strategy = "native",
