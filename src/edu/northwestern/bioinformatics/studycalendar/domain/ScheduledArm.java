@@ -116,7 +116,9 @@ public class ScheduledArm extends AbstractMutableDomainObject {
         for(Date date: eventsByDate.keySet()) {
             List<ScheduledEvent> events = eventsByDate.get(date);
             for(ScheduledEvent event : events) {
-                if(event.isFutureScheduled(currentDate)) return event;
+                if ((currentDate.before(event.getActualDate()) || currentDate.equals(event.getActualDate())) 
+                        && event.isScheduled())
+                    return event;
             }
         }
         return null;

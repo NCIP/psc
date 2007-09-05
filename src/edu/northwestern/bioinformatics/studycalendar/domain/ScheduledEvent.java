@@ -65,13 +65,8 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public boolean isFutureScheduled(Date currentDate) {
-        if(ScheduledEventMode.SCHEDULED == getCurrentState().getMode()){
-            if(getActualDate().after(currentDate) || getActualDate().equals(currentDate)){
-                return true;
-            }
-        }
-        return false;
+    public boolean isScheduled(){
+        return ScheduledEventMode.SCHEDULED == getCurrentState().getMode()? true : false;
     }
 
     ////// BEAN PROPERTIES

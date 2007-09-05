@@ -189,6 +189,10 @@
             float: right;
             margin: 1em;
         }
+
+        #take-off-study {
+            float:right
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -306,7 +310,10 @@
 </head>
 <body>
 
-
+<div id="take-off-study">
+    <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
+</div>
+<br style="clear:both"/>
 <c:if test="${not empty assignments}">
     <div id="schedule-switch">View schedule for
         <select id="assigned-participant-selector">

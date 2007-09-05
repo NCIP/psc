@@ -159,7 +159,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         assertTrue(scheduledArm.isComplete());
     }
 
-    public void testGetNextScheduledDate() {
+  /*  public void testGetNextScheduledDate() {
         Calendar now = Calendar.getInstance();
         Calendar calendar = Calendar.getInstance();
 
@@ -176,5 +176,41 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         Date d = scheduledArm.getNextScheduledEvent(now.getTime()).getActualDate();
 
         assertTrue(scheduledArm.getEvents().get(2).getActualDate() == d);
+    }   */
+
+    public void testGetNextScheduledDateForMiddleDate() {
+        Date now = DateUtils.createDate(2007, Calendar.SEPTEMBER, 5);
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2007, Calendar.AUGUST, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("GHI", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("JKL", 2007, Calendar.NOVEMBER, 4, new Scheduled()));
+
+        ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
+
+        assertEquals("Wrong arm", "GHI", event.getActivity().getName());
+    }
+
+    public void testGetNextScheduledDateForEqualDate() {
+        Date now = DateUtils.createDate(2007, Calendar.SEPTEMBER, 2);
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2007, Calendar.AUGUST, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("GHI", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("JKL", 2007, Calendar.NOVEMBER, 4, new Scheduled()));
+
+        ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
+
+        assertEquals("Wrong arm", "DEF", event.getActivity().getName());
+    }
+
+    public void testGetNextScheduledDateForOccured() {
+        Date now = DateUtils.createDate(2007, Calendar.SEPTEMBER, 2);
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2007, Calendar.AUGUST, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledEvent("GHI", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("JKL", 2007, Calendar.NOVEMBER, 4, new Scheduled()));
+
+        ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
+
+        assertEquals("Wrong arm", "GHI", event.getActivity().getName());
     }
 }
