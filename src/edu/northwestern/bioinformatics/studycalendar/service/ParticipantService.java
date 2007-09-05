@@ -238,6 +238,12 @@ public class ParticipantService {
         return cal.getTime();
     }
 
+    public StudyParticipantAssignment takeParticipantOffStudy(StudyParticipantAssignment studyAssignment, Date offStudyDate) {
+        studyAssignment.setEndDateEpoch(offStudyDate);
+        participantDao.save(studyAssignment.getParticipant());
+        return studyAssignment;
+    }
+
     ////// CONFIGURATION
 
     public void setParticipantDao(ParticipantDao participantDao) {

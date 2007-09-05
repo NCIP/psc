@@ -7,9 +7,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
+import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * @author Padmaja Vedula
@@ -44,6 +46,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
             spa.setParticipant(participant);
             spa.setStudySite(studySite);
             spa.setStartDateEpoch(new Date());
+            spa.setEndDateEpoch(DateUtils.createDate(2008, 12, 1));
 
             participant.addAssignment(spa);
 
@@ -59,6 +62,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
         assertEquals("Wrong participant", -100, (int) newAssignment.getParticipant().getId());
         assertEquals("Wrong study site", -3001, (int) newAssignment.getStudySite().getId());
         assertSameDay("Wrong start date", new Date(), newAssignment.getStartDateEpoch());
+        assertSameDay("Wrong end date", DateUtils.createDate(2008, 12, 1), newAssignment.getEndDateEpoch());
     }
 
     public void testSaveNewParticipant() throws Exception {

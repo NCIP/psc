@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
+import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
@@ -379,6 +380,35 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledEvent(2005, Calendar.AUGUST, 15, 1, events.get(2));
 
         
+    }
+
+    public void testTakeParticipantOffStudy() throws Exception {
+        Study study = createNamedInstance("Glancing", Study.class);
+        Site site = createNamedInstance("Lake", Site.class);
+        StudySite studySite = createStudySite(study, site);        
+        Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
+        Arm expectedArm = Epoch.create("Treatment", "A", "B", "C").getArms().get(1);
+        expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
+        expectedArm.getPeriods().iterator().next().addPlannedEvent(createPlannedEvent("Any", 4));
+        Date expectedEndDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 1);
+
+        Participant participantExpectedSave = createParticipant("Alice", "Childress");
+
+        StudyParticipantAssignment expectedAssignment = new StudyParticipantAssignment();
+        expectedAssignment.setStartDateEpoch(startDate);
+        expectedAssignment.setParticipant(participantExpectedSave);
+        expectedAssignment.setStudySite(studySite);
+
+        participantExpectedSave.addAssignment(expectedAssignment);
+
+        expectedAssignment.setEndDateEpoch(expectedEndDate);
+
+        participantDao.save(expectedAssignment.getParticipant());
+
+        replayMocks();
+        StudyParticipantAssignment actualAssignment = service.takeParticipantOffStudy(expectedAssignment, expectedEndDate);
+        verifyMocks();
+        CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 1, actualAssignment.getEndDateEpoch());
     }
 
 }

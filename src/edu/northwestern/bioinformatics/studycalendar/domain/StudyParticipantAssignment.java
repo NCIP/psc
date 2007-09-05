@@ -37,6 +37,7 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     private StudySite studySite;
     private Participant participant;
     private Date startDateEpoch;
+    private Date endDateEpoch;
 
     private ScheduledCalendar scheduledCalendar;
     private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
@@ -86,6 +87,15 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     @Column(name = "first_epoch_stdate")
     public Date getStartDateEpoch() {
         return startDateEpoch;
+    }
+
+    public void setEndDateEpoch(Date endDateEpoch) {
+        this.endDateEpoch = endDateEpoch;
+    }
+
+    @Column(name = "last_epoch_enddate")
+    public Date getEndDateEpoch() {
+        return endDateEpoch;
     }
 
     @OneToOne (mappedBy = "assignment")

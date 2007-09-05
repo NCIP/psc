@@ -81,6 +81,7 @@ public class ControllerTools {
     public static void addHierarchyToModel(StudyParticipantAssignment assignment, Map<String, Object> model) {
         model.put("assignment", assignment);
         model.put("participant", assignment.getParticipant());
+        model.put("scheduledCalendar", assignment.getScheduledCalendar());
     }
 
     public static void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {

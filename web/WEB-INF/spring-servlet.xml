@@ -356,6 +356,11 @@
         <property name="viewName"><value>administration</value></property>
     </bean>
 
+    <bean name="/cal/takeParticipantOffStudy" id="participantOffStudyController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantOffStudyController">
+         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">
