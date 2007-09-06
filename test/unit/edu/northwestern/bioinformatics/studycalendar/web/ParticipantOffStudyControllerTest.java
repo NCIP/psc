@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,6 +34,7 @@ public class ParticipantOffStudyControllerTest extends ControllerTestCase{
         controller.setStudyParticipantAssignmentDao(assignmentDao);
 
         assignment = setId(10, new StudyParticipantAssignment());
+        assignment.setScheduledCalendar(setId(20, new ScheduledCalendar()));
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
@@ -43,6 +45,7 @@ public class ParticipantOffStudyControllerTest extends ControllerTestCase{
         verifyMocks();
 
         assertEquals("Wrong view", "redirectToSchedule", mv.getViewName());
+        assertEquals("Calendar Parameter wrong", "20", mv.getModelMap().get("calendar"));
     }
 
    public void testBindDate() throws Exception {

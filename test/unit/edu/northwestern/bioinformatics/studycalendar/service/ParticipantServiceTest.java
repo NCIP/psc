@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.Calendar;
@@ -342,7 +343,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         MonthDayHoliday holidayThree = new MonthDayHoliday();
         holidayThree.setDay(3);
         holidayThree.setMonth(Calendar.AUGUST);
-        holidayThree.setYear(2005);                
+        holidayThree.setYear(2005);
         List<Holiday> listOfHolidays = new ArrayList<Holiday>();
         listOfHolidays.add(holidayOne);
         listOfHolidays.add(holidayTwo);
@@ -350,7 +351,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         site.setHolidaysAndWeekends(listOfHolidays);
 
        studySite.setSite(site);
-        assignment.setStudySite(studySite);        
+        assignment.setStudySite(studySite);
 
         assignment.setParticipant(createParticipant("Alice", "Childress"));
         participantDao.save(assignment.getParticipant());
@@ -379,36 +380,48 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledEvent(2005, Calendar.AUGUST, 8, 1, events.get(1));
         assertNewlyScheduledEvent(2005, Calendar.AUGUST, 15, 1, events.get(2));
 
-        
+
     }
 
     public void testTakeParticipantOffStudy() throws Exception {
-        Study study = createNamedInstance("Glancing", Study.class);
-        Site site = createNamedInstance("Lake", Site.class);
-        StudySite studySite = createStudySite(study, site);        
-        Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
-        Arm expectedArm = Epoch.create("Treatment", "A", "B", "C").getArms().get(1);
-        expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
-        expectedArm.getPeriods().iterator().next().addPlannedEvent(createPlannedEvent("Any", 4));
-        Date expectedEndDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 1);
+        Date startDate = DateUtils.createDate(2007, Calendar.AUGUST, 31);
+        Date expectedEndDate = DateUtils.createDate(2007, Calendar.SEPTEMBER, 4);
 
-        Participant participantExpectedSave = createParticipant("Alice", "Childress");
-
-        StudyParticipantAssignment expectedAssignment = new StudyParticipantAssignment();
+        StudyParticipantAssignment expectedAssignment = setId(1, new StudyParticipantAssignment());
         expectedAssignment.setStartDateEpoch(startDate);
-        expectedAssignment.setParticipant(participantExpectedSave);
-        expectedAssignment.setStudySite(studySite);
-
-        participantExpectedSave.addAssignment(expectedAssignment);
-
         expectedAssignment.setEndDateEpoch(expectedEndDate);
 
-        participantDao.save(expectedAssignment.getParticipant());
+        ScheduledArm arm0 = new ScheduledArm();
+        arm0.addEvent(createScheduledEvent("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));  // Fixtures creates
+        arm0.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Canceled()));  // events 2 days
+        arm0.addEvent(createScheduledEvent("GHI", 2007, Calendar.SEPTEMBER, 6, new Occurred()));  // before what's
+        arm0.addEvent(createScheduledEvent("JKL", 2007, Calendar.SEPTEMBER, 8, new Occurred()));  // specified.
 
+        ScheduledArm arm1 = new ScheduledArm();
+        arm1.addEvent(createScheduledEvent("MNO", 2007, Calendar.OCTOBER, 2, new Occurred()));
+        arm1.addEvent(createScheduledEvent("PQR", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        arm1.addEvent(createScheduledEvent("STU", 2007, Calendar.OCTOBER, 6, new Scheduled()));
+        arm1.addEvent(createScheduledEvent("VWX", 2007, Calendar.OCTOBER, 8, new Scheduled()));
+
+        ScheduledCalendar calendar = new ScheduledCalendar();
+        calendar.setAssignment(expectedAssignment);
+        calendar.addArm(arm0);
+        calendar.addArm(arm1);
+        expectedAssignment.setScheduledCalendar(calendar);
+
+        participantDao.save(expectedAssignment.getParticipant());
         replayMocks();
+
         StudyParticipantAssignment actualAssignment = service.takeParticipantOffStudy(expectedAssignment, expectedEndDate);
         verifyMocks();
-        CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 1, actualAssignment.getEndDateEpoch());
+
+        CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 4, actualAssignment.getEndDateEpoch());
+
+        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm0.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm1.getEvents().get(0).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
     }
 
 }

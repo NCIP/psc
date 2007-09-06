@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -78,5 +79,15 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
 
     public void setScheduledArms(List<ScheduledArm> arms) {
         this.scheduledArms = arms;
+    }
+
+    public List<ScheduledEvent> getAllUpcomingScheduledEvents(Date startDate) {
+        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList();
+        for (ScheduledArm arm : getScheduledArms()) {
+            if (!arm.isComplete()) {
+                upcomingScheduledEvents.addAll(arm.getNextScheduledEvents(startDate));
+            }
+        }
+        return upcomingScheduledEvents;
     }
 }

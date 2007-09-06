@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class ParticipantOffStudyController extends PscSimpleFormController {
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ParticipantOffStudyCommand command = (ParticipantOffStudyCommand) oCommand;
         StudyParticipantAssignment assignment = command.takeParticipantOffStudy();
-        return new ModelAndView(getSuccessView());
+        return new ModelAndView(getSuccessView(), new ModelMap("calendar", assignment.getScheduledCalendar().getId().toString()));
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {

@@ -187,7 +187,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
 
         ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
 
-        assertEquals("Wrong arm", "GHI", event.getActivity().getName());
+        assertEquals("Wrong event", "GHI", event.getActivity().getName());
     }
 
     public void testGetNextScheduledDateForEqualDate() {
@@ -199,7 +199,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
 
         ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
 
-        assertEquals("Wrong arm", "DEF", event.getActivity().getName());
+        assertEquals("Wrong event", "DEF", event.getActivity().getName());
     }
 
     public void testGetNextScheduledDateForOccured() {
@@ -211,6 +211,18 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
 
         ScheduledEvent event = scheduledArm.getNextScheduledEvent(now);
 
-        assertEquals("Wrong arm", "GHI", event.getActivity().getName());
+        assertEquals("Wrong event", "GHI", event.getActivity().getName());
+    }
+
+    public void testGetNextScheduledEvents() {
+        Date now = DateUtils.createDate(2007, Calendar.SEPTEMBER, 5);
+        scheduledArm.addEvent(createScheduledEvent("ABC", 2007, Calendar.AUGUST, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("GHI", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledEvent("JKL", 2007, Calendar.NOVEMBER, 4, new Scheduled()));
+
+        List<ScheduledEvent> events = scheduledArm.getNextScheduledEvents(now);
+
+        assertEquals("Wrong events", 2, events.size());    
     }
 }

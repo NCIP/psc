@@ -8,7 +8,7 @@
   <laf:box title="Take Off Study">
     <laf:division>
         <form:form method="post">
-            <input type="hidden" name="assignment" value="${assignment.id}"/>
+            <%--<input type="hidden" name="assignment" value="${assignment.id}"/>--%>
             <div class="row">
                 <div class="label">
                     Participant:
