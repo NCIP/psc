@@ -381,45 +381,46 @@
 </laf:box>
 </c:if>
 
-<laf:box>
-    <laf:division>
-    <div id="schedule-next-arm" class="section autoclear collapsible">
+<c:if test="${assignment.endDateEpoch == null}">
+    <laf:box>
+        <laf:division>
+        <div id="schedule-next-arm" class="section autoclear collapsible">
 
-    <h2 id="schedule-next-arm-header">Schedule next arm</h2>
-    <div class="content" style="display: none">
-        <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
-        <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextArm"/>">
-            <div class="row">
-                <div class="label">Next arm</div>
-                <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
-            </div>
-            <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
-            <input type="hidden" name="calendar" value="${calendar.id}"/>
-            <div class="row" id="mode-row">
-                <div class="label">When?</div>
-                <div class="value">
-                    <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
-                                  name="mode" value="IMMEDIATE"/> Immediately</label>
-                    <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
-                                  name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+        <h2 id="schedule-next-arm-header">Schedule next arm</h2>
+        <div class="content" style="display: none">
+            <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
+            <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextArm"/>">
+                <div class="row">
+                    <div class="label">Next arm</div>
+                    <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
                 </div>
+                <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+                <input type="hidden" name="calendar" value="${calendar.id}"/>
+                <div class="row" id="mode-row">
+                    <div class="label">When?</div>
+                    <div class="value">
+                        <label><input type="radio" class="mode-radio" id="mode-radio-immediate"
+                                      name="mode" value="IMMEDIATE"/> Immediately</label>
+                        <label><input type="radio" class="mode-radio" id="mode-radio-per-protocol"
+                                      name="mode" value="PER_PROTOCOL" checked="checked"/> Per Protocol</label>
+                    </div>
 
-                <div class="row">
-                    <div class="label"><label for="start-date-input">Start date</label></div>
-                    <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
+                    <div class="row">
+                        <div class="label"><label for="start-date-input">Start date</label></div>
+                        <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
+                    </div>
+                    <div class="row">
+                        <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
-                </div>
+                </form>
+                <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
             </div>
-            </form>
-            <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+
         </div>
-
-    </div>
-    </laf:division>
-</laf:box>
-
+        </laf:division>
+    </laf:box>
+</c:if>
 
 <div id="scheduled-arms" class="section">
     <laf:box title="Arms scheduled">

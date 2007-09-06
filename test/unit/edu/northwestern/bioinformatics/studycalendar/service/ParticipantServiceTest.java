@@ -424,4 +424,24 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
     }
 
+    public void testScheduleArmWithOffStudyParticipant() {
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        assignment.setParticipant(createParticipant("Alice", "Childress"));
+        assignment.setEndDateEpoch(DateUtils.createDate(2006, Calendar.APRIL, 1));
+
+        StudySite studySite = new StudySite();
+        studySite.setSite(new Site());
+        assignment.setStudySite(studySite);
+
+        replayMocks();
+
+        ScheduledArm returnedArm = service.scheduleArm(
+                assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1),
+                NextArmMode.PER_PROTOCOL);
+        verifyMocks();
+
+        ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
+        assertNull("Scheduled calendar not created", scheduledCalendar);
+        assertSame("Arm not added to scheduled arms", null, returnedArm);
+    }
 }

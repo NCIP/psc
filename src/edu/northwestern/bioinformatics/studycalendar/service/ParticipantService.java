@@ -59,6 +59,7 @@ public class ParticipantService {
     public ScheduledArm scheduleArm(
         StudyParticipantAssignment assignment, Arm arm, Date startDate, NextArmMode mode
     ) {
+        if (assignment.getEndDateEpoch() != null) return null;
         ScheduledCalendar calendar = assignment.getScheduledCalendar();
         if (calendar == null) {
             calendar = new ScheduledCalendar();
