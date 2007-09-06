@@ -191,6 +191,7 @@
         }
 
         #take-off-study {
+            margin-right:1em;
             float:right
         }
     </style>
@@ -314,10 +315,20 @@
     <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
 </div>
 <br style="clear:both"/>
-<c:if test="${not empty assignments}">
-    <div id="schedule-switch">View schedule for
+<c:if test="${not empty offStudyAssignments}">
+    <div id="schedule-switch">View schedule (Off Study) for
+        <select id="offstudy-assigned-participant-selector">
+            <c:forEach items="${offStudyAssignments}" var="a">
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+            </c:forEach>
+        </select>
+        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+    </div>
+</c:if>
+<c:if test="${not empty onStudyAssignments}">
+    <div id="schedule-switch">View schedule (On Study) for
         <select id="assigned-participant-selector">
-            <c:forEach items="${assignments}" var="a">
+            <c:forEach items="${onStudyAssignments}" var="a">
                 <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
             </c:forEach>
         </select>

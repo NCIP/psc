@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
+import java.util.*;
 
 import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
 
@@ -69,8 +66,18 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
 
         Study study = assignment.getStudySite().getStudy();
         if (study != null) {
+            List<StudyParticipantAssignment> offStudyAssignments = new ArrayList<StudyParticipantAssignment>();
+            List<StudyParticipantAssignment> onStudyAssignments = new ArrayList<StudyParticipantAssignment>();
             List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
             model.addObject("assignments", assignments);
+            for(StudyParticipantAssignment currentAssignment: assignments) {
+                if (currentAssignment.getEndDateEpoch() == null)
+                    onStudyAssignments.add(currentAssignment);
+                else
+                    offStudyAssignments.add(currentAssignment);
+            }
+            model.addObject("offStudyAssignments", offStudyAssignments);
+            model.addObject("onStudyAssignments", onStudyAssignments);
         }
 
         return new ModelAndView("schedule/display", model);

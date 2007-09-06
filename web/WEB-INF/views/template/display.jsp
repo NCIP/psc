@@ -500,15 +500,27 @@
                     <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
                         >Assign Participant</tags:restrictedListItem>
                 </c:if>
-                <c:if test="${not empty assignments}">
+                <c:if test="${not empty onStudyAssignments}">
                     <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
-                    <li>View schedule for
+                    <li>View schedule (On Study) for
                         <select id="assigned-participant-selector">
-                            <c:forEach items="${assignments}" var="assignment">
+                            <c:forEach items="${onStudyAssignments}" var="assignment">
                                 <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
                             </c:forEach>
                         </select>
                         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+                    </li>
+                    </security:secureOperation>
+                </c:if>
+                <c:if test="${not empty offStudyAssignments}">
+                    <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
+                    <li>View schedule (Off Study) for
+                        <select id="offstudy-assigned-participant-selector">
+                            <c:forEach items="${offStudyAssignments}" var="assignment">
+                                <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
+                            </c:forEach>
+                        </select>
+                        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
                     </li>
                     </security:secureOperation>
                 </c:if>

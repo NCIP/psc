@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
@@ -21,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -46,7 +49,19 @@ public class DisplayTemplateController extends PscAbstractController {
         model.addObject("arm", new ArmTemplate(arm));
 
         if (study.getPlannedCalendar().isComplete()) {
-            model.addObject("assignments", studyDao.getAssignmentsForStudy(studyId));
+            List<StudyParticipantAssignment> offStudyAssignments = new ArrayList<StudyParticipantAssignment>();
+            List<StudyParticipantAssignment> onStudyAssignments = new ArrayList<StudyParticipantAssignment>();
+            List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
+
+            for(StudyParticipantAssignment currentAssignment: assignments) {
+                if (currentAssignment.getEndDateEpoch() == null)
+                    onStudyAssignments.add(currentAssignment);
+                else
+                    offStudyAssignments.add(currentAssignment);
+            }
+            model.addObject("assignments", assignments);
+            model.addObject("offStudyAssignments", offStudyAssignments);
+            model.addObject("onStudyAssignments", onStudyAssignments);
         }
 
         if (study.getAmended()) {
