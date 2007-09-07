@@ -208,8 +208,8 @@ module StudyCalendar
   # click_link_with_text("Public Test Site - start page")
   # wait_for_page_to_load "30000"
   
-    type("username", "superuser")
-    type("password", "superuser")
+    type("j_username", "superuser")
+    type("j_password", "superuser")
     click_button_with_text("Log in", 'submit')
     wait_for_page_to_load "30000"  
   end
