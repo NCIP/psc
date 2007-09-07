@@ -310,11 +310,12 @@
     </script>
 </head>
 <body>
-
-<div id="take-off-study">
-    <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
-</div>
+<c:if test="${assignment.endDateEpoch == null}">
+    <div id="take-off-study">
+        <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
+    </div>
 <br style="clear:both"/>
+</c:if>
 <c:if test="${not empty offStudyAssignments}">
     <div id="schedule-switch">View schedule (Off Study) for
         <select id="offstudy-assigned-participant-selector">

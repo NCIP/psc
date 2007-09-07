@@ -22,14 +22,16 @@ public class StudyService {
         List<StudyParticipantAssignment> participantAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
         for(StudyParticipantAssignment assignment: participantAssignments) {
-            ScheduledEvent nextScheduledEvent = assignment.getScheduledCalendar().getNextScheduledEvent(startDate);
-            if(nextScheduledEvent != null) {
-                ScheduledEvent event = new ScheduledEvent();
-                event.setIdealDate(nextScheduledEvent.getActualDate());
-                event.changeState(new Scheduled("Created From Reconsent", event.getIdealDate()));
-                event.setDetails(details);
-                event.setActivity(reconsent);
-                nextScheduledEvent.getScheduledArm().addEvent(event);
+            if (!assignment.isExpired()) {
+                 ScheduledEvent nextScheduledEvent =  assignment.getScheduledCalendar().getNextScheduledEvent(startDate);
+                if (nextScheduledEvent != null) {
+                    ScheduledEvent event = new ScheduledEvent();
+                    event.setIdealDate(nextScheduledEvent.getActualDate());
+                    event.changeState(new Scheduled("Created From Reconsent", event.getIdealDate()));
+                    event.setDetails(details);
+                    event.setActivity(reconsent);
+                    nextScheduledEvent.getScheduledArm().addEvent(event);
+                }
             }
         }
         studyDao.save(study);

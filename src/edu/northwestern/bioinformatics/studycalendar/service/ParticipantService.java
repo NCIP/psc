@@ -240,12 +240,12 @@ public class ParticipantService {
     }
 
     public StudyParticipantAssignment takeParticipantOffStudy(StudyParticipantAssignment studyAssignment, Date offStudyDate) {
-        studyAssignment.setEndDateEpoch(offStudyDate);
         ScheduledCalendar calendar = studyAssignment.getScheduledCalendar();
         List<ScheduledEvent> events = calendar.getAllUpcomingScheduledEvents(offStudyDate);
         for(ScheduledEvent event: events) {
             event.changeState(new Canceled("Off Study"));
         }
+        studyAssignment.setEndDateEpoch(offStudyDate);
         participantDao.save(studyAssignment.getParticipant());
         return studyAssignment;
     }

@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+
 /**
  * @author Rhett Sutphin
  */
@@ -89,5 +91,20 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
             }
         }
         return upcomingScheduledEvents;
+    }
+
+    @Transient
+    public void scheduleReconsent(Date startDate, Activity activity, String details) {
+        if (isReconsentAllowed()) {
+           
+        }
+    }
+
+    @Transient
+    public boolean isReconsentAllowed() {
+        if(assignment != null) {
+            return (assignment.getEndDateEpoch() == null);
+        }
+        return true;
     }
 }

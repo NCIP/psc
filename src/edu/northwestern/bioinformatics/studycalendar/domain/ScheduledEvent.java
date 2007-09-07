@@ -36,8 +36,23 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     ////// LOGIC
 
     public void changeState(ScheduledEventState newState) {
-        if (getCurrentState() != null) previousStates.add(getCurrentState());
-        setCurrentState(newState);
+        if (isChangeable()){
+            if (getCurrentState() != null) previousStates.add(getCurrentState());
+                setCurrentState(newState);
+        }
+    }
+
+    @Transient
+    private boolean isChangeable() {
+        Date endDate;
+        if (scheduledArm != null
+                && scheduledArm.getScheduledCalendar() != null
+                && scheduledArm.getScheduledCalendar().getAssignment() != null
+                && scheduledArm.getScheduledCalendar().getAssignment().getEndDateEpoch() != null) {
+            endDate = scheduledArm.getScheduledCalendar().getAssignment().getEndDateEpoch();
+            return getActualDate().before(endDate);
+        }
+        return true;
     }
 
     @Transient

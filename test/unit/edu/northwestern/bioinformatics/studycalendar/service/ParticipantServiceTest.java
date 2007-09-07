@@ -389,7 +389,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         StudyParticipantAssignment expectedAssignment = setId(1, new StudyParticipantAssignment());
         expectedAssignment.setStartDateEpoch(startDate);
-        expectedAssignment.setEndDateEpoch(expectedEndDate);
 
         ScheduledArm arm0 = new ScheduledArm();
         arm0.addEvent(createScheduledEvent("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));  // Fixtures creates

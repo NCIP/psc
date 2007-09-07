@@ -129,6 +129,11 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
         this.studyId = studyId;
     }
 
+    @Transient
+    public boolean isExpired() {
+        return (endDateEpoch != null);
+    }
+
     ////// OBJECT METHODS
 
     @Override

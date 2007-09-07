@@ -5,6 +5,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -88,5 +89,20 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
         assertEquals("A", all.get(0).getReason());
         assertEquals("B", all.get(1).getReason());
         assertEquals("C", all.get(2).getReason());
+    }
+
+    public void testChangeStateCanceledToOccurredWithOffStudy() throws Exception {
+        scheduledEvent.changeState(new Scheduled("New", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
+        ScheduledCalendar calendar = new ScheduledCalendar();
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        calendar.setAssignment(assignment);
+        calendar.addArm(new ScheduledArm());
+        calendar.getScheduledArms().get(0).addEvent(scheduledEvent);
+        scheduledEvent.changeState(new Canceled());
+        assignment.setEndDateEpoch(DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
+        
+        scheduledEvent.changeState(new Occurred());
+        assertEquals("Wrong states size", 2, scheduledEvent.getAllStates().size());
+        assertEquals("Wrong event state", ScheduledEventMode.CANCELED, scheduledEvent.getCurrentState().getMode());
     }
 }
