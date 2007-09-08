@@ -69,9 +69,9 @@
                                 <c:if test="${not empty study.studySites}">
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">Amend Template</tags:restrictedListItem>
                                 </c:if>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">Amend Template</tags:restrictedListItem>
                             </ul>
                         </li>
                     </c:forEach>
