@@ -36,6 +36,14 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
     }
 
     @Override
+    public void setMemoryOnly(boolean memoryOnly) {
+        super.setMemoryOnly(memoryOnly);
+        for (C child : getChildren()) {
+            child.setMemoryOnly(memoryOnly);
+        }
+    }
+
+    @Override
     protected PlanTreeInnerNode<P, C, G> clone() {
         PlanTreeInnerNode<P, C, G> clone = (PlanTreeInnerNode<P, C, G>) super.clone();
         // deep clone the children

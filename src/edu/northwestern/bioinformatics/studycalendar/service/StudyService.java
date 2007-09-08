@@ -17,6 +17,7 @@ import java.util.List;
 public class StudyService {
     private ActivityDao activityDao;
     private StudyDao studyDao;
+    private DeltaService deltaService;
 
     public void scheduleReconsent(Study study, Date startDate, String details) throws Exception {
         List<StudyParticipantAssignment> participantAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -37,6 +38,12 @@ public class StudyService {
         studyDao.save(study);
     }
 
+    public void save(Study study) {
+        deltaService.saveRevision(study.getAmendment());
+        // TODO: use DeltaService#amend to merge in revision changes
+        studyDao.save(study);
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -47,5 +54,10 @@ public class StudyService {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 }

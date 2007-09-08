@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -43,18 +44,18 @@ public class DeltaService {
     /**
      * Takes the provided source calendar and rolls it back to the amendment
      */
-    public PlannedCalendar getAmendedCalendar(PlannedCalendar source, Amendment target) {
+    public Study getAmendedStudy(Study source, Amendment target) {
         if (!(source.getAmendment().equals(target) || source.getAmendment().hasPreviousAmendment(target))) {
             throw new StudyCalendarSystemException(
                 "Amendment %s (%s) does not apply to the template for %s (%s)",
                 target.getName(), target.getGridId(), source.getName(), source.getGridId());
         }
 
-        PlannedCalendar amended = source.transientClone();
+        Study amended = source.transientClone();
         while (!target.equals(amended.getAmendment())) {
             log.debug("Rolling {} back to {}", source, amended.getAmendment().getPreviousAmendment().getName());
             for (Delta<?> delta : amended.getAmendment().getDeltas()) {
-                PlanTreeNode<?> affected = findEquivalentChild(amended, delta.getNode());
+                PlanTreeNode<?> affected = findEquivalentChild(amended.getPlannedCalendar(), delta.getNode());
                 if (affected == null) {
                     throw new StudyCalendarSystemException(
                         "Could not find a node in the cloned tree matching the node in delta: %s", delta);
@@ -105,6 +106,10 @@ public class DeltaService {
     private boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
         return toMatch.getClass().equals(node.getClass())
             && toMatch.getId().equals(node.getId());
+    }
+
+    public void saveRevision(Revision revision) {
+        
     }
 
     ////// CONFIGURATION

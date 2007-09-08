@@ -58,4 +58,31 @@ public class StudyTest extends StudyCalendarTestCase {
         study.addSite(expectedSite);
         assertEquals("Extra studySite added", 1, study.getStudySites().size());
     }
+
+    public void testCloneWithNoCalendarWorks() throws Exception {
+        assertNull("Test setup failure", study.getPlannedCalendar());
+
+        Study clone = study.clone();
+        assertNotSame("Clone is same", study, clone);
+    }
+    
+    public void testClone() throws Exception {
+        study.setPlannedCalendar(new PlannedCalendar());
+        Study clone = study.clone();
+
+        assertNotSame("Clone is same", study, clone);
+        assertNotSame("Planned calendar not deep-cloned", study.getPlannedCalendar(), clone.getPlannedCalendar());
+        assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
+    }
+
+    public void testTransientCloneIncludesTransientPlannedCalendar() throws Exception {
+        study.setPlannedCalendar(new PlannedCalendar());
+        Study clone = study.transientClone();
+
+        assertFalse("Original study marked mem-only", study.isMemoryOnly());
+        assertTrue("Clone not transient", clone.isMemoryOnly());
+        assertNotNull("Planned calendar not in clone", clone.getPlannedCalendar());
+        assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
+        assertTrue("Cloned calendar not transient", clone.getPlannedCalendar().isMemoryOnly());
+    }
 }

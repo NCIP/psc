@@ -69,7 +69,7 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         assertEquals(3, calendar.getMaxArmCount());
     }
 
-    public void testContentClone() throws Exception {
+    public void testTransientClone() throws Exception {
         PlannedCalendar cal = TemplateSkeletonCreator.BASIC.create().getPlannedCalendar();
         int id = 4;
         cal.setId(id++);
@@ -90,6 +90,7 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
             Epoch cloneEpoch = clone.getEpochs().get(i);
             Epoch calEpoch = cal.getEpochs().get(i);
             assertNotSame("Epoch " + i + " is not a different object", calEpoch, cloneEpoch);
+            assertTrue("Epoch " + i + " is not marked mem-only", cloneEpoch.isMemoryOnly());
             assertEquals("Epoch " + i + " has a different name", calEpoch.getName(), cloneEpoch.getName());
             assertSame("Epoch " + i + " does not reference its cloned parent", clone, cloneEpoch.getParent());
             assertEquals("Epoch " + i + " has a different number of arms", calEpoch.getArms().size(), cloneEpoch.getArms().size());
@@ -97,6 +98,7 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
                 Arm cloneArm = cloneEpoch.getArms().get(j);
                 Arm calArm = calEpoch.getArms().get(j);
                 assertNotSame("Arm " + i + " is not a different object", calArm, cloneArm);
+                assertTrue("Arm " + i + " is not marked mem-only", cloneArm.isMemoryOnly());
                 assertEquals("Arm " + i + " has a different name", calArm.getName(), cloneArm.getName());
                 assertSame("Arm " + i + " does not reference its cloned parent", cloneEpoch, cloneArm.getParent());
             }

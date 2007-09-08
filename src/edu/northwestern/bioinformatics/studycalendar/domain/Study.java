@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Collections;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 /**
  * @author Rhett Sutphin
@@ -28,13 +30,20 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_studies_id")
     }
 )
-public class Study extends AbstractMutableDomainObject implements Named {
+public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable {
     private String name;
     private String protocolAuthorityId;
     private PlannedCalendar plannedCalendar;
+    private Amendment amendment; // the current effective/approved amendment
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    private Boolean amended;
+    // TODO: this needs to be handled more robustly
+    private Boolean amended = false;
+    private boolean memoryOnly = false;
+
+    public Study() {
+        amendment = new Amendment("[Original]");
+    }
 
     ////// LOGIC
 
@@ -58,6 +67,22 @@ public class Study extends AbstractMutableDomainObject implements Named {
             sites.add(studySite.getSite());
         }
         return Collections.unmodifiableList(sites);
+    }
+
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
+
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+        getPlannedCalendar().setMemoryOnly(true);
+    }
+
+    public Study transientClone() {
+        Study clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
     }
 
     ////// BEAN PROPERTIES
@@ -107,5 +132,30 @@ public class Study extends AbstractMutableDomainObject implements Named {
 
     public void setAmended(Boolean amended) {
         this.amended = amended;
+    }
+
+    @Transient // TODO: persistence
+    public Amendment getAmendment() {
+        return amendment;
+    }
+
+    public void setAmendment(Amendment amendment) {
+        this.amendment = amendment;
+    }
+
+    ////// OBJECT METHODS
+
+    @Override
+    protected Study clone() {
+        try {
+            // deep-clone the template portions only, for the moment
+            Study clone = (Study) super.clone();
+            if (getPlannedCalendar() != null) {
+                clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
+            }
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported");
+        }
     }
 }

@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
  * @param <P> parent class
  */
 public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
-    implements Child<P>, Cloneable
+    implements Child<P>, Cloneable, TransientCloneable<PlanTreeNode<P>>
 {
     private P parent;
     private boolean memoryOnly;
@@ -22,13 +22,6 @@ public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainO
         this.parent = parent;
     }
 
-    /**
-     * Tainting flag to indicated that this node instance shouldn't be saved.  I.e., it is a
-     * transient copy of the persistent node with the same IDs, used only for
-     * building concrete revision trees.
-     *
-     * TODO: enforce this somehow, possibly with a hibernate listener
-     */
     public boolean isMemoryOnly() {
         return memoryOnly;
     }

@@ -28,11 +28,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 )
 public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
     private boolean complete;
-    private Amendment amendment;
-
-    public PlannedCalendar() {
-        amendment = new Amendment("[Original]");
-    }
 
     ////// LOGIC
 
@@ -108,14 +103,5 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
             study.setPlannedCalendar(this);
         }
         setParent(study);
-    }
-
-    @Transient // TODO: persistence
-    public Amendment getAmendment() {
-        return amendment;
-    }
-
-    public void setAmendment(Amendment amendment) {
-        this.amendment = amendment;
     }
 }

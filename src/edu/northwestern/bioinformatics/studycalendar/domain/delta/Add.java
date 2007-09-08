@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import java.util.Set;
 
 import org.hibernate.validator.NotNull;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -17,22 +18,41 @@ import org.hibernate.validator.NotNull;
 @Entity
 @DiscriminatorValue("add")
 public class Add extends Change {
-    private Integer newChildId;
+    private PlanTreeNode<?> newChild;
+    private Integer newChildId; // package level for testing
     private Integer index;
+
+    ////// LOGIC
 
     @Override
     @Transient
     public ChangeAction getAction() { return ChangeAction.ADD; }
 
-    ////// BEAN PROPERTIES
-
     @Column (name = "new_value")
     public Integer getNewChildId() {
-        return newChildId;
+        if (getNewChild() != null) {
+            return getNewChild().getId();
+        } else {
+            return newChildId;
+        }
     }
 
     public void setNewChildId(Integer newChildId) {
         this.newChildId = newChildId;
+        if (getNewChild() != null && !newChildId.equals(getNewChild().getId())) {
+            setNewChild(null);
+        }
+    }
+
+    ////// BEAN PROPERTIES
+
+    @Transient
+    public PlanTreeNode<?> getNewChild() {
+        return newChild;
+    }
+
+    public void setNewChild(PlanTreeNode<?> newChild) {
+        this.newChild = newChild;
     }
 
     @Column (name = "attribute")
@@ -43,6 +63,8 @@ public class Add extends Change {
     public void setIndex(Integer index) {
         this.index = index;
     }
+
+    ////// OBJECT METHODS
 
     @Override
     public String toString() {
