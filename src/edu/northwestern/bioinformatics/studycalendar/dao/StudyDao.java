@@ -11,6 +11,7 @@ import java.util.List;
  */
 @Transactional(readOnly = true)
 public class StudyDao extends StudyCalendarGridIdentifiableDao<Study> {
+    @Override
     public Class<Study> domainClass() {
         return Study.class;
     }
@@ -20,17 +21,15 @@ public class StudyDao extends StudyCalendarGridIdentifiableDao<Study> {
         getHibernateTemplate().saveOrUpdate(study);
     }
 
+    @SuppressWarnings({ "unchecked" })
     public List<Study> getAll() {
         return getHibernateTemplate().find("from Study");
     }
 
+    @SuppressWarnings({ "unchecked" })
     public List<StudyParticipantAssignment> getAssignmentsForStudy(Integer studyId) {
         return getHibernateTemplate().find(
             "select a from StudyParticipantAssignment a inner join a.studySite ss inner join a.participant p where ss.study.id = ? order by p.lastName, p.firstName", 
             studyId);
-    }
-    
-    public Study getById(int id) {
-        return (Study) getHibernateTemplate().get(Study.class, new Integer(id));
     }
 }
