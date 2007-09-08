@@ -125,9 +125,6 @@
                 margin: 0;
                 list-style-type: none;
             }
-	//		 tr.arrows td.showDay a.showArrow {
-	//		  font-size: 10pt;
-	//		}
         </style>
         <c:if test="${study.amended or (not plannedCalendar.complete)}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
@@ -466,7 +463,6 @@
 
 
             <c:if test="${not plannedCalendar.complete}">
-                <%--var element = Builder.node('h1', 'Template for',[Builder.node('span',{id:'study-name', value:${study.name} })])--%>
                 Event.observe(window, "load", createStudyControls)
             </c:if>
             <c:if test="${study.amended}">
