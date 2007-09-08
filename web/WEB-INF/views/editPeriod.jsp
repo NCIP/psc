@@ -6,11 +6,11 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <%--<title>${commons:capitalize(verb)} Period</title>--%>
+    <title>${commons:capitalize(verb)} Period</title>
     <style type="text/css">
-        form { width: 45em; }
-        div.label { width: 9em; }
-        div.value { margin-left: 10em; }
+        form { width: 60em; }
+        div.row div.label { width: 9em; }
+        div.row div.value { margin-left: 10em; }
         div.tip {
             width: 35em;
             float: right;
