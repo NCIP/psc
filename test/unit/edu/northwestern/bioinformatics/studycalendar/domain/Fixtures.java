@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
@@ -60,6 +61,14 @@ public class Fixtures {
         study.setPlannedCalendar(new PlannedCalendar());
         study.getPlannedCalendar().addEpoch(Epoch.create(epochName, armNames));
         return study;
+    }
+
+    public static Study createBlankTemplate() {
+        return TemplateSkeletonCreator.BLANK.create();
+    }
+
+    public static Study createBasicTemplate() {
+        return TemplateSkeletonCreator.BASIC.create();
     }
 
     public static StudySite createStudySite(Study study, Site site) {

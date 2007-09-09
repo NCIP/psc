@@ -70,7 +70,7 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
     }
 
     public void testTransientClone() throws Exception {
-        PlannedCalendar cal = TemplateSkeletonCreator.BASIC.create().getPlannedCalendar();
+        PlannedCalendar cal = Fixtures.createBasicTemplate().getPlannedCalendar();
         int id = 4;
         cal.setId(id++);
         for (Epoch epoch : cal.getEpochs()) {

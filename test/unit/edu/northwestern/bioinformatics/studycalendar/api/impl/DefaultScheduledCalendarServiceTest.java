@@ -99,7 +99,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         parameterEvent = setGridId(SCHEDULED_EVENT_BIG_ID, new ScheduledEvent());
         parameterAssignment = setGridId(ASSIGNMENT_BIG_ID, new StudyParticipantAssignment());
 
-        loadedStudy = setGridId(STUDY_BIG_ID, TemplateSkeletonCreator.BASIC.create());
+        loadedStudy = setGridId(STUDY_BIG_ID, Fixtures.createBasicTemplate());
         loadedSite = setGridId(SITE_BIG_ID, createNamedInstance("NU", Site.class));
         loadedStudy.addSite(loadedSite);
         loadedArm = setGridId(ARM_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getArms().get(0));

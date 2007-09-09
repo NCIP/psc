@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
@@ -39,7 +40,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        study = setGridId("STUDY-GRID", setId(300, TemplateSkeletonCreator.BASIC.create()));
+        study = setGridId("STUDY-GRID", setId(300, Fixtures.createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
         Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
         Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
