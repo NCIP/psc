@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.AuthenticationManager;
 import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -28,7 +29,7 @@ public class LoginCommandTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         authenticationManager = registerMockFor(AuthenticationManager.class);
-        auditDao = registerMockFor(LoginAuditDao.class, LoginAuditDao.class.getMethod("save", LoginAudit.class));
+        auditDao = registerMockFor(LoginAuditDao.class, LoginAuditDao.class.getMethod("save", MutableDomainObject.class));
         command = new LoginCommand(authenticationManager, auditDao);
         command.setUsername(USERNAME);
         command.setPassword(PASSWORD);
@@ -44,7 +45,7 @@ public class LoginCommandTest extends StudyCalendarTestCase {
 
     public void testLoginFailsWhenFails() throws Exception {
         expect(authenticationManager.login(USERNAME, PASSWORD)).andReturn(false);
-    	auditDao.save((LoginAudit) EasyMock.notNull());
+        auditDao.save((LoginAudit) EasyMock.notNull());
         replayMocks();
         assertFalse(command.login(IPADDRESS));
         verifyMocks();
