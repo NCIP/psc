@@ -6,13 +6,8 @@ import org.hibernate.Hibernate;
 /**
  * @author Rhett Sutphin
  */
-public class EpochDao extends StudyCalendarDao<Epoch> {
-    public Class<Epoch> domainClass() { return Epoch.class; }
-
-
-    public void save(Epoch epoch) {
-        getHibernateTemplate().saveOrUpdate(epoch);
-    }
+public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
+    @Override public Class<Epoch> domainClass() { return Epoch.class; }
 
     public void initialize(Epoch epoch) {
         Hibernate.initialize(epoch);

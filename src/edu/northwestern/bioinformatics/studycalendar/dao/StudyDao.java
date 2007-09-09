@@ -10,15 +10,10 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class StudyDao extends StudyCalendarGridIdentifiableDao<Study> {
+public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
     @Override
     public Class<Study> domainClass() {
         return Study.class;
-    }
-
-    @Transactional(readOnly = false)
-    public void save(Study study) {
-        getHibernateTemplate().saveOrUpdate(study);
     }
 
     @SuppressWarnings({ "unchecked" })

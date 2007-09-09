@@ -11,8 +11,8 @@ import java.util.ArrayList;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledEventDao extends StudyCalendarGridIdentifiableDao<ScheduledEvent> {
-    public Class<ScheduledEvent> domainClass() { return ScheduledEvent.class; }
+public class ScheduledEventDao extends StudyCalendarMutableDomainObjectDao<ScheduledEvent> {
+    @Override public Class<ScheduledEvent> domainClass() { return ScheduledEvent.class; }
 
     public Collection<ScheduledEvent> getEventsByDate(ScheduledCalendar calendar, Date start, Date end) {
         StringBuilder builder = new StringBuilder("from ScheduledEvent e where e.scheduledArm.scheduledCalendar = ?");
@@ -27,9 +27,5 @@ public class ScheduledEventDao extends StudyCalendarGridIdentifiableDao<Schedule
             params.add(end);
         }
         return getHibernateTemplate().find(builder.toString(), params.toArray());
-    }
-
-    public void save(ScheduledEvent event) {
-        getHibernateTemplate().saveOrUpdate(event);
     }
 }

@@ -5,20 +5,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 
 import java.util.List;
 
 @Transactional(readOnly = true)
-public class DeltaDao extends StudyCalendarDao<Delta> {
+public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Override
     public Class<Delta> domainClass() {
         return Delta.class;
-    }
-
-    @Transactional(readOnly = false)
-    public void save(Delta<?> delta) {
-        getHibernateTemplate().saveOrUpdate(delta);
     }
 
 //    public Delta getByChangeId(int changeId) {

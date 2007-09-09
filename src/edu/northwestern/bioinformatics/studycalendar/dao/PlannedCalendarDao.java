@@ -5,19 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.hibernate.Hibernate;
 
 /**
  * @author Rhett Sutphin
  */
-public class PlannedCalendarDao extends StudyCalendarDao<PlannedCalendar> {
+public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<PlannedCalendar> {
+    @Override
     public Class<PlannedCalendar> domainClass() {
         return PlannedCalendar.class;
-    }
-
-    public void save(PlannedCalendar calendar) {
-        getHibernateTemplate().saveOrUpdate(calendar);
     }
 
     /**

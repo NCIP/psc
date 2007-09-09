@@ -10,7 +10,8 @@ import java.util.Collections;
 /**
  * @author Jaron Sampson
  */
-public class ActivityDao extends StudyCalendarDao<Activity> {
+public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
+    @Override
     public Class<Activity> domainClass() {
         return Activity.class;
     }
@@ -20,10 +21,6 @@ public class ActivityDao extends StudyCalendarDao<Activity> {
         sortedList = getHibernateTemplate().find("from Activity");
         Collections.sort(sortedList);
         return sortedList;
-    }
-
-    public void save(Activity activity) {
-        getHibernateTemplate().saveOrUpdate(activity);
     }
 
     public Activity getByName(String name) {

@@ -10,13 +10,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 
-public class ParticipantDao extends StudyCalendarGridIdentifiableDao<Participant> {
+public class ParticipantDao extends StudyCalendarMutableDomainObjectDao<Participant> {
+    @Override
     public Class<Participant> domainClass() {
         return Participant.class;
-    }
-
-    public void save(Participant participant) {
-        getHibernateTemplate().saveOrUpdate(participant);
     }
 
     public List<Participant> getAll() {

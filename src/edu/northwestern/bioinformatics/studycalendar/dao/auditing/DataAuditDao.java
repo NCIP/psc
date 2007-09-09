@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.auditing;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataReference;
 
@@ -11,13 +11,10 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author Rhett Sutphin
  */
-public class DataAuditDao extends StudyCalendarDao<DataAuditEvent> {
+public class DataAuditDao extends StudyCalendarMutableDomainObjectDao<DataAuditEvent> {
+    @Override
     public Class<DataAuditEvent> domainClass() {
         return DataAuditEvent.class;
-    }
-
-    public void save(DataAuditEvent auditEvent) {
-        getHibernateTemplate().saveOrUpdate(auditEvent);
     }
 
     public List<DataAuditEvent> getAuditTrail(DomainObject object) {

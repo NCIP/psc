@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarGridIdentifiableDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
@@ -23,8 +23,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -174,11 +174,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
 
     //////
 
-    private <T extends GridIdentifiable & DomainObject> T load(T parameter, StudyCalendarGridIdentifiableDao<T> dao) {
+    private <T extends MutableDomainObject> T load(T parameter, StudyCalendarMutableDomainObjectDao<T> dao) {
         return load(parameter, dao, true);
     }
 
-    private <T extends GridIdentifiable & DomainObject> T load(T parameter, StudyCalendarGridIdentifiableDao<T> dao, boolean required) {
+    private <T extends MutableDomainObject> T load(T parameter, StudyCalendarMutableDomainObjectDao<T> dao, boolean required) {
         checkForGridId(parameter);
         T loaded = dao.getByGridId(parameter);
         if (required && loaded == null) {

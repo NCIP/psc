@@ -6,17 +6,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import java.util.List;
 
 
-public class UserDao extends StudyCalendarDao<User> {
-    public Class<User> domainClass() {
-        return User.class;
-    }
+public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
+    @Override public Class<User> domainClass() { return User.class; }
 
     public List<User> getAll() {
         return getHibernateTemplate().find("from User order by name");
-    }
-
-    public void save(User user) {
-        getHibernateTemplate().saveOrUpdate(user);
     }
 
     public List getByName(String name) {

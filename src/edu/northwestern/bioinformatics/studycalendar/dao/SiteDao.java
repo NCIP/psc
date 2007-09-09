@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class SiteDao extends StudyCalendarGridIdentifiableDao<Site> {
+public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site> {
 
     public Class<Site> domainClass() {
         return Site.class;
@@ -31,11 +31,6 @@ public class SiteDao extends StudyCalendarGridIdentifiableDao<Site> {
         return getHibernateTemplate().find("from Site");
     }    
 
-    @Transactional(readOnly = false)
-    public void save(Site site) {
-        getHibernateTemplate().saveOrUpdate(site);
-    }
-    
     public Site getByName(String name) {
         List<Site> results = getHibernateTemplate().find("from Site where name= ?", name);
         return results.get(0);

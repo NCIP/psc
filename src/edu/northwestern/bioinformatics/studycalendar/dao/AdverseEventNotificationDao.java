@@ -5,12 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotifica
 /**
  * @author Rhett Sutphin
  */
-public class AdverseEventNotificationDao extends StudyCalendarDao<AdverseEventNotification> {
+public class AdverseEventNotificationDao extends StudyCalendarMutableDomainObjectDao<AdverseEventNotification> {
+    @Override
     public Class<AdverseEventNotification> domainClass() {
         return AdverseEventNotification.class;
-    }
-
-    public void save(AdverseEventNotification notification) {
-        getHibernateTemplate().saveOrUpdate(notification);
     }
 }

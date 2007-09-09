@@ -11,12 +11,6 @@ import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 /**
  * @author Padmaja Vedula
  */
-public class StudySiteDao extends StudyCalendarDao<StudySite> {
-    public Class<StudySite> domainClass() {
-        return StudySite.class;
-    }
-
-    public void save(StudySite studySite) {
-        getHibernateTemplate().saveOrUpdate(studySite);
-    }
+public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite> {
+    @Override public Class<StudySite> domainClass() { return StudySite.class; }
 }
