@@ -12,6 +12,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -34,16 +36,13 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     private String name;
     private String protocolAuthorityId;
     private PlannedCalendar plannedCalendar;
-    private Amendment amendment; // the current effective/approved amendment
+    private Amendment amendment;            // the current effective/approved amendment
+    private Amendment developmentAmendment; // the next amendment, currently in development and not approved
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
     // TODO: this needs to be handled more robustly
     private Boolean amended = false;
     private boolean memoryOnly = false;
-
-    public Study() {
-        amendment = new Amendment("[Original]");
-    }
 
     ////// LOGIC
 
@@ -134,13 +133,23 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         this.amended = amended;
     }
 
-    @Transient // TODO: persistence
+    @ManyToOne
     public Amendment getAmendment() {
         return amendment;
     }
 
     public void setAmendment(Amendment amendment) {
         this.amendment = amendment;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "dev_amendment_id")
+    public Amendment getDevelopmentAmendment() {
+        return developmentAmendment;
+    }
+
+    public void setDevelopmentAmendment(Amendment developmentAmendment) {
+        this.developmentAmendment = developmentAmendment;
     }
 
     ////// OBJECT METHODS

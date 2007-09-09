@@ -35,6 +35,15 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertIsTestStudy100(actual);
     }
 
+    public void testLoadAmendments() throws Exception {
+        Study study = dao.getById(-100);
+        assertNotNull("Missing current amendment", study.getAmendment());
+        assertNotNull("Missing current amendment is default (not loaded)", study.getAmendment().getId());
+        assertEquals("Wrong current amendment", -45, (int) study.getAmendment().getId());
+        assertNotNull("Missing dev amendment", study.getDevelopmentAmendment());
+        assertEquals("Wrong dev amendment", -55, (int) study.getDevelopmentAmendment().getId());
+    }
+
     public void testGetAll() throws Exception {
         List<Study> actual = dao.getAll();
         assertEquals(2, actual.size());

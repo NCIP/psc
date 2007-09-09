@@ -29,14 +29,16 @@ public class AmendmentCommand implements Validatable {
     }
 
     public void apply() throws Exception{
+        // TODO: why is this condition necessary?
         if (getAction().equals("Submit")) {
             Amendment a = new Amendment();
             a.setName(getName());
             a.setDate(getDate());
-            a.setStudyId(getStudy().getId());
             a.setPreviousAmendment(null);
             amendmentDao.save(a);
             study.setAmended(true);
+            // TODO: this should probably be developmentAmendment
+            study.setAmendment(a);
             studyDao.save(study);
         }
     }

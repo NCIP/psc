@@ -65,7 +65,8 @@ public class DisplayTemplateController extends PscAbstractController {
         }
 
         if (study.getAmended()) {
-            model.addObject("amendment", amendmentDao.getByStudyId(study.getId()));
+            // TODO: this is a temp fix
+            model.addObject("amendment", study.getAmendment());
         }
 
         return new ModelAndView("template/display", model);

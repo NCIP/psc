@@ -11,9 +11,9 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Cascade;
 
 /**
- * An amendment is a revision containing all the {@link edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator}s needed to
- * revert a calendar to its previous state.  The stored {@link edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar}
- * always reflects the latest amendment.
+ * An amendment is a revision containing all the {@link Delta}s needed to
+ * revert a calendar to its previous state.  The stored {@link edu.northwestern.bioinformatics.studycalendar.domain.Study}
+ * always reflects the latest approved amendment.
  * <p>
  * For example, if you have a calendar C with amendments A0, A1, A2, and A3,
  * the calendar loaded from the database will reflect amendment A3.  If you want
@@ -37,7 +37,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     private String name;
     private List<Delta<?>> deltas;
 
-    private Integer studyId;
     private String date;
 
     public Amendment() {
@@ -69,6 +68,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     }
 
     ////// BEAN PROPERTIES
+
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
     @OrderBy // order by ID for testing consistency
@@ -82,7 +82,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     }
 
     @ManyToOne
-    @JoinColumn(name = "previous_amendment")
+    @JoinColumn(name = "previous_amendment_id")
     public Amendment getPreviousAmendment() {
         return previousAmendment;
     }
@@ -99,16 +99,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         this.name = name;
     }
 
-    public Integer getStudyId() {
-        return studyId;
-    }
-
-
-    public void setStudyId(Integer studyId) {
-        this.studyId = studyId;
-    }
-
-
     @Column(name = "amendment_date")
     public String getDate() {
         return date;
@@ -121,8 +111,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     @Override
     public String toString(){
         StringBuffer sb = new StringBuffer();
-        sb.append(" StudyId = ");
-        sb.append(getStudyId());
         sb.append(" Date = ");
         sb.append(getDate());
         sb.append(" Name = ");

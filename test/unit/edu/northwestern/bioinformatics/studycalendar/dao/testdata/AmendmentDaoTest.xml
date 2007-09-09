@@ -1,14 +1,11 @@
 <dataset>
     <AMENDMENTS
         id="-100"
-        study_id="-11"
         name="abc"
         amendment_date="02/2006"
-
         />
     <AMENDMENTS
         id="-200"
-        study_id="-22"
         name="def"
         amendment_date="05/2008"
         previous_amendment='-100'
