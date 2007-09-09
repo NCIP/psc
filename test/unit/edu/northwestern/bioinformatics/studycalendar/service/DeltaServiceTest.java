@@ -121,7 +121,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
             amended.getAmendment().getName());
     }
 
-    public void testReviseToInProgressAmendment() throws Exception {
+    public void testRevise() throws Exception {
         assertEquals("Wrong number of epochs to start with", 3, calendar.getEpochs().size());
 
         Amendment inProgress = new Amendment();
@@ -131,11 +131,12 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         expect(epochDao.getById(8)).andReturn(newEpoch).anyTimes();
 
         replayMocks();
-        PlannedCalendar revised = service.revise(calendar, inProgress);
+        Study revised = service.revise(study, inProgress);
         verifyMocks();
 
-        assertEquals("Epoch not added", 4, revised.getEpochs().size());
-        assertEquals("Epoch not added in the expected location", 8, (int) revised.getEpochs().get(3).getId());
+        assertEquals("Epoch not added", 4, revised.getPlannedCalendar().getEpochs().size());
+        assertEquals("Epoch not added in the expected location", 8,
+            (int) revised.getPlannedCalendar().getEpochs().get(3).getId());
 
         assertEquals("Original calendar modified", 3, calendar.getEpochs().size());
     }

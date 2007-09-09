@@ -55,11 +55,7 @@ public class DeltaService {
         while (!target.equals(amended.getAmendment())) {
             log.debug("Rolling {} back to {}", source, amended.getAmendment().getPreviousAmendment().getName());
             for (Delta<?> delta : amended.getAmendment().getDeltas()) {
-                PlanTreeNode<?> affected = findEquivalentChild(amended.getPlannedCalendar(), delta.getNode());
-                if (affected == null) {
-                    throw new StudyCalendarSystemException(
-                        "Could not find a node in the cloned tree matching the node in delta: %s", delta);
-                }
+                PlanTreeNode<?> affected = findNodeForDelta(amended, delta);
                 for (Change change : delta.getChanges()) {
                     log.debug("Rolling back change {} on {}", change, affected);
                     mutatorFactory.createMutator(affected, change).revert(affected);
@@ -76,20 +72,25 @@ public class DeltaService {
      * returning a new, transient PlannedCalendar.  The revision might be
      * and in-progress amendment or a customization.
      */
-    public PlannedCalendar revise(PlannedCalendar source, Revision revision) {
-        PlannedCalendar revised = source.transientClone();
+    public Study revise(Study source, Revision revision) {
+        Study revised = source.transientClone();
         for (Delta<?> delta : revision.getDeltas()) {
-            PlanTreeNode<?> affected = findEquivalentChild(revised, delta.getNode());
-            if (affected == null) {
-                throw new StudyCalendarSystemException(
-                    "Could not find a node in the cloned tree matching the node in delta: %s", delta);
-            }
+            PlanTreeNode<?> affected = findNodeForDelta(revised, delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).apply(affected);
             }
         }
         return revised;
+    }
+
+    private PlanTreeNode<?> findNodeForDelta(Study revised, Delta<?> delta) {
+        PlanTreeNode<?> affected = findEquivalentChild(revised.getPlannedCalendar(), delta.getNode());
+        if (affected == null) {
+            throw new StudyCalendarSystemException(
+                "Could not find a node in the cloned tree matching the node in delta: %s", delta);
+        }
+        return affected;
     }
 
     private PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
