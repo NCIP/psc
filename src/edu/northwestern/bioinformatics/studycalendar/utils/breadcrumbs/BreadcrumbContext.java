@@ -1,19 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,6 +27,7 @@ public class BreadcrumbContext {
 
     private Site site;
     private StudySite studySite;
+    private Activity activity;
 
     public BreadcrumbContext() { }
 
@@ -128,6 +117,10 @@ public class BreadcrumbContext {
         this.scheduledEvent = scheduledEvent;
     }
 
+    public void setActivity(Activity activity) {
+        this.activity = activity;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -182,5 +175,9 @@ public class BreadcrumbContext {
 
     public ScheduledEvent getScheduledEvent() {
         return scheduledEvent;
+    }
+
+    public Activity getActivity() {
+        return activity;
     }
 }
