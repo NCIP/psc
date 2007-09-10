@@ -6,6 +6,7 @@ class HolidaysTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   def test_holidays
     login()
+    request "/pages/admin"
     click_link_with_text('Manage sites')
     wait_for_page_to_load "30000"
     assert true
@@ -14,6 +15,7 @@ class HolidaysTest < Test::Unit::TestCase
   end
   def test_special_cases
       login()
+      request "/pages/admin"
       click_link_with_text('Manage sites')
       wait_for_page_to_load "30000"
     
@@ -174,7 +176,7 @@ class HolidaysTest < Test::Unit::TestCase
     assert_element_exists('dayOfTheWeek')
     assert_element_exists("xpath=//select[@id='dayOfTheWeek']//option[child::text()]")
     click_button_with_text('Add')
-    
+
       sleep(5)
       
     assert_page_does_not_contain('Exception')
@@ -195,6 +197,7 @@ class HolidaysTest < Test::Unit::TestCase
       type("xpath=//form[@id = 'recurringHoliday']//input[@id= 'holidayDate']", "12/20")
       click_xpath("xpath=//form[@id = 'recurringHoliday']//input[@type='submit']")
       wait_for_condition_text('Missing Description field')
+      sleep(5)
         assert_page_does_not_contain('Exception')
         assert_page_does_not_contain('null')
       
@@ -221,7 +224,8 @@ class HolidaysTest < Test::Unit::TestCase
       type("xpath=//div[@id='holidayNotRecurring-div']//input[@name = 'holidayDescription']", "caca")
        click_xpath("xpath=//div[@id= 'holidayNotRecurring-div']//input[@type='submit']")
       wait_for_condition_element("xpath=//select[@id='selectedHoliday']//option[child::text() = '12/6/2005 (caca)']")
-            
+      sleep(5)
+
     #adds a blank relative recurring date as a holiday
     assert_element_exists('typeOfHolidays')
     assert_element_exists("xpath=//select[@id='typeOfHolidays']//option[child::text() = 'Relative Recurring Holiday']")

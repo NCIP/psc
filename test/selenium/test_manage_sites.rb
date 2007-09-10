@@ -7,6 +7,7 @@ class ManageSitesTest < Test::Unit::TestCase
   
   def test_manage_sites
     login()
+    request "/pages/admin"    
     assert_page_contains('Manage sites')
     click_link_with_text('Manage sites')
     wait_for_page_to_load "30000"

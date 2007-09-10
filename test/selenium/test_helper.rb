@@ -200,7 +200,7 @@ module StudyCalendar
     login
     create_new_study
   end
-	def login
+  def login
     open "/public/login"
     wait_for_page_to_load "30000"
     
@@ -214,6 +214,8 @@ module StudyCalendar
     wait_for_page_to_load "30000"  
   end
   def create_new_study
+    click_link_with_text('Public Test Site - start page')
+    wait_for_page_to_load "30000"
     click_link_with_text("Create a new template")
     wait_for_page_to_load "30000"
   end
@@ -278,10 +280,12 @@ module StudyCalendar
      assert_page_contains("Template for")
      assert_page_contains("Epochs and arms")
    end
+
    #Must be in the template page or error will occur
    def get_study_name()
-     return get_text("xpath=//div[@id='body']/h1/span[@id='study-name']")
+     return get_text("xpath=//div[@id='main']/h1/span[@id='study-name']")
    end
+
    def get_number_of_arms(epoch_number)
      continue = true
      arm_number = 1
