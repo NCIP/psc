@@ -88,6 +88,7 @@ class ArmTest < Test::Unit::TestCase
       click_xpath("xpath=//div[@id='epochs-container']//div[@class='epoch' or @class = 'epoch last'][#{epoch_number}]//ul[@class = 'arms']//li[@class='arm' or @ class = 'arm selected'][#{arm_number}]/div[@class='arm-controls controls']//a[child::text() ='Delete']")
       wait_for_condition_confirmation()
       get_confirmation()
+      sleep 3 
       assert (matches -1) == get_arm_matches(epoch_number, arm_name)
       assert (count - 1) == get_number_of_arms(epoch_number)
     end
