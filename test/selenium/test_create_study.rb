@@ -5,8 +5,9 @@ require "test/unit"
 class CreateStudyTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   def test_create_study
-    
     login()
+	#go_home
+	request "/pages/cal/studyList"
     create_new_study()
     name_study()
   end
@@ -14,7 +15,7 @@ class CreateStudyTest < Test::Unit::TestCase
     assert_page_contains("Create a new template")
     click_link_with_text("Create a new template")
     wait_for_page_to_load "30000"
-    assert_page_contains("Patient Study Calendar")
+   # assert_page_contains("Patient Study Calendar")
     assert_page_contains("Template for")
     assert_element_exists("study-name", false)
     assert_page_contains("Mark this template complete")
@@ -52,20 +53,5 @@ class CreateStudyTest < Test::Unit::TestCase
     assert_page_does_not_contain("TEST3")
     
    end
-  
-  def login
-  #  open "/public/welcome"
-  #  wait_for_page_to_load "30000"
-  #  assert_page_contains("Patient Study Calendar - Public Test Site")
-  #  click_link_with_text("Public Test Site - start page")
-    open "/public/login"
-    wait_for_page_to_load "30000"
-    type("username", "superuser")
-    type("password", "superuser")
-    assert_page_contains("Please log in")
-    click_button_with_text("Log in", 'submit')
-    wait_for_page_to_load "30000"  
-    assert_page_contains("Calendar Menu")
-    assert_page_contains("Calendar templates")
-  end   
+   
 end
