@@ -1,16 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import edu.nwu.bioinformatics.commons.StringUtils;
-import edu.nwu.bioinformatics.commons.testing.DbTestCase;
-import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-import org.dbunit.dataset.datatype.DefaultDataTypeFactory;
-import org.dbunit.dataset.datatype.IDataTypeFactory;
-import org.dbunit.ext.oracle.OracleDataTypeFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -19,124 +16,117 @@ import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import edu.nwu.bioinformatics.commons.StringUtils;
 
 /**
  * @author Rhett Sutphin
  */
 public abstract class DaoTestCase extends StudyCalendarDbTestCase {
 
-    protected MockHttpServletRequest request = new MockHttpServletRequest();
-    protected MockHttpServletResponse response = new MockHttpServletResponse();
-    protected WebRequest webRequest = new ServletWebRequest(request);
-    private boolean shouldFlush = true;
+	protected MockHttpServletRequest request = new MockHttpServletRequest();
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        beginSession();
-    }
+	protected MockHttpServletResponse response = new MockHttpServletResponse();
 
-    @Override
-    protected void tearDown() throws Exception {
-        endSession();
-        super.tearDown();
-    }
+	protected WebRequest webRequest = new ServletWebRequest(request);
 
-    @Override
-    public void runBare() throws Throwable {
-        setUp();
-        try {
-            runTest();
-        } catch (Throwable throwable) {
-            shouldFlush = false;
-            throw throwable;
-        } finally {
-            tearDown();
-        }
-    }
+	private boolean shouldFlush = true;
 
-    private void beginSession() {
-        log.info("-- beginning DaoTestCase interceptor session --");
-        for (OpenSessionInViewInterceptor interceptor : interceptors()) {
-            interceptor.preHandle(webRequest);
-        }
-    }
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		beginSession();
+	}
 
-    private void endSession() {
-        log.info("--    ending DaoTestCase interceptor session --");
-        for (OpenSessionInViewInterceptor interceptor : reverseInterceptors()) {
-            if (shouldFlush) {
-                interceptor.postHandle(webRequest, null);
-            }
-            interceptor.afterCompletion(webRequest, null);
-        }
-    }
+	@Override
+	protected void tearDown() throws Exception {
+		endSession();
+		super.tearDown();
+	}
 
-    protected void interruptSession() {
-        endSession();
-        log.info("-- interrupted DaoTestCase session --");
-        beginSession();
-    }
+	@Override
+	public void runBare() throws Throwable {
+		setUp();
+		try {
+			runTest();
+		}
+		catch (Throwable throwable) {
+			shouldFlush = false;
+			throw throwable;
+		}
+		finally {
+			tearDown();
+		}
+	}
 
-    private List<OpenSessionInViewInterceptor> interceptors() {
-        return Arrays.asList(
-            (OpenSessionInViewInterceptor) getApplicationContext().getBean("auditOpenSessionInViewInterceptor"),
-            (OpenSessionInViewInterceptor) getApplicationContext().getBean("openSessionInViewInterceptor")
-        );
-    }
+	private void beginSession() {
+		log.info("-- beginning DaoTestCase interceptor session --");
+		for (OpenSessionInViewInterceptor interceptor : interceptors()) {
+			interceptor.preHandle(webRequest);
+		}
+	}
 
-    private List<OpenSessionInViewInterceptor> reverseInterceptors() {
-        List<OpenSessionInViewInterceptor> interceptors = interceptors();
-        Collections.reverse(interceptors);
-        return interceptors;
-    }
+	private void endSession() {
+		log.info("--    ending DaoTestCase interceptor session --");
+		for (OpenSessionInViewInterceptor interceptor : reverseInterceptors()) {
+			if (shouldFlush) {
+				interceptor.postHandle(webRequest, null);
+			}
+			interceptor.afterCompletion(webRequest, null);
+		}
+	}
 
-    protected final void dumpResults(String sql) {
-        List<Map<String, String>> rows = new JdbcTemplate(getDataSource()).query(
-            sql,
-            new ColumnMapRowMapper() {
-                protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
-                    Object value = super.getColumnValue(rs, index);
-                    return value == null ? "null" : value.toString();
-                }
-            }
-        );
-        StringBuffer dump = new StringBuffer(sql).append('\n');
-        if (rows.size() > 0) {
-            Map<String, Integer> colWidths = new HashMap<String, Integer>();
-            for (String colName : rows.get(0).keySet()) {
-                colWidths.put(colName, colName.length());
-                for (Map<String, String> row : rows) {
-                    colWidths.put(colName, Math.max(colWidths.get(colName), row.get(colName).length()));
-                }
-            }
+	protected void interruptSession() {
+		endSession();
+		log.info("-- interrupted DaoTestCase session --");
+		beginSession();
+	}
 
-            for (String colName : rows.get(0).keySet()) {
-                StringUtils.appendWithPadding(colName, colWidths.get(colName), false, dump);
-                dump.append("   ");
-            }
-            dump.append('\n');
+	private List<OpenSessionInViewInterceptor> interceptors() {
+		return Arrays.asList((OpenSessionInViewInterceptor) getApplicationContext().getBean(
+				"auditOpenSessionInViewInterceptor"), (OpenSessionInViewInterceptor) getApplicationContext().getBean(
+				"openSessionInViewInterceptor"));
+	}
 
-            for (Map<String, String> row : rows) {
-                for (String colName : row.keySet()) {
-                    StringUtils.appendWithPadding(row.get(colName), colWidths.get(colName), false, dump);
-                    dump.append(" | ");
-                }
-                dump.append('\n');
-            }
-        }
-        dump.append("  ").append(rows.size()).append(" row").append(rows.size() != 1 ? "s\n" : "\n");
+	private List<OpenSessionInViewInterceptor> reverseInterceptors() {
+		List<OpenSessionInViewInterceptor> interceptors = interceptors();
+		Collections.reverse(interceptors);
+		return interceptors;
+	}
 
-        System.out.print(dump);
-    }
+	protected final void dumpResults(final String sql) {
+		List<Map<String, String>> rows = new JdbcTemplate(getDataSource()).query(sql, new ColumnMapRowMapper() {
+			@Override
+			protected Object getColumnValue(ResultSet rs, int index) throws SQLException {
+				Object value = super.getColumnValue(rs, index);
+				return value == null ? "null" : value.toString();
+			}
+		});
+		StringBuffer dump = new StringBuffer(sql).append('\n');
+		if (rows.size() > 0) {
+			Map<String, Integer> colWidths = new HashMap<String, Integer>();
+			for (String colName : rows.get(0).keySet()) {
+				colWidths.put(colName, colName.length());
+				for (Map<String, String> row : rows) {
+					colWidths.put(colName, Math.max(colWidths.get(colName), row.get(colName).length()));
+				}
+			}
+
+			for (String colName : rows.get(0).keySet()) {
+				StringUtils.appendWithPadding(colName, colWidths.get(colName), false, dump);
+				dump.append("   ");
+			}
+			dump.append('\n');
+
+			for (Map<String, String> row : rows) {
+				for (String colName : row.keySet()) {
+					StringUtils.appendWithPadding(row.get(colName), colWidths.get(colName), false, dump);
+					dump.append(" | ");
+				}
+				dump.append('\n');
+			}
+		}
+		dump.append("  ").append(rows.size()).append(" row").append(rows.size() != 1 ? "s\n" : "\n");
+
+		System.out.print(dump);
+	}
 }
