@@ -26,8 +26,9 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @author Rhett Sutphin
  */
 public class AuditIntegratedTest extends DaoTestCase {
-    public void testDisabled() { }
-    /*
+	public void testDisabled() {
+	}
+
 	private static final DataAuditInfo INFO = new DataAuditInfo("dun", "127.1.2.7", DateUtils.createDate(2004,
 			Calendar.NOVEMBER, 2), "/studycalendar/zippo");
 
@@ -39,19 +40,19 @@ public class AuditIntegratedTest extends DaoTestCase {
 
 	private Study created;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
 
-        DataAuditInfo.setLocal(INFO);
+		DataAuditInfo.setLocal(INFO);
 
-        // create initial study
-        created = Fixtures.createBasicTemplate();
-        // amendments are not germane to this test
-        created.setAmendment(null);
-        studyDao.save(created);
-        interruptSession();
-    }
+		// create initial study
+		created = Fixtures.createBasicTemplate();
+		// amendments are not germane to this test
+		created.setAmendment(null);
+		studyDao.save(created);
+		interruptSession();
+	}
 
 	public void testCreation() throws Exception {
 		int studyCreateId = assertDataLogged(created, Operation.CREATE);
@@ -79,12 +80,13 @@ public class AuditIntegratedTest extends DaoTestCase {
 		assertAuditValue(arm2RenameEventId, "name", "C", "Carl");
 	}
 
-//	 * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 = created.getPlannedCalendar().getEpochs().get(1); {
-//	 * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
-//	 * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
-//	 * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
-//	 * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
-	
+	// * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 = created.getPlannedCalendar().getEpochs().get(1);
+	// {
+	// * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
+	// * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
+	// * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
+	// * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
+
 	public void testDelete() throws Exception {
 		// delete an arm
 		Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
@@ -136,7 +138,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 		assertEquals("Wrong number of values found for " + attribute + " change", 1, values.size());
 		Map<String, Object> value = values.get(0);
 		assertEquals("Wrong previous value for " + attribute + " change", expectedPrev, value.get("previous_value"));
-		assertEquals("Wrong current value for " + attribute + " change", expectedCurr, value.get("current_value"));
+		assertEquals("Wrong current value for " + attribute + " change", expectedCurr, value.get("new_value"));
 	}
 
 	private void assertNoAuditValue(final int eventId, final String attribute) {
@@ -157,11 +159,11 @@ public class AuditIntegratedTest extends DaoTestCase {
 		DataAuditInfo info = (DataAuditInfo) DataAuditInfo.getLocal();
 		List<Map<String, Object>> events = (List<Map<String, Object>>) getJdbcTemplate()
 				.query(
-						"SELECT * FROM audit_events ae WHERE ae.operation = ? AND ae.object_class = ? AND ae.object_id = ? AND ae.time = ?",
+						"SELECT * FROM audit_events ae WHERE ae.operation = ? AND ae.class_name = ? AND ae.object_id = ? AND ae.time = ?",
 						new Object[] { operation.toString(), changed.getClass().getName(), changed.getId(),
 								info.getOn() }, new RowMapperResultSetExtractor(new ColumnMapRowMapper(), 1));
 		assertEquals(operation.name() + " not logged for " + changed, 1, events.size());
 		return ((Number) events.get(0).get("id")).intValue();
 	}
-	*/
+
 }
