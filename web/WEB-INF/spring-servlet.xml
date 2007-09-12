@@ -13,9 +13,14 @@
         <property name="location"><value>/WEB-INF/special-views.xml</value></property>
     </bean>
 
-    <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController">
+    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
+        <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
+        <property name="urlResolver"><ref local="urlResolver"/></property>
     </bean>
+
+    <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
+		class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController">
+	</bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass">
