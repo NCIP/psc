@@ -25,7 +25,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author Rhett Sutphin
  */
-public class AuditIntegratedTest extends DaoTestCase {
+public abstract class AuditIntegratedTest extends DaoTestCase {
 	private static final DataAuditInfo INFO = new DataAuditInfo("dun", "127.1.2.7", DateUtils.createDate(2004,
 			Calendar.NOVEMBER, 2), "/studycalendar/zippo");
 
@@ -37,18 +37,19 @@ public class AuditIntegratedTest extends DaoTestCase {
 
 	private Study created;
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
 
-		DataAuditInfo.setLocal(INFO);
+        DataAuditInfo.setLocal(INFO);
 
-		// create initial study
-		created = Fixtures.createBasicTemplate();
-		created.setAmended(false);
-		studyDao.save(created);
-		interruptSession();
-	}
+        // create initial study
+        created = Fixtures.createBasicTemplate();
+        // amendments are not germane to this test
+        created.setAmendment(null);
+        studyDao.save(created);
+        interruptSession();
+    }
 
 	public void testCreation() throws Exception {
 		int studyCreateId = assertDataLogged(created, Operation.CREATE);

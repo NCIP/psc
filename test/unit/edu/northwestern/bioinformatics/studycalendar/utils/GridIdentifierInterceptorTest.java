@@ -13,7 +13,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author Rhett Sutphin
  */
-public class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
+public abstract class GridIdentifierInterceptorTest extends StudyCalendarTestCase {
 	private static final Integer ENTITY_ID = 42;
 
 	private static final String BIG_ID = "GUIDo";

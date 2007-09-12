@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 /**
  * @author Rhett Sutphin
  */
-public class AuditInterceptorTest extends StudyCalendarTestCase {
+public abstract class AuditInterceptorTest extends StudyCalendarTestCase {
 	// private final AuditInterceptor interceptor = new AuditInterceptor();
 
 	// public void testAuditCollection() throws Exception {
