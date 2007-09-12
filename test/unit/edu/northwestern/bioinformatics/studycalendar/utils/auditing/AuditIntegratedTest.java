@@ -10,11 +10,7 @@ import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -54,78 +50,79 @@ public class AuditIntegratedTest extends DaoTestCase {
 		interruptSession();
 	}
 
-	public void testCreation() throws Exception {
-		int studyCreateId = assertDataLogged(created, Operation.CREATE);
-		assertAuditValue(studyCreateId, "name", null, "[Unnamed study]");
-		assertDataLogged(created.getPlannedCalendar(), Operation.CREATE);
-		for (Epoch epoch : created.getPlannedCalendar().getEpochs()) {
-			assertDataLogged(epoch, Operation.CREATE);
-			for (Arm arm : epoch.getArms()) {
-				assertDataLogged(arm, Operation.CREATE);
-			}
-		}
-	}
-
-	public void testSimpleRename() throws Exception {
-		// rename an arm
-		Arm arm2 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(2);
-		{
-			Arm reloaded = armDao.getById(arm2.getId());
-			reloaded.setName("Carl");
-			armDao.save(reloaded);
-		}
-		interruptSession();
-
-		int arm2RenameEventId = assertDataLogged(arm2, Operation.UPDATE);
-		assertAuditValue(arm2RenameEventId, "name", "C", "Carl");
-	}
-
-	// * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 = created.getPlannedCalendar().getEpochs().get(1);
+	// public void testCreation() throws Exception {
+	// int studyCreateId = assertDataLogged(created, Operation.CREATE);
+	// assertAuditValue(studyCreateId, "name", null, "[Unnamed study]");
+	// assertDataLogged(created.getPlannedCalendar(), Operation.CREATE);
+	// for (Epoch epoch : created.getPlannedCalendar().getEpochs()) {
+	// assertDataLogged(epoch, Operation.CREATE);
+	// for (Arm arm : epoch.getArms()) {
+	// assertDataLogged(arm, Operation.CREATE);
+	// }
+	// }
+	// }
+	//
+	// public void testSimpleRename() throws Exception {
+	// // rename an arm
+	// Arm arm2 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(2);
 	// {
-	// * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
-	// * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
-	// * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
-	// * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
+	// Arm reloaded = armDao.getById(arm2.getId());
+	// reloaded.setName("Carl");
+	// armDao.save(reloaded);
+	// }
+	// interruptSession();
+	//
+	// int arm2RenameEventId = assertDataLogged(arm2, Operation.UPDATE);
+	// assertAuditValue(arm2RenameEventId, "name", "C", "Carl");
+	// }
+	//
+	// // * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 =
+	// created.getPlannedCalendar().getEpochs().get(1);
+	// // {
+	// // * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
+	// // * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
+	// // * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
+	// // * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
+	//
+	// public void testDelete() throws Exception {
+	// // delete an arm
+	// Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
+	// {
+	// Study reloaded = studyDao.getById(created.getId());
+	// reloaded.getPlannedCalendar().getEpochs().get(1).getArms().remove(1);
+	// studyDao.save(reloaded);
+	// }
+	// interruptSession();
+	//
+	// int deleteId = assertDataLogged(arm1, Operation.DELETE);
+	// assertAuditValue(deleteId, "name", "B", null);
+	// }
 
-	public void testDelete() throws Exception {
-		// delete an arm
-		Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
-		{
-			Study reloaded = studyDao.getById(created.getId());
-			reloaded.getPlannedCalendar().getEpochs().get(1).getArms().remove(1);
-			studyDao.save(reloaded);
-		}
-		interruptSession();
-
-		int deleteId = assertDataLogged(arm1, Operation.DELETE);
-		assertAuditValue(deleteId, "name", "B", null);
-	}
-
-	public void testUpdateComponentHasSubpropertyValues() throws Exception {
-		// Period#duration is a component
-		Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
-		Period p1 = Fixtures.createPeriod("Neptune", 45, Duration.Unit.week, 7, 3);
-		{
-			Arm targetArm = armDao.getById(arm1.getId());
-			targetArm.addPeriod(p1);
-			armDao.save(targetArm);
-		}
-		interruptSession();
-
-		assertDataLogged(p1, Operation.CREATE);
-
-		{
-			Period reloaded = periodDao.getById(p1.getId());
-			assertNotNull(reloaded);
-			reloaded.getDuration().setUnit(Duration.Unit.day);
-			periodDao.save(reloaded);
-		}
-		interruptSession();
-
-		int updateId = assertDataLogged(p1, Operation.UPDATE);
-		assertAuditValue(updateId, "duration.unit", "week", "day");
-		assertNoAuditValue(updateId, "duration.quantity");
-	}
+	// public void testUpdateComponentHasSubpropertyValues() throws Exception {
+	// // Period#duration is a component
+	// Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
+	// Period p1 = Fixtures.createPeriod("Neptune", 45, Duration.Unit.week, 7, 3);
+	// {
+	// Arm targetArm = armDao.getById(arm1.getId());
+	// targetArm.addPeriod(p1);
+	// armDao.save(targetArm);
+	// }
+	// interruptSession();
+	//
+	// assertDataLogged(p1, Operation.CREATE);
+	//
+	// {
+	// Period reloaded = periodDao.getById(p1.getId());
+	// assertNotNull(reloaded);
+	// reloaded.getDuration().setUnit(Duration.Unit.day);
+	// periodDao.save(reloaded);
+	// }
+	// interruptSession();
+	//
+	// int updateId = assertDataLogged(p1, Operation.UPDATE);
+	// assertAuditValue(updateId, "duration.unit", "week", "day");
+	// assertNoAuditValue(updateId, "duration.quantity");
+	// }
 
 	public void testUpdateCompositeUserTypeHasSubpropertyValues() throws Exception {
 		// ScheduledEvent#currentDate uses a CompositeUserType
