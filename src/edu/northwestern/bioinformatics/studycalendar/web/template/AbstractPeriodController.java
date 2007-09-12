@@ -42,8 +42,10 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         C command = (C) oCommand;
         command.apply();
-        Study study = command.getArm().getEpoch().getPlannedCalendar().getStudy();
-        return ControllerTools.redirectToCalendarTemplate(study.getId(), command.getArm().getId());
+        // TODO: need a way to resolve study from detached arm (etc.)
+//        Study study = command.getArm().getEpoch().getPlannedCalendar().getStudy();
+//        return ControllerTools.redirectToCalendarTemplate(study.getId(), command.getArm().getId());
+        return new ModelAndView("redirectToStudyList");
     }
 
 }

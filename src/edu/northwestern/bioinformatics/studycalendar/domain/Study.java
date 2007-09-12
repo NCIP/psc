@@ -40,11 +40,34 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     private Amendment developmentAmendment; // the next amendment, currently in development and not approved
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    // TODO: this needs to be handled more robustly
-    private Boolean amended = false;
     private boolean memoryOnly = false;
 
     ////// LOGIC
+
+    @Transient
+    public boolean isInDevelopment() {
+        return getDevelopmentAmendment() != null;
+    }
+
+    @Transient
+    public boolean isInInitialDevelopment() {
+        return getDevelopmentAmendment() != null && getAmendment() == null;
+    }
+
+    @Transient
+    public boolean isInAmendmentDevelopment() {
+        return getDevelopmentAmendment() != null && getAmendment() != null;
+    }
+
+    @Transient
+    public boolean isAvailableForAssignment() {
+        return getAmendment() != null;
+    }
+
+    @Transient
+    public boolean isAmended() {
+        return getAmendment().getPreviousAmendment() != null;
+    }
 
     public void addStudySite(StudySite studySite){
         getStudySites().add(studySite);
@@ -125,14 +148,6 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         return studySites;
     }
 
-    public Boolean getAmended() {
-        return amended;
-    }
-
-    public void setAmended(Boolean amended) {
-        this.amended = amended;
-    }
-
     @ManyToOne
     public Amendment getAmendment() {
         return amendment;
@@ -164,7 +179,18 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             }
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new StudyCalendarError("Clone is supported");
+            throw new StudyCalendarError("Clone is supported", e);
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName())
+            .append("[id=").append(getId())
+            .append("; name=").append(getName());
+        if (isMemoryOnly()) sb.append("; transient copy");
+        return sb
+            .append(']')
+            .toString();
     }
 }

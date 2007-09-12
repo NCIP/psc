@@ -1,28 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorTest;
 import static edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorTest.*;
-import static org.easymock.classextension.EasyMock.*;
-
-import java.util.List;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.classextension.EasyMock.notNull;
 
 /**
  * @author Rhett Sutphin
  */
 public class NewStudyCommandTest extends StudyCalendarTestCase {
     private NewStudyCommand command;
-    private StudyDao studyDao;
+    private StudyService studyService;
 
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = registerDaoMockFor(StudyDao.class);
-        command = new NewStudyCommand(studyDao);
+        studyService = registerMockFor(StudyService.class);
+        command = new NewStudyCommand(studyService);
     }
 
     public void testCreateBlank() throws Exception {
@@ -50,6 +45,6 @@ public class NewStudyCommandTest extends StudyCalendarTestCase {
     }
 
     private void expectCreate() {
-        studyDao.save((Study) notNull());
+        studyService.save((Study) notNull());
     }
 }

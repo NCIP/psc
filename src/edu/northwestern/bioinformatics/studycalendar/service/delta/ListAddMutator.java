@@ -1,12 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -22,10 +19,13 @@ public class ListAddMutator extends CollectionAddMutator {
     @Override
     @SuppressWarnings({ "unchecked" })
     public void apply(PlanTreeNode<?> source) {
-        castToOrdered(source).addChild(loadChild(), add.getIndex());
+        Integer index = ((Add) change).getIndex();
+        PlanTreeNode<?> child = findChild();
+        if (source.isMemoryOnly()) {
+            child = child.transientClone();
+        }
+        log.debug("Adding {} to {} at {}", new Object[] { child, source, index });
+        PlanTreeOrderedInnerNode.cast(source).addChild(child, index);
     }
 
-    private PlanTreeOrderedInnerNode<? extends DomainObject, PlanTreeNode<?>> castToOrdered(PlanTreeNode<?> source) {
-        return ((PlanTreeOrderedInnerNode<? extends DomainObject, PlanTreeNode<?>>) source);
-    }
 }

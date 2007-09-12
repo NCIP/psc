@@ -4,6 +4,7 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
+<title>Calendars</title>
 <head>
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
@@ -43,63 +44,45 @@
             <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
         </security:secureOperation>
      </laf:division>
-        <security:secureOperation element="/pages/cal/markComplete" operation="ACCESS">
-            <c:if test="${not empty incompleteStudies}">
+        <security:secureOperation element="/pages/cal/releases/template" operation="ACCESS">
+            <c:if test="${not empty inDevelopmentStudies}">
                 <h3>Templates in design</h3>
                 <laf:division>
                     <ul class="menu">
-                        <c:forEach items="${incompleteStudies}" var="study" varStatus="status">
+                        <c:forEach items="${inDevelopmentStudies}" var="study" varStatus="status">
                             <li class="autoclear ${commons:parity(status.count)}">
                                 <a href="<c:url value="/pages/cal/template?study=${study.id}"/>">${study.name}</a>
+                                <c:if test="${study.inAmendmentDevelopment}">(${study.developmentAmendment.name})</c:if>
                             </li>
                         </c:forEach>
                     </ul>
                 </laf:division>
             </c:if>
         </security:secureOperation>
-        <c:if test="${not empty completeStudies}">
-            <h3>Completed templates</h3>
+        <c:if test="${not empty assignableStudies}">
+            <h3>Available templates</h3>
             <laf:division>
                 <ul class="menu">
-                    <c:forEach items="${completeStudies}" var="study" varStatus="status">
+                    <c:forEach items="${assignableStudies}" var="study" varStatus="status">
                         <li class="autoclear ${commons:parity(status.count)}">
-                            <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">${study.name}</a>
+                            <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
+                                ${study.name}
+                                <c:if test="${study.amended}">(${study.amendment.name})</c:if>
+                            </a>
                             <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                                 <c:if test="${not empty study.studySites}">
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
                                 </c:if>
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">Amend Template</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule reconsent</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">Add amendment</tags:restrictedListItem>
                             </ul>
                         </li>
                     </c:forEach>
                 </ul>
             </laf:division>
         </c:if>
-
-    <c:if test="${not empty amendedStudies}">
-        <h3>Amended templates</h3>
-        <laf:division>
-            <ul class="menu">
-                <c:forEach items="${amendedStudies}" var="study" varStatus="status">
-                    <li class="autoclear ${commons:parity(status.count)}">
-                        <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">${study.name}</a>
-                        <ul class="controls">
-                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Amend sites</tags:restrictedListItem>
-                            <c:if test="${not empty study.studySites}">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule Reconsent</tags:restrictedListItem>
-                            </c:if>
-                        </ul>
-                    </li>
-                </c:forEach>
-            </ul>
-        </laf:division>
-    </c:if>
-
 
         <c:if test="${not empty sites}">
             <h3>Sites</h3>

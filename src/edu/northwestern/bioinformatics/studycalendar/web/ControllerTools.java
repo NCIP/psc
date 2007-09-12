@@ -74,21 +74,23 @@ public class ControllerTools {
 
     public static void addHierarchyToModel(ScheduledCalendar calendar, Map<String, Object> model) {
         model.put("scheduledCalendar", calendar);
-        addHierarchyToModel(calendar.getAssignment().getStudySite().getStudy().getPlannedCalendar(), model);
-        addHierarchyToModel(calendar.getAssignment(), model);
+        if (calendar != null) {
+            addHierarchyToModel(calendar.getAssignment().getStudySite().getStudy().getPlannedCalendar(), model);
+            addHierarchyToModel(calendar.getAssignment(), model);
+        }
     }
 
     public static void addHierarchyToModel(StudyParticipantAssignment assignment, Map<String, Object> model) {
         model.put("assignment", assignment);
-        model.put("participant", assignment.getParticipant());
-        model.put("scheduledCalendar", assignment.getScheduledCalendar());
+        if (assignment != null) {
+            model.put("participant", assignment.getParticipant());
+            model.put("scheduledCalendar", assignment.getScheduledCalendar());
+        }
     }
 
     public static void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {
         model.put("plannedEvent", event);
-        if(event != null) {
-            addHierarchyToModel(event.getPeriod(), model);
-        }        
+        if (event != null) addHierarchyToModel(event.getPeriod(), model);
     }
 
     public static void addHierarchyToModel(Period period, Map<String, Object> model) {
@@ -98,17 +100,17 @@ public class ControllerTools {
 
     public static void addHierarchyToModel(Arm arm, Map<String, Object> model) {
         model.put("arm", arm);
-        addHierarchyToModel(arm.getEpoch(), model);
+        if (arm != null) addHierarchyToModel(arm.getEpoch(), model);
     }
 
     public static void addHierarchyToModel(Epoch epoch, Map<String, Object> model) {
         model.put("epoch", epoch);
-        addHierarchyToModel(epoch.getPlannedCalendar(), model);
+        if (epoch != null) addHierarchyToModel(epoch.getPlannedCalendar(), model);
     }
 
     public static void addHierarchyToModel(PlannedCalendar plannedCalendar, Map<String, Object> model) {
         model.put("plannedCalendar", plannedCalendar);
-        model.put("study", plannedCalendar.getStudy());
+        if (plannedCalendar != null) model.put("study", plannedCalendar.getStudy());
     }
 
     public static boolean isAjaxRequest(HttpServletRequest request) {
@@ -120,6 +122,7 @@ public class ControllerTools {
         return redirectToCalendarTemplate(studyId, null);
     }
 
+    @SuppressWarnings({ "unchecked" })
     public static ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId) {
         ModelMap model = new ModelMap("study", studyId);
         if (selectedArmId != null) model.put("arm", selectedArmId);

@@ -27,7 +27,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
     }
 )
 public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
-    private boolean complete;
 
     ////// LOGIC
 
@@ -69,14 +68,6 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
     }
 
     ////// BEAN PROPERTIES
-
-    public boolean isComplete() {
-        return complete;
-    }
-
-    public void setComplete(boolean complete) {
-        this.complete = complete;
-    }
 
     // This is annotated this way so that the IndexColumn will work with
     // the bidirectional mapping.  See section 2.4.6.2.3 of the hibernate annotations docs.

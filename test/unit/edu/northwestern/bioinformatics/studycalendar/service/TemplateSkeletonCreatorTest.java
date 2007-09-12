@@ -5,6 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 
 import java.util.List;
 
@@ -23,30 +29,55 @@ public class TemplateSkeletonCreatorTest extends StudyCalendarTestCase {
     
     public static void assertBlankStudy(Study actual) {
         assertEquals("Wrong study name", "[Unnamed blank study]", actual.getName());
+        assertNotNull(actual.getPlannedCalendar());
+        Delta<?> actualDelta = assertHasSkeletonDevAmendment(actual);
 
-        List<Epoch> epochs = actual.getPlannedCalendar().getEpochs();
-        assertEquals("Wrong number of epochs", 1, epochs.size());
-        assertEquals("Wrong epoch name", "[Unnamed epoch]", epochs.get(0).getName());
+        assertEquals("Wrong number of changes", 1, actualDelta.getChanges().size());
+        assertIsAddEpochChange(actualDelta.getChanges().get(0), 0, "[Unnamed epoch]");
+
+        assertEquals("Development amendment already applied", 0, actual.getPlannedCalendar().getEpochs().size());
     }
 
     public static void assertBasicStudy(Study actual) {
         assertEquals("Wrong study name for new study", "[Unnamed study]", actual.getName());
 
+        Delta<?> actualDelta = assertHasSkeletonDevAmendment(actual);
+
+        assertEquals("Wrong number of changes", 3, actualDelta.getChanges().size());
+        assertIsAddEpochChange(actualDelta.getChanges().get(0), 0, "Screening");
+        Epoch actualTreatment = assertIsAddEpochChange(actualDelta.getChanges().get(1), 1, "Treatment");
+        assertIsAddEpochChange(actualDelta.getChanges().get(2), 2, "Follow up");
+
         PlannedCalendar calendar = actual.getPlannedCalendar();
-        assertBasicPlannedCalendar(calendar);
-    }
 
-    public static void assertBasicPlannedCalendar(PlannedCalendar calendar) {
-        List<Epoch> epochs = calendar.getEpochs();
-        assertEquals("Wrong number of epochs", 3, epochs.size());
-        assertEquals("Wrong name for epoch 0", "Screening", epochs.get(0).getName());
-        assertEquals("Wrong name for epoch 1", "Treatment", epochs.get(1).getName());
-        assertEquals("Wrong name for epoch 2", "Follow up", epochs.get(2).getName());
-
-        List<Arm> treatmentArms = calendar.getEpochs().get(1).getArms();
+        List<Arm> treatmentArms = actualTreatment.getArms();
         assertEquals("Wrong name for treatment arm 0", "A", treatmentArms.get(0).getName());
         assertEquals("Wrong name for treatment arm 1", "B", treatmentArms.get(1).getName());
         assertEquals("Wrong name for treatment arm 2", "C", treatmentArms.get(2).getName());
+
+        assertEquals("Development amendment already applied", 0, calendar.getEpochs().size());
     }
 
+    private static Delta<?> assertHasSkeletonDevAmendment(Study actual) {
+        assertNotNull("No dev amendment", actual.getDevelopmentAmendment());
+        assertEquals("Wrong number of deltas in dev amendment", 1, actual.getDevelopmentAmendment().getDeltas().size());
+        Delta<?> actualDelta = actual.getDevelopmentAmendment().getDeltas().get(0);
+        assertTrue("Wrong type of delta", PlannedCalendarDelta.class.isAssignableFrom(actualDelta.getClass()));
+        assertNotNull("Delta has no node", actualDelta.getNode());
+        assertSame("Delta has wrong node", actual.getPlannedCalendar(), actualDelta.getNode());
+        return actualDelta;
+    }
+
+    private static Epoch assertIsAddEpochChange(Change change, Integer expectedIndex, String expectedName) {
+        assertEquals("Wrong change action", ChangeAction.ADD, change.getAction());
+
+        // This is two lines to work around a javac bug
+        PlanTreeNode child = ((Add) change).getChild();
+        Epoch added = (Epoch) child;
+
+        assertNotNull("No added epoch", added);
+        assertEquals("Wrong epoch name", expectedName, added.getName());
+        assertEquals("Epoch added at wrong index", expectedIndex, ((Add) change).getIndex());
+        return added;
+    }
 }

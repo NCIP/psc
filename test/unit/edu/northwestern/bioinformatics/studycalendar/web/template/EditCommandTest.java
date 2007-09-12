@@ -4,36 +4,42 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 
 /**
  * @author Rhett Sutphin
  */
 public class EditCommandTest extends StudyCalendarTestCase {
     private EditCommand command;
-    private StudyDao studyDao;
+    private StudyService studyService;
 
     private Study study;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = registerDaoMockFor(StudyDao.class);
+        studyService = registerMockFor(StudyService.class);
 
         command = registerMockFor(EditCommand.class,
             EditCommand.class.getDeclaredMethod("performEdit"),
             EditCommand.class.getDeclaredMethod("getRelativeViewName")
         );
-        command.setStudyDao(studyDao);
+        command.setStudyService(studyService);
+        command.setDeltaService(Fixtures.getTestingDeltaService());
 
         study = Fixtures.createSingleEpochStudy("Study 1234", "E1", "A", "B");
         study.getPlannedCalendar().addEpoch(Epoch.create("E2"));
+        study.setDevelopmentAmendment(new Amendment());
     }
 
     public void testApply() throws Exception {
         command.setStudy(study);
         command.performEdit();
-        studyDao.save(study);
+        studyService.save(study);
 
         replayMocks();
         command.apply();
@@ -41,18 +47,18 @@ public class EditCommandTest extends StudyCalendarTestCase {
     }
     
     public void testApplyToCompleteCalendar() throws Exception {
-        study.getPlannedCalendar().setComplete(true);
-        command.setStudy(study);
+        study.setDevelopmentAmendment(null);
 
         try {
-            command.apply();
+            command.setStudy(study);
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException e) {
             assertContains(e.getMessage(), study.getName());
-            assertContains(e.getMessage(), "complete");
+            assertContains(e.getMessage(), "not in development");
         }
     }
 
+    /* TODO: don't expect to need this anymore.  Keep until sure.
     public void testToSaveStudy() throws Exception {
         command.setStudy(study);
         assertEquals(study, command.toSave());
@@ -75,5 +81,5 @@ public class EditCommandTest extends StudyCalendarTestCase {
         } catch (IllegalStateException ise) {
             assertEquals("Cannot determine which study the edit was applied to", ise.getMessage());
         }
-    }
+    } */
 }

@@ -6,6 +6,8 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import java.util.Map;
 import java.util.HashMap;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+
 /**
  * @author Rhett Sutphin
  */
@@ -20,7 +22,9 @@ public class StaticDaoFinder implements DaoFinder {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public <T extends DomainObject> DomainObjectDao<T> findDao(Class<T> klass) {
-        return (DomainObjectDao<T>) byClass.get(klass);
+    public <T extends DomainObject> DomainObjectDao<?> findDao(Class<T> klass) {
+        DomainObjectDao<T> found = (DomainObjectDao<T>) byClass.get(klass);
+        if (found == null) throw new StudyCalendarSystemException("No DAO for %s", klass.getName());
+        return found;
     }
 }

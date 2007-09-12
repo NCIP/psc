@@ -54,6 +54,7 @@ public class BreadcrumbContext {
     }
 
     public void setStudySite(StudySite studySite) {
+        if (studySite == null) return;
         setSite(studySite.getSite());
         setStudy(studySite.getStudy());
         this.studySite = studySite;
@@ -64,27 +65,31 @@ public class BreadcrumbContext {
     }
 
     public void setPlannedCalendar(PlannedCalendar plannedCalendar) {
+        if (plannedCalendar == null) return;
         setStudy(plannedCalendar.getStudy());
         this.plannedCalendar = plannedCalendar;
     }
 
     public void setEpoch(Epoch epoch) {
+        if (epoch == null) return;
         setPlannedCalendar(epoch.getPlannedCalendar());
         this.epoch = epoch;
     }
 
     public void setArm(Arm arm) {
+        if (arm == null) return;
         setEpoch(arm.getEpoch());
         this.arm = arm;
     }
 
     public void setPeriod(Period period) {
+        if (period == null) return;
         setArm(period.getArm());
         this.period = period;
     }
 
     public void setPlannedEvent(PlannedEvent plannedEvent) {
-        if(plannedEvent != null) {
+        if (plannedEvent != null) {
             setPeriod(plannedEvent.getPeriod());
         }
         this.plannedEvent = plannedEvent;
@@ -95,23 +100,27 @@ public class BreadcrumbContext {
     }
 
     public void setStudyParticipantAssignment(StudyParticipantAssignment studyParticipantAssignment) {
+        if (studyParticipantAssignment == null) return;
         setParticipant(studyParticipantAssignment.getParticipant());
         setPlannedCalendar(studyParticipantAssignment.getStudySite().getStudy().getPlannedCalendar());
         this.studyParticipantAssignment = studyParticipantAssignment;
     }
 
     public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
+        if (scheduledCalendar == null) return;
         setStudyParticipantAssignment(scheduledCalendar.getAssignment());
         this.scheduledCalendar = scheduledCalendar;
     }
 
     public void setScheduledArm(ScheduledArm scheduledArm) {
+        if (scheduledArm == null) return;
         setScheduledCalendar(scheduledArm.getScheduledCalendar());
         setArm(scheduledArm.getArm());
         this.scheduledArm = scheduledArm;
     }
 
     public void setScheduledEvent(ScheduledEvent scheduledEvent) {
+        if (scheduledEvent == null) return;
         setScheduledArm(scheduledEvent.getScheduledArm());
         setPlannedEvent(scheduledEvent.getPlannedEvent());
         this.scheduledEvent = scheduledEvent;

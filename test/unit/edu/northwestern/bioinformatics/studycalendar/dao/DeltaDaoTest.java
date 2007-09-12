@@ -24,7 +24,7 @@ public class DeltaDaoTest extends DaoTestCase {
         Add addChange = (Add)change;
 
         assertEquals("Wrong change index ", -3, (int) addChange.getIndex());
-        assertEquals("Wrong change index ", -2, (int) addChange.getNewChildId());
+        assertEquals("Wrong change index ", -2, (int) addChange.getChildId());
         assertNotNull("Delta was not found", actual);
         assertEquals("Changes not found", 2, changes.size());
         assertEquals("Wrong change action", "add", change.getAction().getCode());
@@ -44,14 +44,14 @@ public class DeltaDaoTest extends DaoTestCase {
         assertTrue("Wrong change subtype", changes.get(0) instanceof Add);
         Add addOne = (Add) changes.get(0);
         assertEquals("Wrong change index ", -3, (int) addOne.getIndex());
-        assertEquals("Wrong change newChildId ", -2, (int) addOne.getNewChildId());
+        assertEquals("Wrong change newChildId ", -2, (int) addOne.getChildId());
 
         Change changeTwo = changes.get(1);
         assertEquals("Wrong change action", ChangeAction.ADD, changeTwo.getAction());
         assertTrue("Wrong change subtype", changeTwo instanceof Add);
         Add addTwo = (Add)changeTwo;
         assertEquals("Wrong change index ", -4, (int) addTwo.getIndex());
-        assertEquals("Wrong change newChildId ", -2, (int) addTwo.getNewChildId());
+        assertEquals("Wrong change newChildId ", -2, (int) addTwo.getChildId());
     }
 
     public void testLoadReorder() throws Exception {
@@ -62,7 +62,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong change action", ChangeAction.REORDER, actual.getAction());
         assertTrue("Wrong change subtype", actual instanceof Reorder);
         Reorder reorder = (Reorder) actual;
-        assertEquals("Wrong old index", 1, (int) reorder.getOldIndex());
+        assertEquals("Wrong child to move", -2, (int) reorder.getChildId());
         assertEquals("Wrong new index", 0, (int) reorder.getNewIndex());
     }
 

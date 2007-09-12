@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,16 +26,12 @@ import java.util.Date;
 @AccessControl(protectionGroups = {StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR, StudyCalendarProtectionGroup.SITE_COORDINATOR})
 public class AmendmentController extends PscCancellableFormController {
     private StudyDao studyDao;
-
-
-
     private AmendmentDao amendmentDao;
-    private static final Logger log = LoggerFactory.getLogger(AmendmentController.class.getName());
+    private StudyService studyService;
 
     public AmendmentController() {
         setCommandClass(AmendmentCommand.class);
         setFormView("amendmentLogin");
-        setValidator(new ValidatableValidator());
 
         setSuccessView("studyList");
         setCancelView("studyList");
@@ -53,7 +50,7 @@ public class AmendmentController extends PscCancellableFormController {
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new AmendmentCommand(studyDao, amendmentDao);
+        return new AmendmentCommand(studyService, amendmentDao);
     }
 
     protected ModelAndView onCancel(Object command) throws Exception {
@@ -72,5 +69,10 @@ public class AmendmentController extends PscCancellableFormController {
     @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 }

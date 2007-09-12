@@ -12,10 +12,10 @@
     <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
         <property name="location"><value>/WEB-INF/special-views.xml</value></property>
     </bean>
-	
-	<bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
-		class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController">
-	</bean>
+
+    <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController">
+    </bean>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass">
@@ -39,7 +39,7 @@
         <property name="interceptors">
             <list>
                 <!--<ref bean="loginCheckInterceptor"/>-->
-                <ref bean="breadcrumbInterceptor"/>
+                <!--<ref bean="breadcrumbInterceptor"/>-->
                 <ref bean="sectionInterceptor"/>
             </list>
         </property>
@@ -47,11 +47,13 @@
 
     <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
+    <!-- Breadcrumbs are incompatible with amendments for the moment.  TODO: fix and enable.
     <bean id="breadcrumbInterceptor" autowire="byType"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
 
     <bean id="breadcrumbCreator" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbCreator"/>
+    -->
 
     <bean id="noCacheTemplate" abstract="true">
         <property name="cacheSeconds"><value>0</value></property>
@@ -77,10 +79,6 @@
     <bean name="/cal/template/addTo" id="addToController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>addToTemplateCommand</value></property>
-    </bean>
-    <bean name="/cal/template/amend/addTo" id="addToAmendController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.delta.AmendEditController">
-        <property name="commandBeanName"><value>addToAmendTemplateCommand</value></property>
     </bean>
 
     <bean name="/cal/template/delete" id="deleteController" autowire="byName"
@@ -134,8 +132,8 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
-    <bean name="/cal/markComplete" id="MarkCompleteController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.MarkCompleteController">
+    <bean name="/cal/template/release" id="releaseAmendmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ReleaseAmendmentController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 

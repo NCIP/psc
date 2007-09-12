@@ -8,11 +8,30 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
  * @author Rhett Sutphin
  * @param <P> parent class
  */
-public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
+public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainObject
     implements Child<P>, Cloneable, TransientCloneable<PlanTreeNode<P>>
 {
     private P parent;
     private boolean memoryOnly;
+
+    ////// LOGIC
+
+    /**
+     * Returns true if the segment of the plan tree to which this node belongs
+     * is not directly associated with a study.  (That is, it is part of an unapplied revision.)
+     * @return
+     */
+    public boolean isDetached() {
+        if (getParent() == null) {
+            return true;
+        } else if (getParent() instanceof PlanTreeNode) {
+            return ((PlanTreeNode) getParent()).isDetached();
+        } else {
+            return false;
+        }
+    }
+
+    ////// Child IMPLEMENTATION
 
     public P getParent() {
         return parent;
@@ -21,6 +40,8 @@ public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainO
     public void setParent(P parent) {
         this.parent = parent;
     }
+
+    ////// TransientCloneable IMPLEMENTATION
 
     public boolean isMemoryOnly() {
         return memoryOnly;
@@ -36,6 +57,8 @@ public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainO
         return clone;
     }
 
+    ////// OBJECT METHODS
+
     @Override
     @SuppressWarnings({ "unchecked" })
     protected PlanTreeNode<P> clone() {
@@ -48,8 +71,10 @@ public class PlanTreeNode<P extends DomainObject> extends AbstractMutableDomainO
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-            .append("[id=").append(getId()).append(']')
-            .toString();
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName())
+            .append("[id=").append(getId());
+        if (isMemoryOnly()) sb.append("; transient copy");
+        sb.append(']');
+        return sb.toString();
     }
 }

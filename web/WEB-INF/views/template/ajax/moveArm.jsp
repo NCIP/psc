@@ -5,6 +5,7 @@
     armItem.remove()
     var sib = $("arm-${relativeTo.id}-item")
     var container = sib.parentNode
+    // replace relative to sib (${position})
     <c:choose>
         <c:when test="${position == 'before'}">container.insertBefore(armItem, sib)</c:when>
         <c:otherwise>container.appendChild(armItem)</c:otherwise>

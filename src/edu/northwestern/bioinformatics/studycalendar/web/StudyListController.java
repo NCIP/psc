@@ -40,24 +40,22 @@ public class StudyListController extends PscAbstractController {
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
 
-        List<Study> complete = new ArrayList<Study>();
-        List<Study> incomplete = new ArrayList<Study>();
-        List<Study> amended = new ArrayList<Study>();
+        List<Study> assignableStudies = new ArrayList<Study>();
+        List<Study> inDevelopmentStudies = new ArrayList<Study>();
 
         for (Study ownedStudy : ownedStudies) {
-            if (ownedStudy.getAmended()){
-                amended.add(ownedStudy);
-            } else if (ownedStudy.getPlannedCalendar().isComplete()) {
-                complete.add(ownedStudy);
-            } else {
-                incomplete.add(ownedStudy);
+            // could be in both lists
+            if (ownedStudy.isAvailableForAssignment()) {
+                assignableStudies.add(ownedStudy);
+            }
+            if (ownedStudy.isInDevelopment()) {
+                inDevelopmentStudies.add(ownedStudy);
             }
         }
 
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("completeStudies", complete);
-        model.put("incompleteStudies", incomplete);
-        model.put("amendedStudies", amended);
+        model.put("assignableStudies", assignableStudies);
+        model.put("inDevelopmentStudies", inDevelopmentStudies);
         model.put("sites", ownedSites);
         
         return new ModelAndView("studyList", model);

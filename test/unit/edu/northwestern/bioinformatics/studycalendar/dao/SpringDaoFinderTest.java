@@ -40,31 +40,46 @@ public class SpringDaoFinderTest extends StudyCalendarTestCase {
         factory.registerBeanDefinition("sessionFactory", new RootBeanDefinition(StubSessionFactory.class));
         factory.registerBeanDefinition("testOneDao", new RootBeanDefinition(TestOneDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
         factory.registerBeanDefinition("testTwoDao", new RootBeanDefinition(TestTwoDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
+        factory.registerBeanDefinition("testTwoSubDao", new RootBeanDefinition(TestTwoPointOneDao.class, RootBeanDefinition.AUTOWIRE_BY_TYPE));
         factory.registerBeanDefinition("someOtherBean", new RootBeanDefinition(Object.class));
         finder.postProcessBeanFactory(factory);
     }
 
     public void testFindWhenItExists() throws Exception {
-        DomainObjectDao<TestOne> actualOne = finder.findDao(TestOne.class);
+        DomainObjectDao<?> actualOne = finder.findDao(TestOne.class);
         assertNotNull(actualOne);
-        assertTrue(actualOne.getClass() == TestOneDao.class);
+        assertEquals(actualOne.getClass(), TestOneDao.class);
 
-        DomainObjectDao<TestTwo> actualTwo = finder.findDao(TestTwo.class);
+        DomainObjectDao<?> actualTwo = finder.findDao(TestTwo.class);
         assertNotNull(actualTwo);
-        assertTrue(actualTwo.getClass() == TestTwoDao.class);
+        assertEquals(actualTwo.getClass(), TestTwoDao.class);
     }
 
     public void testFindWhenItDoesNotExist() throws Exception {
         try {
             finder.findDao(NoDao.class);
-            fail("Exception not found");
+            fail("Exception not thrown");
         } catch (StudyCalendarSystemException e) {
             assertEquals("There is no DAO registered for " + NoDao.class.getName(), e.getMessage());
         }
     }
 
+    public void testFindForUnregisteredSubclass() throws Exception {
+        DomainObjectDao<?> actual = finder.findDao(TestOnePointOne.class);
+        assertNotNull(actual);
+        assertEquals(TestOneDao.class, actual.getClass());
+    }
+
+    public void testFindForRegisteredSubclass() throws Exception {
+        DomainObjectDao<?> actual = finder.findDao(TestTwoPointOne.class);
+        assertNotNull(actual);
+        assertEquals(TestTwoPointOneDao.class, actual.getClass());
+    }
+
     private static class TestOne extends AbstractImmutableDomainObject { }
+    private static class TestOnePointOne extends TestOne { }
     private static class TestTwo extends AbstractMutableDomainObject { }
+    private static class TestTwoPointOne extends TestTwo { }
     private static class NoDao extends AbstractImmutableDomainObject { }
 
     private static class TestOneDao extends AbstractDomainObjectDao<TestOne> {
@@ -72,6 +87,9 @@ public class SpringDaoFinderTest extends StudyCalendarTestCase {
     }
     private static class TestTwoDao extends AbstractDomainObjectDao<TestTwo> {
         @Override public Class<TestTwo> domainClass() { return TestTwo.class; }
+    }
+    private static class TestTwoPointOneDao extends AbstractDomainObjectDao<TestTwoPointOne> {
+        @Override public Class<TestTwoPointOne> domainClass() { return TestTwoPointOne.class; }
     }
 
     private static class StubSessionFactory implements SessionFactory {

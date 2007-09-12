@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -17,13 +17,14 @@ public class NewStudyControllerTest extends ControllerTestCase {
     private static final int ID = 81;
 
     private NewStudyController controller;
-    private StudyDao studyDao;
+    private StudyService studyService;
     private NewStudyCommand command;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         request.setMethod("GET");
-        studyDao = registerMockFor(StudyDao.class);
+        studyService = registerMockFor(StudyService.class);
         command = registerMockFor(NewStudyCommand.class);
 
         controller = new NewStudyController() {
@@ -32,7 +33,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
                 return command;
             }
         };
-        controller.setStudyDao(studyDao);
+        controller.setStudyService(studyService);
     }
 
     public void testHandle() throws Exception {

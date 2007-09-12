@@ -58,7 +58,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
 
                 <!-- Amendments & customizations -->
-                <!--<value>edu.northwestern.bioinformatics.studycalendar.domain.AmendmentLogin</value>-->
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Change</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Add</value>
@@ -80,11 +79,10 @@
             </bean>-->
             <ref local="chainedInterceptor"/>
         </property> 
-    
     </bean>
-	
-	
-	<bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
+
+
+    <bean id="auditSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean" autowire="byName">
         <property name="mappingLocations">
             <list>
                 <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
@@ -108,7 +106,11 @@
 		<property name="interceptors">
 			<list>
 				<ref local="gridIdentifierInterceptor"/>
-				<ref local="auditInterceptor" />
+                <!--
+                    TODO: Use StudyServiceIntegratedTest to figure out why the auditing system
+                    is incompatible with the amendment system.
+                 -->
+                <!-- ref local="auditInterceptor" /-->
 			</list>
 		</property>
 	</bean>
@@ -147,7 +149,6 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.User</value>
 
                 <!-- Amendments & customizations -->
-                <!--<value>edu.northwestern.bioinformatics.studycalendar.domain.AmendmentLogin</value>-->
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Change</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.Add</value>
@@ -171,9 +172,6 @@
 			<ref local="auditSessionFactory" />
 		</property>
 	</bean>
-    
-    
-<!-- <bean id="auditInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.auditing.AuditInterceptor" autowire="byType"/> -->
     
     <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.utils.LocalGridIdentifierCreator"/>
 
@@ -202,6 +200,8 @@
     <bean id="configuration" parent="daoTemplate"
           class="edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration"/>
 
+    <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
+
     <!-- ACTUAL DAOS -->
 
     <tx:annotation-driven proxy-target-class="true"/>
@@ -227,10 +227,8 @@
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>
     <bean id="reportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao"/>
 
-
     <bean id="userDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserDao"/>
     <bean id="amendmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao"/>
     <bean id="deltaDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao"/>
-    <!--<bean id="epochDeltaDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.EpochDeltaDao"/>-->
     <bean id="changeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao"/>
 </beans>

@@ -8,6 +8,7 @@ import java.util.Map;
 public abstract class ModalEditCommand extends EditCommand {
     private Mode mode;
 
+    @Override
     public Map<String, Object> getModel() {
         Map<String, Object> model = super.getModel();
         Map<String, Object> modeModel = getMode().getModel();
@@ -17,10 +18,12 @@ public abstract class ModalEditCommand extends EditCommand {
         return model;
     }
 
+    @Override
     protected void performEdit() {
         getMode().performEdit();
     }
 
+    @Override
     protected String getRelativeViewName() {
         return getMode().getRelativeViewName();
     }
@@ -36,12 +39,12 @@ public abstract class ModalEditCommand extends EditCommand {
 
     protected Mode selectMode() {
         Mode newMode;
-        if (getStudy() != null) {
-            newMode = studyMode();
+        if (getArm() != null) {
+            newMode = armMode();
         } else if (getEpoch() != null) {
             newMode = epochMode();
         } else {
-            newMode = armMode();
+            newMode = studyMode();
         }
         return newMode;
     }

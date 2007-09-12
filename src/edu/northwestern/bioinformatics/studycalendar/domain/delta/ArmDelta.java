@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 @Entity
 @DiscriminatorValue(value="arm")
 public class ArmDelta extends Delta<Arm> {
-    private static final Logger log = LoggerFactory.getLogger(ArmDelta.class.getName());
     public ArmDelta() { }
 
     public ArmDelta(Arm node) { super(node); }

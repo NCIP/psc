@@ -6,6 +6,10 @@ import javax.persistence.*;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -20,10 +24,60 @@ import org.hibernate.annotations.Parameter;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="action", discriminatorType = DiscriminatorType.STRING)
 public abstract class Change extends AbstractMutableDomainObject {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     /**
      * Return the action used by this change.  It should match the discriminator value for the class.
      * @return
      */
     @Transient
     public abstract ChangeAction getAction();
+
+    /**
+     * Integrate the change embodied in this object into the given {@link Delta}.
+     * This may be as simple as adding the change to the delta's change list, but
+     * may extend to removing or modifying other changes.  Or, if this change is
+     * already represented in the delta, this method may do nothing.
+     * @param delta
+     */
+    public void mergeInto(Delta<?> delta) {
+        log.debug("Merging {} into {}", this, delta);
+        List<Change> changes = delta.getChanges();
+        boolean merged = false;
+        MergeLogic logic = createMergeLogic(delta);
+        // walk back through changes until the merge logic says to stop
+        for (int i = changes.size() - 1; i >= 0; i--) {
+            Change c = changes.get(i);
+            if (c.getAction() == ChangeAction.ADD) {
+                merged = logic.encountered((Add) c);
+            } else if (c.getAction() == ChangeAction.REMOVE) {
+                merged = logic.encountered((Remove) c);
+            } else if (c.getAction() == ChangeAction.REORDER) {
+                merged = logic.encountered((Reorder) c);
+            } else if (c.getAction() == ChangeAction.CHANGE_PROPERTY) {
+                merged = logic.encountered((PropertyChange) c);
+            }
+            if (merged) break;
+        }
+        logic.postProcess(merged);
+    }
+
+    protected abstract MergeLogic createMergeLogic(Delta<?> delta);
+
+    /**
+     * Visitor-style template class for children to define their merge behavior.
+     * {@link Change#mergeInto} will walk backwards over the list of changes in
+     * the target delta, passing each one to the appropriate method in this class.
+     * It will stop when one of the <code>encountered</code> methods returns true.
+     * Once the walk is complete, {@link #postProcess} is called, passing
+     * <code>true</code> if any of the <code>encountered</code> methods returned
+     * true.
+     */
+    protected abstract class MergeLogic {
+        public boolean encountered(Add change)             { return false; }
+        public boolean encountered(Remove change)          { return false; }
+        public boolean encountered(Reorder change)         { return false; }
+        public boolean encountered(PropertyChange change)  { return false; }
+        public void postProcess(boolean merged) { }
+    }
 }

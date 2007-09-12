@@ -40,4 +40,11 @@ public class AmendmentTest extends StudyCalendarTestCase {
 
         assertFalse(a2.hasPreviousAmendment(b2));
     }
+    
+    public void testCount() throws Exception {
+        assertEquals(3, a3.getPreviousAmendmentsCount());
+        assertEquals(2, a2.getPreviousAmendmentsCount());
+        assertEquals(1, a1.getPreviousAmendmentsCount());
+        assertEquals(0, a0.getPreviousAmendmentsCount());
+    }
 }

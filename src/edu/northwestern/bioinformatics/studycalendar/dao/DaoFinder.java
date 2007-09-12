@@ -7,5 +7,8 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
  * @author Rhett Sutphin
  */
 public interface DaoFinder {
-    <T extends DomainObject> DomainObjectDao<T> findDao(Class<T> klass);
+    /**
+     * Locates the DAO for the given class.  If there's no matching DAO, throw an exception.
+     */
+    <T extends DomainObject> DomainObjectDao<?> findDao(Class<T> klass);
 }

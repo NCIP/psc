@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,24 +32,35 @@ import java.util.ArrayList;
 @AccessControl(protectionGroups = { StudyCalendarProtectionGroup.STUDY_COORDINATOR, StudyCalendarProtectionGroup.BASE })
 public class DisplayTemplateController extends PscAbstractController {
     private StudyDao studyDao;
-    private AmendmentDao amendmentDao;
+    private DeltaService deltaService;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
     }
 
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
         Integer selectedArmId = ServletRequestUtils.getIntParameter(request, "arm");
+        ModelMap model = new ModelMap();
 
-        Study study = studyDao.getById(studyId);
+        Study loaded = studyDao.getById(studyId);
+
+        Study study;
+        // TODO: make this optional somehow
+        if (loaded.getDevelopmentAmendment() != null) {
+            study = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
+            model.put("developmentRevision", loaded.getDevelopmentAmendment());
+        } else {
+            study = loaded;
+        }
+
         Arm arm = selectArm(study, selectedArmId);
 
-        ModelMap model = new ModelMap();
         ControllerTools.addHierarchyToModel(arm.getEpoch(), model);
         model.addObject("arm", new ArmTemplate(arm));
 
-        if (study.getPlannedCalendar().isComplete()) {
+        if (study.isAvailableForAssignment()) {
             List<StudyParticipantAssignment> offStudyAssignments = new ArrayList<StudyParticipantAssignment>();
             List<StudyParticipantAssignment> onStudyAssignments = new ArrayList<StudyParticipantAssignment>();
             List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
@@ -62,11 +74,6 @@ public class DisplayTemplateController extends PscAbstractController {
             model.addObject("assignments", assignments);
             model.addObject("offStudyAssignments", offStudyAssignments);
             model.addObject("onStudyAssignments", onStudyAssignments);
-        }
-
-        if (study.getAmended()) {
-            // TODO: this is a temp fix
-            model.addObject("amendment", study.getAmendment());
         }
 
         return new ModelAndView("template/display", model);
@@ -92,8 +99,8 @@ public class DisplayTemplateController extends PscAbstractController {
         this.studyDao = studyDao;
     }
 
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 
     private static class Crumb extends DefaultCrumb {

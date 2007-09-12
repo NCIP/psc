@@ -63,6 +63,15 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
                 || this.getPreviousAmendment().hasPreviousAmendment(candidate));
     }
 
+    @Transient
+    public int getPreviousAmendmentsCount() {
+        if (getPreviousAmendment() == null) {
+            return 0;
+        } else {
+            return getPreviousAmendment().getPreviousAmendmentsCount() + 1;
+        }
+    }
+
     public void addDelta(Delta<?> delta) {
         getDeltas().add(delta);
     }
@@ -72,7 +81,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
     @OrderBy // order by ID for testing consistency
-    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -110,14 +118,11 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     @Override
     public String toString(){
-        StringBuffer sb = new StringBuffer();
-        sb.append(" Date = ");
-        sb.append(getDate());
-        sb.append(" Name = ");
-        sb.append(getName());
-        sb.append(" Previous Amendment = ");
-        sb.append(getPreviousAmendment());
-        return sb.toString();
+        return new StringBuffer(getClass().getSimpleName())
+            .append("[date=").append(getDate())
+            .append("; name=").append(getName())
+            .append("; prev=").append(getPreviousAmendment())
+            .append(']').toString();
     }
 
 }

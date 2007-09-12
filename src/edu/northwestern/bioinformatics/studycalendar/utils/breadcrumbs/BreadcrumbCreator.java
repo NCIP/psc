@@ -22,7 +22,6 @@ import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
  * @author Rhett Sutphin
  */
 public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
-//    private static final Log log = LogFactory.getLog(BreadcrumbCreator.class);
     private static final Logger log = LoggerFactory.getLogger(BreadcrumbCreator.class);
 
     private ControllerUrlResolver urlResolver;

@@ -6,8 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 
 /**
  * @author Rhett Sutphin
@@ -48,5 +52,25 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertNotNull(actual);
         assertEquals(CollectionAddMutator.class, actual.getClass());
         assertEquals("Dao does not match child class", epochDao, ((CollectionAddMutator) actual).getDao());
+    }
+    
+    // Note that this will get much more complex once apply(schedule) is thrown into the implementations
+    public void testCreatePropertyMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Period(), new PropertyChange());
+        assertNotNull(actual);
+        assertEquals(SimplePropertyChangeMutator.class, actual.getClass());
+    }
+
+    public void testCreateReorderMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Epoch(), new Reorder());
+        assertNotNull(actual);
+        assertEquals(ReorderMutator.class, actual.getClass());
+    }
+    
+    public void testCreateRemoveMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Epoch(), new Remove());
+        assertNotNull(actual);
+        assertEquals(RemoveMutator.class, actual.getClass());
+        assertEquals("Dao does not match child class", armDao, ((RemoveMutator) actual).getDao());
     }
 }

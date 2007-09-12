@@ -1,18 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import org.springframework.transaction.annotation.Transactional;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Provides methods for calculating deltas and for applying them to PlannedCalendars.
@@ -21,83 +28,93 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactor
  *
  * @author Rhett Sutphin
  */
-@Transactional
+@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public class DeltaService {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private MutatorFactory mutatorFactory;
+    private DaoFinder daoFinder;
+    private DeltaDao deltaDao;
 
     /**
-     * Amend the given PlannedCalendar according to the deltas contained in the given
-     * revision.  This means:
-     * <ul>
-     *   <li>Apply the deltas to the calendar</li>
-     *   <li>Create a new {@link edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment}
-     *       containing reversed versions of all the deltas in the revision</li>
-     *   <li>Register the amendment in the planned calendar</li>
-     *   <li>Save it all</li>
-     * </ul>
-     */
-    public void amend(String amendmentName, PlannedCalendar source, Revision rev) {
-        throw new UnsupportedOperationException("TODO");
-    }
-
-    /**
-     * Takes the provided source calendar and rolls it back to the amendment
-     */
-    public Study getAmendedStudy(Study source, Amendment target) {
-        if (!(source.getAmendment().equals(target) || source.getAmendment().hasPreviousAmendment(target))) {
-            throw new StudyCalendarSystemException(
-                "Amendment %s (%s) does not apply to the template for %s (%s)",
-                target.getName(), target.getGridId(), source.getName(), source.getGridId());
-        }
-
-        Study amended = source.transientClone();
-        while (!target.equals(amended.getAmendment())) {
-            log.debug("Rolling {} back to {}", source, amended.getAmendment().getPreviousAmendment().getName());
-            for (Delta<?> delta : amended.getAmendment().getDeltas()) {
-                PlanTreeNode<?> affected = findNodeForDelta(amended, delta);
-                for (Change change : delta.getChanges()) {
-                    log.debug("Rolling back change {} on {}", change, affected);
-                    mutatorFactory.createMutator(affected, change).revert(affected);
-                }
-            }
-            amended.setAmendment(amended.getAmendment().getPreviousAmendment());
-        }
-
-        return amended;
-    }
-
-    /**
-     * Applies all the deltas in the given revision to source calendar,
-     * returning a new, transient PlannedCalendar.  The revision might be
+     * Applies all the deltas in the given revision to the source study,
+     * returning a new, transient Study.  The revision might be
      * and in-progress amendment or a customization.
      */
     public Study revise(Study source, Revision revision) {
+        log.debug("Revising {} with {}", source, revision);
         Study revised = source.transientClone();
+        apply(revised, revision);
+        return revised;
+    }
+
+    /**
+     * Applies all the deltas in the given revision directly to the given study.
+     */
+    public void apply(Study target, Revision revision) {
+        log.debug("Applying {} to {}", revision, target);
         for (Delta<?> delta : revision.getDeltas()) {
-            PlanTreeNode<?> affected = findNodeForDelta(revised, delta);
+            PlanTreeNode<?> affected = findNodeForDelta(target, delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).apply(affected);
             }
         }
-        return revised;
+    }
+
+    public void revert(Study target, Revision revision) {
+        log.debug("Reverting {} from {}", revision, target);
+        for (Delta<?> delta : revision.getDeltas()) {
+            PlanTreeNode<?> affected = findNodeForDelta(target, delta);
+            for (Change change : delta.getChanges()) {
+                log.debug("Rolling back change {} on {}", change, affected);
+                mutatorFactory.createMutator(affected, change).revert(affected);
+            }
+        }
+    }
+
+    public void updateRevision(Revision target, PlanTreeNode<?> node, Change change) {
+        log.debug("Updating {}", target);
+        if (node.isDetached()) {
+            log.debug("{} is detached; apply {} directly", node, change);
+            mutateNode(node, change);
+        } else {
+            log.debug("{} is part of the live tree; track {} separately", node, change);
+            Delta<?> existing = null;
+            for (Delta<?> delta : target.getDeltas()) {
+                if (isEquivalent(delta.getNode(), node)) {
+                    existing = delta;
+                    break;
+                }
+            }
+            if (existing == null) {
+                log.debug("  - this is the first change; create new delta", change, node);
+                target.getDeltas().add(Delta.createDeltaFor(node, change));
+            } else {
+                log.debug("  - it has been changed before; merge into existing delta {}", existing);
+                change.mergeInto(existing);
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void mutateNode(PlanTreeNode<?> node, Change change) {
+        mutatorFactory.createMutator(node, change).apply(node);
     }
 
     private PlanTreeNode<?> findNodeForDelta(Study revised, Delta<?> delta) {
         PlanTreeNode<?> affected = findEquivalentChild(revised.getPlannedCalendar(), delta.getNode());
         if (affected == null) {
             throw new StudyCalendarSystemException(
-                "Could not find a node in the cloned tree matching the node in delta: %s", delta);
+                "Could not find a node in the target study matching the node in %s", delta);
         }
         return affected;
     }
 
-    private PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
-        if (isEquivalent(node, toMatch)) return node;
-        if (node instanceof PlanTreeInnerNode) {
-            for (PlanTreeNode<?> child : ((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) node).getChildren()) {
-                PlanTreeNode<?> match = findEquivalentChild(child, toMatch);
+    private PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> tree, PlanTreeNode<?> deltaNode) {
+        if (isEquivalent(tree, deltaNode)) return tree;
+        if (tree instanceof PlanTreeInnerNode) {
+            for (PlanTreeNode<?> child : ((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) tree).getChildren()) {
+                PlanTreeNode<?> match = findEquivalentChild(child, deltaNode);
                 if (match != null) return match;
             }
         }
@@ -105,17 +122,62 @@ public class DeltaService {
     }
 
     private boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
-        return toMatch.getClass().equals(node.getClass())
-            && toMatch.getId().equals(node.getId());
+        return (toMatch == node) ||
+            (sameClassIgnoringProxies(toMatch, node) && toMatch.getId().equals(node.getId()));
+    }
+
+    // This is not a general solution, but it will work for all PlanTreeNode subclasses
+    private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
+        return toMatch.getClass().isAssignableFrom(node.getClass())
+            || node.getClass().isAssignableFrom(toMatch.getClass());
     }
 
     public void saveRevision(Revision revision) {
-        
+        if (revision == null) {
+            throw new NullPointerException("Can't save a null revision");
+        }
+        if (!(revision instanceof MutableDomainObject)) {
+            throw new StudyCalendarSystemException("%s is not a MutableDomainObject",
+                revision.getClass().getName());
+        }
+        findDaoAndSave((MutableDomainObject) revision);
+        for (Delta<?> delta : revision.getDeltas()) {
+            for (Change change : delta.getChanges()) {
+                if (change.getAction() == ChangeAction.ADD) {
+                    PlanTreeNode<?> child = ((Add) change).getChild();
+                    if (child != null) {
+                        findDaoAndSave(child);
+                    }
+                }
+            }
+            findDaoAndSave(delta.getNode());
+            deltaDao.save(delta);
+        }
+    }
+
+    private void findDaoAndSave(MutableDomainObject object) {
+        DomainObjectDao<?> dao = daoFinder.findDao(object.getClass());
+        if (!(dao instanceof MutableDomainObjectDao)) {
+            throw new StudyCalendarSystemException("%s does not implement %s", dao.getClass().getName(),
+                MutableDomainObjectDao.class.getName());
+        }
+        ((MutableDomainObjectDao) dao).save(object);
     }
 
     ////// CONFIGURATION
 
+    @Required
     public void setMutatorFactory(MutatorFactory mutatorFactory) {
         this.mutatorFactory = mutatorFactory;
+    }
+
+    @Required
+    public void setDeltaDao(DeltaDao deltaDao) {
+        this.deltaDao = deltaDao;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }

@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import org.easymock.EasyMock;
@@ -31,15 +30,28 @@ public class ListAddMutatorTest extends StudyCalendarTestCase {
         armDao = registerMockFor(ArmDao.class);
 
         add = new Add();
-        add.setNewChildId(arm.getId());
+        add.setChildId(arm.getId());
         add.setIndex(1);
 
         EasyMock.expect(armDao.getById(ARM_ID)).andReturn(arm).anyTimes();
         adder = new ListAddMutator(add, armDao);
     }
 
-    public void testApply() throws Exception {
+    public void testApplyFromDao() throws Exception {
         assertEquals("Test setup failure", 2, epoch.getArms().size());
+        replayMocks();
+        adder.apply(epoch);
+        verifyMocks();
+        assertEquals("child not added", 3, epoch.getArms().size());
+        assertSame("Wrong child added (or in wrong position): " + epoch.getArms(), arm, epoch.getArms().get(1));
+    }
+    
+    public void testApplyFromEmbeddedNewChild() throws Exception {
+        assertEquals("Test setup failure", 2, epoch.getArms().size());
+        arm.setId(null);
+        add.setChild(arm);
+
+        resetMocks();
         replayMocks();
         adder.apply(epoch);
         verifyMocks();
@@ -57,4 +69,31 @@ public class ListAddMutatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong child removed", "A1", epoch.getArms().get(0).getName());
         assertEquals("Wrong child removed", "A2", epoch.getArms().get(1).getName());
     }
+    
+    public void testRevertBeforeSaved() throws Exception {
+        epoch.addChild(arm, 1);
+        arm.setId(null);
+        add.setChild(arm);
+
+        replayMocks();
+        adder.revert(epoch);
+        verifyMocks();
+        assertEquals("child not removed", 2, epoch.getArms().size());
+        assertEquals("Wrong child removed", "A1", epoch.getArms().get(0).getName());
+        assertEquals("Wrong child removed", "A2", epoch.getArms().get(1).getName());
+    }
+
+    public void testApplyToTransientAddsTransientCopy() throws Exception {
+        assertEquals("Test setup failure", 2, epoch.getArms().size());
+
+        epoch.setMemoryOnly(true);
+        replayMocks();
+        adder.apply(epoch);
+        verifyMocks();
+        assertEquals("child not added", 3, epoch.getArms().size());
+        assertEquals("Wrong child added (or in wrong position)", ARM_ID, (int) epoch.getArms().get(1).getId());
+        assertNotSame("Child is direct from DAO", arm, epoch.getArms().get(1));
+        assertTrue("Child is not transient", epoch.getArms().get(1).isMemoryOnly());
+    }
+
 }

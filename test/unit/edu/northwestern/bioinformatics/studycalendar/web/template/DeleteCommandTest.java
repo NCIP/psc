@@ -1,25 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
 import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
-public class DeleteCommandTest extends StudyCalendarTestCase {
+public class DeleteCommandTest extends EditCommandTestCase {
     private DeleteCommand command;
-    private Study study;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         command = new DeleteCommand();
-        study = Fixtures.createSingleEpochStudy("S", "E1", "A", "B", "C");
+        command.setDeltaService(Fixtures.getTestingDeltaService());
+        study.getPlannedCalendar().addEpoch(Epoch.create("E1", "A", "B", "C"));
         study.getPlannedCalendar().addEpoch(Epoch.create("E2"));
+        Fixtures.assignIds(study);
+        command.setStudy(study);
     }
 
     public void testDeleteEpoch() throws Exception {
@@ -30,8 +34,7 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         command.setEpoch(epochs.get(0));
         command.performEdit();
 
-        assertEquals(1, epochs.size());
-        assertEquals("E2", epochs.get(0).getName());
+        DeltaAssertions.assertRemove("Wrong change", epochs.get(0), lastChange());
     }
     
     public void testDeleteLastEpochIsNoop() throws Exception {
@@ -44,8 +47,7 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         command.setEpoch(epochs.get(0));
         command.performEdit();
 
-        assertEquals(1, epochs.size());
-        assertEquals("E1", epochs.get(0).getName());
+        assertEquals("Should be no deltas", 0, dev.getDeltas().size());
     }
     
     public void testDeleteArm() throws Exception {
@@ -58,9 +60,7 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         command.setArm(arms.get(1));
         command.performEdit();
 
-        assertEquals(2, arms.size());
-        assertEquals("A", arms.get(0).getName());
-        assertEquals("C", arms.get(1).getName());
+        DeltaAssertions.assertRemove("Wrong change", arms.get(1), lastChange());
     }
 
     public void testDeleteLastArmIsNoop() throws Exception {
@@ -71,8 +71,7 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
         command.setArm(arms.get(0));
         command.performEdit();
 
-        assertEquals(1, arms.size());
-        assertEquals("E2", arms.get(0).getName());
+        assertEquals("Should be no deltas", 0, dev.getDeltas().size());
     }
 
     public void testEpochView() throws Exception {
@@ -83,5 +82,19 @@ public class DeleteCommandTest extends StudyCalendarTestCase {
     public void testArmView() throws Exception {
         command.setArm(study.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
         assertEquals("deleteArm", command.getRelativeViewName());
+    }
+
+    public void testDeleteNewlyAddedEpoch() throws Exception {
+        assertEquals("Expected three epochs to begin with", 2,
+            study.getPlannedCalendar().getEpochs().size());
+        Epoch newlyAdded = setId(74, Epoch.create("New"));
+        command.updateRevision(study.getPlannedCalendar(), Add.create(newlyAdded));
+        command.setEpoch(newlyAdded);
+
+        command.performEdit();
+
+        // deleting a newly added object cancels the add, so...
+        assertEquals("Add not canceled: " + dev.getDeltas().get(0).getChanges(), 0,
+            dev.getDeltas().get(0).getChanges().size());
     }
 }

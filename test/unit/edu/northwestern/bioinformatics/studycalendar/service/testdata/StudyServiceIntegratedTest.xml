@@ -1,0 +1,10 @@
+<dataset>
+    <!-- This test is save-only - these are here for cleanup -->
+    <AMENDMENTS id="-1" amendment_date="2007-01-01"/>
+    <STUDIES id="-1" name="Don't care"/>
+    <PLANNED_CALENDARS id="-1" study_id="-1"/>
+    <EPOCHS id="-1" planned_calendar_id="-1" name="Don't care"/>
+    <ARMS id="-1" epoch_id="-1" name="Don't care"/>
+    <DELTAS id="-1" node_id="-1" node_type="cal" amendment_id="-1"/>
+    <CHANGES id="-1" delta_id="-1" action="add"/>
+</dataset>

@@ -4,18 +4,29 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
-import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.InheritanceType;
+import javax.persistence.Inheritance;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Cascade;
 
 /**
  * @author Rhett Sutphin
@@ -31,7 +42,6 @@ import org.hibernate.annotations.*;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="node_type", discriminatorType = DiscriminatorType.STRING)
 public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDomainObject {
-    private Revision revision;
     private List<Change> changes;
     private T node;
 
@@ -53,6 +63,12 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
             delta = new PlannedCalendarDelta((PlannedCalendar) node);
         } else if (node instanceof Epoch) {
             delta = new EpochDelta((Epoch) node);
+        } else if (node instanceof Arm) {
+            delta = new ArmDelta((Arm) node);
+        } else if (node instanceof Period) {
+            delta = new PeriodDelta((Period) node);
+        } else if (node instanceof PlannedEvent) {
+            delta = new PlannedEventDelta((PlannedEvent) node);
         } else {
             throw new StudyCalendarError("Unimplemented node type: %s", node.getClass().getName());
         }
@@ -68,7 +84,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         changes.add(change);
     }
 
-    @Transient
+    @Transient // here only -- mapped in subclasses
     public T getNode() {
         return node;
     }
@@ -77,18 +93,10 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         this.node = node;
     }
 
-    @Transient
-    public Revision getRevision() {
-        return revision;
-    }
-
-    public void setRevision(Revision revision) {
-        this.revision = revision;
-    }
     @OneToMany
     @JoinColumn(name = "delta_id", nullable = false)
     @OrderBy // order by ID for testing consistency // TODO: explicit ordering
-    @Cascade(value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<Change> getChanges() {
         return changes;
     }

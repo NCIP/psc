@@ -38,10 +38,15 @@ public class StudyService {
         studyDao.save(study);
     }
 
+    // TODO: need replace all business uses of StudyDao#save with this method
     public void save(Study study) {
-        deltaService.saveRevision(study.getAmendment());
-        // TODO: use DeltaService#amend to merge in revision changes
         studyDao.save(study);
+        if (study.getAmendment() != null) {
+            deltaService.saveRevision(study.getAmendment());
+        }
+        if (study.getDevelopmentAmendment() != null) {
+            deltaService.saveRevision(study.getDevelopmentAmendment());
+        }
     }
 
     ////// CONFIGURATION

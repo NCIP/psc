@@ -33,6 +33,7 @@
         />
     <CHANGES id="-12"
         action="reorder"
+        attribute="-2"
         old_value="1"
         new_value="0"
         delta_id="-200"

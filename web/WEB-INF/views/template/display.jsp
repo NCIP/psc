@@ -84,7 +84,7 @@
             }
             table.periods tr.arrows td {
                 border-width: 0 !important;
-				border-top-width: 1px;
+                border-top-width: 1px;
             }
             .days {
                 margin: 0 3em 3em 5em;
@@ -126,7 +126,7 @@
                 list-style-type: none;
             }
         </style>
-        <c:if test="${study.amended or (not plannedCalendar.complete)}">
+        <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
         </c:if>
         <script type="text/javascript">
@@ -432,7 +432,7 @@
 
             function epochsAreaSetup() {
                 registerSelectArmHandlers()
-                <c:if test="${study.amended or (not plannedCalendar.complete)}">
+                <c:if test="${not empty developmentRevision}">
                     createAllArmControls()
                     createAllEpochControls()
                 </c:if>
@@ -462,11 +462,8 @@
 			}
 
 
-            <c:if test="${not plannedCalendar.complete}">
+            <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", createStudyControls)
-            </c:if>
-            <c:if test="${study.amended}">
-                Event.observe(window, "load", createAddEpochControl)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
 			<c:if test="${not empty arm.months}">
@@ -482,13 +479,11 @@
     </head>
     <body>
 
-    <%--<h1>Template for <span id="study-name">${study.name}</span></h1>--%>
-
         <ul id="admin-options">
-            <c:if test="${not study.amended}">
-                <c:if test="${not plannedCalendar.complete}">
-                    <tags:restrictedListItem url="/pages/cal/markComplete" queryString="study=${study.id}" cssClass="control">Mark this template complete</tags:restrictedListItem>
-                </c:if>
+            <c:if test="${not empty developmentRevision}">
+                <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">Release this template for use</tags:restrictedListItem>
+            </c:if>
+            <c:if test="${empty developmentRevision}">
                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                 <c:if test="${not empty study.studySites}">
                     <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
@@ -522,8 +517,7 @@
                 </c:if>
             </c:if>
         </ul>
-        <br>
-        <br>
+        <%--
         <div>
             <laf:box title="Amendments Template">
                 <laf:division>
@@ -541,6 +535,7 @@
                 </laf:division>
             </laf:box>
         </div>
+        --%>
         <div id="epochs" class="section">
             <laf:box title="Epochs and arms">
                 <laf:division>

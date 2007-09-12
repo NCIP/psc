@@ -43,18 +43,17 @@
     </jsp:attribute>
 </laf:header>
 <tags:breadcrumbs anchors="${breadcrumbs}"/>
-<c:set var="__decorator_title"><decorator:title/></c:set>
-<laf:body title="${__decorator_title}">
+<laf:body>
     <laf:flashMessage/>
     <decorator:body/>
 </laf:body>
 
 <laf:footer>
-        <div id="footmenu">
-            <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
-        </div>
+    <div id="footmenu">
+        <a href="http://gforge.nci.nih.gov/tracker/?func=add&group_id=31&atid=1043">Provide Feedback</a>
+    </div>
 </laf:footer>
-<%-- in a real application, you'd probably want to make this dependent on a config option --%>
+
 <tags:ssoForm/>
 <tags:errorConsole/>
 <c:if test="${configuration.map.showDebugInformation}">

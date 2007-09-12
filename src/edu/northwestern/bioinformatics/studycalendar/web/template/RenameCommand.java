@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 import java.util.Map;
 
@@ -47,14 +46,17 @@ public class RenameCommand extends ModalEditCommand {
             return "rename";
         }
 
-        protected final void rename(Named named) {
-            named.setName(getValue());
+        protected void rename(Named target) {
+            updateRevision((PlanTreeNode<?>) target,
+                PropertyChange.create("name", target.getName(), getValue()));
         }
     }
 
+    // Rename study is unique in that it does not result in a Change
+    // TODO: decide if this is reasonable
     private class RenameStudy extends RenameMode {
         public void performEdit() {
-            rename(getStudy());
+            getStudy().setName(getValue());
         }
     }
 
@@ -72,9 +74,8 @@ public class RenameCommand extends ModalEditCommand {
     private class RenameArm extends RenameMode {
         public void performEdit() {
             rename(getArm());
-            if (!getArm().getEpoch().isMultipleArms()) {
+            if (getArm().getEpoch() != null && !getArm().getEpoch().isMultipleArms()) {
                 rename(getArm().getEpoch());
-                setEpoch(getArm().getEpoch());
             }
         }
     }

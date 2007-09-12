@@ -79,7 +79,7 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implem
     @OneToMany
     @JoinColumn(name="epoch_id", nullable=false)
     @IndexColumn(name="list_index")
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<Arm> getArms() {
         return getChildren();
     }

@@ -19,6 +19,12 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         children = createChildrenCollection();
     }
 
+    // Utility method for cleanliness
+    @SuppressWarnings({ "unchecked" })
+    public static PlanTreeInnerNode<?, PlanTreeNode<?>, ?> cast(PlanTreeNode<?> source) {
+        return (PlanTreeInnerNode<?,PlanTreeNode<?>, ?>) source;
+    }
+
     protected abstract G createChildrenCollection();
     public abstract Class<C> childClass();
 

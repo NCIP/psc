@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 
 import java.util.Map;
 import java.util.Collections;
@@ -12,15 +13,15 @@ import static org.easymock.classextension.EasyMock.*;
 /**
  * @author Rhett Sutphin
  */
-public class ModalEditCommandTest extends StudyCalendarTestCase {
+public class ModalEditCommandTest extends EditCommandTestCase {
     private ModalEditCommand command;
-    private Study study;
     private ModalEditCommand.Mode mockMode;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         command = new TestableCommand();
-        study = Fixtures.createSingleEpochStudy("S", "E", "A", "B");
+        study.getPlannedCalendar().addEpoch(Epoch.create("E", "A", "B"));
         mockMode = registerMockFor(ModalEditCommand.Mode.class);
     }
 
@@ -63,10 +64,14 @@ public class ModalEditCommandTest extends StudyCalendarTestCase {
         command = new TestableCommand() {
             protected Mode studyMode() { return mockMode; }
         };
-        command.setStudy(study);
     }
 
-    private static class TestableCommand extends ModalEditCommand {
+    private class TestableCommand extends ModalEditCommand {
+        public TestableCommand() {
+            setDeltaService(Fixtures.getTestingDeltaService());
+            setStudy(study);
+        }
+
         protected Mode studyMode() { return new TestMode("Study"); }
         protected Mode epochMode() { return new TestMode("Epoch"); }
         protected Mode armMode()   { return new TestMode("Arm");   }

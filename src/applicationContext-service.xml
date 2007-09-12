@@ -22,6 +22,10 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.UserService"/>
     <bean id="studyService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudyService"/>
+    <bean id="amendmentService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.AmendmentService"/>
     <bean id="deltaService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
+    <bean id="mutatorFactory" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
 </beans>

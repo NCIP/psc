@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -19,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
 import java.util.Map;
 import java.util.Collections;
@@ -28,12 +28,13 @@ import java.util.Collections;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
-public class MarkCompleteController extends PscSimpleFormController {
+public class ReleaseAmendmentController extends PscSimpleFormController {
     private StudyDao studyDao;
+    private AmendmentService amendmentService;
 
-    public MarkCompleteController() {
-        setCommandClass(MarkCompleteCommand.class);
-        setFormView("markComplete");
+    public ReleaseAmendmentController() {
+        setCommandClass(ReleaseAmendmentCommand.class);
+        setFormView("template/releaseAmendment");
         setSuccessView("redirectToStudyList");
         setBindOnNewForm(true);
         setCrumb(new Crumb());
@@ -41,24 +42,23 @@ public class MarkCompleteController extends PscSimpleFormController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new MarkCompleteCommand(studyDao);
+        return new ReleaseAmendmentCommand(amendmentService);
     }
 
     @Override
     protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
          // for breadcrumbs
-        return new ModelMap("study", ((MarkCompleteCommand) oCommand).getStudy());
+        return new ModelMap("study", ((ReleaseAmendmentCommand) oCommand).getStudy());
     }
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         ControllerTools.registerDomainObjectEditor(binder, "study", studyDao);
-        binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
     }
 
     @Override
     protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
-        ((MarkCompleteCommand) oCommand).apply();
+        ((ReleaseAmendmentCommand) oCommand).apply();
         // don't want a model because it's a redirect with no params
         return new ModelAndView(getSuccessView());
     }
@@ -70,11 +70,17 @@ public class MarkCompleteController extends PscSimpleFormController {
         this.studyDao = studyDao;
     }
 
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
+
     private static class Crumb extends DefaultCrumb {
         public Crumb() {
-            super("Mark Complete");
+            super("Release");
         }
 
+        @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             return Collections.singletonMap("study", context.getStudy().getId().toString());
         }

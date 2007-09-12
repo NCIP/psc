@@ -53,13 +53,6 @@ public class PlannedCalendarDaoTest extends DaoTestCase {
         }
     }
 
-    public void testScheduleCompleted() throws Exception {
-        PlannedCalendar sched = dao.getById(-100);
-        // TODO: why is this in the DAO test?
-        sched.setComplete(true);
-        assertEquals("Could not mark sched complete", true, sched.isComplete());
-    }
-
     private static void assertEpoch(
         String message, Integer expectedId, String expectedName, Epoch actualEpoch
     ) {
