@@ -25,7 +25,9 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author Rhett Sutphin
  */
-public abstract class AuditIntegratedTest extends DaoTestCase {
+public class AuditIntegratedTest extends DaoTestCase {
+    public void testDisabled() { }
+    /*
 	private static final DataAuditInfo INFO = new DataAuditInfo("dun", "127.1.2.7", DateUtils.createDate(2004,
 			Calendar.NOVEMBER, 2), "/studycalendar/zippo");
 
@@ -77,13 +79,12 @@ public abstract class AuditIntegratedTest extends DaoTestCase {
 		assertAuditValue(arm2RenameEventId, "name", "C", "Carl");
 	}
 
-	/*
-	 * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 = created.getPlannedCalendar().getEpochs().get(1); {
-	 * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
-	 * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
-	 * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
-	 * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
-	 */
+//	 * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 = created.getPlannedCalendar().getEpochs().get(1); {
+//	 * Study reloaded = studyDao.getById(created.getId()); Epoch reloadedE1 = reloaded.getPlannedCalendar().getEpochs().get(1);
+//	 * reloaded.getPlannedCalendar().getEpochs().remove(reloadedE1); reloaded.getPlannedCalendar().getEpochs().add(reloadedE1);
+//	 * studyDao.save(reloaded); } interruptSession(); dumpResults("SELECT * FROM epochs"); dumpResults("SELECT * FROM audit_events");
+//	 * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
+	
 	public void testDelete() throws Exception {
 		// delete an arm
 		Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
@@ -162,4 +163,5 @@ public abstract class AuditIntegratedTest extends DaoTestCase {
 		assertEquals(operation.name() + " not logged for " + changed, 1, events.size());
 		return ((Number) events.get(0).get("id")).intValue();
 	}
+	*/
 }
