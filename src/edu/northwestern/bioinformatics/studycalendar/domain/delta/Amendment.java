@@ -2,13 +2,22 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.ArrayList;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.ManyToOne;
+import javax.persistence.Column;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
@@ -18,7 +27,8 @@ import org.hibernate.annotations.Cascade;
  * For example, if you have a calendar C with amendments A0, A1, A2, and A3,
  * the calendar loaded from the database will reflect amendment A3.  If you want
  * to see the calendar as it existed at A1, you need to do a reverse merge from 3 to 2
- * and then from 2 to 1.  {@link edu.northwestern.bioinformatics.studycalendar.service.DeltaService#getAmendedStudy}
+ * and then from 2 to 1.
+ * {@link edu.northwestern.bioinformatics.studycalendar.service.AmendmentService#getAmendedStudy}
  * implements this process.
  *
  * @author Rhett Sutphin
@@ -80,6 +90,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @OrderBy // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
