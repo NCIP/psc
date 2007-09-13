@@ -5,9 +5,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.springframework.web.servlet.mvc.Controller;
-
-import java.util.Arrays;
 
 /**
  * These tests are intended to verify that the various application contexts will all load when
@@ -19,6 +16,7 @@ public class ApplicationContextInitializationTest extends StudyCalendarTestCase 
 
     private MockServletContext servletContext;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         servletContext = new MockServletContext("web", new FileSystemResourceLoader());
@@ -37,11 +35,12 @@ public class ApplicationContextInitializationTest extends StudyCalendarTestCase 
         assertDispatcherServletConfigLoads("public");
     }
 
-    private void assertDispatcherServletConfigLoads(String servletName) {
+    private void assertDispatcherServletConfigLoads(String servletName) throws Exception {
         try {
             createWebApplicationContextForServlet(servletName);
         } catch (Exception e) {
-            fail("Loading the configuration for MVC servlet '" + servletName + "' failed:  " + e.getMessage());
+            throw new StudyCalendarError("Loading the configuration for MVC servlet '" + servletName
+                + "' failed:  " + e.getMessage(), e);
         }
     }
 
