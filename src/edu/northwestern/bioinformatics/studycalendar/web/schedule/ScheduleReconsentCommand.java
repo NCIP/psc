@@ -28,7 +28,7 @@ public class ScheduleReconsentCommand implements Validatable {
     public void validate(Errors errors) {
         if(startDate != null) {
             if(startDate.before(nowFactory.getNow())) {
-                startDate = nowFactory.getNow();
+                errors.rejectValue("startDate", "error.start.date.after.current.date");
             }
         }
     }

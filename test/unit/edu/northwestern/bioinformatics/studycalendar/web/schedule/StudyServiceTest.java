@@ -38,9 +38,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         study = setId(1 , new Study());        
     }
 
-    public void testApply() throws Exception{
+    public void testReconsentArm1() throws Exception{
         StaticNowFactory staticNowFactory = new StaticNowFactory();
-        staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
+        staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JUNE, 20));
 
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(createParticipant("John", "Doe"));
@@ -75,9 +75,53 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Details");
         verifyMocks();
 
+        List<ScheduledEvent> list = calendar.getScheduledArms().get(0).getEventsByDate().get(
+                DateTools.createTimestamp(2005, Calendar.JULY, 3));
+        
+        assertEquals(2, list.size());
+        assertEquals("Reconsent", list.get(1).getActivity().getName());
+    }
+
+    public void testReconsentArm2() throws Exception{
+        StaticNowFactory staticNowFactory = new StaticNowFactory();
+        staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 20));
+
+        StudyParticipantAssignment spa = new StudyParticipantAssignment();
+        spa.setParticipant(createParticipant("John", "Doe"));
+
+
+        ScheduledCalendar calendar = new ScheduledCalendar();
+        spa.setScheduledCalendar(calendar);
+        spa.setParticipant(createParticipant("Alice", "Childress"));
+
+        ScheduledArm arm1 = new ScheduledArm();
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 1,
+            new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 3));
+        arm1.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.JULY, 8));
+        calendar.addArm(arm1);
+
+        ScheduledArm arm2 = new ScheduledArm();
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1,
+            new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3));
+        arm2.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 8));
+        calendar.addArm(arm2);
+
+        List<StudyParticipantAssignment> assignments = Collections.singletonList(spa);
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
+
+        Activity reconsent = setId(1, createNamedInstance("Reconsent", Activity.class));
+        expect(activityDao.getByName("Reconsent")).andReturn(reconsent);
+
+        studyDao.save(study);
+        replayMocks();
+        service.scheduleReconsent(study, staticNowFactory.getNow(), "Details");
+        verifyMocks();
+
         List<ScheduledEvent> list = calendar.getScheduledArms().get(1).getEventsByDate().get(
                 DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
-        
+
         assertEquals(2, list.size());
         assertEquals("Reconsent", list.get(1).getActivity().getName());
     }
