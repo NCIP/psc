@@ -74,7 +74,7 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
     @OneToMany
     @JoinColumn(name="planned_calendar_id", nullable=true)
     @IndexColumn(name="list_index")
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
+    @Cascade(value = { CascadeType.ALL })
     public List<Epoch> getEpochs() {
         return getChildren();
     }

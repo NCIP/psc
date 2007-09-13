@@ -63,6 +63,25 @@ public class ArmDaoTest extends DaoTestCase {
             assertEquals("Wrong repetitions for checkup period", 1, checkup.getRepetitions());
         }
     }
+    
+    public void testSaveArmWithoutEpoch() throws Exception {
+        Integer id;
+        {
+            Arm arm = new Arm();
+            arm.setName("Hula");
+
+            dao.save(arm);
+            assertNotNull("Not saved", arm.getId());
+            id = arm.getId();
+        }
+
+        interruptSession();
+
+        {
+            Arm loaded = dao.getById(id);
+            assertEquals("Wrong arm", "Hula", loaded.getName());
+        }
+    }
 
 
 }

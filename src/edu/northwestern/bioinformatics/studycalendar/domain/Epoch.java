@@ -77,9 +77,9 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implem
     // This is annotated this way so that the IndexColumn will work with
     // the bidirectional mapping.  See section 2.4.6.2.3 of the hibernate annotations docs.
     @OneToMany
-    @JoinColumn(name="epoch_id", nullable=false)
+    @JoinColumn(name="epoch_id")
     @IndexColumn(name="list_index")
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade(value = { CascadeType.ALL })
     public List<Arm> getArms() {
         return getChildren();
     }

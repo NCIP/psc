@@ -75,4 +75,21 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
             assertEquals("Wrong (new) 4th event", newEventId, iterator.next().getId());
         }
     }
+
+    public void testSaveDetached() throws Exception {
+        Integer id;
+        {
+            Period period = new Period();
+            period.setName("Renaissance");
+            getDao().save(period);
+            assertNotNull("not saved", period.getId());
+            id = period.getId();
+        }
+
+        interruptSession();
+
+        Period loaded = getDao().getById(id);
+        assertNotNull("Could not reload", loaded);
+        assertEquals("Wrong period loaded", "Renaissance", loaded.getName());
+    }
 }

@@ -86,7 +86,7 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
     // This is annotated this way so that the IndexColumn in the parent
     // will work with the bidirectional mapping
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(insertable=false, updatable=false, nullable=false)
+    @JoinColumn(insertable=false, updatable=false)
     public Epoch getEpoch() {
         return getParent();
     }
@@ -96,7 +96,7 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
     }
 
     @OneToMany (mappedBy = "arm")
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade (value = { CascadeType.ALL })
     @Sort (type = SortType.NATURAL)
     public SortedSet<Period> getPeriods() {
         return getChildren();

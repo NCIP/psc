@@ -66,7 +66,7 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
         this.activity = activity;
     }
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "period_id")
     public Period getPeriod() {
         return getParent();

@@ -171,9 +171,10 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
 
     @OneToMany(mappedBy = "period")
     @OrderBy // order by ID for testing consistency
+    // TODO: why isn't this just "ALL"?
     @Cascade(value = { CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.REPLICATE,
-            CascadeType.SAVE_UPDATE, CascadeType.DELETE_ORPHAN })
+            CascadeType.SAVE_UPDATE })
     public List<PlannedEvent> getPlannedEvents() {
         return getChildren();
     }
