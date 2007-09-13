@@ -17,6 +17,7 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
     protected MockServletContext servletContext;
     protected MockHttpSession session;
     protected ControllerTools controllerTools;
+    protected TemplateService templateService;
 
     @Override
     protected void setUp() throws Exception {
@@ -28,11 +29,12 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
         request.setSession(session);
         response = new MockHttpServletResponse();
         controllerTools = new ControllerTools();
-        controllerTools.setTemplateService(new TemplateService() {
+        templateService = new TemplateService() {
             @Override
             public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
                 return node.getParent();
             }
-        });
+        };
+        controllerTools.setTemplateService(templateService);
     }
 }

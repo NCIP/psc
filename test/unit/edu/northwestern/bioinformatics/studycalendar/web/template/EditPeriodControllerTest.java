@@ -19,6 +19,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
     private EditPeriodCommand command;
     private PeriodDao periodDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         periodDao = registerDaoMockFor(PeriodDao.class);
@@ -30,6 +31,8 @@ public class EditPeriodControllerTest extends ControllerTestCase {
             }
         };
         controller.setPeriodDao(periodDao);
+        controller.setControllerTools(controllerTools);
+        controller.setTemplateService(templateService);
     }
 
     private EditPeriodCommand command() {
@@ -62,9 +65,9 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         verifyMocks();
 
         // TODO: make these pass again
-//        assertEquals("Wrong view", "redirectToCalendarTemplate", mv.getViewName());
-//        assertEquals("Study ID missing from model", studyId, mv.getModel().get("study"));
-//        assertEquals("Arm ID missing from model", armId, mv.getModel().get("arm"));
+        assertEquals("Wrong view", "redirectToCalendarTemplate", mv.getViewName());
+        assertEquals("Study ID missing from model", studyId, mv.getModel().get("study"));
+        assertEquals("Arm ID missing from model", armId, mv.getModel().get("arm"));
 
         assertEquals("Duration quantity not updated", expectedQuantity, expected.getDuration().getQuantity());
         assertEquals("Duration unit not updated", expectedUnit, expected.getDuration().getUnit());
