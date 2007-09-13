@@ -22,6 +22,9 @@ public class AmendmentDaoTest extends DaoTestCase {
         amendment.setDate("02/2008");
         List<Amendment> listBeforeAdding = amendmentDao.getAll();
         amendmentDao.save(amendment);
+
+        interruptSession();
+
         List<Amendment> listAfterAdding = amendmentDao.getAll();
         assertEquals("Amendment wasn't added ", listBeforeAdding.size()+1 , listAfterAdding.size());
     }

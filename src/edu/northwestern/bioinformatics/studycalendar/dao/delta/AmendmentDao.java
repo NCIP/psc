@@ -21,9 +21,4 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     public List<Amendment> getAll() {
         return getHibernateTemplate().find("from Amendment");
     }
-
-    @Deprecated
-    public Amendment getByStudyId(Integer studyId) {
-        throw new UnsupportedOperationException("Deprecated");
-    }
 }
