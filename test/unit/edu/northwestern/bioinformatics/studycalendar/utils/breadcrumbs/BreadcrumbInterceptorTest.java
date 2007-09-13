@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -25,12 +27,14 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
 
     private Study study;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         creator = registerMockFor(BreadcrumbCreator.class);
 
         interceptor = new BreadcrumbInterceptor();
         interceptor.setBreadcrumbCreator(creator);
+        interceptor.setTemplateService(new TestingTemplateService());
 
         study = Fixtures.createSingleEpochStudy("S", "E", "A1", "A2");
     }
