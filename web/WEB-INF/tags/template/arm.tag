@@ -3,9 +3,8 @@
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
-
 <%--<laf:box title="${arm.base.qualifiedName}">--%>
-<c:set var="editable" value="${arm.base.epoch.plannedCalendar.study.inDevelopment}"/>
+<c:set var="editable" value="${plannedCalendar.study.inDevelopment}"/>
 
 <%--<h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>--%>
 

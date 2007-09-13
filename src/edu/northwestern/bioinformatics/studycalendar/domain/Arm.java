@@ -48,8 +48,8 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
     @Transient
     public String getQualifiedName() {
         StringBuilder sb = new StringBuilder();
-        sb.append(getEpoch().getName());
-        if (getEpoch().isMultipleArms()) {
+        sb.append(getEpoch() == null ? getName() : getEpoch().getName());
+        if (getEpoch() != null && getEpoch().isMultipleArms()) {
             sb.append(": ").append(getName());
         }
         return sb.toString();

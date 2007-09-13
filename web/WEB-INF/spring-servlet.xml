@@ -73,7 +73,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
         <property name="crumb.parent"><ref local="studyListController"/></property>
     </bean>
-    <bean name="/cal/template/select" id="selectArmController"
+    <bean name="/cal/template/select" id="selectArmController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
         <property name="parameterName"><value>arm</value></property>
         <property name="viewName"><value>template/ajax/selectArm</value></property>

@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
+import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This controller loads a single domain object and passes it to the configured view.
@@ -29,11 +31,13 @@ public class ReturnSingleObjectController<T extends DomainObject> implements Con
     private String parameterName;
     private String viewName;
 
+    @SuppressWarnings({ "unchecked" })
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int armId = ServletRequestUtils.getRequiredIntParameter(request, getParameterName());
-        Map<String, Object> model
-            = Collections.singletonMap(getParameterName(), wrapObject(dao.getById(armId)));
-
+        int id = ServletRequestUtils.getRequiredIntParameter(request, getParameterName());
+        T obj = dao.getById(id);
+        Map<String, Object> model = new HashMap<String, Object>();
+        amplifyModel(obj, model);
+        model.put(getParameterName(), wrapObject(obj));
         return new ModelAndView(getViewName(), model);
     }
 
@@ -49,6 +53,9 @@ public class ReturnSingleObjectController<T extends DomainObject> implements Con
 
     protected Object wrapObject(T t) {
         return t;
+    }
+
+    protected void amplifyModel(T t, Map<String, Object> model) {
     }
 
     ////// CONFIGURATION

@@ -13,14 +13,17 @@ public class SelectArmControllerTest extends ControllerTestCase {
     private SelectArmController controller;
     private ArmDao armDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         controller = new SelectArmController();
         armDao = registerDaoMockFor(ArmDao.class);
 
         controller.setDao(armDao);
+        controller.setControllerTools(controllerTools);
     }
     
+    // TODO: test the inclusion of the plan tree hierarchy
     public void testRequest() throws Exception {
         request.setMethod("GET");
         request.setParameter("arm", "90");
@@ -33,7 +36,7 @@ public class SelectArmControllerTest extends ControllerTestCase {
 
         assertEquals("template/ajax/selectArm", mv.getViewName());
 
-        assertEquals(1, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 2, mv.getModel().size());
         Object actualArm = mv.getModel().get("arm");
         assertNotNull("arm missing", actualArm);
         assertTrue("arm is not wrapped", actualArm instanceof ArmTemplate);
