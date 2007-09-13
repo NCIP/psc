@@ -3,18 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
  */
 public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
+    private TemplateService templateService;
     private BreadcrumbCreator breadcrumbCreator;
 
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {
@@ -38,7 +41,7 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
-        return BreadcrumbContext.create(basis);
+        return BreadcrumbContext.create(basis, templateService);
     }
 
     private boolean isRedirect(ModelAndView mv) {
@@ -48,7 +51,13 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
 
     ////// CONFIGURATION
 
+    @Required
     public void setBreadcrumbCreator(BreadcrumbCreator breadcrumbCreator) {
         this.breadcrumbCreator = breadcrumbCreator;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

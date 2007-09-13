@@ -95,7 +95,7 @@ public class DomainObjectTools {
             Class<? extends DomainObject> klass = DETAIL_ORDER.get(i);
             if (klass.isAssignableFrom(target)) return i;
         }
-        throw new StudyCalendarSystemException("Could not match %s in DETAIL_ORDER", target.getName());
+        return -1;
     }
 
     public static Collection<Integer> collectIds(Collection<? extends DomainObject> objs) {

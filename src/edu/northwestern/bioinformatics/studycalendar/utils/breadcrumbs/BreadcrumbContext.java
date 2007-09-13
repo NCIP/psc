@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.apache.commons.beanutils.PropertyUtils;
 
@@ -29,10 +30,14 @@ public class BreadcrumbContext {
     private StudySite studySite;
     private Activity activity;
 
-    public BreadcrumbContext() { }
+    private TemplateService templateService;
 
-    public static BreadcrumbContext create(DomainObject basis) {
-        BreadcrumbContext context = new BreadcrumbContext();
+    public BreadcrumbContext(TemplateService templateService) {
+        this.templateService = templateService;
+    }
+
+    public static BreadcrumbContext create(DomainObject basis, TemplateService templateService) {
+        BreadcrumbContext context = new BreadcrumbContext(templateService);
         if (basis != null) {
             StringBuilder propertyName = new StringBuilder(basis.getClass().getSimpleName());
             propertyName.setCharAt(0, Character.toLowerCase(propertyName.charAt(0)));
@@ -72,25 +77,25 @@ public class BreadcrumbContext {
 
     public void setEpoch(Epoch epoch) {
         if (epoch == null) return;
-        setPlannedCalendar(epoch.getPlannedCalendar());
+        setPlannedCalendar(templateService.findParent(epoch));
         this.epoch = epoch;
     }
 
     public void setArm(Arm arm) {
         if (arm == null) return;
-        setEpoch(arm.getEpoch());
+        setEpoch(templateService.findParent(arm));
         this.arm = arm;
     }
 
     public void setPeriod(Period period) {
         if (period == null) return;
-        setArm(period.getArm());
+        setArm(templateService.findParent(period));
         this.period = period;
     }
 
     public void setPlannedEvent(PlannedEvent plannedEvent) {
         if (plannedEvent != null) {
-            setPeriod(plannedEvent.getPeriod());
+            setPeriod(templateService.findParent(plannedEvent));
         }
         this.plannedEvent = plannedEvent;
     }

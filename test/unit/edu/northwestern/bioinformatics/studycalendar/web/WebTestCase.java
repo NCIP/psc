@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -28,13 +28,8 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
         request.setMethod("POST");
         request.setSession(session);
         response = new MockHttpServletResponse();
+        templateService = new TestingTemplateService();
         controllerTools = new ControllerTools();
-        templateService = new TemplateService() {
-            @Override
-            public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
-                return node.getParent();
-            }
-        };
         controllerTools.setTemplateService(templateService);
     }
 }

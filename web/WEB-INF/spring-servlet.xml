@@ -48,7 +48,7 @@
         <property name="interceptors">
             <list>
                 <!--<ref bean="loginCheckInterceptor"/>-->
-                <!--<ref bean="breadcrumbInterceptor"/>-->
+                <ref bean="breadcrumbInterceptor"/>
                 <ref bean="sectionInterceptor"/>
             </list>
         </property>
@@ -56,13 +56,11 @@
 
     <bean id="loginCheckInterceptor" autowire="byType" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
-    <!-- Breadcrumbs are incompatible with amendments for the moment.  TODO: fix and enable.
     <bean id="breadcrumbInterceptor" autowire="byType"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
 
     <bean id="breadcrumbCreator" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbCreator"/>
-    -->
 
     <bean id="noCacheTemplate" abstract="true">
         <property name="cacheSeconds"><value>0</value></property>

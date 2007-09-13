@@ -140,6 +140,17 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(PlannedEvent.class, StudyParticipantAssignment.class);
     }
 
+    public void testUnknownIsLessSpecificThanEverything() throws Exception {
+        DomainObject anon = new DomainObject() {
+            public Integer getId() { throw new UnsupportedOperationException("getId not implemented"); }
+            public void setId(Integer integer) { throw new UnsupportedOperationException("setId not implemented"); }
+        };
+
+        assertIsMoreSpecific(anon.getClass(), Site.class);
+        assertIsMoreSpecific(anon.getClass(), Study.class);
+        assertIsMoreSpecific(anon.getClass(), ScheduledEvent.class);
+    }
+
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {
         assertTrue(moreSpecific.getName() + " should be more specific than " + lessSpecific.getName(), DomainObjectTools.isMoreSpecific(moreSpecific, lessSpecific));
         assertFalse(lessSpecific.getName() + " should be less specific than " + moreSpecific.getName(), DomainObjectTools.isMoreSpecific(lessSpecific, moreSpecific));

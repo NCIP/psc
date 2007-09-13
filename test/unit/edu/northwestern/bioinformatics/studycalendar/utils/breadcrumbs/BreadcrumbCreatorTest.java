@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
 
@@ -36,10 +38,11 @@ public class BreadcrumbCreatorTest extends StudyCalendarTestCase {
     private DefaultListableBeanFactory beanFactory;
     private BreadcrumbContext context;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         urlResolver = registerMockFor(ControllerUrlResolver.class);
-        context = new BreadcrumbContext();
+        context = new BreadcrumbContext(new TestingTemplateService());
 
         breadcrumbCreator = new BreadcrumbCreator();
         breadcrumbCreator.setUrlResolver(urlResolver);
