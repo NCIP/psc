@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import java.util.Map;
 import java.util.Date;
@@ -33,6 +34,8 @@ import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
  */
 public class ControllerTools {
     private static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>();
+
+    private TemplateService templateService;
 
     // TODO: make date format externally configurable
     public PropertyEditor getDateEditor(boolean required) {
@@ -90,22 +93,22 @@ public class ControllerTools {
 
     public void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {
         model.put("plannedEvent", event);
-        if (event != null) addHierarchyToModel(event.getPeriod(), model);
+        if (event != null) addHierarchyToModel(templateService.findParent(event), model);
     }
 
     public void addHierarchyToModel(Period period, Map<String, Object> model) {
         model.put("period", period);
-        if (period != null) addHierarchyToModel(period.getArm(), model);
+        if (period != null) addHierarchyToModel(templateService.findParent(period), model);
     }
 
     public void addHierarchyToModel(Arm arm, Map<String, Object> model) {
         model.put("arm", arm);
-        if (arm != null) addHierarchyToModel(arm.getEpoch(), model);
+        if (arm != null) addHierarchyToModel(templateService.findParent(arm), model);
     }
 
     public void addHierarchyToModel(Epoch epoch, Map<String, Object> model) {
         model.put("epoch", epoch);
-        if (epoch != null) addHierarchyToModel(epoch.getPlannedCalendar(), model);
+        if (epoch != null) addHierarchyToModel(templateService.findParent(epoch), model);
     }
 
     public void addHierarchyToModel(PlannedCalendar plannedCalendar, Map<String, Object> model) {
@@ -134,5 +137,9 @@ public class ControllerTools {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "POST is the only valid method for this URL");
     }
 
-    public ControllerTools() { }
+    ////// CONFIGURATION
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 }

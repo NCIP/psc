@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
@@ -13,6 +14,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -571,5 +574,27 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         assertSame(e1, service.findParent(e1a0));
         verifyMocks();
+    }
+
+    public void testFindAncestorWhenPossible() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
+        Arm e1a0 = e1.getArms().get(0);
+
+        assertEquals(e1, service.findAncestor(e1a0, Epoch.class));
+        assertEquals(study.getPlannedCalendar(), service.findAncestor(e1a0, PlannedCalendar.class));
+        assertEquals(study.getPlannedCalendar(), service.findAncestor(e1, PlannedCalendar.class));
+    }
+    
+    public void testFindAncestorWhenNotPossible() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
+
+        try {
+            service.findAncestor(e1, Period.class);
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException expected) {
+            assertEquals("Epoch is not a descendant of Period", expected.getMessage());
+        }
     }
 }

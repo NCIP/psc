@@ -301,6 +301,23 @@ public class TemplateService {
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public <T extends PlanTreeNode<?>> T findAncestor(PlanTreeNode<?> node, Class<T> klass) {
+        boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
+        boolean parentable = PlanTreeNode.class.isAssignableFrom(node.parentClass());
+        if (moreSpecific && parentable) {
+            PlanTreeNode<?> parent = findParent((PlanTreeNode<? extends PlanTreeNode<?>>) node);
+            if (klass.isAssignableFrom(parent.getClass())) {
+                return (T) parent;
+            } else {
+                return findAncestor(parent, klass);
+            }
+        } else {
+            throw new StudyCalendarSystemException("%s is not a descendant of %s",
+                node.getClass().getSimpleName(), klass.getSimpleName());
+        }
+    }
+
     ////// CONFIGURATION
 
     @Required
