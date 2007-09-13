@@ -29,7 +29,6 @@ class AddAmendment < Test::Unit::TestCase
       assert_page_contains("Available templates")
     end
 
-
     def cancel_release_template_for_use
       assert_element_exists("xpath=//div[@id='main']//div[@class='content']//p[last()]/a")
       assert_page_contains('return to the template')

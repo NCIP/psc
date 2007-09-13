@@ -46,5 +46,4 @@ class AddAmendment < Test::Unit::TestCase
       assert_page_contains("Epochs and arms")
       assert_page_contains('Release this template for use')
     end
-
 end

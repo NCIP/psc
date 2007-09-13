@@ -56,6 +56,7 @@
         return isDataCorrect;
     }
 
+            
     function resetElement(elementId, text, color) {
         var element = document.getElementById(elementId);
         element.style.color = color;

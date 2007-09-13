@@ -292,6 +292,7 @@ module StudyCalendar
      return get_text("xpath=//div[@id='main']/h1/span[@id='study-name']")
    end
 
+
    def get_number_of_arms(epoch_number)
      continue = true
      arm_number = 1

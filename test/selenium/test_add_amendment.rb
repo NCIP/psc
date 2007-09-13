@@ -74,4 +74,5 @@ class ReleaseTemplateForUserTest < Test::Unit::TestCase
       assert_page_contains("Available templates")
       assert_page_contains("[Unnamed study] (abc)")
     end
+
 end
