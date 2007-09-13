@@ -214,8 +214,9 @@ module StudyCalendar
     wait_for_page_to_load "30000"  
   end
   def create_new_study
-    click_link_with_text('Public Test Site - start page')
-    wait_for_page_to_load "30000"
+    request "/pages/cal/studyList"
+  	#click_link_with_text('Public Test Site - start page')
+   	wait_for_page_to_load "30000"
     click_link_with_text("Create a new template")
     wait_for_page_to_load "30000"
   end
