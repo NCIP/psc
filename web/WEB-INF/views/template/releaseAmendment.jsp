@@ -21,7 +21,7 @@
         </p>
         <p>
             You cannot reverse this step.  If you're not ready to proceed, please
-            <a href="<c:url value="/cal/template/display?study=${study.id}"/>">return to
+            <a href="<c:url value="/pages/cal/template?study=${study.id}"/>">return to
             the template</a>.
         </p>
         <form:form method="post">
