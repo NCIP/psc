@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import static org.easymock.EasyMock.expect;
+import org.springframework.validation.Errors;
+import org.springframework.validation.BindException;
 
 import java.util.Calendar;
 
@@ -21,12 +23,14 @@ public class ScheduleReconsentCommandTest extends StudyCalendarTestCase {
     }
 
     public void testValidate() throws Exception {
+        BindException errors = new BindException(command, "startDate");
         command.setStartDate(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
-
-        expect(nowFactory.getNow()).andReturn(DateTools.createDate(2007, Calendar.AUGUST, 3)).times(2);
+        expect(nowFactory.getNow()).andReturn(DateTools.createDate(2007, Calendar.AUGUST, 3));
         replayMocks();
-        command.validate(null);
+
+        command.validate(errors);
         verifyMocks();
-        assertSameDay("Expected Date different than actual", DateTools.createDate(2007, Calendar.AUGUST, 3), command.getStartDate());
+
+        assertEquals("There should be one error: ", 1, errors.getAllErrors().size());
     }
 }
