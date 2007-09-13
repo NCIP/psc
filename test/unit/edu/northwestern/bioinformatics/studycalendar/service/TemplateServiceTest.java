@@ -4,11 +4,16 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -33,19 +38,23 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
     private SiteService siteService;
+    private DeltaDao deltaDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
+        deltaDao = registerDaoMockFor(DeltaDao.class);
         siteService = registerMockFor(SiteService.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new TemplateService();
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
+        service.setDeltaDao(deltaDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setSiteService(siteService);
@@ -540,5 +549,27 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         List<Site> remainingSites = study.getSites();
         assertEquals("Removable site not removed", 1, remainingSites.size());
         assertEquals("Wrong site retained", "Dartmouth", remainingSites.get(0).getName());
+    }
+
+    public void testFindParentWhenImmediatelyAvailable() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        assertSame(study.getPlannedCalendar(),
+            service.findParent(study.getPlannedCalendar().getEpochs().get(1)));
+        assertSame(study.getPlannedCalendar().getEpochs().get(1),
+            service.findParent(study.getPlannedCalendar().getEpochs().get(1).getArms().get(0)));
+    }
+    
+    public void testFindParentWhenNotImmediatelyAvailable() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
+        Arm e1a0 = e1.getArms().get(0);
+        e1a0.setParent(null);
+        e1.getArms().remove(e1a0);
+
+        expect(deltaDao.findDeltaWhereAdded(e1a0)).andReturn(Delta.createDeltaFor(e1));
+        replayMocks();
+
+        assertSame(e1, service.findParent(e1a0));
+        verifyMocks();
     }
 }

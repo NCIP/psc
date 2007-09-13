@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
 
@@ -17,25 +16,17 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
         return Delta.class;
     }
 
-//    public Delta getByChangeId(int changeId) {
-//        List<Delta> results = getHibernateTemplate().find("from Delta a where a.changeId= ?", changeId);
-//        return results.get(0);
-//    }
+    @SuppressWarnings({ "unchecked" })
+    public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereAdded(PlanTreeNode<P> node) {
+        List<Delta<P>> deltas = getHibernateTemplate().find(
+            String.format(
+                "select d from Delta d, Add a where a in elements(d.changes) and d.class = %sDelta and a.childId = ?",
+                node.parentClass().getSimpleName()
+            ),
+            node.getId()
+        );
+        log.debug("Found {}", deltas);
+        return CollectionUtils.firstElement(deltas);
+    }
 
 }
-
-//public abstract class DeltaDao <T extends PlanTreeNode<?>> extends StudyCalendarDao<T> {
-//    public List<T> getAll() {
-//        return getHibernateTemplate().find("from Delta");
-//    }
-//
-//    @Transactional(readOnly = false)
-//    public void save(T delta) {
-//        getHibernateTemplate().saveOrUpdate(delta);
-//    }
-//
-//    public Delta getByChangeId(int changeId) {
-//        List<Delta> results = getHibernateTemplate().find("from Delta a where a.changeId= ?", changeId);
-//        return results.get(0);
-//    }
-//}

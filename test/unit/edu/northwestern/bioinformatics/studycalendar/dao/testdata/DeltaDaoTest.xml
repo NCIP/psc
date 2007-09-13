@@ -17,6 +17,12 @@
          node_id="-4"
          amendment_id="-1"
         />
+    <DELTAS
+         id="-220"
+         node_type="arm"
+         node_id="-3"
+         amendment_id="-1"
+        />
     <!-- note that this declaration needs to go first due to dbunit's odd
         ignore-columns-not-present-in-first-row behavior -->
     <CHANGES id="-10"
@@ -41,16 +47,23 @@
     <CHANGES
         id="-6"
         action="add"
-        new_value="-2"
-        attribute="-3"
+        new_value="-3"
+        attribute="1"
         delta_id="-100"
     />
     <CHANGES
         id="-4"
         action="add"
         new_value="-2"
-        attribute="-4"
+        attribute="0"
         delta_id="-100"
+    />
+    <CHANGES
+        id="-5"
+        action="add"
+        new_value="-3"
+        attribute="0"
+        delta_id="-220"
     />
     <STUDIES id="-2" name="Protocol"/>
     <PLANNED_CALENDARS id="-2" study_id="-2"/>    

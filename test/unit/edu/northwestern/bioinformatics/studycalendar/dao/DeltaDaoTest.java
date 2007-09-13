@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
@@ -13,44 +16,30 @@ import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
 
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+
 public class DeltaDaoTest extends DaoTestCase {
     private DeltaDao deltaDao = (DeltaDao) getApplicationContext().getBean("deltaDao");
-
-    public void testGetByChangeIdOne() throws Exception {
-        Delta<?> actual = deltaDao.getById(-100);
-        List<Change> changes = actual.getChanges();
-        Change change = changes.get(0);
-        assertTrue(change instanceof Add);
-        Add addChange = (Add)change;
-
-        assertEquals("Wrong change index ", -3, (int) addChange.getIndex());
-        assertEquals("Wrong change index ", -2, (int) addChange.getChildId());
-        assertNotNull("Delta was not found", actual);
-        assertEquals("Changes not found", 2, changes.size());
-        assertEquals("Wrong change action", "add", change.getAction().getCode());
-    }
-
-    public void testGetByChangeId() throws Exception {
-        Delta<?> actual = deltaDao.getById(-100);
-        assertNotNull("Delta was not found", actual);
-    }
+    private ArmDao armDao = (ArmDao) getApplicationContext().getBean("armDao");
+    private PeriodDao periodDao = (PeriodDao) getApplicationContext().getBean("periodDao");
 
     public void testLoadAddChanges() throws Exception {
         Delta<?> actual = deltaDao.getById(-100);
+        assertNotNull("Delta was not found", actual);
         List<Change> changes = actual.getChanges();
         assertEquals("Changes not found", 2, changes.size());
         assertNotNull("? " + changes, changes.get(0));
         assertEquals("Wrong change action", ChangeAction.ADD, changes.get(0).getAction());
         assertTrue("Wrong change subtype", changes.get(0) instanceof Add);
         Add addOne = (Add) changes.get(0);
-        assertEquals("Wrong change index ", -3, (int) addOne.getIndex());
-        assertEquals("Wrong change newChildId ", -2, (int) addOne.getChildId());
+        assertEquals("Wrong change index ", 1, (int) addOne.getIndex());
+        assertEquals("Wrong change newChildId ", -3, (int) addOne.getChildId());
 
         Change changeTwo = changes.get(1);
         assertEquals("Wrong change action", ChangeAction.ADD, changeTwo.getAction());
         assertTrue("Wrong change subtype", changeTwo instanceof Add);
         Add addTwo = (Add)changeTwo;
-        assertEquals("Wrong change index ", -4, (int) addTwo.getIndex());
+        assertEquals("Wrong change index ", 0, (int) addTwo.getIndex());
         assertEquals("Wrong change newChildId ", -2, (int) addTwo.getChildId());
     }
 
@@ -101,20 +90,19 @@ public class DeltaDaoTest extends DaoTestCase {
             PlannedEvent.class.isAssignableFrom(actual.getNode().getClass()));
     }
 
-    public void testSetDelta() throws Exception {
-//        Add change = new Add();
-//        change.setId(1);
-//        change.setIndex(2);
-//        change.setNewChildId(3);
-//        change.setOldValue("4");
-//        List<Change> changeList = new ArrayList();
-//        changeList.add(change);
-//        Delta delta = new EpochDelta();
-//        delta.setChanges(changeList);
-//        delta.setNode(new Epoch());
-//        delta.setId(22);
-//        deltaDao.save(delta);
-//        System.out.println("===here?");
+    public void testFindOriginalAddDeltaForArm() throws Exception {
+        Arm arm = armDao.getById(-3);
+        assertNotNull("Test setup failure", arm);
+        Delta<Epoch> found = deltaDao.findDeltaWhereAdded(arm);
+        assertNotNull("Delta not found", found);
+        assertEquals("Wrong delta found", -100, (int) found.getId());
     }
 
+    public void testFindOriginalAddDeltaForPeriodWithSameId() throws Exception {
+        Period period = periodDao.getById(-3);
+        assertNotNull("Test setup failure", period);
+        Delta<Arm> found = deltaDao.findDeltaWhereAdded(period);
+        assertNotNull("Delta not found", found);
+        assertEquals("Wrong delta found", -220, (int) found.getId());
+    }
 }

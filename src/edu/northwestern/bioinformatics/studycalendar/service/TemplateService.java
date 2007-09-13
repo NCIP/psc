@@ -1,30 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.nwu.bioinformatics.commons.StringUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.LinkedList;
-import java.util.Iterator;
-
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Required;
-
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Padmaja Vedula
@@ -38,6 +39,7 @@ public class TemplateService {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
+    private DeltaDao deltaDao;
     private SiteService siteService;
 
     public static final String USER_IS_NULL = "User is null";
@@ -47,8 +49,6 @@ public class TemplateService {
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
-
-
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -287,21 +287,42 @@ public class TemplateService {
             }
         }
     }
-    
+
+    public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
+        if (node.getParent() != null) {
+            return node.getParent();
+        } else {
+            Delta<P> delta = deltaDao.findDeltaWhereAdded(node);
+            if (delta == null) {
+                throw new StudyCalendarSystemException("Could not locate delta where %s was added", node);
+            } else {
+                return delta.getNode();
+            }
+        }
+    }
+
     ////// CONFIGURATION
 
+    @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
     
+    @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
     }
 
+    @Required
     public void setStudySiteDao(StudySiteDao studySiteDao) {
         this.studySiteDao = studySiteDao;
     }
-    
+
+    public void setDeltaDao(DeltaDao deltaDao) {
+        this.deltaDao = deltaDao;
+    }
+
+    @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
     }
