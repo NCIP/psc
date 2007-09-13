@@ -29,11 +29,9 @@ public class ApplicationContextInitializationTest extends StudyCalendarTestCase 
         // no exceptions
     }
 
-    // This servlet's configuration can't be loaded in the test environment because of
-    // CSM's excessive startup demands.
-    // public void testSpringServletContext() throws Exception {
-    //     assertDispatcherServletConfigLoads("spring");
-    // }
+    public void testSpringServletContext() throws Exception {
+        assertDispatcherServletConfigLoads("spring");
+    }
 
     public void testPublicServletContext() throws Exception {
         assertDispatcherServletConfigLoads("public");
