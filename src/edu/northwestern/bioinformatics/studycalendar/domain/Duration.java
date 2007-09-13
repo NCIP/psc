@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import org.hibernate.annotations.Type;
 
@@ -12,7 +13,7 @@ import javax.persistence.Transient;
  * @author Rhett Sutphin
  */
 @Embeddable
-public class Duration implements Comparable<Duration> {
+public class Duration implements Comparable<Duration>, Cloneable {
     public static enum Unit {
         day(1), week(7);
         private int inDays;
@@ -101,5 +102,15 @@ public class Duration implements Comparable<Duration> {
         result = (quantity != null ? quantity.hashCode() : 0);
         result = 29 * result + (unit != null ? unit.hashCode() : 0);
         return result;
+    }
+
+
+    @Override
+    protected Duration clone() {
+        try {
+            return (Duration) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("It is supported", e);
+        }
     }
 }

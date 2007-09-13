@@ -182,4 +182,13 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
     public void setPlannedEvents(List<PlannedEvent> plannedEvents) {
         setChildren(plannedEvents);
     }
+
+    ////// OBJECT METHODS
+
+    @Override
+    protected Period clone() {
+        Period clone = (Period) super.clone();
+        clone.setDuration(getDuration().clone());
+        return clone;
+    }
 }

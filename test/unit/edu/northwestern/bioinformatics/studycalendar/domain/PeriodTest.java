@@ -173,4 +173,14 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Out of range considered last day", p1.isFirstDayOfRepetition(5));
         assertFalse("Second day considered last day", p1.isFirstDayOfRepetition(-5));
     }
+
+    public void testCloneClonesDuration() throws Exception {
+        Period p1 = new Period();
+        p1.getDuration().setQuantity(17);
+        Period p1c = (Period) p1.clone();
+        p1c.getDuration().setQuantity(42);
+        assertEquals("Update wrote through from clone to original", 17, (int) p1.getDuration().getQuantity());
+        assertEquals("Update of clone didn't take", 42, (int) p1c.getDuration().getQuantity());
+        assertNotSame(p1.getDuration(), p1c.getDuration());
+    }
 }
