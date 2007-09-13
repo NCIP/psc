@@ -585,6 +585,14 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals(study.getPlannedCalendar(), service.findAncestor(e1a0, PlannedCalendar.class));
         assertEquals(study.getPlannedCalendar(), service.findAncestor(e1, PlannedCalendar.class));
     }
+
+    public void testFindAncestorWhenDynamicSubclass() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        Epoch dynamic = new Epoch() { };
+        study.getPlannedCalendar().addEpoch(dynamic);
+
+        assertSame(study.getPlannedCalendar(), service.findAncestor(dynamic, PlannedCalendar.class));
+    }
     
     public void testFindAncestorWhenNotPossible() throws Exception {
         Study study = Fixtures.createBasicTemplate();

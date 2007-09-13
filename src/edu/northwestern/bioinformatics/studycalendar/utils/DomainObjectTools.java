@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
@@ -83,8 +84,18 @@ public class DomainObjectTools {
     }
 
     public static boolean isMoreSpecific(Class<? extends DomainObject> more, Class<? extends DomainObject> less) {
-        int diff = DETAIL_ORDER.indexOf(more) - DETAIL_ORDER.indexOf(less);
+        int diff = detailOf(more) - detailOf(less);
         return diff > 0;
+    }
+
+    private static int detailOf(Class<? extends DomainObject> target) {
+        int direct = DETAIL_ORDER.indexOf(target);
+        if (direct >= 0) return direct;
+        for (int i = 0; i < DETAIL_ORDER.size(); i++) {
+            Class<? extends DomainObject> klass = DETAIL_ORDER.get(i);
+            if (klass.isAssignableFrom(target)) return i;
+        }
+        throw new StudyCalendarSystemException("Could not match %s in DETAIL_ORDER", target.getName());
     }
 
     public static Collection<Integer> collectIds(Collection<? extends DomainObject> objs) {

@@ -121,6 +121,13 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(Period.class, PlannedEvent.class);
     }
 
+    public void testSpecificityWithDynamicSubclasses() {
+        PlannedCalendar dynamic = new PlannedCalendar() { };
+        assertNotEquals("Test setup failure", PlannedCalendar.class, dynamic.getClass());
+        assertIsMoreSpecific(Study.class, dynamic.getClass());
+        assertIsMoreSpecific(dynamic.getClass(), Epoch.class);
+    }
+
     public void testScheduledTypeSpecificity() throws Exception {
         assertIsMoreSpecific(Study.class, Participant.class);
         assertIsMoreSpecific(Participant.class, StudyParticipantAssignment.class);
