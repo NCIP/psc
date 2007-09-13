@@ -85,6 +85,11 @@ module StudyCalendar
       @browser.click("xpath=//input[@type='#{input_type}' and @value='#{text}']")
       documenter.document_step "Click \"#{text}\" button"
     end
+    def click_button_by_input_type(input_type='submit')
+      @browser.click("xpath=//input[@type='#{input_type}']")
+      documenter.document_step "Click \"#{input_type}\" button"
+    end
+
 #  @browser.click("xpath=//div[position()=12]//a[child::text()='Set name']")
     def click_link_with_text(text)
       @browser.click("xpath=//a[child::text()='#{text}']")
