@@ -117,7 +117,7 @@
 
             ul#admin-options {
                 padding: 0;
-                margin: 0;
+                margin: 0 0 1em 0;
             }
             ul#admin-options li {
                 display: inline;

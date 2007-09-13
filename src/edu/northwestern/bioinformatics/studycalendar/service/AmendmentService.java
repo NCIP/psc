@@ -2,7 +2,10 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -17,6 +20,7 @@ public class AmendmentService {
 
     private StudyService studyService;
     private DeltaService deltaService;
+    private TemplateService templateService;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -59,6 +63,18 @@ public class AmendmentService {
         return amended;
     }
 
+    /**
+     * Finds the current development amendment for the study associated with the node
+     * and merges in the given change.
+     */
+    public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change change) {
+        Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
+        if (!study.isInDevelopment()) {
+            throw new StudyCalendarSystemException("The study %s is not open for editing or amending", study);
+        }
+        deltaService.updateRevision(study.getDevelopmentAmendment(), node, change);
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -69,5 +85,10 @@ public class AmendmentService {
     @Required
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

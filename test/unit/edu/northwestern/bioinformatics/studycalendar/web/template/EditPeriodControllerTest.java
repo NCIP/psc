@@ -5,8 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import static org.easymock.classextension.EasyMock.notNull;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,12 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 public class EditPeriodControllerTest extends ControllerTestCase {
     private EditPeriodController controller;
     private EditPeriodCommand command;
-    private PeriodDao periodDao;
+    private StudyService studyService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerDaoMockFor(PeriodDao.class);
+        studyService = registerMockFor(StudyService.class);
 
         controller = new EditPeriodController() {
             @Override
@@ -30,9 +32,9 @@ public class EditPeriodControllerTest extends ControllerTestCase {
                 return command();
             }
         };
-        controller.setPeriodDao(periodDao);
         controller.setControllerTools(controllerTools);
         controller.setTemplateService(templateService);
+        controller.setStudyService(studyService);
     }
 
     private EditPeriodCommand command() {
@@ -52,26 +54,34 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         request.setParameter("period.startDay", expectedStartDay.toString());
         request.setParameter("period.name", expectedName);
 
-        Period expected = setId(expectedId, new Period());
+        Period period = setId(expectedId, new Period());
+        period.getDuration().setQuantity(7);
+        period.getDuration().setUnit(Duration.Unit.day);
+        period.setStartDay(8);
+        period.setName("Unethical");
+
         int armId = 45;
         int studyId = 87;
-        setId(armId, setId(studyId, Fixtures.createSingleEpochStudy("S", "E")).getPlannedCalendar().getEpochs().get(0).getArms().get(0)).addPeriod(expected);
+        setId(armId, setId(studyId, Fixtures.createSingleEpochStudy("S", "E"))
+            .getPlannedCalendar().getEpochs().get(0).getArms().get(0)).addPeriod(period);
 
-        periodDao.save((Period) notNull());
-        command = new EditPeriodCommand(expected, periodDao);
+        command = registerMockFor(EditPeriodCommand.class);
+        expect(command.getPeriod()).andReturn(period).anyTimes();
+        expect(command.getArm()).andReturn(period.getArm()).anyTimes();
+        studyService.save((Study) notNull());
+        command.apply();
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
-        // TODO: make these pass again
         assertEquals("Wrong view", "redirectToCalendarTemplate", mv.getViewName());
         assertEquals("Study ID missing from model", studyId, mv.getModel().get("study"));
         assertEquals("Arm ID missing from model", armId, mv.getModel().get("arm"));
 
-        assertEquals("Duration quantity not updated", expectedQuantity, expected.getDuration().getQuantity());
-        assertEquals("Duration unit not updated", expectedUnit, expected.getDuration().getUnit());
-        assertEquals("Start day not updated", expectedStartDay, expected.getStartDay());
-        assertEquals("Name not updated", expectedName, expected.getName());
+        assertEquals("Duration quantity not updated", expectedQuantity, period.getDuration().getQuantity());
+        assertEquals("Duration unit not updated", expectedUnit, period.getDuration().getUnit());
+        assertEquals("Start day not updated", expectedStartDay, period.getStartDay());
+        assertEquals("Name not updated", expectedName, period.getName());
     }
 }

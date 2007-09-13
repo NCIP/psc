@@ -57,4 +57,22 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         assertPropertyChange("Wrong change 1", "duration.quantity", "3", "6",
             delta.getChanges().get(1));
     }
+
+    public void testCreateWithNullOldValue() throws Exception {
+        PropertyChange actual = PropertyChange.create("f", null, "oo");
+        assertNull(actual.getOldValue());
+        assertEquals("oo", actual.getNewValue());
+    }
+
+    public void testCreateWithNullNewValue() throws Exception {
+        PropertyChange actual = PropertyChange.create("f", "oo", null);
+        assertEquals("oo", actual.getOldValue());
+        assertNull(actual.getNewValue());
+    }
+
+    public void testCreateUsesToString() throws Exception {
+        PropertyChange actual = PropertyChange.create("b", 6, 7);
+        assertEquals("6", actual.getOldValue());
+        assertEquals("7", actual.getNewValue());
+    }
 }

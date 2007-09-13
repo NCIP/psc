@@ -17,11 +17,11 @@ public class PropertyChange extends Change {
 
     ////// FACTORY
 
-    public static PropertyChange create(String prop, String oldValue, String newValue) {
+    public static PropertyChange create(String prop, Object oldValue, Object newValue) {
         PropertyChange change = new PropertyChange();
         change.setPropertyName(prop);
-        change.setOldValue(oldValue);
-        change.setNewValue(newValue);
+        change.setOldValue(oldValue == null ? null : oldValue.toString());
+        change.setNewValue(newValue == null ? null : newValue.toString());
         return change;
     }
 

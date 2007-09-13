@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 public class AmendmentServiceTest extends StudyCalendarTestCase {
     private AmendmentService service;
     private StudyService studyService;
+    private DeltaService mockDeltaService;
 
     private Study study;
     private PlannedCalendar calendar;
@@ -46,6 +48,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service = new AmendmentService();
         service.setStudyService(studyService);
         service.setDeltaService(Fixtures.getTestingDeltaService());
+        service.setTemplateService(new TestingTemplateService());
+
+        mockDeltaService = registerMockFor(DeltaService.class);
     }
 
     public void testAmend() throws Exception {
@@ -130,4 +135,17 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
             amended.getAmendment().getName());
     }
 
+    public void testUpdateDevAmendment() throws Exception {
+        service.setDeltaService(mockDeltaService);
+
+        Amendment expectedDevAmendment = new Amendment();
+        study.setDevelopmentAmendment(expectedDevAmendment);
+        Epoch epoch = calendar.getEpochs().get(1);
+        Remove expectedChange = Remove.create(epoch.getArms().get(0));
+
+        mockDeltaService.updateRevision(expectedDevAmendment, epoch, expectedChange);
+        replayMocks();
+        service.updateDevelopmentAmendment(epoch, expectedChange);
+        verifyMocks();
+    }
 }

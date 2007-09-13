@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -20,6 +21,7 @@ import java.util.Map;
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class EditPeriodController extends AbstractPeriodController<EditPeriodCommand> {
     private PeriodDao periodDao;
+    private AmendmentService amendmentService;
 
     public EditPeriodController() {
         super(EditPeriodCommand.class);
@@ -29,7 +31,7 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int periodId = ServletRequestUtils.getRequiredIntParameter(request, "period");
-        return new EditPeriodCommand(periodDao.getById(periodId), periodDao);
+        return new EditPeriodCommand(periodDao.getById(periodId), amendmentService);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -58,5 +60,10 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
     @Required
     public void setPeriodDao(PeriodDao periodDao) {
         this.periodDao = periodDao;
+    }
+
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
     }
 }

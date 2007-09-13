@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -29,11 +30,17 @@ import java.util.Collections;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
 public class NewPeriodController extends AbstractPeriodController<NewPeriodCommand> {
+    private AmendmentService amendmentService;
     private ArmDao armDao;
 
     public NewPeriodController() {
         super(NewPeriodCommand.class);
         setCrumb(new Crumb());
+    }
+
+    @Override
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        return new NewPeriodCommand(amendmentService);
     }
 
     @Override
@@ -52,6 +59,11 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
     @Required
     public void setArmDao(ArmDao armDao) {
         this.armDao = armDao;
+    }
+
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
     }
 
     private static class Crumb extends DefaultCrumb {
