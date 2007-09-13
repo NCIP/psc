@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +27,7 @@ public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
         {
             PlannedEvent plannedEvent = new PlannedEvent();
             plannedEvent.setDay(5);
+            plannedEvent.setActivity(getDao().getById(-12).getActivity());
             getDao().save(plannedEvent);
             assertNotNull("not saved", plannedEvent.getId());
             id = plannedEvent.getId();
