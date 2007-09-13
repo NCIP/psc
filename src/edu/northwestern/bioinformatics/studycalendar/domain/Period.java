@@ -58,8 +58,8 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
 
     ////// LOGIC
 
-    @Override
-    public Class<PlannedEvent> childClass() { return PlannedEvent.class; }
+    @Override public Class<Arm> parentClass() { return Arm.class; }
+    @Override public Class<PlannedEvent> childClass() { return PlannedEvent.class; }
 
     public void addPlannedEvent(PlannedEvent event) {
         addChild(event);

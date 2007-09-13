@@ -51,8 +51,8 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implem
 
     ////// LOGIC
 
-    @Override
-    public Class<Arm> childClass() { return Arm.class; }
+    @Override public Class<PlannedCalendar> parentClass() { return PlannedCalendar.class; }
+    @Override public Class<Arm> childClass() { return Arm.class; }
 
     public void addArm(Arm arm) {
         addChild(arm);

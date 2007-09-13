@@ -33,6 +33,8 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
 
     ////// LOGIC
 
+    @Override public Class<Period> parentClass() { return Period.class; }
+
     public int compareTo(PlannedEvent other) {
         // by day
         int dayDiff = getDay() - other.getDay();

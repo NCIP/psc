@@ -33,6 +33,8 @@ public abstract class PlanTreeNode<P extends DomainObject> extends AbstractMutab
 
     ////// Child IMPLEMENTATION
 
+    public abstract Class<P> parentClass();
+
     public P getParent() {
         return parent;
     }

@@ -36,10 +36,10 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
 
     ////// LOGIC
 
-    @Override protected SortedSet<Period> createChildrenCollection() { return new TreeSet<Period>(); }
+    @Override public Class<Epoch> parentClass() { return Epoch.class; }
+    @Override public Class<Period> childClass() { return Period.class; }
 
-    @Override
-    public Class<Period> childClass() { return Period.class; }
+    @Override protected SortedSet<Period> createChildrenCollection() { return new TreeSet<Period>(); }
 
     public void addPeriod(Period period) {
         addChild(period);
