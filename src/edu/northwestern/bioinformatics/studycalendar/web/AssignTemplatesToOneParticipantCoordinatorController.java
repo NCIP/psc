@@ -41,14 +41,14 @@ import org.slf4j.LoggerFactory;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
 public class AssignTemplatesToOneParticipantCoordinatorController extends PscSimpleFormController {
-	private int siteId;
-	private String pcId;
-	private Site site;
-	private SiteDao siteDao;
-	private StudyDao studyDao;
+    private int siteId;
+    private String pcId;
+    private Site site;
+    private SiteDao siteDao;
+    private StudyDao studyDao;
     private TemplateService templateService;
-	private StudyCalendarAuthorizationManager authorizationManager;
-	private static final Logger log = LoggerFactory.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
+    private StudyCalendarAuthorizationManager authorizationManager;
+    private static final Logger log = LoggerFactory.getLogger(AssignTemplatesToOneParticipantCoordinatorController.class.getName());
 
     public AssignTemplatesToOneParticipantCoordinatorController() {
         setCommandClass(AssignTemplatesToOneParticipantCoordinatorCommand.class);
@@ -57,8 +57,8 @@ public class AssignTemplatesToOneParticipantCoordinatorController extends PscSim
     }
     
     public void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) {
-    	ControllerTools.registerDomainObjectEditor(binder, "availableTemplates", studyDao);
-    	ControllerTools.registerDomainObjectEditor(binder, "assignedTemplates", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "availableTemplates", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "assignedTemplates", studyDao);
     }
     
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {

@@ -44,8 +44,8 @@ public class ScheduleEventController extends PscSimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
-        ControllerTools.registerDomainObjectEditor(binder, "event", scheduledEventDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
+        getControllerTools().registerDomainObjectEditor(binder, "event", scheduledEventDao);
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode",
             new ControlledVocabularyEditor(ScheduledEventMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -56,7 +56,7 @@ public class ScheduleEventController extends PscSimpleFormController {
     ) throws Exception {
         Map<String, Object> model = errors.getModel();
         ScheduleEventCommand command = (ScheduleEventCommand) errors.getTarget();
-        ControllerTools.addHierarchyToModel(command.getEvent(), model);
+        getControllerTools().addHierarchyToModel(command.getEvent(), model);
 //        model.put("modes", ScheduledEventMode.values());
         model.put("modes", command.getEventSpecificMode());
         return new ModelAndView("schedule/event", model);
@@ -82,13 +82,13 @@ public class ScheduleEventController extends PscSimpleFormController {
         this.scheduledEventDao = scheduledEventDao;
     }
 
-    private static class Crumb extends DefaultCrumb {
+    private class Crumb extends DefaultCrumb {
         public String getName(BreadcrumbContext context) {
             ScheduledEvent evt = context.getScheduledEvent();
             return new StringBuilder()
                 .append(evt.getActivity().getName())
                 .append(" on ")
-                .append(ControllerTools.formatDate(evt.getActualDate()))
+                .append(getControllerTools().formatDate(evt.getActualDate()))
                 .toString();
         }
 

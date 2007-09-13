@@ -1,39 +1,39 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.validation.BindException;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.editors.GridIdentifiableDaoBasedEditor;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
 public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
-//    private static final Log log = LogFactory.getLog(DisplayScheduleController.class);
-    private static final Logger log = LoggerFactory.getLogger(DisplayScheduleController.class);
     private StudyParticipantAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;
@@ -46,8 +46,8 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        ControllerTools.registerDomainObjectEditor(binder, "arm", scheduledArmDao);
-        ControllerTools.registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
+        getControllerTools().registerDomainObjectEditor(binder, "arm", scheduledArmDao);
+        getControllerTools().registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
         binder.registerCustomEditor(StudyParticipantAssignment.class, "assignment",
             new GridIdentifiableDaoBasedEditor(assignmentDao));
     }
@@ -58,7 +58,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         StudyParticipantAssignment assignment = command.getAssignment();
 
         ModelMap model = new ModelMap();
-        ControllerTools.addHierarchyToModel(assignment.getScheduledCalendar(), model);
+        getControllerTools().addHierarchyToModel(assignment.getScheduledCalendar(), model);
         model.addObject("assignment", assignment);
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));

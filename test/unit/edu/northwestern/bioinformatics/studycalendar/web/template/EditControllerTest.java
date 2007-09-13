@@ -38,6 +38,7 @@ public class EditControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setApplicationContext(applicationContext);
         controller.setCommandBeanName("mockCommandBean");
+        controller.setControllerTools(controllerTools);
         expect(applicationContext.getBean("mockCommandBean")).andReturn(command).anyTimes();
     }
     

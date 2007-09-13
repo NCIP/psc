@@ -35,6 +35,7 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
         
         controller.setScheduledCalendarDao(scheduledCalendarDao);
         controller.setScheduledEventDao(scheduledEventDao);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testBindMode() throws Exception {

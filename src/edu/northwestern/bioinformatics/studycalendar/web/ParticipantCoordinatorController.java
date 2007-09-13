@@ -64,7 +64,7 @@ public class ParticipantCoordinatorController extends PscSimpleFormController {
         templateService.assignTemplateToParticipantCds(assignedStudy, assignedSite,
             emptyForNull(assignCommand.getAssignedCoordinators()),
             emptyForNull(assignCommand.getAvailableCoordinators()));
-        return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
+        return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     private List emptyForNull(List assignedCoordinators) {

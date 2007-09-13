@@ -2,12 +2,15 @@
 <!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
 
 <beans  xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <bean id="controllerTools" class="edu.northwestern.bioinformatics.studycalendar.web.ControllerTools"
+        autowire="byType"/>
 
     <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
         <property name="location"><value>/WEB-INF/special-views.xml</value></property>
@@ -19,8 +22,7 @@
     </bean>
 
     <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
-		class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController">
-	</bean>
+          class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController"/>
 
     <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="viewClass">
@@ -50,7 +52,7 @@
         </property>
     </bean>
 
-    <bean id="loginCheckInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
+    <bean id="loginCheckInterceptor" autowire="byType" class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.LoginCheckInterceptor"/>
 
     <!-- Breadcrumbs are incompatible with amendments for the moment.  TODO: fix and enable.
     <bean id="breadcrumbInterceptor" autowire="byType"

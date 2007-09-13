@@ -53,7 +53,7 @@ public class ReleaseAmendmentController extends PscSimpleFormController {
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        ControllerTools.registerDomainObjectEditor(binder, "study", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
     }
 
     @Override

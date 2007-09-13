@@ -39,6 +39,7 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
         };
         controller.setScheduledCalendarDao(scheduledCalendarDao);
         controller.setScheduledEventDao(scheduledEventDao);
+        controller.setControllerTools(controllerTools);
 
         request.setMethod("GET");
     }

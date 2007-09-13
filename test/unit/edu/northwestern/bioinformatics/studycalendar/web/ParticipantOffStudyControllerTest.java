@@ -32,6 +32,7 @@ public class ParticipantOffStudyControllerTest extends ControllerTestCase{
         };
         controller.setParticipantService(participantService);
         controller.setStudyParticipantAssignmentDao(assignmentDao);
+        controller.setControllerTools(controllerTools);
 
         assignment = setId(10, new StudyParticipantAssignment());
         assignment.setScheduledCalendar(setId(20, new ScheduledCalendar()));

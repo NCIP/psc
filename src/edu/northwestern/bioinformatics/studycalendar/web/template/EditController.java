@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
@@ -22,7 +23,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
-public class EditController extends AbstractCommandController {
+public class EditController extends PscAbstractCommandController<EditCommand> {
     private StudyDao studyDao;
     private EpochDao epochDao;
     private ArmDao armDao;
@@ -38,21 +39,20 @@ public class EditController extends AbstractCommandController {
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
-        ControllerTools.registerDomainObjectEditor(binder, "epoch", epochDao);
-        ControllerTools.registerDomainObjectEditor(binder, "study", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "epoch", epochDao);
+        getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
     }
 
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+    protected ModelAndView handle(EditCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if ("POST".equals(request.getMethod())) {
-            EditCommand command = (EditCommand) oCommand;
             command.apply();
             Map<String, Object> model = command.getModel();
             model.putAll(errors.getModel());
             return new ModelAndView(createViewName(command), model);
         } else {
             // All edits are non-idempotent, so...
-            ControllerTools.sendPostOnlyError(response);
+            getControllerTools().sendPostOnlyError(response);
             return null;
         }
     }

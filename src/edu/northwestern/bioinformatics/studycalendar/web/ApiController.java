@@ -7,6 +7,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.beans.factory.annotation.Required;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -22,9 +23,9 @@ import java.util.Date;
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
 public class ApiController extends AbstractCommandController {
-//    private Log log = LogFactory.getLog(getClass());
     private Logger log = LoggerFactory.getLogger(getClass());
     private ScheduledCalendarService scheduledCalendarService;
+    private ControllerTools controllerTools;
 
     public ApiController() {
         setCommandClass(ApiCommand.class);
@@ -35,7 +36,7 @@ public class ApiController extends AbstractCommandController {
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(false));
+        binder.registerCustomEditor(Date.class, controllerTools.getDateEditor(false));
     }
 
     @SuppressWarnings("unchecked")
@@ -54,7 +55,13 @@ public class ApiController extends AbstractCommandController {
 
     ////// CONFIGURATION
 
+    @Required
     public void setScheduledCalendarService(ScheduledCalendarService scheduledCalendarService) {
         this.scheduledCalendarService = scheduledCalendarService;
+    }
+
+    @Required
+    public void setControllerTools(ControllerTools controllerTools) {
+        this.controllerTools = controllerTools;
     }
 }

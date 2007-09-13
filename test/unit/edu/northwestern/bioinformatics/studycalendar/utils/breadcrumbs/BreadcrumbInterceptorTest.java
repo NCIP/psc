@@ -38,7 +38,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
     public void testCreateContext() throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
-        ControllerTools.addHierarchyToModel(epoch, model);
+        controllerTools.addHierarchyToModel(epoch, model);
         BreadcrumbContext context = interceptor.createContext(model);
         assertSame(epoch, context.getEpoch());
         assertNull(context.getArm());

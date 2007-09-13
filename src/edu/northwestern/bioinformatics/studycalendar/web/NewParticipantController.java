@@ -37,7 +37,7 @@ public class NewParticipantController extends PscSimpleFormController {
 
     protected void initBinder(HttpServletRequest request,
         ServletRequestDataBinder binder) throws Exception {
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
         super.initBinder(request, binder);
     }
     

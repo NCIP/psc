@@ -42,8 +42,8 @@ public class ScheduleReconsentController extends PscCancellableFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "study", studyDao);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(false));
+        getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(false));
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -54,13 +54,15 @@ public class ScheduleReconsentController extends PscCancellableFormController {
         return new ModelAndView(new RedirectView(getSuccessView()));
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new ScheduleReconsentCommand(studyService, nowFactory);
     }
 
+    @Override
     protected ModelAndView onCancel(Object command) throws Exception {
-		return new ModelAndView(new RedirectView(getCancelView()));
-	}
+        return new ModelAndView(new RedirectView(getCancelView()));
+    }
 
     @Required
     public void setStudyService(StudyService studyService) throws Exception {

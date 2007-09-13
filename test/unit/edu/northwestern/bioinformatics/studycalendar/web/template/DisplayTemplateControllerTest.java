@@ -50,6 +50,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         controller = new DisplayTemplateController();
         controller.setStudyDao(studyDao);
         controller.setDeltaService(deltaService);
+        controller.setControllerTools(controllerTools);
 
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());

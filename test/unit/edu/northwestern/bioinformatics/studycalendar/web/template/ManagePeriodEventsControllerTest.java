@@ -49,7 +49,8 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
         controller.setPlannedEventDao(plannedEventDao);
-
+        controller.setControllerTools(controllerTools);
+            
         request.setMethod("GET");
         request.addParameter("id", "15");
 

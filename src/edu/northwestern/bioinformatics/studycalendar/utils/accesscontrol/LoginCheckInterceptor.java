@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,8 +20,8 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
  * @author Rhett Sutphin
  */
 public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
-//    private static Log log = LogFactory.getLog(LoginCheckInterceptor.class);
-    private static Logger log = LoggerFactory.getLogger(LoginCheckInterceptor.class);
+    private Logger log = LoggerFactory.getLogger(getClass());
+    private ControllerTools controllerTools;
 
     public static final String REQUESTED_URL_ATTRIBUTE = LoginCheckInterceptor.class.getName() + ".REQUESTED_URL";
 
@@ -52,7 +51,7 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
             request.getSession().setAttribute(REQUESTED_URL_ATTRIBUTE, getFullPath(request));
 
             Map<String, Object> model = new HashMap<String, Object>();
-            if (ControllerTools.isAjaxRequest(request)) {
+            if (controllerTools.isAjaxRequest(request)) {
                 log.debug("Ajax request intercepted");
                 model.put("ajax", " ");
             }
@@ -65,5 +64,10 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         StringBuffer fullPath = request.getRequestURL();
         if (request.getQueryString() != null) fullPath.append('?').append(request.getQueryString());
         return fullPath.toString();
+    }
+
+    @Required
+    public void setControllerTools(ControllerTools controllerTools) {
+        this.controllerTools = controllerTools;
     }
 }

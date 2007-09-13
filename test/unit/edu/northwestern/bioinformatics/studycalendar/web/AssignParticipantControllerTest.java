@@ -47,6 +47,7 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setStudySiteDao(studySiteDao);
         controller.setArmDao(armDao);
+        controller.setControllerTools(controllerTools);
 
         study = setId(40, createNamedInstance("Protocol 1138", Study.class));
         createStudySite(study, createNamedInstance("Seattle", Site.class));

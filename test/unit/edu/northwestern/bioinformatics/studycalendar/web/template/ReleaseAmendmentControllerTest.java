@@ -27,8 +27,8 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
 
         studyDao = registerDaoMockFor(StudyDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
-        mockCommand = registerMockFor(ReleaseAmendmentCommand.class);
 
+        mockCommand = registerMockFor(ReleaseAmendmentCommand.class);
         mockCommandController = new ReleaseAmendmentController() {
             @Override
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -36,6 +36,8 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
             }
         };
         mockCommandController.setStudyDao(studyDao);
+        mockCommandController.setControllerTools(controllerTools);
+
         command = new ReleaseAmendmentCommand(amendmentService);
         controller = new ReleaseAmendmentController() {
             @Override
@@ -44,6 +46,7 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
             }
         };
         controller.setStudyDao(studyDao);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testBindStudy() throws Exception {

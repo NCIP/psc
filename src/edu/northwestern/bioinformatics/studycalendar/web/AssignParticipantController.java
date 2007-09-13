@@ -50,10 +50,10 @@ public class AssignParticipantController extends PscSimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
-        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
-        ControllerTools.registerDomainObjectEditor(binder, "studySite", studySiteDao);
-        ControllerTools.registerDomainObjectEditor(binder, "participant", participantDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
+        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySite", studySiteDao);
+        getControllerTools().registerDomainObjectEditor(binder, "participant", participantDao);
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -65,7 +65,7 @@ public class AssignParticipantController extends PscSimpleFormController {
         refdata.put("study", study);
         refdata.put("participants", participants);
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
-        ControllerTools.addHierarchyToModel(epoch, refdata);
+        getControllerTools().addHierarchyToModel(epoch, refdata);
         List<Arm> arms = epoch.getArms();
         if (arms.size() > 1) {
             refdata.put("arms", arms);

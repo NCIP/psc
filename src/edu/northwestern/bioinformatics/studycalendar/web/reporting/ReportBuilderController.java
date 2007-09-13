@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
 
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.BASE)
 public class ReportBuilderController extends PscSimpleFormController {
-	private SiteService siteService;
-	private SiteDao siteDao;
-	private StudyDao studyDao;
-	private ParticipantDao participantDao;
-	private static final Logger log = LoggerFactory.getLogger(ReportBuilderController.class.getName());
-	private ReportRowDao reportRowDao;
+    private SiteService siteService;
+    private SiteDao siteDao;
+    private StudyDao studyDao;
+    private ParticipantDao participantDao;
+    private static final Logger log = LoggerFactory.getLogger(ReportBuilderController.class.getName());
+    private ReportRowDao reportRowDao;
 
     public ReportBuilderController() {
         setCommandClass(ReportBuilderCommand.class);
@@ -54,27 +54,24 @@ public class ReportBuilderController extends PscSimpleFormController {
     
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "sitesFilter", siteDao);
-        ControllerTools.registerDomainObjectEditor(binder, "studiesFilter", studyDao);
-        ControllerTools.registerDomainObjectEditor(binder, "participantsFilter", participantDao);
+        getControllerTools().registerDomainObjectEditor(binder, "sitesFilter", siteDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studiesFilter", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "participantsFilter", participantDao);
     }
 
-    
-    
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         log.debug("referenceData"); 
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Site> sites = new ArrayList<Site>();
         sites = siteService.getSitesForUser(ApplicationSecurityManager.getUser());
-    	refdata.put("sites", sites);                
+        refdata.put("sites", sites);
         return refdata;
     }
 
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
 
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-    	
-    	ReportBuilderCommand reportCommand = (ReportBuilderCommand) oCommand;
-    	
+        ReportBuilderCommand reportCommand = (ReportBuilderCommand) oCommand;
+
         Map<String, Object> model = new HashMap<String, Object>();
         String startDate = reportCommand.getStartDate();
         String endDate = reportCommand.getEndDate();
@@ -87,33 +84,33 @@ public class ReportBuilderController extends PscSimpleFormController {
         if(sites == null) {sites = new ArrayList<Site>();}
         if(studies == null) {studies = new ArrayList<Study>();}
         if(participants == null) {participants = new ArrayList<Participant>();}
-        
-		Collection reportRows = initializeBeanCollection(sites, studies, participants, startDate, endDate);
-		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
-		model.put("datasource", dataSource);
-		String format = new String();
-		
-		if(reportCommand.getExcelFormat()) {
-			format = "xls";
-	        model.put("format", format);   	  	
-	        return new ModelAndView("xlsReport", model);
-		} else {
-			format = "pdf";
-	        model.put("format", format);   	  	
-	        return new ModelAndView("pdfReport", model);
-		}
-		
-	}
-	
-	private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {	
-		List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, participants, startDate, endDate);
-		
-		return reportRows;
-	}
-	
+
+        Collection reportRows = initializeBeanCollection(sites, studies, participants, startDate, endDate);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
+        model.put("datasource", dataSource);
+        String format = new String();
+
+        if(reportCommand.getExcelFormat()) {
+            format = "xls";
+            model.put("format", format);
+            return new ModelAndView("xlsReport", model);
+        } else {
+            format = "pdf";
+            model.put("format", format);
+            return new ModelAndView("pdfReport", model);
+        }
+
+    }
+
+    private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
+        List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, participants, startDate, endDate);
+
+        return reportRows;
+    }
+
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         //log.debug("formBackingObject");
-    	ReportBuilderCommand command = new ReportBuilderCommand();
+        ReportBuilderCommand command = new ReportBuilderCommand();
         return command;
     }
 
@@ -125,23 +122,23 @@ public class ReportBuilderController extends PscSimpleFormController {
     }
 
     @Required
-	public void setReportRowDao(ReportRowDao reportRowDao) {
-		this.reportRowDao = reportRowDao;
-	}
+    public void setReportRowDao(ReportRowDao reportRowDao) {
+        this.reportRowDao = reportRowDao;
+    }
 
     @Required
-	public void setParticipantDao(ParticipantDao participantDao) {
-		this.participantDao = participantDao;
-	}
+    public void setParticipantDao(ParticipantDao participantDao) {
+        this.participantDao = participantDao;
+    }
 
     @Required
-	public void setStudyDao(StudyDao studyDao) {
-		this.studyDao = studyDao;
-	}
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
 
     @Required
-	public void setSiteService(SiteService siteService) {
-		this.siteService = siteService;
-	}
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
+    }
 
 }

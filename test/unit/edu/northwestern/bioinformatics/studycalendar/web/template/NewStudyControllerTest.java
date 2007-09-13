@@ -34,6 +34,7 @@ public class NewStudyControllerTest extends ControllerTestCase {
             }
         };
         controller.setStudyService(studyService);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testHandle() throws Exception {

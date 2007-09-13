@@ -22,6 +22,7 @@ public class DismissAeControllerTest extends ControllerTestCase {
         notificationDao = registerDaoMockFor(AdverseEventNotificationDao.class);
         controller = new DismissAeController();
         controller.setNotificationDao(notificationDao);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testBindNotification() throws Exception {

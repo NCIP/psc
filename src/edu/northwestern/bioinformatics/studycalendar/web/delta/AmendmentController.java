@@ -39,8 +39,8 @@ public class AmendmentController extends PscCancellableFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "study", studyDao);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(false));
+        getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(false));
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {

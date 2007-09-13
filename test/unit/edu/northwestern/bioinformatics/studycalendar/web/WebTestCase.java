@@ -14,7 +14,9 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
     protected MockHttpServletResponse response;
     protected MockServletContext servletContext;
     protected MockHttpSession session;
+    protected ControllerTools controllerTools;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         servletContext = new MockServletContext();
@@ -23,5 +25,6 @@ public abstract class WebTestCase extends StudyCalendarTestCase {
         request.setMethod("POST");
         request.setSession(session);
         response = new MockHttpServletResponse();
+        controllerTools = new ControllerTools();
     }
 }

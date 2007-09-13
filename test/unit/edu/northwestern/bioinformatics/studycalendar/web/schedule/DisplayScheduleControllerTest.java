@@ -51,7 +51,8 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         controller.setScheduledCalendarDao(scheduledCalendarDao);
         controller.setScheduledArmDao(scheduledArmDao);
         controller.setStudyDao(studyDao);
-
+        controller.setControllerTools(controllerTools);
+          
         assignment = setId(ASSIGNMENT_ID, new StudyParticipantAssignment());
         ScheduledCalendar expectedCalendar = new ScheduledCalendar();
         PlannedCalendar expectedPlannedCalendar = new PlannedCalendar();

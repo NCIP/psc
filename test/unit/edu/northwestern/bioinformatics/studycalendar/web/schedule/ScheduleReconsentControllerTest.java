@@ -38,6 +38,7 @@ public class ScheduleReconsentControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setStudyService(studyService);
         controller.setNowFactory(nowFactory);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testBindDate() throws Exception {

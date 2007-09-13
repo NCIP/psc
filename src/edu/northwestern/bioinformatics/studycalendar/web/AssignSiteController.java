@@ -37,8 +37,8 @@ public class AssignSiteController extends PscSimpleFormController {
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        ControllerTools.registerDomainObjectEditor(binder, "assignedSites", siteDao);
-        ControllerTools.registerDomainObjectEditor(binder, "availableSites", siteDao);
+        getControllerTools().registerDomainObjectEditor(binder, "assignedSites", siteDao);
+        getControllerTools().registerDomainObjectEditor(binder, "availableSites", siteDao);
     } 
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -60,7 +60,7 @@ public class AssignSiteController extends PscSimpleFormController {
     	 } else {
     		templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
     	 }
-         return ControllerTools.redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
+         return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {

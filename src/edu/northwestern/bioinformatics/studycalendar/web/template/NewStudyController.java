@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
-public class NewStudyController extends AbstractCommandController {
+public class NewStudyController extends PscAbstractCommandController<NewStudyCommand> {
     private StudyService studyService;
 
     @Override
@@ -26,10 +27,9 @@ public class NewStudyController extends AbstractCommandController {
     }
 
     @Override
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        NewStudyCommand command = (NewStudyCommand) oCommand;
+    protected ModelAndView handle(NewStudyCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Study study = command.create();
-        return ControllerTools.redirectToCalendarTemplate(study.getId());
+        return getControllerTools().redirectToCalendarTemplate(study.getId());
     }
 
     ////// CONFIGURATION

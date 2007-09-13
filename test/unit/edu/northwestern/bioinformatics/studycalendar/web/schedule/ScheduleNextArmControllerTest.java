@@ -45,6 +45,7 @@ public class ScheduleNextArmControllerTest extends ControllerTestCase {
         };
         controller.setArmDao(armDao);
         controller.setScheduledCalendarDao(scheduledCalendarDao);
+        controller.setControllerTools(controllerTools);
 
         scheduledArm = registerMockFor(ScheduledArm.class);
         expect(scheduledArm.getNextArmPerProtocolStartDate()).andReturn(NEXT_PROTOCOL_DATE);

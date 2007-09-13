@@ -44,7 +44,7 @@ public class HolidaysController extends PscSimpleFormController {
     protected void initBinder(HttpServletRequest httpServletRequest,
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
-        ControllerTools.registerDomainObjectEditor(servletRequestDataBinder, "site", siteDao);
+        getControllerTools().registerDomainObjectEditor(servletRequestDataBinder, "site", siteDao);
     }
 
     ////// CONFIGURATION

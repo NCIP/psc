@@ -39,13 +39,13 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
     }
 
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = super.referenceData(request, command, errors);
         refdata.put("verb", "add");
-        ControllerTools.addHierarchyToModel(((PeriodCommand) command).getArm(), refdata);
+        getControllerTools().addHierarchyToModel(((PeriodCommand) command).getArm(), refdata);
         return refdata;
     }
 

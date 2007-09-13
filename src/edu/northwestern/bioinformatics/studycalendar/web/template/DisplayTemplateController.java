@@ -57,7 +57,7 @@ public class DisplayTemplateController extends PscAbstractController {
 
         Arm arm = selectArm(study, selectedArmId);
 
-        ControllerTools.addHierarchyToModel(arm.getEpoch(), model);
+        getControllerTools().addHierarchyToModel(arm.getEpoch(), model);
         model.addObject("arm", new ArmTemplate(arm));
 
         if (study.isAvailableForAssignment()) {

@@ -41,7 +41,7 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = super.referenceData(request, command, errors);
         // include period in refdata for breadcrumbs
-        ControllerTools.addHierarchyToModel(((EditPeriodCommand) command).getPeriod(), refdata);
+        getControllerTools().addHierarchyToModel(((EditPeriodCommand) command).getPeriod(), refdata);
         refdata.put("verb", "edit");
         return refdata;
     }

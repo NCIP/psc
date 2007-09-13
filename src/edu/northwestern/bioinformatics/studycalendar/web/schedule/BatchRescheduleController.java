@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
@@ -21,13 +22,13 @@ import javax.servlet.http.HttpServletResponse;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class BatchRescheduleController extends AbstractCommandController {
+public class BatchRescheduleController extends PscAbstractCommandController<BatchRescheduleCommand> {
 
     private ScheduledEventDao scheduledEventDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
     public BatchRescheduleController() {
-        super(BatchRescheduleCommand.class);
+        setCommandClass(BatchRescheduleCommand.class);
     }
 
     protected Object getCommand(HttpServletRequest request) throws Exception {
@@ -37,14 +38,14 @@ public class BatchRescheduleController extends AbstractCommandController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
 
-        ControllerTools.registerDomainObjectEditor(binder, "events", scheduledEventDao);
-        ControllerTools.registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
+        getControllerTools().registerDomainObjectEditor(binder, "events", scheduledEventDao);
+        getControllerTools().registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode", new ControlledVocabularyEditor(ScheduledEventMode.class));
     }
 
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        BatchRescheduleCommand command = (BatchRescheduleCommand) oCommand;
+    @Override
+    protected ModelAndView handle(BatchRescheduleCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         command.apply();
         return new ModelAndView("schedule/batchReschedule", "scheduledCalendar", command.getScheduledCalendar());
     }

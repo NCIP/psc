@@ -35,8 +35,8 @@ public class ParticipantOffStudyController extends PscSimpleFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(false));
-        ControllerTools.registerDomainObjectEditor(binder, "assignment", studyParticipantAssignmentDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(false));
+        getControllerTools().registerDomainObjectEditor(binder, "assignment", studyParticipantAssignmentDao);
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -47,7 +47,7 @@ public class ParticipantOffStudyController extends PscSimpleFormController {
 
     protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        ControllerTools.addHierarchyToModel(((ParticipantOffStudyCommand) oCommand).getAssignment(), model);
+        getControllerTools().addHierarchyToModel(((ParticipantOffStudyCommand) oCommand).getAssignment(), model);
         return model;
     }
 

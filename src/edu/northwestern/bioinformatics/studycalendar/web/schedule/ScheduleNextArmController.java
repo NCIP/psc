@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
@@ -24,7 +25,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class ScheduleNextArmController extends AbstractCommandController {
+public class ScheduleNextArmController extends PscAbstractCommandController<ScheduleNextArmCommand> {
     private ParticipantService participantService;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ArmDao armDao;
@@ -41,13 +42,13 @@ public class ScheduleNextArmController extends AbstractCommandController {
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        ControllerTools.registerDomainObjectEditor(binder, "arm", armDao);
-        ControllerTools.registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
-        binder.registerCustomEditor(Date.class, ControllerTools.getDateEditor(true));
+        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
+        binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
     }
 
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        ScheduleNextArmCommand command = (ScheduleNextArmCommand) oCommand;
+    @Override
+    protected ModelAndView handle(ScheduleNextArmCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = errors.getModel();
         ScheduledArm newArm = command.schedule();
         model.put("scheduledArm", newArm);

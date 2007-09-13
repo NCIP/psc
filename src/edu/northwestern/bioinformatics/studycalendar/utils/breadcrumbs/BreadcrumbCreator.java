@@ -1,28 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
-import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.BeansException;
-import org.springframework.core.Ordered;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.Ordered;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Iterator;
 
-import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 /**
  * @author Rhett Sutphin
  */
 public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
-    private static final Logger log = LoggerFactory.getLogger(BreadcrumbCreator.class);
+    private final Logger log = LoggerFactory.getLogger(BreadcrumbCreator.class);
 
     private ControllerUrlResolver urlResolver;
     private Map<Crumb, String> names;
@@ -71,6 +68,10 @@ public class BreadcrumbCreator implements Ordered, BeanFactoryPostProcessor {
     }
 
     private void buildAncestry(CrumbSource child, List<Crumb> family) {
+        if (child.getCrumb() == null) {
+            log.debug("{} ({}) did not provide a crumb", child, child.getClass().getName());
+            return;
+        }
         CrumbSource parent = child.getCrumb().getParent();
         if (parent != null) buildAncestry(parent, family);
         family.add(child.getCrumb());

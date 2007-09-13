@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.AdverseEventNotificatio
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -17,24 +18,26 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
-public class DismissAeController extends AbstractCommandController {
+public class DismissAeController extends PscAbstractCommandController<DismissAeCommand> {
     private AdverseEventNotificationDao notificationDao;
 
     public DismissAeController() {
         setCommandClass(DismissAeCommand.class);
     }
 
+    @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
         return new DismissAeCommand(notificationDao);
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        ControllerTools.registerDomainObjectEditor(binder, "notification", notificationDao);
+        getControllerTools().registerDomainObjectEditor(binder, "notification", notificationDao);
     }
 
-    @SuppressWarnings("unchecked")
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        DismissAeCommand command = ((DismissAeCommand) oCommand);
+    @Override
+    @SuppressWarnings({ "unchecked" })
+    protected ModelAndView handle(DismissAeCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         command.dismiss();
         Map<String, Object> model = errors.getModel();
         model.put("notification", command.getNotification());

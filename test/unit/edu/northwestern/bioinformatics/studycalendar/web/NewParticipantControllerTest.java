@@ -25,6 +25,7 @@ public class NewParticipantControllerTest extends ControllerTestCase {
         super.setUp();
         participantDao = registerMockFor(ParticipantDao.class);
         controller.setParticipantDao(participantDao);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testReferenceData() throws Exception {
