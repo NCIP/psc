@@ -90,7 +90,6 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     @OrderBy // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
