@@ -48,8 +48,13 @@
                     <c:forEach items="${period.days}" var="day" varStatus="dStatus">
                         <c:choose>
                             <c:when test="${day.inPeriod}">
-                                <td class="repetition<c:if test="${day.lastDayOfSpan}"> last</c:if>">
-                                    <a href="<c:url value="/pages/cal/managePeriod?id=${day.id}"/>">${day['empty'] ? '&nbsp;' : '&times;'}</a>
+                                <td class="repetition<c:if test="${day.lastDayOfSpan}"> last</c:if><c:if test="${editable}"> editable</c:if>">
+                                    <%-- TODO: could have non-edit mode clicks expand the events for the day --%>
+                                    <c:set var="dayCheck">${day['empty'] ? '&nbsp;' : '&times;'}</c:set>
+                                    <c:choose>
+                                        <c:when test="${not editable}"><span>${dayCheck}</span></c:when>
+                                        <c:otherwise><a href="<c:url value="/pages/cal/managePeriod?id=${day.id}"/>">${dayCheck}</a></c:otherwise>
+                                    </c:choose>
                                 </td>
                             </c:when>
                             <c:otherwise><td class="empty<c:if test="${dStatus.last || day.lastDayOfSpan}"> last</c:if>">&nbsp;</td></c:otherwise>

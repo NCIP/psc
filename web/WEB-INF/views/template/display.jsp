@@ -49,7 +49,7 @@
                 border-width: 1px 1px 0 0;
                 text-align: center;
             }
-            table.periods td.repetition a {
+            table.periods td.repetition a, table.periods td.repetition span {
                 text-decoration: none;
                 margin: 0;
                 padding: 2px;
@@ -61,7 +61,7 @@
             table.periods a:hover {
                 color: #000;
             }
-            table.periods td.repetition:hover {
+            table.periods td.repetition.editable:hover {
                 background-color: #ccc;
             }
             table.periods td.repetition {
