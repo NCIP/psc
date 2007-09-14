@@ -1,13 +1,11 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
-<%@attribute name="amendment" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
+<%@attribute name="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
-<%--<laf:box title="${arm.base.qualifiedName}">--%>
-<c:set var="editable" value="${not empty amendment}"/>
 
-<%--<h2 id="selected-arm-header">${arm.base.qualifiedName}</h2>--%>
+<c:set var="editable" value="${not empty developmentRevision}"/>
 
 <div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
 <laf:box title="${arm.base.qualifiedName}">

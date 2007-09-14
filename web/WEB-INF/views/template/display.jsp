@@ -545,7 +545,7 @@
         </div>
 
         <div id="selected-arm" class="section">
-            <templ:arm arm="${arm}" visible="true"/>
+            <templ:arm arm="${arm}" developmentRevision="${developmentRevision}" visible="true"/>
         </div>
     </body>
 </html>
