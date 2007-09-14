@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
@@ -34,6 +35,7 @@ public class DeltaService {
     private MutatorFactory mutatorFactory;
     private DaoFinder daoFinder;
     private DeltaDao deltaDao;
+    private TemplateService templateService;
 
     /**
      * Applies all the deltas in the given revision to the source study,
@@ -45,6 +47,27 @@ public class DeltaService {
         Study revised = source.transientClone();
         apply(revised, revision);
         return revised;
+    }
+
+    public <T extends PlanTreeNode<?>> T revise(T source) {
+        return revise(source, null);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public <T extends PlanTreeNode<?>> T revise(T source, Revision revision) {
+        PlannedCalendar calendar;
+        if (PlannedCalendar.class.isAssignableFrom(source.getClass())) {
+            calendar = (PlannedCalendar) source;
+        } else {
+            calendar = templateService.findAncestor(source, PlannedCalendar.class);
+        }
+
+        if (revision == null) {
+            revision = calendar.getStudy().getDevelopmentAmendment();
+        }
+
+        Study revised = revise(calendar.getStudy(), revision);
+        return (T) findEquivalentChild(revised.getPlannedCalendar(), source);
     }
 
     /**
@@ -72,6 +95,12 @@ public class DeltaService {
         }
     }
 
+    /**
+     * Merge the change for the node into the target revision
+     * @param target
+     * @param node
+     * @param change
+     */
     public void updateRevision(Revision target, PlanTreeNode<?> node, Change change) {
         log.debug("Updating {}", target);
         if (node.isDetached()) {
@@ -179,5 +208,10 @@ public class DeltaService {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

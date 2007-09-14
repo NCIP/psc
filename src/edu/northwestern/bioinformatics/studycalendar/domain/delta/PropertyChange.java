@@ -58,7 +58,7 @@ public class PropertyChange extends Change {
         this.newValue = newValue;
     }
 
-    @Column(name="attribute")
+    @Column(name="attribute", nullable = false)
     public String getPropertyName() {
         return propertyName;
     }

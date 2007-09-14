@@ -6,11 +6,16 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -36,6 +41,9 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
     private PlannedEventDao plannedEventDao;
+    private StudyService studyService;
+    private DeltaService deltaService;
+    private AmendmentService amendmentService;
 
     public ManagePeriodEventsController() {
         setBindOnNewForm(true);
@@ -44,17 +52,17 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         setCrumb(new Crumb());
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        int id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        if (plannedEventDao == null) {
-            throw new NullPointerException("MY NULL POINTER EXCEPTION");
+        int periodId = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        Period period = periodDao.getById(periodId);
+        if (!isFormSubmission(request)) { // TODO: the need for this branch points up that the AJAX requests should be handled by a different controller
+            period = deltaService.revise(period);
         }
-        Period period = periodDao.getById(id);
-        period.getPlannedEvents().size();
-        periodDao.evict(period);
-        return new ManagePeriodEventsCommand(period, plannedEventDao);
+        return new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
         binder.registerCustomEditor(String.class, "grid.details", new StringTrimmerEditor(true));
@@ -63,6 +71,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
     }
 
+    @Override
     protected Map<String, Object> referenceData(
         HttpServletRequest request, Object oCommand, Errors errors
     ) throws Exception {
@@ -83,14 +92,18 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         return refdata;
     }
 
-    protected ModelAndView processFormSubmission(HttpServletRequest request, HttpServletResponse response,
-                                                 Object oCommand, BindException errors) throws Exception {
+    @Override
+    protected ModelAndView processFormSubmission(
+        HttpServletRequest request, HttpServletResponse response, Object oCommand,
+        BindException errors
+    ) throws Exception {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
         PlannedEvent event = command.apply();
+        studyService.saveStudyFor(command.getPeriod());
         ManagePeriodEventsCommand.GridRow row = command.getOldRow();
+
         Map<String, Object> map = new HashMap<String, Object>();
-        //map.put("grid", command.createGrid());
-        if (event!=null) {
+        if (event != null) {
             map.put("id", event.getId());
         }
         map.put("rowNumber", row.getRowNumber());
@@ -117,7 +130,23 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         this.plannedEventDao = plannedEventDao;
     }
 
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setDeltaService(DeltaService templateService) {
+        this.deltaService = templateService;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
     private static class Crumb extends DefaultCrumb {
+        @Override
         public String getName(BreadcrumbContext context) {
             Period p = context.getPeriod();
             if (p.getName() != null) {
@@ -127,6 +156,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
             }
         }
 
+        @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             return Collections.singletonMap("id", context.getPeriod().getId().toString());
         }

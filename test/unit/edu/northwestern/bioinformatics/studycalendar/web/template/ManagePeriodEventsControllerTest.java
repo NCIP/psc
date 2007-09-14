@@ -6,21 +6,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.springframework.validation.BindException;
-import org.springframework.validation.BindingErrorProcessor;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestUtils;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 /**
  * @author Rhett Sutphin
@@ -34,7 +28,9 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private Period period = createPeriod("7th", 10, 8, 4);
     private List<Activity> activities = new LinkedList<Activity>();
     private ManagePeriodEventsCommand command;
+    private AmendmentService amendmentService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         Study parent = createNamedInstance("Root", Study.class);
@@ -45,11 +41,13 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         periodDao = registerDaoMockFor(PeriodDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         plannedEventDao = registerMockFor(PlannedEventDao.class);
+        amendmentService = registerMockFor(AmendmentService.class);
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
         controller.setPlannedEventDao(plannedEventDao);
         controller.setControllerTools(controllerTools);
+        controller.setDeltaService(getTestingDeltaService());
             
         request.setMethod("GET");
         request.addParameter("id", "15");
@@ -57,7 +55,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
 
-        command = new ManagePeriodEventsCommand(period, plannedEventDao);
+        command = new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
     }
 
     public void testFormBackingObject() throws Exception {
@@ -71,7 +69,6 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     }
 
     public void testFormProcessing() throws Exception {
-
 
         request.addParameter("grid[0].addition","true");
         request.addParameter("grid[0].columnNumber","3");

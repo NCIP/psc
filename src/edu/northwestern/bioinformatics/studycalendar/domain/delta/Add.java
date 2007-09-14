@@ -45,7 +45,7 @@ public class Add extends ChildrenChange {
     }
 
     @Override // in order to map
-    @Column(name = "new_value")
+    @Column(name = "new_value", nullable = false)
     public Integer getChildId() {
         return super.getChildId();
     }

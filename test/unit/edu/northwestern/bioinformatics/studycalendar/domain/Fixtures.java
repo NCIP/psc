@@ -12,6 +12,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -30,6 +32,7 @@ public class Fixtures {
     private static final DeltaService deltaService = new DeltaService();
     static {
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
+        deltaService.setTemplateService(new TestingTemplateService());
     }
 
     public static <T extends DomainObject> T setId(Integer id, T target) {

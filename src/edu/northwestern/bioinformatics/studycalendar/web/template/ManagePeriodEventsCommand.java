@@ -5,8 +5,12 @@ import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
 import java.util.*;
 import java.util.List;
@@ -21,6 +25,7 @@ public class ManagePeriodEventsCommand {
     private static final Logger log = LoggerFactory.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
     private PlannedEventDao plannedEventDao;
+    private AmendmentService amendmentService;
     private GridRow oldRow;
 
 
@@ -31,9 +36,10 @@ public class ManagePeriodEventsCommand {
      */
     private List<GridRow> grid;
 
-    public ManagePeriodEventsCommand(Period period, PlannedEventDao plannedEventDao) {
+    public ManagePeriodEventsCommand(Period period, PlannedEventDao plannedEventDao, AmendmentService amendmentService) {
         this.period = period;
         this.plannedEventDao = plannedEventDao;
+        this.amendmentService = amendmentService;
         grid = createGrid();
     }
 
@@ -112,8 +118,9 @@ public class ManagePeriodEventsCommand {
         for (Integer id: row.getEventIds()) {
             if (id != null && id>-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
-                event.setConditionalDetails(row.getConditionalDetails());
-                plannedEventDao.save(event);
+                amendmentService.updateDevelopmentAmendment(event,
+                    PropertyChange.create("conditionalDetails", event.getConditionalDetails(),
+                        row.getConditionalDetails()));
             }
         }
     }
@@ -124,17 +131,16 @@ public class ManagePeriodEventsCommand {
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
         newEvent.setConditionalDetails(row.getConditionalDetails());
-        period.addPlannedEvent(newEvent);
-        plannedEventDao.save(newEvent);
+
+        amendmentService.updateDevelopmentAmendment(period, Add.create(newEvent));
+
         return newEvent;
     }
 
     private void removeEvent(Integer eventId) {
-        for (Iterator<PlannedEvent> iterator = period.getPlannedEvents().iterator(); iterator.hasNext();) {
-            PlannedEvent event = iterator.next();
-            if(eventId.equals(event.getId())) {
-                iterator.remove();
-                plannedEventDao.delete(event);
+        for (PlannedEvent event : period.getPlannedEvents()) {
+            if (eventId.equals(event.getId())) {
+                amendmentService.updateDevelopmentAmendment(period, Remove.create(event));
             }
         }
     }
@@ -143,8 +149,8 @@ public class ManagePeriodEventsCommand {
         for (Integer id: row.getEventIds()) {
             if (id != null && id >-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
-                event.setDetails(details);
-                plannedEventDao.save(event);
+                amendmentService.updateDevelopmentAmendment(event,
+                    PropertyChange.create("details", event.getDetails(), details));
             }
         }
     }

@@ -25,7 +25,7 @@ public class DeltaAssertions {
     }
 
     public static void assertAdd(
-        String msg, PlanTreeNode<Epoch> expectedChild, Integer expectedIndex, Change actual
+        String msg, PlanTreeNode<?> expectedChild, Integer expectedIndex, Change actual
     ) {
         Add actualAdd = assertChangeIsAdd(msg, actual);
         assertEquals(msg + ": wrong child", expectedChild, actualAdd.getChild());

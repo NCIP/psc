@@ -44,7 +44,7 @@ public class Reorder extends ChildrenChange {
     }
 
     @Override
-    @Column(name="attribute")
+    @Column(name="attribute", nullable = false)
     public Integer getChildId() {
         return super.getChildId();
     }

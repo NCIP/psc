@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,7 @@ public class StudyService {
     private ActivityDao activityDao;
     private StudyDao studyDao;
     private DeltaService deltaService;
+    private TemplateService templateService;
 
     public void scheduleReconsent(Study study, Date startDate, String details) throws Exception {
         List<StudyParticipantAssignment> participantAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -49,6 +52,10 @@ public class StudyService {
         }
     }
 
+    public void saveStudyFor(PlanTreeNode<?> node) {
+        save(templateService.findAncestor(node, PlannedCalendar.class).getStudy());
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -64,5 +71,10 @@ public class StudyService {
     @Required
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

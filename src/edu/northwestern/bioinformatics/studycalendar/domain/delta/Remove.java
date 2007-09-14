@@ -37,7 +37,7 @@ public class Remove extends ChildrenChange {
     ////// BEAN PROPERTIES
 
     @Override
-    @Column(name = "old_value")
+    @Column(name = "old_value", nullable = false)
     public Integer getChildId() {
         return super.getChildId();
     }
