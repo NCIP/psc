@@ -9,7 +9,7 @@
 
 	<!--==================== USERS ====================-->
 	<CSM_USER
-        user_id="1"
+        user_id="-1"
         login_name="SYSTEM_ADMIN"
         first_name="SYSTEM_ADMIN"
         last_name="SYSTEM_ADMIN"
@@ -18,7 +18,7 @@
         />
 
     <CSM_USER
-        user_id="5"
+        user_id="-5"
         login_name="ra_1"
         first_name="Research"
         last_name="Associate1"
@@ -27,7 +27,7 @@
         />
 
     <CSM_USER
-        user_id="6"
+        user_id="-6"
         login_name="ra_2"
         first_name="Research"
         last_name="Associate2"
@@ -36,7 +36,7 @@
         />
 
     <CSM_USER
-        user_id="7"
+        user_id="-7"
         login_name="study_admin1"
         first_name="study"
         last_name="admin1"
@@ -45,7 +45,7 @@
         />
 
     <CSM_USER
-        user_id="8"
+        user_id="-8"
         login_name="study_admin2"
         first_name="Study"
         last_name="Admin2"
@@ -54,7 +54,7 @@
         />
 
     <CSM_USER
-        user_id="3"
+        user_id="-3"
         login_name="studycd_1"
         first_name="Clinical_Research"
         last_name="StudyCoordinator1"
@@ -63,7 +63,7 @@
         />
 
     <CSM_USER
-        user_id="4"
+        user_id="-4"
         login_name="studycd_2"
         first_name="Clinical Research"
         last_name="StudyCoordinator2"
@@ -72,7 +72,7 @@
         />
 
     <CSM_USER
-        user_id="9"
+        user_id="-9"
         login_name="participantcd_1"
         first_name="participant"
         last_name="coordinator"
@@ -81,7 +81,7 @@
         />
 
     <CSM_USER
-        user_id="10"
+        user_id="-10"
         login_name="participantcd_2"
         first_name="Participant"
         last_name="Coordinator2"
@@ -90,7 +90,7 @@
         />
 
     <CSM_USER
-        user_id="2"
+        user_id="-2"
         login_name="sc_systemadmin"
         first_name="STUDYCAL_SYSTEMADMIN"
         last_name="STUDYCAL_SYSTEMADMIN"
@@ -99,7 +99,7 @@
         />
 
     <CSM_USER
-        user_id="11"
+        user_id="-11"
         login_name="superuser"
         first_name="super"
         last_name="superuser"
@@ -108,7 +108,7 @@
         />
 
     <CSM_USER
-        user_id="12"
+        user_id="-12"
         login_name="sitecd_1"
         first_name="sitecd_1"
         last_name="coordinator1"
@@ -117,7 +117,7 @@
         />
 
     <CSM_USER
-        user_id="13"
+        user_id="-13"
         login_name="sitecd_2"
         first_name="sitecd_2"
         last_name="coordinator2"
@@ -130,48 +130,48 @@
 	<!--==================== USER TO GROUP MAPPINGS ====================-->
 
 
-	<CSM_USER_GROUP USER_GROUP_ID="1" USER_ID="3" GROUP_ID="1" />
-    <CSM_USER_GROUP USER_GROUP_ID="2" USER_ID="4" GROUP_ID="1" />
-    <CSM_USER_GROUP USER_GROUP_ID="3" USER_ID="7" GROUP_ID="2" />
-    <CSM_USER_GROUP USER_GROUP_ID="4" USER_ID="8" GROUP_ID="2" />
-    <CSM_USER_GROUP USER_GROUP_ID="5" USER_ID="5" GROUP_ID="5" />
-    <CSM_USER_GROUP USER_GROUP_ID="6" USER_ID="6" GROUP_ID="5" />
-    <CSM_USER_GROUP USER_GROUP_ID="7" USER_ID="11" GROUP_ID="4" />
-    <CSM_USER_GROUP USER_GROUP_ID="8" USER_ID="13" GROUP_ID="6" />
-    <CSM_USER_GROUP USER_GROUP_ID="10" USER_ID="9" GROUP_ID="3" />
-    <CSM_USER_GROUP USER_GROUP_ID="11" USER_ID="10" GROUP_ID="3" />
-    <CSM_USER_GROUP USER_GROUP_ID="13" USER_ID="12" GROUP_ID="6" />
+	<CSM_USER_GROUP USER_GROUP_ID="-1" user_id="-3" GROUP_ID="1" />
+    <CSM_USER_GROUP USER_GROUP_ID="-2" user_id="-4" GROUP_ID="1" />
+    <CSM_USER_GROUP USER_GROUP_ID="-3" user_id="-7" GROUP_ID="2" />
+    <CSM_USER_GROUP USER_GROUP_ID="-4" user_id="-8" GROUP_ID="2" />
+    <CSM_USER_GROUP USER_GROUP_ID="-5" user_id="-5" GROUP_ID="5" />
+    <CSM_USER_GROUP USER_GROUP_ID="-6" user_id="-6" GROUP_ID="5" />
+    <CSM_USER_GROUP USER_GROUP_ID="-7" user_id="-11" GROUP_ID="4" />
+    <CSM_USER_GROUP USER_GROUP_ID="-8" user_id="-13" GROUP_ID="6" />
+    <CSM_USER_GROUP USER_GROUP_ID="-10" user_id="-9" GROUP_ID="3" />
+    <CSM_USER_GROUP USER_GROUP_ID="-11" user_id="-10" GROUP_ID="3" />
+    <CSM_USER_GROUP USER_GROUP_ID="-13" user_id="-12" GROUP_ID="6" />
 
 
     
 
      <CSM_USER_GROUP_ROLE_PG
-        user_group_role_pg_id="21"
-        user_id="9"
+        user_group_role_pg_id="-21"
+        user_id="-9"
         role_id="4"
         protection_group_id="12"
         update_date="2006-09-15"
         />
 
     <CSM_USER_GROUP_ROLE_PG
-        user_group_role_pg_id="22"
-        user_id="9"
+        user_group_role_pg_id="-22"
+        user_id="-9"
         role_id="4"
         protection_group_id="9"
         update_date="2006-09-15"
         />
 
     <CSM_USER_GROUP_ROLE_PG
-        user_group_role_pg_id="23"
-        user_id="10"
+        user_group_role_pg_id="-23"
+        user_id="-10"
         role_id="4"
         protection_group_id="9"
         update_date="2006-09-15"
         />
 
     <CSM_USER_GROUP_ROLE_PG
-        user_group_role_pg_id="24"
-        user_id="10"
+        user_group_role_pg_id="-24"
+        user_id="-10"
         role_id="4"
         protection_group_id="12"
         update_date="2006-09-15"
@@ -180,11 +180,11 @@
     
     <!--==================== USER TO PROTECTION ELEMENT MAPPINGS ==================-->
     <!-- SYSTEM_ADMIN owns csm upt -->
-    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="1"
-		PROTECTION_ELEMENT_ID="1" USER_ID="1" UPDATE_DATE="2007-01-27" />
+    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="-1"
+		PROTECTION_ELEMENT_ID="1" user_id="-1" UPDATE_DATE="2007-01-27" />
     
     <!-- sc_system_admin owns the study_calendar Application -->
-    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="2"
-		PROTECTION_ELEMENT_ID="2" USER_ID="2" UPDATE_DATE="2007-01-27" />
+    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="-2"
+		PROTECTION_ELEMENT_ID="2" user_id="-2" UPDATE_DATE="2007-01-27" />
 
 </dataset>
