@@ -75,7 +75,7 @@ public class AddTest extends StudyCalendarTestCase {
     }
 
     public void testMergeIntoDeltaWithSameAddIsNoop() throws Exception {
-        Add existingAdd = createAddChange(epoch, null);
+        Add existingAdd = Add.create(epoch);
         delta.getChanges().add(existingAdd);
 
         add.setChild(epoch);
@@ -87,7 +87,7 @@ public class AddTest extends StudyCalendarTestCase {
     
     public void testMergeIntoDeltaWithARemoveForTheSameChild() throws Exception {
         plannedCalendar.addChild(epoch);
-        delta.getChanges().add(createRemoveChange(epoch));
+        delta.getChanges().add(Remove.create(epoch));
         
         add.setChild(epoch);
         add.mergeInto(delta);
@@ -97,7 +97,7 @@ public class AddTest extends StudyCalendarTestCase {
     
     public void testMergeIntoDeltaWithRemoveForTheSameChildAndAnIndex() throws Exception {
         plannedCalendar.addChild(epoch);
-        delta.getChanges().add(createRemoveChange(epoch));
+        delta.getChanges().add(Remove.create(epoch));
 
         add.setChild(epoch);
         add.setIndex(4);

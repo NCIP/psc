@@ -8,9 +8,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -103,13 +105,13 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Amendment rev = new Amendment();
         Epoch epoch = setId(4, Epoch.create("New"));
         Delta<?> pcDelta = Delta.createDeltaFor(study.getPlannedCalendar(),
-            createAddChange(epoch, 3));
+            Add.create(epoch, 3));
         rev.addDelta(pcDelta);
         Arm arm = createNamedInstance("N", Arm.class);
 
         assertEquals("Wrong number of arms initially", 1, epoch.getArms().size());
 
-        service.updateRevision(rev, epoch, createAddChange(arm, null));
+        service.updateRevision(rev, epoch, Add.create(arm));
 
         assertEquals("Arm not directly applied", 2, epoch.getArms().size());
     }
@@ -118,13 +120,13 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Amendment rev = new Amendment();
         Epoch epoch = setId(4, createNamedInstance("New", Epoch.class));
         Delta<?> pcDelta = Delta.createDeltaFor(study.getPlannedCalendar(),
-            createAddChange(epoch, 3));
+            Add.create(epoch, 3));
         rev.addDelta(pcDelta);
 
         assertEquals("Wrong number of changes in delta initially", 1, pcDelta.getChanges().size());
 
         service.updateRevision(rev, study.getPlannedCalendar(),
-            createRemoveChange(study.getPlannedCalendar().getEpochs().get(2)));
+            Remove.create(study.getPlannedCalendar().getEpochs().get(2)));
 
         assertEquals("New change not merged into delta", 2, pcDelta.getChanges().size());
     }
@@ -133,13 +135,14 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Amendment rev = new Amendment();
         Epoch epoch = setId(4, createNamedInstance("New", Epoch.class));
         Delta<?> pcDelta = Delta.createDeltaFor(study.getPlannedCalendar(),
-            createAddChange(epoch, 3));
+            Add.create(epoch, 3));
         rev.addDelta(pcDelta);
 
         assertEquals("Wrong number of deltas initially", 1, rev.getDeltas().size());
 
         Epoch expectedTarget = study.getPlannedCalendar().getEpochs().get(1);
-        Add expectedChange = createAddChange(new Arm(), 2);
+        PlanTreeNode<?> newChild = new Arm();
+        Add expectedChange = Add.create(newChild, 2);
         service.updateRevision(rev, expectedTarget, expectedChange);
 
         assertEquals("Wrong number of deltas", 2, rev.getDeltas().size());

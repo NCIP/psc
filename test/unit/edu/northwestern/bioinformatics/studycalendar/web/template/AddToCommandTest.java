@@ -1,19 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAddChange;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Map;
 
@@ -48,7 +42,7 @@ public class AddToCommandTest extends EditCommandTestCase {
         study.getPlannedCalendar().addEpoch(e1);
         study.getPlannedCalendar().addEpoch(e2);
         study.getDevelopmentAmendment().addDelta(
-            Delta.createDeltaFor(study.getPlannedCalendar(), createAddChange(e3, 2)));
+            Delta.createDeltaFor(study.getPlannedCalendar(), Add.create(e3, 2)));
         command.setStudy(study);
 
         Map<String, Object> model = command.getModel();
@@ -82,7 +76,7 @@ public class AddToCommandTest extends EditCommandTestCase {
         study.getPlannedCalendar().addEpoch(epoch);
         Arm newArm = epoch.getArms().remove(1);
         study.getDevelopmentAmendment().addDelta(
-            Delta.createDeltaFor(epoch, createAddChange(newArm, 1)));
+            Delta.createDeltaFor(epoch, Add.create(newArm, 1)));
         Fixtures.assignIds(study);
 
         command.setEpoch(epoch);

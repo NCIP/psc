@@ -67,7 +67,7 @@ public class ReorderTest extends StudyCalendarTestCase {
 
     public void testMergeIntoDeltaWithInterveningRemove() throws Exception {
         delta.getChanges().add(Fixtures.createReorderChange(ab, 1, 0));
-        delta.getChanges().add(Fixtures.createRemoveChange(aa));
+        delta.getChanges().add(Remove.create(aa));
 
         reorder.setChild(ab);
         reorder.setOldIndex(0);
@@ -82,7 +82,7 @@ public class ReorderTest extends StudyCalendarTestCase {
 
     public void testMergeIntoDeltaWithInterveningAdd() throws Exception {
         delta.getChanges().add(Fixtures.createReorderChange(ab, 1, 0));
-        delta.getChanges().add(Fixtures.createAddChange(ac, null));
+        delta.getChanges().add(Add.create(ac));
 
         reorder.setChild(ab);
         reorder.setOldIndex(0);

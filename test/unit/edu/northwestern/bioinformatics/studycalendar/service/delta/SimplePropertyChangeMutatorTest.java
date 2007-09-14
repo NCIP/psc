@@ -2,10 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 /**
@@ -24,33 +22,33 @@ public class SimplePropertyChangeMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyIntegerProperty() throws Exception {
-        doApply(createPropertyChange("startDay", "1", "-1"), period);
+        doApply(PropertyChange.create("startDay", "1", "-1"), period);
         assertEquals("Property not updated", -1, (int) period.getStartDay());
     }
 
     public void testApplyStringProperty() throws Exception {
-        doApply(createPropertyChange("name", "Autumn", "Winter"), period);
+        doApply(PropertyChange.create("name", "Autumn", "Winter"), period);
         assertEquals("Property not updated", "Winter", period.getName());
     }
 
     public void testApplyNullProperty() throws Exception {
-        doApply(createPropertyChange("name", "Autumn", null), period);
+        doApply(PropertyChange.create("name", "Autumn", null), period);
         assertEquals("Property not updated", null, period.getName());
     }
 
     public void testApplyNestedProperty() throws Exception {
-        doApply(createPropertyChange("duration.quantity", "4", "8"), period);
+        doApply(PropertyChange.create("duration.quantity", "4", "8"), period);
         assertEquals("Property not updated", 8, (int) period.getDuration().getQuantity());
     }
 
     public void testApplyEnumProperty() throws Exception {
-        doApply(createPropertyChange("duration.unit", "day", "week"), period);
+        doApply(PropertyChange.create("duration.unit", "day", "week"), period);
         assertEquals("Property not updated", Duration.Unit.week, period.getDuration().getUnit());
     }
 
     public void testRevertStringProperty() throws Exception {
         new SimplePropertyChangeMutator(
-            createPropertyChange("name", "Spring", "Autumn")
+            PropertyChange.create("name", "Spring", "Autumn")
         ).revert(period);
         assertEquals("Property not reverted", "Spring", period.getName());
     }

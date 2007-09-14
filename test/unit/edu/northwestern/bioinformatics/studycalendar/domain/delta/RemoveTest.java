@@ -62,7 +62,7 @@ public class RemoveTest extends StudyCalendarTestCase {
     }
 
     public void testMergeWithEquivalentAddPresent() throws Exception {
-        delta.addChange(createAddChange(ac, 2));
+        delta.addChange(Add.create(ac, 2));
 
         remove.setChild(ac);
         remove.mergeInto(delta);
@@ -71,7 +71,7 @@ public class RemoveTest extends StudyCalendarTestCase {
     }
 
     public void testMergeWithEquivalentRemovePresent() throws Exception {
-        Remove expectedRemove = createRemoveChange(ab);
+        Remove expectedRemove = Remove.create(ab);
         delta.addChange(expectedRemove);
 
         remove.setChild(ab);
@@ -87,4 +87,26 @@ public class RemoveTest extends StudyCalendarTestCase {
 
         assertEquals("Remove should not have been added", 0, delta.getChanges().size());
     }
+
+    /* TODO:
+    public void testMergeTwoIntoDeltaWithIndexesThenRemoveOne() throws Exception {
+        Arm retained0 = setId(17, new Arm());
+        Arm retained1 = setId(18, new Arm());
+        Arm retained2 = setId(19, new Arm());
+        delta.addChange(Add.create(retained0, 2));
+        delta.addChange(Add.create(ac, 3));
+        delta.addChange(Add.create(retained1, 4));
+        delta.addChange(Add.create(retained2, 5));
+
+        remove.setChild(ac);
+        remove.mergeInto(delta);
+        assertEquals("Wrong number of changes in delta", 3, delta.getChanges().size());
+        Add add0 = (Add) delta.getChanges().get(0);
+        Add add1 = (Add) delta.getChanges().get(1);
+        Add add2 = (Add) delta.getChanges().get(2);
+        DeltaAssertions.assertAdd("Index for earlier retained add updated",   retained0, 2, add0);
+        DeltaAssertions.assertAdd("Index for later retained add not updated", retained1, 3, add1);
+        DeltaAssertions.assertAdd("Index for later retained add not updated", retained2, 4, add2);
+    }
+    */
 }

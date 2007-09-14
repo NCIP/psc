@@ -12,7 +12,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -226,33 +225,12 @@ public class Fixtures {
         return add;
     }
 
-    public static Add createAddChange(PlanTreeNode<?> newChild, Integer index) {
-        Add add = new Add();
-        add.setChild(newChild);
-        add.setIndex(index);
-        return add;
-    }
-
-    public static Remove createRemoveChange(PlanTreeNode<?> child) {
-        Remove del = new Remove();
-        del.setChild(child);
-        return del;
-    }
-
     public static Reorder createReorderChange(PlanTreeNode<?> child, Integer oldIndex, Integer newIndex) {
         Reorder reorder = new Reorder();
         reorder.setChild(child);
         reorder.setOldIndex(oldIndex);
         reorder.setNewIndex(newIndex);
         return reorder;
-    }
-
-    public static PropertyChange createPropertyChange(String prop, String old, String neW) {
-        PropertyChange change = new PropertyChange();
-        change.setPropertyName(prop);
-        change.setOldValue(old);
-        change.setNewValue(neW);
-        return change;
     }
 
     // static class
