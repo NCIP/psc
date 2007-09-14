@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import java.util.Iterator;
 import java.util.Collection;
@@ -33,11 +34,13 @@ public class EditPeriodCommand implements PeriodCommand {
     private Period period;
     private Period originalPeriod;
     private AmendmentService amendmentService;
+    private TemplateService templateService;
 
-    public EditPeriodCommand(Period period, AmendmentService amendmentService) {
+    public EditPeriodCommand(Period period, AmendmentService amendmentService, TemplateService templateService) {
         this.originalPeriod = period;
         this.period = (Period) period.transientClone();
         this.amendmentService = amendmentService;
+        this.templateService = templateService;
     }
 
     public Period getPeriod() {
@@ -45,7 +48,7 @@ public class EditPeriodCommand implements PeriodCommand {
     }
 
     public Arm getArm() {
-        return getPeriod().getArm();
+        return templateService.findParent(getPeriod());
     }
 
     public void apply() {

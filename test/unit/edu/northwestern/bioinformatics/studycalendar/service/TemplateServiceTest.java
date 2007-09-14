@@ -605,4 +605,16 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             assertEquals("Epoch is not a descendant of Period", expected.getMessage());
         }
     }
+
+    public void testFindStudyForPlannedCalendar() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        assertSame(study, service.findStudy(study.getPlannedCalendar()));
+    }
+
+    public void testFindStudyForOtherNodes() throws Exception {
+        Study study = Fixtures.createBasicTemplate();
+        Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
+        assertSame(study, service.findStudy(epoch));
+        assertSame(study, service.findStudy(epoch.getArms().get(0)));
+    }
 }

@@ -1,14 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.*;
+import org.easymock.classextension.EasyMock;
+import org.easymock.IArgumentMatcher;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -21,7 +32,10 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
 
     private EditPeriodCommand command;
     private Period period;
+    private Arm arm;
+    private Study study;
     private AmendmentService amendmentService;
+    private TemplateService templateService;
 
     @Override
     protected void setUp() throws Exception {
@@ -31,9 +45,19 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         period.setStartDay(START_DAY);
         period.getDuration().setQuantity(DURATION_QUANTITY);
         period.getDuration().setUnit(DURATION_UNIT);
+        period.setId(88);
 
+        study = Fixtures.createBasicTemplate();
+        arm = study.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+        arm.addPeriod(period);
+        
         amendmentService = registerMockFor(AmendmentService.class);
-        command = new EditPeriodCommand(period, amendmentService);
+        templateService = registerMockFor(TemplateService.class);
+        initCommand();
+    }
+
+    private void initCommand() {
+        command = new EditPeriodCommand(period, amendmentService, templateService);
     }
 
     public void testOriginalPeriodClonedIntoCommand() throws Exception {
@@ -102,6 +126,35 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         replayMocks();
         command.apply();
         verifyMocks();
+    }
+
+    public void testGetArmForNewlyAddedPeriod() throws Exception {
+        period.setArm(null);
+        study.setDevelopmentAmendment(new Amendment("dev"));
+        study.getDevelopmentAmendment().addDelta(Delta.createDeltaFor(arm, Add.create(period)));
+        initCommand();
+
+        expect(templateService.findParent(eqByClassAndId(period))).andReturn(arm).atLeastOnce();
+
+        replayMocks();
+        assertSame(arm, command.getArm());
+        assertNotNull(command.getArm());
+        verifyMocks();
+    }
+
+    private static <T extends DomainObject> T eqByClassAndId(final T t) {
+        EasyMock.reportMatcher(new IArgumentMatcher() {
+            public boolean matches(Object argument) {
+                DomainObject other = (DomainObject) argument;
+                return other != null && other.getId().equals(t.getId())
+                    && other.getClass().equals(t.getClass());
+            }
+
+            public void appendTo(StringBuffer buffer) {
+                buffer.append(t.getClass().getName()).append(" with id ").append(t.getId());
+            }
+        });
+        return null;
     }
 
     private void expectPropertyUpdate(String property, String oldV, String newV) {

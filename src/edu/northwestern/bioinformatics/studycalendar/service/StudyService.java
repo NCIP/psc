@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,8 +51,10 @@ public class StudyService {
         }
     }
 
-    public void saveStudyFor(PlanTreeNode<?> node) {
-        save(templateService.findAncestor(node, PlannedCalendar.class).getStudy());
+    public Study saveStudyFor(PlanTreeNode<?> node) {
+        Study study = templateService.findStudy(node);
+        save(study);
+        return study;
     }
 
     ////// CONFIGURATION

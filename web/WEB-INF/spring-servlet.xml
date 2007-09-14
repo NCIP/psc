@@ -74,11 +74,7 @@
         <property name="crumb.parent"><ref local="studyListController"/></property>
     </bean>
     <bean name="/cal/template/select" id="selectArmController" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController">
-        <property name="parameterName"><value>arm</value></property>
-        <property name="viewName"><value>template/ajax/selectArm</value></property>
-        <property name="dao"><ref bean="armDao"/></property>
-    </bean>
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController"/>
     <bean name="/cal/template/rename" id="renameController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>renameCommand</value></property>

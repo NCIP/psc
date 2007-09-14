@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,6 +21,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
     private EditPeriodController controller;
     private EditPeriodCommand command;
     private StudyService studyService;
+    private DeltaService deltaService;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,6 +37,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setTemplateService(templateService);
         controller.setStudyService(studyService);
+        controller.setDeltaService(deltaService);
     }
 
     private EditPeriodCommand command() {
@@ -62,13 +65,14 @@ public class EditPeriodControllerTest extends ControllerTestCase {
 
         int armId = 45;
         int studyId = 87;
-        setId(armId, setId(studyId, Fixtures.createSingleEpochStudy("S", "E"))
+        Study study = setId(studyId, Fixtures.createSingleEpochStudy("S", "E"));
+        setId(armId, study
             .getPlannedCalendar().getEpochs().get(0).getArms().get(0)).addPeriod(period);
 
         command = registerMockFor(EditPeriodCommand.class);
         expect(command.getPeriod()).andReturn(period).anyTimes();
         expect(command.getArm()).andReturn(period.getArm()).anyTimes();
-        studyService.save((Study) notNull());
+        expect(studyService.saveStudyFor(period.getArm())).andReturn(study);
         command.apply();
 
         replayMocks();

@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -17,6 +18,7 @@ import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -316,6 +318,12 @@ public class TemplateService {
             throw new StudyCalendarSystemException("%s is not a descendant of %s",
                 node.getClass().getSimpleName(), klass.getSimpleName());
         }
+    }
+
+    // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug
+    public Study findStudy(PlanTreeNode node) {
+        if (node instanceof PlannedCalendar) return ((PlannedCalendar) node).getStudy();
+        else return findAncestor(node, PlannedCalendar.class).getStudy();
     }
 
     ////// CONFIGURATION
