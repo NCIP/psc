@@ -60,6 +60,12 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     ////// LOGIC
 
+    @Transient
+    public String getDisplayName() {
+        // TODO: this is insufficiently robust.  Should probably prioritize the date, for one.
+        return new StringBuilder(getName()).append(" (").append(getDate()).append(')').toString();
+    }
+
     /**
      * Returns true IFF the candidate is the previous amendment of this
      * one or the previous of any of its previous amendments.  In other words, is the candidate

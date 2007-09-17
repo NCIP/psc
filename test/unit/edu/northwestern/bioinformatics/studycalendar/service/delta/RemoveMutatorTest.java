@@ -64,10 +64,12 @@ public class RemoveMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApply() throws Exception {
+        assertNotNull("Test setup failure; period has no initial parent", period.getParent());
         replayMocks();
         remover.apply(arm);
         verifyMocks();
         assertEquals("child not removed", 0, arm.getPeriods().size());
+        assertNull("child's parent ref not cleared", period.getParent());
     }
 
     public void testApplyBeforeSaved() throws Exception {

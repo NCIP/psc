@@ -53,13 +53,18 @@ public abstract class AddRemoveMutator implements Mutator {
 
     protected void removeFrom(PlanTreeNode<?> target) {
         PlanTreeInnerNode<?, PlanTreeNode<?>, ?> inner = PlanTreeInnerNode.cast(target);
-        for (Iterator<? extends PlanTreeNode<?>> it = inner.getChildren().iterator(); it.hasNext();) {
-            PlanTreeNode<?> child = it.next();
+        PlanTreeNode<?> toRemove = null;
+        for (PlanTreeNode<?> child : inner.getChildren()) {
             if (change.isSameChild(child)) {
                 log.debug("Removing {} from {}", child, target);
-                it.remove();
+                toRemove = child;
                 break;
             }
         }
+        if (toRemove == null) {
+            log.warn("The child referenced in {} was not found in {}", change, target);
+            return;
+        }
+        inner.removeChild(toRemove);
     }
 }

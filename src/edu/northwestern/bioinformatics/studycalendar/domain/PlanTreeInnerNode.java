@@ -33,6 +33,15 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         child.setParent(this);
     }
 
+    public C removeChild(C child) {
+        if (children.remove(child)) {
+            child.setParent(null);
+            return child;
+        } else {
+            return null;
+        }
+    }
+
     public G getChildren() {
         return children;
     }
