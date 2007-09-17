@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.dao;
+package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -15,8 +16,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
-
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 public class DeltaDaoTest extends DaoTestCase {
     private DeltaDao deltaDao = (DeltaDao) getApplicationContext().getBean("deltaDao");

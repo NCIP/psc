@@ -1,8 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.dao;
+package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
 
