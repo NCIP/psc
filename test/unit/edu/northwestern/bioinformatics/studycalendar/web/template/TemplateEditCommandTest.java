@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 
@@ -13,16 +11,16 @@ import static org.easymock.classextension.EasyMock.*;
 /**
  * @author Rhett Sutphin
  */
-public class ModalEditCommandTest extends EditCommandTestCase {
-    private ModalEditCommand command;
-    private ModalEditCommand.Mode mockMode;
+public class TemplateEditCommandTest extends EditCommandTestCase {
+    private TemplateEditCommand command;
+    private TemplateEditCommand.Mode mockMode;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         command = new TestableCommand();
         study.getPlannedCalendar().addEpoch(Epoch.create("E", "A", "B"));
-        mockMode = registerMockFor(ModalEditCommand.Mode.class);
+        mockMode = registerMockFor(TemplateEditCommand.Mode.class);
     }
 
     public void testSelectStudyMode() throws Exception {
@@ -66,7 +64,7 @@ public class ModalEditCommandTest extends EditCommandTestCase {
         };
     }
 
-    private class TestableCommand extends ModalEditCommand {
+    private class TestableCommand extends TemplateEditCommand {
         public TestableCommand() {
             setDeltaService(Fixtures.getTestingDeltaService());
             setStudy(study);
@@ -77,7 +75,7 @@ public class ModalEditCommandTest extends EditCommandTestCase {
         protected Mode armMode()   { return new TestMode("Arm");   }
     }
 
-    private static class TestMode implements ModalEditCommand.Mode {
+    private static class TestMode implements TemplateEditCommand.Mode {
         private String name;
 
         public TestMode(String name) {

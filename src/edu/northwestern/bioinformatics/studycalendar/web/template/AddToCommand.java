@@ -13,7 +13,7 @@ import org.springframework.ui.ModelMap;
 /**
  * @author Rhett Sutphin
  */
-public class AddToCommand extends ModalEditCommand {
+public class AddToCommand extends TemplateEditCommand {
     protected Mode studyMode() {
         return new AddEpoch();
     }

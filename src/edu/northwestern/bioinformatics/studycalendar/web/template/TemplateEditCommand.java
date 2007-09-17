@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public abstract class ModalEditCommand extends EditCommand {
+public abstract class TemplateEditCommand extends EditCommand {
     private Mode mode;
 
     @Override

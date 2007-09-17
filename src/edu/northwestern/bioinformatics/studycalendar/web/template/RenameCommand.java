@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class RenameCommand extends ModalEditCommand {
+public class RenameCommand extends TemplateEditCommand {
     private String value;
 
     ////// BOUND PROPERTIES
