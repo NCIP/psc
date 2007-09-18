@@ -40,6 +40,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         study.setDevelopmentAmendment(rev);
         treatment = study.getPlannedCalendar().getEpochs().get(1);
         armB = treatment.getArms().get(1);
+        Fixtures.assignIds(study);
 
         mockDaoFinder = new DynamicMockDaoFinder();
     }
