@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.Collection;
+import java.util.ArrayList;
+import java.util.SortedSet;
 
 /**
  * @author Rhett Sutphin
@@ -40,6 +42,24 @@ public abstract class PlanTreeInnerNode<P extends DomainObject, C extends PlanTr
         } else {
             return null;
         }
+    }
+
+    public boolean isAncestorOf(PlanTreeNode descendant) {
+        Collection<?> children = getChildren();
+        if (children instanceof SortedSet) {
+            children = new ArrayList<Object>(children);
+        }
+        if (children.contains(descendant)) {
+            return true;
+        } else if (PlanTreeInnerNode.class.isAssignableFrom(childClass())) {
+            for (C child : getChildren()) {
+                if (((PlanTreeInnerNode) child).isAncestorOf(descendant)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
     }
 
     public G getChildren() {

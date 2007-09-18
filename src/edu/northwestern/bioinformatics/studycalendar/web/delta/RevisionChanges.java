@@ -18,6 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 
 import java.util.List;
@@ -46,7 +47,7 @@ public class RevisionChanges {
     private PlanTreeNode<?> target;
 
     public RevisionChanges(DaoFinder daoFinder, Revision revision, Study source) {
-        this(daoFinder, revision, source, source.getPlannedCalendar());
+        this(daoFinder, revision, source, null);
     }
 
     public RevisionChanges(DaoFinder daoFinder, Revision revision, Study source, PlanTreeNode<?> node) {
@@ -58,13 +59,28 @@ public class RevisionChanges {
 
     public List<Flat> getFlattened() {
         List<Flat> flattened = new ArrayList<Flat>();
-        // TODO: pay attention to "target"
         for (Delta<?> delta : revision.getDeltas()) {
-            for (Change change : delta.getChanges()) {
-                flattened.add(createFlat(delta.getNode(), change));
+            if (isChildOrTarget(delta.getNode())) {
+                for (Change change : delta.getChanges()) {
+                    flattened.add(createFlat(delta.getNode(), change));
+                }
             }
         }
         return flattened;
+    }
+
+    private boolean isChildOrTarget(PlanTreeNode node) {
+        if (target == null) return true;
+        if (node.getClass().isAssignableFrom(target.getClass()) || target.getClass().isAssignableFrom(node.getClass())) {
+            return node.equals(target);
+        }
+        if (!DomainObjectTools.isMoreSpecific(node.getClass(), target.getClass())) {
+            return false;
+        }
+        if (target instanceof PlanTreeInnerNode) {
+            return ((PlanTreeInnerNode) target).isAncestorOf(node);
+        }
+        return false;
     }
 
     // visible for testing
@@ -151,6 +167,13 @@ public class RevisionChanges {
         }
 
         public abstract String getSentence();
+
+        @Override
+        public String toString() {
+            return new StringBuilder(getClass().getSimpleName()).append('[')
+                .append(getChange()).append(" on ").append(getNode()).append(']')
+                .toString();
+        }
     }
 
     public class FlatAdd extends Flat<Add> {

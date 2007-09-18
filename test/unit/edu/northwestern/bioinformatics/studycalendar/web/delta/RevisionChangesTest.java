@@ -46,7 +46,7 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
 
     public void testChangesFlattened() throws Exception {
         getTestingDeltaService().updateRevision(rev, treatment, PropertyChange.create("name", "Treatment", "Megatreatment"));
-        getTestingDeltaService().updateRevision(rev, treatment, Reorder.create(treatment.getArms().get(0), 0, 1));
+        getTestingDeltaService().updateRevision(rev, treatment, Reorder.create(treatment.getArms().get(1), 1, 2));
 
         RevisionChanges c = new RevisionChanges(mockDaoFinder, rev, study);
         List<RevisionChanges.Flat> flattened = c.getFlattened();
@@ -56,6 +56,36 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         assertEquals(treatment, flattened.get(0).getNode());
         assertTrue(flattened.get(1).getChange() instanceof Reorder);
         assertEquals(treatment, flattened.get(1).getNode());
+    }
+
+    public void testChangesOnlyForTargetNodeAndChildrenIfProvided() throws Exception {
+        Period p1 = setId(1, Fixtures.createPeriod("P1", 3, 6, 1));
+        Period p2 = setId(2, Fixtures.createPeriod("P2", 1, 17, 42));
+        PlannedEvent event1 = setId(3, new PlannedEvent());
+        PlannedEvent event2 = setId(4, new PlannedEvent());
+        armB.addPeriod(p1);
+        p1.addPlannedEvent(event1);
+        armB.addPeriod(p2);
+        p2.addPlannedEvent(event2);
+
+        getTestingDeltaService().updateRevision(rev, treatment, PropertyChange.create("name", "Treatment", "Megatreatment"));
+        getTestingDeltaService().updateRevision(rev, armB, PropertyChange.create("name", "B", "Beta"));
+        getTestingDeltaService().updateRevision(rev, p1, PropertyChange.create("name", null, "Aleph"));
+        getTestingDeltaService().updateRevision(rev, p2, PropertyChange.create("name", null, "Zep"));
+        getTestingDeltaService().updateRevision(rev, event1, PropertyChange.create("day", "5", "9"));
+        getTestingDeltaService().updateRevision(rev, event2, PropertyChange.create("day", "7", "4"));
+
+        List<RevisionChanges.Flat> forPeriod = new RevisionChanges(mockDaoFinder, rev, study, p1).getFlattened();
+        assertEquals("Wrong list: " + forPeriod, 2, forPeriod.size());
+        assertEquals(p1, forPeriod.get(0).getNode());
+        assertEquals("name", ((PropertyChange) forPeriod.get(0).getChange()).getPropertyName());
+        assertEquals(event1, forPeriod.get(1).getNode());
+        assertEquals("day", ((PropertyChange) forPeriod.get(1).getChange()).getPropertyName());
+
+        assertEquals(1, new RevisionChanges(mockDaoFinder, rev, study, event1).getFlattened().size());
+        assertEquals(5, new RevisionChanges(mockDaoFinder, rev, study, armB).getFlattened().size());
+        assertEquals(6, new RevisionChanges(mockDaoFinder, rev, study, treatment).getFlattened().size());
+        assertEquals(6, new RevisionChanges(mockDaoFinder, rev, study, study.getPlannedCalendar()).getFlattened().size());
     }
     
     public void testNodeNameForNamed() throws Exception {
