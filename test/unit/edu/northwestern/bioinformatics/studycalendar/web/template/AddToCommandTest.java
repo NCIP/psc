@@ -47,7 +47,6 @@ public class AddToCommandTest extends EditCommandTestCase {
 
         Map<String, Object> model = command.getModel();
 
-        assertEquals(1, model.size());
         assertEquals("Missing epoch", e3.getName(), ((Epoch) model.get("epoch")).getName());
     }
 
@@ -83,7 +82,6 @@ public class AddToCommandTest extends EditCommandTestCase {
         command.setStudy(study);
 
         Map<String, Object> model = command.getModel();
-        assertEquals("Wrong number of model elements", 1, model.size());
         assertEquals("Wrong arm", newArm.getName(), ((Arm) model.get("arm")).getName());
     }
 }
