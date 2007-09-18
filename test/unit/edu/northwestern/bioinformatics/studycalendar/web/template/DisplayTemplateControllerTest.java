@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.Map;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -120,6 +121,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Study amended = study.transientClone();
         amended.setName("Changed");
 
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Collections.<StudyParticipantAssignment>emptyList());
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
