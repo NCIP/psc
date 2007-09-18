@@ -68,6 +68,12 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         assertEquals("unnamed period", RevisionChanges.getNodeName(new Period()));
     }
 
+    public void testNodeNameForNamedWithDynamicSubclasses() throws Exception {
+        assertEquals("epoch 7", RevisionChanges.getNodeName(new Epoch() { @Override public String getName() { return "7"; } }));
+        assertEquals("arm 7", RevisionChanges.getNodeName(new Arm() { @Override public String getName() { return "7"; } }));
+        assertEquals("period 7", RevisionChanges.getNodeName(new Period() { @Override public String getName() { return "7"; } }));
+    }
+
     public void testNodeNameForPlannedCalendar() throws Exception {
         assertEquals("the template", RevisionChanges.getNodeName(new PlannedCalendar()));
     }

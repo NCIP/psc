@@ -14,6 +14,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 
@@ -72,9 +75,9 @@ public class RevisionChanges {
         } else if (node instanceof Named) {
             String name = ((Named) node).getName();
             if (name == null) {
-                sb.append("unnamed ").append(node.getClass().getSimpleName().toLowerCase());
+                sb.append("unnamed ").append(nodeTypeName(node));
             } else {
-                sb.append(node.getClass().getSimpleName().toLowerCase()).append(' ').append(name);
+                sb.append(nodeTypeName(node)).append(' ').append(name);
             }
         } else if (PlannedCalendar.class.isAssignableFrom(node.getClass())) {
             sb.append("the template");
@@ -89,6 +92,17 @@ public class RevisionChanges {
             sb.append("unexpected node: ").append(node);
         }
         return sb.toString();
+    }
+
+    private static String nodeTypeName(PlanTreeNode node) {
+        if (node instanceof PlannedCalendar) return "calendar";
+        if (node instanceof Epoch) return "epoch";
+        if (node instanceof Arm) return "arm";  // segment?
+        if (node instanceof Period) return "period";
+        if (node instanceof PlannedEvent) return "planned activity";
+        // note that this default is not generally suitable because the actual
+        // class might be, e.g., a CGLIB dynamic subclass
+        return node.getClass().getSimpleName().toLowerCase();
     }
 
     private <C extends Change> Flat createFlat(PlanTreeNode node, C change) {
