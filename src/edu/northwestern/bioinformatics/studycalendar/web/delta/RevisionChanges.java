@@ -72,7 +72,7 @@ public class RevisionChanges {
     private boolean isChildOrTarget(PlanTreeNode node) {
         if (target == null) return true;
         if (node.getClass().isAssignableFrom(target.getClass()) || target.getClass().isAssignableFrom(node.getClass())) {
-            return node.equals(target);
+            return node.getId().equals(target.getId());
         }
         if (!DomainObjectTools.isMoreSpecific(node.getClass(), target.getClass())) {
             return false;
