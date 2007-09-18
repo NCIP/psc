@@ -1,22 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.mvc.AbstractCommandController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-
 import java.util.Map;
 
 /**
@@ -34,16 +30,20 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
         setCommandClass(EditCommand.class);
     }
 
+    @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
         return getApplicationContext().getBean(commandBeanName);
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
         getControllerTools().registerDomainObjectEditor(binder, "epoch", epochDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
     }
 
+    @Override
+    @SuppressWarnings({ "unchecked" })
     protected ModelAndView handle(EditCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if ("POST".equals(request.getMethod())) {
             command.apply();

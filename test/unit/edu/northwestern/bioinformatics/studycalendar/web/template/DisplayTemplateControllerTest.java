@@ -4,15 +4,13 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -113,6 +111,21 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("developmentRevision"));
+        assertNull("Changes should not be included for initial dev", actualModel.get("revisionChanges"));
+    }
+
+    public void testChangesIncludedIfInAmendmentDevelopmentPresent() throws Exception {
+        Amendment dev = new Amendment("New amendment");
+        study.setDevelopmentAmendment(dev);
+        Study amended = study.transientClone();
+        amended.setName("Changed");
+
+        expect(deltaService.revise(study, dev)).andReturn(amended);
+        Map<String, Object> actualModel = getAndReturnModel();
+        assertSame(amended, actualModel.get("study"));
+        assertSame(dev, actualModel.get("developmentRevision"));
+        assertNotNull(actualModel.get("revisionChanges"));
+        assertTrue(actualModel.get("revisionChanges") instanceof RevisionChanges);
     }
 
     private Map<String, Object> getAndReturnModel() throws Exception {

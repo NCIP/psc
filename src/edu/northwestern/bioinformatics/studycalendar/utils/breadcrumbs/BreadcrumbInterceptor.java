@@ -11,6 +11,7 @@ import java.util.Map;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
@@ -34,7 +35,7 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
         DomainObject basis = null;
         // look through the context for the most specific model object
         for (Object o : model.values()) {
-            if (o instanceof DomainObject) {
+            if (isBreadcrumbCompatible(o)) {
                 DomainObject domainObject = (DomainObject) o;
                 if (basis == null || DomainObjectTools.isMoreSpecific(domainObject.getClass(), basis.getClass())) {
                     basis = domainObject;
@@ -42,6 +43,11 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
             }
         }
         return BreadcrumbContext.create(basis, templateService);
+    }
+
+    // XXX: quick hack
+    private boolean isBreadcrumbCompatible(Object o) {
+        return o instanceof DomainObject && !(o instanceof Revision);
     }
 
     private boolean isRedirect(ModelAndView mv) {

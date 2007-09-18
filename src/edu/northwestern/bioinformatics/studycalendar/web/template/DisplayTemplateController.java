@@ -1,19 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -33,6 +31,7 @@ import java.util.ArrayList;
 public class DisplayTemplateController extends PscAbstractController {
     private StudyDao studyDao;
     private DeltaService deltaService;
+    private DaoFinder daoFinder;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -51,6 +50,10 @@ public class DisplayTemplateController extends PscAbstractController {
         if (loaded.getDevelopmentAmendment() != null) {
             study = deltaService.revise(loaded, loaded.getDevelopmentAmendment());
             model.put("developmentRevision", loaded.getDevelopmentAmendment());
+            if (!loaded.isInInitialDevelopment()) {
+                model.put("revisionChanges",
+                    new RevisionChanges(daoFinder, loaded.getDevelopmentAmendment(), loaded));
+            }
         } else {
             study = loaded;
         }
@@ -101,6 +104,10 @@ public class DisplayTemplateController extends PscAbstractController {
 
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 
     private static class Crumb extends DefaultCrumb {

@@ -1,5 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+
 import java.util.Map;
 
 /**
@@ -7,11 +10,15 @@ import java.util.Map;
  */
 public abstract class TemplateEditCommand extends EditCommand {
     private Mode mode;
+    private DaoFinder daoFinder;
 
     @Override
     public Map<String, Object> getModel() {
         Map<String, Object> model = super.getModel();
         Map<String, Object> modeModel = getMode().getModel();
+        model.put("developmentRevision", getStudy().getDevelopmentAmendment());
+        model.put("revisionChanges",
+            new RevisionChanges(daoFinder, getStudy().getDevelopmentAmendment(), getStudy()));
         if (modeModel != null) {
             model.putAll(modeModel);
         }
@@ -53,5 +60,11 @@ public abstract class TemplateEditCommand extends EditCommand {
         String getRelativeViewName();
         Map<String, Object> getModel();
         void performEdit();
+    }
+
+    ////// CONFIGURATION
+
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }

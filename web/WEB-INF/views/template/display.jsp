@@ -125,6 +125,16 @@
                 margin: 0;
                 list-style-type: none;
             }
+
+            #revision-changes {
+                float: right;
+                width: 29%;
+            }
+
+            #with-changes #selected-arm {
+                width: 70%;
+                float: left;
+            }
         </style>
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
@@ -544,8 +554,20 @@
             </laf:box>
         </div>
 
+        <c:set var="showChanges" value="${not empty developmentRevision and not study.inInitialDevelopment}"/>
+        <c:if test="${showChanges}">
+            <div id="with-changes">
+                <div id="revision-changes" class="section">
+                    <templ:changes revision="${developmentRevision}" changes="${revisionChanges}"/>
+                </div>
+            <%-- #with-changes is closed below --%>
+        </c:if>
+
         <div id="selected-arm" class="section">
             <templ:arm arm="${arm}" developmentRevision="${developmentRevision}" visible="true"/>
         </div>
+
+        <c:if test="${showChanges}"></div></c:if>
+
     </body>
 </html>

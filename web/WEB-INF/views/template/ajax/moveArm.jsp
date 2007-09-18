@@ -1,5 +1,6 @@
 <%@page contentType="text/javascript" language="java" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <c:if test="${changed}">
     var armItem = $("arm-${command.arm.id}-item")
     armItem.remove()
@@ -16,3 +17,4 @@ var items = $$("#epoch-${command.arm.epoch.id}-arms li")
 items.each( function(elt) { Element.removeClassName(elt, "last") } )
 Element.addClassName(items.last(), "last")
 updateAllArmsControlVisibility(${command.arm.epoch.id})
+<templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
