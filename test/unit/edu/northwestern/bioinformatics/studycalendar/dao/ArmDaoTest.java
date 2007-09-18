@@ -83,5 +83,16 @@ public class ArmDaoTest extends DaoTestCase {
         }
     }
 
+    public void testDetachArmFromEpoch() throws Exception {
+        {
+            Arm arm = dao.getById(-2);
+            arm.getParent().removeChild(arm);
+            dao.save(arm);
+        }
 
+        interruptSession();
+
+        Arm reloaded = dao.getById(-2);
+        assertNull(reloaded.getEpoch());
+    }
 }
