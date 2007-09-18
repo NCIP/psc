@@ -140,6 +140,10 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(PlannedEvent.class, StudyParticipantAssignment.class);
     }
 
+    public void testMoreSpecificThanSelf() throws Exception {
+        assertFalse(DomainObjectTools.isMoreSpecific(Study.class, Study.class));
+    }
+
     public void testUnknownIsLessSpecificThanEverything() throws Exception {
         DomainObject anon = new DomainObject() {
             public Integer getId() { throw new UnsupportedOperationException("getId not implemented"); }
