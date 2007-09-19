@@ -491,7 +491,9 @@
 
         <ul id="admin-options">
             <c:if test="${not empty developmentRevision}">
-                <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">Release this template for use</tags:restrictedListItem>
+                <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
+                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                </tags:restrictedListItem>
             </c:if>
             <c:if test="${empty developmentRevision}">
                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
@@ -527,25 +529,6 @@
                 </c:if>
             </c:if>
         </ul>
-        <%--
-        <div>
-            <laf:box title="Amendments Template">
-                <laf:division>
-                     <form:form name="listOfChanges" method="post">
-                        <select name="selectChange" id="selectChange" size="5"  STYLE="width:100%">
-                           <c:forEach items="${amendment.deltas}" var="delta">
-                                <c:forEach items="${delta.changes}" var="change">
-                                    <option value=${change.id}>
-                                        ${change} ${delta}
-                                    </option>
-                                </c:forEach>
-                            </c:forEach>
-                        </select>
-                    </form:form>
-                </laf:division>
-            </laf:box>
-        </div>
-        --%>
         <div id="epochs" class="section">
             <laf:box title="Epochs and arms">
                 <laf:division>
