@@ -5,11 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -21,7 +21,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class EditPeriodController extends AbstractPeriodController<EditPeriodCommand> {
     private PeriodDao periodDao;
     private AmendmentService amendmentService;

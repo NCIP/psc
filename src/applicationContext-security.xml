@@ -132,7 +132,6 @@
     <bean id="authorizationSwitch"
 		class="gov.nih.nci.security.acegi.csm.authorization.AuthorizationSwitch"
 		factory-method="getInstance">
-		<!--<property name="on" value="true" />-->
-		<property name="on" value="false" />
+		<property name="on" value="true" />
 	</bean>
 </beans>

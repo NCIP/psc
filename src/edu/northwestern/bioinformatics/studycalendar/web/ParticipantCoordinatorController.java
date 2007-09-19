@@ -21,6 +21,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -32,7 +33,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCa
  * @author Jaron Sampson
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
+@AccessControl(roles = Role.SITE_COORDINATOR)
 public class ParticipantCoordinatorController extends PscSimpleFormController {
 //    private static Log log = LogFactory.getLog(ParticipantCoordinatorController.class);
     private static Logger log = LoggerFactory.getLogger(ParticipantCoordinatorController.class);

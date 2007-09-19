@@ -1,21 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- CSM configuration is partially here and partially in migrations.
-     Migrations should contain global configuration; anything that will be the same
-     in every caAERS deployment.  This file should contain development data; e.g.,
-     users for testing different roles, etc.
--->
 
 <dataset>
 
 	<!--==================== USERS ====================-->
-	<CSM_USER
-        user_id="-1"
-        login_name="SYSTEM_ADMIN"
-        first_name="SYSTEM_ADMIN"
-        last_name="SYSTEM_ADMIN"
-        password="yDq1c1nU4E7almNpMZNexg=="
-        update_date="2006-08-30"
-        />
 
     <CSM_USER
         user_id="-5"
@@ -90,15 +77,6 @@
         />
 
     <CSM_USER
-        user_id="-2"
-        login_name="sc_systemadmin"
-        first_name="STUDYCAL_SYSTEMADMIN"
-        last_name="STUDYCAL_SYSTEMADMIN"
-        password="xantBiHGsCKuDO1cYyH1uA=="
-        update_date="2006-09-12"
-        />
-
-    <CSM_USER
         user_id="-11"
         login_name="superuser"
         first_name="super"
@@ -136,11 +114,15 @@
     <CSM_USER_GROUP USER_GROUP_ID="-4" user_id="-8" GROUP_ID="2" />
     <CSM_USER_GROUP USER_GROUP_ID="-5" user_id="-5" GROUP_ID="5" />
     <CSM_USER_GROUP USER_GROUP_ID="-6" user_id="-6" GROUP_ID="5" />
-    <CSM_USER_GROUP USER_GROUP_ID="-7" user_id="-11" GROUP_ID="4" />
     <CSM_USER_GROUP USER_GROUP_ID="-8" user_id="-13" GROUP_ID="6" />
     <CSM_USER_GROUP USER_GROUP_ID="-10" user_id="-9" GROUP_ID="3" />
     <CSM_USER_GROUP USER_GROUP_ID="-11" user_id="-10" GROUP_ID="3" />
     <CSM_USER_GROUP USER_GROUP_ID="-13" user_id="-12" GROUP_ID="6" />
+    <CSM_USER_GROUP USER_GROUP_ID="-14" user_id="-11" GROUP_ID="1" />
+    <CSM_USER_GROUP USER_GROUP_ID="-15" user_id="-11" GROUP_ID="2" />
+    <CSM_USER_GROUP USER_GROUP_ID="-16" user_id="-11" GROUP_ID="3" />
+    <CSM_USER_GROUP USER_GROUP_ID="-17" user_id="-11" GROUP_ID="5" />
+    <CSM_USER_GROUP USER_GROUP_ID="-18" user_id="-11" GROUP_ID="6" />
 
 
     
@@ -176,15 +158,187 @@
         protection_group_id="12"
         update_date="2006-09-15"
         />
+
+    <!--=================== INSERT USERS INTO PSC TABLES ==========================-->
     
-    
-    <!--==================== USER TO PROTECTION ELEMENT MAPPINGS ==================-->
-    <!-- SYSTEM_ADMIN owns csm upt -->
-    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="-1"
-		PROTECTION_ELEMENT_ID="1" user_id="-1" UPDATE_DATE="2007-01-27" />
-    
-    <!-- sc_system_admin owns the study_calendar Application -->
-    <CSM_USER_PE USER_PROTECTION_ELEMENT_ID="-2"
-		PROTECTION_ELEMENT_ID="2" user_id="-2" UPDATE_DATE="2007-01-27" />
+    <USERS
+        id="-1"
+        name="ra_1"
+        csm_user_id="-5"
+        active_flag="1"
+        password="ra_1"
+        />
+
+    <USERS
+        id="-2"
+        name="ra_2"
+        csm_user_id="-6"
+        active_flag="1"
+        password="ra_2"
+        />
+
+    <USERS
+        id="-3"
+        name="study_admin1"
+        csm_user_id="-7"
+        active_flag="1"
+        password="study_admin1"
+        />
+
+    <USERS
+        id="-4"
+        name="study_admin2"
+        csm_user_id="-8"
+        active_flag="1"
+        password="study_admin2"
+        />
+
+    <USERS
+        id="-5"
+        name="studycd_1"
+        csm_user_id="-3"
+        active_flag="1"
+        password="studycd_1"
+        />
+
+    <USERS
+        id="-6"
+        name="studycd_2"
+        csm_user_id="-4"
+        active_flag="1"
+        password="studycd_2"
+        />
+
+    <USERS
+        id="-7"
+        name="participantcd_1"
+        csm_user_id="-9"
+        active_flag="1"
+        password="participantcd_1"
+        />
+
+    <USERS
+        id="-8"
+        name="participantcd_2"
+        csm_user_id="-10"
+        active_flag="1"
+        password="participantcd_2"
+        />
+
+    <USERS
+        id="-9"
+        name="superuser"
+        csm_user_id="-11"
+        active_flag="1"
+        password="superuser"
+        />
+
+    <USERS
+        id="-10"
+        name="sitecd_1"
+        csm_user_id="-12"
+        active_flag="1"
+        password="sitecd_1"
+        />
+
+    <USERS
+        id="-11"
+        name="sitecd_2"
+        csm_user_id="-13"
+        active_flag="1"
+        password="sitecd_2"
+        />
+
+
+    <USER_ROLES
+        id="-1"
+        csm_group_name="RESEARCH_ASSOCIATE"
+        user_id="-1"
+        />
+
+    <USER_ROLES
+        id="-2"
+        csm_group_name="RESEARCH_ASSOCIATE"
+        user_id="-2"
+        />
+
+    <USER_ROLES
+        id="-3"
+        csm_group_name="STUDY_ADMIN"
+        user_id="-3"
+        />
+
+    <USER_ROLES
+        id="-4"
+        csm_group_name="STUDY_ADMIN"
+        user_id="-4"
+        />
+
+    <USER_ROLES
+        id="-5"
+        csm_group_name="STUDY_COORDINATOR"
+        user_id="-5"
+        />
+
+    <USER_ROLES
+        id="-6"
+        csm_group_name="STUDY_COORDINATOR"
+        user_id="-6"
+        />
+
+    <USER_ROLES
+        id="-7"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        user_id="-7"
+        />
+
+    <USER_ROLES
+        id="-8"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        user_id="-8"
+        />
+
+    <USER_ROLES
+        id="-9"
+        csm_group_name="STUDY_COORDINATOR"
+        user_id="-9"
+        />
+
+    <USER_ROLES
+        id="-10"
+        csm_group_name="STUDY_ADMIN"
+        user_id="-9"
+        />
+
+    <USER_ROLES
+        id="-11"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        user_id="-9"
+        />
+
+    <USER_ROLES
+        id="-12"
+        csm_group_name="RESEARCH_ASSOCIATE"
+        user_id="-9"
+        />
+
+    <USER_ROLES
+        id="-13"
+        csm_group_name="SITE_COORDINATOR"
+        user_id="-9"
+        />
+
+    <USER_ROLES
+        id="-14"
+        csm_group_name="SITE_COORDINATOR"
+        user_id="-10"
+        />
+
+    <USER_ROLES
+        id="-15"
+        csm_group_name="SITE_COORDINATOR"
+        user_id="-11"
+        />
+
 
 </dataset>

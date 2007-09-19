@@ -1,47 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
-import gov.nih.nci.security.AuthorizationManager;
-import gov.nih.nci.security.SecurityServiceProvider;
-import gov.nih.nci.security.acegi.csm.authorization.DelegatingObjectPrivilegeCSMAuthorizationCheck;
+import org.acegisecurity.*;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.intercept.ObjectDefinitionSource;
+import org.acegisecurity.intercept.web.FilterSecurityInterceptor;
+import org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap;
+import org.acegisecurity.vote.AbstractAccessDecisionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.Authentication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ApplicationObjectSupport;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.beans.BeansException;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.springframework.web.context.WebApplicationContext;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-
-import java.util.Set;
-import java.util.HashSet;
+import java.util.Iterator;
 
 
 /**
  * @author Padmaja Vedula
+ * @author John Dzak
  */
 
 public class SecureOperation extends TagSupport {
-//    private static Log log = LogFactory.getLog(SecureOperation.class);
     private static Logger log = LoggerFactory.getLogger(SecureOperation.class);
 
-    private String operation;
     private String element;
-
-    public void setOperation(String val) {
-        this.operation = val;
-    }
-
-    public String getOperation() {
-        return this.operation;
-    }
+    private AbstractAccessDecisionManager authorizationDecisionManager;
+    private PathBasedFilterInvocationDefinitionMap definitionMap;
 
     public void setElement(String val) {
         this.element = val;
@@ -52,17 +37,16 @@ public class SecureOperation extends TagSupport {
     }
 
     public int doStartTag() throws JspTagException {
+        initializeBeans();
         String userName = SecurityContextHolder.getContext().getAuthentication().getName();
         if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        WebApplicationContext context = WebApplicationContextUtils.getRequiredWebApplicationContext(pageContext.getServletContext());
-        DelegatingObjectPrivilegeCSMAuthorizationCheck authorizationCheck =
-                (DelegatingObjectPrivilegeCSMAuthorizationCheck) context.getBean("stringAuthorizationCheck");
+        ConfigAttributeDefinition elementRoles = getElementRoles();
 
         try {
-            return isAllowed(authorizationCheck, authentication, getOperation(), getElement());
+            return isAllowed(authentication, getElement(), elementRoles);
         } catch (Exception e) {
             log.error("Exception evaluating SecureOperation startTag", e);
             throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
@@ -73,8 +57,38 @@ public class SecureOperation extends TagSupport {
         return EVAL_PAGE;
     }
 
-    protected int isAllowed(DelegatingObjectPrivilegeCSMAuthorizationCheck i_authorizationCheck, Authentication i_authentication, String i_operation, String i_element) throws Exception {
-        boolean allowed = i_authorizationCheck.checkAuthorization(i_authentication, i_operation, i_element);
+    protected void initializeBeans() {
+        // TODO: Write bean injector for tag files
+        ApplicationContext applicationContext =
+                WebApplicationContextUtils.getRequiredWebApplicationContext(pageContext.getServletContext());
+
+        if (authorizationDecisionManager == null) {
+            authorizationDecisionManager = (AbstractAccessDecisionManager) applicationContext.getBean("accessDecisionManager");
+        }
+
+        if (definitionMap == null) {
+            FilterSecurityInterceptor securityInterceptor =
+                    (FilterSecurityInterceptor) applicationContext.getBean("filterInvocationInterceptor");
+
+            ObjectDefinitionSource definitionSource = securityInterceptor.getObjectDefinitionSource();
+
+            // TODO: Store security path and role information in ObjectDefinitionSource implementer w/o FilterInvocation requirements
+            if(!(definitionSource instanceof PathBasedFilterInvocationDefinitionMap)) {
+                throw new UnsupportedOperationException("ObjectDefinitionSource for FilterInvocationInceptor is not instance of PathBasedFilterInvocationDefinitionMap");
+            }
+
+            definitionMap = (PathBasedFilterInvocationDefinitionMap) definitionSource;
+        }
+    }
+
+    protected int isAllowed(Authentication i_authentication, String i_element, ConfigAttributeDefinition elementRoles) throws Exception {
+        boolean allowed = true;
+
+        try {
+            authorizationDecisionManager.decide(i_authentication, i_element, elementRoles);
+        } catch (AccessDeniedException ade) {
+            allowed = false;
+        }
         
         int k = 0;
         if (!allowed) {
@@ -85,4 +99,31 @@ public class SecureOperation extends TagSupport {
         return k;
     }
 
+    protected ConfigAttributeDefinition getElementRoles() {
+        ConfigAttributeDefinition def = definitionMap.lookupAttributes(element);
+
+        if (def.size() > 1) {
+            log.warn("Method getElementRoles: More than one ConfigAttributeDefinitions defined for " + getElement());
+        }
+
+        return def;
+    }
+
+
+
+    public void release() {
+        super.release();
+        authorizationDecisionManager = null;
+        definitionMap = null;
+    }
+
+    // Configuration
+
+    public void setAuthorizationDecisionManager(AbstractAccessDecisionManager authorizationDecisionManager) {
+        this.authorizationDecisionManager = authorizationDecisionManager;
+    }
+
+    public void setDefinitionMap(PathBasedFilterInvocationDefinitionMap definitionMap) {
+        this.definitionMap = definitionMap;
+    }
 }

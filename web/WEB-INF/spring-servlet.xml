@@ -23,6 +23,12 @@
     </bean>
     -->
 
+    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerSecureUrlCreator" lazy-init="true">
+        <property name="filterInvocationInterceptor"><ref bean="filterInvocationInterceptor"/></property>
+        <property name="urlResolver"><ref local="urlResolver"/></property>
+    </bean>
+
+
     <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController"/>
 

@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
@@ -21,7 +21,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
+@AccessControl(roles = Role.STUDY_ADMIN)
 public class ApiController extends AbstractCommandController {
     private Logger log = LoggerFactory.getLogger(getClass());
     private ScheduledCalendarService scheduledCalendarService;

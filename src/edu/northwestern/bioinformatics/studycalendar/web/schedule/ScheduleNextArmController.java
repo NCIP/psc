@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import org.springframework.web.servlet.mvc.AbstractCommandController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.beans.factory.annotation.Required;
@@ -12,11 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Date;
 import java.util.Map;
@@ -24,7 +23,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
 public class ScheduleNextArmController extends PscAbstractCommandController<ScheduleNextArmCommand> {
     private ParticipantService participantService;
     private ScheduledCalendarDao scheduledCalendarDao;

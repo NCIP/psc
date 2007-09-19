@@ -27,7 +27,6 @@ import java.util.ArrayList;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = { StudyCalendarProtectionGroup.STUDY_COORDINATOR, StudyCalendarProtectionGroup.BASE })
 public class DisplayTemplateController extends PscAbstractController {
     private StudyDao studyDao;
     private DeltaService deltaService;

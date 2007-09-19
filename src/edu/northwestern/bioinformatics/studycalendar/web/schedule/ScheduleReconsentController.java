@@ -1,18 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -21,11 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.util.Date;
 
-@AccessControl(protectionGroups = {StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR, StudyCalendarProtectionGroup.SITE_COORDINATOR})
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SITE_COORDINATOR})
 public class ScheduleReconsentController extends PscCancellableFormController {
     private StudyService studyService;
     private NowFactory nowFactory;

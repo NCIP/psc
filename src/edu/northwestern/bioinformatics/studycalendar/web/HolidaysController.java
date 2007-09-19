@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Nataliya Shurupova
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
+@AccessControl(roles = Role.STUDY_ADMIN)
 public class HolidaysController extends PscSimpleFormController {
     private SiteDao siteDao;
     private static final Logger log = LoggerFactory.getLogger(HolidaysController.class.getName());

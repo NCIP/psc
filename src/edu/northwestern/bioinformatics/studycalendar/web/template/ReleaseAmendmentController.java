@@ -4,7 +4,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,13 +11,13 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.ui.ModelMap;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Map;
 import java.util.Collections;
@@ -27,7 +26,7 @@ import java.util.Collections;
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_COORDINATOR)
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ReleaseAmendmentController extends PscSimpleFormController {
     private StudyDao studyDao;
     private AmendmentService amendmentService;

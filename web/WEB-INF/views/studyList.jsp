@@ -40,12 +40,11 @@
 <body>
 <laf:box title="Calendars">
     <laf:division>
-        <security:secureOperation element="/pages/cal/newStudy" operation="ACCESS">
+        <security:secureOperation element="/pages/cal/newStudy">
             <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
         </security:secureOperation>
      </laf:division>
-        <%-- TODO: access restriction temporarily disabled until access control evens out --%>
-        <%--<security:secureOperation element="/pages/cal/releases/template" operation="ACCESS">--%>
+        <security:secureOperation element="/pages/cal/releases/template">
             <c:if test="${not empty inDevelopmentStudies}">
                 <h3>Templates in design</h3>
                 <laf:division>
@@ -59,7 +58,7 @@
                     </ul>
                 </laf:division>
             </c:if>
-        <%--</security:secureOperation>--%>
+        </security:secureOperation>
         <c:if test="${not empty assignableStudies}">
             <h3>Available templates</h3>
             <laf:division>

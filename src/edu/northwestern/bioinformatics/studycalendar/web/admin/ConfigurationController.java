@@ -4,8 +4,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configu
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationPropertyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +16,7 @@ import org.springframework.validation.BindException;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
+@AccessControl(roles = Role.STUDY_ADMIN)
 public class ConfigurationController extends PscSimpleFormController {
     private Configuration configuration;
 

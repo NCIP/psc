@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -9,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.Collection;
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.HashMap;
 /**
  * @author Jaron Sampson
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR)
+@AccessControl(roles = Role.STUDY_ADMIN)
 public class ManageSitesController extends PscAbstractController {
     private SiteDao siteDao;
 

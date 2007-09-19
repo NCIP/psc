@@ -504,7 +504,7 @@
                         >Assign Participant</tags:restrictedListItem>
                 </c:if>
                 <c:if test="${not empty onStudyAssignments}">
-                    <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
+                    <security:secureOperation element="/pages/cal/schedule">
                     <li>View schedule (On Study) for
                         <select id="assigned-participant-selector">
                             <c:forEach items="${onStudyAssignments}" var="assignment">
@@ -516,7 +516,7 @@
                     </security:secureOperation>
                 </c:if>
                 <c:if test="${not empty offStudyAssignments}">
-                    <security:secureOperation element="/pages/cal/schedule" operation="ACCESS">
+                    <security:secureOperation element="/pages/cal/schedule">
                     <li>View schedule (Off Study) for
                         <select id="offstudy-assigned-participant-selector">
                             <c:forEach items="${offStudyAssignments}" var="assignment">

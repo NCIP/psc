@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentCommand;
 import edu.northwestern.bioinformatics.studycalendar.web.PscCancellableFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,12 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 
-@AccessControl(protectionGroups = {StudyCalendarProtectionGroup.STUDY_ADMINISTRATOR, StudyCalendarProtectionGroup.SITE_COORDINATOR})
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SITE_COORDINATOR})
 public class AmendmentController extends PscCancellableFormController {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;

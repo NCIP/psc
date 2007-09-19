@@ -12,13 +12,14 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 /**
  * @author Jaron Sampson
  *
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
 public class ReportBuilderSelectDateRangeController extends AbstractController {
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

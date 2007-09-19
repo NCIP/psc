@@ -14,9 +14,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
 				PATTERN_TYPE_APACHE_ANT
 
-				/**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,exceptionTranslationFilter,filterInvocationInterceptor                
+				 /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor               
             </value>
-                <!--/**=httpSessionContextIntegrationFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor -->
+
 		</property>
 	</bean>
     
@@ -75,8 +75,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			<bean
 				class="gov.nih.nci.security.acegi.csm.authorization.CSMUserDetailsService">
 				<property name="csmUserProvisioningManager"
-					ref="userProvisioningManager" />
-			</bean>
+					ref="userProvisioningManager"/>
+                <property name="rolePrefix"><value></value></property>
+            </bean>
 		</property>
 
 		<property name="userCache" ref="userCache" />
@@ -131,181 +132,30 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		<property name="authenticationManager"
 			ref="authenticationManager" />
 		<property name="accessDecisionManager">
-			<bean class="org.acegisecurity.vote.AffirmativeBased">
-				<property name="allowIfAllAbstainDecisions"
-					value="false" />
-				<property name="decisionVoters">
-
-					<list>
-						<bean
-							class="gov.nih.nci.security.acegi.csm.vote.AuthorizationSwitchVoter">
-							<property name="authorizationSwitch"
-								ref="authorizationSwitch" />
-						</bean>
-						<bean
-							class="gov.nih.nci.security.acegi.csm.vote.CSMAuthorizationCheckVoter">
-							<property name="processConfigAttribute"
-								value="CSM_FILTER_CHECK" />
-							<property name="authorizationCheck"
-								ref="filterAuthorizationCheck" />
-						</bean>
-
-					</list>
-				</property>
-			</bean>
-		</property>
-
-		<property name="objectDefinitionSource">
+            <ref local="accessDecisionManager"/>
+        </property>
+        <property name="objectDefinitionSource">
 			<value>
 				CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
-				\A/pages/.*\Z=CSM_FILTER_CHECK
+                PATTERN_TYPE_APACHE_ANT
+                
 			</value>
 
 		</property>
 	</bean>
 
-    <bean id="filterAuthorizationCheck" autowire="byType"
-		class="gov.nih.nci.security.acegi.csm.authorization.DelegatingObjectPrivilegeCSMAuthorizationCheck">
-		<property name="csmAuthorizationCheck">
-			<bean
-				class="gov.nih.nci.security.acegi.grid.authorization.CSMGridGroupAuthorizationCheck">
-				<property name="csmUserProvisioningManager"
-					ref="userProvisioningManager" />
-                <property name="authorizationSwitch" ref="authorizationSwitch"/>
-            </bean>
-		</property>
-		<property name="objectIdGenerator"
-			ref="filterPrivilegeAndObjectIdGenerator" />
-		<property name="privilegeGenerator"
-			ref="filterPrivilegeAndObjectIdGenerator" />
-	</bean>
-
-    <bean id="filterPrivilegeAndObjectIdGenerator"
-		class="edu.northwestern.bioinformatics.studycalendar.security.FilterInvocationPrivilegeAndObjectIdGenerator">
-		<property name="objectPrivilegeMap"
-			ref="filterObjectPrivilegeMap" />
-	</bean>
-
-    <util:map id="filterObjectPrivilegeMap"
-		map-class="java.util.LinkedHashMap">
-		<entry key="/pages/admin/configure\??.*"
-               value="/pages/admin/configure:ACCESS" />
-        <entry key="/pages/admin\??.*"
-               value="/pages/admin:ACCESS" />
-        <entry key="/pages/api\??.*"
-               value="/pages/api:ACCESS" />
-        <entry key="/pages/cal/assignParticipant\??.*"
-               value="/pages/cal/assignParticipant:ACCESS" />
-        <entry key="/pages/cal/assignParticipantCoordinatorsToSite\??.*"
-               value="/pages/cal/assignParticipantCoordinatorsToSite:ACCESS" />
-        <entry key="/pages/cal/assignSite\??.*"
-               value="/pages/cal/assignSite:ACCESS" />
-        <entry key="/pages/admin/manage/assignSiteCoordinator\??.*"
-               value="/pages/admin/manage/assignSiteCoordinator:ACCESS" />
-        <entry key="/pages/assignTemplatesToOneParticipantCoordinator\??.*"
-               value="/pages/assignTemplatesToOneParticipantCoordinator:ACCESS" />
-        <entry key="/pages/admin/manage/createUser\??.*"
-               value="/pages/admin/manage/createUser:ACCESS" />
-        <entry key="/pages/cal/template/addTo\??.*"
-               value="/pages/cal/template/addTo:ACCESS" />
-        <entry key="/pages/cal/amendment\??.*"
-               value="/pages/cal/amendment:ACCESS" />
-        <entry key="/pages/generateReport\??.*"
-               value="/pages/generateReport:ACCESS" />
-        <entry key="/pages/admin/manage/holidays\??.*"
-               value="/pages/admin/manage/holidays:ACCESS" />
-        <entry key="/pages/admin/manage/listUsers\??.*"
-               value="/pages/admin/manage/listUsers:ACCESS" />
-        <entry key="/pages/admin/manage/sites\??.*"
-               value="/pages/admin/manage/sites:ACCESS" />
-        <entry key="/pages/cal/createParticipant\??.*"
-               value="/pages/cal/createParticipant:ACCESS" />
-        <entry key="/pages/admin/manage/newSite\??.*"
-               value="/pages/admin/manage/newSite:ACCESS" />
-        <entry key="/pages/cal/assignParticipantCoordinator\??.*"
-               value="/pages/cal/assignParticipantCoordinator:ACCESS" />
-        <entry key="/pages/cal/assignParticipantCoordinator/selectSite\??.*"
-               value="/pages/cal/assignParticipantCoordinator/selectSite:ACCESS" />
-        <entry key="/pages/report/builder\??.*"
-               value="/pages/report/builder:ACCESS" />
-        <entry key="/pages/report/builder/selectDateRange\??.*"
-               value="/pages/report/builder/selectDateRange:ACCESS" />
-        <entry key="/pages/report/builder/selectParticipants\??.*"
-               value="/pages/report/builder/selectParticipants:ACCESS" />
-        <entry key="/pages/report/builder/selectSites\??.*"
-               value="/pages/report/builder/selectSites:ACCESS" />
-        <entry key="/pages/report/builder/selectStudies\??.*"
-               value="/pages/report/builder/selectStudies:ACCESS" />
-        <entry key="/pages/simpleReport\??.*"
-               value="/pages/simpleReport:ACCESS" />
-        <entry key="/pages/cal/schedule/select\??.*"
-               value="/pages/cal/schedule/select:ACCESS" />
-        <entry key="/pages/cal/schedule/batch\??.*"
-               value="/pages/cal/schedule/batch:ACCESS" />
-        <entry key="/pages/cal/schedule/dismissAe\??.*"
-               value="/pages/cal/schedule/dismissAe:ACCESS" />
-        <entry key="/pages/cal/schedule\??.*"
-               value="/pages/cal/schedule:ACCESS" />
-        <entry key="/pages/cal/scheduleEvent\??.*"
-               value="/pages/cal/scheduleEvent:ACCESS" />
-        <entry key="/pages/cal/schedule/nextArm\??.*"
-               value="/pages/cal/schedule/nextArm:ACCESS" />
-        <entry key="/pages/cal/scheduleReconsent\??.*"
-               value="/pages/cal/scheduleReconsent:ACCESS" />
-        <entry key="/pages/cal/siteParticipantCoordinatorList\??.*"
-               value="/pages/cal/siteParticipantCoordinatorList:ACCESS" />
-        <entry key="/pages/sitesForAssignParticipantCoordinators\??.*"
-               value="/pages/sitesForAssignParticipantCoordinators:ACCESS" />
-        <entry key="/pages/cal/studyList\??.*"
-               value="/pages/cal/studyList:ACCESS" />
-        <entry key="/pages/cal/template\??.*"
-               value="/pages/cal/template:ACCESS" />
-        <entry key="/pages/cal/template/rename\??.*"
-               value="/pages/cal/template/rename:ACCESS" />
-        <entry key="/pages/cal/template/addTo\??.*"
-               value="/pages/cal/template/addTo:ACCESS" />
-        <entry key="/pages/cal/template/delete\??.*"
-               value="/pages/cal/template/delete:ACCESS" />
-        <entry key="/pages/cal/template/move\??.*"
-               value="/pages/cal/template/move:ACCESS" />
-        <entry key="/pages/editPeriod\??.*"
-               value="/pages/editPeriod:ACCESS" />
-        <entry key="/pages/cal/managePeriod\??.*"
-               value="/pages/cal/managePeriod:ACCESS" />
-        <entry key="/pages/cal/template/release\??.*"
-               value="/pages/cal/template/release:ACCESS" />
-        <entry key="/pages/newActivity\??.*"
-               value="/pages/newActivity:ACCESS" />
-        <entry key="/pages/cal/newPeriod\??.*"
-               value="/pages/cal/newPeriod:ACCESS" />
-        <entry key="/pages/cal/newStudy\??.*"
-               value="/pages/cal/newStudy:ACCESS" />
-        <entry key="/pages/cal/template/edit.js\??.*"
-               value="/pages/cal/template/edit.js:ACCESS" />
-        <entry key="/pages/cal/template/select\??.*"
-               value="/pages/cal/template/select:ACCESS" />
-    </util:map>
-
-
-    <bean id="stringAuthorizationCheck" autowire="byType"
-        class="gov.nih.nci.security.acegi.csm.authorization.DelegatingObjectPrivilegeCSMAuthorizationCheck">
-        <property name="csmAuthorizationCheck">
-            <bean class="gov.nih.nci.security.acegi.grid.authorization.CSMGridGroupAuthorizationCheck">
-                <property name="csmUserProvisioningManager"
-                    ref="userProvisioningManager" />
-                <property name="authorizationSwitch" ref="authorizationSwitch"/>
-            </bean>
+    <bean id="accessDecisionManager" class="org.acegisecurity.vote.AffirmativeBased">
+        <property name="decisionVoters">
+            <list>
+                <bean class="gov.nih.nci.security.acegi.csm.vote.AuthorizationSwitchVoter">
+                    <property name="authorizationSwitch"
+                              ref="authorizationSwitch" />
+                </bean>
+                <bean class="org.acegisecurity.vote.RoleVoter">
+                    <property name="rolePrefix"><value></value></property>
+                </bean>
+            </list>
         </property>
-        <property name="objectIdGenerator"
-            ref="stringPrivilegeAndObjectIdGenerator" />
-        <property name="privilegeGenerator"
-            ref="stringPrivilegeAndObjectIdGenerator" />
-    </bean>
-
-    <bean id="stringPrivilegeAndObjectIdGenerator"
-        class="edu.northwestern.bioinformatics.studycalendar.security.RegexPrivilegeAndObjectIdGenerator">
-        <property name="objectPrivilegeMap"
-            ref="filterObjectPrivilegeMap" />
     </bean>
 
 </beans>

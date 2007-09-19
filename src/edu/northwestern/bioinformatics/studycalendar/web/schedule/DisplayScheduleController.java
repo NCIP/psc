@@ -4,11 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
@@ -32,7 +28,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
 public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
     private StudyParticipantAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;

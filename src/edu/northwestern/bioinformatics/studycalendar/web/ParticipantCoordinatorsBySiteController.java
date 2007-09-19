@@ -14,14 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -34,7 +33,7 @@ import gov.nih.nci.security.authorization.domainobjects.User;
  *
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.SITE_COORDINATOR)
+@AccessControl(roles = Role.SITE_COORDINATOR)
 public class ParticipantCoordinatorsBySiteController extends AbstractController {
     private SiteDao siteDao;
     private StudyDao studyDao;

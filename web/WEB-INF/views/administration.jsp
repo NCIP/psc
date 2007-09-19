@@ -22,7 +22,7 @@
     </head>
     <body>
 
-    <security:secureOperation element="/pages/admin/manage/sites" operation="ACCESS">
+    <security:secureOperation element="/pages/admin/manage/sites">
         <laf:box title="Administration">
             <laf:division>
                 <ul class="menu">

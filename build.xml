@@ -616,7 +616,7 @@ done so already, please perform the following manual actions.
 
 			<classpath refid="cp.unit-test" />
 
-			<operation type="DELETE_ALL" src="tools/csm/CSM_policy.xml" />
+			<operation type="DELETE" src="tools/csm/CSM_policy.xml" />
 
 		</dbunit>
 	</target>

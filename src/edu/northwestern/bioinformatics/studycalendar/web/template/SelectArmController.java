@@ -21,7 +21,6 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.BASE)
 public class SelectArmController implements Controller {
     private TemplateService templateService;
     private DeltaService deltaService;

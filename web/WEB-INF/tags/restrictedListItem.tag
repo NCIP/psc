@@ -4,7 +4,7 @@
 <%@attribute name="url" required="true" %>
 <%@attribute name="queryString"%>
 <%@attribute name="cssClass"%>
-<security:secureOperation element="${url}" operation="ACCESS">
+<security:secureOperation element="${url}">
 <c:set var="qs"><c:if test="${not empty queryString}">?${queryString}</c:if></c:set>
 <li><a href="<c:url value="${url}${qs}"/>" class="${cssClass}"><jsp:doBody/></a></li>
 </security:secureOperation>

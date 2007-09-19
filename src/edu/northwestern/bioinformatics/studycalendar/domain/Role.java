@@ -36,6 +36,10 @@ public enum Role implements CodedEnum<String> {
         return csmName;
     }
 
+    public String csmGroup() {
+        return csmName;
+    }
+
     public static final String[] strValues() {
         Role[] roles = Role.values();
         String[] strRoles= new String[roles.length];

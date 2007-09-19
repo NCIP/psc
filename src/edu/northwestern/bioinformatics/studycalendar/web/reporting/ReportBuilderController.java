@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
  * @author Jaron Sampson
  */
 
-@AccessControl(protectionGroups = StudyCalendarProtectionGroup.BASE)
 public class ReportBuilderController extends PscSimpleFormController {
     private SiteService siteService;
     private SiteDao siteDao;

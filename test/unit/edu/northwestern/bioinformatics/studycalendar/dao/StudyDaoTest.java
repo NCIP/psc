@@ -85,7 +85,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         // new DataReference(Study.class, savedId));
         // assertEquals("Wrong number of events in trail", 1, trail.size());
         // DataAuditEvent event = trail.get(0);
-        // assertEquals("Wrong operation", Operation.CREATE, event.getOperation());
+        // assertEquals("Wrong operation", Operation.CREATE, event.getElementRoles());
     }
 
     public void testGetStudyParticipantAssigments() throws Exception {

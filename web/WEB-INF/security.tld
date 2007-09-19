@@ -19,10 +19,5 @@
             <rtexprvalue>true</rtexprvalue>
         </attribute>
 
-        <attribute>
-            <name>operation</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
     </tag>
 </taglib>
