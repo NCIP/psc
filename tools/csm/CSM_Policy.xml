@@ -166,7 +166,7 @@
         name="ra_1"
         csm_user_id="-5"
         active_flag="1"
-        password="ra_1"
+        password="XlF3h/jI/Eo="
         />
 
     <USERS
@@ -174,7 +174,7 @@
         name="ra_2"
         csm_user_id="-6"
         active_flag="1"
-        password="ra_2"
+        password="8pcOSnieyYk="
         />
 
     <USERS
@@ -182,7 +182,7 @@
         name="study_admin1"
         csm_user_id="-7"
         active_flag="1"
-        password="study_admin1"
+        password="kWIfWvsUd66SoxTyR4VAOg=="
         />
 
     <USERS
@@ -190,7 +190,7 @@
         name="study_admin2"
         csm_user_id="-8"
         active_flag="1"
-        password="study_admin2"
+        password="kWIfWvsUd65A5ci4Cgt/ZA=="
         />
 
     <USERS
@@ -198,7 +198,7 @@
         name="studycd_1"
         csm_user_id="-3"
         active_flag="1"
-        password="studycd_1"
+        password="FmsjcRxlRj+thtxFP2ZrIA=="
         />
 
     <USERS
@@ -206,7 +206,7 @@
         name="studycd_2"
         csm_user_id="-4"
         active_flag="1"
-        password="studycd_2"
+        password="FmsjcRxlRj+q4RawigB4Ig=="
         />
 
     <USERS
@@ -214,7 +214,7 @@
         name="participantcd_1"
         csm_user_id="-9"
         active_flag="1"
-        password="participantcd_1"
+        password="OI/ZpclGdfVLFNx9KBh4vA=="
         />
 
     <USERS
@@ -222,7 +222,7 @@
         name="participantcd_2"
         csm_user_id="-10"
         active_flag="1"
-        password="participantcd_2"
+        password="OI/ZpclGdfUxpYigEeVf4w=="
         />
 
     <USERS
@@ -230,7 +230,7 @@
         name="superuser"
         csm_user_id="-11"
         active_flag="1"
-        password="superuser"
+        password="sAybp9IVe7feRIv4iO8hcA=="
         />
 
     <USERS
@@ -238,7 +238,7 @@
         name="sitecd_1"
         csm_user_id="-12"
         active_flag="1"
-        password="sitecd_1"
+        password="6bmDzryJ1om8j2uyHEABIQ=="
         />
 
     <USERS
@@ -246,96 +246,81 @@
         name="sitecd_2"
         csm_user_id="-13"
         active_flag="1"
-        password="sitecd_2"
+        password="N1jZCkdaS1W8j2uyHEABIQ=="
         />
 
 
     <USER_ROLES
-        id="-1"
         csm_group_name="RESEARCH_ASSOCIATE"
         user_id="-1"
         />
 
     <USER_ROLES
-        id="-2"
         csm_group_name="RESEARCH_ASSOCIATE"
         user_id="-2"
         />
 
     <USER_ROLES
-        id="-3"
         csm_group_name="STUDY_ADMIN"
         user_id="-3"
         />
 
     <USER_ROLES
-        id="-4"
         csm_group_name="STUDY_ADMIN"
         user_id="-4"
         />
 
     <USER_ROLES
-        id="-5"
         csm_group_name="STUDY_COORDINATOR"
         user_id="-5"
         />
 
     <USER_ROLES
-        id="-6"
         csm_group_name="STUDY_COORDINATOR"
         user_id="-6"
         />
 
     <USER_ROLES
-        id="-7"
         csm_group_name="PARTICIPANT_COORDINATOR"
         user_id="-7"
         />
 
     <USER_ROLES
-        id="-8"
         csm_group_name="PARTICIPANT_COORDINATOR"
         user_id="-8"
         />
 
     <USER_ROLES
-        id="-9"
         csm_group_name="STUDY_COORDINATOR"
         user_id="-9"
         />
 
     <USER_ROLES
-        id="-10"
         csm_group_name="STUDY_ADMIN"
         user_id="-9"
         />
 
     <USER_ROLES
-        id="-11"
         csm_group_name="PARTICIPANT_COORDINATOR"
         user_id="-9"
         />
 
     <USER_ROLES
-        id="-12"
         csm_group_name="RESEARCH_ASSOCIATE"
         user_id="-9"
         />
 
     <USER_ROLES
-        id="-13"
         csm_group_name="SITE_COORDINATOR"
         user_id="-9"
         />
 
     <USER_ROLES
-        id="-14"
         csm_group_name="SITE_COORDINATOR"
         user_id="-10"
         />
 
     <USER_ROLES
-        id="-15"
         csm_group_name="SITE_COORDINATOR"
         user_id="-11"
         />
