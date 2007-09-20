@@ -104,10 +104,10 @@ public class SecureOperation extends TagSupport {
         ConfigAttributeDefinition def = definitionMap.lookupAttributes(element);
 
         if (def == null) {
-            log.warn("Method getElementRoles: ConfigAttributeDefinition null for " + getElement());
-        }
-        if (def != null && def.size() > 1) {
-            log.warn("Method getElementRoles: More than one ConfigAttributeDefinitions defined for " + getElement());
+            log.warn("Method getElementRoles: No matching paths found for " + getElement());
+            def = new ConfigAttributeDefinition();
+        } else if (def != null && def.size() > 1) {
+            log.warn("Method getElementRoles: More than matching paths found for " + getElement());
         }
 
         return def;
