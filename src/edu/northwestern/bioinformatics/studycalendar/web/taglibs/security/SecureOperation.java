@@ -100,9 +100,13 @@ public class SecureOperation extends TagSupport {
     }
 
     protected ConfigAttributeDefinition getElementRoles() {
+        log.info("Method getElementRoles: Looking up attributes for " + getElement());
         ConfigAttributeDefinition def = definitionMap.lookupAttributes(element);
 
-        if (def.size() > 1) {
+        if (def == null) {
+            log.warn("Method getElementRoles: ConfigAttributeDefinition null for " + getElement());
+        }
+        if (def != null && def.size() > 1) {
             log.warn("Method getElementRoles: More than one ConfigAttributeDefinitions defined for " + getElement());
         }
 
