@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
@@ -34,12 +35,14 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private AmendmentService amendmentService;
     private StudyService studyService;
     private DeltaService deltaService;
+    private TemplateService templateService;
+    private Study parent;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         period = createPeriod("7th", 10, 8, 4);
-        Study parent = createNamedInstance("Root", Study.class);
+        parent = createNamedInstance("Root", Study.class);
         parent.setPlannedCalendar(new PlannedCalendar());
         parent.getPlannedCalendar().addEpoch(Epoch.create("Holocene", "Middle"));
         parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
@@ -54,6 +57,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         amendmentService = registerMockFor(AmendmentService.class);
         deltaService = registerMockFor(DeltaService.class);
         studyService = registerMockFor(StudyService.class);
+        templateService = registerMockFor(TemplateService.class);
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
@@ -62,13 +66,13 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         controller.setDeltaService(deltaService);
         controller.setAmendmentService(amendmentService);
         controller.setStudyService(studyService);
+        controller.setTemplateService(templateService);
             
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");
 
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
-
         command = new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
     }
 
@@ -78,6 +82,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
     private ModelAndView doHandle() throws Exception {
         expect(deltaService.revise(period)).andReturn(revisedPeriod);
+        expect(templateService.findStudy(revisedPeriod)).andReturn(parent);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -164,6 +169,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         request.addParameter("selectedActivity", "43");
         Activity expectedActivity = setId(43, new Activity());
         expect(activityDao.getById(43)).andReturn(expectedActivity);
+        expect(templateService.findStudy(period)).andReturn(parent);
         replayMocks();
 
         Map<String, Object> refdata = controller.referenceData(request, command, null);
@@ -173,6 +179,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
 
     public void testReferenceDataEmptyIfNoNewActivity() throws Exception {
+        expect(templateService.findStudy(period)).andReturn(parent);
         request.removeParameter("selectedActivity");
         replayMocks();
 

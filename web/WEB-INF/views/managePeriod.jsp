@@ -5,6 +5,7 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <html>
 <head>
 <%--<title>Set up Period ${period.name} of ${arm.qualifiedName} in ${study.name}</title>--%>
@@ -56,8 +57,6 @@ function selectedValue(selectorName) {
 function addActivityRow() {
     var activity = selectedActivity()
     var cells = []
-    //var dayCount = $$("#days-header th").length - 1 //8
-    //            var dayCount = $$('th.day-number').length -1 //6
     var dayCount = ${period.dayRanges[0].days}.length
     var rowCount = $$("#input-body tr").length - 1
     // header
@@ -65,27 +64,29 @@ function addActivityRow() {
     var activityInput = Builder.node("input", { id: activityName, name: activityName, type: 'hidden', value: activity.id })
     cells.push(Builder.node('th', {className: 'activity'}, activity.name), [activityInput]);
 
+
+
     // input cells
     for (var i = 0; i < dayCount; i++) {
         var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
-        var namePlusOne = name+1
-        var input = Builder.node('input', {
-            type:'checkbox',
-            id:namePlusOne,
+        var input = Builder.node('span', {            
+            id:name,
             name:name,
-            value:'-1'
+            class: "marker",
+            value: -1
         });
-        registerCellInputHandlers(input)
-        cells.push(Builder.node('td', {}, [input]))
+        cells.push(Builder.node('td', {class:'counter', style:'position: relative;'}, [input]))
     }
     var detailsName = 'grid[' + rowCount + '].details'
     var detailsInput = Builder.node('input', {
         id: detailsName,
         name: detailsName,
         type: 'text',
-        onChange:"return ajaxform(null, this, null);"
+        onChange:"return ajaxform(null, null, null,  this, null);"
     });
     cells.push(Builder.node('td', {}, [detailsInput]))
+
+
 
     //corresponding to the conditional behavior
     cells.push(Builder.node('td', {id:'emptyCell'}));
@@ -110,7 +111,7 @@ function addActivityRow() {
         name: conditionDetailsName,
         type: 'text',
         disabled: 'true',
-        onChange:"return ajaxform(null, null, this);"});
+        onChange:"return ajaxform(null, null, null, null, this);"});
     cells.push(Builder.node('td', {}, [conditionDetailsInput]))
 
     var rowId = 'activity' + activity.id;
@@ -118,6 +119,7 @@ function addActivityRow() {
 
     row.style.display = 'none';
     $('input-body').appendChild(row)
+    registerDraggablesAndDroppables()
     showEmptyMessage()
     SC.slideAndShow(rowId)
 }
@@ -144,7 +146,7 @@ function showEmptyMessage() {
 
 function registerCellInputHandlers(input) {
     highlightNonZero(input);
-    Event.observe(input, "click", function(e){return ajaxform(input, null, null)})
+    Event.observe(input, "click", function(e){return ajaxform(input, null, null, null, null)})
     Event.observe(input, "change", highlightNonZero)
     Event.observe(input, "keyup", highlightNonZero)
 }
@@ -167,8 +169,8 @@ function parseDetailName(name) {
 }
 
 function getInfoFromConditionalDetails(formdata, conditionalDetails, index) {
-    formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(true) + "&";
-    formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(true) + "&";
+    formdata = formdata + 'addition' + "=" + escape(false) + "&";
     return formdata
 }
 
@@ -183,29 +185,63 @@ function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
         $(details).disabled = false;
     }
 
-    formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(true) + "&";
-    formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(true) + "&";
+    formdata = formdata + 'addition' + "=" + escape(false) + "&";
     return formdata
 }
 
 function getInfoFromEventCheckbox(formdata, checkbox, index1, index2) {
-    var details = 'grid[' + index1 + '].details';
-    formdata = formdata + details + "=" + escape($(details).value) + "&";
-    formdata = formdata + 'grid[' + index1 + '].columnNumber'+ "=" + index2 + "&";
-    formdata = formdata + 'grid[' + index1 + '].addition' + "=" + escape($(checkbox).checked) + "&";
-    formdata = formdata + 'grid[' + index1 + '].conditionalUpdated' + "=" + escape(false) + "&";
+   var details = 'grid[' + index1 + '].details';
+    formdata = formdata + "details=" + escape($(details).value) + "&";
+    formdata = formdata + 'columnNumber'+ "=" + index2 + "&";
+    formdata = formdata + 'addition' + "=" + escape($(checkbox).checked) + "&";
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";    
     return formdata;
 }
 
 function getInfoFromEventDetails(formdata, details, index) {
-    formdata = formdata + $(details).name + "=" + escape($(details).value) + "&";
-    formdata = formdata + 'grid[' + index + '].addition' + "=" + escape(false) + "&";
-    formdata = formdata + 'grid[' + index + '].columnNumber'+ "=" + escape(-1) + "&";
-    formdata = formdata + 'grid[' + index + '].conditionalUpdated' + "=" + escape(false) + "&";
+    formdata = formdata + "details=" + escape($(details).value) + "&";
+    formdata = formdata + 'addition' + "=" + escape(false) + "&";
+    formdata = formdata + 'columnNumber'+ "=" + escape(-1) + "&";
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
     return formdata;
 }
 
-function ajaxform(checkbox, details, conditionalDetails) {
+function getInfoFromEventTextbox(formdata, isAdding, index1, index2) {
+   var details = 'grid[' + index1 + '].details';
+    formdata = formdata + "details=" + escape($(details).value) + "&";
+    formdata = formdata + 'columnNumber'+ "=" + index2 + "&";
+    formdata = formdata + 'addition' + "=" + isAdding + "&";
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
+    return formdata;
+}
+
+function createAddControl(text, objectType, objectId) {
+    return createControlAnchorOne("add", text, "Add this " + objectType, '<c:url value="/pages/cal/managePeriod/addTo"/>')
+}
+
+function createRemoveControl(text, objectType, objectId) {
+    return createControlAnchorOne("remove", text, "Remove this " + objectType, '<c:url value="/pages/cal/managePeriod/remove"/>')
+}
+
+
+function updateDetails(text, objectType, objectId) {
+    return createControlAnchorOne("update", text, "Update " + objectType, '<c:url value="/pages/cal/managePeriod/update"/>')
+}
+
+function createControlAnchorOne(controlName, text, title, baseHref) {
+    var href = baseHref;
+    if (href.indexOf('?') >= 0) {
+        href += '&'
+    } else {
+        href += '?'
+    }
+    return href
+}
+
+
+function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
+    var href;
 
     // Set up data variable
     var formdata = "";
@@ -216,65 +252,205 @@ function ajaxform(checkbox, details, conditionalDetails) {
         arrayOfIndexes = parseInput(checkbox.name)
         if (checkbox.name.indexOf(".conditionalCheckbox")>=0) {
             formdata = getInfoFromConditionalCheckbox(formdata, checkbox, arrayOfIndexes[0])
+            href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
         } else {
             formdata = getInfoFromEventCheckbox(formdata, checkbox, arrayOfIndexes[0], arrayOfIndexes[1])
+            if($(checkbox).checked) {
+                href = createAddControl("Add checkbox", "checkbox", arrayOfIndexes[0])
+            } else {
+                href = createRemoveControl("Remove checkbox", "checkbox", arrayOfIndexes[0])
+            }
         }
+
     } else if (details != null) {
         arrayOfIndexes = parseInput($(details).name);
         formdata = getInfoFromEventDetails(formdata, details, arrayOfIndexes[0]);
+        href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
     } else if (conditionalDetails != null) {
         arrayOfIndexes = parseInput(conditionalDetails.name)
         formdata = getInfoFromConditionalDetails(formdata, conditionalDetails, arrayOfIndexes[0])
+        href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
+    } else if (textbox != null) {
+        arrayOfIndexes = parseInput(textbox)
+        formdata = getInfoFromEventTextbox(formdata, isAdd, arrayOfIndexes[0], arrayOfIndexes[1])
+        if (isAdd) {
+            href = createAddControl("Add checkbox", "checkbox", arrayOfIndexes[0])
+        } else {
+            href = createRemoveControl("Remove checkbox", "checkbox", arrayOfIndexes[0])
+        }
     }
 
     var activity = 'grid[' + arrayOfIndexes[0] + '].activity';
-    formdata = formdata + activity + "=" + escape($(activity).value) +"&";
+    formdata = formdata + "activity=" + escape($(activity).value) +"&";
 
     var arrayOfCounts = 'grid[' + arrayOfIndexes[0] + '].eventIds';
     for (var i = 0; i < ${period.duration.days}; i++) {
-        var singleElement = arrayOfCounts +'[' +i + ']'+1;
-        if ($(singleElement) == null) {
-            singleElement = arrayOfCounts +'[' +i + ']';
+        singleElement = arrayOfCounts +'[' +i + ']';
+        if ($(singleElement).getAttribute('value') ==  null ) {
+            formdata = formdata + 'eventIds' + '[' +i + ']'+  "=-1" + "&" ;
+        } else {
+            formdata = formdata + 'eventIds' + '[' +i + ']'+  "=" + $(singleElement).getAttribute('value') + "&" ;
         }
-        formdata = formdata + $(singleElement).name +  "=" + $(singleElement).value + "&" ;
     }
 
-    formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].rowNumber'+ "=" + arrayOfIndexes[0] + "&";
-    formdata = formdata + 'grid[' + arrayOfIndexes[0] + '].updated' + "=" + escape(true) + "&";
+    formdata = formdata + 'rowNumber'+ "=" + arrayOfIndexes[0] + "&";
+    formdata = formdata + 'updated' + "=" + escape(true) + "&";
 
 
     var checkboxName = 'grid[' + arrayOfIndexes[0] + '].conditionalCheckbox1';
-    formdata = formdata + $(checkboxName).name +  "=" + $(checkboxName).checked + "&" ;
+    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&" ;
 
     var details1 = 'grid[' +  arrayOfIndexes[0] + '].conditionalDetails';
-    formdata = formdata + $(details1).name +  "=" + $(details1).value + "&";
-
-    var href = '<c:url value="/pages/cal/managePeriod"/>'
+    formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
 
     var lastRequest = new Ajax.Request(href,
     {
         postBody: formdata
     });
+
     return true;
 }
 
+
+
 function registerHandlers() {
-    $$('.input-row td.counter').each(function(cell) {
-        var input = cell.getElementsByTagName("INPUT")[0]
-        registerCellInputHandlers(input)
-    });
     $$('.input-row td.conditional').each(function(cell) {
         var input = cell.getElementsByTagName("INPUT")[0]
         registerCellInputHandlers(input)
     });
     Event.observe('add-activity-button', 'click', addActivityRow)
     Event.observe('select-activity-type', 'change', updateActivitySelector)
+   
+}
+
+function makeCellDraggableAndDroppable(input) {
+        document.getElementsByClassName('marker').each(
+			function(item) {
+				new Draggable(item,{revert: true});
+				item.currentDurationIndex = item.parentNode.durationIndex;
+				item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+			}
+        );
+
+		Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
+
+
+}
+
+function registerDraggablesAndDroppables() {
+    document.getElementsByClassName('newMarker').each(
+        function(item) {new Draggable(item, {revert: true});
+      }
+    );
+
+    var x=0;
+    document.getElementsByClassName('counter').each(
+        function(item) {Droppables.add(item, {
+                    accept:['marker','newMarker'],
+                    hoverclass: 'hoverActive',
+                    onDrop: moveEvent })
+            item.durationIndex = x;
+            x = (x == PERIOD_DURATION-1) ? 0 : (x+1);
+        }
+    );
+
+    document.getElementsByClassName('marker').each(
+        function(item) {new Draggable(item,{revert: true});
+            item.currentDurationIndex = item.parentNode.durationIndex;
+            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+        }
+    );
+
+    Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
 Event.observe(window, "load", registerHandlers)
 Event.observe(window, "load", showEmptyMessage)
 Event.observe(window, "load", updateActivitySelector)
+Event.observe(window, "load", registerDraggablesAndDroppables)
+
+
+
+    String.prototype.trim = function() {
+		this.replace( /^\s+/g, "" );
+  		return this.replace( /\s+$/g, "" );
+	}
+
+	var PERIOD_DURATION = 7;
+	var PERIOD_REPITITION = 3;        
+
+
+    function trim(inputString) {
+        if (typeof inputString != "string") { return inputString; }
+        var retValue = inputString;
+        var ch = retValue.substring(0, 1);
+        while (ch == " ") {
+            retValue = retValue.substring(1, retValue.length);
+            ch = retValue.substring(0, 1);
+        }
+        ch = retValue.substring(retValue.length-1, retValue.length);
+        while (ch == " ") {
+            retValue = retValue.substring(0, retValue.length-1);
+            ch = retValue.substring(retValue.length-1, retValue.length);
+        }
+        while (retValue.indexOf("  ") != -1) {
+            retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
+        }
+        return retValue;
+    }        
+
+function moveEvent(draggable,dropZone) {
+    var wholeElement = trim(dropZone.getElementsBySelector("span")[0])
+    var elementId = dropZone.getElementsBySelector("span")[0].id
+    if (wholeElement.firstChild == null) {
+        ajaxform(null, elementId, true, null, null)
+
+        var prevDurationIndex = draggable.currentDurationIndex;
+        var newDurationIndex = dropZone.durationIndex;
+        var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+
+        // Prevent drag and drop on same square isn't a move and you are not allowed to drag a scheduled activity to another activity
+        // TODO: try to get scriptaculous to prevent this using accept
+        if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim()) {
+            var marker = createMarker(newDurationIndex, activity);
+            dropZone.appendChild(marker);
+
+            draggable.parentNode.removeChild(draggable);
+            if(draggable.className=='newMarker') {
+                var div = Builder.node("div", { className: 'newMarker' })
+                div.innerHTML = 'X';
+                new Draggable(div, { revert: true } );
+                $('newMarkerArea').appendChild(div);
+            }
+        }
+    }
+  }
+
+function deleteEvent(draggable,dropZone) {
+    var element = draggable.parentNode.getElementsBySelector("span")[0].id
+    ajaxform(null, element, false, null, null)
+
+    var prevDurationIndex = draggable.currentDurationIndex;
+    var prevActivity = draggable.activity;
+    draggable.innerHTML = '';
+}
+
+
+function createMarker(currentDurationIndex, activityName) {
+    var marker = document.createElement('span');
+    marker.innerHTML = 'X';
+    marker.className='marker';
+    marker.currentDurationIndex = currentDurationIndex;
+    marker.activity = activityName;
+    new Draggable(marker,{revert: true});
+    return marker;
+}
+
+
+
 </script>
+
+
 <style type="text/css">
     #no-activities-message td {
         text-align: center;
@@ -340,9 +516,32 @@ Event.observe(window, "load", updateActivitySelector)
         border:none;
     }
 
+   #revision-changes {
+        float: right;
+        width: 29%;
+    }
+
+    #with-changes #period {
+        width: 70%;
+        float: left;
+    }
+
 </style>
 </head>
 <body>
+
+<c:set var="showChanges" value="${not empty developmentRevision and not study.inInitialDevelopment}"/>
+<%--'${revisionChanges.flattened}'--%>
+
+  <c:if test="${showChanges}">
+      <div id="with-changes">
+          <div id="revision-changes" class="section">
+              <templ:changes revision="${developmentRevision}" changes="${revisionChanges}"/>
+          </div>
+      <%-- #with-changes is closed below --%>
+  </c:if>
+
+<div id="period" class="section">
 <laf:box title="Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}">
     <laf:division>
         <p>
@@ -362,7 +561,7 @@ Event.observe(window, "load", updateActivitySelector)
                 <tr id="days-header">
                     <td></td>
                     <c:forEach items="${period.dayRanges[0].days}" var="d">
-                        <th class="day-number">
+                        <th id="day-number" class="day-number">
                             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
                                 ${d + x * period.duration.days}
                                 <c:if test="${not xStatus.last}"><br/></c:if>
@@ -388,33 +587,52 @@ Event.observe(window, "load", updateActivitySelector)
                             </th>
                             <c:forEach items="${gridRow.eventIds}" varStatus="cStatus">
                                 <td class="counter">
-                                    <form:checkbox path="grid[${gridStatus.index}].eventIds[${cStatus.index}]"
-                                                   value="${empty gridRow.eventIds[cStatus.index] ? -1 : gridRow.eventIds[cStatus.index]}"/>
+                                    <c:choose>
+                                        <c:when test="${not empty gridRow.eventIds[cStatus.index]}">
+                                        <span id="grid[${gridStatus.index}].eventIds[${cStatus.index}]" value="${gridRow.eventIds[cStatus.index]}" class="marker">X</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span id="grid[${gridStatus.index}].eventIds[${cStatus.index}]" value="-1" class="marker"></span>
+                                    </c:otherwise>
+                                    </c:choose>
                                 </td>
                             </c:forEach>
                             <td>
                                 <form:input path="grid[${gridStatus.index}].details"
-                                            onchange="ajaxform(null, this, null);" />
+                                            onchange="ajaxform(null, null, null, this, null);" />
                             </td>
                             <!--corresponds to the conditional behavior-->
                             <td id="emptyCell" ></td>
                             <td class="conditional">
                                 <form:checkbox path="grid[${gridStatus.index}].conditionalCheckbox"
                                                value="${gridRow.conditionalCheckbox}" />
-
-                                <%--<input type=checkbox <c:if test="${gridRow.conditionalDetails != null}">checked</c:if> name="grid[${gridStatus.index}].conditionalCheckbox"/>--%>
-
                             </td>
                             <td>
                                 <form:input path="grid[${gridStatus.index}].conditionalDetails"
-                                            onchange="return ajaxform(null, null, this);"
+                                            onchange="return ajaxform(null, null, null, null, this);"
                                             disabled="${empty gridRow.conditionalDetails}"
                                         />
                             </td>
                         </tr>
                     </c:forEach>
+
+
+                    <div  style="float:left;position:relative;margin-right:20px">
+                        <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Add</span>
+                        <div style="border:1px solid #ccc;width:50px;height:50px;text-align:center;vertical-align:middle;line-height:50px;margin:2px 5px 10px 5px;" id="newMarkerArea">
+                            <div class="newMarker">X</div>
+                        </div>
+                        <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Delete</span>
+
+                        <div style="border:1px solid #ccc;width:50px;text-align:center;margin:2px 5px 10px 5px;z-index:1" id="deleteDrop">
+                            <p style="margin:5px;font-size:16px">Drop Here</p>
+                        </div>
+                     </div>
+
                 </tbody>
             </table>
+
+            <br style="clear:both"/>
 
             <div id="activities-input">
                 <label for="add-activity">Activities:</label>
@@ -431,5 +649,11 @@ Event.observe(window, "load", updateActivitySelector)
         </form:form>
     </laf:division>
 </laf:box>
+
+</div>          
+
+  <c:if test="${showChanges}"></div></c:if>
+
+
 </body>
 </html>

@@ -3,19 +3,23 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
@@ -25,6 +29,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,6 +48,8 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     private StudyService studyService;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
+    private TemplateService templateService;
+    private DaoFinder daoFinder;
 
     public ManagePeriodEventsController() {
         setBindOnNewForm(true);
@@ -86,7 +93,12 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         refdata.put("activityTypes", ActivityType.values());
         refdata.put("activities", activityDao.getAll());
         refdata.put("activitiesById", DomainObjectTools.byId(activityDao.getAll()));
+        Study study = templateService.findStudy(command.getPeriod());
+        Amendment amendment = study.getDevelopmentAmendment();
+        refdata.put("developmentRevision", amendment);
+        refdata.put("revisionChanges", new RevisionChanges(daoFinder, amendment, study, command.getPeriod()));
         getControllerTools().addHierarchyToModel(command.getPeriod(), refdata);
+        System.out.println("");
 
         return refdata;
     }
@@ -142,6 +154,16 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 
     private static class Crumb extends DefaultCrumb {

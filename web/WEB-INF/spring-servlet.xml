@@ -81,6 +81,7 @@
     </bean>
     <bean name="/cal/template/select" id="selectArmController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController"/>
+
     <bean name="/cal/template/rename" id="renameController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>renameCommand</value></property>
@@ -98,6 +99,26 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>moveCommand</value></property>
     </bean>
+
+
+<!--to separate ManagePeriodCommands to a separate commands-->
+    <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addToPeriodCommand</value></property>
+    </bean>
+
+    <bean name="/cal/managePeriod/remove" id="deleteFromPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>deleteFromPeriodCommand</value></property>
+    </bean>
+
+    <bean name="/cal/managePeriod/update" id="updatePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>updatePeriodCommand</value></property>
+    </bean>
+
+
+
     <bean name="/cal/template/edit.js" id="editJsController"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
         <property name="viewName"><value>template/edit.js</value></property>

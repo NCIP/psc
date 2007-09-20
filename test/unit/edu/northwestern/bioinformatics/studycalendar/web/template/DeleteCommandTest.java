@@ -36,7 +36,6 @@ public class DeleteCommandTest extends EditCommandTestCase {
 
         DeltaAssertions.assertRemove("Wrong change", epochs.get(0), lastChange());
     }
-    
     public void testDeleteLastEpochIsNoop() throws Exception {
         study.getPlannedCalendar().getEpochs().remove(1);
 

@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.util.List;
+import java.util.Map;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
@@ -46,4 +49,10 @@ public class Configuration extends DatabaseBackedConfiguration {
         return PROPERTIES;
     }
 
+
+    @Override
+    @Transactional (propagation = Propagation.SUPPORTS)
+    public Map<String, Object> getMap() {
+        return super.getMap();
+    }
 }

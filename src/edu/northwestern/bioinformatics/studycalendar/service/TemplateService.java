@@ -21,6 +21,7 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -289,10 +290,11 @@ public class TemplateService {
             }
         }
     }
-
+    
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
         if (node.getParent() != null) {
-            return node.getParent();
+            return node.getParent();                                                                                                    
         } else {
             Delta<P> delta = deltaDao.findDeltaWhereAdded(node);
             if (delta == null) {
@@ -304,6 +306,7 @@ public class TemplateService {
     }
 
     @SuppressWarnings({ "unchecked" })
+    @Transactional(propagation = Propagation.SUPPORTS)
     public <T extends PlanTreeNode<?>> T findAncestor(PlanTreeNode<?> node, Class<T> klass) {
         boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
         boolean parentable = PlanTreeNode.class.isAssignableFrom(node.parentClass());

@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public abstract class TemplateEditCommand extends EditCommand {
+public abstract class TemplateEditCommand extends EditTemplateCommand {
     private Mode mode;
     private DaoFinder daoFinder;
 
@@ -26,12 +26,11 @@ public abstract class TemplateEditCommand extends EditCommand {
     }
 
     @Override
-    protected void performEdit() {
+    public void performEdit() {
         getMode().performEdit();
     }
 
-    @Override
-    protected String getRelativeViewName() {
+    public String getRelativeViewName() {
         return getMode().getRelativeViewName();
     }
 

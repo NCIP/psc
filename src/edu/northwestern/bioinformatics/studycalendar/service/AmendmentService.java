@@ -67,6 +67,7 @@ public class AmendmentService {
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.
      */
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change change) {
         Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
         if (!study.isInDevelopment()) {

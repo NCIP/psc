@@ -101,6 +101,7 @@ public class DeltaService {
      * @param node
      * @param change
      */
+    @Transactional(propagation = Propagation.SUPPORTS)
     public void updateRevision(Revision target, PlanTreeNode<?> node, Change change) {
         log.debug("Updating {}", target);
         if (node.isDetached()) {

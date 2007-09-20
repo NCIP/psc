@@ -1,20 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
 public class EditCommandTest extends StudyCalendarTestCase {
-    private EditCommand command;
+    private TemplateEditCommand command;
     private StudyService studyService;
 
     private Study study;
@@ -24,9 +24,9 @@ public class EditCommandTest extends StudyCalendarTestCase {
         super.setUp();
         studyService = registerMockFor(StudyService.class);
 
-        command = registerMockFor(EditCommand.class,
-            EditCommand.class.getDeclaredMethod("performEdit"),
-            EditCommand.class.getDeclaredMethod("getRelativeViewName")
+        command = registerMockFor(TemplateEditCommand.class,
+            TemplateEditCommand.class.getMethod("performEdit"),
+            TemplateEditCommand.class.getMethod("getRelativeViewName")
         );
         command.setStudyService(studyService);
         command.setDeltaService(Fixtures.getTestingDeltaService());
@@ -42,7 +42,7 @@ public class EditCommandTest extends StudyCalendarTestCase {
         studyService.save(study);
 
         replayMocks();
-        command.apply();
+        PlannedCalendar pc = command.apply();
         verifyMocks();
     }
     

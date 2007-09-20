@@ -69,7 +69,7 @@ public class DisplayTemplateController extends PscAbstractController {
 
             for(StudyParticipantAssignment currentAssignment: assignments) {
                 if (currentAssignment.getEndDateEpoch() == null)
-                    onStudyAssignments.add(currentAssignment);
+                    onStudyAssignments.add(currentAssignment);                                                                                                                                                                             
                 else
                     offStudyAssignments.add(currentAssignment);
             }

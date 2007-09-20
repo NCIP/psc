@@ -18,4 +18,14 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteCommand"/>
     <bean id="moveCommand" autowire="byName" scope="prototype"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.MoveCommand"/>
+
+
+    <bean id="addToPeriodCommand" autowire="byName" scope="prototype"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddToPeriodCommand"/>
+    <bean id="deleteFromPeriodCommand" autowire="byName" scope="prototype"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteFromPeriodCommand"/>
+    <bean id="updatePeriodCommand" autowire="byName" scope="prototype"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.UpdatePeriodCommand"/>
+
+
 </beans>
