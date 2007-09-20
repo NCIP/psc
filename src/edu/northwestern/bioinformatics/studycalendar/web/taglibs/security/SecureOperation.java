@@ -43,7 +43,7 @@ public class SecureOperation extends TagSupport {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        ConfigAttributeDefinition elementRoles = getElementRoles();
+        ConfigAttributeDefinition elementRoles = getElementRoles(getElement());
 
         try {
             return isAllowed(authentication, getElement(), elementRoles);
@@ -99,9 +99,9 @@ public class SecureOperation extends TagSupport {
         return k;
     }
 
-    protected ConfigAttributeDefinition getElementRoles() {
+    protected ConfigAttributeDefinition getElementRoles(String url) {
         log.info("Method getElementRoles: Looking up attributes for " + getElement());
-        ConfigAttributeDefinition def = definitionMap.lookupAttributes(element);
+        ConfigAttributeDefinition def = definitionMap.lookupAttributes(url);
 
         if (def == null) {
             log.warn("Method getElementRoles: No matching paths found for " + getElement());
