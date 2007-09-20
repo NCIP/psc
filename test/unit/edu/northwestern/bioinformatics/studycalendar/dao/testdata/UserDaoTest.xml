@@ -16,7 +16,6 @@
         />
 
     <USER_ROLES
-        id="-1"
         csm_group_name="STUDY_ADMIN"
         user_id="-200"
         />
