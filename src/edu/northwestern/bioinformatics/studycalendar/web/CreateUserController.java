@@ -54,7 +54,7 @@ public class CreateUserController extends PscCancellableFormController {
         user.setName(command.getName());
         user.setRoles(command.getUserRoles());
         user.setActiveFlag(command.getActiveFlag());
-        user.setPassword(command.getPassword());
+        user.setPlainTextPassword(command.getPassword());
 
         userService.saveUser(user);
 
@@ -73,8 +73,8 @@ public class CreateUserController extends PscCancellableFormController {
            command.setName(user.getName());
            command.setUserRoles(user.getRoles());
            command.setActiveFlag(user.getActiveFlag());
-           command.setPassword(user.getPassword());
-           command.setRePassword(user.getPassword());
+           command.setPassword(user.getPlainTextPassword());
+           command.setRePassword(user.getPlainTextPassword());
         }
 
         return command;

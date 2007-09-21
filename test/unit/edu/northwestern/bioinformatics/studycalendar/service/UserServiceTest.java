@@ -70,26 +70,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertEquals(expectedUser, actual);
     }
 
-    public void testSaveUser_2() throws Exception {
-        service.setUserProvisioningManager(userProvisioningManagerStub);
-        User expectedUser = createUser(200, "john", 100L, null, false, null);
-
-        gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
-                new gov.nih.nci.security.authorization.domainobjects.User();
-        expectedCsmUser.setLoginName("john");
-        expectedCsmUser.setUserId(1L);
-
-        userProvisioningManagerStub.createUser(expectedCsmUser);
-
-        userDao.save(expectedUser);
-        replayMocks();
-
-        User actual = service.saveUser(expectedUser);
-        verifyMocks();
-
-        assertEquals(expectedUser, actual);
-    }
-
 
     public void testGetUserByName() throws Exception {
         User expectedUser = createUser(-100, "john", -100L, null, true, "pass123");

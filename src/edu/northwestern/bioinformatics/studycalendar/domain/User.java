@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.security.util.StringEncrypter;
 
 @Entity
 @Table (name = "users")
@@ -50,12 +51,24 @@ public class User extends AbstractMutableDomainObject implements Named {
         this.activeFlag = activeFlag;
     }
 
-    public String getPassword() {
+    public String getPassword() throws Exception {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws Exception {
         this.password = password;
+    }
+
+    @Transient
+    public String getPlainTextPassword() throws Exception{
+        StringEncrypter encrypter = new StringEncrypter();
+        return encrypter.decrypt(password);
+    }
+
+    @Transient
+    public void setPlainTextPassword(String password) throws Exception {
+        StringEncrypter encrypter = new StringEncrypter();
+        this.password = encrypter.encrypt(password);
     }
 
     @CollectionOfElements
