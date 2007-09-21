@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class RenameCommand extends TemplateEditCommand {
+public class RenameCommand extends EditTemplateCommand {
     private String value;
 
     ////// BOUND PROPERTIES
@@ -25,17 +25,9 @@ public class RenameCommand extends TemplateEditCommand {
 
     ////// MODES
 
-    protected Mode studyMode() {
-        return new RenameStudy();
-    }
-
-    protected Mode epochMode() {
-        return new RenameEpoch();
-    }
-
-    protected Mode armMode() {
-        return new RenameArm();
-    }
+    @Override protected Mode studyMode() { return new RenameStudy(); }
+    @Override protected Mode epochMode() { return new RenameEpoch(); }
+    @Override protected Mode armMode()   { return new RenameArm(); }
 
     private abstract class RenameMode implements Mode {
         public Map<String, Object> getModel() {

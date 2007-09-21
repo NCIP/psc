@@ -13,11 +13,13 @@ import org.springframework.ui.ModelMap;
 /**
  * @author Rhett Sutphin
  */
-public class AddToCommand extends TemplateEditCommand {
+public class AddToCommand extends EditTemplateCommand {
+    @Override
     protected Mode studyMode() {
         return new AddEpoch();
     }
 
+    @Override
     protected Mode epochMode() {
         return new AddArm();
     }
@@ -33,6 +35,7 @@ public class AddToCommand extends TemplateEditCommand {
             updateRevision(getEpoch(), Add.create(arm, getEpoch().getArms().size()));
         }
 
+        @SuppressWarnings({ "unchecked" })
         public Map<String, Object> getModel() {
             List<Arm> arms = getRevisedEpoch().getArms();
             return new ModelMap("arm", arms.get(arms.size() - 1));
@@ -44,6 +47,7 @@ public class AddToCommand extends TemplateEditCommand {
             return "addEpoch";
         }
 
+        @SuppressWarnings({ "unchecked" })
         public Map<String, Object> getModel() {
             List<Epoch> epochs = getRevisedStudy().getPlannedCalendar().getEpochs();
             return new ModelMap("epoch", epochs.get(epochs.size() - 1));

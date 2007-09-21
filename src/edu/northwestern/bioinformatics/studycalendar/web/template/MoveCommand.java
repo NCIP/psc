@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class MoveCommand extends TemplateEditCommand {
+public class MoveCommand extends EditTemplateCommand {
     private Integer offset;
 
     ////// BOUND PROPERTIES

@@ -6,8 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 
@@ -18,11 +19,15 @@ import org.springframework.beans.factory.annotation.Required;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
+ * Base class for commands invoked from the main display template page.
+ *
  * @author Rhett Sutphin
  */
 public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar> {
+    private Mode mode;
     private DeltaService deltaService;
     private StudyService studyService;
+    private DaoFinder daoFinder;
 
     // directly bound
     private Study study;
@@ -43,6 +48,10 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
         return null;
     }
 
+    public void performEdit() {
+        getMode().performEdit();
+    }
+
     private void verifyEditable(Study target) {
         if (!target.isInDevelopment()) {
             throw new StudyCalendarSystemException(
@@ -50,37 +59,59 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
         }
     }
 
-    /**
-     * Template method for providing objects to the view
-     */
     public Map<String, Object> getModel() {
-        return new HashMap<String, Object>();
-    }
-
-    /**
-     * Template method that performs the actual work of the command
-     */
-    protected abstract void performEdit();
-
-
-
-    /* TODO: probably don't need this anymore
-    protected Study toSave() {
-        if (getStudy() != null) {
-            return getStudy();
-        } else if (getEpoch() != null) {
-            return getEpoch().getPlannedCalendar().getStudy();
-        } else if (getArm() != null) {
-            return getArm().getEpoch().getPlannedCalendar().getStudy();
-        } else {
-            throw new IllegalStateException("Cannot determine which study the edit was applied to");
+        Map<String, Object> model = new HashMap<String, Object>();
+        Map<String, Object> modeModel = getMode().getModel();
+        model.put("developmentRevision", getStudy().getDevelopmentAmendment());
+        model.put("revisionChanges",
+            new RevisionChanges(daoFinder, getStudy().getDevelopmentAmendment(), getStudy()));
+        if (modeModel != null) {
+            model.putAll(modeModel);
         }
-    }*/
+        return model;
+    }
 
     protected void updateRevision(PlanTreeNode<?> node, Change change) {
         deltaService.updateRevision(getStudy().getDevelopmentAmendment(),node, change);
         cleanUpdateRevised();
     }
+
+    ////// MODES
+    // Subclasses should provide a mode for handling each type of bound domain object
+    // that makes sense
+
+    public String getRelativeViewName() {
+        return getMode().getRelativeViewName();
+    }
+
+    private Mode getMode() {
+        if (mode == null) mode = selectMode();
+        return mode;
+    }
+
+    protected Mode studyMode() { throw new UnsupportedOperationException("No study mode for " + getClass().getSimpleName()); }
+    protected Mode epochMode() { throw new UnsupportedOperationException("No epoch mode for " + getClass().getSimpleName()); }
+    protected Mode armMode() { throw new UnsupportedOperationException("No arm mode for " + getClass().getSimpleName()); }
+
+    protected Mode selectMode() {
+        Mode newMode;
+        if (getArm() != null) {
+            newMode = armMode();
+        } else if (getEpoch() != null) {
+            newMode = epochMode();
+        } else {
+            newMode = studyMode();
+        }
+        return newMode;
+    }
+
+    protected static interface Mode {
+        String getRelativeViewName();
+        Map<String, Object> getModel();
+        void performEdit();
+    }
+
+    ////// REVISED-TO-CURRENT versions of bound props
 
     private void cleanUpdateRevised() {
         revisedStudy = null; // reset
@@ -178,5 +209,9 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
     @Required
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
+    }
+
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }

@@ -9,18 +9,22 @@ import java.util.Collections;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
+ * This is a separate test because, historically, {@link EditTemplateCommand) was two
+ * different classes.  They've been merged, but the tests remain separate to ensure
+ * continuing correct functioning.
+ *
  * @author Rhett Sutphin
  */
-public class TemplateEditCommandTest extends EditCommandTestCase {
-    private TemplateEditCommand command;
-    private TemplateEditCommand.Mode mockMode;
+public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
+    private EditTemplateCommand command;
+    private EditTemplateCommand.Mode mockMode;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         command = new TestableCommand();
         study.getPlannedCalendar().addEpoch(Epoch.create("E", "A", "B"));
-        mockMode = registerMockFor(TemplateEditCommand.Mode.class);
+        mockMode = registerMockFor(EditTemplateCommand.Mode.class);
     }
 
     public void testSelectStudyMode() throws Exception {
@@ -60,22 +64,22 @@ public class TemplateEditCommandTest extends EditCommandTestCase {
 
     private void useMockMode() {
         command = new TestableCommand() {
-            protected Mode studyMode() { return mockMode; }
+            @Override protected Mode studyMode() { return mockMode; }
         };
     }
 
-    private class TestableCommand extends TemplateEditCommand {
+    private class TestableCommand extends EditTemplateCommand {
         public TestableCommand() {
             setDeltaService(Fixtures.getTestingDeltaService());
             setStudy(study);
         }
 
-        protected Mode studyMode() { return new TestMode("Study"); }
-        protected Mode epochMode() { return new TestMode("Epoch"); }
-        protected Mode armMode()   { return new TestMode("Arm");   }
+        @Override protected Mode studyMode() { return new TestMode("Study"); }
+        @Override protected Mode epochMode() { return new TestMode("Epoch"); }
+        @Override protected Mode armMode()   { return new TestMode("Arm");   }
     }
 
-    private static class TestMode implements TemplateEditCommand.Mode {
+    private static class TestMode implements EditTemplateCommand.Mode {
         private String name;
 
         public TestMode(String name) {

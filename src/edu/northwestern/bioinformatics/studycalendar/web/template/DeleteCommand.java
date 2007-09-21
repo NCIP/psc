@@ -11,14 +11,16 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-public class DeleteCommand extends TemplateEditCommand {
+public class DeleteCommand extends EditTemplateCommand {
 
     ////// MODES
 
+    @Override
     protected Mode epochMode() {
         return new DeleteEpoch();
     }
 
+    @Override
     protected Mode armMode() {
         return new DeleteArm();
     }
