@@ -106,11 +106,7 @@
 		<property name="interceptors">
 			<list>
 				<ref local="gridIdentifierInterceptor"/>
-                <!--
-                    TODO: Use StudyServiceIntegratedTest to figure out why the auditing system
-                    is incompatible with the amendment system.
-                 -->
-                <!-- ref local="auditInterceptor" /-->
+                <ref local="auditInterceptor" />
 			</list>
 		</property>
 	</bean>
