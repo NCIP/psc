@@ -55,6 +55,9 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedEven
     private String conditionalDetails;
     private boolean conditionalUpdated;
 
+    private int moveFrom;
+    private int moveTo;
+
     public Map<String, Object> getModel() {
         Map<String, Object> model = getLocalModel();
         model.put("developmentRevision", getStudy().getDevelopmentAmendment());
@@ -196,6 +199,22 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedEven
         this.id = id;
     }
 
+
+    public int getMoveFrom() {
+        return moveFrom;
+    }
+
+    public void setMoveFrom(int moveFrom) {
+        this.moveFrom = moveFrom;
+    }
+
+    public int getMoveTo() {
+        return moveTo;
+    }
+
+    public void setMoveTo(int moveTo) {
+        this.moveTo = moveTo;
+    }
 
     public AmendmentService getAmendmentService() {
         return amendmentService;

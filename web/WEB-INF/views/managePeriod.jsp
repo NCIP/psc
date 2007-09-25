@@ -229,6 +229,10 @@ function updateDetails(text, objectType, objectId) {
     return createControlAnchorOne("update", text, "Update " + objectType, '<c:url value="/pages/cal/managePeriod/update"/>')
 }
 
+function move(text, objectType, objectId) {
+    return createControlAnchorOne("move", text, "Move " + objectType, '<c:url value="/pages/cal/managePeriod/move"/>')
+}
+
 function createControlAnchorOne(controlName, text, title, baseHref) {
     var href = baseHref;
     if (href.indexOf('?') >= 0) {
@@ -239,6 +243,41 @@ function createControlAnchorOne(controlName, text, title, baseHref) {
     return href
 }
 
+function moveAjaxForm(arrayOfIndicesForParent, arrayOfIndicesForChild, isAdd) {
+    var href = move("Move event", "event ", arrayOfIndicesForChild[0]);
+    // Set up data variable
+    var formdata = "";
+    formdata = formdata + 'id='+${period.id}+"&";
+    formdata = getInfoFromEventTextbox(formdata, isAdd, arrayOfIndicesForChild[0], arrayOfIndicesForChild[1])
+
+    var activity = 'grid[' + arrayOfIndicesForChild[0] + '].activity';
+    formdata = formdata + "activity=" + escape($(activity).value) +"&";
+    var arrayOfCounts = 'grid[' + arrayOfIndicesForChild[0] + '].eventIds';
+
+    singleElement = arrayOfCounts +'[' +arrayOfIndicesForParent[1] + ']';
+    if ($(singleElement).getAttribute('value') !=  null ) {
+        formdata = formdata + 'eventIds' + '[' +arrayOfIndicesForParent[1] + ']'+  "=" + $(singleElement).getAttribute('value') + "&" ;
+    }
+    formdata = formdata + 'rowNumber'+ "=" + arrayOfIndicesForChild[0] + "&";
+    formdata = formdata + 'updated' + "=" + escape(true) + "&";
+
+    var checkboxName = 'grid[' + arrayOfIndicesForChild[0] + '].conditionalCheckbox1';
+    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&" ;
+    var details1 = 'grid[' +  arrayOfIndicesForChild[0] + '].conditionalDetails';
+    formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
+
+    formdata = formdata+ "moveFrom=" + arrayOfIndicesForParent[1] + "&";
+    formdata = formdata+ "moveTo=" + arrayOfIndicesForChild[1] + "&";
+
+    var lastRequest = new Ajax.Request(href,
+    {
+        postBody: formdata
+    });
+
+    return true;
+
+
+}
 
 function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
     var href;
@@ -380,51 +419,76 @@ Event.observe(window, "load", registerDraggablesAndDroppables)
 	var PERIOD_REPITITION = 3;        
 
 
-    function trim(inputString) {
-        if (typeof inputString != "string") { return inputString; }
-        var retValue = inputString;
-        var ch = retValue.substring(0, 1);
-        while (ch == " ") {
-            retValue = retValue.substring(1, retValue.length);
-            ch = retValue.substring(0, 1);
-        }
+function trim(inputString) {
+    if (typeof inputString != "string") { return inputString; }
+    var retValue = inputString;
+    var ch = retValue.substring(0, 1);
+    while (ch == " ") {
+        retValue = retValue.substring(1, retValue.length);
+        ch = retValue.substring(0, 1);
+    }
+    ch = retValue.substring(retValue.length-1, retValue.length);
+    while (ch == " ") {
+        retValue = retValue.substring(0, retValue.length-1);
         ch = retValue.substring(retValue.length-1, retValue.length);
-        while (ch == " ") {
-            retValue = retValue.substring(0, retValue.length-1);
-            ch = retValue.substring(retValue.length-1, retValue.length);
-        }
-        while (retValue.indexOf("  ") != -1) {
-            retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
-        }
-        return retValue;
-    }        
+    }
+    while (retValue.indexOf("  ") != -1) {
+        retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
+    }
+    return retValue;
+}
 
 function moveEvent(draggable,dropZone) {
     var wholeElement = trim(dropZone.getElementsBySelector("span")[0])
     var elementId = dropZone.getElementsBySelector("span")[0].id
-    if (wholeElement.firstChild == null) {
-        ajaxform(null, elementId, true, null, null)
 
-        var prevDurationIndex = draggable.currentDurationIndex;
-        var newDurationIndex = dropZone.durationIndex;
-        var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
-
-        // Prevent drag and drop on same square isn't a move and you are not allowed to drag a scheduled activity to another activity
-        // TODO: try to get scriptaculous to prevent this using accept
-        if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim()) {
-            var marker = createMarker(newDurationIndex, activity);
-            dropZone.appendChild(marker);
-
-            draggable.parentNode.removeChild(draggable);
-            if(draggable.className=='newMarker') {
-                var div = Builder.node("div", { className: 'newMarker' })
-                div.innerHTML = 'X';
-                new Draggable(div, { revert: true } );
-                $('newMarkerArea').appendChild(div);
+    var parentElement = trim(draggable.parentNode.getElementsBySelector("span")[0])
+    if (parentElement == null) {
+        //means we are drugging a new event
+        if (wholeElement.firstChild == null) {
+            ajaxform(null, elementId, true, null, null)
+            setUpMarker(draggable, dropZone)
+        }
+    } else {
+        //means we are moving event from one cell to another
+        var parentElementId = parentElement.id
+        var arrayOfIndisesForParent = parseInput(parentElementId)
+        var arrayOfIndisesForChild = parseInput(elementId)
+        if (arrayOfIndisesForParent[0]== arrayOfIndisesForChild[0]) {
+            //need to set up ajax call for move
+            if (wholeElement.firstChild == null) {
+                moveAjaxForm(arrayOfIndisesForParent, arrayOfIndisesForChild, false)
+                setUpMovingMarker(draggable, dropZone)
             }
         }
     }
-  }
+}
+
+
+function setUpMarker(draggable, dropZone) {
+    var prevDurationIndex = draggable.currentDurationIndex;
+    var newDurationIndex = dropZone.durationIndex;
+    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim()) {
+        var marker = createMarker(newDurationIndex, activity);
+        dropZone.appendChild(marker);
+
+        draggable.parentNode.removeChild(draggable);
+        if(draggable.className=='newMarker') {
+            var div = Builder.node("div", { className: 'newMarker' })
+            div.innerHTML = 'X';
+            new Draggable(div, { revert: true } );
+            $('newMarkerArea').appendChild(div);
+        }
+    }
+}    
+
+
+function setUpMovingMarker(draggable, dropZone) {
+    draggable.innerHTML='';
+    var element = trim(dropZone.getElementsBySelector("span")[0]);
+    element.innerHTML='X';
+}
 
 function deleteEvent(draggable,dropZone) {
     var element = draggable.parentNode.getElementsBySelector("span")[0].id
@@ -445,7 +509,6 @@ function createMarker(currentDurationIndex, activityName) {
     new Draggable(marker,{revert: true});
     return marker;
 }
-
 
 
 </script>
