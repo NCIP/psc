@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Set;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -33,7 +34,7 @@ public class BatchRescheduleCommand {
         if (getNewMode() == null) return;
 
         for (ScheduledEvent event : events) {
-            if (isValidEventModeChange(event.getCurrentState().getMode(), getNewMode())) {
+            if (isValidEventModeChange(event.getCurrentState(), getNewMode())) {
                 changeState(event);
             }
         }
@@ -67,14 +68,9 @@ public class BatchRescheduleCommand {
         return reason.toString();
     }
 
-    private boolean isValidEventModeChange(ScheduledEventMode current, ScheduledEventMode future) {
-        boolean result = false;
-        if ((ScheduledEventMode.OCCURRED == current && ScheduledEventMode.SCHEDULED == future)
-                || (ScheduledEventMode.CANCELED == current && ScheduledEventMode.SCHEDULED == future)
-                ||  ScheduledEventMode.SCHEDULED == current) {
-            result = true;
-        }
-        return result;
+    private boolean isValidEventModeChange(ScheduledEventState currentState, ScheduledEventMode future) {
+        List<Class<? extends ScheduledEventState>> availableStates= currentState.getAvailableStates();
+        return availableStates.contains(future.getClazz());
     }
 
     ////// BOUND PROPERTIES

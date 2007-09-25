@@ -12,6 +12,8 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,6 +35,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class ScheduledEventState extends AbstractMutableDomainObject implements Cloneable, Serializable {
     private String reason;
+    private boolean conditional;
 
     protected ScheduledEventState() { }
 
@@ -52,6 +55,33 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
     }
 
     protected void appendSummaryMiddle(StringBuilder sb) { }
+
+    @Transient
+    public void setConditional(boolean conditional) {
+        this.conditional = conditional;    
+    }
+
+    @Transient
+    public boolean isConditional() {
+        return conditional;
+    }
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableConditionalStates() {
+        List<Class<? extends ScheduledEventState>> list = new ArrayList<Class<? extends ScheduledEventState>>();
+        if (conditional) {
+            list.add(Conditional.class);
+            list.add(NotAvailable.class);
+        }
+        return list;
+    }
+
+    @Transient
+    public abstract List<Class<? extends ScheduledEventState>> getAvailableStates();
+
+    public boolean isValidNewState(Class<? extends ScheduledEventState> newStateClass) {
+        return getAvailableStates().contains(newStateClass);
+    }
 
     ////// BEAN PROPERTIES
 

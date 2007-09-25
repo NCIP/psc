@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -104,5 +101,14 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
         scheduledEvent.changeState(new Occurred());
         assertEquals("Wrong states size", 2, scheduledEvent.getAllStates().size());
         assertEquals("Wrong event state", ScheduledEventMode.CANCELED, scheduledEvent.getCurrentState().getMode());
+    }
+
+    public void testScheduleConditional() throws Exception {
+        scheduledEvent.changeState(new Conditional("New", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
+        scheduledEvent.changeState(new Scheduled("Scheduled", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
+        scheduledEvent.changeState(new Occurred("Occurred", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
+
+        assertEquals("Conditional flag not set", true, scheduledEvent.getCurrentState().isConditional());
+        assertEquals("Wrong previous state size", 2, scheduledEvent.getPreviousStates().size());
     }
 }

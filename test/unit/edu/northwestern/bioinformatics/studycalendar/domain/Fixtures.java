@@ -4,6 +4,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
@@ -159,6 +160,17 @@ public class Fixtures {
         event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
         event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
+        return event;
+    }
+
+    public static ScheduledEvent createConditionalEvent(String activityName, int year, int month, int day) {
+        PlannedEvent baseEvent = createPlannedEvent(activityName, 0);
+        baseEvent.setConditionalDetails("Details");
+        ScheduledEvent event = new ScheduledEvent();
+        event.setPlannedEvent(baseEvent);
+        event.setActivity(createActivity(activityName));
+        event.setIdealDate(DateUtils.createDate(year, month, day - 2));
+        event.changeState(new Conditional(null, DateUtils.createDate(year, month, day)));
         return event;
     }
 

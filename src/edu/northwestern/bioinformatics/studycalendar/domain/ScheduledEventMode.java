@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Typedef enum representing the discriminator column for subclasses of
@@ -54,5 +56,9 @@ public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractC
 
     public static Collection<ScheduledEventMode> values() {
         return values(ScheduledEventMode.class);
+    }
+
+    public Class<T> getClazz() {
+        return clazz;
     }
 }

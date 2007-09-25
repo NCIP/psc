@@ -37,8 +37,11 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     public void changeState(ScheduledEventState newState) {
         if (isChangeable()){
-            if (getCurrentState() != null) previousStates.add(getCurrentState());
-                setCurrentState(newState);
+            if (getCurrentState() != null) {
+                previousStates.add(getCurrentState());
+                newState.setConditional(getCurrentState().isConditional());
+            }
+            setCurrentState(newState);
         }
     }
 

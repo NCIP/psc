@@ -8,6 +8,8 @@ import org.apache.commons.lang.StringUtils;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -34,6 +36,13 @@ public class Canceled extends ScheduledEventState {
             sb.append(" - ").append(getReason());
         }
         return sb.toString();
+    }
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+        List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
+        availableStates.add(Scheduled.class);
+        return availableStates;
     }
 
     ////// BEAN PROPERTIES

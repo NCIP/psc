@@ -4,12 +4,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -26,6 +26,7 @@ public class Conditional extends DatedScheduledEventState {
 
     public Conditional(String reason, Date date) {
         super(reason, date);
+        setConditional(true);
     }
 
     protected void appendPreposition(StringBuilder sb) {
@@ -34,5 +35,14 @@ public class Conditional extends DatedScheduledEventState {
 
     @Transient // use superclass annotation
     public ScheduledEventMode getMode() { return ScheduledEventMode.CONDITIONAL; }
+
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates();
+        availableStates.add(Scheduled.class);
+        return availableStates;
+    }
+
 }
 

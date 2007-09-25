@@ -10,6 +10,8 @@ import javax.persistence.Transient;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
@@ -24,7 +26,10 @@ public class NotAvailable extends ScheduledEventState {
 
     public NotAvailable() { }
 
-    public NotAvailable(String reason) { super(reason); }
+    public NotAvailable(String reason) {
+        super(reason);
+        setConditional(true);
+    }
 
     ////// LOGIC
 
@@ -35,6 +40,13 @@ public class NotAvailable extends ScheduledEventState {
             sb.append(" - ").append(getReason());
         }
         return sb.toString();
+    }
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates();
+        availableStates.add(Scheduled.class);
+        return availableStates;
     }
 
     ////// BEAN PROPERTIES

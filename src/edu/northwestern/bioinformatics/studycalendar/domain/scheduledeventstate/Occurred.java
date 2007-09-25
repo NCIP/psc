@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 
 import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
@@ -33,6 +35,15 @@ public class Occurred extends DatedScheduledEventState {
 
     protected void appendPreposition(StringBuilder sb) {
         sb.append("on");
+    }
+
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+        List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
+        availableStates.add(Occurred.class);
+        availableStates.add(Scheduled.class);
+        return availableStates;
     }
 
     @Transient // use superclass annotation

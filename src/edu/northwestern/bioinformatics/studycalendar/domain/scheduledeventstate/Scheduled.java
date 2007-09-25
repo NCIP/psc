@@ -4,14 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
 import javax.persistence.Transient;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 
 /**
  * @author Rhett Sutphin
@@ -36,4 +34,14 @@ public class Scheduled extends DatedScheduledEventState {
 
     @Transient // use superclass annotation
     public ScheduledEventMode getMode() { return ScheduledEventMode.SCHEDULED; }
+
+
+    @Transient
+    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates();
+        availableStates.add(Occurred.class);
+        availableStates.add(Scheduled.class);
+        availableStates.add(Canceled.class);
+        return availableStates;
+    }
 }
