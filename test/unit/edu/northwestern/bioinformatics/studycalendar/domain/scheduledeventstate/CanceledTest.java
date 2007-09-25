@@ -20,12 +20,12 @@ public class CanceledTest extends StudyCalendarTestCase {
     public void testConditionalCanceledAvailableStates() throws Exception {
         Canceled event = new Canceled("Reason");
         event.setConditional(true);
-        assertEquals("Wrong number of available states", 1, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
     }
 
     public void testRegularCanceledAvailableStates() throws Exception {
         Canceled event = new Canceled("Reason");
         event.setConditional(false);
-        assertEquals("Wrong number of available states", 1, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
     }
 }

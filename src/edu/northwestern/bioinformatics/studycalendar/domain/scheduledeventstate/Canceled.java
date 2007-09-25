@@ -42,6 +42,7 @@ public class Canceled extends ScheduledEventState {
     public List<Class<? extends ScheduledEventState>> getAvailableStates() {
         List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
         availableStates.add(Scheduled.class);
+        availableStates.add(Canceled.class);
         return availableStates;
     }
 
