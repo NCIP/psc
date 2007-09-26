@@ -10,8 +10,8 @@
     <property name="build-dir.webapp"    value="target/web"/>
     <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
 
-    <property name="api-dir"  value="target/api"/>
-    <property name="metrics-dir"  value="target/metrics"/>
+    <property name="api-dir" value="target/api"/>
+    <property name="metrics-dir" value="target/metrics"/>
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
 
     <property name="war-name" value="studycalendar.war"/>
@@ -312,7 +312,7 @@
                 <fileset dir="${coverage-dir}" includes="*.emma"/>
             </merge>
 
-            <report sourcepath="src">
+            <report sourcepath="${src-dir.main}">
                 <fileset dir="${coverage-dir}">
                     <include name="session.emma"/>
                 </fileset>
