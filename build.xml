@@ -1,9 +1,9 @@
 <project name="caBIG Study Calendar" default="compile">
 
     <!-- PROPERTIES AND PATHS -->
-    <property name="src-dir.main"      value="src_/main/java"/>
-    <property name="src-dir.unit-test" value="src_/test/java"/>
-    <property name="src-dir.web"       value="src_/main/webapp"/>
+    <property name="src-dir.main"      value="src/main/java"/>
+    <property name="src-dir.unit-test" value="src/test/java"/>
+    <property name="src-dir.web"       value="src/main/webapp"/>
 
     <property name="build-dir.main"      value="${src-dir.web}/WEB-INF/classes"/>
     <property name="build-dir.unit-test" value="target/test-classes"/>

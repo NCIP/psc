@@ -19,7 +19,7 @@ public class ApplicationContextInitializationTest extends StudyCalendarTestCase 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        servletContext = new MockServletContext("src_/main/webapp", new FileSystemResourceLoader());
+        servletContext = new MockServletContext("src/main/webapp", new FileSystemResourceLoader());
     }
 
     public void testApplicationContextItself() throws Exception {
