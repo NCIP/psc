@@ -1,20 +1,21 @@
 <project name="caBIG Study Calendar" default="compile">
 
     <!-- PROPERTIES AND PATHS -->
-    <property name="src-dir.main"      value="src"/>
-    <property name="src-dir.unit-test" value="test/unit"/>
+    <property name="src-dir.main"      value="src_/main/java"/>
+    <property name="src-dir.unit-test" value="src_/test/java"/>
+    <property name="src-dir.web"       value="src_/main/webapp"/>
 
-    <property name="build-dir.main"      value="web/WEB-INF/classes"/>
-    <property name="build-dir.unit-test" value="build/test-classes"/>
-    <property name="build-dir.webapp"    value="build/web"/>
+    <property name="build-dir.main"      value="${src-dir.web}/WEB-INF/classes"/>
+    <property name="build-dir.unit-test" value="target/test-classes"/>
+    <property name="build-dir.webapp"    value="target/web"/>
     <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
 
-    <property name="api-dir"  value="build/api"/>
-    <property name="metrics-dir"  value="build/metrics"/>
+    <property name="api-dir"  value="target/api"/>
+    <property name="metrics-dir"  value="target/metrics"/>
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
 
     <property name="war-name" value="studycalendar.war"/>
-    <property name="dbunit-dtd-filename" value="build/dbunit-sc.dtd"/>
+    <property name="dbunit-dtd-filename" value="target/dbunit-sc.dtd"/>
 
     <property name="csm-security-policy" value="CSM_policy.xml"/>
 
@@ -44,7 +45,7 @@
     <path id="cp.main">
         <path refid="cp.compiled-source"/>
         <path refid="cp.tomcat.common"/>
-        <fileset dir="web/WEB-INF/lib">
+        <fileset dir="${src-dir.web}/WEB-INF/lib">
             <include name="**/*.jar"/>
         </fileset>
     </path>
@@ -114,7 +115,7 @@
     </target>
 
     <target name="clean">
-        <delete dir="build"/>
+        <delete dir="target"/>
         <delete dir="${build-dir.main}"/>
         <delete dir="${build-dir.webapp}"/>
         <delete dir="dist"/>
@@ -166,7 +167,7 @@
 
     <target name="webapp.main" description="Copy basic webapp only, without recompiling">
         <copy todir="${build-dir.webapp}">
-            <fileset dir="web">
+            <fileset dir="${src-dir.web}">
                 <include name="**/*"/>
             </fileset>
         </copy>
@@ -180,7 +181,7 @@
                 <include name="**/*.jar"/>
             </fileset>
         </copy>
-        <xmltask source="web/WEB-INF/web.xml" dest="${build-dir.webapp}/WEB-INF/web.xml"
+        <xmltask source="${src-dir.web}/WEB-INF/web.xml" dest="${build-dir.webapp}/WEB-INF/web.xml"
                  failwithoutmatch="true">
             <insert path="//:web-app" file="${test-dir.infrastructure}/conf/web.xml"/>
         </xmltask>
