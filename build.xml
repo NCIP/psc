@@ -413,7 +413,7 @@
     <target name="cruise.exec.db" depends="migrate, test.unit.select-database, cruise.exec"/>
 
     <target name="cruise.artifacts">
-        <property name="cruise.artifacts-dir" value="build/artifacts"/>
+        <property name="cruise.artifacts-dir" value="target/artifacts"/>
         <mkdir dir="${cruise.artifacts-dir}/emma"/>
         <copy todir="${cruise.artifacts-dir}/emma">
             <fileset dir="${coverage-dir}">
