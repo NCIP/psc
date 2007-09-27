@@ -44,22 +44,19 @@
             <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
         </security:secureOperation>
      </laf:division>
-        <!-- Find Controller url to Set this to -->
-        <%--<security:secureOperation element="/pages/cal/releases/template">--%>
-            <c:if test="${not empty inDevelopmentStudies}">
-                <h3>Templates in design</h3>
-                <laf:division>
-                    <ul class="menu">
-                        <c:forEach items="${inDevelopmentStudies}" var="study" varStatus="status">
-                            <li class="autoclear ${commons:parity(status.count)}">
-                                <a href="<c:url value="/pages/cal/template?study=${study.id}"/>">${study.name}</a>
-                                <c:if test="${study.inAmendmentDevelopment}">(${study.developmentAmendment.name})</c:if>
-                            </li>
-                        </c:forEach>
-                    </ul>
-                </laf:division>
-            </c:if>
-        <%--</security:secureOperation>--%>
+        <c:if test="${not empty inDevelopmentStudies}">
+            <h3>Templates in design</h3>
+            <laf:division>
+                <ul class="menu">
+                    <c:forEach items="${inDevelopmentStudies}" var="study" varStatus="status">
+                        <li class="autoclear ${commons:parity(status.count)}">
+                            <a href="<c:url value="/pages/cal/template?study=${study.id}"/>">${study.name}</a>
+                            <c:if test="${study.inAmendmentDevelopment}">(${study.developmentAmendment.name})</c:if>
+                        </li>
+                    </c:forEach>
+                </ul>
+            </laf:division>
+        </c:if>
         <c:if test="${not empty assignableStudies}">
             <h3>Available templates</h3>
             <laf:division>
