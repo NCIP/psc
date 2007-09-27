@@ -26,7 +26,6 @@ public class Conditional extends DatedScheduledEventState {
 
     public Conditional(String reason, Date date) {
         super(reason, date);
-        setConditional(true);
     }
 
     protected void appendPreposition(StringBuilder sb) {
@@ -38,8 +37,8 @@ public class Conditional extends DatedScheduledEventState {
 
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
-        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates();
+    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
         availableStates.add(Scheduled.class);
         return availableStates;
     }

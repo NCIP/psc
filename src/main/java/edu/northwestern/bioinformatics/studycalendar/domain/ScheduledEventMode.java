@@ -58,6 +58,15 @@ public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractC
         return values(ScheduledEventMode.class);
     }
 
+    public static List<ScheduledEventMode> getAvailableModes(ScheduledEventState state, boolean conditional) {
+        List<ScheduledEventMode> modes = new ArrayList<ScheduledEventMode>();
+        List<Class<? extends ScheduledEventState>> availableStates = state.getAvailableStates(conditional);
+        for(ScheduledEventMode mode: values()) {
+            if (availableStates.contains(mode.clazz)) modes.add(mode);
+        }
+        return modes;
+    }
+
     public Class<T> getClazz() {
         return clazz;
     }

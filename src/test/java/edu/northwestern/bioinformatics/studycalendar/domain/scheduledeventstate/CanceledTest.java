@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -19,13 +16,11 @@ public class CanceledTest extends StudyCalendarTestCase {
 
     public void testConditionalCanceledAvailableStates() throws Exception {
         Canceled event = new Canceled("Reason");
-        event.setConditional(true);
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates(true).size());
     }
 
     public void testRegularCanceledAvailableStates() throws Exception {
         Canceled event = new Canceled("Reason");
-        event.setConditional(false);
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates(false).size());
     }
 }

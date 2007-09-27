@@ -34,7 +34,7 @@ public class BatchRescheduleCommand {
         if (getNewMode() == null) return;
 
         for (ScheduledEvent event : events) {
-            if (isValidEventModeChange(event.getCurrentState(), getNewMode())) {
+            if (event.isValidNewState(newMode.getClazz())) {
                 changeState(event);
             }
         }
@@ -66,11 +66,6 @@ public class BatchRescheduleCommand {
             reason.append(": ").append(message);
         }
         return reason.toString();
-    }
-
-    private boolean isValidEventModeChange(ScheduledEventState currentState, ScheduledEventMode future) {
-        List<Class<? extends ScheduledEventState>> availableStates= currentState.getAvailableStates();
-        return availableStates.contains(future.getClazz());
     }
 
     ////// BOUND PROPERTIES

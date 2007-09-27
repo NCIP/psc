@@ -39,7 +39,7 @@ public class Canceled extends ScheduledEventState {
     }
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
         List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
         availableStates.add(Scheduled.class);
         availableStates.add(Canceled.class);

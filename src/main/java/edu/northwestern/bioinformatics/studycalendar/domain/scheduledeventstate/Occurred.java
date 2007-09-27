@@ -8,12 +8,9 @@ import java.util.ArrayList;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
 import javax.persistence.Transient;
 
 /**
@@ -39,7 +36,7 @@ public class Occurred extends DatedScheduledEventState {
 
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
+    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
         List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
         availableStates.add(Occurred.class);
         availableStates.add(Scheduled.class);

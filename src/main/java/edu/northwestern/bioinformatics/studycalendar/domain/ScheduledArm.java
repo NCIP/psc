@@ -124,7 +124,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
             List<ScheduledEvent> events = eventsByDate.get(date);
             for(ScheduledEvent event : events) {
                 if ((startDate.before(event.getActualDate()) || startDate.equals(event.getActualDate()))
-                        && event.isScheduled())
+                        && event.isScheduledState())
                     upcomingEvents.add(event);
             }
         }

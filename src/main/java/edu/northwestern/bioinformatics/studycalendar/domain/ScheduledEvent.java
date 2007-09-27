@@ -2,8 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.validator.NotNull;
@@ -39,7 +39,6 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
         if (isChangeable()){
             if (getCurrentState() != null) {
                 previousStates.add(getCurrentState());
-                newState.setConditional(getCurrentState().isConditional());
             }
             setCurrentState(newState);
         }
@@ -83,10 +82,27 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public boolean isScheduled(){
+    public boolean isScheduledState(){
         return ScheduledEventMode.SCHEDULED == getCurrentState().getMode()? true : false;
     }
 
+    @Transient boolean isConditionalState() {
+        return ScheduledEventMode.CONDITIONAL == getCurrentState().getMode()? true: false;
+    }
+
+    @Transient
+    public boolean isValidNewState(Class<? extends ScheduledEventState> newStateClass) {
+        return currentState.getAvailableStates(isConditionalEvent()).contains(newStateClass);
+    }
+
+    @Transient
+    public boolean isConditionalEvent() {
+        boolean conditional = (currentState instanceof Conditional);
+        if (previousStates != null && previousStates.size() > 0) {
+            conditional = (previousStates.get(0) instanceof Conditional);
+        }
+        return conditional;
+    }
     ////// BEAN PROPERTIES
 
     @ManyToOne

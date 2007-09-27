@@ -19,7 +19,6 @@ public class ConditionalTest extends StudyCalendarTestCase {
 
     public void testConditionalAvailableStates() throws Exception {
         Conditional event = new Conditional("Reason", DateUtils.createDate(2004, Calendar.SEPTEMBER, 22));
-        event.setConditional(true);
-        assertEquals("Wrong number of available states", 3, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 3, event.getAvailableStates(true).size());
     }
 }

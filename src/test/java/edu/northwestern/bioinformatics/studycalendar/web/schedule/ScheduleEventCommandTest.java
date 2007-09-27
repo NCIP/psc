@@ -101,7 +101,9 @@ public class ScheduleEventCommandTest extends StudyCalendarTestCase {
 
 
     public void testEventSpecificModesForConditionalEvent() throws Exception {
-        event.getPlannedEvent().setConditionalDetails("conditional Details");
+        ScheduledEvent conditionalEvent = Fixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
+        conditionalEvent.changeState(new Scheduled("Schedule", DateUtils.createDate(2003, Calendar.MARCH, 13)));
+        command.setEvent(conditionalEvent);
         command.setNewMode(ScheduledEventMode.SCHEDULED);
         replayMocks();
         Collection<ScheduledEventMode> collection = command.getEventSpecificMode();

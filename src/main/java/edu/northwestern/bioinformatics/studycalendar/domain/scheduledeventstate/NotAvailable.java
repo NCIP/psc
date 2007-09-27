@@ -28,7 +28,6 @@ public class NotAvailable extends ScheduledEventState {
 
     public NotAvailable(String reason) {
         super(reason);
-        setConditional(true);
     }
 
     ////// LOGIC
@@ -43,8 +42,8 @@ public class NotAvailable extends ScheduledEventState {
     }
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates() {
-        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates();
+    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
         availableStates.add(Scheduled.class);
         return availableStates;
     }

@@ -35,7 +35,6 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class ScheduledEventState extends AbstractMutableDomainObject implements Cloneable, Serializable {
     private String reason;
-    private boolean conditional;
 
     protected ScheduledEventState() { }
 
@@ -57,17 +56,7 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
     protected void appendSummaryMiddle(StringBuilder sb) { }
 
     @Transient
-    public void setConditional(boolean conditional) {
-        this.conditional = conditional;    
-    }
-
-    @Transient
-    public boolean isConditional() {
-        return conditional;
-    }
-
-    @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableConditionalStates() {
+    public List<Class<? extends ScheduledEventState>> getAvailableConditionalStates(boolean conditional) {
         List<Class<? extends ScheduledEventState>> list = new ArrayList<Class<? extends ScheduledEventState>>();
         if (conditional) {
             list.add(Conditional.class);
@@ -77,11 +66,7 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
     }
 
     @Transient
-    public abstract List<Class<? extends ScheduledEventState>> getAvailableStates();
-
-    public boolean isValidNewState(Class<? extends ScheduledEventState> newStateClass) {
-        return getAvailableStates().contains(newStateClass);
-    }
+    public abstract List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional);
 
     ////// BEAN PROPERTIES
 

@@ -74,46 +74,11 @@ public class ScheduleEventCommand {
     }
 
     public Collection<ScheduledEventMode> getEventSpecificMode(){
-        List<ScheduledEventMode> listOfModes = new ArrayList<ScheduledEventMode>();
-        if (getEvent() != null) {
-            if (getEvent().getPlannedEvent().getConditionalDetails() != null) {
-                //case when event is conditional
-                if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CONDITIONAL)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
-                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.OCCURRED);
-                    listOfModes.add(ScheduledEventMode.CANCELED);
-                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
-                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.NOT_AVAILABLE)) {
-                    listOfModes.add(ScheduledEventMode.CONDITIONAL);
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.NOT_AVAILABLE);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.OCCURRED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.OCCURRED);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CANCELED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.CANCELED);
-                }
-            } else {
-                if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.OCCURRED);
-                    listOfModes.add(ScheduledEventMode.CANCELED);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.OCCURRED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.OCCURRED);
-                } else if (getEvent().getCurrentState().getMode().equals(ScheduledEventMode.CANCELED)) {
-                    listOfModes.add(ScheduledEventMode.SCHEDULED);
-                    listOfModes.add(ScheduledEventMode.CANCELED);
-                }
-            }
+        List<ScheduledEventMode> availableModes =  new ArrayList<ScheduledEventMode>();
+        if (event != null) {
+            availableModes = ScheduledEventMode.getAvailableModes(event.getCurrentState(), event.isConditionalEvent());
         }
-        return listOfModes;
+        return availableModes;
     }
 
     public String getNewReason() {

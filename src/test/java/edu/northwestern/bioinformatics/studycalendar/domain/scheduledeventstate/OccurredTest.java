@@ -22,13 +22,11 @@ public class OccurredTest extends StudyCalendarTestCase {
 
     public void testConditionalOccurredAvailableStates() throws Exception {
         Occurred event = new Occurred("Reason",  DateUtils.createDate(2004, Calendar.NOVEMBER, 2));
-        event.setConditional(true);
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates(true).size());
     }
 
    public void testRegularOccurredAvailableStates() throws Exception {
         Occurred event = new Occurred("Reason",  DateUtils.createDate(2004, Calendar.NOVEMBER, 2));
-        event.setConditional(false);
-        assertEquals("Wrong number of available states", 2, event.getAvailableStates().size());
+        assertEquals("Wrong number of available states", 2, event.getAvailableStates(false).size());
     }
 }

@@ -108,7 +108,32 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
         scheduledEvent.changeState(new Scheduled("Scheduled", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
         scheduledEvent.changeState(new Occurred("Occurred", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
 
-        assertEquals("Conditional flag not set", true, scheduledEvent.getCurrentState().isConditional());
+        assertEquals("Conditional flag not set", true, scheduledEvent.isConditionalEvent());
         assertEquals("Wrong previous state size", 2, scheduledEvent.getPreviousStates().size());
+    }
+
+    public void testIsConditionalPos() throws Exception {
+        Date date = DateUtils.createDate(2006, Calendar.AUGUST, 3);
+        scheduledEvent.changeState(new Conditional("Conditional", date));
+        scheduledEvent.changeState(new Scheduled("Conditional", date));
+        assertTrue("Event should be conditional", scheduledEvent.isConditionalEvent());
+    }
+
+    public void testIsConditionalNeg() throws Exception {
+        Date date = DateUtils.createDate(2006, Calendar.AUGUST, 3);
+        scheduledEvent.changeState(new Scheduled("Conditional", date));
+        assertFalse("Event should not be conditional", scheduledEvent.isConditionalEvent());
+    }
+
+    public void testIsValidStateChangePos() throws Exception {
+        Date date = DateUtils.createDate(2006, Calendar.AUGUST, 3);
+        scheduledEvent.changeState(new Conditional("Conditional", date));
+        assertTrue("Should be valid new state", scheduledEvent.isValidNewState(Scheduled.class));
+    }
+
+    public void testIsValidStateChangeNeg() throws Exception {
+        Date date = DateUtils.createDate(2006, Calendar.AUGUST, 3);
+        scheduledEvent.changeState(new Conditional("Conditional", date));
+        assertFalse("Should not be valid new state", scheduledEvent.isValidNewState(Canceled.class));
     }
 }
