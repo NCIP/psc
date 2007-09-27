@@ -86,7 +86,8 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
         return ScheduledEventMode.SCHEDULED == getCurrentState().getMode()? true : false;
     }
 
-    @Transient boolean isConditionalState() {
+    @Transient
+    public boolean isConditionalState() {
         return ScheduledEventMode.CONDITIONAL == getCurrentState().getMode()? true: false;
     }
 

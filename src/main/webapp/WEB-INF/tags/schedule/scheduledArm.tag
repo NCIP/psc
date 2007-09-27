@@ -34,8 +34,10 @@
                         <input type="submit" value="Submit" id="new-mode-submit"/>
 
                         <div class="links-row">
-                            <a id="check-all-events" href="#">Check All Events</a>
-                            <a id="uncheck-all-events"  href="#">Uncheck All Events</a>
+                            Check Events:
+                            <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
+                            <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
+                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
                         </div>
                     </laf:division>
                 </div>
@@ -60,7 +62,7 @@
                         <ul>
                             <c:forEach items="${entry.value}" var="event">
                                 <li class="${event.currentState.mode.name}">
-                                    <input type="checkbox" value="${event.id}" name="events"/>
+                                    <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if>"/>
                                     <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
                                     <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
                                 </li>

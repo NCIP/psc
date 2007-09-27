@@ -89,8 +89,15 @@ Form.Methods.checkCheckboxes = function(form, checkboxName) {
 Form.Methods.uncheckCheckboxes = function(form, checkboxName) {
     Form.Methods.setCheckboxesChecked(form, checkboxName, false)
 }
+//Form.Methods.setCheckboxesChecked = function(form, checkboxName, isChecked) {
+//    var events = $(form).getInputs('checkbox',checkboxName)
+//    events.each(function(event) {
+//        event.checked = isChecked;
+//    })
+//    return form
+//}
 Form.Methods.setCheckboxesChecked = function(form, checkboxName, isChecked) {
-    var events = $(form).getInputs('checkbox',checkboxName)
+    var events = $$("#" + form.id + " input." + checkboxName)
     events.each(function(event) {
         event.checked = isChecked;
     })

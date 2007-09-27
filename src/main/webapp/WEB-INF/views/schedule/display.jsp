@@ -194,6 +194,12 @@
             margin-right:1em;
             float:right
         }
+
+        .batch-schedule-link {
+            color:#0000cc;
+            cursor:pointer;
+            white-space:nowrap;
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
