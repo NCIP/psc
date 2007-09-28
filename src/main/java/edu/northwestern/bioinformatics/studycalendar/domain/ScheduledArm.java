@@ -110,27 +110,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
         return true;
     }
 
-    @Transient
-    public ScheduledEvent getNextScheduledEvent(Date currentDate) {
-        List<ScheduledEvent> events = getNextScheduledEvents(currentDate);
-        return events.size() > 0 ? events.get(0) : null;
-    }
-
-    @Transient
-    public List<ScheduledEvent> getNextScheduledEvents(Date startDate) {
-        List<ScheduledEvent> upcomingEvents = new ArrayList<ScheduledEvent>();
-        Map<Date, List<ScheduledEvent>> eventsByDate = getEventsByDate();
-        for(Date date: eventsByDate.keySet()) {
-            List<ScheduledEvent> events = eventsByDate.get(date);
-            for(ScheduledEvent event : events) {
-                if ((startDate.before(event.getActualDate()) || startDate.equals(event.getActualDate()))
-                        && event.isScheduledState())
-                    upcomingEvents.add(event);
-            }
-        }
-        return upcomingEvents;
-    }
-
+    
     ////// BEAN PROPERTIES
 
     @OneToMany(mappedBy = "scheduledArm")

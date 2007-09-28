@@ -43,19 +43,6 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
         return getScheduledArms().get(getScheduledArms().size() - 1);
     }
 
-    @Transient
-    public ScheduledEvent getNextScheduledEvent(Date currentDate) {
-        for (ScheduledArm arm : getScheduledArms()) {
-            if (!arm.isComplete()) {
-                ScheduledEvent event =  arm.getNextScheduledEvent(currentDate);
-                if(event != null)
-                    return event;
-            }
-        }
-        return null;
-    }
-
-
 
     ////// BEAN PROPERTIES
 
@@ -81,30 +68,5 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
 
     public void setScheduledArms(List<ScheduledArm> arms) {
         this.scheduledArms = arms;
-    }
-
-    public List<ScheduledEvent> getAllUpcomingScheduledEvents(Date startDate) {
-        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList();
-        for (ScheduledArm arm : getScheduledArms()) {
-            if (!arm.isComplete()) {
-                upcomingScheduledEvents.addAll(arm.getNextScheduledEvents(startDate));
-            }
-        }
-        return upcomingScheduledEvents;
-    }
-
-    @Transient
-    public void scheduleReconsent(Date startDate, Activity activity, String details) {
-        if (isReconsentAllowed()) {
-           
-        }
-    }
-
-    @Transient
-    public boolean isReconsentAllowed() {
-        if(assignment != null) {
-            return (assignment.getEndDateEpoch() == null);
-        }
-        return true;
     }
 }

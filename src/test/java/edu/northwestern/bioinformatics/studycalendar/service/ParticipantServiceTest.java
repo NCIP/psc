@@ -391,16 +391,17 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setStartDateEpoch(startDate);
 
         ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(createScheduledEvent("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));  // Fixtures creates
-        arm0.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Canceled()));  // events 2 days
-        arm0.addEvent(createScheduledEvent("GHI", 2007, Calendar.SEPTEMBER, 6, new Occurred()));  // before what's
-        arm0.addEvent(createScheduledEvent("JKL", 2007, Calendar.SEPTEMBER, 8, new Occurred()));  // specified.
+        arm0.addEvent(createScheduledEvent("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));
+        arm0.addEvent(createScheduledEvent("DEF", 2007, Calendar.SEPTEMBER, 4, new Canceled()));
+        arm0.addEvent(createScheduledEvent("GHI", 2007, Calendar.SEPTEMBER, 6, new Occurred()));
+        arm0.addEvent(createScheduledEvent("JKL", 2007, Calendar.SEPTEMBER, 8, new Scheduled()));
 
         ScheduledArm arm1 = new ScheduledArm();
         arm1.addEvent(createScheduledEvent("MNO", 2007, Calendar.OCTOBER, 2, new Occurred()));
         arm1.addEvent(createScheduledEvent("PQR", 2007, Calendar.OCTOBER, 4, new Scheduled()));
         arm1.addEvent(createScheduledEvent("STU", 2007, Calendar.OCTOBER, 6, new Scheduled()));
         arm1.addEvent(createScheduledEvent("VWX", 2007, Calendar.OCTOBER, 8, new Scheduled()));
+        arm1.addEvent(createConditionalEvent("YZA", 2007, Calendar.OCTOBER, 10));
 
         ScheduledCalendar calendar = new ScheduledCalendar();
         calendar.setAssignment(expectedAssignment);
@@ -416,11 +417,13 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 4, actualAssignment.getEndDateEpoch());
 
-        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm0.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm0.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm0.getEvents().get(3).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm1.getEvents().get(0).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.NOT_AVAILABLE, arm1.getEvents().get(4).getCurrentState().getMode());
     }
 
     public void testScheduleArmWithOffStudyParticipant() {

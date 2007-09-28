@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -241,13 +242,40 @@ public class ParticipantService {
 
     public StudyParticipantAssignment takeParticipantOffStudy(StudyParticipantAssignment studyAssignment, Date offStudyDate) {
         ScheduledCalendar calendar = studyAssignment.getScheduledCalendar();
-        List<ScheduledEvent> events = calendar.getAllUpcomingScheduledEvents(offStudyDate);
-        for(ScheduledEvent event: events) {
-            event.changeState(new Canceled("Off Study"));
+
+        List<ScheduledEvent> upcomingScheduledEvents = getPotentialUpcomingEvents(calendar, offStudyDate);
+
+        for(ScheduledEvent event: upcomingScheduledEvents) {
+            if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
+                event.changeState(new Canceled("Off Study"));
+            } else if (ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode()) {
+                event.changeState(new NotAvailable("Off Study"));
+            }
         }
+
         studyAssignment.setEndDateEpoch(offStudyDate);
         participantDao.save(studyAssignment.getParticipant());
         return studyAssignment;
+    }
+
+    private List<ScheduledEvent> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
+        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList();
+        for (ScheduledArm arm : calendar.getScheduledArms()) {
+            if (!arm.isComplete()) {
+                Map<Date, List<ScheduledEvent>> eventsByDate = arm.getEventsByDate();
+                for(Date date: eventsByDate.keySet()) {
+                    List<ScheduledEvent> events = eventsByDate.get(date);
+                    for(ScheduledEvent event : events) {
+                        if ((offStudyDate.before(event.getActualDate()) || offStudyDate.equals(event.getActualDate()))
+                                && (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()
+                                || ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode())) {
+                            upcomingScheduledEvents.add(event);
+                        }
+                    }
+                }
+            }
+        }
+        return upcomingScheduledEvents;
     }
 
     ////// CONFIGURATION
