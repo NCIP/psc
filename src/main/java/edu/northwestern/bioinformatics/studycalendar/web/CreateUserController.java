@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,7 @@ public class CreateUserController extends PscCancellableFormController {
         setValidator(new ValidatableValidator());
         setSuccessView("listUsers");
         setCancelView("listUsers");
+        setCrumb(new Crumb());
     }
 
 
@@ -38,12 +41,20 @@ public class CreateUserController extends PscCancellableFormController {
         String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "editId") == null ? "Create" : "Edit";
         refdata.put("actionText", actionText);
 
+        Integer editId = ServletRequestUtils.getIntParameter(httpServletRequest, "editId");
+        if (editId != null) {
+            User user = userService.getUserById(editId);
+            refdata.put("user", user);
+        }
+
         return refdata;
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());
+        // TODO: add binder to user domain object
+        //binder.registerCustomEditor(User.class, "user", )
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -89,5 +100,25 @@ public class CreateUserController extends PscCancellableFormController {
     @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    private static class Crumb extends DefaultCrumb {
+        public String getName(BreadcrumbContext context) {
+            StringBuilder sb = new StringBuilder();
+            if (context.getUser() == null) {
+                sb.append( "Create User");
+            } else {
+                sb.append(" Edit User ").append(context.getUser().getName());
+            }
+            return sb.toString();
+        }
+
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            Map<String, String> params = new HashMap<String, String>();
+            if (context.getUser() != null) {
+                params.put("editId", context.getUser().getId().toString());
+            }
+            return params;
+        }
     }
 }

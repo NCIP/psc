@@ -303,12 +303,7 @@
 
     <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-           <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name"><value>New User</value></property>
-                 <property name="parent"><ref local="listUsersController"/></property>
-             </bean>
-         </property>
+        <property name="crumb.parent"><ref local="listUsersController"/></property>
     </bean>
 
     <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"

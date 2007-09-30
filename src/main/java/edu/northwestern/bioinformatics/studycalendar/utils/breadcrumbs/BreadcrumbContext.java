@@ -29,6 +29,7 @@ public class BreadcrumbContext {
     private Site site;
     private StudySite studySite;
     private Activity activity;
+    private User user;
 
     private TemplateService templateService;
 
@@ -135,6 +136,10 @@ public class BreadcrumbContext {
         this.activity = activity;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -193,5 +198,9 @@ public class BreadcrumbContext {
 
     public Activity getActivity() {
         return activity;
+    }
+
+    public User getUser() {
+        return user;
     }
 }
