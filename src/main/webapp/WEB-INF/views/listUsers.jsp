@@ -42,7 +42,6 @@
             <a href="<c:url value="/pages/admin/manage/createUser"/>">Create User</a>
         </div>
 
-        <h3>User List</h3>
         <table cellspacing="0" cellpadding="0" border="0" id="container">
             <tr>
                 <td class="nameColumn">Name</td>
