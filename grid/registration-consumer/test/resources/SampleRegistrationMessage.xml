@@ -1,84 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<registration xmlns="http://semanticbits.com/registration.xsd"
- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:schemaLocation="http://semanticbits.com/registration.xsd file:/Users/joshua/dev/ew_caaers/c3prv2_codebase/projects/grid/RegistrationConsumer/schema/RegistrationConsumer/registration.xsd"
- healthCareSiteGridId="gridSite"   
- studyGridId="gridStudy"
-    >
-    <informedConsentFormSignedDate>2006-05-04</informedConsentFormSignedDate>
-    <enrollmentDate>2006-05-04</enrollmentDate>
-    <studyParticipantIdentifier>studyParticipantIdentifier0</studyParticipantIdentifier>
-    <eligibilityIndicator>false</eligibilityIndicator>
-    <participant participantGridId="gridParticipant">
-        <administrativeGenderCode>administrativeGenderCode0</administrativeGenderCode>
-        <birthDate>2006-05-04</birthDate>
-        <ethnicGroupCode>ethnicGroupCode0</ethnicGroupCode>
-        <firstName>firstName0</firstName>
-        <lastName>lastName0</lastName>
-        <maritalStatusCode>maritalStatusCode0</maritalStatusCode>
-        <raceCode>raceCode0</raceCode>
-        <identifier>
-            <source>source0</source>
-            <type>MRN</type>
-            <value>value0</value>
-            <isprimary>false</isprimary>
-        </identifier>
-        <identifier>
-            <source>source1</source>
-            <type>type1</type>
-            <value>value1</value>
-            <isprimary>false</isprimary>
-        </identifier>
-        <identifier>
-            <source>source2</source>
-            <type>type2</type>
-            <value>value2</value>
-            <isprimary>false</isprimary>
-        </identifier>
-        <address>
-            <city>city0</city>
-            <countryCode>countryCode0</countryCode>
-            <postalCode>postalCode0</postalCode>
-            <stateCode>stateCode0</stateCode>
-            <streetAddress>streetAddress0</streetAddress>
-        </address>
-    </participant>
-    <study>
-        <identifier>
-            <source>source3</source>
-            <type>type3</type>
-            <value>value3</value>
-            <isprimary>false</isprimary>
-        </identifier>
-        <identifier>
-            <source>source4</source>
-            <type>type4</type>
-            <value>value4</value>
-            <isprimary>false</isprimary>
-        </identifier>
-        <identifier>
-            <source>source5</source>
-            <type>type5</type>
-            <value>value5</value>
-            <isprimary>false</isprimary>
-        </identifier>
-    </study>
-    <identifier>
-        <source>source6</source>
-        <type>type6</type>
-        <value>value6</value>
-        <isprimary>false</isprimary>
-    </identifier>
-    <identifier>
-        <source>source7</source>
-        <type>type7</type>
-        <value>value7</value>
-        <isprimary>false</isprimary>
-    </identifier>
-    <identifier>
-        <source>source8</source>
-        <type>type8</type>
-        <value>value8</value>
-        <isprimary>false</isprimary>
-    </identifier>
+<registration xmlns="gme://c3pr.cabig/2.0/edu.duke.cabig.c3pr.domain" gridId="gridStudy">
+	<studySite gridId="gridSite">
+		<healthcareSite>
+			<nciInstituteCode>code</nciInstituteCode>
+		</healthcareSite>
+		<irbApprovalDate>2007-09-27T17:29:04.390-04:00</irbApprovalDate>
+		<startDate>2007-09-27T17:29:04.390-04:00</startDate>
+	</studySite>
+	<studyRef gridId="gridStudy">
+		<shortTitleText>ShortTitleText1</shortTitleText>
+		<longTitleText>LongTitleText1</longTitleText>
+	</studyRef>
+	<participant gridId="AAAAA11111GridID">
+		<firstName>Rudolph</firstName>
+		<lastName>Clooney</lastName>
+		<administrativeGenderCode>M</administrativeGenderCode>
+		<address>
+			<streetAddress>12359 sunrise valley drive</streetAddress>
+			<city>Reston</city>
+			<stateCode>VA</stateCode>
+			<postalCode>20191</postalCode>
+			<countryCode>USA</countryCode>
+		</address>
+		<birthDate>0006-06-23</birthDate>
+		<raceCode>White</raceCode>
+		<identifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SystemAssignedIdentifierType">
+			<type>MRN</type>
+			<value>MRN-12A!2121</value>
+			<primaryIndicator>false</primaryIndicator>
+			<systemName>C3PR</systemName>
+		</identifier>
+	</participant>
+	<startDate>2007-09-27</startDate>
+	<informedConsentFormSignedDate>2007-09-27</informedConsentFormSignedDate>
+	<informedConsentVersion>1.0</informedConsentVersion>
+	<regDataEntryStatus>COMPLETE</regDataEntryStatus>
+	<regWorkflowStatus>REGISTERED</regWorkflowStatus>
+	<scheduledEpoch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gridId="81b1da04-5c75-4c94-9422-fddc9d112147" xsi:type="ScheduledTreatmentEpochType">
+		<startDate>2007-09-27</startDate>
+		<epoch gridId="715c0242-f2d6-4bf4-9d21-7beec48b3310" xsi:type="TreatmentEpochType">
+			<name>epoch1</name>
+		</epoch>
+		<scheduledArm>
+		</scheduledArm>
+	</scheduledEpoch>
+	<stratumGroup>0:lets find out1</stratumGroup>
 </registration>
+
