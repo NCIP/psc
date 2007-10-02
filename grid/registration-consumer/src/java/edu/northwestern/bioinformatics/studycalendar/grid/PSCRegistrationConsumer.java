@@ -23,7 +23,6 @@ import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.EmptyInterceptor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -40,8 +39,6 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 	private static final String MRN_IDENTIFIER_TYPE = "MRN";
 
 	private ApplicationContext ctx;
-
-	private EmptyInterceptor sdfad;
 
 	public PSCRegistrationConsumer() {
 		ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:applicationContext.xml",
