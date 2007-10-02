@@ -40,7 +40,7 @@ public class AssignParticipantCommandTest extends StudyCalendarTestCase {
         command.setStartDate(new Date());
         command.setArm(setId(17, Fixtures.createNamedInstance("Worcestershire", Arm.class)));
 
-        expect(participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate())).andReturn(assignment);
+        expect(participantService.assignParticipant(participant, studySite, command.getArm(), command.getStartDate(), null)).andReturn(assignment);
         replayMocks();
 
         assertSame(assignment, command.assignParticipant());

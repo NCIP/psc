@@ -91,8 +91,8 @@ public class UserService {
 
     @SuppressWarnings("unchecked")
     public User getUserByName(String userName) {
-        List<User> usersResults = userDao.getByName(userName);
-        return usersResults.size() > 0 ? usersResults.iterator().next() : null;
+        User usersResults = userDao.getByName(userName);
+        return usersResults;
     }
 
     public List<User> getAllUsers() throws Exception {

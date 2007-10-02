@@ -29,16 +29,17 @@ public class ParticipantService {
     public final String RESCHEDULED = "Rescheduled. ";
     private static final Logger log = LoggerFactory.getLogger(ParticipantService.class.getName());
 
-    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate) {
-        return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null);
+    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, User participantCoordinator) {
+        return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null, participantCoordinator);
     }
 
-    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier) {
+    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User participantCoordinator) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
         spa.setStudySite(study);
         spa.setStartDateEpoch(startDate);
         spa.setGridId(assignmentGridIdentifier);
+        spa.setParticipantCoordinator(participantCoordinator);
         participant.addAssignment(spa);
         scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
         participantDao.save(participant);

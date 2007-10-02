@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
+
 /**
  * @author Rhett Sutphin
  */
@@ -65,4 +67,12 @@ public class StudyListControllerTest extends ControllerTestCase {
         assertSame("Sites list missing or wrong", sites, mv.getModel().get("sites"));
         assertEquals("studyList", mv.getViewName());
     }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        DataAuditInfo.setLocal(null);
+        ApplicationSecurityManager.removeUserSession();
+    }
+
 }

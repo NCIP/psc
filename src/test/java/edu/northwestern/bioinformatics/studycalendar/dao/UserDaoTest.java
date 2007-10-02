@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
-import java.util.List;
-import java.util.Iterator;
+import java.util.*;
 
 public class UserDaoTest extends ContextDaoTestCase<UserDao> {
 
@@ -20,10 +20,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
     }
 
     public void testGetByName() throws Exception {
-        List<User> actualUsers = getDao().getByName("Shurabado");
-        assertEquals("Wrong List Size", 1, actualUsers.size());
-
-        User actualUser = actualUsers.iterator().next();
+        User actualUser = getDao().getByName("Shurabado");
         assertNotNull("User not found", actualUser);
         assertEquals("Wrong id", -200, (int) actualUser.getId());
         assertEquals("Wrong name", "Shurabado", actualUser.getName());
@@ -86,6 +83,19 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
         assertEquals("Wrong password", "password321", actualUser.getPlainTextPassword());
     }
+
+    public void getParticipantAssignmentsList() throws Exception {
+        User actualUser = getDao().getById(-100);
+
+        assertNotNull("User not found", actualUser);
+
+        List<StudyParticipantAssignment> studyParticipantAssignments = actualUser.getStudyParticipantAssignments();
+        assertNotNull("StudyParticipantAssignments not found", studyParticipantAssignments);
+        assertEquals("Wrong quantity of assignments", 3, studyParticipantAssignments.size());
+
+        assertEquals("Wrong first date", "2008-01-01 00:00:00.0", studyParticipantAssignments.get(0).getStartDateEpoch().toString());
+        assertEquals("Wrong second date", "2007-10-10 00:00:00.0", studyParticipantAssignments.get(1).getStartDateEpoch().toString());
+        assertEquals("Wrong third date", "2006-09-15 00:00:00.0", studyParticipantAssignments.get(2).getStartDateEpoch().toString());    }
 
     public void testLoadAndSave() throws Exception {
         Integer savedId;

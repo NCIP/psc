@@ -73,9 +73,9 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     public void testGetUserByName() throws Exception {
         User expectedUser = createUser(-100, "john", -100L, null, true, "pass123");
-        List expectedUsers = Collections.singletonList(expectedUser);
+//        List expectedUsers = Collections.singletonList(expectedUser);
 
-        expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUsers);
+        expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUser);
         replayMocks();
 
         User actualUser = service.getUserByName("john");

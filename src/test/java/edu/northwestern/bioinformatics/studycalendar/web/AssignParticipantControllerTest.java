@@ -1,26 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.Map;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -30,10 +18,12 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
     private StudySiteDao studySiteDao;
     private StudyDao studyDao;
     private ArmDao armDao;
+    private UserDao userDao;
 
     private AssignParticipantController controller;
     private Study study;
     private List<Participant> participants;
+    private User user;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -41,6 +31,7 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         studyDao = registerDaoMockFor(StudyDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         armDao = registerDaoMockFor(ArmDao.class);
+        userDao = registerDaoMockFor(UserDao.class);
 
         controller = new AssignParticipantController();
         controller.setParticipantDao(participantDao);
@@ -56,12 +47,22 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         study.setPlannedCalendar(calendar);
         request.addParameter("id", study.getId().toString());
 
+        user = new User();
+        user.setPlainTextPassword("password123");
+        user.setName("user");
+        Set<Role> roles = new HashSet<Role>();
+        roles.add(Role.PARTICIPANT_COORDINATOR);
+        user.setRoles(roles);
+
         participants = new LinkedList<Participant>();
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
         AssignParticipantCommand mockCommand = registerMockFor(AssignParticipantCommand.class);
         AssignParticipantController mockableController = new MockableCommandController(mockCommand);
+        mockableController.setUserDao(userDao);
+        mockCommand.setParticipantCoordinator(user);
+        expect(userDao.getByName(null)).andReturn(user).anyTimes();
         StudyParticipantAssignment assignment = setId(14, new StudyParticipantAssignment());
 
         expect(mockCommand.assignParticipant()).andReturn(assignment);

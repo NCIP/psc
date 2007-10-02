@@ -5,33 +5,14 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Collection;
+import java.util.*;
 
 import static org.easymock.classextension.EasyMock.*;
 
@@ -56,6 +37,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledEventDao scheduledEventDao;
     private StudyParticipantAssignmentDao assignmentDao;
+    private UserDao userDao;
 
     private Study parameterStudy;
     private Site parameterSite;
@@ -69,6 +51,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private Participant loadedParticipant;
     private Arm loadedArm;
     private ScheduledEvent loadedEvent;
+    private User user;
 
     @Override
     protected void setUp() throws Exception {
@@ -81,6 +64,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
         scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
         assignmentDao = registerDaoMockFor(StudyParticipantAssignmentDao.class);
+        userDao = registerDaoMockFor(UserDao.class);
 
         service = new DefaultScheduledCalendarService();
         service.setParticipantDao(participantDao);
@@ -91,6 +75,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setScheduledCalendarDao(scheduledCalendarDao);
         service.setScheduledEventDao(scheduledEventDao);
         service.setStudyParticipantAssignmentDao(assignmentDao);
+        service.setUserDao(userDao);
 
         parameterStudy = setGridId(STUDY_BIG_ID, new Study());
         parameterSite = setGridId(SITE_BIG_ID, new Site());
@@ -107,6 +92,12 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             Fixtures.createScheduledEvent("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
 
         loadedParticipant = setGridId(PARTICIPANT_BIG_ID, createParticipant("Edward", "Armor-o"));
+
+        user = new User();
+        user.setPlainTextPassword("password123");
+        Set<Role> roles = new HashSet<Role>();
+        roles.add(Role.PARTICIPANT_COORDINATOR);
+        user.setRoles(roles);
 
         expect(studyDao.getByGridId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
         expect(siteDao.getByGridId(parameterSite)).andReturn(loadedSite).times(0, 1);
@@ -239,8 +230,8 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
         expect(participantService.assignParticipant(
-            loadedParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID)).andReturn(newAssignment);
-
+            loadedParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+        expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
             service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
@@ -256,9 +247,9 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         participantDao.save(parameterParticipant);
         expect(participantService.assignParticipant(
-            parameterParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID)
+            parameterParticipant, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID, user)
             ).andReturn(newAssignment);
-
+        expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
             service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
@@ -328,8 +319,8 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite)).andReturn(null);
         expect(participantService.assignParticipant(
-            loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE, ASSIGNMENT_BIG_ID)).andReturn(newAssignment);
-
+            loadedParticipant, loadedStudy.getStudySites().get(0), defaultArm, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+        expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
         service.assignParticipant(parameterStudy, parameterParticipant, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);
         verifyMocks();

@@ -38,6 +38,7 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     private Participant participant;
     private Date startDateEpoch;
     private Date endDateEpoch;
+    private User participantCoordinator;
 
     private ScheduledCalendar scheduledCalendar;
     private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
@@ -78,6 +79,16 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     @JoinColumn(name = "participant_id")
     public Participant getParticipant() {
         return participant;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "participant_coordinator_id")
+    public User getParticipantCoordinator() {
+        return participantCoordinator;
+    }
+
+    public void setParticipantCoordinator(User participantCoordinator) {
+        this.participantCoordinator = participantCoordinator;
     }
 
     public void setStartDateEpoch(Date startDateEpoch) {

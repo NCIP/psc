@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 
 import java.util.Date;
@@ -17,12 +14,13 @@ public class AssignParticipantCommand {
     private Participant participant;
     private Arm arm;
     private Date startDate;
+    private User participantCoordinator;
 
     private ParticipantService participantService;
 
     public StudyParticipantAssignment assignParticipant() {
         return participantService.assignParticipant(
-            getParticipant(), getStudySite(), getEffectiveArm(), getStartDate());
+            getParticipant(), getStudySite(), getEffectiveArm(), getStartDate(), getParticipantCoordinator());
     }
 
     private Arm getEffectiveArm() {
@@ -71,5 +69,13 @@ public class AssignParticipantCommand {
 
     public void setArm(Arm arm) {
         this.arm = arm;
+    }
+
+    public User getParticipantCoordinator() {
+        return participantCoordinator;
+    }
+
+    public void setParticipantCoordinator(User participantCoordinator) {
+        this.participantCoordinator = participantCoordinator;
     }
 }

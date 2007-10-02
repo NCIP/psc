@@ -1,13 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.OrderBy;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.security.util.StringEncrypter;
@@ -26,6 +29,7 @@ public class User extends AbstractMutableDomainObject implements Named {
     private Set<Role> roles = new HashSet<Role>();
     private Boolean activeFlag;
     private String password;
+    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
 
     public String getName() {
         return name;
@@ -92,6 +96,17 @@ public class User extends AbstractMutableDomainObject implements Named {
 
     public void removeRole(Role role) {
         roles.remove(role);
+    }
+
+    @OneToMany (mappedBy = "participantCoordinator")
+    @OrderBy // order by ID for testing consistency
+    @Cascade (value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
+        return studyParticipantAssignments;
+    }
+
+    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
+        this.studyParticipantAssignments = studyParticipantAssignments;
     }
 
     public boolean equals(Object o) {

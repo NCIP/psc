@@ -5,6 +5,7 @@ import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
@@ -12,10 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -28,6 +26,8 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
     private ParticipantDao participantDao;
     private ParticipantService service;
 
+    private User user;
+
     private Arm arm;
 
     @Override
@@ -37,6 +37,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         service = new ParticipantService();
         service.setParticipantDao(participantDao);
+        
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
         arm = epoch.getArms().get(0);
@@ -56,6 +57,13 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         p2.addPlannedEvent(setId(3, createPlannedEvent("Questionnaire", 1, "Questionnaire Details")));  // 3
         p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1, "Infusion Details")));            // 8, 36
         p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18, "Infusion Details")));           // 25, 53
+
+
+        user = new User();
+        user.setPlainTextPassword("password123");
+        Set<Role> roles = new HashSet<Role>();
+        roles.add(Role.PARTICIPANT_COORDINATOR);
+        user.setRoles(roles);
     }
 
     public void testAssignParticipant() throws Exception {
@@ -81,7 +89,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
         replayMocks();
 
-        StudyParticipantAssignment actualAssignment = service.assignParticipant(participantIn, studySite, expectedArm, startDate);
+        StudyParticipantAssignment actualAssignment = service.assignParticipant(participantIn, studySite, expectedArm, startDate, user);
         verifyMocks();
 
         assertNotNull("Assignment not returned", actualAssignment);

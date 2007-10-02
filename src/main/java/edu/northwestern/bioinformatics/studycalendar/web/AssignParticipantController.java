@@ -1,13 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import org.springframework.beans.factory.annotation.Required;
@@ -35,6 +32,9 @@ public class AssignParticipantController extends PscSimpleFormController {
     private StudyDao studyDao;
     private StudySiteDao studySiteDao;
     private ArmDao armDao;
+    private UserDao userDao;
+
+    private User participantCoordinator;
 
     public AssignParticipantController() {
         setCommandClass(AssignParticipantCommand.class);
@@ -72,6 +72,9 @@ public class AssignParticipantController extends PscSimpleFormController {
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignParticipantCommand command = (AssignParticipantCommand) oCommand;
+        String userName = ApplicationSecurityManager.getUser();
+        User user = userDao.getByName(userName);
+        command.setParticipantCoordinator(user);
         StudyParticipantAssignment assignment = command.assignParticipant();
         return new ModelAndView("redirectToSchedule", "assignment", assignment.getId().intValue());
     }
@@ -102,6 +105,11 @@ public class AssignParticipantController extends PscSimpleFormController {
     @Required
     public void setArmDao(ArmDao armDao) {
         this.armDao = armDao;
+    }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     @Required

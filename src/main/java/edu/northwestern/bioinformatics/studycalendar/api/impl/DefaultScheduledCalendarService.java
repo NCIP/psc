@@ -1,28 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
 import org.springframework.beans.factory.annotation.Required;
@@ -44,6 +27,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledEventDao scheduledEventDao;
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+    private UserDao userDao;
 
     public ScheduledCalendar assignParticipant(
         Study study, Participant participant, Site site, Arm firstArm, Date startDate,String assignmentGridId
@@ -67,8 +51,10 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         StudySite join = loader.validateSiteInStudy();
         loader.validateArmInStudy();
 
+        String userName = ApplicationSecurityManager.getUser();
+        User user = userDao.getByName(userName);
         StudyParticipantAssignment newAssignment = participantService.assignParticipant(
-            loadedParticipant, join, loader.getArm(), startDate, assignmentGridId);
+            loadedParticipant, join, loader.getArm(), startDate, assignmentGridId, user);
         return newAssignment.getScheduledCalendar();
     }
 
@@ -170,6 +156,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     @Required
     public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
         this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
+    }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     //////

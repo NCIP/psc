@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 
 import java.util.List;
@@ -13,9 +12,9 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
         return getHibernateTemplate().find("from User order by name");
     }
 
-    public List getByName(String name) {
+    public User getByName(String name) {
         List<User> results = getHibernateTemplate().find("from User where name = ?", name);
-        return results;
+        return results.get(0);
     }
 
     public List getByCsmUserId(Long csmUserId) {
