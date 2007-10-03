@@ -188,7 +188,7 @@ public class TemplateService {
         List<Site> assignedSites = new ArrayList<Site>();
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
         for (ProtectionGroup site : allSitePGs) {
-            availableSites.add(siteDao.getByName(site.getProtectionGroupName()));
+            availableSites.add(DomainObjectTools.loadFromExternalObjectId(site.getProtectionGroupName(), siteDao));
         }
         for (StudySite ss : studyTemplate.getStudySites()) {
             assignedSites.add(ss.getSite());

@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,40 +38,40 @@ public class SiteService {
 
     public Site createSite(Site site) throws Exception {
         siteDao.save(site);
-        saveSiteProtectionGroup(site.getName());
+        saveSiteProtectionGroup(createExternalObjectId(site));
         return site;
     }
     
-    public void saveSiteProtectionGroup(String siteName) throws Exception {
+    protected void saveSiteProtectionGroup(String siteName) throws Exception {
     	authorizationManager.createProtectionGroup(siteName, BASE_SITE_PG);
     }
     
     public void assignSiteCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, SITE_COORDINATOR_ACCESS_ROLE);
     }
     
     public void assignParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
     }
     
     public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
     public void removeParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(site.getName());
+    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     
     public Map getSiteCoordinatorLists(Site site) throws Exception {
-    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, site.getName());
+    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, createExternalObjectId(site));
     }
     
     public Map getParticipantCoordinatorLists(Site site) throws Exception {
-    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, site.getName());
+    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, createExternalObjectId(site));
     }
     
     public List<Site> getSitesForUser(String userName) {
@@ -85,7 +86,7 @@ public class SiteService {
         List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
         List<Site> sites = new ArrayList<Site>(sitePGs.size());
         for (ProtectionGroup sitePG : sitePGs) {
-            sites.add(siteDao.getByName(sitePG.getProtectionGroupName()));
+            sites.add(DomainObjectTools.loadFromExternalObjectId(sitePG.getProtectionGroupName(),siteDao));
         }
         return sites;
     }
@@ -94,8 +95,8 @@ public class SiteService {
         List<ProtectionGroup> studySitePGs = authorizationManager.getStudySitePGsForUser(userName);
         Set<Site> sites = new LinkedHashSet<Site>();
         for (ProtectionGroup studySitePG : studySitePGs) {
-            StudySite studySite = DomainObjectTools
-                .loadFromExternalObjectId(studySitePG.getProtectionGroupName(), studySiteDao);
+            StudySite studySite =
+                    loadFromExternalObjectId(studySitePG.getProtectionGroupName(), studySiteDao);
             sites.add(studySite.getSite());
         }
         return sites;

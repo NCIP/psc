@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateServ
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 import java.util.HashSet;
 import java.util.Collections;
@@ -199,6 +200,13 @@ public class Fixtures {
             Collections.addAll(user.getRoles(), roles);
         }
         return user;
+    }
+
+    public static ProtectionGroup createProtectionGroup(Long aId, String aName){
+        ProtectionGroup myProtectionGroup = new ProtectionGroup();
+        myProtectionGroup.setProtectionGroupName(aName);
+        myProtectionGroup.setProtectionGroupId(aId);
+        return myProtectionGroup;
     }
 
     public static <T extends Named> T createNamedInstance(String name, Class<T> clazz) {

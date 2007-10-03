@@ -336,6 +336,39 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testGetSitesListsWithSameSiteAvailableAndAssigned() throws Exception {
+        Study study = createNamedInstance("Mayo Study", Study.class);
+        study.addSite(createNamedInstance("Mayo Clinic", Site.class));
+
+        ProtectionGroup expectedAvailableSitePG0 =
+                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
+        ProtectionGroup expectedAvailableSitePG1 =
+                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        List<ProtectionGroup> exptectedAvailableSitePGs = Arrays.asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
+        expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
+
+        Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
+        Site expectedAvailableSite1 = createNamedInstance("Northwestern Clinic", Site.class);
+        expect(DomainObjectTools.loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.0", siteDao))
+                .andReturn(expectedAvailableSite0);
+        expect(DomainObjectTools.loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", siteDao))
+                .andReturn(expectedAvailableSite1);
+        replayMocks();
+
+        Map<String, List> assignedAndAvailableSites = service.getSiteLists(study);
+        verifyMocks();
+
+        assertEquals("There should be assigned and available sites", 2, assignedAndAvailableSites.size());
+
+        List<Site> actualAssignedSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.ASSIGNED_PGS);
+        assertEquals("Wrong number of assigned sites", 1, actualAssignedSites.size());
+        assertEquals("Wrong assigned site", "Mayo Clinic", actualAssignedSites.get(0).getName());
+
+        List<Site> actualAvailableSites = assignedAndAvailableSites.get(StudyCalendarAuthorizationManager.AVAILABLE_PGS);
+        assertEquals("Wrong number of available sites", 1, actualAvailableSites.size());
+        assertEquals("Wrong available site", "Northwestern Clinic", actualAvailableSites.get(0).getName());
+    }
+
     public void testGetTemplatesLists() throws Exception {
         Map<String, List> templatesMap = new HashMap<String, List>();
         List<Study> assignedTemplates = new ArrayList<Study>();

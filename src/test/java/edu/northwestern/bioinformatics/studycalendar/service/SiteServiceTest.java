@@ -41,9 +41,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 	
     public void testCreateSite() throws Exception {
-		Site newSite = createNamedInstance("new site", Site.class);
+		Site newSite = setId(1, createNamedInstance("new site", Site.class));
 		siteDao.save(newSite);
-		authorizationManager.createProtectionGroup("new site", "BaseSitePG");
+		authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", "BaseSitePG");
 		replayMocks();
 		
 		Site siteCreated = service.createSite(newSite);
@@ -54,22 +54,23 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSaveSiteProtectionGroup() throws Exception {
-        authorizationManager.createProtectionGroup("new site", SiteService.BASE_SITE_PG);
+        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", SiteService.BASE_SITE_PG);
         replayMocks();
 
-        service.saveSiteProtectionGroup("new site");
+        service.saveSiteProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         verifyMocks();
     }
 
     public void testGetSitesForSiteCd() throws Exception {
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         List<ProtectionGroup> exptectedPGs = Collections.singletonList(expectedPG);
 
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
         List<Site> expectedSites = Collections.singletonList(expectedSite);
 
         expect(authorizationManager.getSitePGsForUser("a user")).andReturn(exptectedPGs);
-        expect(siteDao.getByName("studyguide\\.123")).andReturn(expectedSite);
+        expect(DomainObjectTools
+                .loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", siteDao)).andReturn(expectedSite);
         replayMocks();
 
         List<Site> actualSites = service.getSitesForSiteCd("a user");
@@ -80,13 +81,13 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testAssignSiteCoordinators() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
 
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
-        expect(authorizationManager.getPGByName(expectedSite.getName())).andReturn(expectedPG);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
         authorizationManager.assignProtectionGroupsToUsers(expectedCoordinators,
                                                            expectedPG,
                                                            SiteService.SITE_COORDINATOR_ACCESS_ROLE);
@@ -97,13 +98,13 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testAssignParticipantCoordinators() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
 
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
-        expect(authorizationManager.getPGByName(expectedSite.getName())).andReturn(expectedPG);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
         authorizationManager.assignProtectionGroupsToUsers(expectedCoordinators,
                                                            expectedPG,
                                                            SiteService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
@@ -115,13 +116,13 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
 
     public void testRemoveSiteCoordinators() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
 
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
-        expect(authorizationManager.getPGByName(expectedSite.getName())).andReturn(expectedPG);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
         authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
         replayMocks();
 
@@ -131,13 +132,13 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
 
     public void testRemoveParticipantCoordinators() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
 
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
-        expect(authorizationManager.getPGByName(expectedSite.getName())).andReturn(expectedPG);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
         authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
         replayMocks();
 
@@ -146,12 +147,12 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetSiteCoordinatorLists() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         User myUser = createUser(1L);
         Map<String, List<User>> expectedUserMap = createUserMap(myUser);
 
-        expect(authorizationManager.getUserPGLists(SiteService.SITE_COORDINATOR_GROUP, expectedSite.getName()))
+        expect(authorizationManager.getUserPGLists(SiteService.SITE_COORDINATOR_GROUP, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1"))
                 .andReturn(expectedUserMap);
         replayMocks();
 
@@ -167,12 +168,12 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetParticipantCoordinatorLists() throws Exception {
-        Site expectedSite = createSite("northwestern");
+        Site expectedSite = setId(1, createSite("northwestern"));
 
         User myUser = createUser(1L);
         Map<String, List<User>> expectedUserMap = createUserMap(myUser);
 
-        expect(authorizationManager.getUserPGLists(SiteService.PARTICIPANT_COORDINATOR_GROUP, expectedSite.getName()))
+        expect(authorizationManager.getUserPGLists(SiteService.PARTICIPANT_COORDINATOR_GROUP, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1"))
                 .andReturn(expectedUserMap);
         replayMocks();
 
@@ -187,7 +188,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetSitesForParticipantCoordinators() {
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.StudySite.1");
         List<ProtectionGroup> expectedPGs = Collections.singletonList(expectedPG);
 
         StudySite expectedStudySite = createStudySite("new york", 1);
@@ -196,7 +197,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
         expect(authorizationManager.getStudySitePGsForUser("john")).andReturn(expectedPGs);
         expect(DomainObjectTools
-                .loadFromExternalObjectId(expectedPG.getProtectionGroupName(), studySiteDao))
+                .loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.StudySite.1", studySiteDao))
                 .andReturn(expectedStudySite);
         replayMocks();
 
@@ -208,7 +209,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetSitesForUser() throws Exception {
-        ProtectionGroup expectedPG = createProtectionGroup("studyguide\\.123", 1L);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         List<ProtectionGroup> exptectedPGs = Collections.singletonList(expectedPG);
 
         Site expectedSiteForSiteCd = createSite("northwestern");
@@ -224,7 +225,8 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         expectedSites.addAll(expectedSitesForParticipCoord);
 
         expect(authorizationManager.getSitePGsForUser("john")).andReturn(exptectedPGs);
-        expect(siteDao.getByName("studyguide\\.123")).andReturn(expectedSiteForSiteCd);
+        expect(DomainObjectTools
+                .loadFromExternalObjectId("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", siteDao)).andReturn(expectedSiteForSiteCd);
         expect(authorizationManager.getStudySitePGsForUser("john")).andReturn(exptectedPGs);
         expect(studySiteDao.getById(DomainObjectTools.parseExternalObjectId(expectedPG.getProtectionGroupName())))
                 .andReturn(expectedStudySite);
@@ -251,13 +253,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site expectedSite = createSite(aSiteName);
         expectedStudySite.setSite(expectedSite);
         return expectedStudySite;
-    }
-
-    private ProtectionGroup createProtectionGroup(String aName, Long aId){
-        ProtectionGroup myProtectionGroup = new ProtectionGroup();
-        myProtectionGroup.setProtectionGroupName(aName);
-        myProtectionGroup.setProtectionGroupId(aId);
-        return myProtectionGroup;
     }
 
     private User createUser(Long aUserId) {
