@@ -27,7 +27,8 @@ public class SiteService {
 	public static final String BASE_SITE_PG = "BaseSitePG";
 	public static final String SITE_COORDINATOR_ACCESS_ROLE = "SITE_COORDINATOR";
 	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
-	public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
+    public static final String RESEARCH_ASSOCIATE_ACCESS_ROLE = "RESEARCH_ASSOCIATE";
+    public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
 	public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
@@ -35,6 +36,7 @@ public class SiteService {
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
+
 
     public Site createSite(Site site) throws Exception {
         siteDao.save(site);
@@ -55,6 +57,11 @@ public class SiteService {
     	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
     }
+
+    public void assignSiteResearchAssociates(Site site, List<String> userIds) throws Exception {
+        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, RESEARCH_ASSOCIATE_ACCESS_ROLE);
+    }
     
     public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
     	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
@@ -63,6 +70,11 @@ public class SiteService {
     
     public void removeParticipantCoordinators(Site site, List<String> userIds) throws Exception {
     	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+    	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
+    }
+
+    public void removeResearchAssociates(Site site, List<String> userIds) throws Exception{
+        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
     	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
     }
     

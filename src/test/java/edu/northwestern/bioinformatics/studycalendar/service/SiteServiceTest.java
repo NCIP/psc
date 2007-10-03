@@ -146,6 +146,21 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testRemoveResearchAssociates() throws Exception {
+        Site expectedSite = setId(1, createSite("northwestern"));
+
+        List<String> expectedCoordinators = Collections.singletonList("john");
+
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
+        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
+        replayMocks();
+
+        service.removeResearchAssociates(expectedSite, expectedCoordinators);
+        verifyMocks();
+    }
+
     public void testGetSiteCoordinatorLists() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
@@ -239,6 +254,23 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
         assertEquals(expectedSites.size(), actualSites.size());
         assertTrue(expectedSites.containsAll(actualSites));
+    }
+
+    public void testAssignResearchAssociate() throws Exception {
+        Site expectedSite = setId(1, createSite("northwestern"));
+
+        List<String> expectedResearchAssociates = Collections.singletonList("john");
+
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
+        authorizationManager.assignProtectionGroupsToUsers(expectedResearchAssociates,
+                                                           expectedPG,
+                                                           SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE);
+        replayMocks();
+
+        service.assignSiteResearchAssociates(expectedSite, expectedResearchAssociates);
+        verifyMocks();
     }
 
     /* methods to create objects for mocks */
