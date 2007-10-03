@@ -343,7 +343,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         ProtectionGroup expectedAvailableSitePG0 =
                 createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
         ProtectionGroup expectedAvailableSitePG1 =
-                createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+                createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         List<ProtectionGroup> exptectedAvailableSitePGs = Arrays.asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
         expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
 
