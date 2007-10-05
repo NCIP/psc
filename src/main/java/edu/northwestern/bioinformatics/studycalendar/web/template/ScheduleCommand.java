@@ -3,42 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
-import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 
 import java.util.*;
-import java.text.DateFormat;
+import java.text.DateFormat;                                                                                                                       
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-/**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Sep 26, 2007
- * Time: 4:39:05 PM
- * To change this template use File | Settings | File Templates.
- */
 public class ScheduleCommand {
-
-    private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
-//    private Site site;
-//    private String action;
-    private SiteDao siteDao;
-
-    private Integer fromDate;
     private Integer toDate;
     private User user;
     private UserDao userDao;
-    private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
     private ScheduledEventDao scheduledEventDao;
 
-
-    public ScheduleCommand(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
+    private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
 
     public Map<String, Object> execute() {
         List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(getUser());
@@ -47,14 +26,14 @@ public class ScheduleCommand {
         return model;
     }
 
-
     public Map<String, Object> getMapOfCurrentEvents(List<StudyParticipantAssignment> studyParticipantAssignments) {
         Date startDate = new Date();
         int initialShiftDate = getToDate();
         Collection<ScheduledEvent> collectionOfEvents = null;
         SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
-        Map <String, Object> participantAndEvents = new HashMap<String, Object>();
+        Map <String, Object> participantAndEvents;
         for (int i =0; i< initialShiftDate; i++) {
+            participantAndEvents = new HashMap<String, Object>();
             Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
             List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
             for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
@@ -87,10 +66,10 @@ public class ScheduleCommand {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(startDate.getTime());
         long oneDay = numberOfDays * 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() + oneDay);
-        Date d = (Date)timestampTo;
+        Date d = timestampTo;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = df.format(d);
-        Date d1 = null;
+        Date d1;
         try {
             d1 = df.parse(dateString);
         } catch (ParseException e) {
@@ -111,16 +90,6 @@ public class ScheduleCommand {
         this.toDate = toDate;
     }
 
-
-    public Integer getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(Integer fromDate) {
-        this.fromDate = fromDate;
-    }
-
-
     public User getUser() {
         return user;
     }
@@ -137,16 +106,6 @@ public class ScheduleCommand {
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
     }
-
-
-    public StudyParticipantAssignmentDao getStudyParticipantAssignmentDao() {
-        return studyParticipantAssignmentDao;
-    }
-
-    public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
-        this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
-    }
-
 
     public ScheduledEventDao getScheduledEventDao() {
         return scheduledEventDao;
