@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
 
@@ -19,6 +20,12 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
 
     public List getByCsmUserId(Long csmUserId) {
         List<User> results = getHibernateTemplate().find("from User where csm_user_id = ?", csmUserId);
+        return results;
+    }
+
+    public List<StudyParticipantAssignment> getAssignments(User user) {
+        List<StudyParticipantAssignment> results = getHibernateTemplate().find(
+                "from StudyParticipantAssignment a where a.participantCoordinator = ? ", user);
         return results;
     }
 }

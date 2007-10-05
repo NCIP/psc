@@ -132,6 +132,9 @@
     <bean name="/cal/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
+    <bean name="/cal/participantCoordinatorSchedule" id="scheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleController"/>
+
     <bean name="/cal/newPeriod" id="newPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
@@ -406,6 +409,11 @@
                     <property name="pathMapping"><value>/cal/**</value></property>
                     <property name="tasks">
                         <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Dashboard</value></property>
+                                <property name="linkName"><value>scheduleController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Existing templates</value></property>
                                 <property name="linkName"><value>studyListController</value></property>
