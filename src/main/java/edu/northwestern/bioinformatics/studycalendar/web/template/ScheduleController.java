@@ -5,16 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.slf4j.Logger;
@@ -37,7 +34,7 @@ public class ScheduleController extends PscSimpleFormController {
 	private StudyDao studyDao;
     private UserDao userDao;
 
-    private User user;
+//    private User user;
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
 
@@ -65,7 +62,7 @@ public class ScheduleController extends PscSimpleFormController {
         String userName = ApplicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
-        user = userDao.getByName(userName);
+        User user = userDao.getByName(userName);
         List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(user);
 
         Map<String, Object> model = new HashMap<String, Object>();
@@ -172,6 +169,8 @@ public class ScheduleController extends PscSimpleFormController {
                                     HttpServletResponse response,
                                     Object oCommand, BindException errors) throws Exception {
         ScheduleCommand scheduleCommand = (ScheduleCommand) oCommand;
+        String userName = ApplicationSecurityManager.getUser();
+        User user = userDao.getByName(userName);
         scheduleCommand.setUser(user);
         scheduleCommand.setUserDao(userDao);
         scheduleCommand.setScheduledEventDao(scheduledEventDao);
