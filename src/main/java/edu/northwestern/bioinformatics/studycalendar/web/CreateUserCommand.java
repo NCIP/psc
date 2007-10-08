@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 
@@ -94,5 +95,16 @@ public class CreateUserCommand implements Validatable {
 
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    public User apply() throws Exception {
+        User user = id != null ? userService.getUserById(id) : new User();
+
+        user.setName(name);
+        user.setUserRoles(userRoles);
+        user.setActiveFlag(activeFlag);
+        user.setPlainTextPassword(password);
+
+        return userService.saveUser(user);
     }
 }

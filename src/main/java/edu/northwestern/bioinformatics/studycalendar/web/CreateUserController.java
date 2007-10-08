@@ -60,14 +60,7 @@ public class CreateUserController extends PscCancellableFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         CreateUserCommand command = (CreateUserCommand) oCommand;
         
-        User user = command.getId() != null ? userService.getUserById(command.getId()) : new User();
-
-        user.setName(command.getName());
-        user.setUserRoles(command.getUserRoles());
-        user.setActiveFlag(command.getActiveFlag());
-        user.setPlainTextPassword(command.getPassword());
-
-        userService.saveUser(user);
+        command.apply();
 
         return new ModelAndView(new RedirectView(getSuccessView()));
     }
