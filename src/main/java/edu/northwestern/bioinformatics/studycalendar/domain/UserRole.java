@@ -23,7 +23,8 @@ public class UserRole  extends AbstractMutableDomainObject {
     Role role;
     Set<Site> sites = new HashSet<Site>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     public User getUser() {
         return user;
     }
@@ -45,9 +46,9 @@ public class UserRole  extends AbstractMutableDomainObject {
 
     @OneToMany
     @JoinTable( name="user_role_sites",
-                joinColumns = @JoinColumn(name="user_role_id"),
-                inverseJoinColumns = @JoinColumn(name="site_id")
-              )
+        joinColumns = @JoinColumn(name="user_role_id"),
+        inverseJoinColumns = @JoinColumn(name="site_id")
+    )
     public Set<Site> getSites() {
         return sites;
     }
@@ -55,5 +56,4 @@ public class UserRole  extends AbstractMutableDomainObject {
     public void setSites(Set<Site> sites) {
         this.sites = sites;
     }
-
 }

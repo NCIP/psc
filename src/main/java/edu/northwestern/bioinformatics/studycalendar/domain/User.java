@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.OrderBy;
@@ -26,7 +26,7 @@ import gov.nih.nci.security.util.StringEncrypter;
 public class User extends AbstractMutableDomainObject implements Named {
     private String name;
     private Long csmUserId;
-    private Set<Role> roles = new HashSet<Role>();
+    private Set<UserRole> userRoles = new HashSet<UserRole>();
     private Boolean activeFlag;
     private String password;
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
@@ -75,27 +75,22 @@ public class User extends AbstractMutableDomainObject implements Named {
         this.password = encrypter.encrypt(password);
     }
 
-    @CollectionOfElements
-    @Type(type = "userRole")
-    @JoinTable(
-        name="user_roles",
-        joinColumns = @JoinColumn(name="user_id")
-    )
-    @Column(name="csm_group_name")
-    public Set<Role> getRoles() {
-        return roles;
+    @OneToMany (mappedBy = "user")
+    @Cascade( value = {CascadeType.ALL})
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
     } 
 
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
-    public void addRole(Role role) {
-        roles.add(role);
+    public void addUserRole(UserRole userRole) {
+        userRoles.add(userRole);
     }
 
-    public void removeRole(Role role) {
-        roles.remove(role);
+    public void removeUserRole(UserRole userRole) {
+        userRoles.remove(userRole);
     }
 
     @OneToMany (mappedBy = "participantCoordinator")
@@ -120,8 +115,8 @@ public class User extends AbstractMutableDomainObject implements Named {
                 !csmUserId.equals(user.csmUserId) : user.csmUserId != null) return false;
         if (activeFlag != null ? !activeFlag.equals(user.activeFlag) : user.activeFlag != null) return false;
         if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (roles.size() != user.getRoles().size()) return false;
-        return !(roles != null ? !roles.equals(user.getRoles()) : user.getRoles() != null);
+        if (userRoles.size() != user.getUserRoles().size()) return false;
+        return !(name != null ? !name.equals(user.name) : user.name != null);
 
     }
 

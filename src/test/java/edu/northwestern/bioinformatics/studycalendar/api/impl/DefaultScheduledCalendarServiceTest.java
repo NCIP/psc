@@ -4,13 +4,11 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 import java.util.*;
 
@@ -95,9 +93,12 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         user = new User();
         user.setPlainTextPassword("password123");
-        Set<Role> roles = new HashSet<Role>();
-        roles.add(Role.PARTICIPANT_COORDINATOR);
-        user.setRoles(roles);
+        Set<UserRole> userRoles = new HashSet<UserRole>();
+        UserRole userRole = new UserRole();
+        userRole.setRole(Role.PARTICIPANT_COORDINATOR);
+        userRoles.add(userRole);
+        
+        user.setUserRoles(userRoles);
 
         expect(studyDao.getByGridId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
         expect(siteDao.getByGridId(parameterSite)).andReturn(loadedSite).times(0, 1);

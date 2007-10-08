@@ -50,9 +50,11 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         user = new User();
         user.setPlainTextPassword("password123");
         user.setName("user");
-        Set<Role> roles = new HashSet<Role>();
-        roles.add(Role.PARTICIPANT_COORDINATOR);
-        user.setRoles(roles);
+        Set<UserRole> userRoles = new HashSet<UserRole>();
+        UserRole userRole = new UserRole();
+        userRole.setRole(Role.PARTICIPANT_COORDINATOR);
+        userRoles.add(userRole);
+        user.setUserRoles(userRoles);
 
         participants = new LinkedList<Participant>();
     }

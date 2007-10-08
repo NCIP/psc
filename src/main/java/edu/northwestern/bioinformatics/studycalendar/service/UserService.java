@@ -3,17 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.authorization.domainobjects.Group;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,7 +34,7 @@ public class UserService {
                 throw new StudyCalendarSystemException("Csm User Id is null");
         }
 
-        assignCsmGroups(user.getCsmUserId().toString(), user.getRoles());
+        assignCsmGroups(user.getCsmUserId().toString(), user.getUserRoles());
         userDao.save(user);
         return user;
     }
@@ -51,22 +50,22 @@ public class UserService {
         return csmUser;
     }
 
-    private void assignCsmGroups(String userId, Set<Role> roles) throws Exception {
-        List<String> csmRoles = rolesToCsmGroups(roles);
+    private void assignCsmGroups(String userId, Set<UserRole> userRoles) throws Exception {
+        List<String> csmRoles = rolesToCsmGroups(userRoles);
         String[] strCsmRoles = csmRoles.toArray(new String[csmRoles.size()]);
         if(csmRoles.size() > 0) {
             userProvisioningManager.assignGroupsToUser(userId, strCsmRoles);
         }
     }
 
-    private List<String> rolesToCsmGroups(Set<Role> roles) throws Exception{
+    private List<String> rolesToCsmGroups(Set<UserRole> userRoles) throws Exception{
         List csmGroupsForUser = new ArrayList<String>();
-        if(roles != null) {
+        if(userRoles != null) {
             List<Group> allCsmGroups = getAllCsmGroups();
 
-            for(Role role: roles) {
+            for(UserRole userRole: userRoles) {
                 for(Group group: allCsmGroups) {
-                    if(isGroupEqualToRole(group, role)) {
+                    if(isGroupEqualToRole(group, userRole.getRole())) {
                         csmGroupsForUser.add(group.getGroupId().toString());
                     }
                 }

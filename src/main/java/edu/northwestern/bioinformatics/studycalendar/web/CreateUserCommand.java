@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 
@@ -11,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class CreateUserCommand implements Validatable {
     private String name;
-    private Set<Role> userRoles;
+    private Set<UserRole> userRoles;
     private UserService userService;
     private Boolean activeFlag;
     private Integer id;
@@ -26,11 +27,11 @@ public class CreateUserCommand implements Validatable {
         this.name = name;
     }
 
-    public Set<Role> getUserRoles() {
+    public Set<UserRole> getUserRoles() {
         return userRoles;
     }
 
-    public void setUserRoles(Set<Role> userRoles) {
+    public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
     }
 

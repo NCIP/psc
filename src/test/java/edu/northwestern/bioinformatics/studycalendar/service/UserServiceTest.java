@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.*;
@@ -67,7 +68,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         User actual = service.saveUser(expectedUser);
         verifyMocks();
 
-        assertEquals(expectedUser, actual);
+        assertUserEquals(expectedUser, actual);
     }
 
 
@@ -81,7 +82,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         User actualUser = service.getUserByName("john");
         verifyMocks();
 
-        assertEquals(expectedUser, actualUser);
+        assertUserEquals(expectedUser, actualUser);
     }
 
     public void testGetUserById() throws Exception {
@@ -93,7 +94,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         User actualUser = service.getUserById(-200);
         verifyMocks();
 
-        assertEquals(expectedUser, actualUser);
+        assertUserEquals(expectedUser, actualUser);
     }
 
     public void testGetByIdAndSave() throws Exception {
@@ -113,8 +114,20 @@ public class UserServiceTest extends StudyCalendarTestCase {
         service.saveUser(actual);
         verifyMocks();
 
-        assertEquals(expectedUser, actual);
-    } 
+        assertUserEquals(expectedUser, actual);
+    }
+
+    public void assertUserEquals(User expected, User actual) throws Exception{
+
+        assertEquals("Names not equal", expected.getName(), actual.getName());
+        assertEquals("Csm user ids not equal", expected.getCsmUserId(), actual.getCsmUserId());
+        assertEquals("Active flags not equal", expected.getActiveFlag(), actual.getActiveFlag());
+        assertEquals("Passwords not equal", expected.getPassword(), actual.getPassword());
+        assertEquals("Different number of roles", expected.getUserRoles().size(), actual.getUserRoles().size());
+        for(UserRole userRole : expected.getUserRoles()) {
+            assertTrue("Expected and actual user roles are different", actual.getUserRoles().contains(userRole));
+        }
+    }
 
     public void testIsGroupEqualToRole() {
         UserService us = new UserService();

@@ -7,9 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -195,9 +193,13 @@ public class Fixtures {
         user.setCsmUserId(csmUserId);
         user.setActiveFlag(activeFlag);
         user.setPlainTextPassword(password);
-        if(roles != null) {
-            user.setRoles(new HashSet<Role>());
-            Collections.addAll(user.getRoles(), roles);
+        if (roles != null) {
+            user.setUserRoles(new HashSet<UserRole>());
+            for(Role role : roles) {
+                UserRole userRole = new UserRole();
+                userRole.setRole(role);
+                user.getUserRoles().add(userRole);
+            }
         }
         return user;
     }
