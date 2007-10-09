@@ -22,9 +22,8 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 
 import java.util.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
+
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
 
 
 public class ScheduleController extends PscSimpleFormController {
@@ -34,7 +33,7 @@ public class ScheduleController extends PscSimpleFormController {
 	private StudyDao studyDao;
     private UserDao userDao;
 
-//    private User user;
+    private ParticipantCoordinatorDashboardService participantCoordinatorDashboardService;
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
 
@@ -68,14 +67,14 @@ public class ScheduleController extends PscSimpleFormController {
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("userName", userName);
         model.put("ownedStudies", ownedStudies);
-        model.put("mapOfUserAndCalendar", getMapOfCurrentEvents(studyParticipantAssignments));
+        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studyParticipantAssignments, 7));
         model.put("pastDueActivities", getMapOfOverdueEvents(studyParticipantAssignments));
         return model;
     }
 
     public Map<Object, Object> getMapOfOverdueEvents(List<StudyParticipantAssignment> studyParticipantAssignments) {
         Date currentDate = new Date();
-        Date endDate = shiftStartDayByNumberOfDays(currentDate, -1);
+        Date endDate = participantCoordinatorDashboardService.shiftStartDayByNumberOfDays(currentDate, -1);
 
         //list of events overtue
         Map <Object, Object> participantAndOverDueEvents = new HashMap<Object, Object>();
@@ -103,67 +102,11 @@ public class ScheduleController extends PscSimpleFormController {
         return participantAndOverDueEvents;
     }
 
-    public Map<String, Object> getMapOfCurrentEvents(List<StudyParticipantAssignment> studyParticipantAssignments) {
-        Date startDate = new Date();
-        int initialShiftDate = 7;
-        Collection<ScheduledEvent> collectionOfEvents;
-        SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
-
-        Map <String, Object> participantAndEvents;
-
-        for (int i =0; i< initialShiftDate; i++) {
-            Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
-            participantAndEvents = new HashMap<String, Object>();
-            for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
-
-                List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
-                ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
-                collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
-
-                Participant participant = studyParticipantAssignment.getParticipant();
-                String participantName = participant.getFullName();
-                if (collectionOfEvents.size()>0) {
-                    for (ScheduledEvent event : collectionOfEvents) {
-                        String participantAndEventsKey = participantName + " - " + event.getActivity().getName();
-                        participantAndEvents.put(participantAndEventsKey, event);
-                        events.add(event);
-                    }
-                }
-            }
-            String keyDate = formatDateToString(tempStartDate);
-            mapOfUserAndCalendar.put(keyDate, participantAndEvents);
-        }
-       return mapOfUserAndCalendar; 
-    }
-
-    public Date shiftStartDayByNumberOfDays(Date startDate, Integer numberOfDays) {
-        java.sql.Timestamp timestampTo = new java.sql.Timestamp(startDate.getTime());
-        long numberOfDaysToShift = numberOfDays * 24 * 60 * 60 * 1000;
-        timestampTo.setTime(timestampTo.getTime() + numberOfDaysToShift);
-        Date d = timestampTo;
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = df.format(d);
-        Date d1;
-        try {
-            d1 = df.parse(dateString);
-        } catch (ParseException e) {
-            log.debug("Exception " + e);
-            d1 = startDate;
-        }
-        return d1;
-    }
-
-    public String formatDateToString(Date date) {
-        DateFormat df = new SimpleDateFormat("MM/dd");
-        return df.format(date);
-    }
-
-
     protected Object formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ScheduleCommand command = new ScheduleCommand();
         command.setToDate(7);
         return command;
-    }
+    }    
 
     protected ModelAndView onSubmit(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -174,7 +117,7 @@ public class ScheduleController extends PscSimpleFormController {
         scheduleCommand.setUser(user);
         scheduleCommand.setUserDao(userDao);
         scheduleCommand.setScheduledEventDao(scheduledEventDao);
-        Map<String, Object> model = scheduleCommand.execute();
+        Map<String, Object> model = scheduleCommand.execute(getPAService());
         return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
     }
 
@@ -207,5 +150,13 @@ public class ScheduleController extends PscSimpleFormController {
     }
     public ScheduledEventDao getScheduledEventDao() {
         return scheduledEventDao;
+    }
+
+    public ParticipantCoordinatorDashboardService getPAService() {
+        return participantCoordinatorDashboardService;
+    }
+
+    public void setParticipantCoordinatorDashboardService(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
+        this.participantCoordinatorDashboardService = participantCoordinatorDashboardService;
     }
 }

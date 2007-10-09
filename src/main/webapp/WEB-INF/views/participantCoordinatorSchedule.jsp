@@ -46,49 +46,40 @@
             margin: 0;
             padding: 0;
         }
-        ul.menu li.myControl {
-            padding: 0em;
-            list-style-type: none;
-            margin: 0.5em;
-        }
-
         ul.menu li {
             padding: 0.5em;
             list-style-type: none;
             margin: 0.5em;
         }
-        ul.menu li .primary {
-            display: block;
-            float: left;
-            width: 20%;
-        }
-        ul.menu li.myclass {
-            padding-left: 1em;
-            list-style-type: none;
-            margin: 0.5em;
-        }
         ul.menu li.participant {
-            padding-left: 2em;
+            padding-left: 4em;
             list-style-type: none;
-            /*margin: 2em;*/
+            padding-bottom: 1em;
         }
        ul.menu li.controls {
-            padding-left: 1em;
+            padding-left: 2em;
             list-style-type: none;
-            /*margin: 2em;*/
         }
         h2 {
             margin-top: 2em;
         }
+
+        div.welcome {
+            clear:both;
+            margin:0pt;
+            padding-top:0px;
+            padding-bottom:12px;
+        
+            
+        }
+
     </style>
 </head>
 <body>
-<laf:box title="Participant Coordinator dashboard">
-        <!-- Find Controller url to Set this to -->
-    <h4>Welcome, ${userName}</h4>    
-    <laf:division>
-    <h3>Past-due activities </h3>
-
+    <div class="main">
+        <h1>Welcome, ${userName}</h1>
+    </div>
+    <laf:box title="Past-due activities">
         <ul class="menu">
             <li class="autoclear">
                 <c:forEach items="${pastDueActivities}" var="mapOfPastDueActivities" varStatus="keyStatus">
@@ -100,9 +91,9 @@
                     </c:forEach>
                 </c:forEach>
             </li>
-    </laf:division>
-     <laf:division>
-         <h3>Current activities</h3>
+           </ul>
+    </laf:box>
+    <laf:box title="Current activities">
             <ul class="menu">
 
             <%--Activities for the interval: from <form:input path="fromDate" id="fromDate" size="5" onchange="ajaxform(this);" /> --%>
@@ -114,18 +105,17 @@
                  <tags:participantCoordinatorSchedule/>
             </li>
         </ul>
-
-    </laf:division>
-    <h3>Available studies</h3>
+    </laf:box>
+    <laf:box title="Available studies">
         <ul class="menu">
             <c:forEach items="${ownedStudies}" var="study" varStatus="status">
-                <li class="autoclear ${commons:parity(status.count)}">
+                <li class="autoclear ">
                     <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
                         ${study.name}
                     </a>
 
                     <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
-                        <li class="controls ${commons:parity(studySiteStatus.count)}">
+                        <li class="controls ">
                             ${studySites.site.name}
                             <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign another participants</tags:restrictedListItem>
@@ -154,7 +144,6 @@
                 </li>
             </c:forEach>
         </ul>
-</laf:box>
-
+    </laf:box>
 </body>
 </html>

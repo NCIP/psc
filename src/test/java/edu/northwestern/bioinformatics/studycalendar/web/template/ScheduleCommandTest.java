@@ -11,6 +11,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addEvents;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
 
 import java.util.*;
 import java.text.DateFormat;
@@ -26,6 +27,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     private ScheduledEventDao scheduledEventDao;
 
     private ScheduleCommand command = new ScheduleCommand();
+    private ParticipantCoordinatorDashboardService paService;
 
 
     @Override
@@ -44,6 +46,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         command.setUser(user);
         command.setToDate(3);
 
+        paService = new ParticipantCoordinatorDashboardService();
+        paService.setScheduledEventDao(scheduledEventDao);
+
     }
 
     public void testShiftStartDayByNumberOfDays() throws Exception {
@@ -56,7 +61,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         String dateString = df.format(expectedDate);
         expectedDate = df.parse(dateString);
         replayMocks();
-        Date actualDate = command.shiftStartDayByNumberOfDays(startDate, numberOfDaysToShift);
+        Date actualDate = paService.shiftStartDayByNumberOfDays(startDate, numberOfDaysToShift);
         verifyMocks();
         assertEquals("Expected and Actual Dates are different ", expectedDate, actualDate);
     }
@@ -66,7 +71,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         DateFormat df = new SimpleDateFormat("MM/dd");
         String expectedDateString = df.format(new Date());
         replayMocks();
-        String actualDateString = command.formatDateToString(rightNow.getTime());
+        String actualDateString = paService.formatDateToString(rightNow.getTime());
         verifyMocks();
         assertEquals("Expected and Actual formats are not equals ", expectedDateString, actualDateString);
     }
@@ -104,21 +109,21 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Collection<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
         events.add(e1);
         Date startDate = new Date();
-        Date tempStartDateOne = command.shiftStartDayByNumberOfDays(startDate, 0);
+        Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(events);
 
         Collection<ScheduledEvent> eventsTwo = new ArrayList<ScheduledEvent>();
         eventsTwo.add(e2);
-        Date tempStartDateTwo = command.shiftStartDayByNumberOfDays(startDate, 1);
+        Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwo);
 
         Collection<ScheduledEvent> eventsThree = new ArrayList<ScheduledEvent>();
         eventsThree.add(e3);
-        Date tempStartDateThree = command.shiftStartDayByNumberOfDays(startDate, 2);
+        Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
 
         replayMocks();
-        Map<String, Object> map = command.getMapOfCurrentEvents(studyParticipantAssignment);
+        Map<String, Object> map = paService.getMapOfCurrentEvents(studyParticipantAssignment, 3);
         verifyMocks();
 
         assertNotNull("Map is null", map);
@@ -126,15 +131,20 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         Set<String> keys = map.keySet();
         Date today = new Date();
-        Date todayPlusOne = command.shiftStartDayByNumberOfDays(today, 1);
-        Date todayPlusTwo = command.shiftStartDayByNumberOfDays(today, 2);
-        assertTrue("Keys don't contain today's date", keys.contains(command.formatDateToString(today)));
-        assertTrue("Keys don't contain next day ", keys.contains(command.formatDateToString(todayPlusOne)));
-        assertTrue("Keys don't contain day after next ", keys.contains(command.formatDateToString(todayPlusTwo)));
+        Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
+        Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        Map <String, Object> valueOne = (Map<String, Object>) map.get(command.formatDateToString(today));
-        Map <String, Object> valueTwo = (Map<String, Object>) map.get(command.formatDateToString(todayPlusOne));
-        Map <String, Object> valueThree = (Map<String, Object>) map.get(command.formatDateToString(todayPlusTwo));
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+
+        assertTrue("Keys don't contain today's date", keys.contains(todayKey));
+        assertTrue("Keys don't contain next day ", keys.contains(todayPlusOneKey));
+        assertTrue("Keys don't contain day after next ", keys.contains(todayPlusTwoKey));
+
+        Map <String, Object> valueOne = (Map<String, Object>) map.get(todayKey);
+        Map <String, Object> valueTwo = (Map<String, Object>) map.get(todayPlusOneKey);
+        Map <String, Object> valueThree = (Map<String, Object>) map.get(todayPlusTwoKey);
         assertTrue("Value doesn't contain the right event", valueOne.values().contains(e1));
         assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e2));
         assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e3));
@@ -185,7 +195,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         assignmentTwo.setParticipant(participantTwo);
         assignmentTwo.setStudySite(studySite);
-        assignmentTwo.setStartDateEpoch(command.shiftStartDayByNumberOfDays(new Date(), 2));
+        assignmentTwo.setStartDateEpoch(paService.shiftStartDayByNumberOfDays(new Date(), 2));
         assignmentTwo.setScheduledCalendar(calendarTwo);
 
         List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
@@ -199,7 +209,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         eventsForKate.add(e1);
         Collection<ScheduledEvent> eventsForBill = new ArrayList<ScheduledEvent>();
         Date startDate = new Date();
-        Date tempStartDateOne = command.shiftStartDayByNumberOfDays(startDate, 0);
+        Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(eventsForKate);
         expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateOne, tempStartDateOne)).andReturn(eventsForBill);
 
@@ -207,7 +217,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         eventsTwoForKate.add(e2);
         Collection<ScheduledEvent> eventsTwoForBill = new ArrayList<ScheduledEvent>();
         eventsTwoForBill.add(e5);
-        Date tempStartDateTwo = command.shiftStartDayByNumberOfDays(startDate, 1);
+        Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForKate);
         expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForBill);
 
@@ -216,12 +226,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Collection<ScheduledEvent> eventsThreeForBill = new ArrayList<ScheduledEvent>();
         eventsThreeForBill.add(e6);
 
-        Date tempStartDateThree = command.shiftStartDayByNumberOfDays(startDate, 2);
+        Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
         expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForKate);
         expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForBill);
 
         replayMocks();
-        Map<String, Object> map = command.execute();
+        Map<String, Object> map = command.execute(paService);
         verifyMocks();
         assertNotNull("Map is null", map);
         assertEquals("Map size is incorrect", 1, map.size());
@@ -231,15 +241,20 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map<String, Object> values = (Map<String, Object>) map.get(keys.toArray()[0]);
         Set<String> dates = values.keySet();
         Date today = new Date();
-        Date todayPlusOne = command.shiftStartDayByNumberOfDays(today, 1);
-        Date todayPlusTwo = command.shiftStartDayByNumberOfDays(today, 2);
-        assertTrue("Keys don't contain today's date", dates.contains(command.formatDateToString(today)));
-        assertTrue("Keys don't contain next day ", dates.contains(command.formatDateToString(todayPlusOne)));
-        assertTrue("Keys don't contain day after next ", dates.contains(command.formatDateToString(todayPlusTwo)));
+        Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
+        Date todayPlusTwo = paService.shiftStartDayByNumberOfDays(today, 2);
 
-        Map <String, Object> valueOne = (Map<String, Object>) values.get(command.formatDateToString(today));
-        Map <String, Object> valueTwo = (Map<String, Object>) values.get(command.formatDateToString(todayPlusOne));
-        Map <String, Object> valueThree = (Map<String, Object>) values.get(command.formatDateToString(todayPlusTwo));
+        String todayKey = paService.formatDateToString(today) + " - " + paService.convertDateKeyToString(today);
+        String todayPlusOneKey = paService.formatDateToString(todayPlusOne) + " - " + paService.convertDateKeyToString(todayPlusOne);
+        String todayPlusTwoKey = paService.formatDateToString(todayPlusTwo) + " - " + paService.convertDateKeyToString(todayPlusTwo);
+
+        assertTrue("Keys don't contain today's date", dates.contains(todayKey));
+        assertTrue("Keys don't contain next day ", dates.contains(todayPlusOneKey));
+        assertTrue("Keys don't contain day after next ", dates.contains(todayPlusTwoKey));
+
+        Map <String, Object> valueOne = (Map<String, Object>) values.get(todayKey);
+        Map <String, Object> valueTwo = (Map<String, Object>) values.get(todayPlusOneKey);
+        Map <String, Object> valueThree = (Map<String, Object>) values.get(todayPlusTwoKey);
 
         assertTrue("Value doesn't contain the right event", valueOne.values().contains(e1));
         assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e2));

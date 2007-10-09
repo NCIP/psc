@@ -35,6 +35,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
     private ParticipantDao participantDao;
     private ParticipantService service;
+    private ParticipantCoordinatorDashboardService paService;
     StudyParticipantAssignment actualAssignment;
 
     Study study;
@@ -48,6 +49,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
         participantDao = registerMockFor(ParticipantDao.class);
         service = new ParticipantService();
         service.setParticipantDao(participantDao);
+
+        paService = new ParticipantCoordinatorDashboardService();
 
         study = setId(100, Fixtures.createBasicTemplate());
         studies.add(study);
@@ -69,6 +72,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setUserDao(userDao);
         controller.setScheduledEventDao(scheduledEventDao);
         controller.setTemplateService(templateService);
+        controller.setParticipantCoordinatorDashboardService(paService);
 
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");
@@ -106,7 +110,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         command.setUserDao(userDao);
         command.setScheduledEventDao(scheduledEventDao);
         Map<String, Object> model = null;
-        expect(command.execute()).andReturn(model);
+        expect(command.execute(paService)).andReturn(model);
         replayMocks();
 
         ModelAndView mv = controller.onSubmit(request, response, command, null);
