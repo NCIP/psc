@@ -1,28 +1,40 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static java.lang.String.valueOf;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.validation.BindException;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.beans.PropertyEditorSupport;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @AccessControl(roles = Role.STUDY_ADMIN)
 public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
     private SiteDao siteDao;
+    private UserDao userDao;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -56,6 +68,9 @@ public class CreateUserController extends PscCancellableFormController {
         //binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());        
         // TODO: add binder to user domain object
         //binder.registerCustomEditor(User.class, "user", )
+
+        binder.registerCustomEditor(Site.class, new DaoBasedEditor(siteDao));
+        binder.registerCustomEditor(Role.class, new RoleEditor());
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -100,6 +115,11 @@ public class CreateUserController extends PscCancellableFormController {
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 
     private static class Crumb extends DefaultCrumb {

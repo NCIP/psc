@@ -1,10 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static org.easymock.EasyMock.expect;
@@ -16,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * @author John Dzak
@@ -23,6 +23,7 @@ import java.util.Map;
 public class CreateUserControllerTest extends ControllerTestCase {
     UserService userService;
     CreateUserController controller;
+    private SiteDao siteDao;
 
 
     @Override
@@ -30,16 +31,18 @@ public class CreateUserControllerTest extends ControllerTestCase {
         super.setUp();
 
         userService = registerMockFor(UserService.class);
+        siteDao     = registerDaoMockFor(SiteDao.class);
 
         controller = new CreateUserController();
         controller.setUserService(userService);
+        controller.setSiteDao(siteDao);
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
         MockableCommand mockCommand = registerMockFor(MockableCommand.class, MockableCommand.class.getMethod("apply"));
         CreateUserController mockableController = new MockableCommandController(mockCommand, userService);
 
-        expect(mockCommand.apply()).andReturn(Fixtures.createNamedInstance("Joe", User.class));
+        expect(mockCommand.apply()).andReturn(createNamedInstance("Joe", User.class));
         replayMocks();
 
         ModelAndView mv = mockableController.handleRequest(request, response);
@@ -48,24 +51,36 @@ public class CreateUserControllerTest extends ControllerTestCase {
         assertEquals("Wrong view", "listUsers", ((RedirectView)mv.getView()).getUrl());
     }
 
-  /*  public void testBindArm() throws Exception {
-        request.addParameter("temp[0][0]", "145");
-        request.addParameter("temp[0][1]", "123");
+    public void testBindRolesGrid() throws Exception {
+        Site site = setId(0, createNamedInstance("Mayo Clinic", Site.class));
 
+        request.addParameter("rolesGrid[0]['PARTICIPANT_COORDINATOR'].selected", "true");
+        request.addParameter("rolesGrid[0]['PARTICIPANT_COORDINATOR'].siteSpecific", "true");
         request.setMethod("POST");
 
+        expect(siteDao.getAll()).andReturn(Collections.singletonList(site));
+        expect(siteDao.getById(0)).andReturn(site).times(2);
+        
         replayMocks();
+
         Map<String, Object> model = controller.handleRequest(request, response).getModel();
 
-        assertNoBindingErrorsFor("temp", model);
+        assertNoBindingErrorsFor("rolesGrid", model);
         CreateUserCommand command = (CreateUserCommand) model.get("command");
         verifyMocks();
 
         assertNotNull("Command Object null", command);
-        assertEquals("Wrong size of temp", 2, command.getTemp().size());
-        assertEquals("Wrong size of temp", "145", command.getTemp().get(0).get(0));
-        assertEquals("Wrong size of temp", "123", command.getTemp().get(0).get(1));
-    }*/
+
+        assertNotNull("User site/roles map null", command.getRolesGrid());
+        assertTrue("Does not contain site key", command.getRolesGrid().containsKey(site));
+
+        assertNotNull("Roles map null", command.getRolesGrid().get(site));
+        assertTrue("Does not contain role", command.getRolesGrid().get(site).containsKey(Role.PARTICIPANT_COORDINATOR));
+
+        assertNotNull("Role Cell null", command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR));
+        assertEquals("Selected should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSelected());
+        assertEquals("Site Specific should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSiteSpecific());
+    }
 
 
 

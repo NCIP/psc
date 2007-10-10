@@ -189,6 +189,14 @@ public class CreateUserCommand implements Validatable {
         public boolean isSiteSpecific() {
             return siteSpecific;
         }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+        public void setSiteSpecific(boolean siteSpecific) {
+            this.siteSpecific = siteSpecific;
+        }
     }
 
     protected static RoleCell createRoleCell(boolean selected, boolean siteSpecific) {
