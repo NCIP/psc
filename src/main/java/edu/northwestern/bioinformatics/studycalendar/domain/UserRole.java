@@ -56,4 +56,24 @@ public class UserRole  extends AbstractMutableDomainObject {
     public void setSites(Set<Site> sites) {
         this.sites = sites;
     }
+
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        UserRole userRole = (UserRole) o;
+
+        if (user != null ? !user.equals(userRole.user) : userRole.user != null) return false;
+        if (role != null ? !role.equals(userRole.role) : userRole.role != null) return false;
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result;
+        result = (user != null ? user.hashCode() : 0);
+        result = 29 * result + (role != null ? role.hashCode() : 0);
+        return result;
+    }
 }

@@ -1,19 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.*;
-import org.hibernate.annotations.CascadeType;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.OrderBy;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.security.util.StringEncrypter;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table (name = "users")

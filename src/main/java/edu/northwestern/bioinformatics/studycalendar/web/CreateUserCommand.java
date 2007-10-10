@@ -3,10 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 
-import java.util.Set;
+import java.util.*;
 
 import org.springframework.validation.Errors;
 import org.apache.commons.lang.StringUtils;
@@ -19,6 +21,43 @@ public class CreateUserCommand implements Validatable {
     private Integer id;
     private String password;
     private String rePassword;
+    private User user;
+    private SiteDao siteDao;
+    private Map<Site, Map<Role,RoleCell>> rolesGrid;
+
+    public CreateUserCommand(User user, SiteDao siteDao) {
+        this.user = user;
+        this.siteDao = siteDao;
+        userRoles = new HashSet<UserRole>();
+        buildRolesGrid(user.getUserRoles());
+    }
+
+    private void buildRolesGrid(Set<UserRole> userRoles) {
+        boolean selected;
+        rolesGrid = new HashMap<Site, Map<Role,RoleCell>>();
+        
+        for(Site site : siteDao.getAll()) {
+            for(Role role : Role.values()) {
+                selected = false;
+                for(UserRole userRole : userRoles) {
+                    if (userRole.getRole().equals(role) && (!role.isSiteSpecific() || userRole.getSites().contains(site)) ) {
+                        selected = true;
+                        break;
+                    }
+                }
+
+                if (!rolesGrid.containsKey(site)) {
+                    rolesGrid.put(site, new HashMap<Role, RoleCell>());
+                }
+
+                rolesGrid.get(site).put(role, createRoleCell(selected,role.isSiteSpecific()));
+            }
+        }
+    }
+
+    public User getUser() {
+        return user;
+    }
 
     public String getName() {
         return name;
@@ -98,13 +137,61 @@ public class CreateUserCommand implements Validatable {
     }
 
     public User apply() throws Exception {
-        User user = id != null ? userService.getUserById(id) : new User();
-
-        user.setName(name);
+        interpretRolesGrid(rolesGrid);
         user.setUserRoles(userRoles);
-        user.setActiveFlag(activeFlag);
-        user.setPlainTextPassword(password);
 
         return userService.saveUser(user);
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    public Map<Site, Map<Role, RoleCell>> getRolesGrid() {
+        return rolesGrid;
+    }
+
+    public void interpretRolesGrid(Map<Site, Map<Role,RoleCell>> rolesGrid) {
+        for(Site site : rolesGrid.keySet()) {
+            for(Role role : rolesGrid.get(site).keySet()) {
+                if (rolesGrid.get(site).get(role).isSelected()) {
+                    UserRole newUserRole = new UserRole();
+                    newUserRole.setRole(role);
+                    if (role.isSiteSpecific() == true) {
+                        for (UserRole userRole : userRoles) {
+                            if (userRole.getRole().equals(role)) {
+                                newUserRole = userRole;
+                                break;
+                            }
+                        }
+                        newUserRole.getSites().add(site);
+                    }
+
+                    userRoles.add(newUserRole);
+                }
+            }
+        }
+    }
+
+    public static class RoleCell {
+        private boolean selected;
+        private boolean siteSpecific;
+
+        public RoleCell(boolean selected, boolean siteSpecific) {
+            this.selected = selected;
+            this.siteSpecific = siteSpecific;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public boolean isSiteSpecific() {
+            return siteSpecific;
+        }
+    }
+
+    protected static RoleCell createRoleCell(boolean selected, boolean siteSpecific) {
+        return new RoleCell(selected, siteSpecific);
     }
 }

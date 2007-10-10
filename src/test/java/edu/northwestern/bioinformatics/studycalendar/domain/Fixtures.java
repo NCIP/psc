@@ -1,27 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMutatorFactory;
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-
-import java.util.HashSet;
-import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * @author Rhett Sutphin
@@ -186,7 +185,7 @@ public class Fixtures {
         }
     }
 
-    public static User createUser(Integer id, String name, Long csmUserId, Role[] roles, boolean activeFlag, String password) throws Exception {
+    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, String password, Role... roles) throws Exception {
         User user = new User();
         user.setId(id);
         user.setName(name);
@@ -202,6 +201,13 @@ public class Fixtures {
             }
         }
         return user;
+    }
+
+    public static UserRole createUserRole(Role role, Site... site) {
+        UserRole userRole = new UserRole();
+        userRole.setRole(role);
+        userRole.setSites(new HashSet<Site>(Arrays.asList(site)));
+        return userRole;
     }
 
     public static ProtectionGroup createProtectionGroup(Long aId, String aName){

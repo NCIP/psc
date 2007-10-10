@@ -1,18 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.dao.SearchCriteria;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 

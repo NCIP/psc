@@ -10,9 +10,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +22,7 @@ import java.util.*;
 @AccessControl(roles = Role.STUDY_ADMIN)
 public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
+    private SiteDao siteDao;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -52,7 +53,7 @@ public class CreateUserController extends PscCancellableFormController {
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());
+        //binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());        
         // TODO: add binder to user domain object
         //binder.registerCustomEditor(User.class, "user", )
     }
@@ -66,7 +67,8 @@ public class CreateUserController extends PscCancellableFormController {
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-    	CreateUserCommand command = new CreateUserCommand();
+        // TODO: Move all logic to user object and get rid of property setters
+        CreateUserCommand command = new CreateUserCommand(new User(), siteDao);
         command.setUserService(userService);
         command.setActiveFlag(new Boolean(true));
 
@@ -93,6 +95,11 @@ public class CreateUserController extends PscCancellableFormController {
     @Required
     public void setUserService(UserService userService) {
         this.userService = userService;
+    }
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
 
     private static class Crumb extends DefaultCrumb {

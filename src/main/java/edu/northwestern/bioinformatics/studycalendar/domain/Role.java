@@ -6,17 +6,23 @@ import static gov.nih.nci.cabig.ctms.domain.CodedEnumHelper.*;
 
 
 public enum Role implements CodedEnum<String> {
-    STUDY_COORDINATOR       ("STUDY_COORDINATOR"        ),
-    STUDY_ADMIN             ("STUDY_ADMIN"              ),
+    STUDY_COORDINATOR       ("STUDY_COORDINATOR", false  ),
+    STUDY_ADMIN             ("STUDY_ADMIN",       false  ),
     PARTICIPANT_COORDINATOR ("PARTICIPANT_COORDINATOR"  ),
     RESEARCH_ASSOCIATE      ("RESEARCH_ASSOCIATE"       ),
     SITE_COORDINATOR        ("SITE_COORDINATOR"         );
 
     private String csmName;
+    private boolean siteSpecific;
+
+    private Role(String name, boolean siteSpecific) {
+        this.csmName = name;
+        this.siteSpecific = siteSpecific;
+        register(this);
+    }
 
     private Role(String name) {
-        this.csmName = name;
-        register(this);
+        this(name, true);
     }
 
 
@@ -38,6 +44,10 @@ public enum Role implements CodedEnum<String> {
 
     public String csmGroup() {
         return csmName;
+    }
+
+    public boolean isSiteSpecific() {
+        return siteSpecific;
     }
 
     public static final String[] strValues() {

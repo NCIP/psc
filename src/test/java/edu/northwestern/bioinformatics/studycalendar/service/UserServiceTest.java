@@ -53,7 +53,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     public void testSaveUser() throws Exception {
         service.setUserProvisioningManager(userProvisioningManagerStub);
-        User expectedUser = createUser(200, "john", 100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, true, "pass123");
+        User expectedUser = createUser(200, "john", 100L, true, "pass123", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
@@ -73,7 +73,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
 
     public void testGetUserByName() throws Exception {
-        User expectedUser = createUser(-100, "john", -100L, null, true, "pass123");
+        User expectedUser = createUser(-100, "john", -100L, true, "pass123");
 //        List expectedUsers = Collections.singletonList(expectedUser);
 
         expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUser);
@@ -86,7 +86,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetUserById() throws Exception {
-        User expectedUser = createUser(-200, "john", -100L, new Role[] {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR}, false, "pass123");
+        User expectedUser = createUser(-200, "john", -100L, false, "pass123", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         expect(userDao.getById(-200)).andReturn(expectedUser);
         replayMocks();
@@ -98,9 +98,9 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetByIdAndSave() throws Exception {
-        User expectedUser = createUser(-100,"john", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
-        User expectedUpdatedUser = createUser(-100, "updated", -200L, new Role[] {Role.STUDY_ADMIN, Role.SITE_COORDINATOR}, true, "password");
-        String[] expectedCsmGroups = new String[] {"6", "2"};
+        User expectedUser = createUser(-100,"john", -200L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        User expectedUpdatedUser = createUser(-100, "updated", -200L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        String[] expectedCsmGroups = new String[] {"1", "2"}; // CSM ids for Study coordinator and study admin
 
         expect(userDao.getById(-100)).andReturn(expectedUser);
         expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
