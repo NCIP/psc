@@ -1,13 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleCommand;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,7 +31,6 @@ public class ParticipantCoordinatorDashboardService {
 
     public Map<String, Object> getMapOfCurrentEvents(List<StudyParticipantAssignment> studyParticipantAssignments, int initialShiftDate) {
         Date startDate = new Date();
-//        int initialShiftDate = 7;
         Collection<ScheduledEvent> collectionOfEvents;
         SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
 
@@ -66,6 +60,43 @@ public class ParticipantCoordinatorDashboardService {
             mapOfUserAndCalendar.put(keyDate, participantAndEvents);
         }
        return mapOfUserAndCalendar;
+    }
+
+    public Map<String, Object> getMapOfCurrentEventsForSpecificActivity(
+            List<StudyParticipantAssignment> studyParticipantAssignments, int initialShiftDate, Map<ActivityType, Boolean> activities) {
+        Date startDate = new Date();
+        Collection<ScheduledEvent> collectionOfEvents;
+        SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
+
+        Map <String, Object> participantAndEvents;
+
+        for (int i =0; i< initialShiftDate; i++) {
+            Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
+            participantAndEvents = new HashMap<String, Object>();
+            for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
+                List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+                ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
+                collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
+                Participant participant = studyParticipantAssignment.getParticipant();
+                String participantName = participant.getFullName();
+
+                if (collectionOfEvents.size()>0) {
+                    for (ScheduledEvent event : collectionOfEvents) {
+                        ActivityType eventActivityType = event.getActivity().getType();
+                        Boolean value = activities.get(eventActivityType);
+                        if (value) {
+                            String participantAndEventsKey = participantName + " - " + event.getActivity().getName();
+                            participantAndEvents.put(participantAndEventsKey, event);
+                            events.add(event);
+                        }
+                    }
+                }
+            }
+            String keyDate = formatDateToString(tempStartDate);
+            keyDate = keyDate + " - " + convertDateKeyToString(tempStartDate);
+            mapOfUserAndCalendar.put(keyDate, participantAndEvents);
+        }
+        return mapOfUserAndCalendar;
     }
 
     public String convertDateKeyToString(Date date) {

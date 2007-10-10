@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +70,8 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("ownedStudies", ownedStudies);
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studyParticipantAssignments, 7));
         model.put("pastDueActivities", getMapOfOverdueEvents(studyParticipantAssignments));
+        model.put("activityTypes", ActivityType.values());
+        
         return model;
     }
 
@@ -125,7 +128,8 @@ public class ScheduleController extends PscSimpleFormController {
                               ServletRequestDataBinder servletRequestDataBinder) throws Exception {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-
+        servletRequestDataBinder.registerCustomEditor(ActivityType.class, new ControlledVocabularyEditor(ActivityType.class));
+        
     }
 
     ////// CONFIGURATION

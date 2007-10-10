@@ -16,12 +16,16 @@ public class ScheduleCommand {
     private UserDao userDao;
     private ScheduledEventDao scheduledEventDao;
 
+    private Map<ActivityType, Boolean> activityTypes = new HashMap<ActivityType, Boolean>();
+    private ActivityType activityType;
+    private Boolean activityValue;
+
     private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
 
     public Map<String, Object> execute(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
         List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(getUser());
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("mapOfUserAndCalendar", participantCoordinatorDashboardService.getMapOfCurrentEvents(studyParticipantAssignments, getToDate()));
+        model.put("mapOfUserAndCalendar", participantCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignments, getToDate(), getActivityTypes()));
         return model;
     }
 
@@ -60,5 +64,30 @@ public class ScheduleCommand {
 
     public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
         this.scheduledEventDao = scheduledEventDao;
+    }
+
+
+    public Map<ActivityType, Boolean> getActivityTypes() {
+        return activityTypes;
+    }
+
+    public void setActivityTypes(Map<ActivityType, Boolean> activityTypes) {
+        this.activityTypes = activityTypes;
+    }
+
+    public ActivityType getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
+    }
+
+    public Boolean getActivityValue() {
+        return activityValue;
+    }
+
+    public void setActivityValue(Boolean activityValue) {
+        this.activityValue = activityValue;
     }
 }

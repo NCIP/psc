@@ -12,24 +12,27 @@
 
     <script type="text/javascript">
 
-        function ajaxform(toDate) {
+        function ajaxform() {
             var href = '<c:url value="/pages/cal/participantCoordinatorSchedule"/>'
             // Set up data variable
             var formdata = "";
-            formdata = formdata + 'toDate='+$(toDate).value+"&";
-            console.log("formdata " + formdata);
+            var toDateTemp = 'toDate';
+            formdata = formdata + toDateTemp+ "=" + $(toDateTemp).value+"&";
+
+            var arrayOfCheckboxes = document.getElementsByName('activityTypes');
+
+            for (var i = 0; i < arrayOfCheckboxes.length; i++) {
+                formdata = formdata + 'activityTypes' + '[' +$(arrayOfCheckboxes[i]).value + ']'+  "=" + $(arrayOfCheckboxes[i]).checked + "&"
+            }
+
             var lastRequest = new Ajax.Request(href,
             {
                 postBody: formdata
             });
-
             return true;
         }
 
     </script>
-
-
-
 
     <style type="text/css">
         ul ul.controls {
@@ -63,16 +66,6 @@
         h2 {
             margin-top: 2em;
         }
-
-        div.welcome {
-            clear:both;
-            margin:0pt;
-            padding-top:0px;
-            padding-bottom:12px;
-        
-            
-        }
-
     </style>
 </head>
 <body>
@@ -95,11 +88,14 @@
     </laf:box>
     <laf:box title="Current activities">
             <ul class="menu">
-
-            <%--Activities for the interval: from <form:input path="fromDate" id="fromDate" size="5" onchange="ajaxform(this);" /> --%>
-                    <%--to <form:input path="toDate" id="toDate" size="5" onchange="ajaxform(this);" /> days--%>
-            <li class="autoclear">
-                    Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform(this);" /> days
+                <li class="autoclear">
+                     Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform();" /> days
+                </li>
+            <li>
+                Filter by Activity Type:  <br>
+                <c:forEach items="${activityTypes}" var="activityType">
+                    <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} <BR> </input>
+                </c:forEach>
             </li>
             <li class="autoclear" id="participant-schedule">
                  <tags:participantCoordinatorSchedule/>
