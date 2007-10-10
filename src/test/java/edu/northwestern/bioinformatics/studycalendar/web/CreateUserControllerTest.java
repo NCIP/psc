@@ -6,6 +6,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static org.easymock.EasyMock.expect;
 import org.springframework.validation.Errors;
 import org.springframework.validation.BindException;
@@ -24,6 +25,7 @@ public class CreateUserControllerTest extends ControllerTestCase {
     UserService userService;
     CreateUserController controller;
     private SiteDao siteDao;
+    private UserDao userDao;
 
 
     @Override
@@ -32,10 +34,13 @@ public class CreateUserControllerTest extends ControllerTestCase {
 
         userService = registerMockFor(UserService.class);
         siteDao     = registerDaoMockFor(SiteDao.class);
+        userDao     = registerDaoMockFor(UserDao.class);
 
         controller = new CreateUserController();
         controller.setUserService(userService);
         controller.setSiteDao(siteDao);
+        controller.setUserDao(userDao);
+        controller.setControllerTools(controllerTools);
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
@@ -55,11 +60,10 @@ public class CreateUserControllerTest extends ControllerTestCase {
         Site site = setId(0, createNamedInstance("Mayo Clinic", Site.class));
 
         request.addParameter("rolesGrid[0]['PARTICIPANT_COORDINATOR'].selected", "true");
-        request.addParameter("rolesGrid[0]['PARTICIPANT_COORDINATOR'].siteSpecific", "true");
         request.setMethod("POST");
 
         expect(siteDao.getAll()).andReturn(Collections.singletonList(site));
-        expect(siteDao.getById(0)).andReturn(site).times(2);
+        expect(siteDao.getById(0)).andReturn(site);
         
         replayMocks();
 
@@ -79,7 +83,6 @@ public class CreateUserControllerTest extends ControllerTestCase {
 
         assertNotNull("Role Cell null", command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR));
         assertEquals("Selected should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSelected());
-        assertEquals("Site Specific should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSiteSpecific());
     }
 
 

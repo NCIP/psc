@@ -71,6 +71,7 @@ public class CreateUserController extends PscCancellableFormController {
 
         binder.registerCustomEditor(Site.class, new DaoBasedEditor(siteDao));
         binder.registerCustomEditor(Role.class, new RoleEditor());
+        getControllerTools().registerDomainObjectEditor(binder, "user", userDao);
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
