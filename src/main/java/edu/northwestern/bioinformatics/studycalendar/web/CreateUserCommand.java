@@ -12,14 +12,11 @@ import java.util.*;
 
 import org.springframework.validation.Errors;
 import org.apache.commons.lang.StringUtils;
+import gov.nih.nci.security.util.StringEncrypter;
 
 public class CreateUserCommand implements Validatable {
-    private String name;
     private Set<UserRole> userRoles;
     private UserService userService;
-    private Boolean activeFlag;
-    private Integer id;
-    private String password;
     private String rePassword;
     private User user;
     private SiteDao siteDao;
@@ -29,6 +26,7 @@ public class CreateUserCommand implements Validatable {
         this.user = user;
         this.siteDao = siteDao;
         userRoles = new HashSet<UserRole>();
+        if(user == null) user = new User();
         buildRolesGrid(user.getUserRoles());
     }
 
@@ -59,44 +57,12 @@ public class CreateUserCommand implements Validatable {
         return user;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Set<UserRole> getUserRoles() {
         return userRoles;
     }
 
     public void setUserRoles(Set<UserRole> userRoles) {
         this.userRoles = userRoles;
-    }
-
-    public Boolean getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(Boolean activeFlag) {
-        this.activeFlag = activeFlag;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getRePassword() {
@@ -107,25 +73,32 @@ public class CreateUserCommand implements Validatable {
         this.rePassword = rePassword;
     }
 
-    public void validate(Errors errors) {
-        if(StringUtils.isEmpty(name)) {
-            errors.rejectValue("name", "error.user.name.not.specified");
-        } else {
-            if(id == null && userService.getUserByName(name) != null){
-                errors.rejectValue("name", "error.user.name.already.exists");
+    public void validate(Errors errors){
+        if (user != null) {
+            if (user.getName() == null || StringUtils.isEmpty(user.getName())) {
+                errors.rejectValue("name", "error.user.name.not.specified");
+            } else {
+                if (userService.getUserByName(user.getName()) != null){
+                    errors.rejectValue("name", "error.user.name.already.exists");
+                }
             }
-        }
-        if(password == null || StringUtils.isBlank(password)){
-            errors.rejectValue("password", "error.user.password.not.specified");
-        } else {
-            if(!password.equals(rePassword)) {
-                errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
-                //errors.rejectValue("password"); reject normall password too
+            try {
+                if (user.getPlainTextPassword() == null || StringUtils.isBlank(user.getPlainTextPassword())){
+                    errors.rejectValue("password", "error.user.password.not.specified");
+                } else {
+                    if (!user.getPlainTextPassword().equals(rePassword)) {
+                        errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
+                    }
+                }
+            } catch(StringEncrypter.EncryptionException encryptExcep) {
+                errors.rejectValue("password", "error.user.password.not.specified");
             }
+            // TODO: check grid for roles
+           /* if (user.getUserRoles() == null || user.getUserRoles().size() <= 0) {
+                errors.rejectValue("userRoles", "error.user.role.not.specified");
+            }*/
         }
-        if(userRoles == null || userRoles.size() <= 0) {
-            errors.rejectValue("userRoles", "error.user.role.not.specified");
-        }
+
     }
 
     public UserService getUserService() {

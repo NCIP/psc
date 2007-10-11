@@ -62,13 +62,13 @@ public class User extends AbstractMutableDomainObject implements Named {
     }
 
     @Transient
-    public String getPlainTextPassword() throws Exception{
+    public String getPlainTextPassword() throws StringEncrypter.EncryptionException {
         StringEncrypter encrypter = new StringEncrypter();
         return encrypter.decrypt(password);
     }
 
     @Transient
-    public void setPlainTextPassword(String password) throws Exception {
+    public void setPlainTextPassword(String password) throws StringEncrypter.EncryptionException {
         StringEncrypter encrypter = new StringEncrypter();
         this.password = encrypter.encrypt(password);
     }

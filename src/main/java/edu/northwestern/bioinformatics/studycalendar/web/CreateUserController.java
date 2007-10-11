@@ -51,27 +51,17 @@ public class CreateUserController extends PscCancellableFormController {
         List<Role> roles = Arrays.asList(Role.values());
         refdata.put("roles", roles);
 
-        String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "editId") == null ? "Create" : "Edit";
+        String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "id") == null ? "Create" : "Edit";
         refdata.put("actionText", actionText);
-
-        Integer editId = ServletRequestUtils.getIntParameter(httpServletRequest, "editId");
-        if (editId != null) {
-            User user = userService.getUserById(editId);
-            refdata.put("user", user);
-        }
 
         return refdata;
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        //binder.registerCustomEditor(Role.class, "userRoles", new RoleEditor());        
-        // TODO: add binder to user domain object
-        //binder.registerCustomEditor(User.class, "user", )
 
         binder.registerCustomEditor(Site.class, new DaoBasedEditor(siteDao));
         binder.registerCustomEditor(Role.class, new RoleEditor());
-        getControllerTools().registerDomainObjectEditor(binder, "user", userDao);
     }
 
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -84,20 +74,15 @@ public class CreateUserController extends PscCancellableFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         // TODO: Move all logic to user object and get rid of property setters
-        CreateUserCommand command = new CreateUserCommand(new User(), siteDao);
-        command.setUserService(userService);
-        command.setActiveFlag(new Boolean(true));
-
-        Integer editId = ServletRequestUtils.getIntParameter(request, "editId");
-        if(editId != null) {
-           User user = userService.getUserById(editId);
-           command.setId(user.getId());
-           command.setName(user.getName());
-           command.setUserRoles(user.getUserRoles());
-           command.setActiveFlag(user.getActiveFlag());
-           command.setPassword(user.getPlainTextPassword());
-           command.setRePassword(user.getPlainTextPassword());
+        Integer editId = ServletRequestUtils.getIntParameter(request, "id");
+        User user = new User();
+        if (editId != null) {
+            user = userService.getUserById(editId);
         }
+        CreateUserCommand command = new CreateUserCommand(user, siteDao);
+        command.setUserService(userService);
+
+        // TODO: Implement Re password
 
         return command;
     }
