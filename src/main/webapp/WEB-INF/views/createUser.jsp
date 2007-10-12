@@ -4,6 +4,7 @@
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions"  prefix="fn" %>
 
 <html>
 <head>
@@ -13,16 +14,33 @@
         div.label {
             width: 50%;
         }
+
         div.submit {
             text-align: left;
         }
+
         form {
-            width: 28em;
+            width: 40em;
         }
+
         h2 {
-            margin-bottom:0px;
-            font-size:15px;
+            margin-bottom: 0px;
+            font-size: 15px;
         }
+
+        table.siteRoles td, table.siteRoles th {
+            text-align: center;
+            padding: .5em;
+        }
+
+        table.siteRoles td.notSiteSpecific {
+            vertical-align: top;
+        }
+
+        table.siteRoles th {
+            background-color:#ccc
+        }
+
     </style>
 </head>
 <body>
@@ -73,48 +91,37 @@
                 <div class="label">
                     <h2>Please select a role</h2>
                 </div>
-            </div>
-            <%--<c:forEach items="${roles}" var="role">--%>
-                <!--<div class="row">-->
-                    <!--<div class="label">-->
-                        <%--<form:label path="userRoles">${user.Userrole.displayName}:</form:label>--%>
-                    <!--</div>-->
-                    <!--<div class="value">-->
-                        <%--<form:checkbox path="userRoles" value="${role}"/>--%>
-                    <!--</div>-->
-                <!--</div>-->
-            <%--</c:forEach>--%>
-            <table cellspacing="0" cellpading="0" border="1">
-                <tr>
-                    <td></td>
-                    <c:forEach items="${roles}" var="role">
-                        <td>${role.displayName}</td>
-                    </c:forEach>
+                <div class="value">
+                    <table cellspacing="0" cellpading="0" border="1" class="siteRoles">
+                        <tr>
+                            <th></th>
+                            <c:forEach items="${roles}" var="role">
+                                <th>${role.displayName}</th>
+                            </c:forEach>
 
-                </tr>
-                <c:forEach items="${command.rolesGrid}" var="site">
-                    <tr>
-                        <td>${site.key.name}</td>
+                        </tr>
+                        <c:forEach items="${command.rolesGrid}" var="site" varStatus="index">
+                            <tr>
+                                <th>${site.key.name}</th>
 
-                        <c:forEach items="${roles}" var="role">
-                            <td>
-                                <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
-
-                                <%--command.rolesGrid[${site.key.id}].value[${role}].selected--%>
-                                <%--<c:if test="${site.value[role].selected}">--%>
-                                    <!--true-->
-                                <%--</c:if>--%>
-                                <%--<c:if test="${not site.value[role].selected}">--%>
-                                    <!--false-->
-                                <%--</c:if>--%>
-                            </td>
+                                <c:forEach items="${roles}" var="role">
+                                    <c:if test="${not role.siteSpecific && index.first}">
+                                        <td <c:if test="${not role.siteSpecific && index.first}">rowspan="${fn:length(command.rolesGrid)}"</c:if> class="notSiteSpecific">
+                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
+                                        </td>
+                                    </c:if>
+                                    <c:if test="${role.siteSpecific}">
+                                        <td>
+                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
+                                        </td>
+                                    </c:if>
+                                </c:forEach>
+                            </tr>
                         </c:forEach>
-                        <%--<c:forEach items="${site.value}" var="role">--%>
-                            <!--<td>${role.key.displayName}</td>-->
-                        <%--</c:forEach>--%>
-                    </tr>
-                </c:forEach>
-            </table>
+                    </table>
+                </div>
+            </div>
+
 
             <div class="row">
                 <div class="label">&nbsp;</div>
