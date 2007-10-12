@@ -6,8 +6,12 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import static org.easymock.EasyMock.expect;
+import org.easymock.classextension.EasyMock;
+import org.easymock.internal.matchers.ArrayEquals;
+import org.easymock.IArgumentMatcher;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,9 +48,11 @@ public class CreateUserControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setValidateOnBinding(false);
 
-        user = createUser(-1, "John", -1L, true, "pass");
         site = setId(0, createNamedInstance("Mayo Clinic", Site.class));
         sites = Collections.singletonList(site);
+
+        user = createUser(-1, "John", -1L, true, "pass");
+        user.setUserRoles(Collections.singleton(createUserRole(Role.PARTICIPANT_COORDINATOR, site)));
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
@@ -62,36 +68,28 @@ public class CreateUserControllerTest extends ControllerTestCase {
         assertEquals("Wrong view", "listUsers", ((RedirectView)mv.getView()).getUrl());
     }
 
-   // Disable temporarily so can commit current changes 
-  /*  public void testBindRolesGrid() throws Exception {
-        user.setUserRoles(Collections.singleton(createUserRole(Role.PARTICIPANT_COORDINATOR, site)));
+    public void testBindRolesGrid() throws Exception {
+        User expectedUser = createUser(user.getId(), user.getName(), user.getCsmUserId(), user.getActiveFlag(), user.getPlainTextPassword());
+        expectedUser.setUserRoles(Collections.singleton(createUserRole(Role.SITE_COORDINATOR, site)));
 
-        request.addParameter("rolesGrid[0]['PARTICIPANT_COORDINATOR'].selected", "true");
+
+        request.addParameter("_rolesGrid[0]['PARTICIPANT_COORDINATOR'].selected", "1");
+        request.addParameter("rolesGrid[0]['SITE_COORDINATOR'].selected", "true");
         setParametersForPost();
         request.setMethod("POST");
 
         expect(siteDao.getAll()).andReturn(Arrays.asList(site));
-        expect(siteDao.getById(0)).andReturn(site);
-        expect(userService.saveUser(user)).andReturn(user);
+        expect(siteDao.getById(0)).andReturn(site).anyTimes();
+        expect(userService.saveUser(userDetailsEq(expectedUser))).andReturn(expectedUser);
 
         replayMocks();
 
-        Map<String, Object> model = controller.handleRequest(request, response).getModel();
+        ModelAndView mv = controller.handleRequest(request, response);
 
-        CreateUserCommand command = (CreateUserCommand) model.get("command");
         verifyMocks();
 
-        assertNotNull("Command Object null", command);
-
-        assertNotNull("User site/roles map null", command.getRolesGrid());
-        assertTrue("Does not contain site key", command.getRolesGrid().containsKey(site));
-
-        assertNotNull("Roles map null", command.getRolesGrid().get(site));
-        assertTrue("Does not contain role", command.getRolesGrid().get(site).containsKey(Role.PARTICIPANT_COORDINATOR));
-
-        assertNotNull("Role Cell null", command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR));
-        assertEquals("Selected should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSelected());
-    }  */
+        assertEquals("Wrong view", "listUsers", ((RedirectView)mv.getView()).getUrl());
+    }
 
     public void testFormBackingObjectWithOutId() throws Exception {
         User expectedUser = new User();
@@ -114,32 +112,28 @@ public class CreateUserControllerTest extends ControllerTestCase {
         request.setMethod("GET");
 
         expect(userService.getUserById(-1)).andReturn(user);
-        expect(siteDao.getAll()).andReturn(Arrays.asList(new Site()));
+        expect(siteDao.getAll()).andReturn(sites);
 
         replayMocks();
 
         Map<String, Object> model = controller.handleRequest(request, response).getModel();
         CreateUserCommand command = (CreateUserCommand) model.get("command");
+        assertNoBindingErrorsFor("user", model);
+        assertNoBindingErrorsFor("userRoles", model);
         verifyMocks();
 
         assertEquals("Wrong User", user.getName(), command.getUser().getName());
 
+        assertNotNull("Command Object null", command);
 
-    }
+        assertNotNull("User site/roles map null", command.getRolesGrid());
+        assertTrue("Does not contain site key", command.getRolesGrid().containsKey(site));
 
-    public void testBindUser() throws Exception {
-        setParametersForPost();
-        request.setMethod("POST");
+        assertNotNull("Roles map null", command.getRolesGrid().get(site));
+        assertTrue("Does not contain role", command.getRolesGrid().get(site).containsKey(Role.PARTICIPANT_COORDINATOR));
 
-        expect(siteDao.getAll()).andReturn(new ArrayList<Site>());
-        expect(userService.saveUser(user)).andReturn(user);
-
-        replayMocks();
-
-        ModelAndView mv = controller.handleRequest(request, response);
-        verifyMocks();
-
-        assertEquals("Wrong view", "listUsers", ((RedirectView)mv.getView()).getUrl());
+        assertNotNull("Role Cell null", command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR));
+        assertEquals("Selected should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSelected());
     }
 
     protected void setParametersForPost() throws Exception {
@@ -179,4 +173,46 @@ public class CreateUserControllerTest extends ControllerTestCase {
 
         public void validate(Errors errors) { }
     }
+
+    public static User userDetailsEq(User user) {
+        EasyMock.reportMatcher(new UserDetailsEquals(user));
+        return null;
+    }
+
+    public static class UserDetailsEquals implements IArgumentMatcher {
+        private User expected;
+
+        public UserDetailsEquals(User expected) {
+            this.expected = expected;
+        }
+
+        public boolean matches(Object o) {
+            if (!(o instanceof User)) {
+                return false;
+            }
+            User actual = ((User) o);
+
+            if (expected.getName() != null ? !expected.getName().equals(actual.getName()) : actual.getName() != null) return false;
+            if (expected.getCsmUserId() != null ?
+                    !expected.getCsmUserId().equals(actual.getCsmUserId()) : actual.getCsmUserId() != null) return false;
+            if (expected.getActiveFlag() != null ? !expected.getActiveFlag().equals(actual.getActiveFlag()) : actual.getActiveFlag() != null) return false;
+            try {
+                if (expected.getPassword() != null ? !expected.getPassword().equals(actual.getPassword()) : actual.getPassword() != null) return false;
+            } catch (Exception e) {e.printStackTrace();}
+            if (expected.getUserRoles() != null ?expected.getUserRoles().size() != actual.getUserRoles().size(): actual.getUserRoles() != null) return false;
+            for(UserRole userRole : actual.getUserRoles()) {
+                if (expected.getUserRoles().contains(userRole) == false) return false;
+            }
+            return true;
+        }
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append("userDetailsEq(");
+            buffer.append(expected.getClass().getName());
+            buffer.append(" with name \"");
+            buffer.append(expected.getName());
+            buffer.append("\"");
+        }
+    }
+
 }
