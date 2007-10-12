@@ -76,22 +76,22 @@ public class CreateUserCommand implements Validatable {
     public void validate(Errors errors){
         if (user != null) {
             if (user.getName() == null || StringUtils.isEmpty(user.getName())) {
-                errors.rejectValue("name", "error.user.name.not.specified");
+                errors.rejectValue("user.name", "error.user.name.not.specified");
             } else {
-                if (userService.getUserByName(user.getName()) != null){
-                    errors.rejectValue("name", "error.user.name.already.exists");
+                if (user.getId() == null && userService.getUserByName(user.getName()) != null){
+                    errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
             try {
                 if (user.getPlainTextPassword() == null || StringUtils.isBlank(user.getPlainTextPassword())){
-                    errors.rejectValue("password", "error.user.password.not.specified");
+                    errors.rejectValue("user.password", "error.user.password.not.specified");
                 } else {
                     if (!user.getPlainTextPassword().equals(rePassword)) {
-                        errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
+                        errors.rejectValue("user.rePassword", "error.user.repassword.does.not.match.password");
                     }
                 }
             } catch(StringEncrypter.EncryptionException encryptExcep) {
-                errors.rejectValue("password", "error.user.password.not.specified");
+                errors.rejectValue("user.password", "error.user.password.not.specified");
             }
             // TODO: check grid for roles
            /* if (user.getUserRoles() == null || user.getUserRoles().size() <= 0) {
@@ -129,6 +129,7 @@ public class CreateUserCommand implements Validatable {
             for(Role role : rolesGrid.get(site).keySet()) {
                 if (rolesGrid.get(site).get(role).isSelected()) {
                     UserRole newUserRole = new UserRole();
+                    newUserRole.setUser(user);
                     newUserRole.setRole(role);
                     if (role.isSiteSpecific() == true) {
                         for (UserRole userRole : userRoles) {

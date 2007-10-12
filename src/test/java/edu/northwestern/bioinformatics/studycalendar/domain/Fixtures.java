@@ -203,9 +203,10 @@ public class Fixtures {
         return user;
     }
 
-    public static UserRole createUserRole(Role role, Site... site) {
+    public static UserRole createUserRole(User user, Role role, Site... site) {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
+        userRole.setUser(user);
         userRole.setSites(new HashSet<Site>(Arrays.asList(site)));
         return userRole;
     }

@@ -32,4 +32,9 @@
         id="-300"
         name="Northwestern Clinic"
         />
+
+    <SITES
+        id="-400"
+        name="CDC Clinic"
+        />
 </dataset>

@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import static org.easymock.EasyMock.expect;
 import org.easymock.classextension.EasyMock;
-import org.easymock.internal.matchers.ArrayEquals;
 import org.easymock.IArgumentMatcher;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -29,7 +28,8 @@ public class CreateUserControllerTest extends ControllerTestCase {
     private SiteDao siteDao;
     private UserDao userDao;
     private User user;
-    private Site site;
+    private Site site0;
+    private Site site1;
     private List sites;
 
 
@@ -48,11 +48,12 @@ public class CreateUserControllerTest extends ControllerTestCase {
         controller.setControllerTools(controllerTools);
         controller.setValidateOnBinding(false);
 
-        site = setId(0, createNamedInstance("Mayo Clinic", Site.class));
-        sites = Collections.singletonList(site);
+        site0 = setId(0, createNamedInstance("Mayo Clinic", Site.class));
+        site1 = setId(1, createNamedInstance("Northwestern Clinic", Site.class));
+        sites = Arrays.asList(site0, site1);
 
         user = createUser(-1, "John", -1L, true, "pass");
-        user.setUserRoles(Collections.singleton(createUserRole(Role.PARTICIPANT_COORDINATOR, site)));
+        user.setUserRoles(Collections.singleton(createUserRole(user, Role.PARTICIPANT_COORDINATOR, site0)));
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
@@ -70,16 +71,17 @@ public class CreateUserControllerTest extends ControllerTestCase {
 
     public void testBindRolesGrid() throws Exception {
         User expectedUser = createUser(user.getId(), user.getName(), user.getCsmUserId(), user.getActiveFlag(), user.getPlainTextPassword());
-        expectedUser.setUserRoles(Collections.singleton(createUserRole(Role.SITE_COORDINATOR, site)));
-
+        expectedUser.setUserRoles(Collections.singleton(createUserRole(expectedUser, Role.SITE_COORDINATOR, site0, site1)));
 
         request.addParameter("_rolesGrid[0]['PARTICIPANT_COORDINATOR'].selected", "1");
         request.addParameter("rolesGrid[0]['SITE_COORDINATOR'].selected", "true");
+        request.addParameter("rolesGrid[1]['SITE_COORDINATOR'].selected", "true");
         setParametersForPost();
         request.setMethod("POST");
 
-        expect(siteDao.getAll()).andReturn(Arrays.asList(site));
-        expect(siteDao.getById(0)).andReturn(site).anyTimes();
+        expect(siteDao.getAll()).andReturn(sites);
+        expect(siteDao.getById(0)).andReturn(site0).anyTimes();
+        expect(siteDao.getById(1)).andReturn(site1).anyTimes();
         expect(userService.saveUser(userDetailsEq(expectedUser))).andReturn(expectedUser);
 
         replayMocks();
@@ -127,14 +129,14 @@ public class CreateUserControllerTest extends ControllerTestCase {
         assertEquals("Wrong User", user.getName(), command.getUser().getName());
         assertEquals("Re enter password is empty", user.getPlainTextPassword(), command.getRePassword());
 
-        assertNotNull("User site/roles map null", command.getRolesGrid());
-        assertTrue("Does not contain site key", command.getRolesGrid().containsKey(site));
+        assertNotNull("User site0/roles map null", command.getRolesGrid());
+        assertTrue("Does not contain site0 key", command.getRolesGrid().containsKey(site0));
 
-        assertNotNull("Roles map null", command.getRolesGrid().get(site));
-        assertTrue("Does not contain role", command.getRolesGrid().get(site).containsKey(Role.PARTICIPANT_COORDINATOR));
+        assertNotNull("Roles map null", command.getRolesGrid().get(site0));
+        assertTrue("Does not contain role", command.getRolesGrid().get(site0).containsKey(Role.PARTICIPANT_COORDINATOR));
 
-        assertNotNull("Role Cell null", command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR));
-        assertEquals("Selected should be true", true, command.getRolesGrid().get(site).get(Role.PARTICIPANT_COORDINATOR).isSelected());
+        assertNotNull("Role Cell null", command.getRolesGrid().get(site0).get(Role.PARTICIPANT_COORDINATOR));
+        assertEquals("Selected should be true", true, command.getRolesGrid().get(site0).get(Role.PARTICIPANT_COORDINATOR).isSelected());
     }
 
     protected void setParametersForPost() throws Exception {

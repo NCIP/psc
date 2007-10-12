@@ -84,6 +84,38 @@
                     <!--</div>-->
                 <!--</div>-->
             <%--</c:forEach>--%>
+            <table cellspacing="0" cellpading="0" border="1">
+                <tr>
+                    <td></td>
+                    <c:forEach items="${roles}" var="role">
+                        <td>${role.displayName}</td>
+                    </c:forEach>
+
+                </tr>
+                <c:forEach items="${command.rolesGrid}" var="site">
+                    <tr>
+                        <td>${site.key.name}</td>
+
+                        <c:forEach items="${roles}" var="role">
+                            <td>
+                                <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
+
+                                <%--command.rolesGrid[${site.key.id}].value[${role}].selected--%>
+                                <%--<c:if test="${site.value[role].selected}">--%>
+                                    <!--true-->
+                                <%--</c:if>--%>
+                                <%--<c:if test="${not site.value[role].selected}">--%>
+                                    <!--false-->
+                                <%--</c:if>--%>
+                            </td>
+                        </c:forEach>
+                        <%--<c:forEach items="${site.value}" var="role">--%>
+                            <!--<td>${role.key.displayName}</td>-->
+                        <%--</c:forEach>--%>
+                    </tr>
+                </c:forEach>
+            </table>
+
             <div class="row">
                 <div class="label">&nbsp;</div>
                 <div class="submit">

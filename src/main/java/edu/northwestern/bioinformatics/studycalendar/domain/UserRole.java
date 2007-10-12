@@ -24,7 +24,6 @@ public class UserRole  extends AbstractMutableDomainObject {
     Set<Site> sites = new HashSet<Site>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     public User getUser() {
         return user;
     }
@@ -55,6 +54,14 @@ public class UserRole  extends AbstractMutableDomainObject {
 
     public void setSites(Set<Site> sites) {
         this.sites = sites;
+    }
+
+    public void addSite(Site site) {
+        sites.add(site);
+    }
+
+    public void removeSite(Site site) {
+        sites.remove(site);
     }
 
 

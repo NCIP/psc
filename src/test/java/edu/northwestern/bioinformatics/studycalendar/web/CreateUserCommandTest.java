@@ -48,7 +48,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
     public void testBuildRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true, "pass", Role.STUDY_ADMIN);
-        expectedUser.addUserRole(createUserRole(Role.RESEARCH_ASSOCIATE, sites.get(0)));
+        expectedUser.addUserRole(createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0), sites.get(1)));
 
         expect(siteDao.getAll()).andReturn(sites);
         replayMocks();
@@ -63,16 +63,18 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         assertTrue("Role should be true for all sites", rolesGrid.get(sites.get(1)).get(Role.STUDY_ADMIN).isSelected());
         assertFalse("Role should not be true for this site", rolesGrid.get(sites.get(0)).get(Role.PARTICIPANT_COORDINATOR).isSelected());
         assertTrue("Role should not be true for this site",  rolesGrid.get(sites.get(0)).get(Role.RESEARCH_ASSOCIATE).isSelected());
+        assertTrue("Role should not be true for this site",  rolesGrid.get(sites.get(1)).get(Role.RESEARCH_ASSOCIATE).isSelected());
 
     }
 
     public void testInterpretRolesGrid() throws Exception {
-        List expectedUserRoles = Arrays.asList(
-                createUserRole(Role.STUDY_ADMIN),
-                createUserRole(Role.RESEARCH_ASSOCIATE, sites.get(0)),
-                createUserRole(Role.PARTICIPANT_COORDINATOR, sites.get(1))
-        );
         User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+
+        List expectedUserRoles = Arrays.asList(
+                createUserRole(expectedUser, Role.STUDY_ADMIN),
+                createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0)),
+                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+        );
         expectedUser.setUserRoles(new HashSet(expectedUserRoles));
 
         expect(siteDao.getAll()).andReturn(sites);
@@ -101,10 +103,11 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong Role", Role.PARTICIPANT_COORDINATOR, userRole2.getRole());
 
         assertEquals("Wrong number of sites", 1, userRole1.getSites().size());
-        assertEquals("Wrong number of sites", 1, userRole2.getSites().size());
+        assertEquals("Wrong number of sites", 2, userRole2.getSites().size());
 
         assertEquals("Wrong Site", sites.get(0), userRole1.getSites().iterator().next());
-        assertEquals("Wrong Site", sites.get(1), userRole2.getSites().iterator().next());
+        assertTrue("Wrong Site", userRole2.getSites().contains(sites.get(0)));
+        assertTrue("Wrong Site", userRole2.getSites().contains(sites.get(1)));
 
     }
     

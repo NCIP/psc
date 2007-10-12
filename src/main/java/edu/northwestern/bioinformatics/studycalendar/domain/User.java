@@ -75,6 +75,7 @@ public class User extends AbstractMutableDomainObject implements Named {
 
     @OneToMany (mappedBy = "user")
     @Cascade( value = {CascadeType.ALL})
+    @JoinColumn(name = "user_id")
     public Set<UserRole> getUserRoles() {
         return userRoles;
     } 
