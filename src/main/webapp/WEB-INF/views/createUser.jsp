@@ -26,37 +26,36 @@
     </style>
 </head>
 <body>
-<laf:box title="List User">
+<laf:box title="${actionText} User">
     <laf:division>
-        <h1>${actionText} User</h1>
 
         <form:form method="post">
-            <form:hidden path="id"/>
+            <form:hidden path="user.id"/>
             <form:errors path="*"/>
             <div class="row">
                 <div class="label" >
-                    <form:label path="name" >User Name:</form:label>
+                    <form:label path="user.name" >User Name:</form:label>
                 </div>
                 <div class="value">
                     <c:if test="${actionText=='Create'}">
-                        <form:input path="name"/>
+                        <form:input path="user.name"/>
                     </c:if>
                     <c:if test="${actionText=='Edit'}">
-                        ${command.name}
+                        ${command.user.name}
                     </c:if>
                 </div>
             </div>
             <div class="row">
                 <div class="label" >
-                    <form:label path="name">Password:</form:label>
+                    <form:label path="user.plainTextPassword">Password:</form:label>
                 </div>
                 <div class="value">
-                    <form:password path="password"/>
+                    <form:password path="user.plainTextPassword"/>
                 </div>
             </div>
             <div class="row">
                 <div class="label" >
-                    <form:label path="name">Re-Enter Password:</form:label>
+                    <form:label path="rePassword">Re-Enter Password:</form:label>
                 </div>
                 <div class="value">
                     <form:password path="rePassword"/>
@@ -64,10 +63,10 @@
             </div>
             <div class="row">
                 <div class="label" >
-                    <form:label path="name">Enable User:</form:label>
+                    <form:label path="user.activeFlag">Enable User:</form:label>
                 </div>
                 <div class="value">
-                    <form:checkbox path="activeFlag" value=""/>
+                    <form:checkbox path="user.activeFlag" value=""/>
                 </div>
             </div>
             <div class="row">
@@ -75,16 +74,16 @@
                     <h2>Please select a role</h2>
                 </div>
             </div>
-            <c:forEach items="${roles}" var="role">
-                <div class="row">
-                    <div class="label">
-                        <form:label path="userRoles">${role.displayName}:</form:label>
-                    </div>
-                    <div class="value">
-                        <form:checkbox path="userRoles" value="${role}"/>
-                    </div>
-                </div>
-            </c:forEach>
+            <%--<c:forEach items="${roles}" var="role">--%>
+                <!--<div class="row">-->
+                    <!--<div class="label">-->
+                        <%--<form:label path="userRoles">${user.Userrole.displayName}:</form:label>--%>
+                    <!--</div>-->
+                    <!--<div class="value">-->
+                        <%--<form:checkbox path="userRoles" value="${role}"/>--%>
+                    <!--</div>-->
+                <!--</div>-->
+            <%--</c:forEach>--%>
             <div class="row">
                 <div class="label">&nbsp;</div>
                 <div class="submit">

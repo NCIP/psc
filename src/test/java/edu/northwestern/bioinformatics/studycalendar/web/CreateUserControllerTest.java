@@ -122,9 +122,10 @@ public class CreateUserControllerTest extends ControllerTestCase {
         assertNoBindingErrorsFor("userRoles", model);
         verifyMocks();
 
-        assertEquals("Wrong User", user.getName(), command.getUser().getName());
-
         assertNotNull("Command Object null", command);
+
+        assertEquals("Wrong User", user.getName(), command.getUser().getName());
+        assertEquals("Re enter password is empty", user.getPlainTextPassword(), command.getRePassword());
 
         assertNotNull("User site/roles map null", command.getRolesGrid());
         assertTrue("Does not contain site key", command.getRolesGrid().containsKey(site));

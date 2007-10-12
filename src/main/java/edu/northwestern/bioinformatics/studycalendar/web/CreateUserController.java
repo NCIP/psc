@@ -73,16 +73,15 @@ public class CreateUserController extends PscCancellableFormController {
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        // TODO: Move all logic to user object and get rid of property setters
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        User user = new User();
-        if (editId != null) {
-            user = userService.getUserById(editId);
-        }
+        User user = (editId != null) ? user = userService.getUserById(editId) : new User();
+
         CreateUserCommand command = new CreateUserCommand(user, siteDao);
         command.setUserService(userService);
 
-        // TODO: Implement Re password
+        if (command.getUser().getPassword() != null) {
+            command.setRePassword(command.getUser().getPlainTextPassword());
+        }
 
         return command;
     }
@@ -122,7 +121,7 @@ public class CreateUserController extends PscCancellableFormController {
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = new HashMap<String, String>();
             if (context.getUser() != null) {
-                params.put("editId", context.getUser().getId().toString());
+                params.put("id", context.getUser().getId().toString());
             }
             return params;
         }
