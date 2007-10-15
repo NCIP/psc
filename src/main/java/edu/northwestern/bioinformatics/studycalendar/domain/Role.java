@@ -10,7 +10,8 @@ public enum Role implements CodedEnum<String> {
     STUDY_ADMIN             ("STUDY_ADMIN",       false  ),
     PARTICIPANT_COORDINATOR ("PARTICIPANT_COORDINATOR"  ),
     RESEARCH_ASSOCIATE      ("RESEARCH_ASSOCIATE"       ),
-    SITE_COORDINATOR        ("SITE_COORDINATOR"         );
+    SITE_COORDINATOR        ("SITE_COORDINATOR"         ),
+    SYSTEM_ADMINISTRATOR    ("SYSTEM_ADMINISTRATOR"     );
 
     private String csmName;
     private boolean siteSpecific;
