@@ -5,7 +5,7 @@ require "test/unit"
 class PeriodTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
   
-  def test_period
+  def test_create_period
     init()
     add_period(2, 2)
     initialize_period('Period1', 2, 5, 'day', 4)

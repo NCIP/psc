@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper'
 require "test/unit"
 
 
-class ReleaseTemplateForUserTest < Test::Unit::TestCase
+class AddAmendmentTest < Test::Unit::TestCase
   include StudyCalendar::SeleniumCommands
 
     def test_add_amendment
