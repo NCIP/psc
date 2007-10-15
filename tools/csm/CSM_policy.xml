@@ -103,9 +103,27 @@
         update_date="2006-10-31"
         />
 
-     
+    <CSM_USER
+        user_id="-14"
+        login_name="system_admin1"
+        first_name="System"
+        last_name="Admin1"
+        password="yDq1c1nU4E5FhlAGCu3byg=="
+        update_date="2006-10-31"
+        />
 
-	<!--==================== USER TO GROUP MAPPINGS ====================-->
+    <CSM_USER
+        user_id="-15"
+        login_name="system_admin2"
+        first_name="System"
+        last_name="Admin2"
+        password="yDq1c1nU4E4g7OirUlHC8A=="
+        update_date="2006-10-31"
+        />
+
+
+
+    <!--==================== USER TO GROUP MAPPINGS ====================-->
 
 
 	<CSM_USER_GROUP USER_GROUP_ID="-1" user_id="-3" GROUP_ID="1" />
@@ -124,8 +142,11 @@
     <CSM_USER_GROUP USER_GROUP_ID="-17" user_id="-11" GROUP_ID="5" />
     <CSM_USER_GROUP USER_GROUP_ID="-18" user_id="-11" GROUP_ID="6" />
 
+    <CSM_USER_GROUP USER_GROUP_ID="-19" user_id="-14" GROUP_ID="7" />
+    <CSM_USER_GROUP USER_GROUP_ID="-20" user_id="-15" GROUP_ID="7" />
 
-    
+
+
 
      <CSM_USER_GROUP_ROLE_PG
         user_group_role_pg_id="-21"
@@ -160,7 +181,7 @@
         />
 
     <!--=================== INSERT USERS INTO PSC TABLES ==========================-->
-    
+
     <USERS
         id="-1"
         name="ra_1"
@@ -248,6 +269,23 @@
         active_flag="1"
         password="N1jZCkdaS1W8j2uyHEABIQ=="
         />
+
+    <USERS
+        id="-12"
+        name="system_admin1"
+        csm_user_id="-14"
+        active_flag="1"
+        password="yDq1c1nU4E5FhlAGCu3byg=="
+        />
+
+    <USERS
+        id="-13"
+        name="system_admin2"
+        csm_user_id="-15"
+        active_flag="1"
+        password="yDq1c1nU4E4g7OirUlHC8A=="
+        />
+
 
 
     <USER_ROLES
@@ -338,6 +376,16 @@
         id="-15"
         csm_group_name="SITE_COORDINATOR"
         user_id="-11"
+        />
+
+    <USER_ROLES
+        csm_group_name="SYSTEM_ADMINISTRATOR"
+        user_id="-12"
+        />
+
+    <USER_ROLES
+        csm_group_name="SYSTEM_ADMINISTRATOR"
+        user_id="-13"
         />
 
 

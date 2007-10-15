@@ -33,6 +33,8 @@ public class StringEncoderTest extends StudyCalendarTestCase {
         System.out.println("sc_systemadmin: "  + se.encrypt("systemadmin"));
         System.out.println("sitecd_1: "        + se.encrypt("sitecd_1"));
         System.out.println("sitecd_2: "        + se.encrypt("sitecd_2"));
+        System.out.println("system_admin1: "   + se.encrypt("system_admin1"));
+        System.out.println("system_admin2: "   + se.encrypt("system_admin2"));
 
     }
 
