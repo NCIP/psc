@@ -34,6 +34,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     private UserProvisioningManagerStub userProvisioningManagerStub;
     private UserService service;
     private List<Group> allCsmGroups;
+    private SiteService siteService;
 
 
     protected void setUp() throws Exception {
@@ -42,10 +43,12 @@ public class UserServiceTest extends StudyCalendarTestCase {
         userDao = registerMockFor(UserDao.class);
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
         userProvisioningManagerStub = new UserProvisioningManagerStub();
+        siteService = registerMockFor(SiteService.class);
 
         service = new UserService();
         service.setUserDao(userDao);
         service.setUserProvisioningManager(userProvisioningManager);
+        service.setSiteService(siteService);
 
         allCsmGroups = new ArrayList<Group>();
         allCsmGroups.add(createCsmGroup(1L, "STUDY_COORDINATOR"));
@@ -61,10 +64,12 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
-        expectedCsmUser.setLoginName("john");
-        expectedCsmUser.setUserId(1L);
+        expectedCsmUser.setLoginName(expectedUser.getName());
+        expectedCsmUser.setUserId(expectedUser.getCsmUserId());
 
         userProvisioningManagerStub.createUser(expectedCsmUser);
+
+        expect(siteService.getSitesForUser(expectedCsmUser.getName())).andReturn(new ArrayList<Site>());
 
         userDao.save(expectedUser);
         replayMocks();
@@ -102,19 +107,22 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetByIdAndAddUserRoleAndSave() throws Exception {
-        User expectedUser = createUser(-100,"john", -200L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        User expectedUser = createUser(-100,"john", 100L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         UserRole userRole = createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR,
                 createNamedInstance("Mayo Clinic", Site.class),
                 createNamedInstance("Northwestern Clinic", Site.class));
 
-        User expectedUpdatedUser = createUser(-100, "updated", -200L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        User expectedUpdatedUser = createUser(-100, "updated", 100L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
         expectedUpdatedUser.addUserRole(userRole);
 
         String[] expectedCsmGroups = new String[] {"1", "2", "3"}; // CSM ids for Study coordinator and study admin
 
         expect(userDao.getById(-100)).andReturn(expectedUser);
         expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
-        userProvisioningManager.assignGroupsToUser(eq("-200"), unsortedAryEq(expectedCsmGroups));
+        userProvisioningManager.assignGroupsToUser(eq("100"), unsortedAryEq(expectedCsmGroups));
+        expect(siteService.getSitesForUser(expectedUpdatedUser.getName())).andReturn(new ArrayList());
+        siteService.assignParticipantCoordinators(createNamedInstance("Mayo Clinic", Site.class), expectedUser.getCsmUserId().toString());
+        siteService.assignParticipantCoordinators(createNamedInstance("Northwestern Clinic", Site.class), expectedUser.getCsmUserId().toString());
         userDao.save(expectedUpdatedUser);
 
         replayMocks();
@@ -262,7 +270,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         }
 
         public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
-            user.setUserId(1L);
+            user.setUserId(100L);
         }
 
         public Application getApplicationById(String string) throws CSObjectNotFoundException {

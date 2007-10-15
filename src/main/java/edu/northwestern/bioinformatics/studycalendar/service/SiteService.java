@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static java.util.Collections.singletonList;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -11,12 +13,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Padmaja Vedula
@@ -49,19 +46,44 @@ public class SiteService {
     }
     
     public void assignSiteCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, SITE_COORDINATOR_ACCESS_ROLE);
+        assignProtectionGroup(site, userIds, SITE_COORDINATOR_ACCESS_ROLE);
     }
     
     public void assignParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+    	assignProtectionGroup(site, userIds, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
     }
 
     public void assignSiteResearchAssociates(Site site, List<String> userIds) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, RESEARCH_ASSOCIATE_ACCESS_ROLE);
+        assignProtectionGroup(site, userIds, RESEARCH_ASSOCIATE_ACCESS_ROLE);
     }
+
+    public void assignSiteCoordinators(Site site, String userId) throws Exception {
+        assignSiteCoordinators(site, singletonList(userId));
+    }
+
+    public void assignParticipantCoordinators(Site site, String userId) throws Exception {
+    	assignParticipantCoordinators(site, singletonList(userId));
+    }
+
+    public void assignSiteResearchAssociates(Site site, String userId) throws Exception {
+        assignSiteResearchAssociates(site, singletonList(userId));
+    }
+
+    private void assignProtectionGroup(Site site, List<String> userIds, String accessRole) throws Exception {
+        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, accessRole);
+    }
+
+    public void removeAllSiteRoles(Site site, List<String> userIds) throws Exception {
+        removeParticipantCoordinators(site, userIds);
+        removeResearchAssociates(site, userIds);
+        removeSiteCoordinators(site, userIds);
+    }
+
+    public void removeAllSiteRoles(Site site, String userId) throws Exception {
+        removeAllSiteRoles(site, Collections.singletonList(userId));
+    }
+
     
     public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
     	ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));

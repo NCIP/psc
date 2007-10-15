@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static org.easymock.EasyMock.expect;
+import org.easymock.classextension.EasyMock;
 
 import java.util.*;
 
@@ -70,7 +71,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     public void testInterpretRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
 
-        List expectedUserRoles = Arrays.asList(
+        List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
                 createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0)),
                 createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
@@ -112,9 +113,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
     
     public CreateUserCommand createCommand(User user) {
-        CreateUserCommand command = new CreateUserCommand(user, siteDao);
-        command.setUserService(service);
-        command.setSiteDao(siteDao);
+        CreateUserCommand command = new CreateUserCommand(user, siteDao, service);
         return command;
     }
 

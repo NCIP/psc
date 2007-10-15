@@ -131,4 +131,28 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong password", "password123", loaded.getPlainTextPassword());
         }
     }
+
+    public void testDeleteUnreferencedRole() throws Exception {
+      Integer savedId;
+        {
+            User actualUser = getDao().getById(-200);
+            assertNotNull("User not found", actualUser);
+            assertEquals("Wrong id", -200, (int) actualUser.getId());
+            assertEquals("No roles assigned", 1, actualUser.getUserRoles().size());
+
+
+            actualUser.clearUserRoles();
+            getDao().save(actualUser);
+            savedId = actualUser.getId();
+        }
+
+        interruptSession();
+
+        {
+            User loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload user with id " + savedId, loaded);
+            assertEquals("Wrong id", -200, (int) loaded.getId());
+            assertEquals("Wrong Role Size", 0, loaded.getUserRoles().size());
+        }
+    }
 }

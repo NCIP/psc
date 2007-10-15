@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -170,8 +171,8 @@ public class CreateUserControllerTest extends ControllerTestCase {
 
     private class MockableCommand extends CreateUserCommand {
 
-        public MockableCommand(User user, SiteDao siteDao) {
-            super(user, siteDao);
+        public MockableCommand(User user, SiteDao siteDao, UserService userService) {
+            super(user, siteDao, userService);
         }
 
         public void validate(Errors errors) { }

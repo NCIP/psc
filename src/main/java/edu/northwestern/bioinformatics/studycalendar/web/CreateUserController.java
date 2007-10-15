@@ -20,11 +20,9 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.beans.PropertyEditorSupport;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -76,8 +74,7 @@ public class CreateUserController extends PscCancellableFormController {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
         User user = (editId != null) ? user = userService.getUserById(editId) : new User();
 
-        CreateUserCommand command = new CreateUserCommand(user, siteDao);
-        command.setUserService(userService);
+        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService);
 
         if (command.getUser().getPassword() != null) {
             command.setRePassword(command.getUser().getPlainTextPassword());

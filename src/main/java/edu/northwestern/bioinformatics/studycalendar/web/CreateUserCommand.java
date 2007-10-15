@@ -1,18 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
-
-import java.util.*;
-
-import org.springframework.validation.Errors;
-import org.apache.commons.lang.StringUtils;
 import gov.nih.nci.security.util.StringEncrypter;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.validation.Errors;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class CreateUserCommand implements Validatable {
     private Set<UserRole> userRoles;
@@ -22,9 +24,10 @@ public class CreateUserCommand implements Validatable {
     private SiteDao siteDao;
     private Map<Site, Map<Role,RoleCell>> rolesGrid;
 
-    public CreateUserCommand(User user, SiteDao siteDao) {
+    public CreateUserCommand(User user, SiteDao siteDao, UserService userService) {
         this.user = user;
         this.siteDao = siteDao;
+        this.userService = userService;
         userRoles = new HashSet<UserRole>();
         if(user == null) user = new User();
         buildRolesGrid(user.getUserRoles());
@@ -87,7 +90,7 @@ public class CreateUserCommand implements Validatable {
                     errors.rejectValue("user.password", "error.user.password.not.specified");
                 } else {
                     if (!user.getPlainTextPassword().equals(rePassword)) {
-                        errors.rejectValue("user.rePassword", "error.user.repassword.does.not.match.password");
+                        errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
                     }
                 }
             } catch(StringEncrypter.EncryptionException encryptExcep) {
@@ -111,7 +114,8 @@ public class CreateUserCommand implements Validatable {
 
     public User apply() throws Exception {
         interpretRolesGrid(rolesGrid);
-        user.setUserRoles(userRoles);
+        user.clearUserRoles();
+        user.addAllUserRoles(userRoles);
 
         return userService.saveUser(user);
     }
@@ -131,7 +135,7 @@ public class CreateUserCommand implements Validatable {
                     UserRole newUserRole = new UserRole();
                     newUserRole.setUser(user);
                     newUserRole.setRole(role);
-                    if (role.isSiteSpecific() == true) {
+                    if (role.isSiteSpecific()) {
                         for (UserRole userRole : userRoles) {
                             if (userRole.getRole().equals(role)) {
                                 newUserRole = userRole;

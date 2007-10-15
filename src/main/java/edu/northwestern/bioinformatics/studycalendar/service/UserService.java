@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
@@ -12,10 +13,7 @@ import gov.nih.nci.security.dao.SearchCriteria;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Transactional
 public class UserService {
@@ -23,6 +21,7 @@ public class UserService {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
+    private SiteService siteService;
 
     public User saveUser(User user) throws Exception {
         if(user == null)
@@ -36,8 +35,28 @@ public class UserService {
         }
 
         assignCsmGroups(user.getCsmUserId().toString(), user.getUserRoles());
+        assignCsmUserToSite(user.getCsmUserId().toString(), user.getName(), user.getUserRoles());
         userDao.save(user);
         return user;
+    }
+
+    private void assignCsmUserToSite(String csmUserId, String userName, Set<UserRole> userRoles) throws Exception {
+        for (Site site : siteService.getSitesForUser(userName)) {
+            siteService.removeAllSiteRoles(site, csmUserId);
+        }
+
+        for (UserRole userRole : userRoles) {
+            for (Site site : userRole.getSites()) {
+                if (SiteService.PARTICIPANT_COORDINATOR_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
+                    siteService.assignParticipantCoordinators(site, csmUserId);
+                } else if (SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
+                    siteService.assignSiteResearchAssociates(site, csmUserId);
+                } else if (SiteService.SITE_COORDINATOR_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
+                    siteService.assignSiteCoordinators(site, csmUserId);
+                }
+            }
+        }
+
     }
 
     private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user) throws Exception {
@@ -112,5 +131,10 @@ public class UserService {
     @Required
     public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
         this.userProvisioningManager = userProvisioningManager;
+    }
+
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }

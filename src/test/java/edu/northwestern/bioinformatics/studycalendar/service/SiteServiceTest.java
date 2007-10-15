@@ -273,6 +273,23 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testRemoveAllSiteRoles() throws Exception{
+        Site expectedSite = setId(1, createSite("northwestern"));
+
+        List<String> expectedCoordinators = Collections.singletonList("john");
+
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG).times(3);
+        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
+        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
+        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
+        replayMocks();
+
+        service.removeAllSiteRoles(expectedSite, expectedCoordinators);
+        verifyMocks();
+    }
+
     /* methods to create objects for mocks */
 
     private Site createSite(String aSiteName) {

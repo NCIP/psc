@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,10 +25,17 @@ import java.util.Set;
 public class User extends AbstractMutableDomainObject implements Named {
     private String name;
     private Long csmUserId;
-    private Set<UserRole> userRoles = new HashSet<UserRole>();
+    private Set<UserRole> userRoles;
     private Boolean activeFlag;
     private String password;
-    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+    private List<StudyParticipantAssignment> studyParticipantAssignments;
+
+
+    public User() {
+        this.userRoles = new HashSet<UserRole>();
+        this.studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+        this.activeFlag = true;
+    }
 
     public String getName() {
         return name;
@@ -63,6 +71,9 @@ public class User extends AbstractMutableDomainObject implements Named {
 
     @Transient
     public String getPlainTextPassword() throws StringEncrypter.EncryptionException {
+        if (password == null || StringUtils.isBlank(password))
+            return password;
+        
         StringEncrypter encrypter = new StringEncrypter();
         return encrypter.decrypt(password);
     }
@@ -74,7 +85,7 @@ public class User extends AbstractMutableDomainObject implements Named {
     }
 
     @OneToMany (mappedBy = "user")
-    @Cascade( value = {CascadeType.ALL})
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     @JoinColumn(name = "user_id")
     public Set<UserRole> getUserRoles() {
         return userRoles;
@@ -92,6 +103,14 @@ public class User extends AbstractMutableDomainObject implements Named {
         userRoles.remove(userRole);
     }
 
+    public void clearUserRoles() {
+        userRoles.clear();
+    }
+
+    public void addAllUserRoles(Set<UserRole> userRoles) {
+        this.userRoles.addAll(userRoles);
+    }
+    
     @OneToMany (mappedBy = "participantCoordinator")
     @OrderBy // order by ID for testing consistency
     @Cascade (value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
