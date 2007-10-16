@@ -38,9 +38,9 @@ public class DisplayICSCalendarController extends AbstractController {
 
 		if (gridId != null) {
 			StudyParticipantAssignment studyParticipantAssignment = studyParticipantAssignmentDao.getByGridId(gridId);
-			Calendar icsCalendar = ICalUtil.generateICalendar(studyParticipantAssignment);
+			Calendar icsCalendar = ICalTools.generateICalendar(studyParticipantAssignment);
 
-			response.setContentType("application/ics");
+			// response.setContentType("application/ics");
 			response.setHeader("Content-Disposition", "attachment; filename=" + gridId + ".ics");
 
 			response.setContentType("text/calendar");
