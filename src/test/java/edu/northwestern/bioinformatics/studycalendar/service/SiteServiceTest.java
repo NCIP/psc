@@ -1,12 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static org.easymock.classextension.EasyMock.*;
@@ -287,6 +291,19 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         service.removeAllSiteRoles(expectedSite, expectedCoordinators);
+        verifyMocks();
+    }
+
+    public void testAssignProtectionGroup() throws Exception {
+        Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
+        List<String> userIds = Arrays.asList("John");
+        String[] accessRoles = {Role.PARTICIPANT_COORDINATOR.csmRole(), Role.SITE_COORDINATOR.csmRole()};
+        ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), site.getName());
+
+        expect(authorizationManager.getPGByName(createExternalObjectId(site))).andReturn(pg);
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, pg, accessRoles);
+        replayMocks();
+        service.assignProtectionGroup(site, userIds, accessRoles);
         verifyMocks();
     }
 

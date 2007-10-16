@@ -87,7 +87,7 @@ public class CreateUserController extends PscCancellableFormController {
 		return new ModelAndView(new RedirectView(getCancelView()));
 	}
 
-    
+
 
     @Required
     public void setUserService(UserService userService) {

@@ -4,8 +4,11 @@ import edu.nwu.bioinformatics.commons.ComparisonUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import gov.nih.nci.security.authorization.domainobjects.Role;
+import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 
@@ -90,6 +93,32 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         verifyMocks();
     }
 
+    public void testAssignProtectionGroupsToUsers() throws Exception {
+        Role role0 = new Role();
+        role0.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR.csmRole());
+        role0.setId(7L);
+        Role role1 = new Role();
+        role1.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.PARTICIPANT_COORDINATOR.csmRole());
+        role1.setId(4L);
+
+        String userId = "1";
+
+        ProtectionGroup protectionGroup = new ProtectionGroup();
+        protectionGroup.setProtectionGroupId(100L);
+
+        RoleSearchCriteria criteria0 = new RoleSearchCriteria(role0);
+        RoleSearchCriteria criteria1 = new RoleSearchCriteria(role1);
+
+        expect(userProvisioningManager.getObjects(eqRoleSearchCriteria(criteria0))).andReturn(Arrays.asList(role0));
+        expect(userProvisioningManager.getObjects(eqRoleSearchCriteria(criteria1))).andReturn(Arrays.asList(role1));
+
+        userProvisioningManager.assignUserRoleToProtectionGroup(eq(userId), aryEq(new String[]{role0.getId().toString(), role1.getId().toString()}), eq(protectionGroup.getProtectionGroupId().toString()));
+        replayMocks();
+
+        manager.assignProtectionGroupsToUsers(Arrays.asList(userId), protectionGroup, new String[] {role0.getName(), role1.getName()});
+        verifyMocks();
+    }
+
     private static ProtectionGroup createPG(long id) {
         ProtectionGroup g = new ProtectionGroup();
         g.setProtectionGroupId(id);
@@ -115,5 +144,35 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         List<String> ids = new ArrayList<String>(groups.length);
         for (ProtectionGroup group : groups) ids.add(group.getProtectionGroupId().toString());
         return ids.toArray(new String[0]);
+    }
+
+    public static RoleSearchCriteria eqRoleSearchCriteria(RoleSearchCriteria in) {
+        EasyMock.reportMatcher(new RoleSearchCriteriaEquals(in));
+        return null;
+    }
+
+    public static class RoleSearchCriteriaEquals implements IArgumentMatcher {
+        private RoleSearchCriteria expected;
+
+        public RoleSearchCriteriaEquals(RoleSearchCriteria expected) {
+            this.expected = expected;
+        }
+
+        public boolean matches(Object actual) {
+            if (!(actual instanceof RoleSearchCriteria)) {
+                return false;
+            }
+
+            return(((RoleSearchCriteria) actual).getFieldAndValues().entrySet().iterator().next()
+                    .equals((expected.getFieldAndValues().entrySet().iterator().next())));
+        }
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append("eqRoleSearchCriteria(");
+            buffer.append(expected.getClass().getName());
+            buffer.append(" with message \"");
+            buffer.append(expected.getFieldAndValues().entrySet().iterator().next());
+            buffer.append("\")");
+        }
     }
 }

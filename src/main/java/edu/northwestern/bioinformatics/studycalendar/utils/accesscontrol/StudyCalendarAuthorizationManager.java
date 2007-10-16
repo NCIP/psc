@@ -20,13 +20,7 @@ import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.util.ObjectSetUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -322,6 +316,30 @@ public class StudyCalendarAuthorizationManager {
 		if (roleList.size() > 0) {
 			Role accessRole = (Role) roleList.get(0);
 			String[] roleIds = new String[] {accessRole.getId().toString()};
+
+			for (String userId : userIds)
+			{
+				userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, protectionGroup.getProtectionGroupId().toString());
+			}
+		}
+	}
+
+    public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String[] roleNames) throws Exception
+	{   List<Role> roleList = new ArrayList<Role>();
+        for (String roleStr : roleNames ) {
+            Role searchRole = new Role();
+		    searchRole.setName(roleStr);
+            SearchCriteria roleSearchCriteria = new RoleSearchCriteria(searchRole);
+		    roleList.addAll(userProvisioningManager.getObjects(roleSearchCriteria));
+        }
+
+
+		if (roleList.size() > 0) {
+            String[] roleIds = new String[roleList.size()];
+            Iterator<Role> role = roleList.iterator();
+            for (int i = 0; i < roleIds.length; i++) {
+                roleIds[i] = role.next().getId().toString();
+            }
 
 			for (String userId : userIds)
 			{

@@ -45,18 +45,17 @@ public class UserService {
             siteService.removeAllSiteRoles(site, csmUserId);
         }
 
+        Map<Site, List<String>> rolesBySite = new HashMap<Site, List<String>>();
         for (UserRole userRole : userRoles) {
             for (Site site : userRole.getSites()) {
-                if (SiteService.PARTICIPANT_COORDINATOR_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
-                    siteService.assignParticipantCoordinators(site, csmUserId);
-                } else if (SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
-                    siteService.assignSiteResearchAssociates(site, csmUserId);
-                } else if (SiteService.SITE_COORDINATOR_ACCESS_ROLE.equals(userRole.getRole().csmGroup())) {
-                    siteService.assignSiteCoordinators(site, csmUserId);
-                }
+                if (!rolesBySite.containsKey(site)) rolesBySite.put(site, new ArrayList<String>());
+                rolesBySite.get(site).add(userRole.getRole().csmRole());
             }
         }
 
+       for (Site site : rolesBySite.keySet()) {
+           siteService.assignProtectionGroup(site, csmUserId, rolesBySite.get(site).toArray(new String[0]));
+       }
     }
 
     private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user) throws Exception {

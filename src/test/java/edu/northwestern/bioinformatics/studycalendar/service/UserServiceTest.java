@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static org.easymock.EasyMock.aryEq;
+
 import static java.util.Collections.singleton;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
@@ -22,6 +24,7 @@ import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.eq;
 import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
 import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
@@ -35,6 +38,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     private UserService service;
     private List<Group> allCsmGroups;
     private SiteService siteService;
+    private List<Site> sites;
 
 
     protected void setUp() throws Exception {
@@ -56,6 +60,10 @@ public class UserServiceTest extends StudyCalendarTestCase {
         allCsmGroups.add(createCsmGroup(3L, "PARTICIPANT_COORDINATOR"));
         allCsmGroups.add(createCsmGroup(5L, "RESEARCH_ASSOCIATE"));
         allCsmGroups.add(createCsmGroup(6L, "SITE_COORDINATOR"));
+
+        sites = new ArrayList<Site>();
+        sites.add(createNamedInstance("Mayo Clinic", Site.class));
+        sites.add(createNamedInstance("Northwestern Clinic", Site.class));
     }
 
     public void testSaveUser() throws Exception {
@@ -69,7 +77,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         userProvisioningManagerStub.createUser(expectedCsmUser);
 
-        expect(siteService.getSitesForUser(expectedCsmUser.getName())).andReturn(new ArrayList<Site>());
+        expect(siteService.getSitesForUser(expectedCsmUser.getName())).andReturn(Collections.<Site>emptyList());
 
         userDao.save(expectedUser);
         replayMocks();
@@ -83,7 +91,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     public void testGetUserByName() throws Exception {
         User expectedUser = createUser(-100, "john", -100L, true, "pass123");
-//        List expectedUsers = Collections.singletonList(expectedUser);
 
         expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUser);
         replayMocks();
@@ -106,30 +113,38 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertUserEquals(expectedUser, actualUser);
     }
 
-    public void testGetByIdAndAddUserRoleAndSave() throws Exception {
-        User expectedUser = createUser(-100,"john", 100L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        UserRole userRole = createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR,
-                createNamedInstance("Mayo Clinic", Site.class),
-                createNamedInstance("Northwestern Clinic", Site.class));
+    public void testReAssignCsmProtectionGroups() throws Exception {
+        User expectedUser = createUser(-100,"john", 100L, true, "password");
+        expectedUser.addUserRole(createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1)));
 
-        User expectedUpdatedUser = createUser(-100, "updated", 100L, true, "password", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-        expectedUpdatedUser.addUserRole(userRole);
+        User expectedUpdatedUser = createUser(-100, "updated", 100L, true, "password");
 
-        String[] expectedCsmGroups = new String[] {"1", "2", "3"}; // CSM ids for Study coordinator and study admin
+        UserRole expectedUserRole0 = createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0), sites.get(1));
+        expectedUpdatedUser.addUserRole(expectedUserRole0);
+        UserRole expectedUserRole1 = createUserRole(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
+        expectedUpdatedUser.addUserRole(expectedUserRole1);
+
+        String[] expectedCsmGroups = new String[] {"5", "6"}; // CSM ids for Research Associate
 
         expect(userDao.getById(-100)).andReturn(expectedUser);
         expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
         userProvisioningManager.assignGroupsToUser(eq("100"), unsortedAryEq(expectedCsmGroups));
-        expect(siteService.getSitesForUser(expectedUpdatedUser.getName())).andReturn(new ArrayList());
-        siteService.assignParticipantCoordinators(createNamedInstance("Mayo Clinic", Site.class), expectedUser.getCsmUserId().toString());
-        siteService.assignParticipantCoordinators(createNamedInstance("Northwestern Clinic", Site.class), expectedUser.getCsmUserId().toString());
+        expect(siteService.getSitesForUser(expectedUpdatedUser.getName())).andReturn(sites);
+
+        String expectedUpdatedCsmUserId = expectedUpdatedUser.getCsmUserId().toString();
+        siteService.removeAllSiteRoles(sites.get(0), expectedUpdatedCsmUserId);
+        siteService.removeAllSiteRoles(sites.get(1), expectedUpdatedCsmUserId);
+
+        siteService.assignProtectionGroup(eq(sites.get(0)), eq(expectedUpdatedCsmUserId), unsortedAryEq(new String[]{expectedUserRole0.getRole().csmRole(), expectedUserRole1.getRole().csmRole()}));
+        siteService.assignProtectionGroup(eq(sites.get(1)), eq(expectedUpdatedCsmUserId), unsortedAryEq(new String[]{expectedUserRole0.getRole().csmRole()}));
+
         userDao.save(expectedUpdatedUser);
 
         replayMocks();
 
         User actual = service.getUserById(-100);
         actual.setName("updated");
-        actual.addUserRole(userRole);
+        actual.setUserRoles(expectedUpdatedUser.getUserRoles());
         service.saveUser(actual);
         verifyMocks();
 
@@ -143,10 +158,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertEquals("Active flags not equal", expected.getActiveFlag(), actual.getActiveFlag());
         assertEquals("Passwords not equal", expected.getPassword(), actual.getPassword());
         assertEquals("Different number of roles", expected.getUserRoles().size(), actual.getUserRoles().size());
-//        for(UserRole userRole : expected.getUserRoles()) {
-//
-//            assertTrue("Expected and actual user roles are different", actual.getUserRoles().contains(userRole));
-//        }
+
         Iterator<UserRole> expectedUserRolesIter = expected.getUserRoles().iterator();
         Iterator<UserRole> actualUserRolesIter = actual.getUserRoles().iterator();
         while (expectedUserRolesIter.hasNext()) {
@@ -168,7 +180,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
-        EasyMock.reportMatcher(new CsmGroupSearchCriteriaMatcher(group));
+        reportMatcher(new CsmGroupSearchCriteriaMatcher(group));
         return null;
     }
 
@@ -198,7 +210,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public static <T> T unsortedAryEq(T t) {
-        EasyMock.reportMatcher(new UnsortedArrayEquals(t));
+        reportMatcher(new UnsortedArrayEquals(t));
         return null;
     }
 

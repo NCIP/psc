@@ -74,6 +74,16 @@ public class SiteService {
     	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, accessRole);
     }
 
+    public void assignProtectionGroup(Site site, String userId, String[] accessRoles) throws Exception {
+        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+    	authorizationManager.assignProtectionGroupsToUsers(Collections.singletonList(userId), sitePG, accessRoles);
+    }
+
+    public void assignProtectionGroup(Site site, List<String> userIds, String[] accessRoles) throws Exception {
+        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
+    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, accessRoles);
+    }
+
     public void removeAllSiteRoles(Site site, List<String> userIds) throws Exception {
         removeParticipantCoordinators(site, userIds);
         removeResearchAssociates(site, userIds);
