@@ -22,8 +22,8 @@
     <bean id="studyCalendarAuthorizationManager" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
 
+    <!--
     <bean id="gridAuthenticationClient" class="gov.nih.nci.cabig.ctms.web.sso.GridBasicAuthenticationClientImpl">
-        <!-- TODO: parameterize these -->
         <property name="idpUrl" value="https://cagrid-auth.nci.nih.gov:8443/wsrf/services/cagrid/AuthenticationService"/>
         <property name="ifsUrl" value="https://cagrid-dorian.nci.nih.gov:8443/wsrf/services/cagrid/Dorian"/>
         <property name="proxyLifetimeHours" value="12"/>
@@ -41,6 +41,7 @@
         <property name="passwordParam" value="password"/>
         <property name="gridProxyParam" value="gridProxy"/>
     </bean>
+    -->
 
     <bean id="csmAuthorizationDao"
 		class="gov.nih.nci.security.dao.DIAuthorizationDao"
