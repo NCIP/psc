@@ -2,8 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
-import org.springframework.mock.web.MockServletContext;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -17,10 +15,6 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 	protected MockHttpServletRequest request;
 
 	protected MockHttpServletResponse response;
-
-	protected MockServletContext servletContext;
-
-	protected MockHttpSession session;
 
 	private DisplayICSCalendarController controller;
 
@@ -38,8 +32,11 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 		request.setMethod("GET");
 		String grid = "adefg-higj";
 		request.setPathInfo("/cal/schedule/display/" + grid + ".ics");
-
 		controller.handleRequest(request, response);
+
+		assertEquals("response should return content type of calendar", "text/calendar", response.getContentType());
+		assertEquals("response should return file of type ics", "attachment; filename=" + grid + ".ics", response
+				.getHeader("Content-Disposition"));
 
 	}
 

@@ -10,6 +10,7 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
@@ -23,7 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssi
  * Utility class which provides functionality of generating ics calendar.
  * @author Saurabh Agrawal
  */
-public class ICalUtil {
+public class ICalTools {
 
 	/**
 	 * Generate ICS calendar for a studyParticipantAssignment.
@@ -64,14 +65,20 @@ public class ICalUtil {
 					SortedMap<Date, List<ScheduledEvent>> events = scheduledArm.getEventsByDate();
 					for (Date date : events.keySet()) {
 						List<ScheduledEvent> event = events.get(date);
-						for (ScheduledEvent scheduleEvent : event) {
-							String activityName = scheduleEvent.getActivity().getName();
-							VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), activityName);
-							// initialize as an all-day event..
-							vEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
+						for (final ScheduledEvent scheduleEvent : event) {
+							if (scheduleEvent.getActivity() != null) {
+								String activityName = scheduleEvent.getActivity().getName();
+								VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()),
+										activityName);
 
-							// Add the event
-							icsCalendar.getComponents().add(vEvent);
+								// initialize as an all-day event..
+								vEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
+								Description description = new Description(scheduleEvent.getActivity().getDescription());
+								vEvent.getProperties().add(description);
+								// Add the event
+								icsCalendar.getComponents().add(vEvent);
+							}
+
 						}
 
 					}
@@ -81,5 +88,4 @@ public class ICalUtil {
 
 		return icsCalendar;
 	}
-
 }
