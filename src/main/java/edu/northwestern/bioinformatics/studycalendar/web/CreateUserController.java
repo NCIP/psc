@@ -16,6 +16,7 @@ import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -43,14 +44,16 @@ public class CreateUserController extends PscCancellableFormController {
         setCrumb(new Crumb());
     }
 
-
-    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
+    protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
+        CreateUserCommand command = (CreateUserCommand) o;
         Map<String, Object> refdata = new HashMap<String, Object>();
         List<Role> roles = Arrays.asList(Role.values());
         refdata.put("roles", roles);
 
-        String actionText = ServletRequestUtils.getIntParameter(httpServletRequest, "id") == null ? "Create" : "Edit";
+        String actionText = ServletRequestUtils.getIntParameter(request, "id") == null ? "Create" : "Edit";
         refdata.put("actionText", actionText);
+
+        refdata.put("user", command.getUser());
 
         return refdata;
     }
@@ -107,7 +110,7 @@ public class CreateUserController extends PscCancellableFormController {
     private static class Crumb extends DefaultCrumb {
         public String getName(BreadcrumbContext context) {
             StringBuilder sb = new StringBuilder();
-            if (context.getUser() == null) {
+            if (context.getUser() == null || context.getUser().getId() == null) {
                 sb.append( "Create User");
             } else {
                 sb.append(" Edit User ").append(context.getUser().getName());
@@ -117,7 +120,7 @@ public class CreateUserController extends PscCancellableFormController {
 
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = new HashMap<String, String>();
-            if (context.getUser() != null) {
+            if (context.getUser() != null && context.getUser().getId() != null) {
                 params.put("id", context.getUser().getId().toString());
             }
             return params;
