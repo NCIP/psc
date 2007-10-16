@@ -330,6 +330,7 @@
             </c:forEach>
         </select>
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+        <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar">Go</a>
     </div>
 </c:if>
 <c:if test="${not empty onStudyAssignments}">

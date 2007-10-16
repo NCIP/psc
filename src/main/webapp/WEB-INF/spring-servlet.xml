@@ -209,6 +209,9 @@
     <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
 
+    <bean name="/cal/schedule/display/*.ics" id="displayICSCalendarController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayICSCalendarController"/>
+
     <bean name="/cal/scheduleEvent" id="scheduleEventController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController">
         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
