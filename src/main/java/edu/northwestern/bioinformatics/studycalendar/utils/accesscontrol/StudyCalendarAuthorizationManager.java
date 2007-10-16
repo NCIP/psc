@@ -309,7 +309,9 @@ public class StudyCalendarAuthorizationManager {
     
     public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) throws Exception
 	{
-    	Role role = new Role();
+        if (protectionGroup == null) return;
+        
+        Role role = new Role();
 		role.setName(roleName);
 		SearchCriteria roleSearchCriteria = new RoleSearchCriteria(role);
 		List roleList = userProvisioningManager.getObjects(roleSearchCriteria);
@@ -325,7 +327,10 @@ public class StudyCalendarAuthorizationManager {
 	}
 
     public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String[] roleNames) throws Exception
-	{   List<Role> roleList = new ArrayList<Role>();
+	{
+        if (protectionGroup == null) return;
+
+        List<Role> roleList = new ArrayList<Role>();
         for (String roleStr : roleNames ) {
             Role searchRole = new Role();
 		    searchRole.setName(roleStr);
@@ -350,7 +355,9 @@ public class StudyCalendarAuthorizationManager {
     
     public void removeProtectionGroupUsers(List<String> userIds, ProtectionGroup protectionGroup) throws Exception
     {
-    	if (!((userIds.size() == 1) && (userIds.get(0).equals("")))) {
+        if (protectionGroup == null) return;
+
+        if (!((userIds.size() == 1) && (userIds.get(0).equals("")))) {
     		for (String userId : userIds)
     		{
     			userProvisioningManager.removeUserFromProtectionGroup(protectionGroup.getProtectionGroupId().toString(), userId);
