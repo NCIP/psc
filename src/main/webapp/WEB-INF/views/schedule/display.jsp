@@ -319,6 +319,7 @@
 <c:if test="${assignment.endDateEpoch == null}">
     <div id="take-off-study">
         <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
+        <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar">Export Calendar as ICS for iCal, Outlook, etc..</a>
     </div>
 <br style="clear:both"/>
 </c:if>
@@ -330,8 +331,7 @@
             </c:forEach>
         </select>
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
-        <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar">Go</a>
-    </div>
+      </div>
 </c:if>
 <c:if test="${not empty onStudyAssignments}">
     <div id="schedule-switch">View schedule (On Study) for
