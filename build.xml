@@ -328,14 +328,13 @@
 
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
     <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
-        <property name="hsqldb-dir" value="hsqldb"/>
-        <property name="hsqldb-jar" value="test/lib/sc-hsqldb.jar"/>
-        <property name="create-hsqldb.temp-url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/study_calendar"/>
-        <delete file="${hsqldb-jar}"/>
+        <property name="hsqldb-dir" value="target/hsqldb"/>
+        <property name="create-hsqldb.dbname" value="psc"/>
+        <property name="create-hsqldb.url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/${create-hsqldb.dbname}"/>
         <delete dir="${hsqldb-dir}"/>
 
         <propertyfile file="db/hsqldb.properties">
-            <entry key="datasource.url"      value="jdbc:hsqldb:res:/${hsqldb-dir}/study_calendar"/>
+            <entry key="datasource.url"      value="${create-hsqldb.url}"/>
             <entry key="datasource.username" value="sa"/>
             <entry key="datasource.password" value=""/>
             <entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>
@@ -343,27 +342,23 @@
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
         </propertyfile>
 
-        <echo >${create-hsqldb.temp-url}</echo>
+        <echo>${create-hsqldb.url}</echo>
         <mkdir dir="${hsqldb-dir}"/>
         <ant antfile="${basedir}/build.xml">
-            <property name="datasource.url" value="${create-hsqldb.temp-url}"/>
+            <property name="datasource.url" value="${create-hsqldb.url}"/>
             <target name="hsqldb"/>
             <target name="migrate"/>
         </ant>
 
-        <sql driver="org.hsqldb.jdbcDriver" url="${create-hsqldb.temp-url}"
+        <sql driver="org.hsqldb.jdbcDriver" url="${create-hsqldb.url}"
             userid="sa" password="" classpathref="test.cfjava.libs" autocommit="true">
             <!-- database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
                 released and the tests can reopen it -->
             SHUTDOWN SCRIPT;
         </sql>
 
-        <jar file="${hsqldb-jar}">
-            <fileset dir="${basedir}">
-                <include name="${hsqldb-dir}/**/*"/>
-            </fileset>
-        </jar>
-        <delete dir="${hsqldb-dir}"/>
+        <echo>Marking ${create-hsqldb.url} read-only</echo>
+        <echo append="true" file="${hsqldb-dir}/${create-hsqldb.dbname}.properties">hsqldb.files_readonly=true${line.separator}</echo>
     </target>
 
     <!-- CODE METRICS TARGETS -->
