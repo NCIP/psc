@@ -328,7 +328,7 @@
 
     <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
     <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
-        <property name="hsqldb-dir" value="target/hsqldb"/>
+        <property name="hsqldb-dir" value="db/hsqldb"/>
         <property name="create-hsqldb.dbname" value="psc"/>
         <property name="create-hsqldb.url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/${create-hsqldb.dbname}"/>
         <delete dir="${hsqldb-dir}"/>
