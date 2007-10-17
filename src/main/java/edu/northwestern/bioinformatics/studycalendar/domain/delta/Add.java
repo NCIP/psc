@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
 
 import javax.persistence.Entity;
 import javax.persistence.DiscriminatorValue;
@@ -42,6 +43,13 @@ public class Add extends ChildrenChange {
     @Override
     protected MergeLogic createMergeLogic(Delta<?> delta) {
         return new AddMergeLogic(delta);
+    }
+
+    @Override
+    protected SiblingDeletedLogic createSiblingDeletedLogic(
+        Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition
+    ) {
+        return new AddSibDeletedLogic(delta, deletedChangePosition, thisPreDeletePosition);
     }
 
     @Override // in order to map
@@ -114,12 +122,12 @@ public class Add extends ChildrenChange {
         public boolean encountered(Remove change) {
             if (change.isSameChild(Add.this)) {
                 log.debug("Found equivalent remove ({}).  Canceling.", change);
-                delta.getChanges().remove(change);
+                delta.removeChange(change);
                 if (getIndex() != null) {
                     Reorder reorder = new Reorder();
                     reorder.setToSameChildAs(Add.this);
                     reorder.setNewIndex(getIndex());
-                    delta.getChanges().add(reorder);
+                    delta.addChange(reorder);
                     log.debug("Replaced with {}", reorder);
                 }
                 return true;
@@ -144,8 +152,50 @@ public class Add extends ChildrenChange {
         @Override
         public void postProcess(boolean merged) {
             if (!merged && !nodeHasChildAlready()) {
-                delta.getChanges().add(Add.this);
+                delta.addChange(Add.this);
             }
+        }
+    }
+
+    private class AddSibDeletedLogic extends SiblingDeletedLogic {
+        private Delta<?> delta;
+        private boolean thisAfter;
+
+        public AddSibDeletedLogic(Delta<?> delta, int delIndex, int thisIndex) {
+            this.delta = delta;
+            thisAfter = delIndex < thisIndex;
+        }
+
+        @Override
+        public void siblingDeleted(Add change) {
+            if (Add.this.getIndex() == null) return;
+            if (!thisAfter) return;
+            decrementIf(
+                (change.getIndex() == null) ||
+                (change.getIndex() != null && change.getIndex() < getIndex()));
+        }
+
+        @Override
+        public void siblingDeleted(Remove change) {
+            if (Add.this.getIndex() == null) return;
+            if (!thisAfter) return;
+            if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
+                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
+                if (removedElementIndex < getIndex()) {
+                    setIndex(getIndex() + 1);
+                }
+            }
+        }
+
+        @Override
+        public void siblingDeleted(Reorder change) {
+            if (Add.this.getIndex() == null) return;
+            if (!thisAfter) return;
+            decrementIf(change.getNewIndex() < getIndex());
+        }
+
+        private void decrementIf(boolean condition) {
+            if (condition) setIndex(getIndex() - 1);
         }
     }
 }

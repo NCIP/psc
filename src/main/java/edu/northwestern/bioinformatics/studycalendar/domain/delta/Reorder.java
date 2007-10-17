@@ -128,7 +128,7 @@ public class Reorder extends ChildrenChange {
         @Override
         public void postProcess(boolean shortCircuited) {
             if (!merged || !shortCircuited) {
-                delta.getChanges().add(Reorder.this);
+                delta.addChanges(Reorder.this);
             }
         }
     }

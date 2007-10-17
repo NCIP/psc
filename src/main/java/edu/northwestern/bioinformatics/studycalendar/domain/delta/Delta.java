@@ -1,32 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.InheritanceType;
-import javax.persistence.Inheritance;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
-import java.util.List;
-import java.util.Arrays;
-import java.util.ArrayList;
-
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Cascade;
+
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Rhett Sutphin
@@ -72,17 +72,43 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         } else {
             throw new StudyCalendarError("Unimplemented node type: %s", node.getClass().getName());
         }
-        delta.getChanges().addAll(Arrays.asList(changes));
+        delta.addChanges(changes);
         return (Delta<T>) delta;
     }
 
     ////// LOGIC
 
-    ////// BEAN PROPERTIES
-
-    public void addChange(Change change ) {
+    public Delta<T> addChange(Change change) {
         changes.add(change);
+        return this;
     }
+
+    public Delta<T> addChanges(Change... newChanges) {
+        for (Change c : newChanges) {
+            addChange(c);
+        }
+        return this;
+    }
+
+    public Delta<T> removeChange(Change change) {
+        int removedIndex = getChangesInternal().indexOf(change);
+        if (getChangesInternal().remove(change)) {
+            for (ListIterator<Change> it = getChanges().listIterator(); it.hasNext();) {
+                Change sib = it.next();
+                int sibOriginalIdx = it.previousIndex();
+                if (removedIndex <= sibOriginalIdx) sibOriginalIdx++;
+                sib.siblingDeleted(this, change, removedIndex, sibOriginalIdx);
+            }
+        }
+        return this;
+    }
+
+    @Transient
+    public List<Change> getChanges() {
+        return Collections.unmodifiableList(getChangesInternal());
+    }
+
+    ////// BEAN PROPERTIES
 
     @Transient // here only -- mapped in subclasses
     public T getNode() {
@@ -97,11 +123,11 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
     @JoinColumn(name = "delta_id", nullable = false)
     @OrderBy // order by ID for testing consistency // TODO: explicit ordering
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<Change> getChanges() {
+    protected List<Change> getChangesInternal() {
         return changes;
     }
 
-    public void setChanges(List<Change> changes) {
+    protected void setChangesInternal(List<Change> changes) {
         this.changes = changes;
     }
 

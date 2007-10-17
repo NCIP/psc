@@ -65,6 +65,32 @@ public abstract class Change extends AbstractMutableDomainObject {
     protected abstract MergeLogic createMergeLogic(Delta<?> delta);
 
     /**
+     * Notifies this change that another change in the same delta was removed.
+     *
+     * @param parent
+     * @param deleted
+     * @param deletedChangePosition The index of the deleted change in the delta (before it was deleted)
+     * @param thisPreDeletePosition The index of this change in the delta (before the sibling was deleted)
+     */
+    public void siblingDeleted(Delta<?> parent, Change deleted, int deletedChangePosition, int thisPreDeletePosition) {
+        SiblingDeletedLogic logic = createSiblingDeletedLogic(parent, deletedChangePosition, thisPreDeletePosition);
+        if (deleted.getAction() == ChangeAction.ADD) {
+            logic.siblingDeleted((Add) deleted);
+        } else if (deleted.getAction() == ChangeAction.REMOVE) {
+            logic.siblingDeleted((Remove) deleted);
+        } else if (deleted.getAction() == ChangeAction.REORDER) {
+            logic.siblingDeleted((Reorder) deleted);
+        } else if (deleted.getAction() == ChangeAction.CHANGE_PROPERTY) {
+            logic.siblingDeleted((PropertyChange) deleted);
+        }
+    }
+
+    // TODO: this will be abstract
+    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    /**
      * Visitor-style template class for children to define their merge behavior.
      * {@link Change#mergeInto} will walk backwards over the list of changes in
      * the target delta, passing each one to the appropriate method in this class.
@@ -79,5 +105,12 @@ public abstract class Change extends AbstractMutableDomainObject {
         public boolean encountered(Reorder change)         { return false; }
         public boolean encountered(PropertyChange change)  { return false; }
         public void postProcess(boolean merged) { }
+    }
+
+    protected abstract class SiblingDeletedLogic {
+        public void siblingDeleted(Add change)             { }
+        public void siblingDeleted(Remove change)          { }
+        public void siblingDeleted(Reorder change)         { }
+        public void siblingDeleted(PropertyChange change)  { }
     }
 }

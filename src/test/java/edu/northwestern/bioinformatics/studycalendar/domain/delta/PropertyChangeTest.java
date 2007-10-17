@@ -31,7 +31,7 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
     }
 
     public void testMergeWithExistingChangeForProperty() throws Exception {
-        delta.getChanges().add(PropertyChange.create("startDay", "2", "5"));
+        delta.addChange(PropertyChange.create("startDay", "2", "5"));
 
         change.setPropertyName("startDay");
         change.setOldValue("5");
@@ -43,7 +43,7 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
     }
 
     public void testMergeWithExistingChangeForADifferentProperty() throws Exception {
-        delta.getChanges().add(PropertyChange.create("name", "Second", "First"));
+        delta.addChange(PropertyChange.create("name", "Second", "First"));
 
         change.setPropertyName("duration.quantity");
         change.setOldValue("3");

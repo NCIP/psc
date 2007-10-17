@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 /**
@@ -66,6 +67,8 @@ public class AddTest extends StudyCalendarTestCase {
         assertSame(epoch, add.getChild());
     }
 
+    ////// mergeInto tests
+
     public void testMergeIntoEmptyDeltaSimplyAdds() throws Exception {
         add.setChild(epoch);
         assertEquals("Test setup failure", 0, delta.getChanges().size());
@@ -76,7 +79,7 @@ public class AddTest extends StudyCalendarTestCase {
 
     public void testMergeIntoDeltaWithSameAddIsNoop() throws Exception {
         Add existingAdd = Add.create(epoch);
-        delta.getChanges().add(existingAdd);
+        delta.addChange(existingAdd);
 
         add.setChild(epoch);
         add.mergeInto(delta);
@@ -87,7 +90,7 @@ public class AddTest extends StudyCalendarTestCase {
     
     public void testMergeIntoDeltaWithARemoveForTheSameChild() throws Exception {
         plannedCalendar.addChild(epoch);
-        delta.getChanges().add(Remove.create(epoch));
+        delta.addChange(Remove.create(epoch));
         
         add.setChild(epoch);
         add.mergeInto(delta);
@@ -97,7 +100,7 @@ public class AddTest extends StudyCalendarTestCase {
     
     public void testMergeIntoDeltaWithRemoveForTheSameChildAndAnIndex() throws Exception {
         plannedCalendar.addChild(epoch);
-        delta.getChanges().add(Remove.create(epoch));
+        delta.addChange(Remove.create(epoch));
 
         add.setChild(epoch);
         add.setIndex(4);
@@ -111,7 +114,7 @@ public class AddTest extends StudyCalendarTestCase {
         assertEquals("New reorder has wrong index", 4,
             (int) ((Reorder) delta.getChanges().get(0)).getNewIndex());
     }
-    
+
     public void testMergeIntoDeltaForNodeWhichAlreadyContainsChild() throws Exception {
         plannedCalendar.addChild(epoch);
 
@@ -119,5 +122,120 @@ public class AddTest extends StudyCalendarTestCase {
         add.mergeInto(delta);
 
         assertEquals("No change should have been added", 0, delta.getChanges().size());
+    }
+
+    ////// deleteSibling tests
+
+    public void testDeleteAddSibDecrementsIndexIfPresentAndLater() throws Exception {
+        Add toRemove = Add.create(Epoch.create("target"), 1);
+        Add after = Add.create(Epoch.create("great"), 2);
+
+        after.siblingDeleted(delta, toRemove, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+    
+    public void testDeleteAddSibDoesNotDecrementIndexIfEarlier() throws Exception {
+        Add toRemove = Add.create(Epoch.create("target"), 4);
+        Add after = Add.create(Epoch.create("great"), 3);
+
+        after.siblingDeleted(delta, toRemove, 0, 1);
+        assertEquals(3, (int) after.getIndex());
+    }
+
+    public void testDeleteAddSibDoesNotDecrementIndexIfBefore() throws Exception {
+        Add before = Add.create(Epoch.create("great"), 5);
+        Add toRemove = Add.create(Epoch.create("target"), 4);
+
+        before.siblingDeleted(delta, toRemove, 1, 0);
+        assertEquals(5, (int) before.getIndex());
+    }
+
+    public void testDeleteAddSibIgnoredIfUnindexed() throws Exception {
+        Add toRemove = Add.create(Epoch.create("target"), 4);
+        Add after = Add.create(Epoch.create("great"));
+
+        after.siblingDeleted(delta, toRemove, 0, 1);
+        assertNull(after.getIndex());
+    }
+
+    public void testDeleteAddSibDecrementsIfUnindexedDeletedAddComesBefore() throws Exception {
+        Add toRemove = Add.create(Epoch.create("target"));
+        Add after = Add.create(Epoch.create("great"), 7);
+
+        after.siblingDeleted(delta, toRemove, 0, 1);
+        assertEquals(6, (int) after.getIndex());
+    }
+
+    public void testDeleteAddSibDoesNotDecrementIfUnindexedDeletedAddComesAfter() throws Exception {
+        Add toRemove = Add.create(Epoch.create("target"));
+        Add before = Add.create(Epoch.create("great"), 7);
+
+        before.siblingDeleted(delta, toRemove, 1, 0);
+        assertEquals(7, (int) before.getIndex());
+    }
+
+    public void testDeleteRemoveSibIfIndexedAndAfterIncrements() throws Exception {
+        plannedCalendar.addEpoch(epoch);
+        Add after = Add.create(Epoch.create("history"), 5);
+        Remove toDel = Remove.create(epoch);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(6, (int) after.getIndex());
+    }
+
+    public void testDeleteRemoveSibIfIndexedAndBeforeDoesNotIncrement() throws Exception {
+        plannedCalendar.addEpoch(Epoch.create("E1"));
+        plannedCalendar.addEpoch(Epoch.create("E2"));
+        plannedCalendar.addEpoch(epoch);
+        Add after = Add.create(Epoch.create("history"), 1);
+        Remove toDel = Remove.create(epoch);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+
+    public void testDeleteRemoveSibIfNotIndexed() throws Exception {
+        plannedCalendar.addEpoch(epoch);
+        Add after = Add.create(Epoch.create("history"));
+        Remove toDel = Remove.create(epoch);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        // expect no exception
+    }
+    
+    public void testDeleteRemoveSibWhenNodeChildrenUnordered() throws Exception {
+        Arm arm = new Arm();
+        Period existingPeriod = new Period();
+        arm.addPeriod(existingPeriod);
+        Remove toDel = Remove.create(existingPeriod);
+        Add after = Add.create(createNamedInstance("New", Period.class), 1);
+        Delta<?> armDelta = Delta.createDeltaFor(arm, toDel, after);
+
+        after.siblingDeleted(armDelta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderSibWhenIndexedAndAfter() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 2);
+        Add after = Add.create(Epoch.create("great"), 7);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(6, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderSibWhenIndexedAndBefore() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 2);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(2, (int) after.getIndex());
+    }
+    
+    public void testDeleteReorderSibWhenIndexedAndEarlier() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 5);
+
+        after.siblingDeleted(delta, toDel, 1, 0);
+        assertEquals(5, (int) after.getIndex());
     }
 }

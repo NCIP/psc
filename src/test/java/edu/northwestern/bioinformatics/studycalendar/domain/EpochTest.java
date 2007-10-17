@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.easymock.EasyMock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
@@ -59,5 +61,23 @@ public class EpochTest extends StudyCalendarTestCase {
         assertEquals("Wrong name for arm 0", "H", armed.getArms().get(0).getName());
         assertEquals("Wrong name for arm 1", "I", armed.getArms().get(1).getName());
         assertEquals("Wrong name for arm 2", "J", armed.getArms().get(2).getName());
+    }
+    
+    public void testIndexOf() throws Exception {
+        Epoch armed = Epoch.create("Holocene", "H", "I", "J");
+        assertEquals(0, armed.indexOf(armed.getArms().get(0)));
+        assertEquals(2, armed.indexOf(armed.getArms().get(2)));
+        assertEquals(1, armed.indexOf(armed.getArms().get(1)));
+    }
+
+    public void testIndexOfNonChildThrowsException() throws Exception {
+        Epoch e = Epoch.create("E", "A1", "A2");
+        Arm other = Fixtures.createNamedInstance("A7", Arm.class);
+        try {
+            e.indexOf(other);
+            fail("Exception not thrown");
+        } catch (IllegalArgumentException iae) {
+            assertEquals(other + " is not a child of " + e, iae.getMessage());
+        }
     }
 }

@@ -32,6 +32,52 @@ public class DeltaTest extends StudyCalendarTestCase {
         assertDeltaFor(new PlannedEvent(), PlannedEventDelta.class);
     }
 
+    public void testAddChange() throws Exception {
+        Delta<?> delta = new EpochDelta();
+        assertEquals("Test setup failure", 0, delta.getChanges().size());
+        delta.addChange(PropertyChange.create("nil", "null", "{}"));
+        assertEquals(1, delta.getChanges().size());
+    }
+
+    public void testRemoveChangeNotifiesSiblings() throws Exception {
+        Change sib0 = registerMockFor(Change.class);
+        Change sib1 = registerMockFor(Change.class);
+        Change sib2 = registerMockFor(Change.class);
+
+        Delta<?> delta = new EpochDelta();
+        delta.addChanges(sib0, sib1, sib2);
+
+        sib0.siblingDeleted(delta, sib1, 1, 0);
+        sib2.siblingDeleted(delta, sib1, 1, 2);
+
+        replayMocks();
+        delta.removeChange(sib1);
+        verifyMocks();
+    }
+
+    public void testRemoveChangeDoesNotNotifyIfTheRemovedChangeWasNotInTheDelta() throws Exception {
+        Change sib0 = registerMockFor(Change.class);
+        Change sib1 = registerMockFor(Change.class);
+        Change sib2 = registerMockFor(Change.class);
+
+        Delta<?> delta = new EpochDelta();
+        delta.addChange(sib0).addChange(sib2);
+
+        replayMocks();
+        delta.removeChange(sib1);
+        verifyMocks();
+    }
+
+    public void testGetChangesReturnsReadOnlyList() throws Exception {
+        Delta<?> delta = new EpochDelta();
+        try {
+            delta.getChanges().add(PropertyChange.create("aleph", "i", "I"));
+            fail("Exception not thrown");
+        } catch (UnsupportedOperationException e) {
+            // good
+        }
+    }
+
     private static void assertDeltaFor(PlanTreeNode<?> node, Class<?> expectedClass) {
         Delta<?> actual = Delta.createDeltaFor(node);
         assertNotNull(actual);

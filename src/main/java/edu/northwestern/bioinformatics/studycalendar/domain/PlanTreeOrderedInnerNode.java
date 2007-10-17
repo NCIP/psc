@@ -25,4 +25,13 @@ public abstract class PlanTreeOrderedInnerNode<P extends DomainObject, C extends
         child.setParent(this);
         getChildren().add(index, child);
     }
+
+    public int indexOf(C child) {
+        int index = getChildren().indexOf(child);
+        if (index >= 0) {
+            return index;
+        } else {
+            throw new IllegalArgumentException(child + " is not a child of " + this);
+        }
+    }
 }

@@ -122,7 +122,7 @@ public class PropertyChange extends Change {
         @Override
         public void postProcess(boolean merged) {
             if (!merged) {
-                delta.getChanges().add(PropertyChange.this);
+                delta.addChange(PropertyChange.this);
             }
         }
     }

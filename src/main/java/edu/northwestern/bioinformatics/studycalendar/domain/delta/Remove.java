@@ -62,7 +62,7 @@ public class Remove extends ChildrenChange {
         public boolean encountered(Add change) {
             if (change.isSameChild(Remove.this)) {
                 log.debug("Found equivalent add ({}).  Canceling.", change);
-                delta.getChanges().remove(change);
+                delta.removeChange(change);
                 return true;
             }
             return false;
@@ -93,7 +93,7 @@ public class Remove extends ChildrenChange {
         @Override
         public void postProcess(boolean merged) {
             if (!merged && nodeHasChildToRemove()) {
-                delta.getChanges().add(Remove.this);
+                delta.addChange(Remove.this);
             }
         }
     }

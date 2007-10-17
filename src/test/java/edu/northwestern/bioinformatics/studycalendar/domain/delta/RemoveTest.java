@@ -88,7 +88,6 @@ public class RemoveTest extends StudyCalendarTestCase {
         assertEquals("Remove should not have been added", 0, delta.getChanges().size());
     }
 
-    /* TODO:
     public void testMergeTwoIntoDeltaWithIndexesThenRemoveOne() throws Exception {
         Arm retained0 = setId(17, new Arm());
         Arm retained1 = setId(18, new Arm());
@@ -108,5 +107,4 @@ public class RemoveTest extends StudyCalendarTestCase {
         DeltaAssertions.assertAdd("Index for later retained add not updated", retained1, 3, add1);
         DeltaAssertions.assertAdd("Index for later retained add not updated", retained2, 4, add2);
     }
-    */
 }

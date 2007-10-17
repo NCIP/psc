@@ -20,7 +20,7 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
     public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereAdded(PlanTreeNode<P> node) {
         List<Delta<P>> deltas = getHibernateTemplate().find(
             String.format(
-                "select d from Delta d, Add a where a in elements(d.changes) and d.class = %sDelta and a.childId = ?",
+                "select d from Delta d, Add a where a in elements(d.changesInternal) and d.class = %sDelta and a.childId = ?",
                 node.parentClass().getSimpleName()
             ),
             node.getId()
