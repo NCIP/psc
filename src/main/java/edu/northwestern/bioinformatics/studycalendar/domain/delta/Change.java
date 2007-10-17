@@ -74,6 +74,7 @@ public abstract class Change extends AbstractMutableDomainObject {
      */
     public void siblingDeleted(Delta<?> parent, Change deleted, int deletedChangePosition, int thisPreDeletePosition) {
         SiblingDeletedLogic logic = createSiblingDeletedLogic(parent, deletedChangePosition, thisPreDeletePosition);
+        if (logic == null) return;
         if (deleted.getAction() == ChangeAction.ADD) {
             logic.siblingDeleted((Add) deleted);
         } else if (deleted.getAction() == ChangeAction.REMOVE) {
@@ -85,9 +86,8 @@ public abstract class Change extends AbstractMutableDomainObject {
         }
     }
 
-    // TODO: this will be abstract
     protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
-        throw new UnsupportedOperationException("TODO");
+        return null;
     }
 
     /**
