@@ -15,10 +15,10 @@ define "psc" do
   resources.from(_("src/main/java")).exclude("**/*.java")
   compile.options.target = "1.5"
   compile.with CTMS_COMMONS, CORE_COMMONS, SECURITY, XML, SPRING, HIBERNATE, 
-    LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, WEB, CONTAINER_PROVIDED
+    LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, WEB, DB, CONTAINER_PROVIDED
   
   test.resources.from(_("src/test/java")).exclude("**/*.java")
-  test.with UNIT_TESTING
+  test.with(UNIT_TESTING).include("*Test")
 
   package(:war).exclude(CONTAINER_PROVIDED)
   package(:sources)
@@ -40,11 +40,9 @@ define "psc" do
     dbprops.merge!(loaded)
     dbprops['datasource.dialect.upt'] ||= dbprops['datasource.dialect']
     puts "All database ops for this build will use #{dbprops['datasource.url']}"
-
-    jdbc = jdbc_driver(dbprops['datasource.driver'])
-    test.with jdbc
-    package(:war).with :libs => jdbc
-
+  end
+  
+  resources.enhance do
     # always overwrite
     cp dbfile.to_s, "target/classes/datasource.properties"
   end
@@ -55,20 +53,4 @@ define "psc" do
     filter(_("conf/upt")).include('*.xml').into(_("target/test-classes")).
       using(:ant, {'tomcat.security.dir' => _("target/test-classes")}.merge(dbprops)).run
   end
-end
-
-# Select a JDBC driver artifact based on the given driver class
-def jdbc_driver(driverclass)
-  artifact(
-    case driverclass
-    when /postgresql/ 
-      DB.postgresql
-    when /oracle/
-      DB.oracle
-    when /hsql/
-      DB.hsqldb
-    else
-      fail "Don't know which dependency to use for #{driverclass}"
-    end
-  )
 end
