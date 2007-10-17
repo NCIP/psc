@@ -11,5 +11,6 @@ class UpdateCsmGroup extends edu.northwestern.bioinformatics.bering.Migration {
 
 
     void down() {
+        execute("DELETE FROM csm_group WHERE group_id=7")
     }
 }

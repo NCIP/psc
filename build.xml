@@ -229,6 +229,7 @@
                  userid="${datasource.username}"
                  password="${datasource.password}"
                  targetVersion="${migrate.version}"
+                 migrationsDir="${basedir}/src/main/db/migrate"
             />
     </target>
 
