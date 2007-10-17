@@ -8,7 +8,6 @@ import java.util.List;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Summary;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -87,8 +86,8 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		List<VEvent> vEvents = calendar.getComponents();
 
 		for (VEvent vEvent : vEvents) {
-			assertEquals("vEvent should have only 4 properties(DtStamp,DtStart,SUMMARY,DESCRIPTION)", 4, vEvent
-					.getProperties().size());
+			assertEquals("vEvent should have only 3 properties(DtStamp,DtStart,SUMMARY)", 3, vEvent.getProperties()
+					.size());
 
 			assertEquals("vEvent  should have only 1 SUMMARY property..", 1, vEvent.getProperties(Property.SUMMARY)
 					.size());
@@ -98,13 +97,13 @@ public class ICalToolsTest extends junit.framework.TestCase {
 			assertEquals("the summary value should have 'activity name:event:arm' string", 0, summary.getValue()
 					.indexOf("activity name:event:arm"));
 
-			assertEquals("vEvent  should have only 1 DESCRIPTION property ..", 1, vEvent.getProperties(
-					Property.DESCRIPTION).size());
-			Description description = (Description) vEvent.getProperties(Property.DESCRIPTION).get(0);
+			// assertEquals("vEvent should have only 1 DESCRIPTION property ..", 1, vEvent.getProperties(
+			// Property.DESCRIPTION).size());
+			// Description description = (Description) vEvent.getProperties(Property.DESCRIPTION).get(0);
 
-			assertEquals("there should not be any parameter in DESCRIPTION", 0, description.getParameters().size());
-			assertEquals("the descripton value should have 'desc:event:arm' string", 0, description.getValue().indexOf(
-					"desc:event:arm"));
+			// assertEquals("there should not be any parameter in DESCRIPTION", 0, description.getParameters().size());
+			// assertEquals("the descripton value should have 'desc:event:arm' string", 0, description.getValue().indexOf(
+			// "desc:event:arm"));
 
 			assertEquals("vEvent  should have only 1 DtStart property ..", 1, vEvent.getProperties(Property.DTSTART)
 					.size());

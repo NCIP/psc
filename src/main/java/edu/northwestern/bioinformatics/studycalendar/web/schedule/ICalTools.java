@@ -10,7 +10,6 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
@@ -59,7 +58,7 @@ public class ICalTools {
 					for (Date date : events.keySet()) {
 						List<ScheduledEvent> event = events.get(date);
 						for (final ScheduledEvent scheduleEvent : event) {
-							VEvent vEvent = generateAllDayEventForAnActivity(scheduleEvent.getActivity(), date);
+							VEvent vEvent = generateAllDayEventForAnScheduleEvent(scheduleEvent, date);
 							if (vEvent != null) {
 								icsCalendar.getComponents().add(vEvent);
 							}
@@ -75,23 +74,28 @@ public class ICalTools {
 	}
 
 	/**
-	 * Generate an all day ics calendar event for an activity.
+	 * Generate an all day ics calendar event for an schedule event.
 	 * 
-	 * @param activity the activity for which ics calendar event need to be generated
+	 * 
+	 * @param scheduledEvent the scheduled event for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
 	 * 
-	 * @return the ics calendar event. Returns null if activity or date is null
-	 * 
+	 * @return the ics calendar event. Returns null if scheduledEvent has not activity or date is null
 	 */
-	private static VEvent generateAllDayEventForAnActivity(final Activity activity, final Date date) {
+	private static VEvent generateAllDayEventForAnScheduleEvent(final ScheduledEvent scheduledEvent, final Date date) {
+		final Activity activity = scheduledEvent.getActivity();
 		if (activity != null && date != null) {
-			String activityName = activity.getName();
-			VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), activityName);
+			String eventDetails = activity.getName();
+			if (scheduledEvent.getDetails() != null && !scheduledEvent.getDetails().trim().equalsIgnoreCase("")) {
+				eventDetails = eventDetails + " (" + scheduledEvent.getDetails() + ")";
+			}
+
+			VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), eventDetails);
 
 			// initialize as an all-day event..
 			vEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
-			Description description = new Description(activity.getDescription());
-			vEvent.getProperties().add(description);
+			// Description description = new Description(activity.getDescription());
+			// vEvent.getProperties().add(description);
 			return vEvent;
 		}
 		return null;
