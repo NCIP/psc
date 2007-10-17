@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Jaron Sampson
  * @author Yufang Wang
  */
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class AssignSiteCoordinatorController extends PscSimpleFormController {
 	private static final String GROUP_NAME = "SITE_COORDINATOR";
 	private SiteDao siteDao;

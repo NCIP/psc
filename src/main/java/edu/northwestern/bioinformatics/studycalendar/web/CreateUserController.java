@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
     private SiteDao siteDao;

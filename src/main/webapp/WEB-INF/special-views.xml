@@ -50,4 +50,8 @@
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/cal/schedule</value></property>
     </bean>
+    <bean id="redirectToAdministration" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/admin</value></property>
+    </bean>
 </beans>

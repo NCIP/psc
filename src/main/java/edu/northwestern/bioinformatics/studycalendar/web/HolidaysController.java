@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author Nataliya Shurupova
  */
 
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class HolidaysController extends PscSimpleFormController {
     private SiteDao siteDao;
     private static final Logger log = LoggerFactory.getLogger(HolidaysController.class.getName());

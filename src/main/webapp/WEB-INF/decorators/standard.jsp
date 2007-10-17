@@ -39,7 +39,14 @@
         <laf:sectionTab section="${section}" currentSection="${currentSection}"/>
     </jsp:attribute>
     <jsp:attribute name="renderTask">
-        <laf:taskLink task="${task}"/>
+        <c:choose>
+            <c:when test="${currentSection.displayName == 'Dashboard'}">
+                <tags:restrictedTaskItem role="${task.displayName}"><laf:taskLink task="${task}"/></tags:restrictedTaskItem>
+            </c:when>
+            <c:otherwise>
+                <laf:taskLink task="${task}"/>
+            </c:otherwise>
+        </c:choose>
     </jsp:attribute>
 </laf:header>
 <tags:breadcrumbs anchors="${breadcrumbs}"/>

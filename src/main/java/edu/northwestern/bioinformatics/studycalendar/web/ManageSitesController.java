@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * @author Jaron Sampson
  */
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class ManageSitesController extends PscAbstractController {
     private SiteDao siteDao;
 

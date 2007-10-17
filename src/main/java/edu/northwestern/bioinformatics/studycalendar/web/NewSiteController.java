@@ -16,7 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 
 
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class NewSiteController extends PscSimpleFormController {
     private SiteService siteService;
        

@@ -16,7 +16,7 @@ import org.springframework.validation.BindException;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.STUDY_ADMIN)
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
 public class ConfigurationController extends PscSimpleFormController {
     private Configuration configuration;
 

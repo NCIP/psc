@@ -20,7 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
  * @author Rhett Sutphin
  */
 public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
-    private Logger log = LoggerFactory.getLogger(getClass());
+    private static final Logger log = LoggerFactory.getLogger(LoginCheckInterceptor.class);
     private ControllerTools controllerTools;
 
     public static final String REQUESTED_URL_ATTRIBUTE = LoginCheckInterceptor.class.getName() + ".REQUESTED_URL";

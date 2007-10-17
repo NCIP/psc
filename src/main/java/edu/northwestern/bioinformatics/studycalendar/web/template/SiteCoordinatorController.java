@@ -1,30 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
-
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
-public class ScheduleController extends PscSimpleFormController {
+@AccessControl(roles = Role.SITE_COORDINATOR)
+public class SiteCoordinatorController extends PscSimpleFormController {
 	private TemplateService templateService;
 
     private ScheduledEventDao scheduledEventDao;
@@ -35,7 +34,7 @@ public class ScheduleController extends PscSimpleFormController {
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
 
-    public ScheduleController() {
+    public SiteCoordinatorController() {
         setCommandClass(ScheduleCommand.class);
         setBindOnNewForm(true);
     }
@@ -59,7 +58,7 @@ public class ScheduleController extends PscSimpleFormController {
         model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studyParticipantAssignments, 7));
         model.put("pastDueActivities", getMapOfOverdueEvents(studyParticipantAssignments));
         model.put("activityTypes", ActivityType.values());
-        
+
         return model;
     }
 
@@ -97,7 +96,7 @@ public class ScheduleController extends PscSimpleFormController {
         ScheduleCommand command = new ScheduleCommand();
         command.setToDate(7);
         return command;
-    }    
+    }
 
     protected ModelAndView onSubmit(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -117,7 +116,7 @@ public class ScheduleController extends PscSimpleFormController {
         super.initBinder(httpServletRequest, servletRequestDataBinder);
         servletRequestDataBinder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
         servletRequestDataBinder.registerCustomEditor(ActivityType.class, new ControlledVocabularyEditor(ActivityType.class));
-        
+
     }
 
     ////// CONFIGURATION
@@ -150,5 +149,5 @@ public class ScheduleController extends PscSimpleFormController {
 
     public void setParticipantCoordinatorDashboardService(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
         this.participantCoordinatorDashboardService = participantCoordinatorDashboardService;
-    }
+    }  
 }
