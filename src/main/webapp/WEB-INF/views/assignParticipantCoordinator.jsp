@@ -26,21 +26,30 @@
         function registerSiteSelector() {
             Event.observe("siteSelector", "change", function() {
                 $('site-indicator').reveal();
-                SC.slideAndHide("assignmentForm", {
-                    afterFinish: function() {
-                        var siteId = $("siteSelector").options[$("siteSelector").selectedIndex].value
-                        if (siteId) {
-                            SC.asyncSubmit("siteSelectorForm", {
-                                onComplete: function() {
-                                    $('site-indicator').conceal();
-                                }
-                            })
-                        } else {
-                            $('site-indicator').conceal();
+                if ($('assignmentForm').style.display != 'none') {
+                    SC.slideAndHide("assignmentForm", {
+                        afterFinish: function() {
+                            sendSiteSelectorFormSubmit();
                         }
+                    })
+                } else {
+                    sendSiteSelectorFormSubmit();
+                }
+
+            })
+        }
+
+        function sendSiteSelectorFormSubmit() {
+            var siteId = $("siteSelector").options[$("siteSelector").selectedIndex].value
+            if (siteId) {
+                SC.asyncSubmit("siteSelectorForm", {
+                    onComplete: function() {
+                        $('site-indicator').conceal();
                     }
                 })
-            })
+            } else {
+                $('site-indicator').conceal();
+            }
         }
 
         function moveSelected(src, dst) {
@@ -90,7 +99,7 @@
             Study: ${study.name}
         </p>
 
-        <form id="siteSelectorForm" action="<c:url value="/pages/assignParticipantCoordinator/selectSite"/>">
+        <form id="siteSelectorForm" action="<c:url value="/pages/cal/assignParticipantCoordinator/selectSite"/>">
             <input type="hidden" name="study" value="${study.id}">
             <div class="row">
                 <div class="label">
