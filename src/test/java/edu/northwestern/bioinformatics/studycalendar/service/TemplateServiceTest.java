@@ -264,7 +264,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         Site site1 = setId(1, createNamedInstance("site1", Site.class));
         StudySite studySite1 = setId(1, createStudySite(studyTemplate1, site1));
-        expect(authorizationManager.getUsers(TemplateService.PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite1), site1.getName())).andReturn(pcdMap);
+        expect(authorizationManager.getUsers(TemplateService.PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite1), DomainObjectTools.createExternalObjectId(site1))).andReturn(pcdMap);
 
         replayMocks();
         service.getParticipantCoordinators(studyTemplate1, site1);

@@ -173,7 +173,7 @@ public class TemplateService {
         List<StudySite> studySites = studyTemplate.getStudySites();
         for (StudySite studySite : studySites) {
             if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                pcdMap = authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite), site.getName());
+                pcdMap = authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite), DomainObjectTools.createExternalObjectId(site));
             }
         }
         return pcdMap;
