@@ -128,12 +128,6 @@ public class User extends AbstractMutableDomainObject implements Named {
 
         User user = (User) o;
 
-        if (name != null ? !name.equals(user.name) : user.name != null) return false;
-        if (csmUserId != null ?
-                !csmUserId.equals(user.csmUserId) : user.csmUserId != null) return false;
-        if (activeFlag != null ? !activeFlag.equals(user.activeFlag) : user.activeFlag != null) return false;
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (userRoles.size() != user.getUserRoles().size()) return false;
         return !(name != null ? !name.equals(user.name) : user.name != null);
 
     }
