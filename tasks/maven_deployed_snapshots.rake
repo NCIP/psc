@@ -1,7 +1,12 @@
 # Gives buildr the ability to download snapshots created by m2.  This sort
 # of snapshot's name includes a timestamp and a build number instead of the
 # "SNAPSHOT" string implied by its version string.  The timestamp and build 
-# number may be derived from "maven-metadata.xml," available alongside. 
+# number are derived from maven-metadata.xml.
+
+# This implementation stores the resulting jar with the SNAPSHOT version as
+# part of its name.  This is compatible with the rest of buildr, but different
+# from how m2 works.
+
 module Buildr::ActsAsArtifact
   def snapshot?
     version =~ /-SNAPSHOT$/
@@ -26,7 +31,7 @@ class Buildr::Artifact
           repo_url = URI.parse(repo_url) unless URI === repo_url
           repo_url.path += "/" unless repo_url.path[-1] == "/"
           
-          snapshot_url = current_snapshot_repo_url repo_url
+          snapshot_url = current_snapshot_repo_url(repo_url)
           if snapshot_url
             begin
               URI.download snapshot_url, name
