@@ -14,13 +14,13 @@
             <form:errors path="*"/>
 
             <table cellspacing="0" cellpading="0" border="1" class="siteRoles">
-                <%--<tr>--%>
-                    <%--<th></th>--%>
-                    <%--<c:forEach items="${roles}" var="role">--%>
-                        <%--<th>${role.displayName}</th>--%>
-                    <%--</c:forEach>--%>
+                <tr>
+                    <th></th>
+                    <c:forEach items="${sites}" var="site">
+                        <th>${site.name}</th>
+                    </c:forEach>
 
-                <%--</tr>--%>
+                </tr>
                 <c:forEach items="${command.studyAssignmentGrid}" var="user" varStatus="index">
                     <tr>
                         <th>${user.key.name}</th>

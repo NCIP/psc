@@ -45,6 +45,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         request.setMethod("GET");
 
         expectCommandBuildGrid();
+        expectRefData();
 
         replayMocks();
 
@@ -58,6 +59,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         request.setMethod("GET");
 
         expectCommandBuildGrid();
+        expectRefData();
 
         replayMocks();
 
@@ -69,6 +71,10 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
     private void expectCommandBuildGrid() {
         expect(userDao.getAllParticipantCoordinators()).andReturn(users);
+        expect(siteDao.getAll()).andReturn(sites);
+    }
+
+    public void expectRefData() {
         expect(siteDao.getAll()).andReturn(sites);
     }
 }

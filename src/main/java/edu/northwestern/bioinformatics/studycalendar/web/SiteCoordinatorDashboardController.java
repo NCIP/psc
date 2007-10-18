@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author John Dzak
@@ -17,6 +19,13 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
     public SiteCoordinatorDashboardController() {
         setFormView("siteCoordinatorDashboard");
+    }
+
+
+    protected Map referenceData(HttpServletRequest request) throws Exception {
+        Map<String, Object> refdata = new HashMap<String,Object>();
+        refdata.put("sites", siteDao.getAll());
+        return refdata;
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
