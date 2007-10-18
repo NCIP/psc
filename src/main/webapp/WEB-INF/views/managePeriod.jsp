@@ -359,7 +359,7 @@ function registerHandlers() {
     });
     Event.observe('add-activity-button', 'click', addActivityRow)
     Event.observe('select-activity-type', 'change', updateActivitySelector)
-   
+//    Event.observe('return-to-template', 'click', returnToTemplate)
 }
 
 function makeCellDraggableAndDroppable(input) {
@@ -588,6 +588,12 @@ function createMarker(currentDurationIndex, activityName) {
         width: 70%;
         float: left;
     }
+    label#emptyLabel {
+        empty-cells:hide;
+        border:none;
+        width:100px;
+    }
+   
 
 </style>
 </head>
@@ -708,7 +714,8 @@ function createMarker(currentDurationIndex, activityName) {
                 <input type="button" id="add-activity-button" value="Add to period"/>
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
                 <span class="tip">(Be sure to save your changes before leaving this page)</span>
-            </div>
+             </div>
+             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?arm=${arm.id}&study=${study.id}"/>'" />
         </form:form>
     </laf:division>
 </laf:box>
