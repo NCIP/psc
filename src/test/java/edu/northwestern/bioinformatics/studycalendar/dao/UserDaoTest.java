@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.*;
 
@@ -18,6 +15,7 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong Role Size", 0, actualUser.getUserRoles().size());
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
         assertEquals("Wrong password", "password123", actualUser.getPlainTextPassword());
+        assertEquals("Wrong Study Site", -3000, (int)actualUser.getStudySites().get(0).getId());
     }
 
     public void testGetByName() throws Exception {
@@ -153,6 +151,30 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertNotNull("Could not reload user with id " + savedId, loaded);
             assertEquals("Wrong id", -200, (int) loaded.getId());
             assertEquals("Wrong Role Size", 0, loaded.getUserRoles().size());
+        }
+    }
+
+    public void testRemoveStudySite() throws Exception {
+      Integer savedId;
+        {
+            User actualUser = getDao().getById(-100);
+            assertNotNull("User not found", actualUser);
+            assertEquals("Wrong id", -100, (int) actualUser.getId());
+            assertEquals("No roles assigned", 1, actualUser.getStudySites().size());
+
+
+            actualUser.setStudySites(Collections.<StudySite>emptyList());
+            getDao().save(actualUser);
+            savedId = actualUser.getId();
+        }
+
+        interruptSession();
+
+        {
+            User loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload user with id " + savedId, loaded);
+            assertEquals("Wrong id", -100, (int) loaded.getId());
+            assertEquals("Wrong Role Size", 0, loaded.getStudySites().size());
         }
     }
 }

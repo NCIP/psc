@@ -29,6 +29,7 @@ public class User extends AbstractMutableDomainObject implements Named {
     private Boolean activeFlag;
     private String password;
     private List<StudyParticipantAssignment> studyParticipantAssignments;
+    private List<StudySite> studySites;
 
 
     public User() {
@@ -109,6 +110,24 @@ public class User extends AbstractMutableDomainObject implements Named {
 
     public void addAllUserRoles(Set<UserRole> userRoles) {
         this.userRoles.addAll(userRoles);
+    }
+
+    @ManyToMany
+    @JoinTable( name="user_study_sites",
+        joinColumns = @JoinColumn(name="user_id"),
+        inverseJoinColumns = @JoinColumn(name="study_site_id")
+    )
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
+
+    public void setStudySites(List<StudySite> studySites) {
+        this.studySites = studySites;
+    }
+
+    @Transient
+    public String getDisplayName() {
+        return name;
     }
     
     @OneToMany (mappedBy = "participantCoordinator")

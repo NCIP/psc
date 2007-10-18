@@ -20,6 +20,7 @@
         csm_group_name="STUDY_ADMIN"
         user_id="-200"
         />
+
     <PARTICIPANTS
         id="-100"
         first_name="Dilbert"
@@ -32,6 +33,7 @@
     <SITES
         id="-1001"
         name="New Site"/>
+
     <STUDIES
         id="-2000"
         name="Old Study"/>
@@ -40,6 +42,11 @@
         id="-3000"
         site_id="-1001"
         study_id="-2000"/>
+
+    <USER_STUDY_SITES
+        user_id="-100"
+        study_site_id="-3000"
+        />
 
     <PARTICIPANT_ASSIGNMENTS
         id="-20"

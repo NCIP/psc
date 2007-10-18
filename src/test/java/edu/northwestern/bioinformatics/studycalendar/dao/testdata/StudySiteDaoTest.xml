@@ -1,0 +1,30 @@
+<dataset>
+    <STUDIES
+        id="-100"
+        name="Study A"
+        />
+
+    <SITES
+        id="-200"
+        name="New Site"
+        />
+
+    <STUDY_SITES
+        id="-300"
+        site_id="-200"
+        study_id="-100"
+        />
+
+    <USERS
+        id="-400"
+        name="Joey"
+        csm_user_id="-1"
+        active_flag="0"
+        password="qN+MnXquuqMPAE1RlGJJyA=="
+        />
+
+    <USER_STUDY_SITES
+        user_id="-400"
+        study_site_id="-300"
+        />
+</dataset>

@@ -4,13 +4,9 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.tools.ant.types.selectors.modifiedselector.Cache;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +27,7 @@ public class StudySite extends AbstractMutableDomainObject {
     private Site site;
     private Study study;
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+    private List<User> users;
 
     ////// LOGIC
 
@@ -70,6 +67,19 @@ public class StudySite extends AbstractMutableDomainObject {
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
         return studyParticipantAssignments;
+    }
+
+    @ManyToMany
+    @JoinTable( name="user_study_sites",
+        joinColumns = @JoinColumn(name="study_site_id"),
+        inverseJoinColumns = @JoinColumn(name="user_id")
+    )
+    public List<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
     ////// OBJECT METHODS
