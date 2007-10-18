@@ -533,7 +533,11 @@ function createMarker(currentDurationIndex, activityName) {
     }
 
     .input-row td {
-        text-align: right;
+        text-align:center;
+    }
+
+    .input-row td span{
+        cursor: pointer;
     }
 
     .input-row td input {
@@ -548,6 +552,7 @@ function createMarker(currentDurationIndex, activityName) {
 
     td, th {
         border: 1px solid #666;
+        text-align:center;
     }
 
     a#newActivityLink {
@@ -593,7 +598,7 @@ function createMarker(currentDurationIndex, activityName) {
         border:none;
         width:100px;
     }
-   
+
 
 </style>
 </head>
@@ -688,7 +693,7 @@ function createMarker(currentDurationIndex, activityName) {
 
                     <div  style="float:left;position:relative;margin-right:20px">
                         <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Add</span>
-                        <div style="border:1px solid #ccc;width:50px;height:50px;text-align:center;vertical-align:middle;line-height:50px;margin:2px 5px 10px 5px;" id="newMarkerArea">
+                        <div style="border:1px solid #ccc;width:50px;height:50px;text-align:center;vertical-align:middle;line-height:50px;margin:2px 5px 10px 5px;cursor:pointer;" id="newMarkerArea">
                             <div class="newMarker">X</div>
                         </div>
                         <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Delete</span>
