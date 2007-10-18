@@ -176,7 +176,7 @@
     </bean>
 
     <bean name="/dashboard/siteCoordinatorSchedule" id="dashboardSiteCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SiteCoordinatorController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardController">
     </bean>
 
 
