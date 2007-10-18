@@ -7,6 +7,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
 import javax.persistence.Column;
 
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
+
 /**
  * A {@link Change} representing the reordering of the node's children.  Specifically,
  * it defines the move of a child from its current position to another in a list.
@@ -32,6 +34,15 @@ public class Reorder extends ChildrenChange {
         created.setOldIndex(oldIndex);
         created.setNewIndex(newIndex);
         return created;
+    }
+
+    ////// LOGIC
+
+    @Override
+    public boolean isNoop() {
+        // Null-safety is belt-and-suspenders here; it's not legal for a
+        // reorder to have null for either value
+        return ComparisonTools.nullSafeEquals(getOldIndex(), getNewIndex());
     }
 
     @Transient

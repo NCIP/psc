@@ -34,6 +34,12 @@ public abstract class Change extends AbstractMutableDomainObject {
     public abstract ChangeAction getAction();
 
     /**
+     * Return true IFF this change would not affect the targeted node at all.
+     * @return
+     */
+    public abstract boolean isNoop();
+
+    /**
      * Integrate the change embodied in this object into the given {@link Delta}.
      * This may be as simple as adding the change to the delta's change list, but
      * may extend to removing or modifying other changes.  Or, if this change is

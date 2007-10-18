@@ -30,6 +30,11 @@ public class Remove extends ChildrenChange {
     public ChangeAction getAction() { return ChangeAction.REMOVE; }
 
     @Override
+    public boolean isNoop() {
+        return false;
+    }
+
+    @Override
     protected MergeLogic createMergeLogic(Delta<?> delta) {
         return new RemoveMergeLogic(delta);
     }

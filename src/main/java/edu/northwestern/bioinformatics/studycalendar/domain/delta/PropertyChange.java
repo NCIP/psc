@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
+
 import javax.persistence.Entity;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
@@ -26,6 +28,11 @@ public class PropertyChange extends Change {
     }
 
     ////// LOGIC
+
+    @Override
+    public boolean isNoop() {
+        return ComparisonTools.nullSafeEquals(getOldValue(), getNewValue());
+    }
 
     @Override
     @Transient

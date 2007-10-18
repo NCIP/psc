@@ -29,6 +29,12 @@ public class ReorderTest extends StudyCalendarTestCase {
         delta = Delta.createDeltaFor(epoch);
     }
     
+    public void testIsNoop() throws Exception {
+        assertTrue(Reorder.create(epoch, 4, 4).isNoop());
+        assertFalse(Reorder.create(epoch, 2, 7).isNoop());
+        assertFalse(Reorder.create(epoch, 1, 0).isNoop());
+    }
+    
     public void testMergeIntoEmptyDelta() throws Exception {
         reorder.setChild(ab);
         reorder.setOldIndex(1);

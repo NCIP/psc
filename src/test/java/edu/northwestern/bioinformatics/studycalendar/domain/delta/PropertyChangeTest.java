@@ -20,6 +20,14 @@ public class PropertyChangeTest extends StudyCalendarTestCase {
         delta = Delta.createDeltaFor(period);
     }
 
+    public void testIsNoop() throws Exception {
+        assertTrue("null => null should be noop", PropertyChange.create("any", null, null).isNoop());
+        assertTrue("equal old and new should be noop", PropertyChange.create("any", "aleph", "aleph").isNoop());
+        assertFalse("null => not-null should be not noop", PropertyChange.create("any", null, "aleph").isNoop());
+        assertFalse("not-null => null should be not noop", PropertyChange.create("any", "aleph", null).isNoop());
+        assertFalse("unequal old and new should be not noop", PropertyChange.create("any", "aleph", "one").isNoop());
+    }
+
     public void testMergeIntoEmptyDelta() throws Exception {
         change.setPropertyName("startDay");
         change.setOldValue("5");

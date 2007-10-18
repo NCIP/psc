@@ -41,6 +41,11 @@ public class Add extends ChildrenChange {
     public ChangeAction getAction() { return ChangeAction.ADD; }
 
     @Override
+    public boolean isNoop() {
+        return false;
+    }
+
+    @Override
     protected MergeLogic createMergeLogic(Delta<?> delta) {
         return new AddMergeLogic(delta);
     }
