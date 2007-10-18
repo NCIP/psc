@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 
 @Entity
@@ -22,6 +23,7 @@ public class UserRole  extends AbstractMutableDomainObject {
     User user;
     Role role;
     Set<Site> sites = new HashSet<Site>();
+    private List<StudySite> studySites;
 
     @ManyToOne(fetch = FetchType.LAZY)
     public User getUser() {
@@ -62,6 +64,19 @@ public class UserRole  extends AbstractMutableDomainObject {
 
     public void removeSite(Site site) {
         sites.remove(site);
+    }
+
+    @ManyToMany
+    @JoinTable( name="user_role_study_sites",
+        joinColumns = @JoinColumn(name="user_role_id"),
+        inverseJoinColumns = @JoinColumn(name="study_site_id")
+    )
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
+
+    public void setStudySites(List<StudySite> studySites) {
+        this.studySites = studySites;
     }
 
 

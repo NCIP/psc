@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.Iterator;
+import java.util.Collections;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     public void testGetUserRoleById() throws Exception {
@@ -85,6 +86,31 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
             assertEquals("Wrong site", "CDC Clinic", siteIter.next().getName());
 
+        }
+    }
+
+
+    public void testRemoveStudySite() throws Exception {
+      Integer savedId;
+        {
+            UserRole actualUserRole = getDao().getById(-1);
+            assertNotNull("User Role not found", actualUserRole);
+            assertEquals("Wrong id", -1, (int) actualUserRole.getId());
+            assertEquals("No study sites assigned", 1, actualUserRole.getStudySites().size());
+
+
+            actualUserRole.setStudySites(Collections.<StudySite>emptyList());
+            getDao().save(actualUserRole);
+            savedId = actualUserRole.getId();
+        }
+
+        interruptSession();
+
+        {
+            UserRole loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload user role with id " + savedId, loaded);
+            assertEquals("Wrong id", -1, (int) loaded.getId());
+            assertEquals("Wrong study site size", 0, loaded.getStudySites().size());
         }
     }
 }

@@ -37,4 +37,19 @@
         id="-400"
         name="CDC Clinic"
         />
+
+    <STUDIES
+        id="-1000"
+        name="Study A"/>
+
+    <STUDY_SITES
+        id="-2000"
+        site_id="-200"
+        study_id="-1000"/>
+
+    <USER_ROLE_STUDY_SITES
+        user_role_id="-1"
+        study_site_id="-2000"
+        />
+    
 </dataset>

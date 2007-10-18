@@ -23,8 +23,8 @@
         password="qN+MnXquuqMPAE1RlGJJyA=="
         />
 
-    <USER_STUDY_SITES
-        user_id="-400"
+    <USER_ROLE_STUDY_SITES
+        user_role_id="-400"
         study_site_id="-300"
         />
 </dataset>
