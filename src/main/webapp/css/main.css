@@ -65,6 +65,10 @@
     padding: 0 0 5px 0;
 }
 
+.day ul li img {
+    vertical-align:middle;
+}
+
 .epochs-and-arms {
     position: relative;
 }

@@ -48,11 +48,11 @@
                 <div class="legend">
                     <h3>Legend</h3>
                     <ul>
-                        <li class="scheduled even"><a>Scheduled</a></li>
-                        <li class="occurred  odd" ><a>Occurred</a></li>
-                        <li class="canceled even" ><a>Canceled</a></li>
-                        <li class="conditional odd"><a>Conditional</a></li>
-                        <li class="NA even"><a>NA</a></li>
+                        <li class="even"><img src="<c:url value="/images/scheduled.png"/>" alt="activity indicator"/><a>  Scheduled</a></li>
+                        <li class="odd" ><img src="<c:url value="/images/occurred.png"/>" alt="activity indicator"/><a>  Occurred</a></li>
+                        <li class="even" ><img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/><a>  Canceled</a></li>
+                        <li class="odd"><img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/><a>  Conditional</a></li>
+                        <li class="even"><img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/><a>  NA</a></li>
                     </ul>
                 </div>
                 <c:forEach items="${arm.eventsByDate}" var="entry" varStatus="status">
@@ -61,10 +61,28 @@
 
                         <ul>
                             <c:forEach items="${entry.value}" var="event">
-                                <li class="${event.currentState.mode.name}">
+                                <li>
                                     <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if>"/>
-                                    <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
-                                    <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
+                                    <c:choose>
+                                        <c:when test="${event.currentState.mode.name == 'scheduled'}">
+                                            <img src="<c:url value="/images/scheduled.png"/>" alt="activity indicator"/>
+                                        </c:when>
+                                        <c:when test="${event.currentState.mode.name == 'conditional'}">
+                                            <img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/>
+                                        </c:when>
+                                        <c:when test="${event.currentState.mode.name == 'occurred'}">
+                                            <img src="<c:url value="/images/occurred.png"/>" alt="activity indicator"/>
+                                        </c:when>
+                                        <c:when test="${event.currentState.mode.name == 'canceled'}">
+                                            <img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/>
+                                        </c:otherwise>
+                                    </c:choose>
+
+                                        <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
+                                        <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
                                 </li>
                                 <li class="event-details">
                                     <c:if test="${not empty event.plannedEvent.conditionalDetails}">Conditional </c:if>

@@ -162,6 +162,10 @@
             color: steelblue;
         }
 
+        li img {
+            vertical-align:middle;            
+        }
+
         .ae a.dismiss-control {
             display: block;
             float: right;

@@ -92,8 +92,14 @@
                         <ul>
                             <c:forEach items="${entry.value.events}" var="event">
                                 <li>
-                                    <a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
-                                    <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
+                                    <c:if test="${not empty event.conditionalDetails}"><img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/>
+                                        <a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
+                                        <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
+                                    </c:if>
+                                    <c:if test="${empty event.conditionalDetails}" >
+                                        <a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a>
+                                        <span class="event-details"><c:if test="${not empty event.details}">(${event.details})</c:if></span>
+                                    </c:if>
                                 </li>
                                 <li class="event-details">
                                     <c:if test="${not empty event.conditionalDetails}">Conditional </c:if>
