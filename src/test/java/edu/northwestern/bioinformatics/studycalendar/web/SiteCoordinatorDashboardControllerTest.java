@@ -2,10 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import static org.easymock.EasyMock.expect;
+import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -19,27 +22,29 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     SiteCoordinatorDashboardController controller;
     private StudyDao studyDao;
     private UserDao userDao;
+    List<User> users;
+    private SiteDao siteDao;
+    private List<Site> sites;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        studyDao = registerDaoMockFor(StudyDao.class);
+        siteDao  = registerDaoMockFor(SiteDao.class);
         userDao  = registerDaoMockFor(UserDao.class);
 
         controller = new SiteCoordinatorDashboardController();
-        controller.setStudyDao(studyDao);
+        controller.setSiteDao(siteDao);
         controller.setUserDao(userDao);
+
+        users    = asList(createNamedInstance("John", User.class));
+        sites    = asList(createNamedInstance("Mayo Clinic", Site.class));
     }
 
     public void testFormBackingObject() throws Exception {
-        List<Study> studies = asList( createNamedInstance("Study A", Study.class));
-        List<User> users = asList(createNamedInstance("John", User.class));
-
         request.setMethod("GET");
 
-        expect(userDao.getAll()).andReturn(users);
-        expect(studyDao.getAll()).andReturn(studies);
+        expectCommandBuildGrid();
 
         replayMocks();
 
@@ -47,5 +52,23 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) model.get("command");
         verifyMocks();
         assertNotNull("Command is null", command);
+    }
+
+    public void testGetView() throws Exception {
+        request.setMethod("GET");
+
+        expectCommandBuildGrid();
+
+        replayMocks();
+
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+        
+        assertEquals("Wrong View Name", "siteCoordinatorDashboard", mv.getViewName());
+    }
+
+    private void expectCommandBuildGrid() {
+        expect(userDao.getAllParticipantCoordinators()).andReturn(users);
+        expect(siteDao.getAll()).andReturn(sites);
     }
 }
