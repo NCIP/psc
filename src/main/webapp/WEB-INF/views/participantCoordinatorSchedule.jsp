@@ -13,7 +13,7 @@
     <script type="text/javascript">
 
         function ajaxform() {
-            var href = '<c:url value="/pages/cal/participantCoordinatorSchedule"/>'
+            var href = '<c:url value="/pages/dashboard/participantCoordinatorSchedule"/>'
             // Set up data variable
             var formdata = "";
             var toDateTemp = 'toDate';
