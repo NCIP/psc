@@ -25,6 +25,11 @@
                     <tr>
                         <th>${user.key.name}</th>
 
+                        <c:forEach items="${sites}" var="site">
+                            <td>
+                                <form:checkbox path="studyAssignmentGrid[${user.key.id}][${site.id}].selected"/>
+                            </td>
+                        </c:forEach>
                     </tr>
                 </c:forEach>
             </table>
