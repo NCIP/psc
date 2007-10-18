@@ -65,7 +65,7 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumer {
         }
 
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
-        assignment.setBigId(gridId);
+        assignment.setGridId(gridId);
 
         AdverseEvent event = new AdverseEvent();
         event.setDescription(description);

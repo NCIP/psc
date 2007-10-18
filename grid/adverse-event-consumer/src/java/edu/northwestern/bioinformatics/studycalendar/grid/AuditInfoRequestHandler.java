@@ -3,10 +3,7 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import org.apache.axis.AxisFault;
 import org.apache.axis.MessageContext;
 import org.apache.axis.handlers.BasicHandler;
@@ -15,7 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.globus.wsrf.security.SecurityManager;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>

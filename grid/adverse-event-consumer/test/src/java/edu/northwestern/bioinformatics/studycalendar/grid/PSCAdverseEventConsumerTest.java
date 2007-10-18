@@ -3,7 +3,7 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.auditing.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cabig.ctms.grid.ae.beans.AENotificationType;
 import gov.nih.nci.cabig.ctms.grid.ae.client.AdverseEventConsumerClient;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumer;
@@ -12,7 +12,6 @@ import gov.nih.nci.cagrid.common.Utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.InputStream;
 import java.io.Reader;
 import java.util.Date;
 
@@ -31,119 +30,125 @@ import org.dbunit.operation.DatabaseOperation;
  */
 public class PSCAdverseEventConsumerTest extends DBTestCase {
 
-    private String clientConfigFile;
+	private String clientConfigFile;
 
-    private String aeFile;
+	private String aeFile;
 
-    private String serviceUrl;
+	private String serviceUrl;
 
-    private void init() {
-        this.clientConfigFile = System.getProperty("psc.test.clientConfigFile",
-                        "/gov/nih/nci/cabig/ctms/grid/ae/client/client-config.wsdd");
-        this.aeFile = System.getProperty("psc.test.sampleNotificationFile",
-                        "test/resources/SampleAdverseEventMessage.xml");
-        this.serviceUrl = System.getProperty("psc.test.serviceUrl",
-                        "http://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
+	private void init() {
+		clientConfigFile = System.getProperty("psc.test.clientConfigFile",
+				"/gov/nih/nci/cabig/ctms/grid/ae/client/client-config.wsdd");
+		aeFile = System.getProperty("psc.test.sampleNotificationFile",
+				"grid/adverse-event-consumer/test/resources/SampleAdverseEventMessage.xml");
+		// serviceUrl = System.getProperty("psc.test.serviceUrl",
+		// "http://localhost:8080/wsrf/services/cagrid/AdverseEventConsumer");
 
-        String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
-        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:study_calendar");
-        String usr = System.getProperty("psc.test.db.usr", "postgres");
-        String pwd = System.getProperty("psc.test.db.pwd", "postgres");
+		serviceUrl = System.getProperty("psc.test.serviceUrl",
+				"http://10.10.10.2:9017/wsrf/services/cagrid/AdverseEventConsumer");
 
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, driver);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, url);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
-        System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
-    }
+		String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
+		String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:studycalendar_test");
+		String usr = System.getProperty("psc.test.db.usr", "psc");
+		String pwd = System.getProperty("psc.test.db.pwd", "psc");
 
-    public PSCAdverseEventConsumerTest() {
-        super();
-        init();
+		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_DRIVER_CLASS, driver);
+		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_CONNECTION_URL, url);
+		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
+		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
+	}
 
-    }
+	public PSCAdverseEventConsumerTest() {
+		super();
+		init();
 
-    public PSCAdverseEventConsumerTest(String name) {
-        super(name);
-        init();
-    }
+	}
 
-    protected DatabaseOperation getSetUpOperation() throws Exception {
-        return DatabaseOperation.CLEAN_INSERT;
-    }
+	public PSCAdverseEventConsumerTest(final String name) {
+		super(name);
+		init();
+	}
 
-    protected DatabaseOperation getTearDownOperation() throws Exception {
-        return DatabaseOperation.NONE;
-    }
+	@Override
+	protected DatabaseOperation getSetUpOperation() throws Exception {
+		return DatabaseOperation.CLEAN_INSERT;
+	}
 
-    public void testCreateNotificationLocal() {
-        AENotificationType ae = getNotification();
-        try {
-            DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-            AdverseEventConsumer consumer = new PSCAdverseEventConsumer();
-            consumer.register(ae);
-            DataAuditInfo.setLocal(null);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error creating registration: " + ex.getMessage());
-        }
-        validateNotification(ae);
-    }
+	@Override
+	protected DatabaseOperation getTearDownOperation() throws Exception {
+		return DatabaseOperation.NONE;
+	}
 
-    private void validateNotification(AENotificationType ae) {
-        // TODO Auto-generated method stub
+	public void testCreateNotificationLocal() {
+		AENotificationType ae = getNotification();
+		try {
+			DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+			AdverseEventConsumer consumer = new PSCAdverseEventConsumer();
+			consumer.register(ae);
+			DataAuditInfo.setLocal(null);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error creating registration: " + ex.getMessage());
+		}
+		validateNotification(ae);
+	}
 
-    }
+	private void validateNotification(final AENotificationType ae) {
+		// TODO Auto-generated method stub
 
-    public void testCreateNotificationRemote() {
-        AENotificationType ae = getNotification();
-        try {
-            AdverseEventConsumerClient client = new AdverseEventConsumerClient(this.serviceUrl);
-            client.register(ae);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error making call: " + ex.getMessage());
-        }
-    }
+	}
 
-    private AENotificationType getNotification() {
-        AENotificationType ae = null;
-        try {
-            InputStream config = getClass().getResourceAsStream(clientConfigFile);
-            Reader reader = new FileReader(aeFile);
-            ae = (AENotificationType) Utils.deserializeObject(reader, AENotificationType.class,
-                            config);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            fail("Error deserializing AENotificationType object: " + ex.getMessage());
-        }
-        return ae;
-    }
+	public void testCreateNotificationRemote() {
+		AENotificationType ae = getNotification();
+		try {
+			AdverseEventConsumerClient client = new AdverseEventConsumerClient(serviceUrl);
+			client.register(ae);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error making call: " + ex.getMessage());
+		}
+	}
 
-    public static void main(String[] args) {
-        junit.textui.TestRunner.run(suite());
-    }
+	private AENotificationType getNotification() {
+		AENotificationType ae = null;
+		try {
+			// InputStream config = getClass().getResourceAsStream(clientConfigFile);
+			Reader reader = new FileReader(aeFile);
+			ae = (AENotificationType) Utils.deserializeObject(reader, AENotificationType.class);
+		}
+		catch (Exception ex) {
+			ex.printStackTrace();
+			fail("Error deserializing AENotificationType object: " + ex.getMessage());
+		}
+		return ae;
+	}
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite();
-        
-        /*
-         * NOTE: These tests CANNOT be run in succession because it will cause
-         * the maximum number of connections to be exceeded.
-         */
-//        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
-        suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationLocal"));
-        return suite;
-    }
+	public static void main(final String[] args) {
+		junit.textui.TestRunner.run(suite());
+	}
 
-    @Override
-    protected IDataSet getDataSet() throws Exception {
-        String fileName = "test/resources/test_data.xml";
-        File testFile = new File(fileName);
-        if (!testFile.exists()) {
-            throw new RuntimeException(fileName + " not found.");
-        }
+	public static Test suite() {
+		TestSuite suite = new TestSuite();
 
-        return new FlatXmlDataSet(new FileInputStream(testFile));
-    }
+		/*
+		 * NOTE: These tests CANNOT be run in succession because it will cause the maximum number of connections to be exceeded.
+		 */
+		suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationRemote"));
+		// suite.addTest(new PSCAdverseEventConsumerTest("testCreateNotificationLocal"));
+		return suite;
+	}
+
+	@Override
+	protected IDataSet getDataSet() throws Exception {
+		String fileName = "grid/adverse-event-consumer/test/resources/test_data.xml";
+		File testFile = new File(fileName);
+		if (!testFile.exists()) {
+			throw new RuntimeException(fileName + " not found.");
+		}
+
+		return new FlatXmlDataSet(new FileInputStream(testFile));
+	}
 
 }

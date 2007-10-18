@@ -344,8 +344,6 @@
     </div>
 </c:if>
 <br style="clear:both"/>
-
-<c:if test="${configuration.externalAppsConfigured and not empty assignment.currentAeNotifications}">
 <laf:box>
 <laf:division>
 
@@ -384,10 +382,9 @@
             </p>
         </div>
     </div>
-    </c:forEach>
-     </laf:division>
-</laf:box>
-</c:if>
+	    </c:forEach>
+	     </laf:division>
+	</laf:box>
 
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box>
