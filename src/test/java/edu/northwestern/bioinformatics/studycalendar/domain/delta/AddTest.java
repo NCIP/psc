@@ -215,22 +215,102 @@ public class AddTest extends StudyCalendarTestCase {
         assertEquals(1, (int) after.getIndex());
     }
 
-    public void testDeleteReorderSibWhenIndexedAndAfter() throws Exception {
-        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 2);
-        Add after = Add.create(Epoch.create("great"), 7);
+    public void testDeleteReorderSibWhenNotIndexed() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 7);
+        Add after = Add.create(Epoch.create("great"));
 
         after.siblingDeleted(delta, toDel, 0, 1);
-        assertEquals(6, (int) after.getIndex());
+        assertNull(after.getIndex()); // no change
     }
 
-    public void testDeleteReorderSibWhenIndexedAndBefore() throws Exception {
+    public void testDeleteReorderUpSibWithIndexBetweenReorderIndexes() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 1);
+        Add after = Add.create(Epoch.create("great"), 2);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+    
+    public void testDeleteReorderUpSibWithIndexEqualsNew() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 1);
+        Add after = Add.create(Epoch.create("great"), 1);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderUpSibWithIndexEqualsOld() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 1);
+        Add after = Add.create(Epoch.create("great"), 4);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(3, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderUpSibWithIndexAfter() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 1);
+        Add after = Add.create(Epoch.create("great"), 5);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(5, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderUpSibWithIndexBefore() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 1);
+        Add after = Add.create(Epoch.create("great"), 0);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(0, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderDownSibWithIndexBetweenReorderIndexes() throws Exception {
         Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 2);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(3, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderDownSibWithIndexEqualsNew() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 4);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(5, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderDownSibWithIndexEqualsOld() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 1);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderDownSibWithIndexAfter() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 5);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(5, (int) after.getIndex());
+    }
+    
+    public void testDeleteReorderDownSibWithIndexBefore() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
+        Add after = Add.create(Epoch.create("great"), 0);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(0, (int) after.getIndex());
+    }
+
+    public void testDeleteReorderNoopSibWithIndex() throws Exception {
+        Reorder toDel = Reorder.create(Epoch.create("target"), 4, 4);
         Add after = Add.create(Epoch.create("great"), 2);
 
         after.siblingDeleted(delta, toDel, 0, 1);
         assertEquals(2, (int) after.getIndex());
     }
-    
+
     public void testDeleteReorderSibWhenIndexedAndEarlier() throws Exception {
         Reorder toDel = Reorder.create(Epoch.create("target"), 1, 4);
         Add after = Add.create(Epoch.create("great"), 5);

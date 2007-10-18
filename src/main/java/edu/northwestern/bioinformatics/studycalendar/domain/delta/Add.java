@@ -187,9 +187,7 @@ public class Add extends ChildrenChange {
             if (!thisAfter) return;
             if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
                 int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
-                if (removedElementIndex < getIndex()) {
-                    setIndex(getIndex() + 1);
-                }
+                incrementIf(removedElementIndex < getIndex());
             }
         }
 
@@ -197,7 +195,16 @@ public class Add extends ChildrenChange {
         public void siblingDeleted(Reorder change) {
             if (Add.this.getIndex() == null) return;
             if (!thisAfter) return;
-            decrementIf(change.getNewIndex() < getIndex());
+            boolean within = (change.getOldIndex() >= getIndex() && getIndex()  > change.getNewIndex())  // up
+                          || (change.getOldIndex() <  getIndex() && getIndex() <= change.getNewIndex()); // down
+            if (within) {
+                decrementIf(change.isMoveUp());
+                incrementIf(change.isMoveDown());
+            }
+        }
+
+        private void incrementIf(boolean condition) {
+            if (condition) setIndex(getIndex() + 1);
         }
 
         private void decrementIf(boolean condition) {
