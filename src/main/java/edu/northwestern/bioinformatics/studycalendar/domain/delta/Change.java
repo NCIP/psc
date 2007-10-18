@@ -37,6 +37,7 @@ public abstract class Change extends AbstractMutableDomainObject {
      * Return true IFF this change would not affect the targeted node at all.
      * @return
      */
+    @Transient
     public abstract boolean isNoop();
 
     /**

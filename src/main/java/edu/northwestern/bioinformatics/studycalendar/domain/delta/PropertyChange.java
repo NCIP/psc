@@ -30,6 +30,7 @@ public class PropertyChange extends Change {
     ////// LOGIC
 
     @Override
+    @Transient
     public boolean isNoop() {
         return ComparisonTools.nullSafeEquals(getOldValue(), getNewValue());
     }

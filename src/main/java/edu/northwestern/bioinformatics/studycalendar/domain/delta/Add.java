@@ -41,6 +41,7 @@ public class Add extends ChildrenChange {
     public ChangeAction getAction() { return ChangeAction.ADD; }
 
     @Override
+    @Transient
     public boolean isNoop() {
         return false;
     }

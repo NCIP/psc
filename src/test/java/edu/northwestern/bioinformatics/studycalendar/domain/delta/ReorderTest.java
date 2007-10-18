@@ -34,7 +34,19 @@ public class ReorderTest extends StudyCalendarTestCase {
         assertFalse(Reorder.create(epoch, 2, 7).isNoop());
         assertFalse(Reorder.create(epoch, 1, 0).isNoop());
     }
+
+    public void testIsMoveUp() throws Exception {
+        assertFalse(Reorder.create(epoch, 4, 4).isMoveUp());
+        assertFalse(Reorder.create(epoch, 2, 7).isMoveUp());
+        assertTrue(Reorder.create(epoch, 1, 0).isMoveUp());
+    }
     
+    public void testIsMoveDown() throws Exception {
+        assertFalse(Reorder.create(epoch, 4, 4).isMoveDown());
+        assertTrue(Reorder.create(epoch, 2, 7).isMoveDown());
+        assertFalse(Reorder.create(epoch, 1, 0).isMoveDown());
+    }
+
     public void testMergeIntoEmptyDelta() throws Exception {
         reorder.setChild(ab);
         reorder.setOldIndex(1);

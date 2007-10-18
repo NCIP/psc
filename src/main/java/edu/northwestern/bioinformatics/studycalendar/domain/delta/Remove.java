@@ -30,6 +30,7 @@ public class Remove extends ChildrenChange {
     public ChangeAction getAction() { return ChangeAction.REMOVE; }
 
     @Override
+    @Transient
     public boolean isNoop() {
         return false;
     }

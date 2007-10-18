@@ -39,10 +39,21 @@ public class Reorder extends ChildrenChange {
     ////// LOGIC
 
     @Override
+    @Transient
     public boolean isNoop() {
         // Null-safety is belt-and-suspenders here; it's not legal for a
         // reorder to have null for either value
         return ComparisonTools.nullSafeEquals(getOldIndex(), getNewIndex());
+    }
+
+    @Transient
+    public boolean isMoveUp() {
+        return getNewIndex() < getOldIndex();
+    }
+
+    @Transient
+    public boolean isMoveDown() {
+        return getOldIndex() < getNewIndex();
     }
 
     @Transient
