@@ -11,6 +11,9 @@ import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author John Dzak
+ */
 public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private UserRoleDao userRoleDao;

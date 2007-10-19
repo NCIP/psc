@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author John Dzak
+ */
 public class SiteCoordinatorDashboardCommand {
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
     private SiteDao siteDao;

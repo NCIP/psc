@@ -16,7 +16,6 @@ import java.util.Map;
 /**
  * @author John Dzak
  */
-
 public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     SiteCoordinatorDashboardController controller;
     private StudyDao studyDao;
