@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.Iterator;
 import java.util.Collections;
+import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     public void testGetUserRoleById() throws Exception {
@@ -112,5 +113,12 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong id", -1, (int) loaded.getId());
             assertEquals("Wrong study site size", 0, loaded.getStudySites().size());
         }
+    }
+
+    public void testGetAllParticipantCoordinators() throws Exception {
+        List<UserRole> usersRoles = getDao().getAllParticipantCoordinatorUserRoles();
+
+        assertEquals("wrong participant coordinator", "PC A", usersRoles.get(0).getUser().getName());
+        assertEquals("wrong participant coordinator", "PC B", usersRoles.get(1).getUser().getName());
     }
 }

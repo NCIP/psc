@@ -1,10 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
@@ -14,17 +12,19 @@ import java.util.List;
 import java.util.Map;
 
 public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
-    private UserDao userDao;
+    private SiteDao siteDao;
+    private UserRoleDao userRoleDao;
     private Study study;
     private List<User> users;
     private List<Site> sites;
-    private SiteDao siteDao;
+    private List<UserRole> userRoles;
+
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        userDao  = registerDaoMockFor(UserDao.class);
-        siteDao  = registerDaoMockFor(SiteDao.class);
+        siteDao     = registerDaoMockFor(SiteDao.class);
+        userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
         study = createNamedInstance("Study A", Study.class);
 
@@ -42,12 +42,13 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         user0.addUserRole(role0);
         user1.addUserRole(role1);
 
-        sites   = asList(site0, site1);
-        users   = asList(user0, user1);
+        sites     = asList(site0, site1);
+        users     = asList(user0, user1);
+        userRoles = asList(role0, role1);
     }
 
     public void testBuildStudyAssignmentGrid() throws Exception {
-        expect(userDao.getAllParticipantCoordinators()).andReturn(users);
+        expect(userRoleDao.getAllParticipantCoordinatorUserRoles()).andReturn(userRoles);
         expect(siteDao.getAll()).andReturn(sites);
 
         replayMocks();
@@ -74,6 +75,6 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     }
 
     private SiteCoordinatorDashboardCommand createCommand() {
-        return new SiteCoordinatorDashboardCommand(userDao, siteDao, study);
+        return new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, study);
     }
 }

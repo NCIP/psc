@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -22,6 +23,7 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
+    private UserRoleDao userRoleDao;
 
 
     public SiteCoordinatorDashboardController() {
@@ -47,7 +49,7 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
         if (editId == null ) editId = 1;
 
         Study study = studyDao.getById(1);
-        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(userDao, siteDao, study);
+        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, study);
         return command;
     }
 
@@ -61,5 +63,9 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
+    }
+
+    public void setUserRoleDao(UserRoleDao userRoleDao) {
+        this.userRoleDao = userRoleDao;
     }
 }

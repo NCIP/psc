@@ -1,56 +1,42 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SiteCoordinatorDashboardCommand {
-    private UserDao userDao;
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
     private SiteDao siteDao;
     private Study study;
+    private UserRoleDao userRoleDao;
 
-    public SiteCoordinatorDashboardCommand(UserDao userDao, SiteDao siteDao, Study study) {
-        this.userDao  = userDao;
-        this.siteDao  = siteDao;
-        this.study    = study;
+    public SiteCoordinatorDashboardCommand(SiteDao siteDao, UserRoleDao userRoleDao, Study study) {
+        this.siteDao      = siteDao;
+        this.userRoleDao  = userRoleDao;
+        this.study        = study;
 
         buildStudyAssignmentGrid();
     }
 
     public void buildStudyAssignmentGrid() {
         studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
-        List<User> users = userDao.getAllParticipantCoordinators();
-        List<Site> sites = siteDao.getAll();
+        List<Site> sites    = siteDao.getAll();
+        List<UserRole> usersRoles = userRoleDao.getAllParticipantCoordinatorUserRoles();
 
-        for (User user : users) {
-            if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new HashMap<Site, StudyAssignmentCell>());
+        for (UserRole userRole : usersRoles) {
+            if (!studyAssignmentGrid.containsKey(userRole)) studyAssignmentGrid.put(userRole.getUser(), new HashMap<Site, StudyAssignmentCell>());
 
             for (Site site : sites) {
-
-                UserRole participCoordRole = getParticipantCoordinatorUserRole(user);
-
-                if (participCoordRole != null) {
-                    studyAssignmentGrid.get(user)
+                    studyAssignmentGrid.get(userRole.getUser())
                             .put(site,
-                                    createStudyAssignmentCell(isSiteSelected(participCoordRole, study, site),
-                                            isSiteAccessAllowed(participCoordRole, site)));
-                }
+                                    createStudyAssignmentCell(isSiteSelected(userRole, study, site),
+                                            isSiteAccessAllowed(userRole, site)));
             }
         }
-    }
-
-    protected UserRole getParticipantCoordinatorUserRole(User user) {
-        for (UserRole userRole : user.getUserRoles()) {
-            if (Role.PARTICIPANT_COORDINATOR.equals(userRole.getRole())) {      // There should only be one
-                return userRole;                                                // participant coordinator role
-            }
-        }
-        return null;
     }
 
     protected boolean isSiteSelected(UserRole userRole, Study study, Site site) {

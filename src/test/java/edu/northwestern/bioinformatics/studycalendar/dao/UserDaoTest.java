@@ -152,12 +152,4 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
             assertEquals("Wrong Role Size", 0, loaded.getUserRoles().size());
         }
     }
-
-
-    public void testGetAllParticipantCoordinators() throws Exception {
-        List<User> users = getDao().getAllParticipantCoordinators();
-
-        assertEquals("wrong participant coordinator", "PC A", users.get(0).getName());
-        assertEquals("wrong participant coordinator", "PC B", users.get(1).getName());
-    }
 }

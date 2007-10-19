@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,28 +20,30 @@ import java.util.Map;
 public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     SiteCoordinatorDashboardController controller;
     private StudyDao studyDao;
-    private UserDao userDao;
-    List<User> users;
     private SiteDao siteDao;
+    private UserRoleDao userRoleDao;
     private List<Site> sites;
+    private List<UserRole> userRoles;
     private Study study;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        siteDao  = registerDaoMockFor(SiteDao.class);
-        userDao  = registerDaoMockFor(UserDao.class);
-        studyDao = registerDaoMockFor(StudyDao.class);
+        siteDao     = registerDaoMockFor(SiteDao.class);
+        studyDao    = registerDaoMockFor(StudyDao.class);
+        userRoleDao = registerDaoMockFor(UserRoleDao.class);
 
         controller = new SiteCoordinatorDashboardController();
         controller.setSiteDao(siteDao);
-        controller.setUserDao(userDao);
         controller.setStudyDao(studyDao);
+        controller.setUserRoleDao(userRoleDao);
 
-        users    = asList(createNamedInstance("John", User.class));
+        User user0     = createNamedInstance("John", User.class);
+
+        userRoles = asList(Fixtures.createUserRole(user0, Role.PARTICIPANT_COORDINATOR));
         sites    = asList(createNamedInstance("Mayo Clinic", Site.class));
-        study    = createNamedInstance("Study A", Study.class);
+        study    = setId(1,createNamedInstance("Study A", Study.class));
     }
 
     public void testFormBackingObject() throws Exception {
@@ -74,9 +75,9 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     }
 
     private void expectCommandBuildGrid() {
-        expect(userDao.getAllParticipantCoordinators()).andReturn(users);
+        expect(userRoleDao.getAllParticipantCoordinatorUserRoles()).andReturn(userRoles);
         expect(siteDao.getAll()).andReturn(sites);
-        expect(studyDao.getById(1)).andReturn(study);
+        expect(studyDao.getById(study.getId())).andReturn(study);
     }
 
     public void expectRefData() {
