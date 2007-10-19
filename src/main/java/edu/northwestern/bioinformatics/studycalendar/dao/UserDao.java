@@ -29,7 +29,7 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
 
     public List<StudyParticipantAssignment> getAssignments(User user) {
         List<StudyParticipantAssignment> results = getHibernateTemplate().find(
-                "from User where participantCoordinator = ? ", user);
+                "from StudyParticipantAssignment a where a.participantCoordinator = ? ", user);
         return results;
     }
 

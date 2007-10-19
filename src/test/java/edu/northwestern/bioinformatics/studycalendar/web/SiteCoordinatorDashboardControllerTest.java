@@ -25,6 +25,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     List<User> users;
     private SiteDao siteDao;
     private List<Site> sites;
+    private Study study;
 
     @Override
     protected void setUp() throws Exception {
@@ -32,13 +33,16 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
         siteDao  = registerDaoMockFor(SiteDao.class);
         userDao  = registerDaoMockFor(UserDao.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
 
         controller = new SiteCoordinatorDashboardController();
         controller.setSiteDao(siteDao);
         controller.setUserDao(userDao);
+        controller.setStudyDao(studyDao);
 
         users    = asList(createNamedInstance("John", User.class));
         sites    = asList(createNamedInstance("Mayo Clinic", Site.class));
+        study    = createNamedInstance("Study A", Study.class);
     }
 
     public void testFormBackingObject() throws Exception {
@@ -72,6 +76,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     private void expectCommandBuildGrid() {
         expect(userDao.getAllParticipantCoordinators()).andReturn(users);
         expect(siteDao.getAll()).andReturn(sites);
+        expect(studyDao.getById(1)).andReturn(study);
     }
 
     public void expectRefData() {

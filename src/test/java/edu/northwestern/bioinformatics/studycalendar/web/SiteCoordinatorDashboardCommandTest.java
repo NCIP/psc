@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
@@ -11,11 +11,11 @@ import static org.easymock.EasyMock.expect;
 
 import static java.util.Arrays.asList;
 import java.util.List;
+import java.util.Map;
 
 public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     private UserDao userDao;
-    private StudyDao studyDao;
-    private List<Study> studies;
+    private Study study;
     private List<User> users;
     private List<Site> sites;
     private SiteDao siteDao;
@@ -24,19 +24,25 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         super.setUp();
 
         userDao  = registerDaoMockFor(UserDao.class);
-        studyDao = registerDaoMockFor(StudyDao.class);
         siteDao  = registerDaoMockFor(SiteDao.class);
 
-        Study study0 = createNamedInstance("Study A", Study.class);
-        Site  site0  = createNamedInstance("Mayo Clinic", Site.class);
+        study = createNamedInstance("Study A", Study.class);
+
+        Site  site0  = createNamedInstance("Mayo Clinic" , Site.class);
+        Site  site1  = createNamedInstance("Northwestern", Site.class);
+
         User  user0  = createNamedInstance("John", User.class);
-        User  user1  = createNamedInstance("John", User.class);
+        User  user1  = createNamedInstance("Jake", User.class);
 
-        user0.addUserRole(createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0));
-        user1.addUserRole(createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site0));
+        UserRole role0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        role0.setStudySites(asList(createStudySite(study, site0)));
 
-        studies = asList(study0);
-        sites   = asList(site0);
+        UserRole role1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site0);
+
+        user0.addUserRole(role0);
+        user1.addUserRole(role1);
+
+        sites   = asList(site0, site1);
         users   = asList(user0, user1);
     }
 
@@ -48,11 +54,26 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         SiteCoordinatorDashboardCommand newCommand = createCommand();
         verifyMocks();
 
-        assertTrue("Wrong User" , newCommand.getStudyAssignmentGrid().containsKey(users.get(0)));
-        assertTrue("Wrong Site", newCommand.getStudyAssignmentGrid().get(users.get(0)).containsKey(sites.get(0)));
+        Map<User, Map<Site,SiteCoordinatorDashboardCommand.StudyAssignmentCell>> studyAssignmentGrid = newCommand.getStudyAssignmentGrid();
+
+        assertTrue("No User", studyAssignmentGrid.containsKey(users.get(0)));
+        assertTrue("No User", studyAssignmentGrid.containsKey(users.get(1)));
+
+        assertTrue("No Site", studyAssignmentGrid.get(users.get(0)).containsKey(sites.get(0)));
+        assertTrue("No Site", studyAssignmentGrid.get(users.get(1)).containsKey(sites.get(0)));
+
+        assertTrue("Should be selected"     , studyAssignmentGrid.get(users.get(0)).get(sites.get(0)).isSelected());
+        assertFalse("Should not be selected", studyAssignmentGrid.get(users.get(0)).get(sites.get(1)).isSelected());
+        assertFalse("Should not be selected", studyAssignmentGrid.get(users.get(1)).get(sites.get(0)).isSelected());
+        assertFalse("Should not be selected", studyAssignmentGrid.get(users.get(1)).get(sites.get(1)).isSelected());
+
+        assertTrue("Site Access should be allowed"     , studyAssignmentGrid.get(users.get(0)).get(sites.get(0)).isSiteAccessAllowed());
+        assertTrue("Site Access should be allowed"     , studyAssignmentGrid.get(users.get(0)).get(sites.get(1)).isSiteAccessAllowed());
+        assertTrue("Site Access should be allowed"     , studyAssignmentGrid.get(users.get(1)).get(sites.get(0)).isSiteAccessAllowed());
+        assertFalse("Site Access should not be allowed", studyAssignmentGrid.get(users.get(1)).get(sites.get(1)).isSiteAccessAllowed());
     }
 
     private SiteCoordinatorDashboardCommand createCommand() {
-        return new SiteCoordinatorDashboardCommand(userDao, studyDao, siteDao);
+        return new SiteCoordinatorDashboardCommand(userDao, siteDao, study);
     }
 }

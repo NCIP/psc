@@ -1,11 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -13,14 +10,14 @@ import java.util.List;
 
 public class SiteCoordinatorDashboardCommand {
     private UserDao userDao;
-    private StudyDao studyDao;
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
     private SiteDao siteDao;
+    private Study study;
 
-    public SiteCoordinatorDashboardCommand(UserDao userDao, StudyDao studyDao, SiteDao siteDao) {
+    public SiteCoordinatorDashboardCommand(UserDao userDao, SiteDao siteDao, Study study) {
         this.userDao  = userDao;
-        this.studyDao = studyDao;
         this.siteDao  = siteDao;
+        this.study    = study;
 
         buildStudyAssignmentGrid();
     }
@@ -34,9 +31,37 @@ public class SiteCoordinatorDashboardCommand {
             if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new HashMap<Site, StudyAssignmentCell>());
 
             for (Site site : sites) {
-                studyAssignmentGrid.get(user).put(site, createStudyAssignmentCell(false));
+
+                UserRole participCoordRole = getParticipantCoordinatorUserRole(user);
+
+                if (participCoordRole != null) {
+                    studyAssignmentGrid.get(user)
+                            .put(site,
+                                    createStudyAssignmentCell(isSiteSelected(participCoordRole, study, site),
+                                            isSiteAccessAllowed(participCoordRole, site)));
+                }
             }
         }
+    }
+
+    protected UserRole getParticipantCoordinatorUserRole(User user) {
+        for (UserRole userRole : user.getUserRoles()) {
+            if (Role.PARTICIPANT_COORDINATOR.equals(userRole.getRole())) {      // There should only be one
+                return userRole;                                                // participant coordinator role
+            }
+        }
+        return null;
+    }
+
+    protected boolean isSiteSelected(UserRole userRole, Study study, Site site) {
+        for (StudySite studySite : userRole.getStudySites()) {
+            if (site.equals(studySite.getSite()) && study.equals(studySite.getStudy())) return true;
+        }
+        return false;
+    }
+
+    protected boolean isSiteAccessAllowed(UserRole userRole, Site site) {
+        return userRole.getSites().contains(site);
     }
 
     public Map<User, Map<Site, StudyAssignmentCell>> getStudyAssignmentGrid() {
@@ -45,9 +70,11 @@ public class SiteCoordinatorDashboardCommand {
 
     public static class StudyAssignmentCell {
         private boolean selected;
+        private boolean siteAccessAllowed;
 
-        public StudyAssignmentCell(boolean selected) {
+        public StudyAssignmentCell(boolean selected, boolean siteAccessAllowed) {
             this.selected = selected;
+            this.siteAccessAllowed = siteAccessAllowed;
         }
 
         public boolean isSelected() {
@@ -58,9 +85,16 @@ public class SiteCoordinatorDashboardCommand {
             this.selected = selected;
         }
 
+        public boolean isSiteAccessAllowed() {
+            return siteAccessAllowed;
+        }
+
+        public void setSiteAccessAllowed(boolean siteAccessAllowed) {
+            this.siteAccessAllowed = siteAccessAllowed;
+        }
     }
 
-    protected static StudyAssignmentCell createStudyAssignmentCell(boolean selected) {
-        return new StudyAssignmentCell(selected);
+    protected static StudyAssignmentCell createStudyAssignmentCell(boolean selected, boolean siteAccessAllowed) {
+        return new StudyAssignmentCell(selected, siteAccessAllowed);
     }
 }

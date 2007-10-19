@@ -10,6 +10,7 @@ import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
+import java.util.ArrayList;
 
 
 @Entity
@@ -23,7 +24,7 @@ public class UserRole  extends AbstractMutableDomainObject {
     User user;
     Role role;
     Set<Site> sites = new HashSet<Site>();
-    private List<StudySite> studySites;
+    private List<StudySite> studySites = new ArrayList<StudySite>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     public User getUser() {
