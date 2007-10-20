@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.security.util.ObjectSetUtil;
 
 /**
  * @author Ram Chilukuri
@@ -80,6 +81,11 @@ public class StudySite extends AbstractMutableDomainObject {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    @Transient
+    public static StudySite findStudySite(Study study, Site site) {
+        return (StudySite) ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).iterator().next();
     }
 
     ////// OBJECT METHODS

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -28,7 +29,7 @@ public class SiteCoordinatorDashboardCommand {
     public void buildStudyAssignmentGrid() {
         studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
         List<Site> sites    = siteDao.getAll();
-        List<UserRole> usersRoles = userRoleDao.getAllParticipantCoordinatorUserRoles();
+        List<UserRole> usersRoles = userRoleDao.getAllParticipantCoordinators();
 
         for (UserRole userRole : usersRoles) {
             if (!studyAssignmentGrid.containsKey(userRole)) studyAssignmentGrid.put(userRole.getUser(), new HashMap<Site, StudyAssignmentCell>());
@@ -55,6 +56,18 @@ public class SiteCoordinatorDashboardCommand {
 
     public Map<User, Map<Site, StudyAssignmentCell>> getStudyAssignmentGrid() {
         return studyAssignmentGrid;
+    }
+
+    public void apply() {
+        for(User user : studyAssignmentGrid.keySet()) {
+            for(Site site : studyAssignmentGrid.get(user).keySet()) {
+                if (studyAssignmentGrid.get(user).get(site).isSelected()) {
+                    UserRole userRole = userRoleDao.getByUserAndRole(user, Role.PARTICIPANT_COORDINATOR);
+                    userRole.addStudySite(findStudySite(study, site));
+                    userRoleDao.save(userRole);
+                }
+            }
+        }
     }
 
     public static class StudyAssignmentCell {

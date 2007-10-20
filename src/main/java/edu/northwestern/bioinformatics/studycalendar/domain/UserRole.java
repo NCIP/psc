@@ -80,6 +80,10 @@ public class UserRole  extends AbstractMutableDomainObject {
         this.studySites = studySites;
     }
 
+    public void addStudySite(StudySite studySite) {
+        studySites.add(studySite);
+    }
+
 
     public boolean equals(Object o) {
         if (this == o) return true;

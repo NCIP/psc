@@ -23,6 +23,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     private UserRoleDao userRoleDao;
     private List<Site> sites;
     private List<UserRole> userRoles;
+    private List<Study> studies;
     private Study study;
 
     @Override
@@ -40,9 +41,11 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
         User user0     = createNamedInstance("John", User.class);
 
+        study     = setId(1,createNamedInstance("Study A", Study.class));
         userRoles = asList(Fixtures.createUserRole(user0, Role.PARTICIPANT_COORDINATOR));
-        sites    = asList(createNamedInstance("Mayo Clinic", Site.class));
-        study    = setId(1,createNamedInstance("Study A", Study.class));
+        sites     = asList(createNamedInstance("Mayo Clinic", Site.class));
+        studies   = asList(study);
+
     }
 
     public void testFormBackingObject() throws Exception {
@@ -74,12 +77,13 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     }
 
     private void expectCommandBuildGrid() {
-        expect(userRoleDao.getAllParticipantCoordinatorUserRoles()).andReturn(userRoles);
+        expect(userRoleDao.getAllParticipantCoordinators()).andReturn(userRoles);
         expect(siteDao.getAll()).andReturn(sites);
         expect(studyDao.getById(study.getId())).andReturn(study);
     }
 
     public void expectRefData() {
         expect(siteDao.getAll()).andReturn(sites);
+        expect(studyDao.getAll()).andReturn(studies);
     }
 }

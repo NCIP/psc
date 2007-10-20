@@ -10,6 +10,7 @@ import static org.easymock.EasyMock.expect;
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * @author John Dzak
@@ -22,6 +23,7 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     private List<UserRole> userRoles;
     private User user0, user1;
     private Site site0, site1;
+    private UserRole role0, role1;
 
 
     protected void setUp() throws Exception {
@@ -38,10 +40,10 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         user0  = createNamedInstance("John", User.class);
         user1  = createNamedInstance("Jake", User.class);
 
-        UserRole role0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
-        role0.setStudySites(asList(createStudySite(study, site0)));
+        role0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        role0.setStudySites(new ArrayList(asList(createStudySite(study, site0))));
 
-        UserRole role1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site0);
+        role1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site0);
 
         user0.addUserRole(role0);
         user1.addUserRole(role1);
@@ -51,14 +53,13 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     }
 
     public void testBuildStudyAssignmentGrid() throws Exception {
-        expect(userRoleDao.getAllParticipantCoordinatorUserRoles()).andReturn(userRoles);
-        expect(siteDao.getAll()).andReturn(sites);
+        expectBuildStudyAssignmentGrid();
 
         replayMocks();
-        SiteCoordinatorDashboardCommand newCommand = createCommand();
+        SiteCoordinatorDashboardCommand command = createCommand();
         verifyMocks();
 
-        Map<User, Map<Site,SiteCoordinatorDashboardCommand.StudyAssignmentCell>> studyAssignmentGrid = newCommand.getStudyAssignmentGrid();
+        Map<User, Map<Site,SiteCoordinatorDashboardCommand.StudyAssignmentCell>> studyAssignmentGrid = command.getStudyAssignmentGrid();
 
         assertTrue("No User", studyAssignmentGrid.containsKey(user0));
         assertTrue("No User", studyAssignmentGrid.containsKey(user1));
@@ -75,6 +76,24 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         assertTrue("Site Access should be allowed"     , studyAssignmentGrid.get(user0).get(site1).isSiteAccessAllowed());
         assertTrue("Site Access should be allowed"     , studyAssignmentGrid.get(user1).get(site0).isSiteAccessAllowed());
         assertFalse("Site Access should not be allowed", studyAssignmentGrid.get(user1).get(site1).isSiteAccessAllowed());
+    }
+
+    public void testInterpretStudyAssignmentGrid() throws Exception {
+        expectBuildStudyAssignmentGrid();
+        expect(userRoleDao.getByUserAndRole(user0, Role.PARTICIPANT_COORDINATOR)).andReturn(role0);
+        userRoleDao.save(role0);
+
+        replayMocks();
+
+        SiteCoordinatorDashboardCommand command = createCommand();
+        command.apply();
+        verifyMocks();
+
+    }
+
+    protected void expectBuildStudyAssignmentGrid() {
+        expect(userRoleDao.getAllParticipantCoordinators()).andReturn(userRoles);
+        expect(siteDao.getAll()).andReturn(sites);
     }
 
     private SiteCoordinatorDashboardCommand createCommand() {

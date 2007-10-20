@@ -7,6 +7,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
+    private SiteDao siteDao;
+    private UserDao userDao;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        siteDao = (SiteDao)getApplicationContext().getBean("siteDao");
+        userDao = (UserDao)getApplicationContext().getBean("userDao");
+    }
+
     public void testGetUserRoleById() throws Exception {
         UserRole userRole = getDao().getById(-1);
         assertNotNull("User  Role not found", userRole);
@@ -67,7 +77,7 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
 
             actualUserRole.setRole(Role.SITE_COORDINATOR);
-            actualUserRole.addSite(((SiteDao)getApplicationContext().getBean("siteDao")).getById(-400));
+            actualUserRole.addSite(siteDao.getById(-400));
 
             getDao().save(actualUserRole);
             savedId = actualUserRole.getId();
@@ -116,9 +126,18 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     }
 
     public void testGetAllParticipantCoordinators() throws Exception {
-        List<UserRole> usersRoles = getDao().getAllParticipantCoordinatorUserRoles();
+        List<UserRole> usersRoles = getDao().getAllParticipantCoordinators();
 
         assertEquals("wrong participant coordinator", "PC A", usersRoles.get(0).getUser().getName());
         assertEquals("wrong participant coordinator", "PC B", usersRoles.get(1).getUser().getName());
+    }
+
+    public void testGetByUserAndRole() throws Exception {
+        User expectedUser = userDao.getById(-101);
+        Role expectedRole = Role.PARTICIPANT_COORDINATOR;
+        
+        UserRole actualUserRole = getDao().getByUserAndRole(expectedUser, expectedRole);
+        assertEquals("Wrong user", "PC A", actualUserRole.getUser().getName());
+        assertEquals("Wrong role", Role.PARTICIPANT_COORDINATOR, actualUserRole.getRole());
     }
 }

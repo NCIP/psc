@@ -1,20 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
-import java.util.HashMap;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author John Dzak
@@ -34,6 +33,7 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     protected Map referenceData(HttpServletRequest request) throws Exception {
         Map<String, Object> refdata = new HashMap<String,Object>();
         refdata.put("sites", siteDao.getAll());
+        refdata.put("studies", studyDao.getAll());
         return refdata;
     }
 
