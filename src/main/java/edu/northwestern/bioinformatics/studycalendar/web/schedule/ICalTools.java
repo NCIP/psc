@@ -10,6 +10,7 @@ import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -59,7 +61,8 @@ public class ICalTools {
 					for (Date date : events.keySet()) {
 						List<ScheduledEvent> event = events.get(date);
 						for (final ScheduledEvent scheduleEvent : event) {
-							VEvent vEvent = generateAllDayEventForAnScheduleEvent(scheduleEvent, date);
+							VEvent vEvent = generateAllDayEventForAnScheduleEventOfPatient(scheduleEvent, date,
+									studyParticipantAssignment.getParticipant());
 							if (vEvent != null) {
 								icsCalendar.getComponents().add(vEvent);
 							}
@@ -75,17 +78,19 @@ public class ICalTools {
 	}
 
 	/**
-	 * Generate an all day ics calendar event for an schedule event. Currently calendar event is created only for ScheduleEvent of
-	 * {@link ScheduledEventMode.SCHEDULED}
+	 * Generate an all day ics calendar event for an schedule event of Patient. Currently calendar event is created only for ScheduleEvent
+	 * of {@link ScheduledEventMode.SCHEDULED}
 	 * 
-	 * 
+	 * @param participant patient on which study is done
 	 * @param scheduledEvent the scheduled event for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
+	 * @param participant
 	 * 
 	 * @return the ics calendar event. Returns null if scheduledEvent has no activity or date is null or ScheduleEvent is not of
 	 *         {@link ScheduledEventMode.SCHEDULED}
 	 */
-	private static VEvent generateAllDayEventForAnScheduleEvent(final ScheduledEvent scheduledEvent, final Date date) {
+	private static VEvent generateAllDayEventForAnScheduleEventOfPatient(final ScheduledEvent scheduledEvent,
+			final Date date, final Participant participant) {
 		final Activity activity = scheduledEvent.getActivity();
 		if (activity != null && date != null && scheduledEvent.getCurrentState() != null
 				&& scheduledEvent.getCurrentState().getMode() != null
@@ -99,8 +104,12 @@ public class ICalTools {
 
 			// initialize as an all-day event..
 			vEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
-			// Description description = new Description(activity.getDescription());
-			// vEvent.getProperties().add(description);
+
+			if (participant != null) {
+				String eventDescrtiption = participant.getLastFirst();
+				Description description = new Description(eventDescrtiption);
+				vEvent.getProperties().add(description);
+			}
 			return vEvent;
 		}
 		return null;

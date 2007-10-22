@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 /**
@@ -40,8 +41,10 @@ public class DisplayICSCalendarController extends AbstractController {
 			StudyParticipantAssignment studyParticipantAssignment = studyParticipantAssignmentDao.getByGridId(gridId);
 			Calendar icsCalendar = ICalTools.generateICalendar(studyParticipantAssignment);
 
+			String fileName = generateICSfileName(studyParticipantAssignment);
+
 			// response.setContentType("application/ics");
-			response.setHeader("Content-Disposition", "attachment; filename=" + gridId + ".ics");
+			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
 			response.setContentType("text/calendar");
 
@@ -54,6 +57,33 @@ public class DisplayICSCalendarController extends AbstractController {
 
 		// return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
 		return null;
+	}
+
+	/**
+	 * Generate ICS file name as lastname_firstname_studyprotocolauthorityid
+	 * 
+	 * @param studyParticipantAssignment the study participant assignment
+	 * 
+	 * @return the string
+	 */
+	private String generateICSfileName(final StudyParticipantAssignment studyParticipantAssignment) {
+		StringBuffer fileName = new StringBuffer(studyParticipantAssignment.getGridId());
+		Participant participant = studyParticipantAssignment.getParticipant();
+		if (participant != null) {
+			fileName = new StringBuffer("");
+			if (participant.getLastName() != null) {
+				fileName.append(participant.getLastName() + "-");
+			}
+			if (participant.getFirstName() != null) {
+				fileName.append(participant.getFirstName() + "-");
+			}
+		}
+		if (studyParticipantAssignment.getStudySite() != null
+				&& studyParticipantAssignment.getStudySite().getStudy() != null
+				&& studyParticipantAssignment.getStudySite().getStudy().getProtocolAuthorityId() != null) {
+			fileName.append(studyParticipantAssignment.getStudySite().getStudy().getProtocolAuthorityId());
+		}
+		return fileName.append(".ics").toString();
 	}
 
 	/**

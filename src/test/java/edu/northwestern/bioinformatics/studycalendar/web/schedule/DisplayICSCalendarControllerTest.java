@@ -4,6 +4,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 /**
@@ -18,6 +20,8 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 
 	private DisplayICSCalendarController controller;
 
+	private String grid = "adefg-higj";
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -30,13 +34,13 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 
 	public void testHandle() throws Exception {
 		request.setMethod("GET");
-		String grid = "adefg-higj";
+
 		request.setPathInfo("/cal/schedule/display/" + grid + ".ics");
 		controller.handleRequest(request, response);
 
 		assertEquals("response should return content type of calendar", "text/calendar", response.getContentType());
-		assertEquals("response should return file of type ics", "attachment; filename=" + grid + ".ics", response
-				.getHeader("Content-Disposition"));
+		assertEquals("response should return file of type ics", "attachment; filename=lastName-firstName-.ics",
+				response.getHeader("Content-Disposition"));
 
 	}
 
@@ -59,8 +63,12 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 	private class MockStudyParticipantDao extends StudyParticipantAssignmentDao {
 		@Override
 		public StudyParticipantAssignment getByGridId(final String gridId) {
+			StudyParticipantAssignment studyParticipantAssignment = new StudyParticipantAssignment();
+			studyParticipantAssignment.setGridId(gridId);
+			Participant participant = Fixtures.createParticipant("firstName", "lastName");
+			studyParticipantAssignment.setParticipant(participant);
 
-			return new StudyParticipantAssignment();
+			return studyParticipantAssignment;
 		}
 	}
 }
