@@ -23,6 +23,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 /**
@@ -74,17 +75,21 @@ public class ICalTools {
 	}
 
 	/**
-	 * Generate an all day ics calendar event for an schedule event.
+	 * Generate an all day ics calendar event for an schedule event. Currently calendar event is created only for ScheduleEvent of
+	 * {@link ScheduledEventMode.SCHEDULED}
 	 * 
 	 * 
 	 * @param scheduledEvent the scheduled event for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
 	 * 
-	 * @return the ics calendar event. Returns null if scheduledEvent has not activity or date is null
+	 * @return the ics calendar event. Returns null if scheduledEvent has no activity or date is null or ScheduleEvent is not of
+	 *         {@link ScheduledEventMode.SCHEDULED}
 	 */
 	private static VEvent generateAllDayEventForAnScheduleEvent(final ScheduledEvent scheduledEvent, final Date date) {
 		final Activity activity = scheduledEvent.getActivity();
-		if (activity != null && date != null) {
+		if (activity != null && date != null && scheduledEvent.getCurrentState() != null
+				&& scheduledEvent.getCurrentState().getMode() != null
+				&& scheduledEvent.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
 			String eventDetails = activity.getName();
 			if (scheduledEvent.getDetails() != null && !scheduledEvent.getDetails().trim().equalsIgnoreCase("")) {
 				eventDetails = eventDetails + " (" + scheduledEvent.getDetails() + ")";
