@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author John Dzak
@@ -26,16 +27,17 @@ public class SiteCoordinatorDashboardCommand {
         buildStudyAssignmentGrid();
     }
 
-    public void buildStudyAssignmentGrid() {
+    protected void buildStudyAssignmentGrid() {
         studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
         List<Site> sites    = siteDao.getAll();
         List<UserRole> usersRoles = userRoleDao.getAllParticipantCoordinators();
 
         for (UserRole userRole : usersRoles) {
-            if (!studyAssignmentGrid.containsKey(userRole)) studyAssignmentGrid.put(userRole.getUser(), new HashMap<Site, StudyAssignmentCell>());
+            User user = userRole.getUser();
+            if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new HashMap<Site, StudyAssignmentCell>());
 
             for (Site site : sites) {
-                    studyAssignmentGrid.get(userRole.getUser())
+                    studyAssignmentGrid.get(user)
                             .put(site,
                                     createStudyAssignmentCell(isSiteSelected(userRole, study, site),
                                             isSiteAccessAllowed(userRole, site)));
@@ -60,13 +62,14 @@ public class SiteCoordinatorDashboardCommand {
 
     public void apply() {
         for(User user : studyAssignmentGrid.keySet()) {
+            UserRole userRole = userRoleDao.getByUserAndRole(user, Role.PARTICIPANT_COORDINATOR);
+            userRole.clearStudySites();
             for(Site site : studyAssignmentGrid.get(user).keySet()) {
                 if (studyAssignmentGrid.get(user).get(site).isSelected()) {
-                    UserRole userRole = userRoleDao.getByUserAndRole(user, Role.PARTICIPANT_COORDINATOR);
                     userRole.addStudySite(findStudySite(study, site));
-                    userRoleDao.save(userRole);
                 }
             }
+            userRoleDao.save(userRole);
         }
     }
 

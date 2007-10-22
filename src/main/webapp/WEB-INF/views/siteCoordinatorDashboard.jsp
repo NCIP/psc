@@ -43,6 +43,7 @@
                     </tr>
                 </c:forEach>
             </table>
+            <input type="submit" value="Save"/>
         </form:form>
     </laf:division>
 </laf:box>

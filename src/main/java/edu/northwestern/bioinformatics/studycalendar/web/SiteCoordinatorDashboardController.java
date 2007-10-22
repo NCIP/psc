@@ -10,6 +10,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -51,6 +53,13 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
         Study study = studyDao.getById(1);
         SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, study);
         return command;
+    }
+
+    protected ModelAndView onSubmit(Object o) throws Exception {
+        SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) o;
+        command.apply();
+        
+        return new ModelAndView(new RedirectView("siteCoordinatorSchedule"));
     }
 
     public void setStudyDao(StudyDao studyDao) {
