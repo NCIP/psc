@@ -183,6 +183,15 @@ public class AddTest extends StudyCalendarTestCase {
         assertEquals(6, (int) after.getIndex());
     }
 
+    public void testDeleteRemoveSibIfIndexedAndEqualIncrements() throws Exception {
+        plannedCalendar.addEpoch(epoch);
+        Add after = Add.create(Epoch.create("history"), 0);
+        Remove toDel = Remove.create(epoch);
+
+        after.siblingDeleted(delta, toDel, 0, 1);
+        assertEquals(1, (int) after.getIndex());
+    }
+
     public void testDeleteRemoveSibIfIndexedAndBeforeDoesNotIncrement() throws Exception {
         plannedCalendar.addEpoch(Epoch.create("E1"));
         plannedCalendar.addEpoch(Epoch.create("E2"));

@@ -1,0 +1,175 @@
+package edu.northwestern.bioinformatics.studycalendar.domain.delta;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
+import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+
+/**
+ * A series of higher-level tests which examine the behavior for
+ * various indexed change deletions.
+ *
+ * @author Rhett Sutphin
+ */
+public class DeltaReorderDeletedBehaviorTest extends StudyCalendarTestCase {
+    private Epoch epoch;
+    private Arm[] arms;
+    private Arm anotherArm;
+
+    private Delta<?> delta;
+    private Reorder firstReorder;
+    private Revision revision;
+
+    private DeltaService deltaService;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        Study study = setId(0, new Study());
+        study.setPlannedCalendar(setId(1, new PlannedCalendar()));
+
+        epoch = setId(2, Epoch.create("Z", "A", "B", "C", "D", "E", "F"));
+        study.getPlannedCalendar().addEpoch(epoch);
+        arms = new Arm[epoch.getArms().size()];
+        for (int i = 0; i < epoch.getArms().size(); i++) {
+            arms[i] = setId(10 + i, epoch.getArms().get(i));
+        }
+        anotherArm = setId(30, createNamedInstance("x", Arm.class));
+
+        firstReorder = Reorder.create(arms[0], 0, 0); // intended to be overridden via setFirstReorder
+        delta = Delta.createDeltaFor(epoch, firstReorder);
+        revision = SimpleRevision.create(delta);
+
+        deltaService = new DeltaService();
+        deltaService.setTemplateService(new TestingTemplateService());
+        MutatorFactory factory = new MutatorFactory();
+        factory.setDaoFinder(new StaticDaoFinder(new ArmDao()));
+        deltaService.setMutatorFactory(factory);
+    }
+
+    private void setFirstReorder(int oldIndex, int newIndex) {
+        firstReorder.setChild(arms[oldIndex]);
+        firstReorder.setOldIndex(oldIndex);
+        firstReorder.setNewIndex(newIndex);
+    }
+
+    public void testMoveDownAndAddAtOldIndex() throws Exception {
+        setFirstReorder(1, 3);
+        delta.addChange(Add.create(anotherArm, 1));
+        removeFirstAndExpectOrder("AxCDBEF", "AxBCDEF");
+    }
+
+    public void testMoveDownAndAddAtIndexInRange() throws Exception {
+        setFirstReorder(1, 3);
+        delta.addChange(Add.create(anotherArm, 2));
+        removeFirstAndExpectOrder("ACxDBEF", "ABCxDEF");
+    }
+
+    public void testMoveDownAndAddAtNewIndex() throws Exception {
+        setFirstReorder(1, 3);
+        delta.addChange(Add.create(anotherArm, 3));
+        removeFirstAndExpectOrder("ACDxBEF", "ABCDxEF");
+    }
+
+    public void testMoveUpAndAddAtOldIndex() throws Exception {
+        setFirstReorder(3, 1);
+        delta.addChange(Add.create(anotherArm, 1));
+        removeFirstAndExpectOrder("AxDBCEF", "AxBCDEF");
+    }
+
+    public void testMoveUpAndAddAtIndexInRange() throws Exception {
+        setFirstReorder(3, 1);
+        delta.addChange(Add.create(anotherArm, 2));
+        removeFirstAndExpectOrder("ADxBCEF", "AxBCDEF");
+    }
+
+    public void testMoveUpAndAddAtNewIndex() throws Exception {
+        setFirstReorder(3, 1);
+        delta.addChange(Add.create(anotherArm, 3));
+        removeFirstAndExpectOrder("ADBxCEF", "ABxCDEF");
+    }
+
+    ////// REORDER TESTS
+    // In theory, there are 50 possible cases to test.
+    // In reality, it is not clear what the correct change would be for most of them,
+    // so we just punt and make sure the old index continues to point at the same child.
+
+    public void testMoveUpAndThenReorderOld1AboveNew1Inside() throws Exception {
+        setFirstReorder(3, 1);
+        delta.addChange(Reorder.create(arms[0], 0, 2));
+        removeFirstAndExpectOrder("DBACEF", "BCADEF");
+    }
+
+    public void testMoveUpAndThenReorderOld1EqualsOld0New1Inside() throws Exception {
+        setFirstReorder(3, 1);
+        delta.addChange(Reorder.create(arms[2], 3, 4));
+        removeFirstAndExpectOrder("ADBECF", "ABDECF");
+    }
+
+    public void testMoveUpAndThenReorderOld1InsideNew1Inside() throws Exception {
+        setFirstReorder(5, 1);
+        delta.addChange(Reorder.create(arms[2], 3, 2));
+        removeFirstAndExpectOrder("AFCBDE", "ABCDEF");
+    }
+
+    public void testMoveUpAndThenReorderOld1BelowNew1Inside() throws Exception {
+        setFirstReorder(5, 3);
+        delta.addChange(Reorder.create(arms[3], 4, 2));
+        removeFirstAndExpectOrder("ABDCFE", "ABDCEF");
+    }
+
+    public void testMoveDownAndThenReorderOld1AboveNew1Inside() throws Exception {
+        setFirstReorder(1, 3);
+        delta.addChange(Reorder.create(arms[0], 0, 2));
+        removeFirstAndExpectOrder("CDABEF", "BCADEF");
+    }
+
+    public void testMoveDownAndThenReorderOld1InsideNew1Inside() throws Exception {
+        // ABCDEF
+        setFirstReorder(1, 5);
+        // ACDEFB
+        delta.addChange(Reorder.create(arms[4], 3, 2));
+        // ACEDFB
+        removeFirstAndExpectOrder("ACEDFB", "ABECDF");
+    }
+
+    public void testMoveDownAndThenReorderOld1BelowNew1Inside() throws Exception {
+        // ABCDEF
+        setFirstReorder(3, 5);
+        // ABCEFD
+        delta.addChange(Reorder.create(arms[5], 4, 2));
+        // ABFCED
+        removeFirstAndExpectOrder("ABFCED", "ABFCDE");
+    }
+
+    private void removeFirstAndExpectOrder(String expectedInitialOrder, String expectedOrderAfterRemove) {
+        assertEquals("Order not as expected initially", expectedInitialOrder, armOrder());
+        delta.removeChange(firstReorder);
+        assertEquals("Order not as expected after first reorder deleted", expectedOrderAfterRemove, armOrder());
+        for (Change change : delta.getChanges()) {
+            if (change instanceof Reorder) {
+                Reorder r = (Reorder) change;
+                assertEquals("Child's real position != old index",
+                    epoch.getChildren().indexOf(r.getChild()), (int) r.getOldIndex());
+            }
+        }
+    }
+
+    private String armOrder() {
+        StringBuilder sb = new StringBuilder();
+        Epoch reordered = deltaService.revise(epoch, revision);
+        for (Arm arm : reordered.getArms()) {
+            sb.append(arm.getName());
+        }
+        return sb.toString();
+    }
+}

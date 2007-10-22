@@ -47,10 +47,10 @@ public class ReorderTest extends StudyCalendarTestCase {
         assertFalse(Reorder.create(epoch, 1, 0).isMoveDown());
     }
 
+    ////// MERGE TESTS
+
     public void testMergeIntoEmptyDelta() throws Exception {
-        reorder.setChild(ab);
-        reorder.setOldIndex(1);
-        reorder.setNewIndex(2);
+        setReorderProperties(ab, 1, 2);
         
         reorder.mergeInto(delta);
         assertEquals("Change not added", 1, delta.getChanges().size());
@@ -73,9 +73,7 @@ public class ReorderTest extends StudyCalendarTestCase {
             Fixtures.createReorderChange(ab, 1, 0),
             Fixtures.createReorderChange(aa, 1, 0));
 
-        reorder.setChild(ab);
-        reorder.setOldIndex(0);
-        reorder.setNewIndex(2);
+        setReorderProperties(ab, 0, 2);
         reorder.mergeInto(delta);
 
         assertEquals("Wrong number of changes: " + delta.getChanges(), 3, delta.getChanges().size());
@@ -89,9 +87,7 @@ public class ReorderTest extends StudyCalendarTestCase {
             Fixtures.createReorderChange(ab, 1, 0),
             Remove.create(aa));
 
-        reorder.setChild(ab);
-        reorder.setOldIndex(0);
-        reorder.setNewIndex(1);
+        setReorderProperties(ab, 0, 1);
         reorder.mergeInto(delta);
 
         assertEquals("Wrong number of changes", 3, delta.getChanges().size());
@@ -105,14 +101,201 @@ public class ReorderTest extends StudyCalendarTestCase {
             Fixtures.createReorderChange(ab, 1, 0),
             Add.create(ac));
 
-        reorder.setChild(ab);
-        reorder.setOldIndex(0);
-        reorder.setNewIndex(2);
+        setReorderProperties(ab, 0, 2);
         reorder.mergeInto(delta);
 
         assertEquals("Wrong number of changes", 3, delta.getChanges().size());
         assertReorder("Wrong change 0", ab, 1, 0, delta.getChanges().get(0));
         assertAdd("Wrong change 1",  ac, null, delta.getChanges().get(1));
         assertReorder("Wrong change 2", ab, 0, 2, delta.getChanges().get(2));
+    }
+
+    ////// SIBLING REMOVAL TESTS
+
+    // sibling add
+
+    public void testSiblingIndexedAddDeletedWhenMoveUp() throws Exception {
+        Add add = Add.create(ac, 0);
+        setReorderProperties(ab, 2, 1);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New not decremented", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingIndexedAddDeletedWhenMoveDown() throws Exception {
+        Add add = Add.create(ac, 0);
+        setReorderProperties(aa, 1, 2);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old not decremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New not decremented", 1, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingIndexedInterveningAddDeletedWhenMoveUp() throws Exception {
+        Add add = Add.create(ac, 1);
+        setReorderProperties(ab, 2, 0);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New decremented", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingIndexedInterveningAddDeletedWhenMoveDown() throws Exception {
+        Add add = Add.create(ac, 1);
+        setReorderProperties(aa, 0, 2);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New not decremented", 1, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingIndexedAddAfterDeletedWhenMoveUp() throws Exception {
+        Add add = Add.create(ac, 2);
+        setReorderProperties(ab, 1, 0);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old decremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New decremented", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingIndexedAddAfterDeletedWhenMoveDown() throws Exception {
+        Add add = Add.create(ac, 2);
+        setReorderProperties(aa, 0, 1);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New decremented", 1, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingUnindexedAddDeleted() throws Exception {
+        Add add = Add.create(ac);
+        setReorderProperties(ab, 1, 2);
+
+        reorder.siblingDeleted(delta, add, 0, 1);
+        assertEquals("Old decremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New decremented", 2, (int) reorder.getNewIndex());
+    }
+
+    // sibling remove
+
+    public void testSiblingRemoveOfEarlyChildDeletedWhenMoveUp() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(aa);
+        setReorderProperties(ac, 1, 0);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
+        assertEquals("New not incremented", 1, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingRemoveOfEarlyChildDeletedWhenMoveDown() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(aa);
+        setReorderProperties(ab, 0, 1);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old not incremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New not incremented", 2, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingRemoveOfInterveningChildDeletedWhenMoveUp() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(ab);
+        setReorderProperties(ac, 1, 0);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
+        assertEquals("New incremented", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingRemoveOfInterveningChildDeletedWhenMoveDown() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(ab);
+        setReorderProperties(aa, 0, 1);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New not incremented", 2, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingRemoveOfLaterChildDeletedWhenMoveUp() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(ac);
+        setReorderProperties(ab, 1, 0);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old incremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New incremented", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingRemoveOfLaterChildDeletedWhenMoveDown() throws Exception {
+        epoch.addArm(ac);
+        Remove remove = Remove.create(ac);
+        setReorderProperties(ab, 0, 1);
+
+        reorder.siblingDeleted(delta, remove, 0, 1);
+        assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New incremented", 1, (int) reorder.getNewIndex());
+    }
+
+    // sibling reorder
+    
+    public void testSiblingReorderUpDeletedWhenOldInSiblingRange() throws Exception {
+        epoch.addArm(ac);
+        Reorder first = Reorder.create(ac, 2, 0);
+        setReorderProperties(aa, 1, 2);
+
+        reorder.siblingDeleted(delta, first, 0, 1);
+        assertEquals("Old not decremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New changed", 2, (int) reorder.getNewIndex());
+    }
+    
+    public void testSiblingReorderUpDeletedWhenOldAtSiblingMax() throws Exception {
+        epoch.addArm(ac);
+        Reorder first = Reorder.create(ac, 2, 0);
+        setReorderProperties(ab, 2, 0);
+
+        reorder.siblingDeleted(delta, first, 0, 1);
+        assertEquals("Old not decremented", 1, (int) reorder.getOldIndex());
+        assertEquals("New changed", 0, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingReorderUpDeletedWhenOldOutOfSiblingRange() throws Exception {
+        epoch.addArm(ac);
+        Reorder first = Reorder.create(ac, 2, 1);
+        setReorderProperties(aa, 0, 1);
+
+        reorder.siblingDeleted(delta, first, 0, 1);
+        assertEquals("Old decremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New changed", 1, (int) reorder.getNewIndex());
+    }
+
+    public void testSiblingReorderDownDeletedWhenOldInSiblingRange() throws Exception {
+        epoch.addArm(ac);
+        Reorder first = Reorder.create(aa, 0, 2);
+        setReorderProperties(ac, 1, 2);
+
+        reorder.siblingDeleted(delta, first, 0, 1);
+        assertEquals("Old not incremented", 2, (int) reorder.getOldIndex());
+        assertEquals("New changed", 2, (int) reorder.getNewIndex());
+    }
+    
+    // testSiblingReorderDownDeletedWhenOldAtSiblingMax --> not possible
+
+    public void testSiblingReorderDownDeletedWhenOldOutOfSiblingRange() throws Exception {
+        epoch.addArm(ac);
+        Reorder first = Reorder.create(ac, 2, 1);
+        setReorderProperties(aa, 0, 1);
+
+        reorder.siblingDeleted(delta, first, 0, 1);
+        assertEquals("Old incremented", 0, (int) reorder.getOldIndex());
+        assertEquals("New changed", 1, (int) reorder.getNewIndex());
+    }
+
+    private void setReorderProperties(Arm child, int old, int newI) {
+        reorder.setChild(child);
+        reorder.setOldIndex(old);
+        reorder.setNewIndex(newI);
     }
 }

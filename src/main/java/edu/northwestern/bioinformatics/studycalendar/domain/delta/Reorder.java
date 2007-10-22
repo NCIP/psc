@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
 
 import javax.persistence.Entity;
 import javax.persistence.DiscriminatorValue;
@@ -8,6 +9,8 @@ import javax.persistence.Transient;
 import javax.persistence.Column;
 
 import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 /**
  * A {@link Change} representing the reordering of the node's children.  Specifically,
@@ -57,12 +60,23 @@ public class Reorder extends ChildrenChange {
     }
 
     @Transient
+    public boolean isBetweenIndexesOrAtMax(int value) {
+        return (getOldIndex() >= value && value > getNewIndex())  // up
+            || (getOldIndex() < value && value <= getNewIndex()); // down
+    }
+
+    @Transient
     @Override
     public ChangeAction getAction() { return ChangeAction.REORDER; }
 
     @Override
     protected MergeLogic createMergeLogic(Delta<?> delta) {
         return new ReorderMergeLogic(delta);
+    }
+
+    @Override
+    protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
+        return new ReorderSibDeletedLogic(delta, deletedChangePosition, thisPreDeletePosition);
     }
 
     @Override
@@ -152,6 +166,70 @@ public class Reorder extends ChildrenChange {
             if (!merged || !shortCircuited) {
                 delta.addChanges(Reorder.this);
             }
+        }
+    }
+
+    // This is quasi copied from Add, but different enough that it's difficult to build a
+    // shared base class
+    private class ReorderSibDeletedLogic extends SiblingDeletedLogic {
+        private Delta<?> delta;
+        private boolean thisAfter;
+        private BeanWrapper thisWrapped;
+
+        public ReorderSibDeletedLogic(Delta<?> delta, int delIndex, int thisIndex) {
+            this.delta = delta;
+            thisAfter = delIndex < thisIndex;
+            thisWrapped = new BeanWrapperImpl(Reorder.this);
+        }
+
+        @Override
+        public void siblingDeleted(Add change) {
+            if (notApplicable()) return;
+            if (change.getIndex() == null) return;
+            decrementIf("oldIndex",
+                (change.getIndex() != null && change.getIndex() < getOldIndex()));
+            decrementIf("newIndex",
+                (change.getIndex() != null && change.getIndex() < getNewIndex()));
+        }
+
+        @Override
+        public void siblingDeleted(Remove change) {
+            if (notApplicable()) return;
+            if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
+                int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
+                incrementIf("oldIndex", removedElementIndex <= getOldIndex());
+                incrementIf("newIndex", removedElementIndex <= getNewIndex());
+            }
+        }
+
+        @Override
+        public void siblingDeleted(Reorder change) {
+            if (notApplicable()) return;
+            boolean within = change.isBetweenIndexesOrAtMax(getOldIndex()); // down
+            if (within) {
+                decrementIf("oldIndex", change.isMoveUp());
+                incrementIf("oldIndex", change.isMoveDown());
+            }
+        }
+
+        private boolean notApplicable() {
+            return !thisAfter;
+        }
+
+        private void incrementIf(String property, boolean condition) {
+            if (condition) {
+                thisWrapped.setPropertyValue(property, getIntProperty(property) + 1);
+            }
+        }
+
+        private void decrementIf(String property, boolean condition) {
+            if (condition) {
+                thisWrapped.setPropertyValue(property, getIntProperty(property) - 1);
+            }
+        }
+
+        private Integer getIntProperty(String property) {
+            return (Integer) thisWrapped.getPropertyValue(property);
         }
     }
 }

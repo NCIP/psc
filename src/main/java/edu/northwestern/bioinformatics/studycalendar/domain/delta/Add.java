@@ -1,18 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeOrderedInnerNode;
 
-import javax.persistence.Entity;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.util.Collection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
@@ -174,8 +170,7 @@ public class Add extends ChildrenChange {
 
         @Override
         public void siblingDeleted(Add change) {
-            if (Add.this.getIndex() == null) return;
-            if (!thisAfter) return;
+            if (notApplicable()) return;
             decrementIf(
                 (change.getIndex() == null) ||
                 (change.getIndex() != null && change.getIndex() < getIndex()));
@@ -183,24 +178,25 @@ public class Add extends ChildrenChange {
 
         @Override
         public void siblingDeleted(Remove change) {
-            if (Add.this.getIndex() == null) return;
-            if (!thisAfter) return;
+            if (notApplicable()) return;
             if (delta.getNode() instanceof PlanTreeOrderedInnerNode) {
                 int removedElementIndex = ((PlanTreeOrderedInnerNode) delta.getNode()).indexOf(change.getChild());
-                incrementIf(removedElementIndex < getIndex());
+                incrementIf(removedElementIndex <= getIndex());
             }
         }
 
         @Override
         public void siblingDeleted(Reorder change) {
-            if (Add.this.getIndex() == null) return;
-            if (!thisAfter) return;
-            boolean within = (change.getOldIndex() >= getIndex() && getIndex()  > change.getNewIndex())  // up
-                          || (change.getOldIndex() <  getIndex() && getIndex() <= change.getNewIndex()); // down
+            if (notApplicable()) return;
+            boolean within = change.isBetweenIndexesOrAtMax(getIndex()); // down
             if (within) {
                 decrementIf(change.isMoveUp());
                 incrementIf(change.isMoveDown());
             }
+        }
+
+        private boolean notApplicable() {
+            return Add.this.getIndex() == null || !thisAfter;
         }
 
         private void incrementIf(boolean condition) {
