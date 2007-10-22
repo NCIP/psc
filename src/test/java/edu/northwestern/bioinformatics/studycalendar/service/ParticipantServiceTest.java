@@ -309,7 +309,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         String description = "Closed";
         Date dateBeforeReset = event.getActualDate();
         assertNotEquals("descriptions are equals", event.getCurrentState().getReason(), description);
-        service.resetTheEvent(holiday.getTime(), event,
+        service.shiftToAvoidBlackoutDate(holiday.getTime(), event,
                 scheduledCalendar.getAssignment().getStudySite().getSite(),
                 description);
         Date dateAfterReset = event.getActualDate();
@@ -323,7 +323,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         timestampTo.setTime(timestampTo.getTime() - oneDay);
         assertEquals("dates are not equals", df.format(timestampTo), df.format(dateBeforeReset));        
         assertEquals("descriptions are not equals", event.getCurrentState().getReason(),
-                service.RESCHEDULED + description);
+                ParticipantService.RESCHEDULED + description);
     }
 
     public void testAvoidWeekendsAndHolidays() throws Exception {

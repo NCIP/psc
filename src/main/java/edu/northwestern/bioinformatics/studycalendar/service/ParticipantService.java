@@ -1,33 +1,54 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
+import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
+import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-
-import java.util.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-
-import org.springframework.transaction.annotation.Transactional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
  */
 @Transactional
 public class ParticipantService {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    public static final String RESCHEDULED = "Rescheduled. ";
+
     private ParticipantDao participantDao;
     private SiteService siteService;
-
-    public final String RESCHEDULED = "Rescheduled. ";
-    private static final Logger log = LoggerFactory.getLogger(ParticipantService.class.getName());
 
     public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, User participantCoordinator) {
         return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null, participantCoordinator);
@@ -47,15 +68,15 @@ public class ParticipantService {
     }
 
     public List<StudyParticipantAssignment> getAssignedStudyParticipant(String userName, List<StudyParticipantAssignment> assignments) {
-    	List<StudyParticipantAssignment> actualAssignments = new ArrayList<StudyParticipantAssignment>();
-    	List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(userName));
-    	for (StudyParticipantAssignment assignment : assignments) {
-    		for (Site site : sites) {
-    			if (site.getId()== assignment.getStudySite().getSite().getId())
-    				actualAssignments.add(assignment);
-    		}
+        List<StudyParticipantAssignment> actualAssignments = new ArrayList<StudyParticipantAssignment>();
+        List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(userName));
+        for (StudyParticipantAssignment assignment : assignments) {
+            for (Site site : sites) {
+                if (site.getId()== assignment.getStudySite().getSite().getId())
+                    actualAssignments.add(assignment);
+            }
         }
-    	return actualAssignments;
+        return actualAssignments;
     }
 
     public ScheduledArm scheduleArm(
@@ -110,11 +131,11 @@ public class ParticipantService {
                 int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
                 if (dateCompare != 0) return dateCompare;
 
-                if(e1.getPlannedEvent() == null && e2.getPlannedEvent() == null)
+                if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null)
                     return 0;
-                else if(e1.getPlannedEvent() == null)
+                else if (e1.getPlannedEvent() == null)
                     return -1;
-                else if(e2.getPlannedEvent() == null)
+                else if (e2.getPlannedEvent() == null)
                     return 1;
 
                 return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
@@ -122,20 +143,20 @@ public class ParticipantService {
         });
 
         Site site = calendar.getAssignment().getStudySite().getSite();
-        avoidWeekendsAndHolidays(site, scheduledArm);
+        avoidBlackoutDates(scheduledArm, site);
         participantDao.save(assignment.getParticipant());
 
         return scheduledArm;
     }
 
-    private void avoidWeekendsAndHolidays(Site site, ScheduledArm arm) {
+    private void avoidBlackoutDates(ScheduledArm arm, Site site) {
        List<ScheduledEvent> listOfEvents = arm.getEvents();
         for (ScheduledEvent event : listOfEvents) {
-            resetEvent(event, site);
+            avoidBlackoutDates(event, site);
         }
     }
 
-    public void resetEvent(ScheduledEvent event, Site site) {
+    private void avoidBlackoutDates(ScheduledEvent event, Site site) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar dateCalendar = Calendar.getInstance();
         Date date = event.getActualDate();
@@ -145,7 +166,7 @@ public class ParticipantService {
         Calendar holidayCalendar = Calendar.getInstance();
         List<Holiday> holidayList = site.getHolidaysAndWeekends();
 
-        for(Holiday holiday: holidayList) {
+        for (Holiday holiday: holidayList) {
             // TODO: instanceof indicates abstraction failure -- this logic should be in each BlackoutDate class
             if (holiday instanceof MonthDayHoliday) {
                 //month needs to be decremented, because we are using 00 for January in the Calendar
@@ -158,13 +179,13 @@ public class ParticipantService {
                 String originalDateFormatted = df.format(date.getTime());
                 String holidayDateFormatted = df.format(holidayCalendar.getTime());
                 if (originalDateFormatted.equals(holidayDateFormatted)) {
-                    resetTheEvent(date, event, site, holiday.getDescription());
+                    shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
                 }
             } else if(holiday instanceof DayOfTheWeek) {
                 DayOfTheWeek dayOfTheWeek = (DayOfTheWeek) holiday;
                 int intValueOfTheDay = dayOfTheWeek.getDayOfTheWeekInteger();
                 if (dateCalendar.get(Calendar.DAY_OF_WEEK) == intValueOfTheDay) {
-                    resetTheEvent(date, event, site, holiday.getDescription());
+                    shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
                 }
             } else if (holiday instanceof RelativeRecurringHoliday) {
                 RelativeRecurringHoliday relativeRecurringHoliday =
@@ -175,16 +196,16 @@ public class ParticipantService {
                 Calendar c = Calendar.getInstance();
 
                 try {
-                    c.setTime(new SimpleDateFormat("dd/MM/yyyy").parse("01/" + month + "/"
-                            + year));
-                    List dates = findRecurringHoliday(c, dayOfTheWeekInt);
+                    c.setTime(
+                        new SimpleDateFormat("dd/MM/yyyy").parse("01/" + month + '/' + year));
+                    List<Date> dates = findRecurringHoliday(c, dayOfTheWeekInt);
                     //-1, since we start from position 0 in the list
-                    Date specificDay = (Date)dates.get(numberOfTheWeek-1);
+                    Date specificDay = dates.get(numberOfTheWeek-1);
 
                     String originalDateFormatted = df.format(date.getTime());
                     String holidayDateFormatted = df.format(specificDay);
                     if (originalDateFormatted.equals(holidayDateFormatted)) {
-                        resetTheEvent(date, event, site, holiday.getDescription());
+                        shiftToAvoidBlackoutDate(date, event, site, holiday.getDescription());
                     }
                 } catch (ParseException e) {
                     throw new StudyCalendarSystemException(e);
@@ -193,21 +214,22 @@ public class ParticipantService {
         }
     }
 
-    public void resetTheEvent(Date date, ScheduledEvent event, Site site,
-                              String reason) {
+    // package level for testing
+    void shiftToAvoidBlackoutDate(Date date, ScheduledEvent event, Site site, String reason) {
         date = shiftDayByOne(date);
         Scheduled s = new Scheduled(RESCHEDULED + reason, date);
         event.changeState(s);
-        resetEvent(event, site);
+        avoidBlackoutDates(event, site);
     }
 
+    // package level for testing
     //looking for a specific day = dayOfTheWeek (like Monday, or Tuesday)
-    public List findRecurringHoliday(Calendar cal, int dayOfTheWeek){
-        List weekendList = new ArrayList();
+    List<Date> findRecurringHoliday(Calendar cal, int dayOfTheWeek) {
+        List<Date> weekendList = new ArrayList<Date>();
         for (int i = cal.getActualMinimum(Calendar.DAY_OF_MONTH);
              i < cal.getActualMaximum(Calendar.DAY_OF_MONTH) ; i ++) {
             int dayOfTheWeekCal = cal.get(Calendar.DAY_OF_WEEK) ;
-	        if (dayOfTheWeekCal == dayOfTheWeek) {
+            if (dayOfTheWeekCal == dayOfTheWeek) {
                 weekendList.add(cal.getTime());
             }
             cal.add(Calendar.DAY_OF_MONTH, 1);
@@ -215,15 +237,14 @@ public class ParticipantService {
         return weekendList;
     }
 
-
-    public Date shiftDayByOne(Date date) {
+    // package level for testing
+    Date shiftDayByOne(Date date) {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(date.getTime());
         long oneDay = 1 * 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() + oneDay);
-        Date d = (Date)timestampTo;
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = df.format(d);
-        Date d1 = null;
+        String dateString = df.format(timestampTo);
+        Date d1;
         try {
             d1 = df.parse(dateString);
         } catch (ParseException e) {
@@ -260,7 +281,7 @@ public class ParticipantService {
     }
 
     private List<ScheduledEvent> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
-        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList();
+        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList<ScheduledEvent>();
         for (ScheduledArm arm : calendar.getScheduledArms()) {
             if (!arm.isComplete()) {
                 Map<Date, List<ScheduledEvent>> eventsByDate = arm.getEventsByDate();
