@@ -88,6 +88,13 @@ public class UserRole  extends AbstractMutableDomainObject {
         studySites.clear();
     }
 
+    public static UserRole findByRole(Set<UserRole> userRoles, Role role) {
+        for (UserRole userRole : userRoles) {
+            if (role.equals(userRole.getRole())) return userRole;
+        }
+        return null;
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

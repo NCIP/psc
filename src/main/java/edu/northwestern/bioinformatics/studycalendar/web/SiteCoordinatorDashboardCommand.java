@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
@@ -62,7 +63,7 @@ public class SiteCoordinatorDashboardCommand {
 
     public void apply() {
         for(User user : studyAssignmentGrid.keySet()) {
-            UserRole userRole = userRoleDao.getByUserAndRole(user, Role.PARTICIPANT_COORDINATOR);
+            UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
             userRole.clearStudySites();
             for(Site site : studyAssignmentGrid.get(user).keySet()) {
                 if (studyAssignmentGrid.get(user).get(site).isSelected()) {
