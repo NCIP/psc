@@ -20,6 +20,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
 
         controller = new NewActivityController();
         controller.setActivityDao(activityDao);
+        controller.setValidateOnBinding(false);        
     }
 
     public void testFormView() throws Exception {

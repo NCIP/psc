@@ -24,6 +24,11 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
     }
 
     public Activity getByName(String name) {
-        return (Activity) getHibernateTemplate().find("from Activity where name = ?", name).get(0);
+//        return (Activity) getHibernateTemplate().find("from Activity where name = ?", name).get(0);
+        List<Activity> activities = getHibernateTemplate().find("from Activity where name = ?", name);
+        if (activities.size() == 0) {
+            return null;
+        }
+        return activities.get(0);
     }
 }

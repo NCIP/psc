@@ -7,7 +7,6 @@
 
 <html>
 <head>
-    <%--<title>${action} Activity</title>--%>
     <tags:javascriptLink name="scriptaculous/scriptaculous"/>
     <style type="text/css">
         div.label {
@@ -24,9 +23,11 @@
 <body>
 <laf:box title="${action} Activity">
     <laf:division>
-        <%--<h1>${action} Activity</h1>--%>
         <c:url value="/pages/newActivity" var="formAction"/>
         <form:form action="${formAction}" method="post">
+            <div style="height:10px;padding-bottom:20px; width:40em; color:red;">
+                <form:errors path="*"/>
+            </div>
             <div class="row">
                 <div class="label">
                     <form:label path="activityName">Activity name</form:label>

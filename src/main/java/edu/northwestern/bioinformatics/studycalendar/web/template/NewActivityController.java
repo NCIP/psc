@@ -2,9 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -14,10 +17,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.CreateUserCommand;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 /**
  * @author Jaron Sampson
@@ -26,8 +32,11 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController
 public class NewActivityController extends PscSimpleFormController {
     private ActivityDao activityDao;
 
+    private static final Logger log = LoggerFactory.getLogger(NewActivityController.class.getName());    
+
     public NewActivityController() {
         setCommandClass(NewActivityCommand.class);
+        setValidator(new ValidatableValidator());
         setBindOnNewForm(true);
         setFormView("editActivity");
         setSuccessView("viewActivity");
@@ -61,6 +70,11 @@ public class NewActivityController extends PscSimpleFormController {
                 .addObject("selectedActivity", activity.getId());
             return new ModelAndView("redirectToManagePeriod", model);
         }
+    }
+
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        NewActivityCommand command = new NewActivityCommand(activityDao);
+        return command;
     }
 
     ////// CONFIGURATION
