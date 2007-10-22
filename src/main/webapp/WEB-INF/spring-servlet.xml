@@ -463,12 +463,12 @@
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Study Coorinator</value></property>
+                                <property name="displayName"><value>Study Coordinator</value></property>
                                 <property name="linkName"><value>dashboardStudyCoordinatorController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Site Coorinator</value></property>
+                                <property name="displayName"><value>Site Coordinator</value></property>
                                 <property name="linkName"><value>dashboardSiteCoordinatorController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>

@@ -35,8 +35,8 @@ public class RoleSecureOperation extends TagSupport {
     private String element;
 
     private final String PARTICIPANT_COORDINATOR_STRING = "Participant Coordinator";
-    private final String STUDY_COORDINATOR_STRING = "Study Coorinator";
-    private final String SITE_COORDINATOR_STRING = "Site Coorinator";
+    private final String STUDY_COORDINATOR_STRING = "Study Coordinator";
+    private final String SITE_COORDINATOR_STRING = "Site Coordinator";
     private final String STUDY_ADMIN_STRING = "Study Admin";
     private final String RESEARCH_ASSOCIATE_STRING = "Research Associate";
     private final String SYSTEM_ADMIN_STRING = "System Admin";
