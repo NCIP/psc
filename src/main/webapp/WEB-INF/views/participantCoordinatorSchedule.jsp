@@ -59,12 +59,16 @@
             list-style-type: none;
             padding-bottom: 1em;
         }
-       ul.menu li.controls {
+        ul.menu li.controls {
             padding-left: 2em;
             list-style-type: none;
         }
         h2 {
             margin-top: 2em;
+        }
+        input.checkboxes {
+            margin-left:10px;
+            vertical-align:middle;
         }
     </style>
 </head>
@@ -92,9 +96,9 @@
                      Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform();" /> days
                 </li>
             <li>
-                Filter by Activity Type:  <br>
+                Filter by Activity Type:  
                 <c:forEach items="${activityTypes}" var="activityType">
-                    <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} <BR> </input>
+                    <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} </input>
                 </c:forEach>
             </li>
             <li class="autoclear" id="participant-schedule">
