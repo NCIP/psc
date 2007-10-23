@@ -116,6 +116,9 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         studySite.setSite(new Site());
         assignment.setStudySite(studySite);
 
+        Amendment expectedAmendment = new Amendment();
+        assignment.setCurrentAmendment(expectedAmendment);
+
         replayMocks();
 
         ScheduledArm returnedArm = service.scheduleArm(
@@ -147,6 +150,8 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, "Infusion Details",      a4, events.get(8));
         assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, "Infusion Details",      a4, events.get(9));
         assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, "Infusion Details",      a4, events.get(10));
+
+        assertSame("Source amendment not set on SEs", expectedAmendment, events.get(7).getSourceAmendment());
     }
     
     public void testScheduleFirstArmWithNegativeDays() throws Exception {
@@ -275,7 +280,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
     public void testFindRecurringHoliday() throws Exception {
         Calendar cal = Calendar.getInstance();
-        List listOfDays = new ArrayList();
+        List<Date> listOfDays = new ArrayList<Date>();
         assertTrue(listOfDays.size()==0);
         int dayOfTheWeek = Calendar.DAY_OF_WEEK;
         listOfDays = service.findRecurringHoliday(cal, dayOfTheWeek);

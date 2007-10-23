@@ -73,13 +73,15 @@ public class ParticipantService {
         List<Site> sites =  new ArrayList<Site>(siteService.getSitesForParticipantCoordinator(userName));
         for (StudyParticipantAssignment assignment : assignments) {
             for (Site site : sites) {
-                if (site.getId()== assignment.getStudySite().getSite().getId())
+                if (site.getId() == assignment.getStudySite().getSite().getId())
                     actualAssignments.add(assignment);
             }
         }
         return actualAssignments;
     }
 
+    // TODO: should take SPA#currentAmendment into account when scheduling.
+    // That's out of scope for construction 2, though.  RMS20071023.
     public ScheduledArm scheduleArm(
         StudyParticipantAssignment assignment, Arm arm, Date startDate, NextArmMode mode
     ) {
@@ -121,6 +123,7 @@ public class ParticipantService {
                     }
                     event.setDetails(plannedEvent.getDetails());
                     event.setActivity(plannedEvent.getActivity());
+                    event.setSourceAmendment(assignment.getCurrentAmendment());
                     scheduledArm.addEvent(event);
                 }
             }
