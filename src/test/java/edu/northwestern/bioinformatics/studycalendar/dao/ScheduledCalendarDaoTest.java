@@ -50,6 +50,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, event.getIdealDate());
         assertEquals("Wrong notes", "Boo!", event.getNotes());
         assertEquals("Wrong amendment", -17, (int) event.getSourceAmendment().getId());
+        assertEquals("Wrong rep number", 3, (int) event.getRepetitionNumber());
 
         ScheduledEventState currentState = event.getCurrentState();
         assertTrue(currentState instanceof Occurred);

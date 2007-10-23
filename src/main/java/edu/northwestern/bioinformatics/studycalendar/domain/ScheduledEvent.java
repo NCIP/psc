@@ -34,6 +34,7 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     private String details;
     private Activity activity;
     private Amendment sourceAmendment;
+    private Integer repetitionNumber;
 
     ////// LOGIC
 
@@ -189,5 +190,13 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     public void setSourceAmendment(Amendment sourceAmendment) {
         this.sourceAmendment = sourceAmendment;
+    }
+
+    public Integer getRepetitionNumber() {
+        return repetitionNumber;
+    }
+
+    public void setRepetitionNumber(Integer repetitionNumber) {
+        this.repetitionNumber = repetitionNumber;
     }
 }

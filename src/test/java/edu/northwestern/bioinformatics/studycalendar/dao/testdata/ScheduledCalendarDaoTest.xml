@@ -57,6 +57,7 @@
         activity_id="-100"
         details="Nice Details!!"
         source_amendment_id="-17"
+        repetition_number="3"
         />
     <SCHEDULED_EVENT_STATES
         id="-11"
