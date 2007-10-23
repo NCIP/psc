@@ -49,10 +49,11 @@ public class ParticipantCoordinatorDashboardService {
                 String participantName = participant.getFullName();
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledEvent event : collectionOfEvents) {
-                        String participantAndEventsKey = participantName + " - " + event.getActivity().getName();
-                        participantAndEvents.put(participantAndEventsKey, event);
                         events.add(event);
                     }
+                }
+                if (events != null && events.size() > 0) {
+                    participantAndEvents.put(participantName, events);
                 }
             }
             String keyDate = formatDateToString(tempStartDate);
@@ -85,11 +86,12 @@ public class ParticipantCoordinatorDashboardService {
                         ActivityType eventActivityType = event.getActivity().getType();
                         Boolean value = activities.get(eventActivityType);
                         if (value) {
-                            String participantAndEventsKey = participantName + " - " + event.getActivity().getName();
-                            participantAndEvents.put(participantAndEventsKey, event);
                             events.add(event);
                         }
                     }
+                }
+                if (events != null && events.size()> 0)  {
+                    participantAndEvents.put(participantName, events);
                 }
             }
             String keyDate = formatDateToString(tempStartDate);

@@ -145,9 +145,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map <String, Object> valueOne = (Map<String, Object>) map.get(todayKey);
         Map <String, Object> valueTwo = (Map<String, Object>) map.get(todayPlusOneKey);
         Map <String, Object> valueThree = (Map<String, Object>) map.get(todayPlusTwoKey);
-        assertTrue("Value doesn't contain the right event", valueOne.values().contains(e1));
-        assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e2));
-        assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e3));
+        assertTrue("Value doesn't contain the right event", ((ArrayList)valueOne.values().iterator().next()).contains(e1));
+        assertTrue("ValueTwo doesn't contain the right event", ((ArrayList)valueTwo.values().iterator().next()).contains(e2));
+        assertTrue("ValueThree doesn't contain the right event", ((ArrayList)valueThree.values().iterator().next()).contains(e3));
     }
 
 
@@ -232,7 +232,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("Value is not empty", 0, valueOne.values().size());
         assertEquals("ValueTwo is not empty", 0, valueTwo.values().size());
         assertEquals("ValueThree is empty", 1, valueThree.values().size());
-        assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e3));
+        assertTrue("ValueThree doesn't contain the right event", ((ArrayList)valueThree.values().iterator().next()).contains(e3));
     }
 
 
@@ -346,16 +346,15 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map <String, Object> valueTwo = (Map<String, Object>) values.get(todayPlusOneKey);
         Map <String, Object> valueThree = (Map<String, Object>) values.get(todayPlusTwoKey);
 
-        assertTrue("Value doesn't contain the right event", valueOne.values().contains(e1));
-        assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e2));
-        assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e5));
-        assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e3));
-        assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e6));
+        assertEquals("ValueOne doesn't contain the right number of events", 1, valueOne.values().size());
+        assertEquals("ValueTwo doesn't contain the right number of events", 2, valueTwo.values().size());
+        assertEquals("ValueThree doesn't contain the right number of events", 2, valueTwo.values().size());
+
 
         Set<String> valueOneKey = valueOne.keySet();
         assertEquals("Wrong number of participants ", 1, valueOneKey.size());
         String participantKey = (String) valueOneKey.toArray()[0];
-        String expectedParticipantKeyOne = participantOne.getFullName() + " - " + e1.getActivity().getName();
+        String expectedParticipantKeyOne = participantOne.getFullName();
         assertEquals("Participants are not the same", expectedParticipantKeyOne, participantKey);
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
@@ -487,16 +486,14 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map <String, Object> valueTwo = (Map<String, Object>) values.get(todayPlusOneKey);
         Map <String, Object> valueThree = (Map<String, Object>) values.get(todayPlusTwoKey);
 
-        assertTrue("Value doesn't contain the right event", valueOne.values().contains(e1));
-        assertTrue("ValueTwo doesn't contain the right event", valueTwo.values().contains(e2));
-        assertTrue("ValueTwo contain the wrong event", !valueTwo.values().contains(e5));
-        assertTrue("ValueThree doesn't contain the right event", valueThree.values().contains(e6));
-
+        assertEquals("ValueOne doesn't contain the right number of events", 1, valueOne.values().size());
+        assertEquals("ValueTwo doesn't contain the right number of events", 1, valueTwo.values().size());
+        assertEquals("ValueThree doesn't contain the right number of events", 1, valueTwo.values().size());
 
         Set<String> valueOneKey = valueOne.keySet();
         assertEquals("Wrong number of participants ", 1, valueOneKey.size());
         String participantKey = (String) valueOneKey.toArray()[0];
-        String expectedParticipantKeyOne = participantOne.getFullName() + " - " + e1.getActivity().getName();
+        String expectedParticipantKeyOne = participantOne.getFullName() ;
         assertEquals("Participants are not the same", expectedParticipantKeyOne, participantKey);
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
