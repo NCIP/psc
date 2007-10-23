@@ -130,7 +130,7 @@ CONTAINER_PROVIDED = [
 UNIT_TESTING = [
   "edu.northwestern.bioinformatics:core-commons-testing:jar:#{CORE_COMMONS_VERSION}",
   eponym("dbunit", "2.1"),
-  "org.easymock:easymock:jar:2.3",
+  "org.easymock:easymock:jar:2.2",
   "org.easymock:easymockclassextension:jar:2.2.2",
   "org.springframework:spring-mock:jar:#{SPRING_VERSION}"
 ]
