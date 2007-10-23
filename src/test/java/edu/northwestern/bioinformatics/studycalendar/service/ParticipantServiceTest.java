@@ -139,17 +139,17 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         Activity a3 = createNamedInstance("Questionnaire", Activity.class);
         Activity a4 = createNamedInstance("Infusion", Activity.class);
 
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  1, 1, "CBC Details",           a1, events.get(0));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 2, "Vitals Details",        a2, events.get(1));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 3, "Questionnaire Details", a3, events.get(2));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 1, "CBC Details",           a1, events.get(3));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 4, "Infusion Details",      a4, events.get(4));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 10, 2, "Vitals Details",        a2, events.get(5));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 15, 1, "CBC Details",           a1, events.get(6));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 17, 2, "Vitals Details",        a2, events.get(7));
-        assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, "Infusion Details",      a4, events.get(8));
-        assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, "Infusion Details",      a4, events.get(9));
-        assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, "Infusion Details",      a4, events.get(10));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  1, 1, "CBC Details",           a1, 0, events.get(0));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 2, "Vitals Details",        a2, 0, events.get(1));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  3, 3, "Questionnaire Details", a3, 0, events.get(2));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 1, "CBC Details",           a1, 1, events.get(3));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL,  8, 4, "Infusion Details",      a4, 0, events.get(4));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 10, 2, "Vitals Details",        a2, 1, events.get(5));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 15, 1, "CBC Details",           a1, 2, events.get(6));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 17, 2, "Vitals Details",        a2, 2, events.get(7));
+        assertNewlyScheduledEvent(2006, Calendar.APRIL, 25, 5, "Infusion Details",      a4, 0, events.get(8));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,    6, 4, "Infusion Details",      a4, 1, events.get(9));
+        assertNewlyScheduledEvent(2006, Calendar.MAY,   23, 5, "Infusion Details",      a4, 1, events.get(10));
 
         assertSame("Source amendment not set on SEs", expectedAmendment, events.get(7).getSourceAmendment());
     }
@@ -268,14 +268,16 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
     }
 
     private void assertNewlyScheduledEvent(
-         int expectedYear, int expectedMonth, int expectedDayOfMonth,
-         int expectedPlannedEventId, String expectedDetails,
-         Activity expectedActivity, ScheduledEvent actualEvent
+        int expectedYear, int expectedMonth, int expectedDayOfMonth,
+        int expectedPlannedEventId, String expectedDetails,
+        Activity expectedActivity, int expectedRepetitionNumber,
+        ScheduledEvent actualEvent
     ){
         assertNewlyScheduledEvent(expectedYear, expectedMonth, expectedDayOfMonth, expectedPlannedEventId, actualEvent);
         assertEquals("Wrong details", expectedDetails, actualEvent.getDetails());
-        assertNotNull("Actual Event Activity Null", actualEvent.getActivity());
-        assertEquals("Wrong Activity", expectedActivity.getName(), actualEvent.getActivity().getName());
+        assertEquals("Wrong repetition number", expectedRepetitionNumber, (int) actualEvent.getRepetitionNumber());
+        assertNotNull("No activity", actualEvent.getActivity());
+        assertEquals("Wrong activity", expectedActivity.getName(), actualEvent.getActivity().getName());
     }
 
     public void testFindRecurringHoliday() throws Exception {

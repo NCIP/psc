@@ -192,11 +192,28 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
         this.sourceAmendment = sourceAmendment;
     }
 
+    /**
+     * The repetition of the source period from which this event was created.
+     * Zero-based.
+     *
+     * @see Period
+     */
     public Integer getRepetitionNumber() {
         return repetitionNumber;
     }
 
     public void setRepetitionNumber(Integer repetitionNumber) {
         this.repetitionNumber = repetitionNumber;
+    }
+
+    ////// OBJECT METHODS
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append("[idealDate=").append(getIdealDate())
+            .append("; plannedEvent=").append(getPlannedEvent().getId())
+            .append("; repetition=").append(getRepetitionNumber())
+            .append(']').toString();
     }
 }

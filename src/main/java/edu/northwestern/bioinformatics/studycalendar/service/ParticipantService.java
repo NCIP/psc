@@ -109,11 +109,15 @@ public class ParticipantService {
         int normalizationFactor = arm.getDayRange().getStartDay() * -1 + 1;
 
         for (Period period : arm.getPeriods()) {
-            for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
-                for (Integer armDay : plannedEvent.getDaysInArm()) {
+            log.debug("Adding events from period {}", period);
+            int repOffset = period.getStartDay() - 1;
+            for (int r = 0 ; r < period.getRepetitions() ; r++) {
+                log.debug(" - rep {}; offset: {}", r, repOffset);
+                for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
                     // TODO: I think we might need to track which repetition an event is from
                     ScheduledEvent event = new ScheduledEvent();
-                    event.setIdealDate(idealDate(armDay + normalizationFactor, startDate));
+                    event.setRepetitionNumber(r);
+                    event.setIdealDate(idealDate(repOffset + plannedEvent.getDay() + normalizationFactor, startDate));
                     event.setPlannedEvent(plannedEvent);
                     if (plannedEvent.getConditionalDetails() == null || plannedEvent.getConditionalDetails().length()<0) {
                         //setting mode to conditional
@@ -126,6 +130,7 @@ public class ParticipantService {
                     event.setSourceAmendment(assignment.getCurrentAmendment());
                     scheduledArm.addEvent(event);
                 }
+                repOffset += period.getDuration().getDays();
             }
         }
 
@@ -135,12 +140,13 @@ public class ParticipantService {
                 int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
                 if (dateCompare != 0) return dateCompare;
 
-                if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null)
+                if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null) {
                     return 0;
-                else if (e1.getPlannedEvent() == null)
+                } else if (e1.getPlannedEvent() == null) {
                     return -1;
-                else if (e2.getPlannedEvent() == null)
+                } else if (e2.getPlannedEvent() == null) {
                     return 1;
+                }
 
                 return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
             }
