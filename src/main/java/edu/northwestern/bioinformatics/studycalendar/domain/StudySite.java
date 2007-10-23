@@ -85,7 +85,10 @@ public class StudySite extends AbstractMutableDomainObject {
 
     @Transient
     public static StudySite findStudySite(Study study, Site site) {
-        return (StudySite) ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).iterator().next();
+        if (ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).size() > 0) {
+            return (StudySite) ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).iterator().next();
+        }
+        return null;
     }
 
     ////// OBJECT METHODS

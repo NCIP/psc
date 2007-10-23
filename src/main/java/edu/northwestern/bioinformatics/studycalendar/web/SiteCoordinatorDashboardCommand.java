@@ -47,10 +47,7 @@ public class SiteCoordinatorDashboardCommand {
     }
 
     protected boolean isSiteSelected(UserRole userRole, Study study, Site site) {
-        for (StudySite studySite : userRole.getStudySites()) {
-            if (site.equals(studySite.getSite()) && study.equals(studySite.getStudy())) return true;
-        }
-        return false;
+        return userRole.getStudySites().contains(findStudySite(study, site));
     }
 
     protected boolean isSiteAccessAllowed(UserRole userRole, Site site) {
