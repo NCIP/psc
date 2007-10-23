@@ -6,6 +6,7 @@ import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
@@ -68,6 +69,8 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
     public void testAssignParticipant() throws Exception {
         Study study = createNamedInstance("Glancing", Study.class);
+        Amendment expectedAmendment = new Amendment("Foom");
+        study.setAmendment(expectedAmendment);
         Site site = createNamedInstance("Lake", Site.class);
         StudySite studySite = createStudySite(study, site);
         Participant participantIn = createParticipant("Alice", "Childress");
@@ -82,6 +85,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         expectedAssignment.setStartDateEpoch(startDate);
         expectedAssignment.setParticipant(participantExpectedSave);
         expectedAssignment.setStudySite(studySite);
+        expectedAssignment.setCurrentAmendment(expectedAmendment);
 
         participantExpectedSave.addAssignment(expectedAssignment);
 

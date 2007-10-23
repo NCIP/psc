@@ -54,13 +54,14 @@ public class ParticipantService {
         return this.assignParticipant(participant, study, armOfFirstEpoch, startDate, null, participantCoordinator);
     }
 
-    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite study, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User participantCoordinator) {
+    public StudyParticipantAssignment assignParticipant(Participant participant, StudySite studySite, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User participantCoordinator) {
         StudyParticipantAssignment spa = new StudyParticipantAssignment();
         spa.setParticipant(participant);
-        spa.setStudySite(study);
+        spa.setStudySite(studySite);
         spa.setStartDateEpoch(startDate);
         spa.setGridId(assignmentGridIdentifier);
         spa.setParticipantCoordinator(participantCoordinator);
+        spa.setCurrentAmendment(studySite.getStudy().getAmendment());
         participant.addAssignment(spa);
         scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
         participantDao.save(participant);

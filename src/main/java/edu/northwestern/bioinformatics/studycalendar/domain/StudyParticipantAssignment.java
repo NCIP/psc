@@ -171,6 +171,8 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
             return false;
         if (studySite != null ? !studySite.equals(that.studySite) : that.studySite != null)
             return false;
+        if (currentAmendment != null ? !currentAmendment.equals(that.currentAmendment) : that.currentAmendment != null)
+            return false;
         // Participant#equals calls this method, so we can't use it here
         if (!DomainObjectTools.equalById(participant, that.participant)) return false;
 
@@ -183,6 +185,7 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
         result = (studySite != null ? studySite.hashCode() : 0);
         result = 29 * result + (participant != null ? participant.hashCode() : 0);
         result = 29 * result + (startDateEpoch != null ? startDateEpoch.hashCode() : 0);
+        result = 29 * result + (currentAmendment != null ? currentAmendment.hashCode() : 0);
         return result;
     }
 }
