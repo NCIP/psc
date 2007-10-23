@@ -1,18 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
-import javax.persistence.*;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Date;
+import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 /**
  * @author Rhett Sutphin

@@ -20,6 +20,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+
 
 /**
  * @author Ram Chilukuri
@@ -36,10 +38,12 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
     private String studyId;
     private StudySite studySite;
     private Participant participant;
+
     private Date startDateEpoch;
     private Date endDateEpoch;
     private User participantCoordinator;
 
+    private Amendment currentAmendment;
     private ScheduledCalendar scheduledCalendar;
     private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
 
@@ -130,6 +134,15 @@ public class StudyParticipantAssignment extends AbstractMutableDomainObject {
 
     public void setAeNotifications(List<AdverseEventNotification> aeNotifications) {
         this.aeNotifications = aeNotifications;
+    }
+
+    @ManyToOne
+    public Amendment getCurrentAmendment() {
+        return currentAmendment;
+    }
+
+    public void setCurrentAmendment(Amendment currentAmendment) {
+        this.currentAmendment = currentAmendment;
     }
 
     public String getStudyId() {

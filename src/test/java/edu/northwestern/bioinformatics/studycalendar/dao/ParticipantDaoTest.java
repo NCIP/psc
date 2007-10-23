@@ -7,11 +7,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Calendar;
+
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
  * @author Padmaja Vedula
@@ -20,6 +23,7 @@ import java.util.Calendar;
 public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
     private SiteDao siteDao = (SiteDao) getApplicationContext().getBean("siteDao");
     private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
+    private AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
 
     public void testGetAll() throws Exception {
         List<Participant> actual = getDao().getAll();
@@ -47,6 +51,7 @@ public class ParticipantDaoTest extends ContextDaoTestCase<ParticipantDao> {
             spa.setStudySite(studySite);
             spa.setStartDateEpoch(new Date());
             spa.setEndDateEpoch(DateUtils.createDate(2008, 12, 1));
+            spa.setCurrentAmendment(amendmentDao.getById(-55));
 
             participant.addAssignment(spa);
 

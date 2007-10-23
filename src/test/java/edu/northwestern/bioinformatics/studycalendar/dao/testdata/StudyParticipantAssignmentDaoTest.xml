@@ -1,4 +1,6 @@
 <dataset>
+    <AMENDMENTS id="-18" amendment_date="2007-06-05"/>
+
     <PARTICIPANT_ASSIGNMENTS
         id="-10"
         participant_id="-20"
@@ -7,6 +9,7 @@
         last_epoch_enddate="2003-09-01"
         study_id="004-12"
         grid_id="NOT-SMALL"
+        current_amendment_id="-18"
         />
     <STUDY_SITES
         id="-15"
@@ -16,6 +19,7 @@
     <STUDIES
         id="-100"
         name="S1"
+        amendment_id="-18"
         />
     <SITES
         id="-200"
