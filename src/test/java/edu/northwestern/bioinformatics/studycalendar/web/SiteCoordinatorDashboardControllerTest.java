@@ -1,13 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -15,7 +18,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import static java.util.Arrays.asList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author John Dzak
@@ -28,22 +30,29 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
     private List<Study> studies;
     private SiteCoordinatorDashboardCommand command;
+    private User user;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        siteDao     = registerDaoMockFor(SiteDao.class);
-        studyDao    = registerDaoMockFor(StudyDao.class);
+        siteDao         = registerDaoMockFor(SiteDao.class);
+        studyDao        = registerDaoMockFor(StudyDao.class);
+        templateService = registerMockFor(TemplateService.class);
 
         command     = registerMockFor(SiteCoordinatorDashboardCommand.class);
 
         controller = new MockableController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
+        controller.setTemplateService(templateService);
+
+        user      =  createUser(1, "john", 1L, true, "pass");
 
         sites     = asList(createNamedInstance("Mayo Clinic", Site.class));
         studies   = asList(createNamedInstance("Study A", Study.class));
+
+        SecurityContextHolderTestHelper.setSecurityContext(user.getName(), user.getPassword());
     }
 
     public void testGetView() throws Exception {
@@ -72,9 +81,17 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         assertEquals("Wrong View Name", "siteCoordinatorSchedule", ((RedirectView) mv.getView()).getUrl());
     }
 
-    public void expectRefData() {
+    public void expectRefData() throws Exception{
         expect(siteDao.getAll()).andReturn(sites);
         expect(studyDao.getAll()).andReturn(studies);
+        expect(templateService.checkOwnership(user.getName(), studies)).andReturn(studies);
+        expect(command.getStudy()).andReturn(studies.get(0));
+    }
+
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        ApplicationSecurityManager.removeUserSession();
     }
 
     private class MockableController extends SiteCoordinatorDashboardController {

@@ -5,11 +5,9 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author John Dzak
@@ -27,7 +25,7 @@ public class SiteCoordinatorDashboardCommand {
 
         buildStudyAssignmentGrid();
     }
-
+    
     protected void buildStudyAssignmentGrid() {
         studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
         List<Site> sites    = siteDao.getAll();
@@ -99,5 +97,9 @@ public class SiteCoordinatorDashboardCommand {
 
     protected static StudyAssignmentCell createStudyAssignmentCell(boolean selected, boolean siteAccessAllowed) {
         return new StudyAssignmentCell(selected, siteAccessAllowed);
+    }
+
+    public Study getStudy() {
+        return study;
     }
 }

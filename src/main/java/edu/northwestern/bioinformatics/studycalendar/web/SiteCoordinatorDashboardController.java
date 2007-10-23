@@ -7,15 +7,20 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author John Dzak
@@ -25,6 +30,7 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     private UserDao userDao;
     private SiteDao siteDao;
     private UserRoleDao userRoleDao;
+    private TemplateService templateService;
 
 
     public SiteCoordinatorDashboardController() {
@@ -32,10 +38,14 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     }
 
 
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String,Object>();
+
+        SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) o;
+
+        refdata.put("studies",  getAssignableStudies(ApplicationSecurityManager.getUser()));
         refdata.put("sites", siteDao.getAll());
-        refdata.put("studies", studyDao.getAll());
+        refdata.put("currentStudy", command.getStudy());
         return refdata;
     }
 
@@ -47,12 +57,37 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        if (editId == null ) editId = 1;
+        Integer studyId = ServletRequestUtils.getIntParameter(request, "study");
+        Study selectedStudy = getCurrentStudy(studyId, ApplicationSecurityManager.getUser());
 
-        Study study = studyDao.getById(1);
-        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, study);
+        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, selectedStudy);
         return command;
+    }
+
+    protected Study getCurrentStudy(Integer studyId, String userName) throws Exception {
+        Study study = null;
+        if (studyId != null ) {
+            study = studyDao.getById(studyId);
+        } else {
+            List<Study> assignableStudies = getAssignableStudies(userName);
+            if(assignableStudies.size() > 0) {
+                study = assignableStudies.get(0);
+            }
+        }
+        return study;
+    }
+
+    protected List<Study> getAssignableStudies(String userName) throws Exception {
+        List<Study> studies = studyDao.getAll();
+        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
+
+        List<Study> assignableStudies = new ArrayList<Study>();
+         for (Study ownedStudy : ownedStudies) {
+            if (ownedStudy.isAvailableForAssignment()) {
+                assignableStudies.add(ownedStudy);
+            }
+         }
+        return assignableStudies;
     }
 
     protected ModelAndView onSubmit(Object o) throws Exception {
@@ -76,5 +111,9 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
     public void setUserRoleDao(UserRoleDao userRoleDao) {
         this.userRoleDao = userRoleDao;
+    }
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }
