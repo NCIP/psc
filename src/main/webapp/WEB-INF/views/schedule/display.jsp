@@ -14,6 +14,8 @@
     <tags:javascriptLink name="scheduled-event"/>
     <tags:javascriptLink name="scheduled-event-batch"/>
     <style type="text/css">
+        h1 { float: left };
+        
         .epochs-and-arms, #next-arm-form {
             margin: 1em;
         }
@@ -192,17 +194,23 @@
         #schedule-switch {
             float: right;
             margin: 1em;
+            clear: right;
         }
 
-        #take-off-study {
-            margin-right:1em;
-            float:right
+        #schedule-controls {
+            margin-right: 1em;
+            float: right;
+            clear: right;
         }
 
         .batch-schedule-link {
             color:#0000cc;
             cursor:pointer;
             white-space:nowrap;
+        }
+
+        .box {
+            clear: both;
         }
     </style>
     <script type="text/javascript">
@@ -320,75 +328,71 @@
     </script>
 </head>
 <body>
-<c:if test="${assignment.endDateEpoch == null}">
-    <div id="take-off-study">
-        <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take Particpant Off Study</a>
-        <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar">Export Calendar as ICS for iCal, Outlook, etc..</a>
-    </div>
-<br style="clear:both"/>
-</c:if>
-<c:if test="${not empty offStudyAssignments}">
-    <div id="schedule-switch">View schedule (Off Study) for
-        <select id="offstudy-assigned-participant-selector">
-            <c:forEach items="${offStudyAssignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
-            </c:forEach>
-        </select>
-        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
-      </div>
-</c:if>
-<c:if test="${not empty onStudyAssignments}">
-    <div id="schedule-switch">View schedule (On Study) for
+<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
+
+<div id="schedule-controls">
+    <c:if test="${assignment.endDateEpoch == null}">
+        <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take participant off study</a>
+    </c:if>
+    <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
+</div>
+<div id="schedule-switch">
+    <c:if test="${not empty onStudyAssignments}">
+        View schedule for current participant
         <select id="assigned-participant-selector">
             <c:forEach items="${onStudyAssignments}" var="a">
                 <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
             </c:forEach>
         </select>
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
-    </div>
-</c:if>
-<br style="clear:both"/>
-<laf:box>
-<laf:division>
+    </c:if>
+    <c:if test="${not empty offStudyAssignments}">
+        View schedule for historical participant
+        <select id="offstudy-assigned-participant-selector">
+            <c:forEach items="${offStudyAssignments}" var="a">
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+            </c:forEach>
+        </select>
+        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+    </c:if>
+</div>
 
-    <%--<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>--%>
-
-    <c:if test="${configuration.externalAppsConfigured}">
-        <div class="section" id="external-apps">
-            <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
-            <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-            View this participant's
-            <c:if test="${caaersAvail}">
-                <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
-            </c:if>
-            <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
-            <c:if test="${labViewerAvail}">
-                <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
-            </c:if>
-        </div>
+<c:if test="${configuration.externalAppsConfigured}">
+<laf:box title="Other applications">
+<laf:division id="external-apps">
+    <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+    <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+    View this participant's
+    <c:if test="${caaersAvail}">
+        <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
+    </c:if>
+    <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
+    <c:if test="${labViewerAvail}">
+        <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
     </c:if>
 
-<c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-    <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-        <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
-        <div class="content" style="display: none">
-            <p>
-                An adverse event was reported for this participant.  Please consider how
-                this should impact future scheduling.
-            </p>
-            <h3>Details</h3>
-            <p>${aeNote.adverseEvent.description}</p>
-            <p>
-                <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                    View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
-                </c:if>
-            </p>
+    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+            <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+            <div class="content" style="display: none">
+                <p>
+                    An adverse event was reported for this participant.  Please consider how
+                    this should impact future scheduling.
+                </p>
+                <h3>Details</h3>
+                <p>${aeNote.adverseEvent.description}</p>
+                <p>
+                    <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                    <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                        View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                    </c:if>
+                </p>
+            </div>
         </div>
-    </div>
-	    </c:forEach>
-	     </laf:division>
-	</laf:box>
+    </c:forEach>
+</laf:division>
+</laf:box>
+</c:if>
 
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box>
