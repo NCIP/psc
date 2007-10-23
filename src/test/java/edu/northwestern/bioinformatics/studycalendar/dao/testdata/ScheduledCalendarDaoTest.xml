@@ -56,6 +56,7 @@
         notes="Boo!"
         activity_id="-100"
         details="Nice Details!!"
+        source_amendment_id="-17"
         />
     <SCHEDULED_EVENT_STATES
         id="-11"
@@ -89,6 +90,7 @@
         ideal_date="2006-11-01"
         activity_id="-100"
         details="Nice Details!!"
+        source_amendment_id="-17"
         />
     <SCHEDULED_EVENTS
         id="-16"
@@ -99,6 +101,7 @@
         ideal_date="2006-11-02"
         activity_id="-100"
         details="Nice Details!!"
+        source_amendment_id="-17"
         />
     <SCHEDULED_EVENTS
         id="-17"
@@ -108,6 +111,7 @@
         ideal_date="2006-11-01"
         activity_id="-100"
         details="Nice Details!!"
+        source_amendment_id="-17"
         />
     <SCHEDULED_EVENTS
         id="-18"
@@ -118,5 +122,6 @@
         ideal_date="2006-11-08"
         activity_id="-100"
         details="Nice Details!!"
+        source_amendment_id="-17"
         />
 </dataset>

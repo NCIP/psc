@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
@@ -32,6 +33,7 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
     private String details;
     private Activity activity;
+    private Amendment sourceAmendment;
 
     ////// LOGIC
 
@@ -178,5 +180,14 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    @ManyToOne(optional = false)
+    public Amendment getSourceAmendment() {
+        return sourceAmendment;
+    }
+
+    public void setSourceAmendment(Amendment sourceAmendment) {
+        this.sourceAmendment = sourceAmendment;
     }
 }

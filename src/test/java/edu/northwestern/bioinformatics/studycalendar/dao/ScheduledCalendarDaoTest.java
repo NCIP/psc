@@ -4,15 +4,19 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertSameDay;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
  * @author Rhett Sutphin
@@ -22,6 +26,8 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         = (ParticipantDao) getApplicationContext().getBean("participantDao");
     private ArmDao armDao
         = (ArmDao) getApplicationContext().getBean("armDao");
+    private AmendmentDao amendmentDao
+        = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
 
     public void testGetById() throws Exception {
         ScheduledCalendar cal = getDao().getById(-20);
@@ -43,6 +49,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong base event for event", -6, (int) event.getPlannedEvent().getId());
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, event.getIdealDate());
         assertEquals("Wrong notes", "Boo!", event.getNotes());
+        assertEquals("Wrong amendment", -17, (int) event.getSourceAmendment().getId());
 
         ScheduledEventState currentState = event.getCurrentState();
         assertTrue(currentState instanceof Occurred);
@@ -98,6 +105,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         String expectedReason = "All done";
         Activity expectedActivity = Fixtures.setId(-100, Fixtures.createNamedInstance("Infusion", Activity.class));
         expectedActivity.setVersion(0);
+        Amendment expectedAmendment = amendmentDao.getById(-17);
 
         {
             Participant participant = participantDao.getById(-1);
@@ -117,6 +125,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             event.setPlannedEvent(arm3.getPeriods().iterator().next().getPlannedEvents().get(0));
             event.changeState(new Occurred(expectedReason, expectedActualDate));
             event.setActivity(expectedActivity);
+            event.setSourceAmendment(expectedAmendment);
             lastScheduledArm.addEvent(event);
 
             assertNull(calendar.getId());
