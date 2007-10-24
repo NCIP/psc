@@ -19,13 +19,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -37,6 +39,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
@@ -106,57 +109,68 @@ public class ParticipantService {
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);
         calendar.addArm(scheduledArm);
-        int normalizationFactor = arm.getDayRange().getStartDay() * -1 + 1;
+
+        Amendment sourceAmendment = assignment.getCurrentAmendment();
+        Integer armStartDay = arm.getDayRange().getStartDay();
+        List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
 
         for (Period period : arm.getPeriods()) {
-            log.debug("Adding events from period {}", period);
-            int repOffset = period.getStartDay() - 1;
-            for (int r = 0 ; r < period.getRepetitions() ; r++) {
-                log.debug(" - rep {}; offset: {}", r, repOffset);
-                for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
-                    // TODO: I think we might need to track which repetition an event is from
-                    ScheduledEvent event = new ScheduledEvent();
-                    event.setRepetitionNumber(r);
-                    event.setIdealDate(idealDate(repOffset + plannedEvent.getDay() + normalizationFactor, startDate));
-                    event.setPlannedEvent(plannedEvent);
-                    if (plannedEvent.getConditionalDetails() == null || plannedEvent.getConditionalDetails().length()<0) {
-                        //setting mode to conditional
-                        event.changeState(new Scheduled("Initialized from template", event.getIdealDate()));
-                    } else {
-                        event.changeState(new Conditional("Initialized from template", event.getIdealDate()));
-                    }
-                    event.setDetails(plannedEvent.getDetails());
-                    event.setActivity(plannedEvent.getActivity());
-                    event.setSourceAmendment(assignment.getCurrentAmendment());
-                    scheduledArm.addEvent(event);
-                }
-                repOffset += period.getDuration().getDays();
-            }
+            events.addAll(schedulePeriod(period, sourceAmendment, armStartDay, startDate));
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
-        Collections.sort(scheduledArm.getEvents(), new Comparator<ScheduledEvent>() {
-            public int compare(ScheduledEvent e1, ScheduledEvent e2) {
-                int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
-                if (dateCompare != 0) return dateCompare;
+        Collections.sort(events, DatabaseEventOrderComparator.INSTANCE);
 
-                if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null) {
-                    return 0;
-                } else if (e1.getPlannedEvent() == null) {
-                    return -1;
-                } else if (e2.getPlannedEvent() == null) {
-                    return 1;
-                }
-
-                return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
-            }
-        });
+        for (ScheduledEvent event : events) scheduledArm.addEvent(event);
 
         Site site = calendar.getAssignment().getStudySite().getSite();
         avoidBlackoutDates(scheduledArm, site);
         participantDao.save(assignment.getParticipant());
 
         return scheduledArm;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public List<ScheduledEvent> schedulePeriod(Period period, Amendment sourceAmendment, Integer armStartDay, Date armStartDate) {
+        List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+        log.debug("Adding events from period {}", period);
+        for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
+            events.addAll(schedulePlannedEvent(plannedEvent, period, sourceAmendment, armStartDay, armStartDate));
+        }
+        return events;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public List<ScheduledEvent> schedulePlannedEvent(PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, Integer armStartDay, Date armStartDate) {
+        log.debug("Adding events from planned event {}", plannedEvent);
+        List<ScheduledEvent> peEvents = new LinkedList<ScheduledEvent>();
+        
+        // amount needed to shift the relative days in the period such that
+        // the relative day 0 falls on armStateDate.  E.g., if the arm starts on
+        // day 1, the normalizationFactor needs to shift everything down 1.
+        // if it starts on -7, it needs to shift everything up 7.
+        int normalizationFactor = armStartDay * -1;
+
+        for (int r = 0 ; r < period.getRepetitions() ; r++) {
+            int repOffset = period.getStartDay() + period.getDuration().getDays() * r;
+            log.debug(" - rep {}; offset: {}", r, repOffset);
+            ScheduledEvent event = new ScheduledEvent();
+            event.setRepetitionNumber(r);
+            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay() + normalizationFactor, armStartDate));
+            event.setPlannedEvent(plannedEvent);
+
+            DatedScheduledEventState initialState
+                = (DatedScheduledEventState) plannedEvent.getInitialScheduledMode().createStateInstance();
+            initialState.setReason("Initialized from template");
+            initialState.setDate(event.getIdealDate());
+            event.changeState(initialState);
+
+            event.setDetails(plannedEvent.getDetails());
+            event.setActivity(plannedEvent.getActivity());
+            event.setSourceAmendment(sourceAmendment);
+            peEvents.add(event);
+        }
+        return peEvents;
     }
 
     private void avoidBlackoutDates(ScheduledArm arm, Site site) {
@@ -250,7 +264,7 @@ public class ParticipantService {
     // package level for testing
     Date shiftDayByOne(Date date) {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(date.getTime());
-        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        long oneDay = 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() + oneDay);
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = df.format(timestampTo);
@@ -318,5 +332,24 @@ public class ParticipantService {
 
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    private static class DatabaseEventOrderComparator implements Comparator<ScheduledEvent> {
+        public static final Comparator<? super ScheduledEvent> INSTANCE = new DatabaseEventOrderComparator();
+
+        public int compare(ScheduledEvent e1, ScheduledEvent e2) {
+            int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
+            if (dateCompare != 0) return dateCompare;
+
+            if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null) {
+                return 0;
+            } else if (e1.getPlannedEvent() == null) {
+                return -1;
+            } else if (e2.getPlannedEvent() == null) {
+                return 1;
+            }
+
+            return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
+        }
     }
 }

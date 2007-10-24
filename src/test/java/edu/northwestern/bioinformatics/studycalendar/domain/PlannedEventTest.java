@@ -78,4 +78,16 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         PlannedEvent clone = (PlannedEvent) e0.clone();
         assertSame("Activity is not same object", e0.getActivity(), clone.getActivity());
     }
+
+    public void testScheduledModeWhenConditional() throws Exception {
+        e0.setConditionalDetails("Only if you roll 2, 4, or 5");
+        assertEquals(ScheduledEventMode.CONDITIONAL, e0.getInitialScheduledMode());
+    }
+    
+    public void testScheduledModeWhenNotConditional() throws Exception {
+        e0.setConditionalDetails(" ");
+        e1.setConditionalDetails(null);
+        assertEquals(ScheduledEventMode.SCHEDULED, e0.getInitialScheduledMode());
+        assertEquals(ScheduledEventMode.SCHEDULED, e1.getInitialScheduledMode());
+    }
 }

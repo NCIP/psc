@@ -297,7 +297,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertNotEquals("dates are equals", df.format(newDate), df.format(date));
 
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(newDate.getTime());
-        long oneDay = 1 * 24 * 60 * 60 * 1000;
+        long oneDay = 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() - oneDay);
         assertEquals("dates are not equals", df.format(timestampTo), df.format(date));
     }

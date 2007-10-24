@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -11,8 +12,11 @@ import javax.persistence.FetchType;
 import javax.persistence.Transient;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Date;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.StringTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 /**
  * @author Rhett Sutphin
@@ -52,6 +56,14 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
             dayInArm += getPeriod().getDuration().getDays();
         }
         return days;
+    }
+
+    public ScheduledEventMode getInitialScheduledMode() {
+        if (StringUtils.isBlank(getConditionalDetails())) {
+            return ScheduledEventMode.SCHEDULED;
+        } else {
+            return ScheduledEventMode.CONDITIONAL;
+        }
     }
 
     ////// BEAN PROPERTIES
