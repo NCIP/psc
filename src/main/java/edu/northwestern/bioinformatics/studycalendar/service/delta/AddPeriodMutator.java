@@ -41,6 +41,7 @@ public class AddPeriodMutator extends CollectionAddMutator {
     }
 
     private Collection<ScheduledArm> findMatchingArms(ScheduledCalendar cal) {
-        return cal.getScheduledArmsFor((Arm) change.getDelta().getNode());
+        // Second cast works around a dumb javac bug
+        return cal.getScheduledArmsFor((Arm) (PlanTreeNode) change.getDelta().getNode());
     }
 }
