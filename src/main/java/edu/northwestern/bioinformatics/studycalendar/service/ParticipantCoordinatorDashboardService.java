@@ -58,7 +58,9 @@ public class ParticipantCoordinatorDashboardService {
             }
             String keyDate = formatDateToString(tempStartDate);
             keyDate = keyDate + " - " + convertDateKeyToString(tempStartDate);
-            mapOfUserAndCalendar.put(keyDate, participantAndEvents);
+            if (participantAndEvents!= null && participantAndEvents.size()>0) {
+                mapOfUserAndCalendar.put(keyDate, participantAndEvents);
+            }
         }
        return mapOfUserAndCalendar;
     }
@@ -96,7 +98,9 @@ public class ParticipantCoordinatorDashboardService {
             }
             String keyDate = formatDateToString(tempStartDate);
             keyDate = keyDate + " - " + convertDateKeyToString(tempStartDate);
-            mapOfUserAndCalendar.put(keyDate, participantAndEvents);
+            if (participantAndEvents!= null && participantAndEvents.size()>0) {
+                mapOfUserAndCalendar.put(keyDate, participantAndEvents);
+            }
         }
         return mapOfUserAndCalendar;
     }
