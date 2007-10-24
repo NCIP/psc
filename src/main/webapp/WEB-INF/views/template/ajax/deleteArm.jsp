@@ -4,7 +4,6 @@
 var toDelete = $('arm-${command.arm.id}-item')
 SC.highlight(toDelete)
 toDelete.remove()
-
-$('epochs-container').style.height = '<tags:epochHeight plannedCalendar="${command.arm.epoch.plannedCalendar}"/>'
-updateAllArmsControlVisibility(${command.arm.epoch.id})
+$('epochs-container').style.height = '<tags:epochHeight plannedCalendar="${epoch.plannedCalendar}"/>'
+updateAllArmsControlVisibility(${epoch.id})
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />

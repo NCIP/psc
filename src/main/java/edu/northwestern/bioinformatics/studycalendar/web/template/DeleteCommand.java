@@ -5,8 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
 import java.util.Map;
+import java.util.List;
+import java.util.HashMap;
+
+import org.springframework.ui.ModelMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
@@ -14,6 +21,8 @@ import java.util.Map;
 public class DeleteCommand extends EditTemplateCommand {
 
     ////// MODES
+    private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
+    
 
     @Override
     protected Mode epochMode() {
@@ -32,8 +41,11 @@ public class DeleteCommand extends EditTemplateCommand {
         }
 
         public Map<String, Object> getModel() {
-            return null;
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("epoch", ((Epoch)getObjectParent()));
+            return map;
         }
+
 
         protected abstract T getObject();
         protected abstract PlanTreeInnerNode getObjectParent();
