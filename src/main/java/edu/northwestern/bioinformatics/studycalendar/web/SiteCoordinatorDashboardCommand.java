@@ -5,7 +5,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import java.util.*;
 
@@ -17,11 +17,13 @@ public class SiteCoordinatorDashboardCommand {
     private SiteDao siteDao;
     private Study study;
     private UserRoleDao userRoleDao;
+    private TemplateService templateService;
 
-    public SiteCoordinatorDashboardCommand(SiteDao siteDao, UserRoleDao userRoleDao, Study study) {
-        this.siteDao      = siteDao;
-        this.userRoleDao  = userRoleDao;
-        this.study        = study;
+    public SiteCoordinatorDashboardCommand(SiteDao siteDao, UserRoleDao userRoleDao, TemplateService templateService, Study study) {
+        this.siteDao         = siteDao;
+        this.userRoleDao     = userRoleDao;
+        this.templateService = templateService;
+        this.study           = study;
 
         buildStudyAssignmentGrid();
     }
@@ -56,16 +58,15 @@ public class SiteCoordinatorDashboardCommand {
         return studyAssignmentGrid;
     }
 
-    public void apply() {
+    public void apply() throws Exception {
         for(User user : studyAssignmentGrid.keySet()) {
-            UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-            userRole.clearStudySites();
             for(Site site : studyAssignmentGrid.get(user).keySet()) {
                 if (studyAssignmentGrid.get(user).get(site).isSelected()) {
-                    userRole.addStudySite(findStudySite(study, site));
+                    templateService.assignTemplateToParticipantCoordinator(study,site, user);
+                } else {
+                    templateService.removeAssignedTemplateFromParticipantCoordinator(study,site, user);
                 }
             }
-            userRoleDao.save(userRole);
         }
     }
 

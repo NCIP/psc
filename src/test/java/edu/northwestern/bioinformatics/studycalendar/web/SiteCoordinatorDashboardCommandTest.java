@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import static org.easymock.EasyMock.expect;
 
 import static java.util.Arrays.asList;
@@ -16,7 +17,8 @@ import java.util.*;
 public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private UserRoleDao userRoleDao;
-    private Study study;
+    private TemplateService templateService;
+    private Study study0, study1;
     private List<Site> sites;
     private List<UserRole> userRoles;
     private User user0, user1;
@@ -29,8 +31,10 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
 
         siteDao     = registerDaoMockFor(SiteDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
+        templateService = registerMockFor(TemplateService.class);
 
-        study = createNamedInstance("Study A", Study.class);
+        study0 = createNamedInstance("Study A", Study.class);
+        study1 = createNamedInstance("Study B", Study.class);
 
         site0  = createNamedInstance("Mayo Clinic" , Site.class);
         site1  = createNamedInstance("Northwestern", Site.class);
@@ -39,7 +43,8 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         user1  = createNamedInstance("Jake", User.class);
 
         role0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
-        role0.setStudySites(new ArrayList(asList(createStudySite(study, site0))));
+        role0.addStudySite(createStudySite(study0, site0));
+        role0.addStudySite(createStudySite(study1, site0));
 
         role1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site0);
 
@@ -58,6 +63,10 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         Map<User, Map<Site,SiteCoordinatorDashboardCommand.StudyAssignmentCell>> studyAssignmentGrid = command.getStudyAssignmentGrid();
+
+        assertEquals("Wrong Size", 2, studyAssignmentGrid.keySet().size());
+        assertEquals("Wrong Size", 2, studyAssignmentGrid.get(user0).keySet().size());
+        assertEquals("Wrong Size", 2, studyAssignmentGrid.get(user1).keySet().size());
 
         assertTrue("No User", studyAssignmentGrid.containsKey(user0));
         assertTrue("No User", studyAssignmentGrid.containsKey(user1));
@@ -91,7 +100,7 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         expectBuildStudyAssignmentGrid();
         replayMocks();
         
-        boolean result = createCommand().isSiteSelected(role0, study, site0);
+        boolean result = createCommand().isSiteSelected(role0, study0, site0);
         verifyMocks();
 
         assertTrue("Site should be selected", result);
@@ -101,7 +110,7 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         expectBuildStudyAssignmentGrid();
         replayMocks();
 
-        boolean result = createCommand().isSiteSelected(role1, study, site0);
+        boolean result = createCommand().isSiteSelected(role1, study0, site0);
         verifyMocks();
 
         assertFalse("Site should be selected", result);
@@ -132,12 +141,14 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         expect(siteDao.getAll()).andReturn(sites);
     }
 
-    private void expectApply() {
-        userRoleDao.save(role0);
-        userRoleDao.save(role1);
+    private void expectApply() throws Exception {
+        expect(templateService.assignTemplateToParticipantCoordinator(study0, site0, user0)).andReturn(user0);
+        expect(templateService.removeAssignedTemplateFromParticipantCoordinator(study0, site1, user0)).andReturn(user0);
+        expect(templateService.removeAssignedTemplateFromParticipantCoordinator(study0, site0, user1)).andReturn(user0);
+        expect(templateService.removeAssignedTemplateFromParticipantCoordinator(study0, site1, user1)).andReturn(user0);
     }
 
     private SiteCoordinatorDashboardCommand createCommand() {
-        return new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, study);
+        return new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, templateService, study0);
     }
 }

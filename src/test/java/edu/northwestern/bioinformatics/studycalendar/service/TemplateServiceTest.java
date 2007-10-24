@@ -1,21 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
+
+import static java.util.Arrays.asList;
+
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -42,6 +42,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private StudyCalendarAuthorizationManager authorizationManager;
     private SiteService siteService;
     private DeltaDao deltaDao;
+    private UserRoleDao userRoleDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -51,6 +52,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         siteDao = registerDaoMockFor(SiteDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
+        userRoleDao = registerDaoMockFor(UserRoleDao.class);
         siteService = registerMockFor(SiteService.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
@@ -58,6 +60,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
         service.setDeltaDao(deltaDao);
+        service.setUserRoleDao(userRoleDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setSiteService(siteService);
@@ -67,7 +70,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         Site site1 = createNamedInstance("aaa", Site.class);
         Site site2 = createNamedInstance("bbb", Site.class);
-        List<Site> sitesTest = Arrays.asList(site1, site2);
+        List<Site> sitesTest = asList(site1, site2);
 
         checkOrder(studySiteDao, true);
 
@@ -81,7 +84,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testAssignTemplateToSitesRequiresStudy() throws Exception {
         Site site1 = createNamedInstance("aaa", Site.class);
-        List<Site> sitesTest = Arrays.asList(site1);
+        List<Site> sitesTest = asList(site1);
         try {
             service.assignTemplateToSites(null, sitesTest);
             fail("Expected IllegalArgumentException. Null object is passed instead of study ");
@@ -131,6 +134,70 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testAssignTemplateToParticipantCoordinator() throws Exception {
+        Site  site          = setId(1, createNamedInstance("Northwestern", Site.class));
+        Study study         = setId(1, createNamedInstance("Study A", Study.class));
+        StudySite studySite = setId(1, createStudySite(study, site));
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User user =
+                setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
+        user.setCsmUserId(1L);
+
+        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site);
+        user.addUserRole(userRole);
+
+        userRoleDao.save(userRole);
+
+        String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
+        List<String> assignedUserId = asList(user.getCsmUserId().toString());
+        authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+
+        String exptectedPGName = DomainObjectTools.createExternalObjectId(studySite);
+        ProtectionGroup expectedPG = createProtectionGroup(100L, exptectedPGName);
+        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(createProtectionGroup(100L, exptectedPGName));
+
+        List<String> availableUserId = Collections.<String>emptyList();
+        authorizationManager.removeProtectionGroupUsers(availableUserId, expectedPG);
+
+        replayMocks();
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User actualUser =
+                service.assignTemplateToParticipantCoordinator(study, site, user);
+        verifyMocks();
+
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
+    }
+
+    public void testRemoveAssignedTemplateFromParticipantCoordinator() throws Exception {
+        Site site0  = createNamedInstance("Northwestern", Site.class);
+        Site site1  = createNamedInstance("Mayo", Site.class);
+        Study study = createNamedInstance("Study A", Study.class);
+
+        StudySite studySite0 = createStudySite(study, site0);
+        StudySite studySite1 = createStudySite(study, site1);
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User user =
+                setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
+
+        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        userRole.addStudySite(studySite0);
+        userRole.addStudySite(studySite1);
+
+        user.addUserRole(userRole);
+
+        userRoleDao.save(userRole);
+        replayMocks();
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User actualUser
+                = service.removeAssignedTemplateFromParticipantCoordinator(study, site0, user);
+        verifyMocks();
+
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles() , Role.PARTICIPANT_COORDINATOR);
+        assertEquals("Wrong study site0 size", 1, actualUserRole.getStudySites().size());
+        assertEquals("Wrong study site", studySite1, actualUserRole.getStudySites().get(0));
+    }
+
     public void testAssignTemplateToParticipantCds() throws Exception {
         Study studyTemplate = createNamedInstance("abc", Study.class);
         Site site2 = setId(8, createNamedInstance("bbb", Site.class));
@@ -138,8 +205,8 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         StudySite studySite2 = setId(2, createStudySite(studyTemplate, site2));
 
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite2);
-        List<String> assignedUserId = Arrays.asList("3", "4");
-        List<String> availableUserId = Arrays.asList("5", "6");
+        List<String> assignedUserId = asList("3", "4");
+        List<String> availableUserId = asList("5", "6");
         authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
         ProtectionGroup expectedProtectionGroup = new ProtectionGroup();
         expectedProtectionGroup.setProtectionGroupId(101l);
@@ -153,8 +220,8 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testAssignTemplateToParticipantCdsRequiresStudy() throws Exception {
         Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> assignedUserId = Arrays.asList("3", "4");
-        List<String> availableUserId = Arrays.asList("5", "6");
+        List<String> assignedUserId = asList("3", "4");
+        List<String> availableUserId = asList("5", "6");
         try {
             service.assignTemplateToParticipantCds(null, site, assignedUserId, availableUserId);
             fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
@@ -165,8 +232,8 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testAssignTemplateToParticipantCdsRequiresSite() throws Exception {
         Study studyTemplate = createNamedInstance("abc", Study.class);
-        List<String> assignedUserId = Arrays.asList("3", "4");
-        List<String> availableUserId = Arrays.asList("5", "6");
+        List<String> assignedUserId = asList("3", "4");
+        List<String> availableUserId = asList("5", "6");
         try {
             service.assignTemplateToParticipantCds(studyTemplate, null, assignedUserId, availableUserId);
             fail("Expected IllegalArgumentException. Null object is passed instead of site ");
@@ -178,7 +245,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testAssignTemplateToParticipantCdsRequiresSitesListOfAssignedUserUds() throws Exception {
         Study studyTemplate = createNamedInstance("abc", Study.class);
         Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> availableUserId = Arrays.asList("5", "6");
+        List<String> availableUserId = asList("5", "6");
         try {
             service.assignTemplateToParticipantCds(studyTemplate, site, null, availableUserId);
             fail("Expected IllegalArgumentException. Null object is passed instead of assignedUserId ");
@@ -190,7 +257,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testAssignTemplateToParticipantCdsRequiresSitesListOfAvailableUserIds() throws Exception {
         Study studyTemplate = createNamedInstance("abc", Study.class);
         Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> assignedUserId = Arrays.asList("3", "4");
+        List<String> assignedUserId = asList("3", "4");
         try {
             service.assignTemplateToParticipantCds(studyTemplate, site, assignedUserId, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of assignedUserId ");
@@ -206,7 +273,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         StudySite studySite1 = setId(1, createStudySite(studyTemplate1, site1));
 
-        List<Study> studyTemplates = Arrays.asList(studyTemplate1, studyTemplate2);
+        List<Study> studyTemplates = asList(studyTemplate1, studyTemplate2);
 
         String userId = "1";
 
@@ -237,7 +304,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testAssignMultipleTemplatesRequiresSite() throws Exception {
         Study studyTemplate = createNamedInstance("abc", Study.class);
         String userId = "1";
-        List<Study> studyTemplates = Arrays.asList(studyTemplate);
+        List<Study> studyTemplates = asList(studyTemplate);
         try {
             service.assignMultipleTemplates(studyTemplates, null, userId);
             fail("Expected IllegalArgumentException. Null object is passed instead of site ");
@@ -249,7 +316,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testAssignMultipleTemplatesRequiresUserId() throws Exception {
         Site site1 = setId(1, createNamedInstance("site1", Site.class));
         Study studyTemplate = createNamedInstance("abc", Study.class);
-        List<Study> studyTemplates = Arrays.asList(studyTemplate);
+        List<Study> studyTemplates = asList(studyTemplate);
         try {
             service.assignMultipleTemplates(studyTemplates, site1, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of userId ");
@@ -344,7 +411,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.0");
         ProtectionGroup expectedAvailableSitePG1 =
                 createProtectionGroup(2L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-        List<ProtectionGroup> exptectedAvailableSitePGs = Arrays.asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
+        List<ProtectionGroup> exptectedAvailableSitePGs = asList(expectedAvailableSitePG0, expectedAvailableSitePG1);
         expect(authorizationManager.getSites()).andReturn(exptectedAvailableSitePGs);
 
         Site expectedAvailableSite0 = createNamedInstance("Mayo Clinic", Site.class);
@@ -443,7 +510,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testCheckOwnership() throws Exception {
         String userName = "UserName" ;
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplates = Arrays.asList(studyTemplate1);
+        List<Study> studyTemplates = asList(studyTemplate1);
         studyTemplate1.setName(userName);
         List<Study> expectedStudyTemplates = new ArrayList<Study>();
         expect(authorizationManager.checkOwnership(userName, studyTemplates)).andReturn(expectedStudyTemplates);
@@ -456,7 +523,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testCheckOwnershipRequiresUserName() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplates = Arrays.asList(studyTemplate1);
+        List<Study> studyTemplates = asList(studyTemplate1);
         try {
             service.checkOwnership(null, studyTemplates);
             fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
@@ -479,7 +546,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study study = setId(1, createNamedInstance(userName, Study.class));
         Site site = setId(1, createNamedInstance("a", Site.class));
         study.addSite(site);
-        List<Site> expectedSites = Arrays.asList(site);
+        List<Site> expectedSites = asList(site);
         expect(siteService.getSitesForSiteCd(userName)).andReturn(expectedSites);
         List<Site> templateSites = new ArrayList<Site>();
         templateSites.add(site);
@@ -514,8 +581,8 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Site site1 = setId(123, createNamedInstance("site1", Site.class));
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         StudySite studySite1 = setId(123, createStudySite(studyTemplate1, site1));
-        List<Study> studyTemplateList = Arrays.asList(studyTemplate1);
-        List<String> userIds = Arrays.asList(userId);
+        List<Study> studyTemplateList = asList(studyTemplate1);
+        List<String> userIds = asList(userId);
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite1);
         ProtectionGroup studySitePG= new ProtectionGroup();
         studySitePG.setProtectionGroupId(1l);
@@ -539,7 +606,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testRemoveMultipleTemplatesRequiresSite() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplateList = Arrays.asList(studyTemplate1);
+        List<Study> studyTemplateList = asList(studyTemplate1);
         try {
             service.removeMultipleTemplates(studyTemplateList, null, "UserName");
             fail("Expected IllegalArgumentException. Null object is passed instead of site ");
@@ -551,7 +618,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testRemoveMultipleTemplatesRequiresStudy() throws Exception {
         Site site1 = setId(123, createNamedInstance("site1", Site.class));
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplateList = Arrays.asList(studyTemplate1);
+        List<Study> studyTemplateList = asList(studyTemplate1);
         try {
             service.removeMultipleTemplates(studyTemplateList, site1, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of userId ");
@@ -575,7 +642,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         try {
-            service.removeTemplateFromSites(study, Arrays.asList(site1, site2));
+            service.removeTemplateFromSites(study, asList(site1, site2));
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are participant(s) assigned", scve.getMessage());

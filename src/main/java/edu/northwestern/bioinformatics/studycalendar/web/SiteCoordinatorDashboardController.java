@@ -54,13 +54,14 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
         binder.registerCustomEditor(Site.class, new DaoBasedEditor(siteDao));
         binder.registerCustomEditor(User.class, new DaoBasedEditor(userDao));
+        binder.registerCustomEditor(Study.class, new DaoBasedEditor(studyDao));
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer studyId = ServletRequestUtils.getIntParameter(request, "study");
         Study selectedStudy = getCurrentStudy(studyId, ApplicationSecurityManager.getUser());
 
-        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, selectedStudy);
+        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, templateService, selectedStudy);
         return command;
     }
 

@@ -651,7 +651,7 @@ public class StudyCalendarAuthorizationManager {
             }
 		}
     }
-    
+
     public boolean isUserPGAssigned(String pgName, String userId) throws Exception {
         Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
 		   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);

@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static java.util.Arrays.asList;
+
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -23,12 +24,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Padmaja Vedula
@@ -44,6 +40,7 @@ public class TemplateService {
     private StudySiteDao studySiteDao;
     private DeltaDao deltaDao;
     private SiteService siteService;
+    private UserRoleDao userRoleDao;
 
     public static final String USER_IS_NULL = "User is null";
     public static final String SITE_IS_NULL = "Site is null";
@@ -52,6 +49,7 @@ public class TemplateService {
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
+
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -90,6 +88,31 @@ public class TemplateService {
                 authorizationManager.removeProtectionGroupUsers(availableUserIds, studySitePG);
             }
         }
+    }
+
+
+    public edu.northwestern.bioinformatics.studycalendar.domain.User
+            assignTemplateToParticipantCoordinator( Study study,
+                                                    Site site,
+                                                    edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        userRole.addStudySite(findStudySite(study, site));
+        userRoleDao.save(userRole);
+
+        assignTemplateToParticipantCds(study, site, asList(user.getCsmUserId().toString()), Collections.<String>emptyList());
+
+        return user;
+    }
+
+    public edu.northwestern.bioinformatics.studycalendar.domain.User
+            removeAssignedTemplateFromParticipantCoordinator(Study study,
+                                                             Site site,
+                                                             edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        userRole.removeStudySite(findStudySite(study, site));
+        userRoleDao.save(userRole);
+
+        return user;
     }
     
     public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
@@ -358,5 +381,9 @@ public class TemplateService {
     @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    public void setUserRoleDao(UserRoleDao userRoleDao) {
+        this.userRoleDao = userRoleDao;
     }
 }

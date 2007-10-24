@@ -40,6 +40,7 @@
         <c:url value="/pages/dashboard/siteCoordinatorSchedule" var="action"/>
 
         <form:form method="post" id="assignmentForm" action="${action}">
+            <form:hidden path="study"/>
             <form:errors path="*"/>
             <div class="row">
                 <div class="label" >
