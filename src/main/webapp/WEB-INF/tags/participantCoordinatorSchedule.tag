@@ -12,7 +12,8 @@
                     <tr valign="top">
                         <td valign="top">
                              <li class="control">
-                                 ${eventsMap.key} -
+                                 <a href="/studycalendar/pages/cal/schedule?calendar=${eventsMap.value[0].scheduledArm.scheduledCalendar.id}&arm=${eventsMap.value[0].scheduledArm.id}"
+                                    title="View entire schedule on ${eventsMap.value[0].scheduledArm.scheduledCalendar.assignment.studySite.study.name}" >${eventsMap.key} -</a><br>
                              </li>
                         </td>
                         <td valign="top">
@@ -21,11 +22,8 @@
                                     <tr valign="top">
                                         <td width="500" valign="top">
                                             <li class="control">
-                                                <a href="/studycalendar/pages/cal/scheduleEvent?event=${mapEventList.activity.id}">${mapEventList.activity.name}</a><br>
+                                                <a href="/studycalendar/pages/cal/scheduleEvent?event=${mapEventList.activity.id}" title="Update event">${mapEventList.activity.name}</a><br>
                                             </li>
-                                        </td>
-                                        <td valign="top">
-                                            <tags:restrictedListItem cssClass="control"  url="/pages/cal/schedule?calendar=${mapEventList.scheduledArm.scheduledCalendar.id}&arm=${mapEventList.scheduledArm.id}">Entire Schedule</tags:restrictedListItem>
                                         </td>
                                     </tr>
                                  </c:forEach>
