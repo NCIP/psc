@@ -7,7 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 /**
  * @author John Dzak
  */
+@AccessControl(roles = {Role.PARTICIPANT_COORDINATOR})
 public class SiteCoordinatorDashboardController extends PscSimpleFormController {
     private StudyDao studyDao;
     private UserDao userDao;
