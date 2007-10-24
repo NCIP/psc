@@ -41,16 +41,19 @@ public class DeleteCommand extends EditTemplateCommand {
         }
 
         public Map<String, Object> getModel() {
-            List<Arm> arms = ((Epoch)getObjectParent()).getArms();
-            arms.remove(getRevisedArm());
-            Arm arm =  arms.get(arms.size() - 1);
-
             Map<String, Object> map = new HashMap<String, Object>();
-            map.put("epoch", ((Epoch)getObjectParent()));
-            map.put("arm", arm);
-            ArmTemplate armTemplate = new ArmTemplate(arm);
+            if (getObjectParent() instanceof Epoch) {
+                List<Arm> arms = ((Epoch)getObjectParent()).getArms();
+                arms.remove(getRevisedArm());
+                Arm arm =  arms.get(arms.size() - 1);
 
-            map.put("template", armTemplate);
+
+                map.put("epoch", ((Epoch)getObjectParent()));
+                map.put("arm", arm);
+                ArmTemplate armTemplate = new ArmTemplate(arm);
+
+                map.put("template", armTemplate);
+            } 
             return map;
         }
 
