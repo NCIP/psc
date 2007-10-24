@@ -10,5 +10,6 @@ public interface Mutator {
     void apply(PlanTreeNode<?> source);
     void revert(PlanTreeNode<?> target);
 
+    boolean appliesToExistingSchedules();
     void apply(ScheduledCalendar calendar);
 }

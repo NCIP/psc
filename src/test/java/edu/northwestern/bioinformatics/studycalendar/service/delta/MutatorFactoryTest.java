@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
@@ -12,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 
 /**
  * @author Rhett Sutphin
@@ -20,6 +23,8 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     private MutatorFactory factory;
     private EpochDao epochDao;
     private ArmDao armDao;
+    private PeriodDao periodDao;
+    private PlannedEventDao plannedEventDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -28,7 +33,8 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
 
         DaoFinder finder = new StaticDaoFinder(
             epochDao = registerDaoMockFor(EpochDao.class),
-            armDao = registerDaoMockFor(ArmDao.class)
+            armDao = registerDaoMockFor(ArmDao.class),
+            periodDao = registerDaoMockFor(PeriodDao.class)
         );
 
         factory.setDaoFinder(finder);
@@ -52,6 +58,14 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertNotNull(actual);
         assertEquals(CollectionAddMutator.class, actual.getClass());
         assertEquals("Dao does not match child class", epochDao, ((CollectionAddMutator) actual).getDao());
+    }
+
+    public void testCreatePeriodAdder() throws Exception {
+        Add add = new Add();
+        add.setChildId(5);
+        Mutator actual = factory.createMutator(new Arm(), add);
+        assertNotNull(actual);
+        assertEquals(AddPeriodMutator.class,  actual.getClass());
     }
     
     // Note that this will get much more complex once apply(schedule) is thrown into the implementations

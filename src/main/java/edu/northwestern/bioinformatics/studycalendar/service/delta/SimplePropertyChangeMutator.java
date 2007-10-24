@@ -38,6 +38,10 @@ public class SimplePropertyChangeMutator implements Mutator {
         }
     }
 
+    public boolean appliesToExistingSchedules() {
+        return false;
+    }
+
     public void apply(ScheduledCalendar calendar) {
         throw new UnsupportedOperationException("apply not implemented");
     }

@@ -45,6 +45,10 @@ public class ReorderMutator implements Mutator {
         return match;
     }
 
+    public boolean appliesToExistingSchedules() {
+        return false;
+    }
+
     public void apply(ScheduledCalendar calendar) {
         throw new UnsupportedOperationException("apply not implemented");
     }

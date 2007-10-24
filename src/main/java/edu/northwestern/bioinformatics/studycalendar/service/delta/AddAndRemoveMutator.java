@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,12 +14,12 @@ import java.util.Iterator;
 /**
  * @author Rhett Sutphin
  */
-public abstract class AddRemoveMutator implements Mutator {
+abstract class AddAndRemoveMutator implements Mutator {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected ChildrenChange change;
     protected DomainObjectDao<? extends PlanTreeNode<?>> dao;
 
-    public AddRemoveMutator(ChildrenChange change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
+    public AddAndRemoveMutator(ChildrenChange change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
         this.dao = dao;
         this.change = change;
         if (dao == null && this.change.getChild() == null) {
@@ -27,16 +28,13 @@ public abstract class AddRemoveMutator implements Mutator {
         }
     }
 
-    protected PlanTreeNode<?> findChild() {
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    protected PlanTreeNode findChild() {
         if (change.getChild() != null) {
             return change.getChild();
         } else {
             return dao.getById(change.getChildId());
         }
-    }
-
-    public void apply(ScheduledCalendar calendar) {
-        throw new UnsupportedOperationException("TODO");
     }
 
     // accessor for testing
@@ -66,5 +64,13 @@ public abstract class AddRemoveMutator implements Mutator {
             return;
         }
         inner.removeChild(toRemove);
+    }
+
+    public boolean appliesToExistingSchedules() {
+        return false;
+    }
+
+    public void apply(ScheduledCalendar calendar) {
+        throw new StudyCalendarSystemException("%s cannot be applied to an existing schedule", change);
     }
 }

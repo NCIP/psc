@@ -15,6 +15,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collection;
+import java.util.ArrayList;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 /**
  * @author Rhett Sutphin
@@ -45,6 +49,14 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
         return getScheduledArms().get(getScheduledArms().size() - 1);
     }
 
+    @Transient
+    public List<ScheduledArm> getScheduledArmsFor(Arm source) {
+        List<ScheduledArm> matches = new ArrayList<ScheduledArm>(getScheduledArms().size());
+        for (ScheduledArm scheduledArm : getScheduledArms()) {
+            if (scheduledArm.getArm().equals(source)) matches.add(scheduledArm);
+        }
+        return matches;
+    }
 
     ////// BEAN PROPERTIES
 
