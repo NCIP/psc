@@ -95,11 +95,20 @@ public class TemplateService {
             assignTemplateToParticipantCoordinator( Study study,
                                                     Site site,
                                                     edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+        if (study == null) {
+            throw new IllegalArgumentException(STUDY_IS_NULL);
+        }
+        if (site == null) {
+            throw new IllegalArgumentException(SITE_IS_NULL);
+        }
+        if (user == null) {
+            throw new IllegalArgumentException(USER_IS_NULL);
+        }
         UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
         userRole.addStudySite(findStudySite(study, site));
         userRoleDao.save(userRole);
 
-        assignTemplateToParticipantCds(study, site, asList(user.getCsmUserId().toString()), Collections.<String>emptyList());
+        assignMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
 
         return user;
     }
@@ -108,9 +117,20 @@ public class TemplateService {
             removeAssignedTemplateFromParticipantCoordinator(Study study,
                                                              Site site,
                                                              edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+        if (study == null) {
+            throw new IllegalArgumentException(STUDY_IS_NULL);
+        }
+        if (site == null) {
+            throw new IllegalArgumentException(SITE_IS_NULL);
+        }
+        if (user == null) {
+            throw new IllegalArgumentException(USER_IS_NULL);
+        }
         UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
         userRole.removeStudySite(findStudySite(study, site));
         userRoleDao.save(userRole);
+
+        removeMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
 
         return user;
     }

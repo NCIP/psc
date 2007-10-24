@@ -103,6 +103,66 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testAssignTemplateToParticipantCoordinatorRequiresSite() throws Exception {
+        try {
+            service.assignTemplateToParticipantCoordinator(null, null, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of studyTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testAssignTemplateToParticipantCoordinatorRequiresStudy() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        try {
+            service.assignTemplateToParticipantCoordinator(study, null, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of siteTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testAssignTemplateToParticipantCoordinatorRequiresUser() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        Site  site  = createNamedInstance("asdf", Site.class);
+        try {
+            service.assignTemplateToParticipantCoordinator(study, site, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of userTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresSite() throws Exception {
+        try {
+            service.removeAssignedTemplateFromParticipantCoordinator(null, null, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of studyTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresStudy() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        try {
+            service.removeAssignedTemplateFromParticipantCoordinator(study, null, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of siteTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
+        }
+    }
+
+    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresUser() throws Exception {
+        Study study = createNamedInstance("sldfksdfjk", Study.class);
+        Site  site  = createNamedInstance("asdf", Site.class);
+        try {
+            service.removeAssignedTemplateFromParticipantCoordinator(study, site, null);
+            fail("Expected IllegalArgumentException. Null object is passed instead of userTest ");
+        } catch(IllegalArgumentException ise) {
+            assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
+        }
+    }
+
     private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
         EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
         return null;
@@ -151,14 +211,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
         List<String> assignedUserId = asList(user.getCsmUserId().toString());
         authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
-
-        String exptectedPGName = DomainObjectTools.createExternalObjectId(studySite);
-        ProtectionGroup expectedPG = createProtectionGroup(100L, exptectedPGName);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(createProtectionGroup(100L, exptectedPGName));
-
-        List<String> availableUserId = Collections.<String>emptyList();
-        authorizationManager.removeProtectionGroupUsers(availableUserId, expectedPG);
-
         replayMocks();
 
         edu.northwestern.bioinformatics.studycalendar.domain.User actualUser =
@@ -170,15 +222,16 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRemoveAssignedTemplateFromParticipantCoordinator() throws Exception {
-        Site site0  = createNamedInstance("Northwestern", Site.class);
-        Site site1  = createNamedInstance("Mayo", Site.class);
-        Study study = createNamedInstance("Study A", Study.class);
+        Site site0  = setId(1, createNamedInstance("Northwestern", Site.class));
+        Site site1  = setId(2, createNamedInstance("Mayo", Site.class));
+        Study study = setId(1, createNamedInstance("Study A", Study.class));
 
-        StudySite studySite0 = createStudySite(study, site0);
-        StudySite studySite1 = createStudySite(study, site1);
+        StudySite studySite0 = setId(1, createStudySite(study, site0));
+        StudySite studySite1 = setId(2, createStudySite(study, site1));
 
         edu.northwestern.bioinformatics.studycalendar.domain.User user =
                 setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
+        user.setCsmUserId(1L);
 
         UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site0, site1);
         userRole.addStudySite(studySite0);
@@ -187,6 +240,11 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         user.addUserRole(userRole);
 
         userRoleDao.save(userRole);
+
+        String studySitePGName = DomainObjectTools.createExternalObjectId(studySite0);
+        ProtectionGroup expectedPG = createProtectionGroup(1L, studySitePGName);
+        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(expectedPG);
+        authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
         replayMocks();
 
         edu.northwestern.bioinformatics.studycalendar.domain.User actualUser
