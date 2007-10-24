@@ -26,6 +26,8 @@ import java.util.List;
 public abstract class Change extends AbstractMutableDomainObject {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
+    private Delta<?> delta;
+
     /**
      * Return the action used by this change.  It should match the discriminator value for the class.
      * @return
@@ -96,6 +98,20 @@ public abstract class Change extends AbstractMutableDomainObject {
     protected SiblingDeletedLogic createSiblingDeletedLogic(Delta<?> delta, int deletedChangePosition, int thisPreDeletePosition) {
         return null;
     }
+
+    ////// BEAN PROPERTIES
+
+    @ManyToOne
+    @JoinColumn(insertable=false, updatable=false)
+    public Delta<?> getDelta() {
+        return delta;
+    }
+
+    public void setDelta(Delta<?> delta) {
+        this.delta = delta;
+    }
+
+    ////// INNER CLASSES
 
     /**
      * Visitor-style template class for children to define their merge behavior.

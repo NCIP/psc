@@ -27,12 +27,14 @@ public class DeltaDaoTest extends DaoTestCase {
         assertNotNull("Delta was not found", actual);
         List<Change> changes = actual.getChanges();
         assertEquals("Changes not found", 2, changes.size());
+
         assertNotNull("? " + changes, changes.get(0));
         assertEquals("Wrong change action", ChangeAction.ADD, changes.get(0).getAction());
         assertTrue("Wrong change subtype", changes.get(0) instanceof Add);
         Add addOne = (Add) changes.get(0);
         assertEquals("Wrong change index ", 1, (int) addOne.getIndex());
         assertEquals("Wrong change newChildId ", -3, (int) addOne.getChildId());
+        assertSame("Reverse relationship not loaded", actual, addOne.getDelta());
 
         Change changeTwo = changes.get(1);
         assertEquals("Wrong change action", ChangeAction.ADD, changeTwo.getAction());
@@ -40,6 +42,7 @@ public class DeltaDaoTest extends DaoTestCase {
         Add addTwo = (Add)changeTwo;
         assertEquals("Wrong change index ", 0, (int) addTwo.getIndex());
         assertEquals("Wrong change newChildId ", -2, (int) addTwo.getChildId());
+        assertSame("Reverse relationship not loaded", actual, addTwo.getDelta());
     }
 
     public void testLoadReorder() throws Exception {
@@ -52,6 +55,7 @@ public class DeltaDaoTest extends DaoTestCase {
         Reorder reorder = (Reorder) actual;
         assertEquals("Wrong child to move", -2, (int) reorder.getChildId());
         assertEquals("Wrong new index", 0, (int) reorder.getNewIndex());
+        assertSame("Reverse relationship not loaded", actualDelta, reorder.getDelta());
     }
 
     public void testLoadRemove() throws Exception {
@@ -63,6 +67,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertTrue("Wrong change subtype", actual instanceof Remove);
         Remove remove = (Remove) actual;
         assertEquals("Wrong child id", -3, (int) remove.getChildId());
+        assertSame("Reverse relationship not loaded", actualDelta, remove.getDelta());
     }
 
     public void testLoadPropertyChange() throws Exception {
@@ -76,6 +81,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong old value", "7", prop.getOldValue());
         assertEquals("Wrong new value", "4", prop.getNewValue());
         assertEquals("Wrong property", "day", prop.getPropertyName());
+        assertSame("Reverse relationship not loaded", actualDelta, prop.getDelta());
     }
 
     public void testGetNode() throws Exception {

@@ -12,6 +12,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -23,6 +24,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.ManyToOne;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +46,7 @@ import java.util.ListIterator;
 public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDomainObject {
     private List<Change> changes;
     private T node;
+    private Revision revision;
 
     protected Delta() {
         changes = new ArrayList<Change>();
@@ -129,6 +132,16 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
 
     protected void setChangesInternal(List<Change> changes) {
         this.changes = changes;
+    }
+
+    @ManyToOne(targetEntity = Amendment.class) // temporary, of course
+    @JoinColumn(name = "amendment_id", insertable = false, updatable = false)
+    public Revision getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Revision revision) {
+        this.revision = revision;
     }
 
     ////// OBJECT METHODS

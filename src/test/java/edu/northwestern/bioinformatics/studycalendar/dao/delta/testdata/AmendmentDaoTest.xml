@@ -11,4 +11,19 @@
         previous_amendment='-100'
         />
 
+    <DELTAS
+        id="-102"
+        node_id="-22"
+        node_type="cal"
+        amendment_id="-100"
+        />
+    <STUDIES
+        id="-20"
+        name="You need it"
+        amendment_id="-100"
+        />
+    <PLANNED_CALENDARS
+        id="-22"
+        study_id="-20"
+        />
 </dataset>

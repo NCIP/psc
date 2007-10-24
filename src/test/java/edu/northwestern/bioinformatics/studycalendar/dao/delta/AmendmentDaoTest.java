@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
 import java.util.List;
@@ -8,11 +9,16 @@ import java.util.List;
 public class AmendmentDaoTest extends DaoTestCase {
     private AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
 
-    public void testGetByAmendmentNumber() throws Exception {
+    public void testGetById() throws Exception {
         Amendment actual = amendmentDao.getById(-100);
-        assertNotNull("AmendmentLogin not found", actual);
+        assertNotNull("Amendment not found", actual);
         assertEquals("Wrong name", "abc", actual.getName());
-        assertEquals("Wrong date ", "02/2006", actual.getDate());
+        assertEquals("Wrong date", "02/2006", actual.getDate());
+        assertEquals("Wrong number of deltas", 1, actual.getDeltas().size());
+        Delta delta = actual.getDeltas().get(0);
+        assertEquals("Wrong delta", -102, (int) delta.getId());
+        assertEquals("Wrong node for delta", -22, (int) delta.getNode().getId());
+        assertSame("Reverse relationship not loaded", actual, delta.getRevision());
     }
 
     public void testSave() throws Exception {
