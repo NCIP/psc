@@ -115,16 +115,12 @@ public class ParticipantService {
         scheduledArm.setStartDay(armStartDay);
         calendar.addArm(scheduledArm);
 
-        List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
-
         for (Period period : arm.getPeriods()) {
-            events.addAll(schedulePeriod(period, sourceAmendment, armStartDay, startDate));
+            schedulePeriod(period, sourceAmendment, scheduledArm);
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
-        Collections.sort(events, DatabaseEventOrderComparator.INSTANCE);
-
-        for (ScheduledEvent event : events) scheduledArm.addEvent(event);
+        Collections.sort(scheduledArm.getEvents(), DatabaseEventOrderComparator.INSTANCE);
 
         Site site = calendar.getAssignment().getStudySite().getSite();
         avoidBlackoutDates(scheduledArm, site);
@@ -133,33 +129,38 @@ public class ParticipantService {
         return scheduledArm;
     }
 
+    /**
+     * Derives scheduled events from the given period and applies them to the given scheduled arm.
+     */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<ScheduledEvent> schedulePeriod(Period period, Amendment sourceAmendment, Integer armStartDay, Date armStartDate) {
-        List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+    public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledArm targetArm) {
         log.debug("Adding events from period {}", period);
         for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
-            events.addAll(schedulePlannedEvent(plannedEvent, period, sourceAmendment, armStartDay, armStartDate));
+            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm);
         }
-        return events;
     }
 
+    /**
+     * Derives scheduled events from the given planned event and applies them to the given scheduled arm.
+     */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public List<ScheduledEvent> schedulePlannedEvent(PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, Integer armStartDay, Date armStartDate) {
+    public void schedulePlannedEvent(
+        PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm
+    ) {
         log.debug("Adding events from planned event {}", plannedEvent);
-        List<ScheduledEvent> peEvents = new LinkedList<ScheduledEvent>();
-        
+
         // amount needed to shift the relative days in the period such that
         // the relative day 0 falls on armStateDate.  E.g., if the arm starts on
         // day 1, the normalizationFactor needs to shift everything down 1.
         // if it starts on -7, it needs to shift everything up 7.
-        int normalizationFactor = armStartDay * -1;
+        int normalizationFactor = targetArm.getStartDay() * -1;
 
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
             int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * r;
             log.debug(" - rep {}; offset: {}", r, repOffset);
             ScheduledEvent event = new ScheduledEvent();
             event.setRepetitionNumber(r);
-            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), armStartDate));
+            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), targetArm.getStartDate()));
             event.setPlannedEvent(plannedEvent);
 
             DatedScheduledEventState initialState
@@ -171,9 +172,9 @@ public class ParticipantService {
             event.setDetails(plannedEvent.getDetails());
             event.setActivity(plannedEvent.getActivity());
             event.setSourceAmendment(sourceAmendment);
-            peEvents.add(event);
+
+            targetArm.addEvent(event);
         }
-        return peEvents;
     }
 
     private void avoidBlackoutDates(ScheduledArm arm, Site site) {
