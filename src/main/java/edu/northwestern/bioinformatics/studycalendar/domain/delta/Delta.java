@@ -83,6 +83,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
 
     public Delta<T> addChange(Change change) {
         changes.add(change);
+        change.setDelta(this);
         return this;
     }
 
@@ -102,6 +103,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
                 if (removedIndex <= sibOriginalIdx) sibOriginalIdx++;
                 sib.siblingDeleted(this, change, removedIndex, sibOriginalIdx);
             }
+            change.setDelta(null);
         }
         return this;
     }

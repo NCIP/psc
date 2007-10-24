@@ -90,6 +90,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     public void addDelta(Delta<?> delta) {
         getDeltas().add(delta);
+        delta.setRevision(this);
     }
 
     ////// BEAN PROPERTIES
