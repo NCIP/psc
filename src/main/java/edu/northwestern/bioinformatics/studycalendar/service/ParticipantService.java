@@ -152,11 +152,11 @@ public class ParticipantService {
         int normalizationFactor = armStartDay * -1;
 
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
-            int repOffset = period.getStartDay() + period.getDuration().getDays() * r;
+            int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * r;
             log.debug(" - rep {}; offset: {}", r, repOffset);
             ScheduledEvent event = new ScheduledEvent();
             event.setRepetitionNumber(r);
-            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay() + normalizationFactor, armStartDate));
+            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), armStartDate));
             event.setPlannedEvent(plannedEvent);
 
             DatedScheduledEventState initialState
