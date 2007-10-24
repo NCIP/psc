@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
@@ -37,10 +38,9 @@ public class StudySiteTest extends StudyCalendarTestCase {
         StudySite studySite2 = Fixtures.createStudySite(study1, site0);
         StudySite studySite3 = Fixtures.createStudySite(study1, site1);
 
-        StudySite actualStudySite = StudySite.findStudySite(study0, site1);
-        assertEquals("Wrong Study Site", studySite1, actualStudySite);
-        assertNotEquals("Study Site  should not be equal", studySite0, actualStudySite);
-        assertNotEquals("Study Site  should not be equal", studySite2, actualStudySite);
-        assertNotEquals("Study Site  should not be equal", studySite3, actualStudySite);
+        assertEquals("Wrong Study Site", studySite0, findStudySite(study0, site0));
+        assertEquals("Wrong Study Site", studySite1, findStudySite(study0, site1));
+        assertEquals("Wrong Study Site", studySite2, findStudySite(study1, site0));
+        assertEquals("Wrong Study Site", studySite3, findStudySite(study1, site1));
     }
 }

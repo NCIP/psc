@@ -97,8 +97,10 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     protected ModelAndView onSubmit(Object o) throws Exception {
         SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) o;
         command.apply();
-        
-        return new ModelAndView(new RedirectView("siteCoordinatorSchedule"));
+
+        RedirectView rv = new RedirectView("siteCoordinatorSchedule");
+        rv.addStaticAttribute("study", command.getStudy().getId());
+        return new ModelAndView(rv);
     }
 
     public void setStudyDao(StudyDao studyDao) {

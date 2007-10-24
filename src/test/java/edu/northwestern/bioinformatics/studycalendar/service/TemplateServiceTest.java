@@ -221,6 +221,29 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
     }
 
+    public void testAssignTemplateToParticipantCoordinatorStudySiteAlreadyExists() throws Exception {
+        Site  site          = setId(1, createNamedInstance("Northwestern", Site.class));
+        Study study         = setId(1, createNamedInstance("Study A", Study.class));
+        StudySite studySite = setId(1, createStudySite(study, site));
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User user =
+                setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
+        user.setCsmUserId(1L);
+
+        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site);
+        user.addUserRole(userRole);
+        userRole.addStudySite(studySite);
+
+        replayMocks();
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User actualUser =
+                service.assignTemplateToParticipantCoordinator(study, site, user);
+        verifyMocks();
+
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
+    }
+
     public void testRemoveAssignedTemplateFromParticipantCoordinator() throws Exception {
         Site site0  = setId(1, createNamedInstance("Northwestern", Site.class));
         Site site1  = setId(2, createNamedInstance("Mayo", Site.class));

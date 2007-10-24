@@ -80,11 +80,14 @@ public class TemplateService {
         if (user == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
-        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-        userRole.addStudySite(findStudySite(study, site));
-        userRoleDao.save(userRole);
 
-        assignMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
+        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        if (!userRole.getStudySites().contains(findStudySite(study, site))) {
+            userRole.addStudySite(findStudySite(study, site));
+            userRoleDao.save(userRole);
+
+            assignMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
+        }
 
         return user;
     }
@@ -103,10 +106,12 @@ public class TemplateService {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
         UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-        userRole.removeStudySite(findStudySite(study, site));
-        userRoleDao.save(userRole);
+        if (userRole.getStudySites().contains(findStudySite(study, site))) {
+            userRole.removeStudySite(findStudySite(study, site));
+            userRoleDao.save(userRole);
 
-        removeMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
+            removeMultipleTemplates(asList(study), site, user.getCsmUserId().toString());
+        }
 
         return user;
     }

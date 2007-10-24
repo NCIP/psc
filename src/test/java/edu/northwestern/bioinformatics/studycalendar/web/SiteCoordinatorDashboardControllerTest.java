@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -69,16 +70,18 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     }
 
     public void testOnSubmitView() throws Exception {
+        Study study = setId(1, createNamedInstance("Study A", Study.class));
         request.setMethod("POST");
 
         command.apply();
-        
+        expect(command.getStudy()).andReturn(study);
         replayMocks();
 
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
         assertEquals("Wrong View Name", "siteCoordinatorSchedule", ((RedirectView) mv.getView()).getUrl());
+        assertEquals("Wrong View Name", study.getId(), (((RedirectView) mv.getView()).getStaticAttributes().get("study")));
     }
 
     public void expectRefData() throws Exception{
