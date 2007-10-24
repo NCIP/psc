@@ -58,6 +58,7 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
         return days;
     }
 
+    @Transient
     public ScheduledEventMode getInitialScheduledMode() {
         if (StringUtils.isBlank(getConditionalDetails())) {
             return ScheduledEventMode.SCHEDULED;
