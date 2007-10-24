@@ -498,7 +498,7 @@
             <c:if test="${empty developmentRevision}">
                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                 <c:if test="${not empty study.studySites}">
-                    <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}" cssClass="control"
+                    <tags:restrictedListItem url="/pages/dashboard/siteCoordinatorSchedule" queryString="id=${study.id}" cssClass="control"
                         >Assign Participant Coordinators</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
                         >Assign Participant</tags:restrictedListItem>

@@ -65,30 +65,6 @@ public class TemplateService {
             studySiteDao.save(ss);
         }
     }
-    
-    public void assignTemplateToParticipantCds(Study studyTemplate, Site site, List<String> assignedUserIds, List<String> availableUserIds) throws Exception {
-        if (studyTemplate == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (assignedUserIds == null) {
-            throw new IllegalArgumentException(LIST_IS_NULL);
-        }
-        if (availableUserIds == null) {
-            throw new IllegalArgumentException(LIST_IS_NULL);
-        }
-        List<StudySite> studySites = studyTemplate.getStudySites();
-        for (StudySite studySite : studySites) {
-            if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
-                authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
-                ProtectionGroup studySitePG = authorizationManager.getPGByName(studySitePGName);
-                authorizationManager.removeProtectionGroupUsers(availableUserIds, studySitePG);
-            }
-        }
-    }
 
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User
@@ -204,23 +180,6 @@ public class TemplateService {
             }
         }
     }
-    
-    public Map getParticipantCoordinators(Study studyTemplate, Site site) throws Exception {
-        if (studyTemplate == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        Map<String, List> pcdMap = new HashMap<String, List>();
-        List<StudySite> studySites = studyTemplate.getStudySites();
-        for (StudySite studySite : studySites) {
-            if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
-                pcdMap = authorizationManager.getUsers(PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite), DomainObjectTools.createExternalObjectId(site));
-            }
-        }
-        return pcdMap;
-    }
 
     public Map getSiteLists(Study studyTemplate) throws Exception {
         if (studyTemplate == null) {
@@ -284,29 +243,8 @@ public class TemplateService {
         }
         return authorizationManager.checkOwnership(userName, studies);
     }
-    
-    public List getSitesForTemplateSiteCd(String userName, Study study) {
-        if (userName == null) {
-            throw new IllegalArgumentException(STRING_IS_NULL);
-        }
-        if (study == null) {
-            throw new IllegalArgumentException(STUDY_IS_NULL);
-        }
-        List<Site> sites = siteService.getSitesForSiteCd(userName);
-        List<StudySite> allStudySites = study.getStudySites();
-        List<Site> templateSites = new ArrayList<Site>();
-        for (Site site : sites) {
-            for (StudySite studySite : allStudySites) {
-                if (studySite.getSite().getId() == site.getId()) {
-                    templateSites.add(site);
-                }
-            }
-        }
 
-        return templateSites;
-    }
-    
-    
+
     public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
         if (studyTemplates == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);

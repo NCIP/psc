@@ -225,18 +225,6 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
-    <bean name="/cal/assignParticipantCoordinator" id="participantCoordinatorController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>Assign Participant Coordinator</value></property>
-                <property name="parent"><ref local="displayTemplateController"/></property>
-            </bean>
-        </property>
-    </bean>
-    <bean name="/cal/assignParticipantCoordinator/selectSite" id="ParticipantCoordinatorsBySiteController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantCoordinatorsBySiteController"/>
-
     <bean name="/cal/schedule" id="displayScheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>

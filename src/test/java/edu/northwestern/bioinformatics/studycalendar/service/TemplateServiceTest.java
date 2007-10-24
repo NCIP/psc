@@ -256,74 +256,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong study site", studySite1, actualUserRole.getStudySites().get(0));
     }
 
-    public void testAssignTemplateToParticipantCds() throws Exception {
-        Study studyTemplate = createNamedInstance("abc", Study.class);
-        Site site2 = setId(8, createNamedInstance("bbb", Site.class));
-
-        StudySite studySite2 = setId(2, createStudySite(studyTemplate, site2));
-
-        String studySitePGName = DomainObjectTools.createExternalObjectId(studySite2);
-        List<String> assignedUserId = asList("3", "4");
-        List<String> availableUserId = asList("5", "6");
-        authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
-        ProtectionGroup expectedProtectionGroup = new ProtectionGroup();
-        expectedProtectionGroup.setProtectionGroupId(101l);
-        expect(authorizationManager.getPGByName(studySitePGName)).andReturn(expectedProtectionGroup);
-        authorizationManager.removeProtectionGroupUsers(availableUserId, expectedProtectionGroup);
-
-        replayMocks();
-        service.assignTemplateToParticipantCds(studyTemplate, site2, assignedUserId, availableUserId);
-        verifyMocks();
-    }
-
-    public void testAssignTemplateToParticipantCdsRequiresStudy() throws Exception {
-        Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> assignedUserId = asList("3", "4");
-        List<String> availableUserId = asList("5", "6");
-        try {
-            service.assignTemplateToParticipantCds(null, site, assignedUserId, availableUserId);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testAssignTemplateToParticipantCdsRequiresSite() throws Exception {
-        Study studyTemplate = createNamedInstance("abc", Study.class);
-        List<String> assignedUserId = asList("3", "4");
-        List<String> availableUserId = asList("5", "6");
-        try {
-            service.assignTemplateToParticipantCds(studyTemplate, null, assignedUserId, availableUserId);
-            fail("Expected IllegalArgumentException. Null object is passed instead of site ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testAssignTemplateToParticipantCdsRequiresSitesListOfAssignedUserUds() throws Exception {
-        Study studyTemplate = createNamedInstance("abc", Study.class);
-        Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> availableUserId = asList("5", "6");
-        try {
-            service.assignTemplateToParticipantCds(studyTemplate, site, null, availableUserId);
-            fail("Expected IllegalArgumentException. Null object is passed instead of assignedUserId ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.LIST_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testAssignTemplateToParticipantCdsRequiresSitesListOfAvailableUserIds() throws Exception {
-        Study studyTemplate = createNamedInstance("abc", Study.class);
-        Site site = setId(8, createNamedInstance("bbb", Site.class));
-        List<String> assignedUserId = asList("3", "4");
-        try {
-            service.assignTemplateToParticipantCds(studyTemplate, site, assignedUserId, null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of assignedUserId ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.LIST_IS_NULL, ise.getMessage());
-        }
-    }
-
     public void testAssignMultipleTemplates() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         Study studyTemplate2 = createNamedInstance("bbb", Study.class);
@@ -380,39 +312,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             fail("Expected IllegalArgumentException. Null object is passed instead of userId ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
-        }
-    }    
-
-    public void testGetParticipantCoordinators() throws Exception {
-        Map<String, List> pcdMap = new HashMap<String, List>();
-
-        Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        Site site1 = setId(1, createNamedInstance("site1", Site.class));
-        StudySite studySite1 = setId(1, createStudySite(studyTemplate1, site1));
-        expect(authorizationManager.getUsers(TemplateService.PARTICIPANT_COORDINATOR_GROUP, DomainObjectTools.createExternalObjectId(studySite1), DomainObjectTools.createExternalObjectId(site1))).andReturn(pcdMap);
-
-        replayMocks();
-        service.getParticipantCoordinators(studyTemplate1, site1);
-        verifyMocks();
-    }
-
-    public void testGetParticipantCoordinatorsRequiresStudy() throws Exception {
-        Site site = setId(1, createNamedInstance("site1", Site.class));
-        try {
-            service.getParticipantCoordinators(null, site);
-            fail("Expected IllegalArgumentException. Null object is passed instead of studyTemplate ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetParticipantCoordinatorsRequiresSite() throws Exception {
-        Study studyTemplate = createNamedInstance("abc", Study.class);
-        try {
-            service.getParticipantCoordinators(studyTemplate, null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of site ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
         }
     }
 
@@ -596,41 +495,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDIES_LIST_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetSitesForTemplateSiteCd() {
-        String userName = "userName";
-        Study study = setId(1, createNamedInstance(userName, Study.class));
-        Site site = setId(1, createNamedInstance("a", Site.class));
-        study.addSite(site);
-        List<Site> expectedSites = asList(site);
-        expect(siteService.getSitesForSiteCd(userName)).andReturn(expectedSites);
-        List<Site> templateSites = new ArrayList<Site>();
-        templateSites.add(site);
-
-        replayMocks();
-        List<Site> actualSiteList = service.getSitesForTemplateSiteCd(userName, study);
-        verifyMocks();
-        assertEquals(templateSites, actualSiteList);
-    }
-
-    public void testGetSitesForTemplateSiteCdRequiresUserName() throws Exception {
-        Study study = setId(1, createNamedInstance("aaa", Study.class));
-        try {
-            service.getSitesForTemplateSiteCd(null, study);
-            fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
-        }
-    }
-
-    public void testGetSitesForTemplateSiteCdRequiresStudy() throws Exception {
-        try {
-            service.getSitesForTemplateSiteCd("UserName", null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of Study ");
-        } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
         }
     }
 

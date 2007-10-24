@@ -70,7 +70,7 @@
                             <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                                 <c:if test="${not empty study.studySites}">
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipantCoordinator" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
+                                    <tags:restrictedListItem cssClass="control" url="/pages/dashboard/siteCoordinatorSchedule" queryString="id=${study.id}">Assign participant coordinators</tags:restrictedListItem>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
                                 </c:if>
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule reconsent</tags:restrictedListItem>
