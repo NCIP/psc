@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Iterator;
 
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
 /**
  * @author Rhett Sutphin
  */
@@ -91,40 +93,18 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testGetStartDateWithNoEvents() throws Exception {
-        assertNull(scheduledArm.getStartDate());
-    }
-
-    public void testGetStartDate() throws Exception {
-        Arm arm = Epoch.create("Screening").getArms().get(0);
-        Period period = createPeriod("P1", 4, 7, 3);
-        PlannedEvent plannedEvent = createPlannedEvent("ABC", 4);
-        period.addPlannedEvent(plannedEvent);
-        arm.addPeriod(period);
-
-        scheduledArm.setArm(arm);
-        ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedEvent(plannedEvent);
-        event.setIdealDate(DateUtils.createDate(2004, Calendar.JANUARY, 4));
-        scheduledArm.addEvent(event);
-
-        assertDayOfDate(2004, Calendar.JANUARY, 1, scheduledArm.getStartDate());
-    }
-    
     public void testGetNextArmPerProtocolStartDate() throws Exception {
         Arm arm = Epoch.create("Screening").getArms().get(0);
         Period period = createPeriod("P1", 4, 7, 3);
         PlannedEvent plannedEvent = createPlannedEvent("ABC", 4);
         period.addPlannedEvent(plannedEvent);
-        arm.addPeriod(period);
+        arm.addPeriod(period); // arm length is 21 days
 
+        scheduledArm.setStartDay(4);
+        scheduledArm.setStartDate(DateTools.createDate(2004, Calendar.JANUARY, 4));
         scheduledArm.setArm(arm);
-        ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedEvent(plannedEvent);
-        event.setIdealDate(DateUtils.createDate(2004, Calendar.JANUARY, 4));
-        scheduledArm.addEvent(event);
 
-        assertDayOfDate(2004, Calendar.JANUARY, 22, scheduledArm.getNextArmPerProtocolStartDate());
+        assertDayOfDate(2004, Calendar.JANUARY, 25, scheduledArm.getNextArmPerProtocolStartDate());
     }
 
     public void testIsNotCompleteIfAnyEventInScheduledState() throws Exception {

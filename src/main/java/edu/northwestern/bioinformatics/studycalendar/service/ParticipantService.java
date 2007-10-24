@@ -106,12 +106,15 @@ public class ParticipantService {
             }
         }
 
-        ScheduledArm scheduledArm = new ScheduledArm();
-        scheduledArm.setArm(arm);
-        calendar.addArm(scheduledArm);
-
         Amendment sourceAmendment = assignment.getCurrentAmendment();
         Integer armStartDay = arm.getDayRange().getStartDay();
+
+        ScheduledArm scheduledArm = new ScheduledArm();
+        scheduledArm.setArm(arm);
+        scheduledArm.setStartDate(startDate);
+        scheduledArm.setStartDay(armStartDay);
+        calendar.addArm(scheduledArm);
+
         List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
 
         for (Period period : arm.getPeriods()) {

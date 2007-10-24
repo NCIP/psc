@@ -28,6 +28,8 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 public class ScheduledArm extends AbstractMutableDomainObject {
     private ScheduledCalendar scheduledCalendar;
     private List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+    private Integer startDay;
+    private Date startDate;
 
     private Arm arm;
 
@@ -76,18 +78,6 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public Date getStartDate() {
-        if (getEvents().size() == 0) return null;
-        ScheduledEvent anEvent = getEvents().get(0);
-        if(anEvent.getPlannedEvent() == null) return null;              // Reconsent won't have planned event
-        int relativeDay = anEvent.getPlannedEvent().getDay();
-        Calendar startDate = Calendar.getInstance();
-        startDate.setTime(anEvent.getIdealDate());
-        startDate.add(Calendar.DAY_OF_MONTH, -1 * relativeDay + 1);
-        return startDate.getTime();
-    }
-
-    @Transient
     public Date getNextArmPerProtocolStartDate() {
         Date origin = getStartDate();
         if (origin != null) {
@@ -110,7 +100,6 @@ public class ScheduledArm extends AbstractMutableDomainObject {
         return true;
     }
 
-    
     ////// BEAN PROPERTIES
 
     @OneToMany(mappedBy = "scheduledArm")
@@ -143,6 +132,22 @@ public class ScheduledArm extends AbstractMutableDomainObject {
 
     public void setArm(Arm arm) {
         this.arm = arm;
+    }
+
+    public Integer getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(Integer startDay) {
+        this.startDay = startDay;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
     ///// OBJECT METHODS

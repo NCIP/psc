@@ -131,6 +131,8 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
         assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
         assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
+        assertEquals("Wrong start day for scheduled arm", 1, (int) returnedArm.getStartDay());
+        assertDayOfDate("Wrong start date for scheduled arm", 2006, Calendar.APRIL, 1, returnedArm.getStartDate());
         List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
 
@@ -182,6 +184,8 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
         List<ScheduledEvent> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
+        assertEquals("Wrong start day for arm", -7, (int) returnedArm.getStartDay());
+        assertDayOfDate("Wrong start date for arm", 2006, Calendar.MARCH, 24, returnedArm.getStartDate());
 
         assertNewlyScheduledEvent(2006, Calendar.MARCH, 24, 1, events.get(0));
         assertNewlyScheduledEvent(2006, Calendar.MARCH, 26, 2, events.get(1));

@@ -32,12 +32,16 @@
         id="-21"
         arm_id="-3"
         scheduled_calendar_id="-20"
+        start_date="2006-11-04"
+        start_day="1"
         list_index="1"
         />
     <SCHEDULED_ARMS
         id="-22"
         arm_id="-4"
         scheduled_calendar_id="-20"
+        start_date="2006-10-27"
+        start_day="2"
         list_index="0"
         />
 

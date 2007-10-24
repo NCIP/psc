@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.delta.MemoryOnlyMut
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -140,6 +142,8 @@ public class Fixtures {
     public static ScheduledArm createScheduledArm(Arm arm) {
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);
+        scheduledArm.setStartDay(1);
+        scheduledArm.setStartDate(DateTools.createDate(1997, Calendar.JANUARY, 12));
         return scheduledArm;
     }
 
