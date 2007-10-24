@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
@@ -58,7 +57,7 @@ public class ReorderTest extends StudyCalendarTestCase {
     }
     
     public void testMergeIntoDeltaWithEarlierReorderForSame() throws Exception {
-        delta.addChange(Fixtures.createReorderChange(ab, 1, 0));
+        delta.addChange(Reorder.create(ab, 1, 0));
         
         reorder.setChild(ab);
         reorder.setNewIndex(2);
@@ -70,8 +69,8 @@ public class ReorderTest extends StudyCalendarTestCase {
     
     public void testMergeIntoDeltaWithInterveningReorder() throws Exception {
         delta.addChanges(
-            Fixtures.createReorderChange(ab, 1, 0),
-            Fixtures.createReorderChange(aa, 1, 0));
+            Reorder.create(ab, 1, 0),
+            Reorder.create(aa, 1, 0));
 
         setReorderProperties(ab, 0, 2);
         reorder.mergeInto(delta);
@@ -84,7 +83,7 @@ public class ReorderTest extends StudyCalendarTestCase {
 
     public void testMergeIntoDeltaWithInterveningRemove() throws Exception {
         delta.addChanges(
-            Fixtures.createReorderChange(ab, 1, 0),
+            Reorder.create(ab, 1, 0),
             Remove.create(aa));
 
         setReorderProperties(ab, 0, 1);
@@ -98,7 +97,7 @@ public class ReorderTest extends StudyCalendarTestCase {
 
     public void testMergeIntoDeltaWithInterveningAdd() throws Exception {
         delta.addChanges(
-            Fixtures.createReorderChange(ab, 1, 0),
+            Reorder.create(ab, 1, 0),
             Add.create(ac));
 
         setReorderProperties(ab, 0, 2);

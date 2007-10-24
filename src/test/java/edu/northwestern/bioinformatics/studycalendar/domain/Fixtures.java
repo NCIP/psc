@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
@@ -19,10 +18,9 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Calendar;
+import java.util.HashSet;
 
 /**
  * @author Rhett Sutphin
@@ -256,14 +254,6 @@ public class Fixtures {
         add.setChildId(newChildId);
         add.setIndex(index);
         return add;
-    }
-
-    public static Reorder createReorderChange(PlanTreeNode<?> child, Integer oldIndex, Integer newIndex) {
-        Reorder reorder = new Reorder();
-        reorder.setChild(child);
-        reorder.setOldIndex(oldIndex);
-        reorder.setNewIndex(newIndex);
-        return reorder;
     }
 
     // static class
