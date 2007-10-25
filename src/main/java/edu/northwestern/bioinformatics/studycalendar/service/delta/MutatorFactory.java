@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -11,7 +12,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -21,6 +24,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class MutatorFactory {
     private DaoFinder daoFinder;
     private ParticipantService participantService;
+    private TemplateService templateService;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -40,9 +44,9 @@ public class MutatorFactory {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
         if (target instanceof Arm) {
             return new AddPeriodMutator(add, (PeriodDao) dao, participantService);
-        // TODO
-//        } else if (target instanceof Period) {
-//            return new AddPlannedEventMutator(add, (PeriodDao) dao);
+        } else if (target instanceof Period) {
+            return new AddPlannedEventMutator(add, (PlannedEventDao) dao,
+                participantService, templateService);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
         } else {
@@ -51,7 +55,14 @@ public class MutatorFactory {
     }
 
     private <T extends PlanTreeNode<?>> Mutator createRemoveMutator(T target, Remove remove) {
-        return new RemoveMutator(remove, findChildDao(target));
+        DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
+        if (target instanceof Arm) {
+            return new RemovePeriodMutator(remove, (PeriodDao) dao, templateService);
+        } else if (target instanceof Period) {
+            return new RemovePlannedEventMutator(remove, (PlannedEventDao) dao);
+        } else {
+            return new RemoveMutator(remove, dao);
+        }
     }
 
     private <T extends PlanTreeNode<?>> Mutator createReorderMutator(T target, Reorder reorder) {
@@ -82,5 +93,10 @@ public class MutatorFactory {
     @Required
     public void setParticipantService(ParticipantService participantService) {
         this.participantService = participantService;
+    }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

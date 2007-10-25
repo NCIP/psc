@@ -1,18 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Columns;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IndexColumn;
+import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
 import org.hibernate.validator.NotNull;
 
-import javax.persistence.*;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.*;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -86,22 +99,31 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     @Transient
     public boolean isConditionalState() {
-        return ScheduledEventMode.CONDITIONAL == getCurrentState().getMode()? true: false;
+        return ScheduledEventMode.CONDITIONAL == getCurrentState().getMode();
     }
 
     @Transient
     public boolean isValidNewState(Class<? extends ScheduledEventState> newStateClass) {
-        return currentState.getAvailableStates(isConditionalEvent()).contains(newStateClass);
+        return getCurrentState().getAvailableStates(isConditionalEvent()).contains(newStateClass);
     }
 
     @Transient
     public boolean isConditionalEvent() {
-        boolean conditional = (currentState instanceof Conditional);
-        if (previousStates != null && previousStates.size() > 0) {
-            conditional = (previousStates.get(0) instanceof Conditional);
+        for (ScheduledEventState state : getAllStates()) {
+            if (state.getMode() == ScheduledEventMode.CONDITIONAL) return true;
         }
-        return conditional;
+        return false;
     }
+
+    public void unscheduleIfOutstanding(String reason) {
+        if (getCurrentState().getMode().isOutstanding()) {
+            ScheduledEventState newState
+                = getCurrentState().getMode().getUnscheduleMode().createStateInstance();
+            newState.setReason(reason);
+            changeState(newState);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     @ManyToOne

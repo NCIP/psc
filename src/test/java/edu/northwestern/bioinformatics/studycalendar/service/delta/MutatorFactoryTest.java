@@ -34,7 +34,8 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         DaoFinder finder = new StaticDaoFinder(
             epochDao = registerDaoMockFor(EpochDao.class),
             armDao = registerDaoMockFor(ArmDao.class),
-            periodDao = registerDaoMockFor(PeriodDao.class)
+            periodDao = registerDaoMockFor(PeriodDao.class),
+            plannedEventDao = registerDaoMockFor(PlannedEventDao.class)
         );
 
         factory.setDaoFinder(finder);
@@ -68,6 +69,15 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertEquals(AddPeriodMutator.class,  actual.getClass());
     }
     
+    public void testCreatePlannedEventAdder() throws Exception {
+        Add add = new Add();
+        add.setIndex(8);
+        add.setChildId(5);
+        Mutator actual = factory.createMutator(new Period(), add);
+        assertNotNull(actual);
+        assertEquals(AddPlannedEventMutator.class,  actual.getClass());
+    }
+
     // Note that this will get much more complex once apply(schedule) is thrown into the implementations
     public void testCreatePropertyMutator() throws Exception {
         Mutator actual = factory.createMutator(new Period(), new PropertyChange());
@@ -86,5 +96,21 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertNotNull(actual);
         assertEquals(RemoveMutator.class, actual.getClass());
         assertEquals("Dao does not match child class", armDao, ((RemoveMutator) actual).getDao());
+    }
+
+    public void testCreateRemovePeriodMutator() throws Exception {
+        Remove remove = new Remove();
+        remove.setChildId(5);
+        Mutator actual = factory.createMutator(new Arm(), remove);
+        assertNotNull(actual);
+        assertEquals(RemovePeriodMutator.class,  actual.getClass());
+    }
+    
+    public void testCreateRemovePlannedEventMutator() throws Exception {
+        Remove remove = new Remove();
+        remove.setChildId(5);
+        Mutator actual = factory.createMutator(new Period(), remove);
+        assertNotNull(actual);
+        assertEquals(RemovePlannedEventMutator.class,  actual.getClass());
     }
 }

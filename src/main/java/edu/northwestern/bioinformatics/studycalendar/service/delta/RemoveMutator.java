@@ -20,8 +20,4 @@ public class RemoveMutator extends AddAndRemoveMutator {
     public void revert(PlanTreeNode<?> target) {
         addTo(target);
     }
-
-    public void apply(ScheduledCalendar calendar) {
-        throw new UnsupportedOperationException("apply not implemented");
-    }
 }

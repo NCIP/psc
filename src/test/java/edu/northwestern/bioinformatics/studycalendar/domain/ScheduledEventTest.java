@@ -2,7 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -135,5 +140,59 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
         Date date = DateUtils.createDate(2006, Calendar.AUGUST, 3);
         scheduledEvent.changeState(new Conditional("Conditional", date));
         assertFalse("Should not be valid new state", scheduledEvent.isValidNewState(Canceled.class));
+    }
+
+    public void testUnscheduleScheduledEvent() throws Exception {
+        scheduledEvent.changeState(new Scheduled());
+        assertEquals("Test setup failure", 1, scheduledEvent.getAllStates().size());
+
+        scheduledEvent.unscheduleIfOutstanding("Testing");
+        assertEquals("State not changed", 2, scheduledEvent.getAllStates().size());
+        assertEquals("State not changed", ScheduledEventMode.CANCELED,
+            scheduledEvent.getCurrentState().getMode());
+        assertEquals("New state has wrong reason", "Testing",
+            scheduledEvent.getCurrentState().getReason());
+    }
+
+    public void testUnscheduleConditionalEvent() throws Exception {
+        scheduledEvent.changeState(new Conditional());
+        assertEquals("Test setup failure", 1, scheduledEvent.getAllStates().size());
+
+        scheduledEvent.unscheduleIfOutstanding("Testing");
+        assertEquals("State not changed", 2, scheduledEvent.getAllStates().size());
+        assertEquals("State not changed", ScheduledEventMode.NOT_APPLICABLE,
+            scheduledEvent.getCurrentState().getMode());
+        assertEquals("New state has wrong reason", "Testing",
+            scheduledEvent.getCurrentState().getReason());
+    }
+
+    public void testUnscheduleCanceledEvent() throws Exception {
+        scheduledEvent.changeState(new Canceled());
+        assertEquals("Test setup failure", 1, scheduledEvent.getAllStates().size());
+
+        scheduledEvent.unscheduleIfOutstanding("Testing");
+        assertEquals("State changed", 1, scheduledEvent.getAllStates().size());
+        assertEquals("State changed", ScheduledEventMode.CANCELED,
+            scheduledEvent.getCurrentState().getMode());
+    }
+
+    public void testUnscheduleOccurredEvent() throws Exception {
+        scheduledEvent.changeState(new Occurred());
+        assertEquals("Test setup failure", 1, scheduledEvent.getAllStates().size());
+
+        scheduledEvent.unscheduleIfOutstanding("Testing");
+        assertEquals("State changed", 1, scheduledEvent.getAllStates().size());
+        assertEquals("State changed", ScheduledEventMode.OCCURRED,
+            scheduledEvent.getCurrentState().getMode());
+    }
+
+    public void testUnscheduleNotApplicableEvent() throws Exception {
+        scheduledEvent.changeState(new NotApplicable());
+        assertEquals("Test setup failure", 1, scheduledEvent.getAllStates().size());
+
+        scheduledEvent.unscheduleIfOutstanding("Testing");
+        assertEquals("State changed", 1, scheduledEvent.getAllStates().size());
+        assertEquals("State changed", ScheduledEventMode.NOT_APPLICABLE,
+            scheduledEvent.getCurrentState().getMode());
     }
 }

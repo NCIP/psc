@@ -6,7 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
 
 import java.util.List;
 import java.util.Calendar;
@@ -23,6 +24,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     private ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
     private ScheduledArm scheduledArm = new ScheduledArm();
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendar.addArm(scheduledArm);
@@ -157,4 +159,34 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
 
         assertTrue(scheduledArm.getEvents().get(2).getActualDate() == d);
     }   */
+
+    public void testUnscheduleAllOutstandingEvents() throws Exception {
+        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
+        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 2,
+            new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 4))));
+        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3,
+            new Canceled()));
+        scheduledArm.addEvent(createScheduledEvent("Maybe CBC", 2005, Calendar.AUGUST, 4,
+            new Conditional()));
+        scheduledArm.addEvent(createScheduledEvent("Maybe CBC", 2005, Calendar.AUGUST, 5,
+            new NotApplicable()));
+
+        scheduledArm.unscheduleOutstandingEvents("Testing");
+
+        assertEquals("Scheduled event not changed", 2, scheduledArm.getEvents().get(0).getAllStates().size());
+        assertEquals("Scheduled not changed to canceled", ScheduledEventMode.CANCELED,
+            scheduledArm.getEvents().get(0).getCurrentState().getMode());
+        assertEquals("Scheduled new mode has wrong reason", "Testing",
+            scheduledArm.getEvents().get(0).getCurrentState().getReason());
+
+        assertEquals("Conditional event not changed", 3, scheduledArm.getEvents().get(3).getAllStates().size());
+        assertEquals("Conditional not changed to NA", ScheduledEventMode.NOT_APPLICABLE,
+            scheduledArm.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Conditional new mode has wrong reason", "Testing",
+            scheduledArm.getEvents().get(3).getCurrentState().getReason());
+
+        assertEquals("Occurred event changed", 2, scheduledArm.getEvents().get(1).getAllStates().size());
+        assertEquals("Canceled event changed", 2, scheduledArm.getEvents().get(2).getAllStates().size());
+        assertEquals("NA event changed", 2, scheduledArm.getEvents().get(4).getAllStates().size());
+    }
 }

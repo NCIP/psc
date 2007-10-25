@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.*;
 import java.text.DateFormat;
@@ -207,10 +208,10 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assignment.setParticipant(createParticipant("Alice", "Childress"));
 
         ScheduledArm existingArm = new ScheduledArm();
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 2,
+        existingArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
+        existingArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 2,
             new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 4))));
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3,
+        existingArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3,
             new Canceled(null)));
 
         calendar.addArm(existingArm);
@@ -311,7 +312,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
         assignment.setScheduledCalendar(scheduledCalendar);
         ScheduledArm existingArm = new ScheduledArm();
-        existingArm.addEvent(Fixtures.createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
+        existingArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
         scheduledCalendar.addArm(existingArm);
 
         StudySite studySite = new StudySite();

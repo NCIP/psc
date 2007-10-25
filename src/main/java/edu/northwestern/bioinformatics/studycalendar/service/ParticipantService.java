@@ -98,11 +98,7 @@ public class ParticipantService {
         if (mode == NextArmMode.IMMEDIATE) {
             String cancellationReason = "Immediate transition to " + arm.getQualifiedName();
             for (ScheduledArm existingArm : calendar.getScheduledArms()) {
-                for (ScheduledEvent event : existingArm.getEvents()) {
-                    if (event.getCurrentState().getMode() == ScheduledEventMode.SCHEDULED) {
-                        event.changeState(new Canceled(cancellationReason));
-                    }
-                }
+                existingArm.unscheduleOutstandingEvents(cancellationReason);
             }
         }
 

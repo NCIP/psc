@@ -67,6 +67,16 @@ public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractC
         return modes;
     }
 
+    public boolean isOutstanding() {
+        return getUnscheduleMode() != null;
+    }
+
+    public ScheduledEventMode<?> getUnscheduleMode() {
+        if (this == SCHEDULED) return CANCELED;
+        else if (this == CONDITIONAL) return NOT_APPLICABLE;
+        else return null;
+    }
+
     public Class<T> getClazz() {
         return clazz;
     }

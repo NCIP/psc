@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -33,7 +35,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
 
     private Arm arm;
 
-    ////// BUSINESS METHODS
+    ////// LOGIC
 
     public void addEvent(ScheduledEvent event) {
         getEvents().add(event);
@@ -93,11 +95,15 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     @Transient
     public boolean isComplete() {
         for (ScheduledEvent event : getEvents()) {
-            if (event.getCurrentState().getMode() == ScheduledEventMode.SCHEDULED) {
+            if (event.getCurrentState().getMode().isOutstanding()) {
                 return false;
             }
         }
         return true;
+    }
+
+    public void unscheduleOutstandingEvents(String reason) {
+        for (ScheduledEvent event : getEvents()) event.unscheduleIfOutstanding(reason);
     }
 
     ////// BEAN PROPERTIES
