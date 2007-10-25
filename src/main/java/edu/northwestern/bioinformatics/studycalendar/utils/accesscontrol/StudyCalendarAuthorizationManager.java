@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
+import static java.util.Arrays.asList;
+
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -12,10 +15,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroupRoleContext;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
-import gov.nih.nci.security.dao.RoleSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
-import gov.nih.nci.security.dao.UserSearchCriteria;
+import gov.nih.nci.security.dao.*;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.util.ObjectSetUtil;
@@ -306,7 +306,11 @@ public class StudyCalendarAuthorizationManager {
 		userHashMap.put(AVAILABLE_USERS, availableUsers);
 		return userHashMap;
 	}
-    
+
+    public void assignProtectionGroupsToUsers(String userId, ProtectionGroup protectionGroup, String roleName) throws Exception {
+        assignProtectionGroupsToUsers(asList(userId), protectionGroup, roleName);
+    }
+
     public void assignProtectionGroupsToUsers(List<String> userIds, ProtectionGroup protectionGroup, String roleName) throws Exception
 	{
         if (protectionGroup == null) return;
@@ -669,7 +673,46 @@ public class StudyCalendarAuthorizationManager {
     	return userProvisioningManager.getUser(userName);
     }
 
+
+
+    public void assignCsmGroups(edu.northwestern.bioinformatics.studycalendar.domain.User user, Set<UserRole> userRoles) throws Exception {
+        List<String> csmRoles = rolesToCsmGroups(userRoles);
+        String[] strCsmRoles = csmRoles.toArray(new String[csmRoles.size()]);
+        userProvisioningManager.assignGroupsToUser(user.getCsmUserId().toString(), strCsmRoles);
+    }
+
+    private List<String> rolesToCsmGroups(Set<UserRole> userRoles) throws Exception{
+        List csmGroupsForUser = new ArrayList<String>();
+        if(userRoles != null) {
+            List<Group> allCsmGroups = getAllCsmGroups();
+
+            for(UserRole userRole: userRoles) {
+                for(Group group: allCsmGroups) {
+                    if(isGroupEqualToRole(group, userRole.getRole())) {
+                        csmGroupsForUser.add(group.getGroupId().toString());
+                    }
+                }
+            }
+        }
+        return csmGroupsForUser;
+    }
+
+
     ////// INTERNAL HELPERS
+
+    protected boolean isGroupEqualToRole(Group group, edu.northwestern.bioinformatics.studycalendar.domain.Role role) {
+        return group.getGroupName().equals(role.getCode());
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Group> getAllCsmGroups() throws Exception {
+        SearchCriteria searchCriteria = new GroupSearchCriteria(new Group());
+        List<Group> groups = userProvisioningManager.getObjects(searchCriteria);
+        if(groups == null) {
+            throw new StudyCalendarSystemException("Get Csm Groups is null");
+        }
+        return groups;
+    }
     
     private List<ProtectionGroup> getSitePGs(User user) {
         List<ProtectionGroup> sites = new ArrayList<ProtectionGroup>();

@@ -53,14 +53,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         service.setUserDao(userDao);
         service.setUserProvisioningManager(userProvisioningManager);
         service.setSiteService(siteService);
-
-        allCsmGroups = new ArrayList<Group>();
-        allCsmGroups.add(createCsmGroup(1L, "STUDY_COORDINATOR"));
-        allCsmGroups.add(createCsmGroup(2L, "STUDY_ADMIN"));
-        allCsmGroups.add(createCsmGroup(3L, "PARTICIPANT_COORDINATOR"));
-        allCsmGroups.add(createCsmGroup(5L, "RESEARCH_ASSOCIATE"));
-        allCsmGroups.add(createCsmGroup(6L, "SITE_COORDINATOR"));
-
+        
         sites = new ArrayList<Site>();
         sites.add(createNamedInstance("Mayo Clinic", Site.class));
         sites.add(createNamedInstance("Northwestern Clinic", Site.class));
@@ -76,8 +69,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         expectedCsmUser.setUserId(expectedUser.getCsmUserId());
 
         userProvisioningManagerStub.createUser(expectedCsmUser);
-
-        expect(siteService.getSitesForUser(expectedCsmUser.getName())).andReturn(Collections.<Site>emptyList());
 
         userDao.save(expectedUser);
         replayMocks();
@@ -113,44 +104,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertUserEquals(expectedUser, actualUser);
     }
 
-    public void testReAssignCsmProtectionGroups() throws Exception {
-        User expectedUser = createUser(-100,"john", 100L, true, "password");
-        expectedUser.addUserRole(createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1)));
-
-        User expectedUpdatedUser = createUser(-100, "updated", 100L, true, "password");
-
-        UserRole expectedUserRole0 = createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0), sites.get(1));
-        expectedUpdatedUser.addUserRole(expectedUserRole0);
-        UserRole expectedUserRole1 = createUserRole(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
-        expectedUpdatedUser.addUserRole(expectedUserRole1);
-
-        String[] expectedCsmGroups = new String[] {"5", "6"}; // CSM ids for Research Associate
-
-        expect(userDao.getById(-100)).andReturn(expectedUser);
-        expect(userProvisioningManager.getObjects(eqCsmGroupSearchCriteria(new GroupSearchCriteria(new Group())))).andReturn(allCsmGroups);
-        userProvisioningManager.assignGroupsToUser(eq("100"), unsortedAryEq(expectedCsmGroups));
-        expect(siteService.getSitesForUser(expectedUpdatedUser.getName())).andReturn(sites);
-
-        String expectedUpdatedCsmUserId = expectedUpdatedUser.getCsmUserId().toString();
-        siteService.removeAllSiteRoles(sites.get(0), expectedUpdatedCsmUserId);
-        siteService.removeAllSiteRoles(sites.get(1), expectedUpdatedCsmUserId);
-
-        siteService.assignProtectionGroup(eq(sites.get(0)), eq(expectedUpdatedCsmUserId), unsortedAryEq(new String[]{expectedUserRole0.getRole().csmRole(), expectedUserRole1.getRole().csmRole()}));
-        siteService.assignProtectionGroup(eq(sites.get(1)), eq(expectedUpdatedCsmUserId), unsortedAryEq(new String[]{expectedUserRole0.getRole().csmRole()}));
-
-        userDao.save(expectedUpdatedUser);
-
-        replayMocks();
-
-        User actual = service.getUserById(-100);
-        actual.setName("updated");
-        actual.setUserRoles(expectedUpdatedUser.getUserRoles());
-        service.saveUser(actual);
-        verifyMocks();
-
-        assertUserEquals(expectedUser, actual);
-    }
-
     public void assertUserEquals(User expected, User actual) throws Exception{
 
         assertEquals("Names not equal", expected.getName(), actual.getName());
@@ -171,12 +124,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
                 assertTrue("Does not contain site", actualUserRole.getSites().contains(expectedSite));
             }
         }
-    }
-
-    public void testIsGroupEqualToRole() {
-        UserService us = new UserService();
-        assertTrue(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.STUDY_COORDINATOR));
-        assertFalse(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.SITE_COORDINATOR));
     }
 
     public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
@@ -224,13 +171,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
             Arrays.sort((Object[])actual);
             return super.matches(actual);
         }
-    }
-
-    private Group createCsmGroup(Long id, String name) {
-        Group g = new Group();
-        g.setGroupId(id);
-        g.setGroupName(name);
-        return g;
     }
 
     private class UserProvisioningManagerStub implements UserProvisioningManager {

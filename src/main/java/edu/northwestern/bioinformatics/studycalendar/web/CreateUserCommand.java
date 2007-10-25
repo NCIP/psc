@@ -6,29 +6,30 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import gov.nih.nci.security.util.StringEncrypter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class CreateUserCommand implements Validatable {
-    private Set<UserRole> userRoles;
     private UserService userService;
     private String rePassword;
     private User user;
     private SiteDao siteDao;
     private Map<Site, Map<Role,RoleCell>> rolesGrid;
+    private UserRoleService userRoleService;
 
-    public CreateUserCommand(User user, SiteDao siteDao, UserService userService) {
+    public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserRoleService userRoleService) {
         this.user = user;
         this.siteDao = siteDao;
         this.userService = userService;
-        userRoles = new HashSet<UserRole>();
+        this.userRoleService = userRoleService;
+        
         if(user == null) user = new User();
         buildRolesGrid(user.getUserRoles());
     }
@@ -56,26 +57,6 @@ public class CreateUserCommand implements Validatable {
         }
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public Set<UserRole> getUserRoles() {
-        return userRoles;
-    }
-
-    public void setUserRoles(Set<UserRole> userRoles) {
-        this.userRoles = userRoles;
-    }
-
-    public String getRePassword() {
-        return rePassword;
-    }
-
-    public void setRePassword(String rePassword) {
-        this.rePassword = rePassword;
-    }
-
     public void validate(Errors errors){
         if (user != null) {
             if (user.getName() == null || StringUtils.isEmpty(user.getName())) {
@@ -96,56 +77,55 @@ public class CreateUserCommand implements Validatable {
             } catch(StringEncrypter.EncryptionException encryptExcep) {
                 errors.rejectValue("user.password", "error.user.password.not.specified");
             }
-            // TODO: check grid for roles
-           /* if (user.getUserRoles() == null || user.getUserRoles().size() <= 0) {
-                errors.rejectValue("userRoles", "error.user.role.not.specified");
-            }*/
         }
 
     }
 
-    public UserService getUserService() {
-        return userService;
-    }
 
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
 
     public User apply() throws Exception {
-        interpretRolesGrid(rolesGrid);
-        user.clearUserRoles();
-        user.addAllUserRoles(userRoles);
-
-        return userService.saveUser(user);
+        userService.saveUser(user);
+        assignUserRolesFromRolesGrid(rolesGrid);
+        return user;
     }
 
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
 
-    public Map<Site, Map<Role, RoleCell>> getRolesGrid() {
-        return rolesGrid;
-    }
-
-    public void interpretRolesGrid(Map<Site, Map<Role,RoleCell>> rolesGrid) {
+    public void assignUserRolesFromRolesGrid(Map<Site, Map<Role,RoleCell>> rolesGrid) throws Exception {
         for(Site site : rolesGrid.keySet()) {
             for(Role role : rolesGrid.get(site).keySet()) {
-                if (rolesGrid.get(site).get(role).isSelected()) {
-                    UserRole newUserRole = new UserRole();
-                    newUserRole.setUser(user);
-                    newUserRole.setRole(role);
-                    if (role.isSiteSpecific()) {
-                        for (UserRole userRole : userRoles) {
-                            if (userRole.getRole().equals(role)) {
-                                newUserRole = userRole;
-                                break;
-                            }
-                        }
-                        newUserRole.getSites().add(site);
+                if (role.isSiteSpecific()) {
+                    if (rolesGrid.get(site).get(role).isSelected()) {
+                        userRoleService.assignUserRole(user, role, site);
+                    } else {
+                        userRoleService.removeUserRoleAssignment(user, role, site);
                     }
+                }
+            }
+        }
 
-                    userRoles.add(newUserRole);
+        Set<Role> roleList = rolesGrid.values().iterator().next().keySet();
+        for(Role role : roleList) {
+            if (!role.isSiteSpecific()) {
+                int selected = 0;
+                int notSelected = 0;
+                for (Site innerSite : rolesGrid.keySet()) {
+                    if (!rolesGrid.get(innerSite).get(role).isSelected()) notSelected++;
+                    if (rolesGrid.get(innerSite).get(role).isSelected()) selected++;
+                }
+                if (selected == notSelected) {
+                    if(UserRole.findByRole(user.getUserRoles(), role) == null) {
+                        userRoleService.assignUserRole(user, role);
+                    } else {
+                        userRoleService.removeUserRoleAssignment(user, role);
+                    }
+                } else if (selected == 1) {
+                    userRoleService.assignUserRole(user, role);
+                } else if (notSelected == 1) {
+                    userRoleService.removeUserRoleAssignment(user, role);
+                } else if (selected > notSelected) {
+                    userRoleService.assignUserRole(user, role);
+                } else if (notSelected > selected) {
+                    userRoleService.removeUserRoleAssignment(user, role);
                 }
             }
         }
@@ -179,5 +159,34 @@ public class CreateUserCommand implements Validatable {
 
     protected static RoleCell createRoleCell(boolean selected, boolean siteSpecific) {
         return new RoleCell(selected, siteSpecific);
+    }
+
+    // bean getter and setters
+    public User getUser() {
+        return user;
+    }
+
+    public String getRePassword() {
+        return rePassword;
+    }
+
+    public void setRePassword(String rePassword) {
+        this.rePassword = rePassword;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    public Map<Site, Map<Role, RoleCell>> getRolesGrid() {
+        return rolesGrid;
     }
 }

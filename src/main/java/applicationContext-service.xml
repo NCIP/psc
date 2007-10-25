@@ -29,5 +29,7 @@
     <bean id="mutatorFactory" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
     <bean id="participantCoordinatorDashboardService" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService"/>     
+          class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService"/>
+    <bean id="userRoleService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
 </beans>

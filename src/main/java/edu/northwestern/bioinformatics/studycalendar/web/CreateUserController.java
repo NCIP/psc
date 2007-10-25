@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
@@ -33,7 +34,7 @@ import java.util.Map;
 public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
     private SiteDao siteDao;
-    private UserDao userDao;
+    private UserRoleService userRoleService;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -75,9 +76,9 @@ public class CreateUserController extends PscCancellableFormController {
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        User user = (editId != null) ? user = userService.getUserById(editId) : new User();
+        User user = (editId != null) ? userService.getUserById(editId) : new User();
 
-        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService);
+        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService, userRoleService);
 
         if (command.getUser().getPassword() != null) {
             command.setRePassword(command.getUser().getPlainTextPassword());
@@ -102,9 +103,8 @@ public class CreateUserController extends PscCancellableFormController {
         this.siteDao = siteDao;
     }
 
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserRoleService(UserRoleService userRoleService) {
+        this.userRoleService = userRoleService;
     }
 
     private static class Crumb extends DefaultCrumb {

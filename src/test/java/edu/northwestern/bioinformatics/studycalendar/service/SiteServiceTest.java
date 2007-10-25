@@ -1,12 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
+
+import static java.util.Arrays.asList;
+
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -28,17 +30,19 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteService service;
     private StudyCalendarAuthorizationManager authorizationManager;
     private StudySiteDao studySiteDao;
-	
-    
+    private UserDao userDao;
+
+
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = registerMockFor(SiteDao.class);
+        userDao = registerDaoMockFor(UserDao.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
         studySiteDao = registerMockFor(StudySiteDao.class);
 
-
         service = new SiteService();
         service.setSiteDao(siteDao);
+        service.setUserDao(userDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
 
@@ -84,7 +88,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertEquals(expectedSites.get(0).getName(), actualSites.get(0).getName());
     }
 
-    public void testAssignSiteCoordinators() throws Exception {
+    public void testAssignSiteCoordinatorsInCsm() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
@@ -97,11 +101,11 @@ public class SiteServiceTest extends StudyCalendarTestCase {
                                                            SiteService.SITE_COORDINATOR_ACCESS_ROLE);
         replayMocks();
 
-        service.assignSiteCoordinators(expectedSite, expectedCoordinators);
+        service.assignSiteCoordinatorsInCsm(expectedSite, expectedCoordinators);
         verifyMocks();
     }
 
-    public void testAssignParticipantCoordinators() throws Exception {
+    public void testAssignParticipantCoordinatorsInCsm() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
@@ -114,12 +118,45 @@ public class SiteServiceTest extends StudyCalendarTestCase {
                                                            SiteService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
         replayMocks();
 
-        service.assignParticipantCoordinators(expectedSite, expectedCoordinators);
+        service.assignParticipantCoordinatorsInCsm(expectedSite, expectedCoordinators);
         verifyMocks();
     }
 
 
-    public void testRemoveSiteCoordinators() throws Exception {
+    public void testAssignResearchAssociatesInCsm() throws Exception {
+        Site expectedSite = setId(1, createSite("northwestern"));
+
+        List<String> expectedResearchAssociates = Collections.singletonList("john");
+
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
+        authorizationManager.assignProtectionGroupsToUsers(expectedResearchAssociates,
+                                                           expectedPG,
+                                                           SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE);
+        replayMocks();
+
+        service.assignSiteResearchAssociatesInCsm(expectedSite, expectedResearchAssociates);
+        verifyMocks();
+    }
+
+    public void testRemoveProtectionGroupPSCDomainObjects() throws Exception {
+        Site expectedSite = setId(1, createSite("northwestern"));
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true, "pass");
+        user.addUserRole(createUserRole(user, Role.PARTICIPANT_COORDINATOR, expectedSite));
+
+        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
+        authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), expectedPG);
+        replayMocks();
+
+        service.removeProtectionGroup(expectedSite, user);
+        verifyMocks();
+    }
+
+    public void testRemoveProtectionGroup() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
         List<String> expectedCoordinators = Collections.singletonList("john");
@@ -130,7 +167,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
         replayMocks();
 
-        service.removeSiteCoordinators(expectedSite, expectedCoordinators);
+        service.removeProtectionGroup(expectedSite, expectedCoordinators);
         verifyMocks();
     }
 
@@ -260,43 +297,9 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertTrue(expectedSites.containsAll(actualSites));
     }
 
-    public void testAssignResearchAssociate() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedResearchAssociates = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.assignProtectionGroupsToUsers(expectedResearchAssociates,
-                                                           expectedPG,
-                                                           SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE);
-        replayMocks();
-
-        service.assignSiteResearchAssociates(expectedSite, expectedResearchAssociates);
-        verifyMocks();
-    }
-
-    public void testRemoveAllSiteRoles() throws Exception{
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG).times(3);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        replayMocks();
-
-        service.removeAllSiteRoles(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-    public void testAssignProtectionGroup() throws Exception {
+    public void testAssignUsersToProtectionGroup() throws Exception {
         Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
-        List<String> userIds = Arrays.asList("John");
+        List<String> userIds = asList("John");
         String[] accessRoles = {Role.PARTICIPANT_COORDINATOR.csmRole(), Role.SITE_COORDINATOR.csmRole()};
         ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), site.getName());
 
@@ -304,6 +307,19 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     	authorizationManager.assignProtectionGroupsToUsers(userIds, pg, accessRoles);
         replayMocks();
         service.assignProtectionGroup(site, userIds, accessRoles);
+        verifyMocks();
+    }
+
+    public void testAssignProtectionGroup() throws Exception {
+        Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
+        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true, "pass");
+        Role role = Role.PARTICIPANT_COORDINATOR;
+        ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), DomainObjectTools.createExternalObjectId(site));
+
+        expect(authorizationManager.getPGByName(pg.getProtectionGroupName())).andReturn(pg);
+    	authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), pg, role.csmRole());
+        replayMocks();
+        service.assignProtectionGroup(site, user, role);
         verifyMocks();
     }
 

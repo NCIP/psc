@@ -4,48 +4,34 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import static org.easymock.EasyMock.expect;
-import org.easymock.classextension.EasyMock;
 
 import java.util.*;
 
 public class CreateUserCommandTest extends StudyCalendarTestCase {
-    private UserService service;
+    private UserService userService;
     private SiteDao siteDao;
     List<Site> sites;
+    Study study;
+    private UserRoleService userRoleService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        service = registerMockFor(UserService.class);
-        siteDao = registerDaoMockFor(SiteDao.class);
+        siteDao         = registerDaoMockFor(SiteDao.class);
+        userService     = registerMockFor(UserService.class);
+        userRoleService = registerMockFor(UserRoleService.class);
 
         sites = Arrays.asList(
                 createNamedInstance("Mayo Clinic", Site.class),
                 createNamedInstance("Northwestern Clinic", Site.class)
         );
+
+        study = createNamedInstance("Study A", Study.class);
     }
-
-    // TODO: write intrepetRolesGrid first
-   /* public void testApplyForNewUser() throws Exception {
-        User expectedUser = createUser(null, "Joe", null, true, "pass",Role.STUDY_COORDINATOR);
-        CreateUserCommand command = createCommand(new User());
-        command.setName(expectedUser.getName());
-        command.setUserRoles(expectedUser.getUserRoles());
-        command.setActiveFlag(expectedUser.getActiveFlag());
-        command.setPassword(expectedUser.getPlainTextPassword());
-
-        expect(siteDao.getAll()).andReturn(sites);
-        expect(service.saveUser(expectedUser)).andReturn(expectedUser);
-        replayMocks();
-
-        User actualUser = command.apply();
-        verifyMocks();
-
-        assertEquals("Different user names", expectedUser.getName(), actualUser.getName());
-    }*/
 
     public void testBuildRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true, "pass", Role.STUDY_ADMIN);
@@ -73,47 +59,98 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
-                createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0)),
                 createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
         );
-        expectedUser.setUserRoles(new HashSet(expectedUserRoles));
+        expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
 
         expect(siteDao.getAll()).andReturn(sites);
-        expect(service.saveUser(expectedUser)).andReturn(expectedUser);
+
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(1));
+
+        userRoleService.assignUserRole(expectedUser, Role.STUDY_ADMIN);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.STUDY_COORDINATOR);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SYSTEM_ADMINISTRATOR);
+
         replayMocks();
 
         CreateUserCommand command = createCommand(expectedUser);
-        command.apply();
+        expectedUser.setUserRoles(Collections.<UserRole>emptySet());        // empty user roles so we can test the assign method
+        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
         verifyMocks();
-
-        Set<UserRole> actualUserRoles = command.getUserRoles();
-
-        assertEquals("Wrong number of roles", 3, actualUserRoles.size());
-
-        assertTrue("User Role missing", actualUserRoles.contains(expectedUserRoles.get(0)));
-        assertTrue("User Role missing", actualUserRoles.contains(expectedUserRoles.get(1)));
-        assertTrue("User Role missing", actualUserRoles.contains(expectedUserRoles.get(2)));
-
-        List<UserRole> userRoleList = new ArrayList(actualUserRoles);
-        UserRole userRole0 = userRoleList.get(userRoleList.indexOf(expectedUserRoles.get(0)));
-        UserRole userRole1 = userRoleList.get(userRoleList.indexOf(expectedUserRoles.get(1)));
-        UserRole userRole2 = userRoleList.get(userRoleList.indexOf(expectedUserRoles.get(2)));
-
-        assertEquals("Wrong Role", Role.STUDY_ADMIN, userRole0.getRole());
-        assertEquals("Wrong Role", Role.RESEARCH_ASSOCIATE, userRole1.getRole());
-        assertEquals("Wrong Role", Role.PARTICIPANT_COORDINATOR, userRole2.getRole());
-
-        assertEquals("Wrong number of sites", 1, userRole1.getSites().size());
-        assertEquals("Wrong number of sites", 2, userRole2.getSites().size());
-
-        assertEquals("Wrong Site", sites.get(0), userRole1.getSites().iterator().next());
-        assertTrue("Wrong Site", userRole2.getSites().contains(sites.get(0)));
-        assertTrue("Wrong Site", userRole2.getSites().contains(sites.get(1)));
-
     }
-    
+
+    public void testInterpretRolesGridRemoveRole() throws Exception {
+        User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(expectedUser, Role.STUDY_ADMIN),
+                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+        );
+        expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+
+        expect(siteDao.getAll()).andReturn(sites);
+
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.STUDY_ADMIN);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.STUDY_COORDINATOR);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SYSTEM_ADMINISTRATOR);
+
+        replayMocks();
+
+        CreateUserCommand command = createCommand(expectedUser);
+        command.getRolesGrid().get(sites.get(0)).get(Role.STUDY_ADMIN).setSelected(false);
+        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
+        verifyMocks();
+    }
+
+    public void testInterpretRolesGridAddRole() throws Exception {
+        User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+
+        List<UserRole> expectedUserRoles = Arrays.asList(
+                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+        );
+        expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
+
+        expect(siteDao.getAll()).andReturn(sites);
+
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));
+
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0));
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(1));
+
+        userRoleService.assignUserRole(expectedUser, Role.STUDY_ADMIN);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.STUDY_COORDINATOR);
+        userRoleService.removeUserRoleAssignment(expectedUser, Role.SYSTEM_ADMINISTRATOR);
+
+        replayMocks();
+
+        CreateUserCommand command = createCommand(expectedUser);
+        command.getRolesGrid().get(sites.get(0)).get(Role.STUDY_ADMIN).setSelected(true);
+        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
+        verifyMocks();
+    }
+
     public CreateUserCommand createCommand(User user) {
-        CreateUserCommand command = new CreateUserCommand(user, siteDao, service);
+        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService, userRoleService);
         return command;
     }
 

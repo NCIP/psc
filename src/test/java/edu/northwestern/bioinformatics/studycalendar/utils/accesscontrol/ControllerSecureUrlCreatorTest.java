@@ -83,10 +83,10 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         Iterator configAttribIter = defs.getConfigAttributes();
         assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "STUDY_ADMIN", ((ConfigAttribute)configAttribIter.next()).getAttribute());
+        assertEquals("Wrong Role", "SYSTEM_ADMINISTRATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "PARTICIPANT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "RESEARCH_ASSOCIATE", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SITE_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "SYSTEM_ADMINISTRATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
     }
 
     public ConfigAttributeDefinition lookupConfigAttributeDefinitions(String controllerName) {

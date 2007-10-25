@@ -18,7 +18,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +56,7 @@ public class AssignParticipantCoordinatorsToSiteController extends PscSimpleForm
     	//ProtectionGroup sitePG = siteService.getSiteProtectionGroup(assignedSite.getName()); 
     	
         if("true".equals(assignCommand.getAssign())) {   
-            siteService.assignParticipantCoordinators(assignedSite, assignCommand.getAvailableCoordinators());
+            siteService.assignParticipantCoordinatorsInCsm(assignedSite, assignCommand.getAvailableCoordinators());
         } else {
             log.debug("onSubmit:remove");
              

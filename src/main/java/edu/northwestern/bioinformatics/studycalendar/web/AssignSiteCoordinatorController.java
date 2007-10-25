@@ -68,7 +68,7 @@ public class AssignSiteCoordinatorController extends PscSimpleFormController {
             	}
             }
             
-            siteService.assignSiteCoordinators(assignedSite, assignCommand.getAvailableCoordinators());
+            siteService.assignSiteCoordinatorsInCsm(assignedSite, assignCommand.getAvailableCoordinators());
             
         } else {
             log.debug("onSubmit:remove");

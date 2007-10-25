@@ -197,8 +197,7 @@ public class Fixtures {
         if (roles != null) {
             user.setUserRoles(new HashSet<UserRole>());
             for(Role role : roles) {
-                UserRole userRole = new UserRole();
-                userRole.setRole(role);
+                UserRole userRole = new UserRole(user, role);
                 user.getUserRoles().add(userRole);
             }
         }
@@ -206,9 +205,7 @@ public class Fixtures {
     }
 
     public static UserRole createUserRole(User user, Role role, Site... site) {
-        UserRole userRole = new UserRole();
-        userRole.setRole(role);
-        userRole.setUser(user);
+        UserRole userRole = new UserRole(user, role);
         userRole.setSites(new HashSet<Site>(Arrays.asList(site)));
         return userRole;
     }

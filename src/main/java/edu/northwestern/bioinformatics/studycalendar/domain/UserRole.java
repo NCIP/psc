@@ -26,6 +26,13 @@ public class UserRole  extends AbstractMutableDomainObject {
     Set<Site> sites = new HashSet<Site>();
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
+    public UserRole() { }
+
+    public UserRole(User user, Role role) {
+        this.user = user;
+        this.role = role;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     public User getUser() {
         return user;
@@ -64,7 +71,9 @@ public class UserRole  extends AbstractMutableDomainObject {
     }
 
     public void removeSite(Site site) {
-        sites.remove(site);
+        if (sites.contains(site)) {
+            sites.remove(site);
+        }
     }
 
     @ManyToMany

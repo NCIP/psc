@@ -34,28 +34,8 @@ public class UserService {
                 throw new StudyCalendarSystemException("Csm User Id is null");
         }
 
-        assignCsmGroups(user.getCsmUserId().toString(), user.getUserRoles());
-        assignCsmUserToSite(user.getCsmUserId().toString(), user.getName(), user.getUserRoles());
         userDao.save(user);
         return user;
-    }
-
-    private void assignCsmUserToSite(String csmUserId, String userName, Set<UserRole> userRoles) throws Exception {
-        for (Site site : siteService.getSitesForUser(userName)) {
-            siteService.removeAllSiteRoles(site, csmUserId);
-        }
-
-        Map<Site, List<String>> rolesBySite = new HashMap<Site, List<String>>();
-        for (UserRole userRole : userRoles) {
-            for (Site site : userRole.getSites()) {
-                if (!rolesBySite.containsKey(site)) rolesBySite.put(site, new ArrayList<String>());
-                rolesBySite.get(site).add(userRole.getRole().csmRole());
-            }
-        }
-
-       for (Site site : rolesBySite.keySet()) {
-           siteService.assignProtectionGroup(site, csmUserId, rolesBySite.get(site).toArray(new String[0]));
-       }
     }
 
     private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user) throws Exception {
@@ -67,44 +47,6 @@ public class UserService {
         csmUser.setLastName("");    // Attribute can't be null
         userProvisioningManager.createUser(csmUser);
         return csmUser;
-    }
-
-    private void assignCsmGroups(String userId, Set<UserRole> userRoles) throws Exception {
-        List<String> csmRoles = rolesToCsmGroups(userRoles);
-        String[] strCsmRoles = csmRoles.toArray(new String[csmRoles.size()]);
-        if(csmRoles.size() > 0) {
-            userProvisioningManager.assignGroupsToUser(userId, strCsmRoles);
-        }
-    }
-
-    private List<String> rolesToCsmGroups(Set<UserRole> userRoles) throws Exception{
-        List csmGroupsForUser = new ArrayList<String>();
-        if(userRoles != null) {
-            List<Group> allCsmGroups = getAllCsmGroups();
-
-            for(UserRole userRole: userRoles) {
-                for(Group group: allCsmGroups) {
-                    if(isGroupEqualToRole(group, userRole.getRole())) {
-                        csmGroupsForUser.add(group.getGroupId().toString());
-                    }
-                }
-            }
-        }
-        return csmGroupsForUser;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<Group> getAllCsmGroups() throws Exception {
-        SearchCriteria searchCriteria = new GroupSearchCriteria(new Group());
-        List<Group> groups = userProvisioningManager.getObjects(searchCriteria);
-        if(groups == null) {
-            throw new StudyCalendarSystemException("Get Csm Groups is null");
-        }
-        return groups;
-    }
-
-    protected boolean isGroupEqualToRole(Group group, Role role) {
-        return group.getGroupName().equals(role.getCode());
     }
 
     @SuppressWarnings("unchecked")
