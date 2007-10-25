@@ -21,13 +21,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -39,11 +39,11 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
  */
+// TODO: split out schedule-specific parts into ScheduleService
 @Transactional
 public class ParticipantService {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -299,7 +299,7 @@ public class ParticipantService {
             if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
                 event.changeState(new Canceled("Off Study"));
             } else if (ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode()) {
-                event.changeState(new NotAvailable("Off Study"));
+                event.changeState(new NotApplicable("Off Study"));
             }
         }
 

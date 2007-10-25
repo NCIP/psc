@@ -8,17 +8,14 @@ import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.SessionImplementor;
 import org.apache.commons.beanutils.PropertyUtils;
-//import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ControlledVocabularyObjectType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 
 import java.lang.reflect.InvocationTargetException;
@@ -38,7 +35,6 @@ import java.io.Serializable;
  * @author Rhett Sutphin
  */
 public class ScheduledEventStateType implements CompositeUserType {
-//    private static Log log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
     private static Logger log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
     private static final Type MODE_TYPE = Hibernate.custom(ControlledVocabularyObjectType.class, new String[] { "enumClass" }, new String[] { ScheduledEventMode.class.getName() });
 
@@ -132,6 +128,7 @@ public class ScheduledEventStateType implements CompositeUserType {
         MODE_TYPE.nullSafeSet(st, mode, index + MODE_INDEX, session);
     }
 
+    // TODO: why isn't this using SchedEventMode.createStateInstance?
     private ScheduledEventState createStateObject(ScheduledEventMode mode) {
         if (ScheduledEventMode.SCHEDULED == mode) {
             return new Scheduled();
@@ -141,8 +138,8 @@ public class ScheduledEventStateType implements CompositeUserType {
             return new Canceled();
         } else if (ScheduledEventMode.CONDITIONAL == mode) {
             return new Conditional();
-        } else if (ScheduledEventMode.NOT_AVAILABLE == mode) {
-            return new NotAvailable();
+        } else if (ScheduledEventMode.NOT_APPLICABLE == mode) {
+            return new NotApplicable();
         } else {
             return null;
         }

@@ -22,16 +22,17 @@ import java.util.List;
     }
 )
 @DiscriminatorValue(value = "5")
-public class NotAvailable extends ScheduledEventState {
+public class NotApplicable extends ScheduledEventState {
 
-    public NotAvailable() { }
+    public NotApplicable() { }
 
-    public NotAvailable(String reason) {
+    public NotApplicable(String reason) {
         super(reason);
     }
 
     ////// LOGIC
 
+    @Override
     @Transient
     public String getTextSummary() {
         StringBuilder sb = new StringBuilder().append(StringUtils.capitalize(getMode().getName()));
@@ -41,6 +42,7 @@ public class NotAvailable extends ScheduledEventState {
         return sb.toString();
     }
 
+    @Override
     @Transient
     public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
         List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
@@ -50,6 +52,7 @@ public class NotAvailable extends ScheduledEventState {
 
     ////// BEAN PROPERTIES
 
+    @Override
     @Transient // use superclass annotation
-    public ScheduledEventMode getMode() { return ScheduledEventMode.NOT_AVAILABLE; }
+    public ScheduledEventMode getMode() { return ScheduledEventMode.NOT_APPLICABLE; }
 }

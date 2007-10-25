@@ -446,7 +446,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
         assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.NOT_AVAILABLE, arm1.getEvents().get(4).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledEventMode.NOT_APPLICABLE, arm1.getEvents().get(4).getCurrentState().getMode());
     }
 
     public void testScheduleArmWithOffStudyParticipant() {

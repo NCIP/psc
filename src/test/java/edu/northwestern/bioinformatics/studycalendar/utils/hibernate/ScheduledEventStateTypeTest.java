@@ -70,9 +70,9 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeGetNotAvailable() throws Exception {
-        expectGetStateFields(NOT_AVAILABLE, false);
+        expectGetStateFields(NOT_APPLICABLE, false);
         ScheduledEventState state = doNullSafeGet();
-        assertScheduledEventState(NotAvailable.class, REASON, state);
+        assertScheduledEventState(NotApplicable.class, REASON, state);
     }
     // TODO (requires changes to ControlledVocabularyObjectType)
 //    public void testNullSafeGetNull() throws Exception {
@@ -126,8 +126,8 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
     }
 
     public void testNullSafeSetNotAvailable() throws Exception {
-        expectSetStateFields(NOT_AVAILABLE, 6, false);
-        doNullSafeSet(new NotAvailable(REASON), 6);
+        expectSetStateFields(NOT_APPLICABLE, 6, false);
+        doNullSafeSet(new NotApplicable(REASON), 6);
     }
 
     private void doNullSafeSet(ScheduledEventState expectedState, int index) throws SQLException {

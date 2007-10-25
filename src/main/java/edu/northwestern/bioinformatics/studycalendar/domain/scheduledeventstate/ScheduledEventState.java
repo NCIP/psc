@@ -60,7 +60,7 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
         List<Class<? extends ScheduledEventState>> list = new ArrayList<Class<? extends ScheduledEventState>>();
         if (conditional) {
             list.add(Conditional.class);
-            list.add(NotAvailable.class);
+            list.add(NotApplicable.class);
         }
         return list;
     }

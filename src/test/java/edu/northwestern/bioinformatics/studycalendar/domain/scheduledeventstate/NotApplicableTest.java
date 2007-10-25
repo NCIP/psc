@@ -3,17 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 
-public class NotAvailableTest extends StudyCalendarTestCase {
+public class NotApplicableTest extends StudyCalendarTestCase {
     public void testSummary() throws Exception {
-        assertEquals("NA - Not Available Reason", new NotAvailable("Not Available Reason").getTextSummary());
+        assertEquals("NA - Not Available Reason", new NotApplicable("Not Available Reason").getTextSummary());
     }
 
     public void testSummaryWithoutReason() throws Exception {
-        assertEquals("NA", new NotAvailable().getTextSummary());
+        assertEquals("NA", new NotApplicable().getTextSummary());
     }
 
-    public void testNotAvailableAvailableStates() throws Exception {
-        NotAvailable event = new NotAvailable("Reason");
+    public void testAvailableStates() throws Exception {
+        NotApplicable event = new NotApplicable("Reason");
         assertEquals("Wrong number of available states", 3, event.getAvailableStates(true).size());
     }
 }

@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotAvailable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.Collection;
@@ -29,8 +29,8 @@ public class ScheduledEventMode<T extends ScheduledEventState> extends AbstractC
         = new ScheduledEventMode<Canceled>(3, "canceled", Canceled.class);
     public static final ScheduledEventMode<Conditional> CONDITIONAL
         = new ScheduledEventMode<Conditional>(4, "conditional", Conditional.class);
-    public static final ScheduledEventMode<NotAvailable> NOT_AVAILABLE
-        = new ScheduledEventMode<NotAvailable>(5, "NA", NotAvailable.class);
+    public static final ScheduledEventMode<NotApplicable> NOT_APPLICABLE
+        = new ScheduledEventMode<NotApplicable>(5, "NA", NotApplicable.class);
 
 
     private Class<T> clazz;
