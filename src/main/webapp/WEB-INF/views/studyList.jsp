@@ -4,7 +4,7 @@
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
-<title>Calendars</title>
+<title>Templates</title>
 <head>
     <tags:stylesheetLink name="main"/>
     <style type="text/css">
@@ -38,7 +38,7 @@
     </style>
 </head>
 <body>
-<laf:box title="Calendars">
+<laf:box title="Templates">
     <laf:division>
         <security:secureOperation element="/pages/cal/newStudy">
             <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>

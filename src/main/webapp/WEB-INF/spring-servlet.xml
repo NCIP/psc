@@ -481,7 +481,7 @@
 
 
                 <bean parent="sectionTemplate" >
-                    <property name="displayName"><value>Calendars</value></property>
+                    <property name="displayName"><value>Templates</value></property>
                     <property name="mainController"><value>studyListController</value></property>
                     <property name="pathMapping"><value>/cal/**</value></property>
                     <property name="tasks">
