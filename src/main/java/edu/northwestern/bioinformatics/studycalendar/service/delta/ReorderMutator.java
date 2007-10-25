@@ -50,6 +50,6 @@ public class ReorderMutator implements Mutator {
     }
 
     public void apply(ScheduledCalendar calendar) {
-        throw new UnsupportedOperationException("apply not implemented");
+        throw new StudyCalendarSystemException("%s cannot be applied to an existing schedule", reorder);
     }
 }
