@@ -29,7 +29,8 @@ public class RemovePeriodMutator extends RemoveMutator {
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        Arm arm = (Arm) change.getDelta().getNode();
+        // second cast is for silly javac/generics bug
+        Arm arm = (Arm) (PlanTreeNode) change.getDelta().getNode();
         Period removedPeriod = (Period) findChild();
         Revision rev = change.getDelta().getRevision();
         for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
