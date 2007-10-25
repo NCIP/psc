@@ -12,7 +12,10 @@ Element.removeClassName(lastExisting, "last")
 SC.highlight("epoch-${epoch.id}")
 createEpochControls($("epoch-${epoch.id}-header"))
 registerSelectArmHandler($("arm-${epoch.arms[0].id}"))
-createArmControls($("arm-${epoch.arms[0].id}-item"))
+
+<%--createArmControls($("arm-${epoch.arms[0].id}-item"))--%>
+
 updateAllEpochsControlVisibility()
+createAllArmControls()
 SC.Main.registerClickForwarder($("arm-${epoch.arms[0].id}-item"))
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
