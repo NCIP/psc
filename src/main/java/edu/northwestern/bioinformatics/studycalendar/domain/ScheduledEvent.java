@@ -75,7 +75,8 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
 
     @Transient
     public List<ScheduledEventState> getAllStates() {
-        List<ScheduledEventState> all = new ArrayList<ScheduledEventState>(getPreviousStates());
+        List<ScheduledEventState> all = new ArrayList<ScheduledEventState>();
+        if (getPreviousStates() != null) all.addAll(getPreviousStates());
         if (getCurrentState() != null) all.add(getCurrentState());
         return all;
     }

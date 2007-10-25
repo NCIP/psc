@@ -75,6 +75,7 @@ public class ScheduledEventTest extends StudyCalendarTestCase {
     }
 
     public void testGetAllWithCurrentOnly() throws Exception {
+        scheduledEvent.setPreviousStates(null); // paranoia
         scheduledEvent.changeState(new Canceled("A"));
         List<ScheduledEventState> all = scheduledEvent.getAllStates();
         assertEquals(1, all.size());
