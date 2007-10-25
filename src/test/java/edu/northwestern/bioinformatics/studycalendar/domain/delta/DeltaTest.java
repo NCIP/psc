@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 
+import java.util.Arrays;
+
 /**
  * @author Rhett Sutphin
  */
@@ -45,10 +47,11 @@ public class DeltaTest extends StudyCalendarTestCase {
         Change sib2 = registerMockFor(Change.class);
 
         Delta<?> delta = new EpochDelta();
-        delta.addChanges(sib0, sib1, sib2);
+        delta.getChangesInternal().addAll(Arrays.asList(sib0, sib1, sib2));
 
         sib0.siblingDeleted(delta, sib1, 1, 0);
         sib2.siblingDeleted(delta, sib1, 1, 2);
+        sib1.setDelta(null);
 
         replayMocks();
         delta.removeChange(sib1);
@@ -61,7 +64,7 @@ public class DeltaTest extends StudyCalendarTestCase {
         Change sib2 = registerMockFor(Change.class);
 
         Delta<?> delta = new EpochDelta();
-        delta.addChange(sib0).addChange(sib2);
+        delta.getChangesInternal().addAll(Arrays.asList(sib0, sib2));
 
         replayMocks();
         delta.removeChange(sib1);
