@@ -12,6 +12,7 @@ import javax.persistence.Transient;
 @Entity
 @DiscriminatorValue(value="2")
 public class DayOfTheWeek extends Holiday {
+    // TODO: This ought to be the java.util.Calendar constant for the day, or a custom enum
     private String dayOfTheWeek;
 
     @Transient
