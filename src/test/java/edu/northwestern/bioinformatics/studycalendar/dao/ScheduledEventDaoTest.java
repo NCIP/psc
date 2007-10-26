@@ -10,12 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Date;
-import java.util.List;
-
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -56,7 +51,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
     }
     
     public void testGetScheduledEventsFromPlannedEvent() throws Exception {
-        Collection<ScheduledEvent> matches = getDao().getScheduledEventsFromPlannedEvent(
+        Collection<ScheduledEvent> matches = getDao().getEventsFromPlannedEvent(
             plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21));
         assertEquals("Wrong number of matches", 2, matches.size());
         Collection<Integer> actualIds = DomainObjectTools.collectIds(matches);
@@ -69,7 +64,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         loaded.setDetails("F9");
         ScheduledEvent queried = null;
 
-        for (ScheduledEvent e : getDao().getScheduledEventsFromPlannedEvent(plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21))) {
+        for (ScheduledEvent e : getDao().getEventsFromPlannedEvent(plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21))) {
             if (e.getId() == -30) {
                 queried = e;
                 break;
