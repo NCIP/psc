@@ -3,27 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * @author John Dzak
@@ -33,9 +27,10 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
-    private UserRoleDao userRoleDao;
     private TemplateService templateService;
     private SiteService siteService;
+    private UserService userService;
+    private String MODE_ASSIGN_BY_USER = "byUser";
 
 
     public SiteCoordinatorDashboardController() {
@@ -48,10 +43,12 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
         SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) o;
 
-        User siteCoordinator = command.getSiteCoordinator();
-        refdata.put("studies",  getAssignableStudies(siteCoordinator.getName()));
-        refdata.put("sites", siteService.getSitesForSiteCd(siteCoordinator.getName()));
+        refdata.put("studies", command.getAssignableStudies() );
+        refdata.put("sites"  , command.getAssignableSites());
+        refdata.put("users"  , command.getAssignableUsers());
+
         refdata.put("currentStudy", command.getStudy());
+
         return refdata;
     }
 
@@ -65,29 +62,31 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         User siteCoordinator = userDao.getByName(ApplicationSecurityManager.getUser());
-        Integer studyId      = ServletRequestUtils.getIntParameter(request, "study");
-        Study selectedStudy  = getCurrentStudy(studyId, siteCoordinator.getName());
 
-        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(userRoleDao, templateService, siteService, selectedStudy, siteCoordinator);
+        List<User> assignableUsers    = userService.getParticipantCoordinatorsForSites(getSitesForUser(siteCoordinator));
+        List<Site> assignableSites    = siteService.getSitesForSiteCd(siteCoordinator.getName());
+        List<Study> assignableStudies = getAssignableStudies(siteCoordinator.getName());
+
+        String mode = ServletRequestUtils.getStringParameter(request, "mode");
+        AbstractGridCommand command;
+        if ( MODE_ASSIGN_BY_USER.equals(mode) ) {
+            command = null;
+//            Integer userId      = ServletRequestUtils.getIntParameter(request, "user");
+//            User selectedUser   = getCurrentUser(userId.toString(), assignableUsers);
+//            command = new SiteCoordinatorDashboardCommandByUser(userRoleDao, templateService, siteService, selectedUser, siteCoordinator);
+        } else {
+            Integer studyId      = ServletRequestUtils.getIntParameter(request, "study");
+            Study selectedStudy  = getCurrentStudy(studyId, assignableStudies);
+            command = new SiteCoordinatorDashboardCommand(templateService, selectedStudy, assignableStudies, assignableSites, assignableUsers);
+        }
         return command;
     }
 
-    protected Study getCurrentStudy(Integer studyId, String userName) throws Exception {
-        Study study = null;
-        if (studyId != null ) {
-            study = studyDao.getById(studyId);
-        } else {
-            List<Study> assignableStudies = getAssignableStudies(userName);
-            if(assignableStudies.size() > 0) {
-                study = assignableStudies.get(0);
-            }
-        }
-        return study;
-    }
 
-    protected List<Study> getAssignableStudies(String userName) throws Exception {
+
+    protected List<Study> getAssignableStudies(String siteCoordinatorName) throws Exception {
         List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
+        List<Study> ownedStudies = templateService.checkOwnership(siteCoordinatorName, studies);
 
         List<Study> assignableStudies = new ArrayList<Study>();
          for (Study ownedStudy : ownedStudies) {
@@ -96,6 +95,40 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
             }
          }
         return assignableStudies;
+    }
+
+    public List<Site> getSitesForUser(User user) {
+        Set<Site> sites = new HashSet<Site>();
+        for (UserRole userRole : user.getUserRoles()) {
+            if (userRole.getSites().size() > 0)  {
+                sites.addAll(userRole.getSites());
+            }
+        }
+        return new ArrayList<Site>(sites);
+    }
+
+    protected Study getCurrentStudy(Integer studyId, List<Study> assignableStudies) throws Exception {
+        Study study = null;
+        if (studyId != null ) {
+            study = studyDao.getById(studyId);
+        } else {
+            if(assignableStudies.size() > 0) {
+                study = assignableStudies.get(0);
+            }
+        }
+        return study;
+    }
+
+    protected User getCurrentUser(String userId, List<User> assignableUsers) throws Exception {
+        User user = null;
+        if (userId != null ) {
+            user = userDao.getById(Integer.parseInt(userId));
+        } else {
+            if(assignableUsers.size() > 0) {
+                user = assignableUsers.get(0);
+            }
+        }
+        return user;
     }
 
     protected ModelAndView onSubmit(Object o) throws Exception {
@@ -119,15 +152,15 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
         this.siteDao = siteDao;
     }
 
-    public void setUserRoleDao(UserRoleDao userRoleDao) {
-        this.userRoleDao = userRoleDao;
-    }
-
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
     }
 
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }

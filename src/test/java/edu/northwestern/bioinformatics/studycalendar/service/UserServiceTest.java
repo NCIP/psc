@@ -1,16 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static org.easymock.EasyMock.aryEq;
-
-import static java.util.Collections.singleton;
-
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.*;
@@ -21,24 +16,24 @@ import gov.nih.nci.security.exceptions.CSException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.easymock.IArgumentMatcher;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.eq;
 import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.reportMatcher;
 import org.easymock.internal.matchers.ArrayEquals;
 
 import javax.security.auth.Subject;
 import java.security.Principal;
 import java.util.*;
+import static java.util.Arrays.asList;
 
 public class UserServiceTest extends StudyCalendarTestCase {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     private UserProvisioningManagerStub userProvisioningManagerStub;
     private UserService service;
-    private List<Group> allCsmGroups;
-    private SiteService siteService;
     private List<Site> sites;
+    private User user0, user1, user2;
+    private Site site0, site1;
+    private UserRole userRole0, userRole1, userRole2;
 
 
     protected void setUp() throws Exception {
@@ -47,16 +42,27 @@ public class UserServiceTest extends StudyCalendarTestCase {
         userDao = registerMockFor(UserDao.class);
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
         userProvisioningManagerStub = new UserProvisioningManagerStub();
-        siteService = registerMockFor(SiteService.class);
 
         service = new UserService();
         service.setUserDao(userDao);
         service.setUserProvisioningManager(userProvisioningManager);
-        service.setSiteService(siteService);
         
-        sites = new ArrayList<Site>();
-        sites.add(createNamedInstance("Mayo Clinic", Site.class));
-        sites.add(createNamedInstance("Northwestern Clinic", Site.class));
+        user0 = createNamedInstance("Adam", User.class);
+        user1 = createNamedInstance("Steve", User.class);
+        user2 = createNamedInstance("Site Coordinator", User.class);
+
+        site0 = createNamedInstance("Northwestern", Site.class);
+        site1 = createNamedInstance("Mayo Clinic", Site.class);
+        sites = asList(site0, site1);
+
+        userRole0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        userRole1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site1);
+        userRole2 = createUserRole(user2, Role.STUDY_ADMIN);
+
+        user0.addUserRole(userRole0);
+        user1.addUserRole(userRole1);
+        user2.addUserRole(userRole2);
+
     }
 
     public void testSaveUser() throws Exception {
@@ -102,6 +108,15 @@ public class UserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertUserEquals(expectedUser, actualUser);
+    }
+
+    public void testGetParticipantCoordinatorsForSites() throws Exception {
+        expect(userDao.getAllParticipantCoordinators()).andReturn(asList(user0, user1));
+        replayMocks();
+        List<User> actualParticipantCoordinators = service.getParticipantCoordinatorsForSites(asList(site0));
+        verifyMocks();
+        assertEquals("Wrong number of users", 1, actualParticipantCoordinators.size());
+        assertEquals("Wrong user", user0.getName(), actualParticipantCoordinators.get(0).getName());
     }
 
     public void assertUserEquals(User expected, User actual) throws Exception{
@@ -218,7 +233,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
 
         public List getObjects(SearchCriteria searchCriteria) {
-            return allCsmGroups;
+            throw new UnsupportedOperationException();
         }
 
         public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {

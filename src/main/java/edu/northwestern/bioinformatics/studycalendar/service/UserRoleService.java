@@ -10,6 +10,9 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.find
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UserRoleService {
     private SiteService siteService;
     private UserRoleDao userRoleDao;
@@ -57,10 +60,23 @@ public class UserRoleService {
         }
     }
 
-   
-
     public void removeUserRoleAssignment(User user, Role role) throws Exception {
         removeUserRoleAssignment(user, role, null);
+    }
+
+    public List<User> getSiteAssociatedUsers(List<Site> sites, List<User> users) {
+        List<User> associatedUsers = new ArrayList<User>();
+        for (Site site : sites) {
+            for (User user : users) {
+                for (UserRole userRole : user.getUserRoles()) {
+                    if (userRole.getSites().contains(site) && !associatedUsers.contains(user)) {
+                        associatedUsers.add(user);
+                        break;
+                    }
+                }
+            }
+        }
+        return associatedUsers;
     }
 
     @Required
@@ -68,6 +84,7 @@ public class UserRoleService {
         this.userDao = userDao;
     }
 
+    @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
     }

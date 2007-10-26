@@ -8,13 +8,11 @@ import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     private SiteDao siteDao;
-    private UserDao userDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = (SiteDao)getApplicationContext().getBean("siteDao");
-        userDao = (UserDao)getApplicationContext().getBean("userDao");
     }
 
     public void testGetUserRoleById() throws Exception {
@@ -123,21 +121,5 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
             assertEquals("Wrong id", -1, (int) loaded.getId());
             assertEquals("Wrong study site size", 0, loaded.getStudySites().size());
         }
-    }
-
-    public void testGetAllParticipantCoordinators() throws Exception {
-        List<UserRole> usersRoles = getDao().getAllParticipantCoordinators();
-
-        assertEquals("wrong participant coordinator", "PC A", usersRoles.get(0).getUser().getName());
-        assertEquals("wrong participant coordinator", "PC B", usersRoles.get(1).getUser().getName());
-    }
-
-    public void testGetByUserAndRole() throws Exception {
-        User expectedUser = userDao.getById(-101);
-        Role expectedRole = Role.PARTICIPANT_COORDINATOR;
-        
-        UserRole actualUserRole = getDao().getByUserAndRole(expectedUser, expectedRole);
-        assertEquals("Wrong user", "PC A", actualUserRole.getUser().getName());
-        assertEquals("Wrong role", Role.PARTICIPANT_COORDINATOR, actualUserRole.getRole());
     }
 }

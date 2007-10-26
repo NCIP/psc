@@ -1,18 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -32,8 +29,10 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
     private List<Study> studies;
     private SiteCoordinatorDashboardCommand command;
-    private User user;
+    private User siteCoordinator;
+    private User user0, user1;
     private SiteService siteService;
+    private List<User> users;
 
     @Override
     protected void setUp() throws Exception {
@@ -52,12 +51,16 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
 
-        user      =  createUser(1, "john", 1L, true, "pass");
+        siteCoordinator =  createUser(1, "john", 1L, true, "pass");
+
+        user0 = createNamedInstance("John", User.class);
+        user1 = createNamedInstance("John", User.class);
+        users = asList(user0, user1);
 
         sites     = asList(createNamedInstance("Mayo Clinic", Site.class));
         studies   = asList(createNamedInstance("Study A", Study.class));
 
-        SecurityContextHolderTestHelper.setSecurityContext(user.getName(), user.getPassword());
+        SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), siteCoordinator.getPassword());
     }
 
     public void testGetView() throws Exception {
@@ -89,10 +92,9 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     }
 
     public void expectRefData() throws Exception{
-        expect(command.getSiteCoordinator()).andReturn(user);
-        expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.checkOwnership(user.getName(), studies)).andReturn(studies);
-        expect(siteService.getSitesForSiteCd(user.getName())).andReturn(sites);
+        expect(command.getAssignableStudies()).andReturn(studies);
+        expect(command.getAssignableSites()).andReturn(sites);
+        expect(command.getAssignableUsers()).andReturn(users);
         expect(command.getStudy()).andReturn(studies.get(0));
     }
 

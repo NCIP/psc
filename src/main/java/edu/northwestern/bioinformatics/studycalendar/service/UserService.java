@@ -63,6 +63,21 @@ public class UserService {
         return userDao.getById(id);
     }
 
+    public List<User> getParticipantCoordinatorsForSites(List<Site> sites) {
+        List<User> users = userDao.getAllParticipantCoordinators();
+        List<User> associatedUsers = new ArrayList<User>();
+        for (User user : users) {
+            for (Site site : sites) {
+                UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+                if (userRole != null && userRole.getSites().contains(site)) {
+                    associatedUsers.add(user);
+                    break;
+                }
+            }
+        }
+        return associatedUsers;
+    }
+
     ////// CONFIGURATION
     @Required
     public void setUserDao(UserDao userDao) {

@@ -58,4 +58,32 @@
         participant_coordinator_id="-100"
         current_amendment_id="-5221"
         />
+
+        <USERS
+        id="-300"
+        name="PC A"
+        csm_user_id="-350"
+        active_flag="1"
+        password="qN+MnXquuqMPAE1RlGJJyA=="
+        />
+
+    <USERS
+        id="-400"
+        name="PC B"
+        csm_user_id="-450"
+        active_flag="1"
+        password="qN+MnXquuqMPAE1RlGJJyA=="
+        />
+
+    <USER_ROLES
+        id="-2"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        user_id="-300"
+        />
+
+    <USER_ROLES
+        id="-3"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        user_id="-400"
+        />
 </dataset>

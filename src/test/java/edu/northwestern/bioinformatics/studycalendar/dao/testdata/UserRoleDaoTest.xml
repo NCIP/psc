@@ -53,32 +53,5 @@
         user_role_id="-1"
         study_site_id="-2000"
         />
-
-    <USERS
-        id="-101"
-        name="PC A"
-        csm_user_id="-151"
-        active_flag="1"
-        password="qN+MnXquuqMPAE1RlGJJyA=="
-        />
-
-    <USERS
-        id="-102"
-        name="PC B"
-        csm_user_id="-152"
-        active_flag="1"
-        password="qN+MnXquuqMPAE1RlGJJyA=="
-        />
-    <USER_ROLES
-        id="-2"
-        csm_group_name="PARTICIPANT_COORDINATOR"
-        user_id="-101"
-        />
-
-    <USER_ROLES
-        id="-3"
-        csm_group_name="PARTICIPANT_COORDINATOR"
-        user_id="-102"
-        />
-
+    
 </dataset>
