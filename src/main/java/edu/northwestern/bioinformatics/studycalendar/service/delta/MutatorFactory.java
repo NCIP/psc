@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -15,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -25,6 +27,7 @@ public class MutatorFactory {
     private DaoFinder daoFinder;
     private ParticipantService participantService;
     private TemplateService templateService;
+    private ScheduleService scheduleService;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -70,7 +73,24 @@ public class MutatorFactory {
     }
 
     private <T extends PlanTreeNode<?>> Mutator createPropertyMutator(T target, PropertyChange change) {
-        // Note that this will get much more complex once apply(schedule) is implemented
+        if (target instanceof Period) {
+            if ("startDay".equals(change.getPropertyName())) {
+                return new ChangePeriodStartDayMutator(change, templateService, scheduleService);
+            } else if ("repetitions".equals(change.getPropertyName())) {
+                return new ChangePeriodRepetitionsMutator(change, templateService, participantService);
+            } else if ("duration.quantity".equals(change.getPropertyName())) {
+                return new ChangePeriodDurationQuantityMutator(change, templateService, scheduleService);
+            } else if ("duration.unit".equals(change.getPropertyName())) {
+                return new ChangePeriodDurationUnitMutator(change, templateService, scheduleService);
+            }
+            // fall through
+        }
+        // TODO
+        // if (target instanceof PlannedEvent) {
+        //
+        // } 
+
+        // default
         return new SimplePropertyChangeMutator(change);
     }
 
@@ -98,5 +118,10 @@ public class MutatorFactory {
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setScheduleService(ScheduleService scheduleService) {
+        this.scheduleService = scheduleService;
     }
 }

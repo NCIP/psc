@@ -78,11 +78,34 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         assertEquals(AddPlannedEventMutator.class,  actual.getClass());
     }
 
-    // Note that this will get much more complex once apply(schedule) is thrown into the implementations
     public void testCreatePropertyMutator() throws Exception {
-        Mutator actual = factory.createMutator(new Period(), new PropertyChange());
+        Mutator actual = factory.createMutator(new Arm(), new PropertyChange());
         assertNotNull(actual);
         assertEquals(SimplePropertyChangeMutator.class, actual.getClass());
+    }
+
+    public void testCreatePeriodStartMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Period(), PropertyChange.create("startDay", "11", "8"));
+        assertNotNull(actual);
+        assertEquals(ChangePeriodStartDayMutator.class, actual.getClass());
+    }
+
+    public void testCreatePeriodRepsMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Period(), PropertyChange.create("repetitions", "4", "8"));
+        assertNotNull(actual);
+        assertEquals(ChangePeriodRepetitionsMutator.class, actual.getClass());
+    }
+
+    public void testCreatePeriodDurationQuantityMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Period(), PropertyChange.create("duration.quantity", "4", "8"));
+        assertNotNull(actual);
+        assertEquals(ChangePeriodDurationQuantityMutator.class, actual.getClass());
+    }
+
+    public void testCreatePeriodDurationUnitMutator() throws Exception {
+        Mutator actual = factory.createMutator(new Period(), PropertyChange.create("duration.unit", "day", "week"));
+        assertNotNull(actual);
+        assertEquals(ChangePeriodDurationUnitMutator.class, actual.getClass());
     }
 
     public void testCreateReorderMutator() throws Exception {
