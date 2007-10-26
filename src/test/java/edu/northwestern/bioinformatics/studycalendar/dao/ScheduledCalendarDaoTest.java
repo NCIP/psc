@@ -10,13 +10,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.assertDayOfDate;
+import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Collection;
 
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
 
 /**
  * @author Rhett Sutphin
@@ -28,6 +30,10 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         = (ArmDao) getApplicationContext().getBean("armDao");
     private AmendmentDao amendmentDao
         = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+    private StudyDao studyDao
+        = (StudyDao) getApplicationContext().getBean("studyDao");
+    private SiteDao siteDao
+        = (SiteDao) getApplicationContext().getBean("siteDao");
 
     public void testGetById() throws Exception {
         ScheduledCalendar cal = getDao().getById(-20);
@@ -158,6 +164,14 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         Activity currentActivity = reloaded.getScheduledArms().get(2).getEvents().get(0).getActivity();
         assertNotNull("Activity null", currentActivity);
         assertEquals("Wrong Activity", expectedActivity.getName(), currentActivity.getName());
+    }
+
+    public void testGetAllForStudy() throws Exception {
+        Collection<ScheduledCalendar> matches = getDao().getAllFor(studyDao.getById(-2));
+        assertEquals("Wrong number of matches", 2, matches.size());
+        Collection<Integer> matchIds = DomainObjectTools.collectIds(matches);
+        assertContains(matchIds, -201);
+        assertContains(matchIds, -203);
     }
 
     public void testInitialize() throws Exception {

@@ -1,9 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ public class AmendmentService {
     private StudyService studyService;
     private DeltaService deltaService;
     private TemplateService templateService;
+    private ScheduledCalendarDao scheduledCalendarDao;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -28,6 +31,7 @@ public class AmendmentService {
      *   <li>Apply the deltas to the persistent calendar</li>
      *   <li>Move the development amendment to the study's amendment stack</li>
      *   <li>Save it all</li>
+     *   <li>Temporarily:  apply amendment to all existing schedules</li>
      * </ul>
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -41,6 +45,10 @@ public class AmendmentService {
         source.setAmendment(dev);
         source.setDevelopmentAmendment(null);
         studyService.save(source);
+
+        for (ScheduledCalendar scheduledCalendar : scheduledCalendarDao.getAllFor(source)) {
+            deltaService.amend(scheduledCalendar.getAssignment(), dev);
+        }
     }
 
     /**
@@ -91,5 +99,10 @@ public class AmendmentService {
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
+        this.scheduledCalendarDao = scheduledCalendarDao;
     }
 }

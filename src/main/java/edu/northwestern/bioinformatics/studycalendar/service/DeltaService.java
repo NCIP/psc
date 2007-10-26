@@ -7,11 +7,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
@@ -47,6 +50,16 @@ public class DeltaService {
         Study revised = source.transientClone();
         apply(revised, revision);
         return revised;
+    }
+
+    /**
+     * Applies the given amendment to the calendar for the participant in the
+     * given assignment.
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void amend(StudyParticipantAssignment assignment, Amendment amendment) {
+        apply(assignment.getScheduledCalendar(), amendment);
+        assignment.setCurrentAmendment(amendment);
     }
 
     public <T extends PlanTreeNode<?>> T revise(T source) {
@@ -91,6 +104,17 @@ public class DeltaService {
             for (Change change : delta.getChanges()) {
                 log.debug("Rolling back change {} on {}", change, affected);
                 mutatorFactory.createMutator(affected, change).revert(affected);
+            }
+        }
+    }
+
+    private void apply(ScheduledCalendar target, Revision revision) {
+        log.debug("Applying {} to {}", revision, target);
+        for (Delta<?> delta : revision.getDeltas()) {
+            PlanTreeNode<?> affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);
+            for (Change change : delta.getChanges()) {
+                log.debug("Applying change {} on {}", change, affected);
+                mutatorFactory.createMutator(affected, change).apply(target);
             }
         }
     }

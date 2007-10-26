@@ -1,12 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -14,6 +16,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
+import java.util.Collections;
+
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -22,6 +28,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private AmendmentService service;
     private StudyService studyService;
     private DeltaService mockDeltaService;
+    private ScheduledCalendarDao scheduledCalendarDao;
 
     private Study study;
     private PlannedCalendar calendar;
@@ -30,6 +37,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         studyService = registerMockFor(StudyService.class);
+        scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -49,6 +57,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setStudyService(studyService);
         service.setDeltaService(Fixtures.getTestingDeltaService());
         service.setTemplateService(new TestingTemplateService());
+        service.setScheduledCalendarDao(scheduledCalendarDao);
 
         mockDeltaService = registerMockFor(DeltaService.class);
     }
@@ -64,6 +73,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         study.setDevelopmentAmendment(inProgress);
 
         studyService.save(study);
+        // temporary:
+        expect(scheduledCalendarDao.getAllFor(study)).andReturn(Collections.<ScheduledCalendar>emptyList());
 
         replayMocks();
         service.amend(study);

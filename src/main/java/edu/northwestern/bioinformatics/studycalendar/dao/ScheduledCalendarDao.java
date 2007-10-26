@@ -4,6 +4,9 @@ import org.hibernate.Hibernate;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -25,5 +28,10 @@ public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<Sc
                 Hibernate.initialize(event.getPreviousStates());
             }
         }
+    }
+
+    public Collection<ScheduledCalendar> getAllFor(Study source) {
+        return getHibernateTemplate().find(
+            "from ScheduledCalendar cal where cal.assignment.studySite.study = ?", source);
     }
 }
