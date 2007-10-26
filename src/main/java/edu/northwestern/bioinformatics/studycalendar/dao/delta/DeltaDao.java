@@ -2,6 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import org.springframework.transaction.annotation.Transactional;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
@@ -16,12 +19,20 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
         return Delta.class;
     }
 
-    @SuppressWarnings({ "unchecked" })
     public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereAdded(PlanTreeNode<P> node) {
+        return findDeltaForChildChangeOfNode(Add.class, node);
+    }
+
+    public <P extends PlanTreeNode<?>> Delta<P> findDeltaWhereRemoved(PlanTreeNode<P> node) {
+        return findDeltaForChildChangeOfNode(Remove.class, node);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private <P extends PlanTreeNode<?>> Delta<P> findDeltaForChildChangeOfNode(Class<? extends ChildrenChange> changeClass, PlanTreeNode<P> node) {
         List<Delta<P>> deltas = getHibernateTemplate().find(
             String.format(
-                "select d from Delta d, Add a where a in elements(d.changesInternal) and d.class = %sDelta and a.childId = ?",
-                node.parentClass().getSimpleName()
+                "select d from Delta d, %s a where a in elements(d.changesInternal) and d.class = %sDelta and a.childId = ? order by d.id desc",
+                changeClass.getSimpleName(), node.parentClass().getSimpleName()
             ),
             node.getId()
         );

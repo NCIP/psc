@@ -17,6 +17,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -618,6 +619,24 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         assertSame(e1, service.findParent(e1a0));
+        verifyMocks();
+    }
+
+    public void testFindParentWhenAddedAsChildOfAnotherAddAndThenRemovedAlone() throws Exception {
+        // simulates this process:
+        //   Period P0 with child P0E0 added to E1A1 --> Results in Add(P0) in amendment R0
+        //   P0E0 removed in amendment R1 --> Results in  Remove(P0E0) and P0E0.period=>null
+
+        Study study = Fixtures.createBasicTemplate();
+        Period p = Fixtures.createPeriod("P0", 3, 17, 1);
+        PlannedEvent p0e0 = Fixtures.createPlannedEvent("P0E0", 4);
+        study.getPlannedCalendar().getEpochs().get(1).getArms().get(1).addPeriod(p);
+
+        expect(deltaDao.findDeltaWhereAdded(p0e0)).andReturn(null);
+        expect(deltaDao.findDeltaWhereRemoved(p0e0)).andReturn(Delta.createDeltaFor(p, Remove.create(p0e0)));
+        replayMocks();
+
+        assertSame(p, service.findParent(p0e0));
         verifyMocks();
     }
 

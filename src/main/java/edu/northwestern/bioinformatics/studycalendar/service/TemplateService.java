@@ -283,11 +283,16 @@ public class TemplateService {
             return node.getParent();                                                                                                    
         } else {
             Delta<P> delta = deltaDao.findDeltaWhereAdded(node);
-            if (delta == null) {
-                throw new StudyCalendarSystemException("Could not locate delta where %s was added", node);
-            } else {
+            if (delta != null) {
                 return delta.getNode();
             }
+
+            delta = deltaDao.findDeltaWhereRemoved(node);
+            if (delta != null) {
+                return delta.getNode();
+            }
+
+            throw new StudyCalendarSystemException("Could not locate delta where %s was added or where it was removed", node);
         }
     }
 

@@ -103,11 +103,19 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong delta found", -100, (int) found.getId());
     }
 
-    public void testFindOriginalAddDeltaForPeriodWithSameId() throws Exception {
+    public void testFindOriginalAddDeltaForPeriodWithSameIdAsArm() throws Exception {
         Period period = periodDao.getById(-3);
         assertNotNull("Test setup failure", period);
         Delta<Arm> found = deltaDao.findDeltaWhereAdded(period);
         assertNotNull("Delta not found", found);
         assertEquals("Wrong delta found", -220, (int) found.getId());
+    }
+
+    public void testFindMostRecentRemoveDeltaForArm() throws Exception {
+        Arm arm = armDao.getById(-3);
+        assertNotNull("Test setup failure", arm);
+        Delta<Epoch> found = deltaDao.findDeltaWhereRemoved(arm);
+        assertNotNull("Delta not found", found);
+        assertEquals("Wrong delta found", -103, (int) found.getId());
     }
 }

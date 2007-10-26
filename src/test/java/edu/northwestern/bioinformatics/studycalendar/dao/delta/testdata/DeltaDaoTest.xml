@@ -1,10 +1,17 @@
 <dataset>
     <AMENDMENTS id="-1" amendment_date="1/2/2525"/>
+    <AMENDMENTS id="-2" amendment_date="1/7/2525"/>
     <DELTAS
         id="-100"
         node_type="epoch"
         node_id="-1"
         amendment_id="-1"
+        />
+    <DELTAS
+        id="-103"
+        node_type="epoch"
+        node_id="-1"
+        amendment_id="-2"
         />
     <DELTAS
          id="-200"
@@ -65,6 +72,12 @@
         new_value="-3"
         attribute="0"
         delta_id="-220"
+    />
+    <CHANGES
+        id="-13"
+        action="remove"
+        old_value="-3"
+        delta_id="-103"
     />
     <STUDIES id="-2" name="Protocol"/>
     <PLANNED_CALENDARS id="-2" study_id="-2"/>    
