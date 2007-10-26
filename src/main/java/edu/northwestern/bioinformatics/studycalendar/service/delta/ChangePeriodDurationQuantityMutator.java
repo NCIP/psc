@@ -10,31 +10,18 @@ import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 /**
  * @author Rhett Sutphin
  */
-public class ChangePeriodDurationQuantityMutator extends AbstractPeriodPropertyChangeMutator {
-    private ScheduleService scheduleService;
+public class ChangePeriodDurationQuantityMutator extends AbstractChangePeriodDurationMutator {
     private int durationQuanityChange;
 
     public ChangePeriodDurationQuantityMutator(
         PropertyChange change, TemplateService templateService, ScheduleService scheduleService
     ) {
-        super(change, templateService);
-        this.scheduleService = scheduleService;
+        super(change, templateService, scheduleService);
         durationQuanityChange = Integer.parseInt(change.getNewValue()) - Integer.parseInt(change.getOldValue());
     }
 
-    private int durationChangeInDays() {
-        return getChangedPeriod().getDuration().getUnit().inDays() * durationQuanityChange;
-    }
-
     @Override
-    public void apply(ScheduledCalendar calendar) {
-        for (ScheduledArm arm : getScheduledArmsToMutate(calendar)) {
-            for (ScheduledEvent event : arm.getEvents()) {
-                if (getChangedPeriod().equals(templateService.findParent(event.getPlannedEvent()))) {
-                    scheduleService.reviseDate(event, durationChangeInDays() * event.getRepetitionNumber(),
-                        change.getDelta().getRevision());
-                }
-            }
-        }
+    protected int durationChangeInDays() {
+        return getChangedPeriod().getDuration().getUnit().inDays() * durationQuanityChange;
     }
 }

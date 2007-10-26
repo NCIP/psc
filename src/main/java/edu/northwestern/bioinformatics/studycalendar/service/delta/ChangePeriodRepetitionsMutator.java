@@ -18,7 +18,6 @@ import org.apache.commons.logging.Log;
  */
 public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChangeMutator {
     private ParticipantService participantService;
-    private ScheduleService scheduleService;
 
     private int oldRepetitionCount;
     private int newRepetitionCount;
