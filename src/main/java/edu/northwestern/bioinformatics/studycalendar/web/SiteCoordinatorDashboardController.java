@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -67,6 +68,9 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
         List<User> assignableUsers    = userService.getParticipantCoordinatorsForSites(getSitesForUser(siteCoordinator));
         List<Study> assignableStudies = getAssignableStudies(siteCoordinator.getName());
 
+        Collections.sort(assignableUsers, new NamedComparator());
+        Collections.sort(assignableStudies, new NamedComparator());
+
         String mode = ServletRequestUtils.getStringParameter(request, "mode");
         AbstractGridCommand command;
         if ( MODE_ASSIGN_BY_USER.equals(mode) ) {
@@ -78,6 +82,8 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
             Integer studyId      = ServletRequestUtils.getIntParameter(request, "study");
             Study selectedStudy  = getCurrentStudy(studyId, assignableStudies);
             assignableSites    = getAssignableSites(siteCoordinator, selectedStudy);
+            Collections.sort(assignableSites, new NamedComparator());
+
             command = new SiteCoordinatorDashboardCommand(templateService, selectedStudy, assignableStudies, assignableSites, assignableUsers);
         }
         return command;
