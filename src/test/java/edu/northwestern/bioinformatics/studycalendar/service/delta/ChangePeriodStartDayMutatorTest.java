@@ -32,10 +32,11 @@ public class ChangePeriodStartDayMutatorTest extends PeriodMutatorTestCase<Prope
     }
 
     public void testDatesShiftedForward() throws Exception {
-        expect(templateService.findParent(p0e0)).andReturn(period0).times(PERIOD_0_REPS);
-        expect(templateService.findParent(p0e1)).andReturn(period0).times(PERIOD_0_REPS);
-        expect(templateService.findParent(p1e0)).andReturn(period1).times(PERIOD_1_REPS);
-        expect(templateService.findParent(p1e1)).andReturn(period1).times(PERIOD_1_REPS);
+        expect(templateService.findParent(period0)).andReturn(arm);
+        expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
+        expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
+        expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
+        expect(templateService.findParent(p1e1)).andReturn(period1).times(1, PERIOD_1_REPS);
 
         scheduleService.reviseDate(getScheduledEventFixture(p0e0, 0), 4, amendment);
         scheduleService.reviseDate(getScheduledEventFixture(p0e0, 1), 4, amendment);
@@ -52,6 +53,7 @@ public class ChangePeriodStartDayMutatorTest extends PeriodMutatorTestCase<Prope
     public void testDatesShiftedBackwards() throws Exception {
         change.setNewValue("0");
 
+        expect(templateService.findParent(period0)).andReturn(arm);
         expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);

@@ -61,8 +61,9 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
     public void testOnlyApplicableScheduledEventsUnscheduled() throws Exception {
         scheduledCalendar.addArm(scheduledArm);
 
-        pe1se0.unscheduleIfOutstanding("Removed in revision Oops (09/22)");
-        pe1se1.unscheduleIfOutstanding("Removed in revision Oops (09/22)");
+        String expectedMessage = "Removed in revision Oops (09/22)";
+        pe1se0.unscheduleIfOutstanding(expectedMessage);
+        pe1se1.unscheduleIfOutstanding(expectedMessage);
 
         replayMocks();
         mutator.apply(scheduledCalendar);

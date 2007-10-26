@@ -52,7 +52,7 @@ public class RemovePeriodMutatorTest extends PeriodMutatorTestCase<Remove> {
         expect(templateService.findParent(p1e0)).andReturn(period1).times(2);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(2);
 
-        String expectedMessage = "Removed in revision Oops (09/22)";
+        String expectedMessage = "Removed in revision " + REVISION_DISPLAY_NAME;
         getScheduledEventFixture(p0e0, 0).unscheduleIfOutstanding(expectedMessage);
         getScheduledEventFixture(p0e1, 0).unscheduleIfOutstanding(expectedMessage);
         getScheduledEventFixture(p0e0, 1).unscheduleIfOutstanding(expectedMessage);

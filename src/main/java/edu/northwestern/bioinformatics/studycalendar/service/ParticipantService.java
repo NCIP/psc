@@ -137,13 +137,40 @@ public class ParticipantService {
     }
 
     /**
+     * Derives one repetition's worth of scheduled events from the given period and applies them to
+     * the given scheduled arm.
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void schedulePeriod(
+        Period period, Amendment sourceAmendment, ScheduledArm targetArm, int repetitionNumber
+    ) {
+        log.debug("Adding events for rep {} from period {}", repetitionNumber, period);
+        for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
+            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, repetitionNumber);
+        }
+    }
+
+    /**
      * Derives scheduled events from the given planned event and applies them to the given scheduled arm.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedEvent(
         PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm
     ) {
-        log.debug("Adding events from planned event {}", plannedEvent);
+        for (int r = 0 ; r < period.getRepetitions() ; r++) {
+            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, r);
+        }
+    }
+
+    /**
+     * Derives a single scheduled event from the given planned event and applies it to the given scheduled arm.
+     */
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void schedulePlannedEvent(
+        PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
+        int repetitionNumber
+    ) {
+        log.debug("Adding event {} from planned event {}", repetitionNumber, plannedEvent);
 
         // amount needed to shift the relative days in the period such that
         // the relative day 0 falls on armStateDate.  E.g., if the arm starts on
@@ -151,25 +178,23 @@ public class ParticipantService {
         // if it starts on -7, it needs to shift everything up 7.
         int normalizationFactor = targetArm.getStartDay() * -1;
 
-        for (int r = 0 ; r < period.getRepetitions() ; r++) {
-            int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * r;
-            log.debug(" - rep {}; offset: {}", r, repOffset);
-            ScheduledEvent event = createEmptyScheduledEventFor(plannedEvent);
-            event.setRepetitionNumber(r);
-            event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), targetArm.getStartDate()));
+        int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * repetitionNumber;
+        log.debug(" - rep {}; offset: {}", repetitionNumber, repOffset);
+        ScheduledEvent event = createEmptyScheduledEventFor(plannedEvent);
+        event.setRepetitionNumber(repetitionNumber);
+        event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), targetArm.getStartDate()));
 
-            DatedScheduledEventState initialState
-                = (DatedScheduledEventState) plannedEvent.getInitialScheduledMode().createStateInstance();
-            initialState.setReason("Initialized from template");
-            initialState.setDate(event.getIdealDate());
-            event.changeState(initialState);
+        DatedScheduledEventState initialState
+            = (DatedScheduledEventState) plannedEvent.getInitialScheduledMode().createStateInstance();
+        initialState.setReason("Initialized from template");
+        initialState.setDate(event.getIdealDate());
+        event.changeState(initialState);
 
-            event.setDetails(plannedEvent.getDetails());
-            event.setActivity(plannedEvent.getActivity());
-            event.setSourceAmendment(sourceAmendment);
+        event.setDetails(plannedEvent.getDetails());
+        event.setActivity(plannedEvent.getActivity());
+        event.setSourceAmendment(sourceAmendment);
 
-            targetArm.addEvent(event);
-        }
+        targetArm.addEvent(event);
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances

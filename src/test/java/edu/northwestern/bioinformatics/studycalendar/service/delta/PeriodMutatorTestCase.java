@@ -25,7 +25,8 @@ import java.util.Date;
 public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalendarTestCase {
     protected static final int PERIOD_0_REPS = 3;
     protected static final int PERIOD_1_REPS = 2;
-    private static final Date ARM_START_DATE = DateTools.createDate(2010, Calendar.MARCH, 1);
+    protected static final Date ARM_START_DATE = DateTools.createDate(2010, Calendar.MARCH, 1);
+    protected static final String REVISION_DISPLAY_NAME = "Oops (09/22)";
 
     protected Amendment amendment;
     private Delta<?> delta;
