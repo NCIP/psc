@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-
 import javax.persistence.Entity;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
@@ -59,6 +57,8 @@ public class Remove extends ChildrenChange {
 
     private class RemoveMergeLogic extends MergeLogic {
         private Delta<?> delta;
+        private Reorder precedingReorder;
+        private boolean hadPrecedingAdd;
 
         public RemoveMergeLogic(Delta<?> delta) {
             this.delta = delta;
@@ -69,7 +69,16 @@ public class Remove extends ChildrenChange {
             if (change.isSameChild(Remove.this)) {
                 log.debug("Found equivalent add ({}).  Canceling.", change);
                 delta.removeChange(change);
+                hadPrecedingAdd = true;
                 return true;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean encountered(Reorder change) {
+            if (change.isSameChild(Remove.this)) {
+                precedingReorder = change;
             }
             return false;
         }
@@ -98,6 +107,9 @@ public class Remove extends ChildrenChange {
 
         @Override
         public void postProcess(boolean merged) {
+            if (hadPrecedingAdd && precedingReorder != null) {
+                delta.removeChange(precedingReorder);
+            }
             if (!merged && nodeHasChildToRemove()) {
                 delta.addChange(Remove.this);
             }

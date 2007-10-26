@@ -107,4 +107,23 @@ public class RemoveTest extends StudyCalendarTestCase {
         DeltaAssertions.assertAdd("Index for later retained add not updated", retained1, 3, add1);
         DeltaAssertions.assertAdd("Index for later retained add not updated", retained2, 4, add2);
     }
+    
+    public void testMergeWithAddFollowedByReorderCancelsBoth() throws Exception {
+        delta.addChange(Add.create(ac, 2));
+        Reorder.create(ac, 2, 1).mergeInto(delta);
+
+        remove.setChild(ac);
+        remove.mergeInto(delta);
+
+        assertEquals("Remove should have canceled add and reorder", 0, delta.getChanges().size());
+    }
+    
+    public void testMergeWithReorderAloneDoesNotCancelReorder() throws Exception {
+        delta.addChange(Reorder.create(aa, 0, 1));
+
+        remove.setChild(aa);
+        remove.mergeInto(delta);
+
+        assertEquals("Remove should not have canceled anything", 2, delta.getChanges().size());
+    }
 }
