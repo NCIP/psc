@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -13,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -27,6 +29,7 @@ public class MutatorFactory {
     private ParticipantService participantService;
     private TemplateService templateService;
     private ScheduleService scheduleService;
+    private ScheduledEventDao scheduledEventDao;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -84,10 +87,14 @@ public class MutatorFactory {
             }
             // fall through
         }
-        // TODO
-        // if (target instanceof PlannedEvent) {
-        //
-        // } 
+        if (target instanceof PlannedEvent) {
+            if ("day".equals(change.getPropertyName())) {
+                return new ChangePlannedEventDayMutator(change, scheduledEventDao, scheduleService);
+            } else if ("details".equals(change.getPropertyName())) {
+                return new ChangePlannedEventSimplePropertyMutator(change, scheduledEventDao);
+            }
+            // fall through
+        }
 
         // default
         return new SimplePropertyChangeMutator(change);
@@ -123,5 +130,10 @@ public class MutatorFactory {
     @Required
     public void setScheduleService(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
+    }
+
+    @Required
+    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
+        this.scheduledEventDao = scheduledEventDao;
     }
 }
