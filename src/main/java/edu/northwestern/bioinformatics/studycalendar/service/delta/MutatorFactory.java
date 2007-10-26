@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -36,7 +35,7 @@ public class MutatorFactory {
         } else if (change.getAction() == ChangeAction.REMOVE) {
             return createRemoveMutator(target, (Remove) change);
         } else if (change.getAction() == ChangeAction.REORDER) {
-            return createReorderMutator(target, (Reorder) change);
+            return createReorderMutator((Reorder) change);
         } else if (change.getAction() == ChangeAction.CHANGE_PROPERTY) {
             return createPropertyMutator(target, (PropertyChange) change);
         }
@@ -68,7 +67,7 @@ public class MutatorFactory {
         }
     }
 
-    private <T extends PlanTreeNode<?>> Mutator createReorderMutator(T target, Reorder reorder) {
+    private Mutator createReorderMutator(Reorder reorder) {
         return new ReorderMutator(reorder);
     }
 
@@ -94,6 +93,7 @@ public class MutatorFactory {
         return new SimplePropertyChangeMutator(change);
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType", "unchecked" })
     private <T extends PlanTreeNode<?>> DomainObjectDao<? extends PlanTreeNode<?>> findChildDao(T target) {
         PlanTreeInnerNode inner = (PlanTreeInnerNode) target;
         return (DomainObjectDao<? extends PlanTreeNode<?>>) findDao(inner.childClass());
