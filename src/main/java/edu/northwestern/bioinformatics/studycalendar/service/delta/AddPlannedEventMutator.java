@@ -15,7 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 /**
  * @author Rhett Sutphin
  */
-public class AddPlannedEventMutator extends ListAddMutator {
+public class AddPlannedEventMutator extends CollectionAddMutator {
     private ParticipantService participantService;
     private TemplateService templateService;
 
