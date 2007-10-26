@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 /**
  * @author Rhett Sutphin
  */
-public abstract class AbstractChangePeriodDurationMutator extends AbstractPeriodPropertyChangeMutator {
+abstract class AbstractChangePeriodDurationMutator extends AbstractPeriodPropertyChangeMutator {
     protected ScheduleService scheduleService;
 
     public AbstractChangePeriodDurationMutator(PropertyChange change, TemplateService templateService, ScheduleService scheduleService) {

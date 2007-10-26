@@ -8,7 +8,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 /**
  * @author Rhett Sutphin
  */
-public class CollectionAddMutator extends AddAndRemoveMutator {
+public class CollectionAddMutator extends AbstractAddAndRemoveMutator {
     public CollectionAddMutator(Add change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
         super(change, dao);
     }

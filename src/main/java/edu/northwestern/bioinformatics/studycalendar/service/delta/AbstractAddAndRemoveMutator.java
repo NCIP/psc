@@ -9,17 +9,15 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Iterator;
-
 /**
  * @author Rhett Sutphin
  */
-abstract class AddAndRemoveMutator implements Mutator {
+abstract class AbstractAddAndRemoveMutator implements Mutator {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     protected ChildrenChange change;
     protected DomainObjectDao<? extends PlanTreeNode<?>> dao;
 
-    public AddAndRemoveMutator(ChildrenChange change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
+    public AbstractAddAndRemoveMutator(ChildrenChange change, DomainObjectDao<? extends PlanTreeNode<?>> dao) {
         this.dao = dao;
         this.change = change;
         if (dao == null && this.change.getChild() == null) {
