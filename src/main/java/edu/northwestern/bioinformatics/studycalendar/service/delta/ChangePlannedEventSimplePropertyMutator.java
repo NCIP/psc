@@ -12,15 +12,11 @@ import java.util.Collection;
 /**
  * @author Rhett Sutphin
  */
-public class ChangePlannedEventSimplePropertyMutator extends SimplePropertyChangeMutator {
-    private ScheduledEventDao scheduledEventDao;
+public class ChangePlannedEventSimplePropertyMutator extends AbstractChangePlannedEventMutator {
 
     public ChangePlannedEventSimplePropertyMutator(PropertyChange change, ScheduledEventDao scheduledEventDao) {
-        super(change);
-        this.scheduledEventDao = scheduledEventDao;
+        super(change, scheduledEventDao);
     }
-
-    @Override public boolean appliesToExistingSchedules() { return true; }
 
     @Override
     public void apply(ScheduledCalendar calendar) {
@@ -31,8 +27,4 @@ public class ChangePlannedEventSimplePropertyMutator extends SimplePropertyChang
         }
     }
 
-    public Collection<ScheduledEvent> findEventsToMutate(ScheduledCalendar calendar) {
-        return scheduledEventDao.getEventsFromPlannedEvent(
-            (PlannedEvent) (PlanTreeNode) change.getDelta().getNode(), calendar);
-    }
 }
