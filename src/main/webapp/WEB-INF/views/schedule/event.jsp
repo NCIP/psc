@@ -85,10 +85,10 @@
                 <div class="label">Details</div>
                 <div class="value">${scheduledEvent.details}</div>
             </div>
-            <c:if test="${not empty scheduledEvent.plannedEvent.conditionalDetails}">
+            <c:if test="${not empty scheduledEvent.plannedEvent.condition}">
                 <div class="row even">
-                    <div class="label">Conditional Details</div>
-                    <div class="value">${scheduledEvent.plannedEvent.conditionalDetails}</div>
+                    <div class="label">Condition</div>
+                    <div class="value">${scheduledEvent.plannedEvent.condition}</div>
                 </div>
             </c:if>
             <div class="row even">
