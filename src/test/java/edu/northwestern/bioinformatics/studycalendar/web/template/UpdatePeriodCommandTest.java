@@ -84,7 +84,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setId(period.getId());
         PlannedEvent eventOne = createPlannedEvent(1, 25);
         eventOne.setId(21);
-        eventOne.setConditionalDetails(eventConditionalDetails);
+        eventOne.setCondition(eventConditionalDetails);
         period.addPlannedEvent(eventOne);
 
         List<Integer> ids = new ArrayList<Integer>();
@@ -98,14 +98,14 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         expect(plannedEventDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
-            PropertyChange.create("conditionalDetails", eventConditionalDetails, detailsToChange));
+            PropertyChange.create("condition", eventConditionalDetails, detailsToChange));
 
         replayMocks();
         command.performEdit();
         verifyMocks();
 
         assertEquals(1, period.getPlannedEvents().size());
-        assertEquals("Details should not be updated in place", eventConditionalDetails, command.getPeriod().getPlannedEvents().get(0).getConditionalDetails());
+        assertEquals("Details should not be updated in place", eventConditionalDetails, command.getPeriod().getPlannedEvents().get(0).getCondition());
     }
 
     public void testGetLocalModelWithDetails() throws Exception {
@@ -162,7 +162,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
-        evt.setConditionalDetails(conditionalDetails);
+        evt.setCondition(conditionalDetails);
         return evt;
     }
 

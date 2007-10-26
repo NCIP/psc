@@ -1,22 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-
-import java.util.*;
-import java.util.List;
-
+import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -63,7 +64,7 @@ public class ManagePeriodEventsCommand {
             String binKey = activityAndDetails + counts.get(activityAndDetails)[countI];
             counts.get(activityAndDetails)[countI]++;
             if (!bins.containsKey(binKey)) {
-                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount, event.getConditionalDetails()));
+                bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount, event.getCondition()));
             }
             bins.get(binKey).addId(event);
         }
@@ -119,7 +120,7 @@ public class ManagePeriodEventsCommand {
             if (id != null && id>-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
-                    PropertyChange.create("conditionalDetails", event.getConditionalDetails(),
+                    PropertyChange.create("condition", event.getCondition(),
                         row.getConditionalDetails()));
             }
         }
@@ -130,7 +131,7 @@ public class ManagePeriodEventsCommand {
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
-        newEvent.setConditionalDetails(row.getConditionalDetails());
+        newEvent.setCondition(row.getConditionalDetails());
 
         amendmentService.updateDevelopmentAmendment(period, Add.create(newEvent));
 
@@ -209,7 +210,7 @@ public class ManagePeriodEventsCommand {
         }
 
         public static String key(PlannedEvent event) {
-            return key(event.getActivity(), event.getDetails(), event.getConditionalDetails());
+            return key(event.getActivity(), event.getDetails(), event.getCondition());
         }
 
         public void addId(PlannedEvent event) {

@@ -174,7 +174,7 @@ public class Fixtures {
 
     public static ScheduledEvent createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedEvent baseEvent = createPlannedEvent(activityName, 0);
-        baseEvent.setConditionalDetails("Details");
+        baseEvent.setCondition("Details");
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(baseEvent);
         event.setActivity(createActivity(activityName));

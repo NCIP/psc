@@ -15,6 +15,7 @@ public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
         assertEquals("Wrong period", -300L, (long) loaded.getPeriod().getId());
         assertNotNull("Activity not loaded", loaded.getActivity());
         assertEquals("Wrong activity", -200L, (long) loaded.getActivity().getId());
+        assertEquals("Wrong condition", "At least 37", loaded.getCondition());
     }
 
     public void testPeriodBidirectional() throws Exception {

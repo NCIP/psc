@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 
 import static org.easymock.EasyMock.expect;
 
@@ -120,7 +119,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
-        evt.setConditionalDetails(conditionalDetails);
+        evt.setCondition(conditionalDetails);
         return evt;
     }
 

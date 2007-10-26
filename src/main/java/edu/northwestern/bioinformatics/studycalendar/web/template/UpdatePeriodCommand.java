@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import java.util.Map;
 import java.util.HashMap;
 
-
 public class UpdatePeriodCommand extends EditPeriodEventsCommand {
 
     private static final Logger log = LoggerFactory.getLogger(UpdatePeriodCommand.class.getName());
@@ -47,7 +46,7 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
             if (id != null && id>-1) {
                 PlannedEvent event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
-                    PropertyChange.create("conditionalDetails", event.getConditionalDetails(),
+                    PropertyChange.create("condition", event.getCondition(),
                         getConditionalDetails()));
             }
         }

@@ -55,7 +55,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         event.setDay(command.getColumnNumber()+1);
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
-        event.setConditionalDetails(command.getConditionalDetails());
+        event.setCondition(command.getConditionalDetails());
         period.addPlannedEvent(event);
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
@@ -83,7 +83,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         event.setDay(command.getColumnNumber()+1);
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
-        event.setConditionalDetails(command.getConditionalDetails());
+        event.setCondition(command.getConditionalDetails());
         period.addPlannedEvent(event);
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
@@ -110,7 +110,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         protected boolean plannedEventMatches(PlannedEvent actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedEvent.getConditionalDetails(), actual.getConditionalDetails());
+                    && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 

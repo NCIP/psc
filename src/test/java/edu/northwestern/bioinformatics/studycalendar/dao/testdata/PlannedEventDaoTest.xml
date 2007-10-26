@@ -24,6 +24,7 @@
         period_id="-300"
         activity_id="-200"
         day="4"
+        condition="At least 37"
         />
 
 </dataset>

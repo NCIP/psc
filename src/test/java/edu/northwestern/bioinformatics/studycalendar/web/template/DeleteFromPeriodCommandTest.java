@@ -108,7 +108,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         protected boolean plannedEventMatches(PlannedEvent actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedEvent.getConditionalDetails(), actual.getConditionalDetails());
+                    && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 
@@ -144,7 +144,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
-        evt.setConditionalDetails(conditionalDetails);
+        evt.setCondition(conditionalDetails);
         return evt;
     }
 

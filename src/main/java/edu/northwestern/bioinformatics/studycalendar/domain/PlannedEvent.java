@@ -10,13 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.FetchType;
 import javax.persistence.Transient;
+import javax.persistence.Column;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Date;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.cabig.ctms.lang.StringTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 
 /**
  * @author Rhett Sutphin
@@ -33,7 +29,7 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
     private Activity activity;
     private Integer day;
     private String details;
-    private String conditionalDetails;
+    private String condition;
 
     ////// LOGIC
 
@@ -60,7 +56,7 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
 
     @Transient
     public ScheduledEventMode getInitialScheduledMode() {
-        if (StringUtils.isBlank(getConditionalDetails())) {
+        if (StringUtils.isBlank(getCondition())) {
             return ScheduledEventMode.SCHEDULED;
         } else {
             return ScheduledEventMode.CONDITIONAL;
@@ -105,11 +101,11 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
     	this.details = details;
     }
 
-    public String getConditionalDetails() {
-        return conditionalDetails;
+    public String getCondition() {
+        return condition;
     }
 
-    public void setConditionalDetails(String conditionalDetails) {
-        this.conditionalDetails = conditionalDetails;
+    public void setCondition(String condition) {
+        this.condition = condition;
     }
 }

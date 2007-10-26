@@ -80,13 +80,13 @@ public class PlannedEventTest extends StudyCalendarTestCase {
     }
 
     public void testScheduledModeWhenConditional() throws Exception {
-        e0.setConditionalDetails("Only if you roll 2, 4, or 5");
+        e0.setCondition("Only if you roll 2, 4, or 5");
         assertEquals(ScheduledEventMode.CONDITIONAL, e0.getInitialScheduledMode());
     }
     
     public void testScheduledModeWhenNotConditional() throws Exception {
-        e0.setConditionalDetails(" ");
-        e1.setConditionalDetails(null);
+        e0.setCondition(" ");
+        e1.setCondition(null);
         assertEquals(ScheduledEventMode.SCHEDULED, e0.getInitialScheduledMode());
         assertEquals(ScheduledEventMode.SCHEDULED, e1.getInitialScheduledMode());
     }

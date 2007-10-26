@@ -20,7 +20,7 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
         newEvent.setDay(getColumnNumber()+1);
         newEvent.setActivity(getActivity());
         newEvent.setDetails(getDetails());
-        newEvent.setConditionalDetails(getConditionalDetails());
+        newEvent.setCondition(getConditionalDetails());
         Add add = Add.create(newEvent);
         amendmentService.updateDevelopmentAmendment(getPeriod(), add);
         setPlannedEvent(newEvent);

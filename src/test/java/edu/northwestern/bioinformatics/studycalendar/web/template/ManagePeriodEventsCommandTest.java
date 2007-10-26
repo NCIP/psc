@@ -195,7 +195,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
 
         expect(plannedEventDao.getById(23)).andReturn(existingEvent);
         amendmentService.updateDevelopmentAmendment(existingEvent,
-            PropertyChange.create("conditionalDetails", initialConditionalDetails, expectedConditionalDetails));
+            PropertyChange.create("condition", initialConditionalDetails, expectedConditionalDetails));
 
         replayMocks();
         command.apply();
@@ -204,7 +204,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         assertEquals(1, period.getPlannedEvents().size());
         PlannedEvent actual = period.getPlannedEvents().get(0);
         assertEquals("ConditionalDetails should not be directly updated", initialConditionalDetails,
-            actual.getConditionalDetails());
+            actual.getCondition());
     }
 
     public void testApplyConditionalDetailsWithUncheckedCheckbox() throws Exception {
@@ -220,7 +220,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
 
         expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
         amendmentService.updateDevelopmentAmendment(existingEvent,
-            PropertyChange.create("conditionalDetails", null, expectedConditionalDetails));
+            PropertyChange.create("condition", null, expectedConditionalDetails));
 
         replayMocks();
         command.apply();
@@ -261,7 +261,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         protected boolean plannedEventMatches(PlannedEvent actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedEvent.getConditionalDetails(), actual.getConditionalDetails());
+                    && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 
@@ -344,7 +344,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
-        evt.setConditionalDetails(conditionalDetails);
+        evt.setCondition(conditionalDetails);
         return evt;
     }
 
