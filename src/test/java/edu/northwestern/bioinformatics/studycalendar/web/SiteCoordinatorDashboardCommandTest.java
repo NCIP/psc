@@ -6,6 +6,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
 
 import static java.util.Arrays.asList;
@@ -24,6 +25,8 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     private User user0, user1;
     private Site site0, site1;
     private UserRole role0, role1;
+    private SiteService siteService;
+    private User siteCoordinator;
 
 
     protected void setUp() throws Exception {
@@ -31,8 +34,10 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
 
         siteDao     = registerDaoMockFor(SiteDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
+        siteService = registerMockFor(SiteService.class);
         templateService = registerMockFor(TemplateService.class);
 
+        siteCoordinator = createNamedInstance("The Site Coord", User.class);
         study0 = createNamedInstance("Study A", Study.class);
         study1 = createNamedInstance("Study B", Study.class);
 
@@ -137,8 +142,8 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     }
 
     protected void expectBuildStudyAssignmentGrid() {
+        expect(siteService.getSitesForSiteCd(siteCoordinator.getName())).andReturn(sites);
         expect(userRoleDao.getAllParticipantCoordinators()).andReturn(userRoles);
-        expect(siteDao.getAll()).andReturn(sites);
     }
 
     private void expectApply() throws Exception {
@@ -149,6 +154,6 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
     }
 
     private SiteCoordinatorDashboardCommand createCommand() {
-        return new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, templateService, study0);
+        return new SiteCoordinatorDashboardCommand(userRoleDao, templateService, siteService, study0, siteCoordinator);
     }
 }

@@ -1,43 +1,63 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * @author John Dzak
  */
 public class SiteCoordinatorDashboardCommand {
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
-    private SiteDao siteDao;
     private Study study;
     private UserRoleDao userRoleDao;
     private TemplateService templateService;
+    private User siteCoordinator;
+    private SiteService siteService;
 
-    public SiteCoordinatorDashboardCommand(SiteDao siteDao, UserRoleDao userRoleDao, TemplateService templateService, Study study) {
-        this.siteDao         = siteDao;
+
+    public SiteCoordinatorDashboardCommand(UserRoleDao userRoleDao, TemplateService templateService, SiteService siteService, Study study, User siteCoordinator) {
         this.userRoleDao     = userRoleDao;
         this.templateService = templateService;
         this.study           = study;
+        this.siteCoordinator = siteCoordinator;
+        this.siteService     = siteService;
 
-        buildStudyAssignmentGrid();
+        if (study != null) {
+            buildStudyAssignmentGrid();
+        }
     }
     
     protected void buildStudyAssignmentGrid() {
         studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
-        List<Site> sites    = siteDao.getAll();
-        List<UserRole> usersRoles = userRoleDao.getAllParticipantCoordinators();
+        List<Site> participCoordSites = siteService.getSitesForSiteCd(siteCoordinator.getName());
+        List<UserRole> userRoles = userRoleDao.getAllParticipantCoordinators();
+        List<UserRole> showableUserRoles = new ArrayList<UserRole>();
 
-        for (UserRole userRole : usersRoles) {
+        for (UserRole userRole : userRoles) {
+            for (Site site : userRole.getSites()) {
+                if (participCoordSites.contains(site)) {
+                    showableUserRoles.add(userRole);
+                }
+            }
+        }
+
+
+        for (UserRole userRole : showableUserRoles) {
             User user = userRole.getUser();
             if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new HashMap<Site, StudyAssignmentCell>());
 
-            for (Site site : sites) {
+            for (Site site : participCoordSites) {
                     studyAssignmentGrid.get(user)
                             .put(site,
                                     createStudyAssignmentCell(isSiteSelected(userRole, study, site),
@@ -102,5 +122,9 @@ public class SiteCoordinatorDashboardCommand {
 
     public Study getStudy() {
         return study;
+    }
+
+    public User getSiteCoordinator() {
+        return siteCoordinator;
     }
 }

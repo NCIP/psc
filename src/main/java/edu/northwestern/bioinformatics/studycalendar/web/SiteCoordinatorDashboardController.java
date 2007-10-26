@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -27,13 +28,14 @@ import java.util.ArrayList;
 /**
  * @author John Dzak
  */
-@AccessControl(roles = {Role.PARTICIPANT_COORDINATOR})
+@AccessControl(roles = {Role.SITE_COORDINATOR})
 public class SiteCoordinatorDashboardController extends PscSimpleFormController {
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
     private UserRoleDao userRoleDao;
     private TemplateService templateService;
+    private SiteService siteService;
 
 
     public SiteCoordinatorDashboardController() {
@@ -46,8 +48,9 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
         SiteCoordinatorDashboardCommand command = (SiteCoordinatorDashboardCommand) o;
 
-        refdata.put("studies",  getAssignableStudies(ApplicationSecurityManager.getUser()));
-        refdata.put("sites", siteDao.getAll());
+        User siteCoordinator = command.getSiteCoordinator();
+        refdata.put("studies",  getAssignableStudies(siteCoordinator.getName()));
+        refdata.put("sites", siteService.getSitesForSiteCd(siteCoordinator.getName()));
         refdata.put("currentStudy", command.getStudy());
         return refdata;
     }
@@ -61,10 +64,11 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        Integer studyId = ServletRequestUtils.getIntParameter(request, "study");
-        Study selectedStudy = getCurrentStudy(studyId, ApplicationSecurityManager.getUser());
+        User siteCoordinator = userDao.getByName(ApplicationSecurityManager.getUser());
+        Integer studyId      = ServletRequestUtils.getIntParameter(request, "study");
+        Study selectedStudy  = getCurrentStudy(studyId, siteCoordinator.getName());
 
-        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(siteDao, userRoleDao, templateService, selectedStudy);
+        SiteCoordinatorDashboardCommand command = new SiteCoordinatorDashboardCommand(userRoleDao, templateService, siteService, selectedStudy, siteCoordinator);
         return command;
     }
 
@@ -121,5 +125,9 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
     }
 }

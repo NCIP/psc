@@ -8,6 +8,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collection;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.security.util.ObjectSetUtil;
@@ -84,8 +85,9 @@ public class StudySite extends AbstractMutableDomainObject {
 
     @Transient
     public static StudySite findStudySite(Study study, Site site) {
-        if (ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).size() > 0) {
-            return (StudySite) ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites()).iterator().next();
+        Collection<StudySite> studySite = ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites());
+        if (studySite != null && studySite.size() > 0) {
+            return (StudySite) studySite.iterator().next();
         }
         return null;
     }

@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import static org.easymock.EasyMock.expect;
@@ -32,6 +33,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     private List<Study> studies;
     private SiteCoordinatorDashboardCommand command;
     private User user;
+    private SiteService siteService;
 
     @Override
     protected void setUp() throws Exception {
@@ -39,6 +41,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
 
         siteDao         = registerDaoMockFor(SiteDao.class);
         studyDao        = registerDaoMockFor(StudyDao.class);
+        siteService     = registerMockFor(SiteService.class);
         templateService = registerMockFor(TemplateService.class);
 
         command     = registerMockFor(SiteCoordinatorDashboardCommand.class);
@@ -47,6 +50,7 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
+        controller.setSiteService(siteService);
 
         user      =  createUser(1, "john", 1L, true, "pass");
 
@@ -85,9 +89,10 @@ public class SiteCoordinatorDashboardControllerTest extends ControllerTestCase {
     }
 
     public void expectRefData() throws Exception{
-        expect(siteDao.getAll()).andReturn(sites);
+        expect(command.getSiteCoordinator()).andReturn(user);
         expect(studyDao.getAll()).andReturn(studies);
         expect(templateService.checkOwnership(user.getName(), studies)).andReturn(studies);
+        expect(siteService.getSitesForSiteCd(user.getName())).andReturn(sites);
         expect(command.getStudy()).andReturn(studies.get(0));
     }
 

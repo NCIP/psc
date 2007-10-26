@@ -4,6 +4,8 @@ import static java.util.Arrays.asList;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
@@ -19,6 +21,7 @@ import gov.nih.nci.security.dao.*;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.*;
 
@@ -51,7 +54,8 @@ public class StudyCalendarAuthorizationManager {
     private static Logger log = LoggerFactory.getLogger(StudyCalendarAuthorizationManager.class);
 
     private UserProvisioningManager userProvisioningManager;
-  
+    private SiteDao siteDao;
+
     public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception
 	{
     	boolean protectionElementPresent = false;
@@ -731,7 +735,7 @@ public class StudyCalendarAuthorizationManager {
         List<StudySite> studySites = study.getStudySites();
         for (StudySite studySite : studySites) {
             for (ProtectionGroup site : sites) {
-               if (studySite.getSite().getName().equals(site.getProtectionGroupName())) {
+               if (studySite.getSite().equals(DomainObjectTools.loadFromExternalObjectId(site.getProtectionGroupName(), siteDao))) {
                    return true;
                }
             }
@@ -785,6 +789,10 @@ public class StudyCalendarAuthorizationManager {
     
     public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
         this.userProvisioningManager = userProvisioningManager;
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
 }
 
