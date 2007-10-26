@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
@@ -42,18 +39,22 @@ public class DeleteCommand extends EditTemplateCommand {
 
         public Map<String, Object> getModel() {
             Map<String, Object> map = new HashMap<String, Object>();
+            Epoch epoch = null;
+            Arm arm = null;
             if (getObjectParent() instanceof Epoch) {
-                List<Arm> arms = ((Epoch)getObjectParent()).getArms();
+                epoch = (Epoch)getObjectParent();
+                List<Arm> arms = epoch.getArms();
                 arms.remove(getRevisedArm());
-                Arm arm =  arms.get(arms.size() - 1);
-
-
-                map.put("epoch", ((Epoch)getObjectParent()));
-                map.put("arm", arm);
-                ArmTemplate armTemplate = new ArmTemplate(arm);
-
-                map.put("template", armTemplate);
-            } 
+                arm =  arms.get(arms.size() - 1);
+            } else if (getObjectParent() instanceof PlannedCalendar) {
+                PlannedCalendar calendar = (PlannedCalendar)getObjectParent();
+                epoch = calendar.getEpochs().get(0);
+                arm = epoch.getArms().get(0);
+            }
+            map.put("epoch", epoch);
+            map.put("arm", arm);
+            ArmTemplate armTemplate = new ArmTemplate(arm);
+            map.put("template", armTemplate);
             return map;
         }
 
