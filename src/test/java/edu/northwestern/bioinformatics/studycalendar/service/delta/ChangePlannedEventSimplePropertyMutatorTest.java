@@ -17,8 +17,8 @@ import java.util.Calendar;
 /**
  * @author Rhett Sutphin
  */
-public class ChangeSimplePlannedEventPropertyMutatorTest extends StudyCalendarTestCase {
-    private ChangeSimplePlannedEventPropertyMutator mutator;
+public class ChangePlannedEventSimplePropertyMutatorTest extends StudyCalendarTestCase {
+    private ChangePlannedEventSimplePropertyMutator mutator;
     private PropertyChange change;
     private PlannedEvent plannedEvent;
     private Delta<?> delta;
@@ -36,7 +36,7 @@ public class ChangeSimplePlannedEventPropertyMutatorTest extends StudyCalendarTe
 
         scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
 
-        mutator = new ChangeSimplePlannedEventPropertyMutator(change, scheduledEventDao);
+        mutator = new ChangePlannedEventSimplePropertyMutator(change, scheduledEventDao);
     }
 
     public void testApplyDetails() throws Exception {

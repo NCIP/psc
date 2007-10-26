@@ -12,10 +12,10 @@ import java.util.Collection;
 /**
  * @author Rhett Sutphin
  */
-public class ChangeSimplePlannedEventPropertyMutator extends SimplePropertyChangeMutator {
+public class ChangePlannedEventSimplePropertyMutator extends SimplePropertyChangeMutator {
     private ScheduledEventDao scheduledEventDao;
 
-    public ChangeSimplePlannedEventPropertyMutator(PropertyChange change, ScheduledEventDao scheduledEventDao) {
+    public ChangePlannedEventSimplePropertyMutator(PropertyChange change, ScheduledEventDao scheduledEventDao) {
         super(change);
         this.scheduledEventDao = scheduledEventDao;
     }
