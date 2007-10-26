@@ -74,7 +74,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         expect(plannedEventDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
-            PropertyChange.create("move event ", command.getMoveFrom() + 1, command.getMoveTo() + 1));
+            PropertyChange.create("day", command.getMoveFrom() + 1, command.getMoveTo() + 1));
 
         replayMocks();
         command.performEdit();

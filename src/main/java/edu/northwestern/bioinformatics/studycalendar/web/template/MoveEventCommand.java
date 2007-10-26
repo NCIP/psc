@@ -20,7 +20,7 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
                 PlannedEvent event = plannedEventDao.getById(id);
                 event.setDay(getColumnNumber()+1);
                 setNewEvent(event);
-                amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("move event ", getMoveFrom()+1, getMoveTo()+1));
+                amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
             }
         }
         return null;
