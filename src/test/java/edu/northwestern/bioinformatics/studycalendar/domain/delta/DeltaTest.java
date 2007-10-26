@@ -81,8 +81,8 @@ public class DeltaTest extends StudyCalendarTestCase {
         }
     }
 
-    private static void assertDeltaFor(PlanTreeNode<?> node, Class<?> expectedClass) {
-        Delta<?> actual = Delta.createDeltaFor(node);
+    private static <T extends PlanTreeNode<?>> void assertDeltaFor(T node, Class<?> expectedClass) {
+        Delta<T> actual = Delta.createDeltaFor(node);
         assertNotNull(actual);
         assertEquals("Wrong class", expectedClass, actual.getClass());
     }
