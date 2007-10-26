@@ -14,7 +14,7 @@ import java.util.Collections;
  * @author Rhett Sutphin
  */
 public class SimplePropertyChangeMutator implements Mutator {
-    private PropertyChange change;
+    protected PropertyChange change;
 
     public SimplePropertyChangeMutator(PropertyChange change) {
         this.change = change;

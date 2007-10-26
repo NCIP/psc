@@ -154,10 +154,9 @@ public class ParticipantService {
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
             int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * r;
             log.debug(" - rep {}; offset: {}", r, repOffset);
-            ScheduledEvent event = new ScheduledEvent();
+            ScheduledEvent event = createEmptyScheduledEventFor(plannedEvent);
             event.setRepetitionNumber(r);
             event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), targetArm.getStartDate()));
-            event.setPlannedEvent(plannedEvent);
 
             DatedScheduledEventState initialState
                 = (DatedScheduledEventState) plannedEvent.getInitialScheduledMode().createStateInstance();
@@ -173,11 +172,22 @@ public class ParticipantService {
         }
     }
 
+    // factored out to allow tests to use the logic in the schedule* methods on semimock instances
+    protected ScheduledEvent createEmptyScheduledEventFor(PlannedEvent plannedEvent) {
+        ScheduledEvent event = new ScheduledEvent();
+        event.setPlannedEvent(plannedEvent);
+        return event;
+    }
+
     private void avoidBlackoutDates(ScheduledArm arm, Site site) {
        List<ScheduledEvent> listOfEvents = arm.getEvents();
         for (ScheduledEvent event : listOfEvents) {
             avoidBlackoutDates(event, site);
         }
+    }
+
+    public void avoidBlackoutDates(ScheduledEvent event) {
+        avoidBlackoutDates(event, event.getScheduledArm().getScheduledCalendar().getAssignment().getStudySite().getSite());
     }
 
     private void avoidBlackoutDates(ScheduledEvent event, Site site) {

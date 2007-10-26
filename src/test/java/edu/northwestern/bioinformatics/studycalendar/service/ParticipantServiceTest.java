@@ -37,7 +37,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         service = new ParticipantService();
         service.setParticipantDao(participantDao);
-        
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
         arm = epoch.getArms().get(0);
@@ -57,7 +56,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         p2.addPlannedEvent(setId(3, createPlannedEvent("Questionnaire", 1, "Questionnaire Details")));  // 3
         p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1, "Infusion Details")));            // 8, 36
         p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18, "Infusion Details")));           // 25, 53
-
 
         user = new User();
         user.setPlainTextPassword("password123");

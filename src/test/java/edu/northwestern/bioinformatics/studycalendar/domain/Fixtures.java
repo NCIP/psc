@@ -137,6 +137,15 @@ public class Fixtures {
         return p;
     }
 
+    public static StudyParticipantAssignment createAssignment(Study study, Site site, Participant participant) {
+        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySite ss = createStudySite(study, site);
+        assignment.setStudySite(ss);
+        assignment.setParticipant(participant);
+        assignment.setScheduledCalendar(new ScheduledCalendar());
+        return assignment;
+    }
+
     public static ScheduledArm createScheduledArm(Arm arm) {
         ScheduledArm scheduledArm = new ScheduledArm();
         scheduledArm.setArm(arm);

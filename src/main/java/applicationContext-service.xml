@@ -18,6 +18,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
     <bean id="templateService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateService"/>
+    <bean id="scheduleService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
     <bean id="userService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.UserService"/>
     <bean id="studyService" autowire="byName" lazy-init="true"
