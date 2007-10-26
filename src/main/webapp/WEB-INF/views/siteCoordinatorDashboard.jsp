@@ -40,54 +40,66 @@
         <c:url value="/pages/dashboard/siteCoordinatorSchedule" var="action"/>
 
         <form:form method="post" id="assignmentForm" action="${action}">
-            <form:hidden path="study"/>
+            <form:hidden path="mode"/>
             <form:errors path="*"/>
-            <div class="row">
-                <div class="label" >
-                    Study:
-                </div>
-                <div class="value">
-                    <select id="studySelector">
-                        <c:forEach items="${studies}" var="study">
-                            <option value="${study.id}" <c:if test="${study == currentStudy}">selected</c:if>>${study.name}</option>
-                        </c:forEach>
-                    </select>
-                </div>
-            </div>
-
-
-            <div class="row">
-                <div class="label" >
-                    Assign Participant Coordinators:
-                </div>
-                <div class="value">
-                    <table cellspacing="0" cellpading="0" border="1" class="siteRoles">
-                        <tr>
-                            <th></th>
-                            <c:forEach items="${sites}" var="site">
-                                <th>${site.name}</th>
-                            </c:forEach>
-
-                        </tr>
-                        <c:forEach items="${command.studyAssignmentGrid}" var="user">
-                            <tr>
-                                <th>${user.key.name}</th>
-
-                                <c:forEach items="${sites}" var="site">
-                                    <c:if test="${command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
-                                        <td>
-                                            <form:checkbox path="studyAssignmentGrid[${user.key.id}][${site.id}].selected"/>
-                                        </td>
-                                    </c:if>
-                                    <c:if test="${not command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
-                                        <td style="background-color:#999">&nbsp;</td>
-                                    </c:if>
+            <c:choose>
+                <c:when test="${mode == 'byUser'}">
+                    <form:hidden path="user"/>
+                </c:when>
+                <c:otherwise>
+                    <div class="row">
+                        <div class="label" >
+                            Study:
+                        </div>
+                        <div class="value">
+                            <select id="studySelector">
+                                <c:forEach items="${studies}" var="study">
+                                    <option value="${study.id}" <c:if test="${study == currentStudy}">selected</c:if>>${study.name}</option>
                                 </c:forEach>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                </div>
-            </div>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <form:hidden path="study"/>
+                        <div class="label" >
+                            Assign Participant Coordinators:
+                        </div>
+                        <div class="value">
+                            <table cellspacing="0" cellpading="0" border="1" class="siteRoles">
+                                <tr>
+                                    <th></th>
+                                    
+                                    <c:forEach items="${command.studyAssignmentGrid}" var="user" varStatus="index">
+                                        <c:if test="${index.first}">
+                                            <c:forEach items="${sites}" var="site">
+                                                <th>${site.name}</th>
+                                            </c:forEach>
+                                        </c:if>
+                                    </c:forEach>
+                                </tr>
+                                <c:forEach items="${command.studyAssignmentGrid}" var="user">
+                                    <tr>
+                                        <th>${user.key.name}</th>
+
+                                        <c:forEach items="${sites}" var="site">
+                                            <c:if test="${command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
+                                                <td>
+                                                    <form:checkbox path="studyAssignmentGrid[${user.key.id}][${site.id}].selected"/>
+                                                </td>
+                                            </c:if>
+                                            <c:if test="${not command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
+                                                <td style="background-color:#999">&nbsp;</td>
+                                            </c:if>
+                                        </c:forEach>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </div>
+                    </div>
+                </c:otherwise>
+            </c:choose>
 
             <div class="row">
                 <div class="label" ></div>
@@ -95,9 +107,6 @@
                     <input type="submit" value="Save"/>
                 </div>
             </div>
-
-
-
         </form:form>
     </laf:division>
 </laf:box>

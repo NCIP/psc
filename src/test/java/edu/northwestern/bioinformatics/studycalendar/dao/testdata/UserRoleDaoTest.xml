@@ -49,9 +49,14 @@
         site_id="-200"
         study_id="-1000"/>
 
+    <STUDY_SITES
+        id="-2001"
+        site_id="-300"
+        study_id="-1000"/>
+
     <USER_ROLE_STUDY_SITES
         user_role_id="-1"
         study_site_id="-2000"
         />
-    
+
 </dataset>

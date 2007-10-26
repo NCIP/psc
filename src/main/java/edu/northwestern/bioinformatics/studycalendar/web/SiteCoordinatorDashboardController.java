@@ -63,8 +63,8 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         User siteCoordinator = userDao.getByName(ApplicationSecurityManager.getUser());
 
+        List<Site> assignableSites;
         List<User> assignableUsers    = userService.getParticipantCoordinatorsForSites(getSitesForUser(siteCoordinator));
-        List<Site> assignableSites    = siteService.getSitesForSiteCd(siteCoordinator.getName());
         List<Study> assignableStudies = getAssignableStudies(siteCoordinator.getName());
 
         String mode = ServletRequestUtils.getStringParameter(request, "mode");
@@ -77,6 +77,7 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
         } else {
             Integer studyId      = ServletRequestUtils.getIntParameter(request, "study");
             Study selectedStudy  = getCurrentStudy(studyId, assignableStudies);
+            assignableSites    = getAssignableSites(siteCoordinator, selectedStudy);
             command = new SiteCoordinatorDashboardCommand(templateService, selectedStudy, assignableStudies, assignableSites, assignableUsers);
         }
         return command;
@@ -105,6 +106,17 @@ public class SiteCoordinatorDashboardController extends PscSimpleFormController 
             }
         }
         return new ArrayList<Site>(sites);
+    }
+
+    public List<Site> getAssignableSites(User siteCoordinator, Study study) {
+        List<Site> sitesForSiteCoord = siteService.getSitesForSiteCd(siteCoordinator.getName());
+        List<Site> assignableStudySites = new ArrayList<Site>();
+        for (Site site : sitesForSiteCoord) {
+            if (StudySite.findStudySite(study, site) != null) {
+                assignableStudySites.add(site);
+            }
+        }
+        return assignableStudySites;
     }
 
     protected Study getCurrentStudy(Integer studyId, List<Study> assignableStudies) throws Exception {

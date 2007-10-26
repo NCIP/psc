@@ -8,11 +8,13 @@ import java.util.List;
 
 public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
     private SiteDao siteDao;
+    private StudySiteDao studySiteDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        siteDao = (SiteDao)getApplicationContext().getBean("siteDao");
+        siteDao      = (SiteDao)getApplicationContext().getBean("siteDao");
+        studySiteDao = (StudySiteDao)getApplicationContext().getBean("studySiteDao");
     }
 
     public void testGetUserRoleById() throws Exception {
@@ -98,6 +100,29 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
         }
     }
 
+    public void testAddStudySite() throws Exception {
+        Integer savedId;
+        {
+            UserRole actualUserRole = getDao().getById(-1);
+            assertNotNull("User Role not found", actualUserRole);
+            assertEquals("Wrong id", -1, (int) actualUserRole.getId());
+            assertEquals("No study sites assigned", 1, actualUserRole.getStudySites().size());
+
+            StudySite studySite = studySiteDao.getById(-2001);
+            actualUserRole.addStudySite(studySite);
+            getDao().save(actualUserRole);
+            savedId = actualUserRole.getId();
+        }
+
+        interruptSession();
+
+        {
+            UserRole loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload user role with id " + savedId, loaded);
+            assertEquals("Wrong id", -1, (int) loaded.getId());
+            assertEquals("Wrong study site size", 2, loaded.getStudySites().size());
+        }
+    }
 
     public void testRemoveStudySite() throws Exception {
       Integer savedId;

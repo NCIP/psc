@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
+    private String mode;
     private Study study;
     private TemplateService templateService;
     private List<Study> assignableStudies;
@@ -60,8 +61,8 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
     }
 
     public void apply() throws Exception {
-        for(User user : studyAssignmentGrid.keySet()) {
-            for(Site site : studyAssignmentGrid.get(user).keySet()) {
+        for (User user : studyAssignmentGrid.keySet()) {
+            for (Site site : studyAssignmentGrid.get(user).keySet()) {
                 if (studyAssignmentGrid.get(user).get(site).isSelected()) {
                     templateService.assignTemplateToParticipantCoordinator(study,site, user);
                 } else {
@@ -101,6 +102,10 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
         return new StudyAssignmentCell(selected, siteAccessAllowed);
     }
 
+    public String getMode() {
+        return mode;
+    }
+
     public Study getStudy() {
         return study;
     }
@@ -115,5 +120,9 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
 
     public List<User> getAssignableUsers() {
         return assignableUsers;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
     }
 }
