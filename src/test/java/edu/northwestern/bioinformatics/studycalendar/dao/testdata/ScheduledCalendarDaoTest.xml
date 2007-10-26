@@ -129,4 +129,36 @@
         details="Nice Details!!"
         source_amendment_id="-17"
         />
+
+    <SCHEDULED_CALENDARS
+        id="-21"
+        assignment_id="-2"
+        />
+    <SCHEDULED_ARMS
+        id="-23"
+        arm_id="-4"
+        scheduled_calendar_id="-21"
+        start_date="2006-10-27"
+        start_day="2"
+        list_index="0"
+        />
+    <SCHEDULED_EVENTS
+        id="-30"
+        scheduled_arm_id="-23"
+        planned_event_id="-6"
+        current_state_mode_id="3"
+        ideal_date="2006-11-01"
+        activity_id="-100"
+        source_amendment_id="-17"
+        />
+    <SCHEDULED_EVENTS
+        id="-31"
+        scheduled_arm_id="-23"
+        planned_event_id="-6"
+        current_state_mode_id="3"
+        ideal_date="2006-11-01"
+        activity_id="-100"
+        source_amendment_id="-17"
+        />
+
 </dataset>

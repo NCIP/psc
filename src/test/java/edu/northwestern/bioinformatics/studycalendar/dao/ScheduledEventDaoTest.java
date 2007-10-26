@@ -13,19 +13,27 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Date;
+import java.util.List;
+
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
  */
 public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao> {
+    private PlannedEventDao plannedEventDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao
             = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
+        plannedEventDao
+            = (PlannedEventDao) getApplicationContext().getBean("plannedEventDao");
     }
 
+    @Override
     protected String getTestDataFileName() {
         return "testdata/ScheduledCalendarDaoTest.xml";
     }
@@ -45,6 +53,31 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         assertEquals("Wrong number of previous states", 3, loaded.getPreviousStates().size());
 
         assertEquals("Wrong details", "Nice Details!!", loaded.getDetails());
+    }
+    
+    public void testGetScheduledEventsFromPlannedEvent() throws Exception {
+        Collection<ScheduledEvent> matches = getDao().getScheduledEventsFromPlannedEvent(
+            plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21));
+        assertEquals("Wrong number of matches", 2, matches.size());
+        Collection<Integer> actualIds = DomainObjectTools.collectIds(matches);
+        assertContains(actualIds, -30);
+        assertContains(actualIds, -31);
+    }
+
+    public void testLoadedAndQueriedScheduledEventsFromSameSessionAreSame() throws Exception {
+        ScheduledEvent loaded = getDao().getById(-30);
+        loaded.setDetails("F9");
+        ScheduledEvent queried = null;
+
+        for (ScheduledEvent e : getDao().getScheduledEventsFromPlannedEvent(plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21))) {
+            if (e.getId() == -30) {
+                queried = e;
+                break;
+            }
+        }
+
+        assertNotNull(queried);
+        assertSame(loaded, queried);
     }
 
     public void testGetByRangeFinite() throws Exception {
