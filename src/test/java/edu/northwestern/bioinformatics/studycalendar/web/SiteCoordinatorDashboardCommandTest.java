@@ -53,10 +53,10 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
 
     public void testBuildStudyAssignmentGrid() throws Exception {
         replayMocks();
-        SiteCoordinatorDashboardCommand command = createCommand();
+        SiteCoordinatorDashboardCommandByStudy command = createCommand();
         verifyMocks();
 
-        Map<User, Map<Site,SiteCoordinatorDashboardCommand.StudyAssignmentCell>> studyAssignmentGrid = command.getStudyAssignmentGrid();
+        Map<User, Map<Site, SiteCoordinatorDashboardCommandByStudy.StudyAssignmentCell>> studyAssignmentGrid = command.getStudyAssignmentGrid();
 
         assertEquals("Wrong Size", 2, studyAssignmentGrid.keySet().size());
         assertEquals("Wrong Size", 2, studyAssignmentGrid.get(user0).keySet().size());
@@ -84,7 +84,7 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        SiteCoordinatorDashboardCommand command = createCommand();
+        SiteCoordinatorDashboardCommandByStudy command = createCommand();
         command.apply();
         verifyMocks();
     }
@@ -132,7 +132,7 @@ public class SiteCoordinatorDashboardCommandTest extends StudyCalendarTestCase {
         expect(templateService.removeAssignedTemplateFromParticipantCoordinator(study0, site1, user1)).andReturn(user0);
     }
 
-    private SiteCoordinatorDashboardCommand createCommand() {
-        return new SiteCoordinatorDashboardCommand(templateService, study0, assignableStudies, assignableSites, assignableUsers);
+    private SiteCoordinatorDashboardCommandByStudy createCommand() {
+        return new SiteCoordinatorDashboardCommandByStudy(templateService, study0, assignableStudies, assignableSites, assignableUsers);
     }
 }

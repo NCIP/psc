@@ -175,8 +175,12 @@
        </property>
     </bean>
 
-    <bean name="/dashboard/siteCoordinatorSchedule" id="dashboardSiteCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardController">
+    <bean name="/dashboard/siteCoordinatorScheduleByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardControllerByStudy">
+    </bean>
+
+    <bean name="/dashboard/siteCoordinatorScheduleByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardControllerByUser">
     </bean>
 
 
@@ -457,7 +461,7 @@
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Site Coordinator</value></property>
-                                <property name="linkName"><value>dashboardSiteCoordinatorController</value></property>
+                                <property name="linkName"><value>dashboardSiteCoordinatorControllerByStudy</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

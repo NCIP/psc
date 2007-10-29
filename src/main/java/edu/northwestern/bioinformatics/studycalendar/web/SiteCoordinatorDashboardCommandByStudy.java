@@ -3,17 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * @author John Dzak
  */
-public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
+public class SiteCoordinatorDashboardCommandByStudy implements AbstractSiteCoordinatorDashboardCommand {
     private Map<User,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
-    private String mode;
     private Study study;
     private TemplateService templateService;
     private List<Study> assignableStudies;
@@ -21,7 +21,7 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
     private List<User> assignableUsers;
 
 
-    public SiteCoordinatorDashboardCommand(TemplateService templateService, Study study, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+    public SiteCoordinatorDashboardCommandByStudy(TemplateService templateService, Study study, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         this.templateService = templateService;
         this.study           = study;
         this.assignableStudies = assignableStudies;
@@ -34,11 +34,11 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
     }
     
     protected void buildStudyAssignmentGrid() {
-        studyAssignmentGrid = new HashMap<User,Map<Site, StudyAssignmentCell>>();
+        studyAssignmentGrid = new TreeMap<User,Map<Site, StudyAssignmentCell>>(new NamedComparator());
 
         for (User user : assignableUsers) {
             UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-            if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new HashMap<Site, StudyAssignmentCell>());
+            if (!studyAssignmentGrid.containsKey(user)) studyAssignmentGrid.put(user, new TreeMap<Site, StudyAssignmentCell>(new NamedComparator()));
             for (Site site : assignableSites) {
                     studyAssignmentGrid.get(user)
                             .put(site,
@@ -102,10 +102,6 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
         return new StudyAssignmentCell(selected, siteAccessAllowed);
     }
 
-    public String getMode() {
-        return mode;
-    }
-
     public Study getStudy() {
         return study;
     }
@@ -120,9 +116,5 @@ public class SiteCoordinatorDashboardCommand implements AbstractGridCommand {
 
     public List<User> getAssignableUsers() {
         return assignableUsers;
-    }
-
-    public void setMode(String mode) {
-        this.mode = mode;
     }
 }
