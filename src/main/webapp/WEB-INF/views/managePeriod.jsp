@@ -89,7 +89,7 @@ function addActivityRow() {
 
 
     //corresponding to the conditional behavior
-    cells.push(Builder.node('td', {id:'emptyCell'}));
+    cells.push(Builder.node('td', {className:'emptyCell'}));
 
     //conditionCheckBox
     var name = 'grid[' + rowCount + '].conditionalCheckbox'
@@ -121,6 +121,15 @@ function addActivityRow() {
     $('input-body').appendChild(row)
     registerDraggablesAndDroppables()
     showEmptyMessage()
+
+    //displaying the very fist empty column, that is not shown when no activities is present
+    if (currentActivityCount() > 0) {
+        var td1Element = document.getElementById("td1")
+        var td2Element = document.getElementById("td2")
+
+        td1Element.style.display = 'table-cell';
+        td2Element.style.display = 'table-cell';
+    }
     SC.slideAndShow(rowId)
 }
 
@@ -541,7 +550,8 @@ function createMarker(currentDurationIndex, activityName) {
     }
 
     .input-row td input {
-        border-width: 0; /*border-bottom: 1px dotted #666;*/
+        /*border-width: 0; border-bottom: 1px dotted #666;*/
+        border-width: 0; border-bottom: 1px #666;
         text-align: center;
         padding: 2px;
     }
@@ -574,12 +584,12 @@ function createMarker(currentDurationIndex, activityName) {
         margin-top: 1%;
         padding: 10px;
     }
-    td#emptyCell {
+    td.emptyCell{
         empty-cells:hide;
         border:none;
         width:100px;
     }
-    td#emptyCellNoWidth {
+    td.emptyCellNoWidth {
         empty-cells:hide;
         border:none;
     }
@@ -599,6 +609,9 @@ function createMarker(currentDurationIndex, activityName) {
         width:100px;
     }
 
+    #td1, #td2, #td3 {
+        display:none;
+    }
 
 </style>
 </head>
@@ -626,14 +639,33 @@ function createMarker(currentDurationIndex, activityName) {
         <form:form>
             <c:set var="tableWidth" value="${period.duration.days + 2}"/>
             <table>
+             <tbody id="input-body">
                 <tr>
-                    <td></td>
+                    <c:choose>
+                        <c:when test="${not empty command.grid}">
+                            <td id="td1" style="display:table-cell;"></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td id="td1"></td>
+                        </c:otherwise>
+                    </c:choose>
+
+
                     <th colspan="${tableWidth - 2}">Days of arm (${commons:pluralize(period.repetitions, "repetition")})</th>
                     <td></td>
-                    <td id="emptyCellNoWidth"> </td>
+                    <td class="emptyCellNoWidth"> </td>
                 </tr>
                 <tr id="days-header">
-                    <td></td>
+                    <c:choose>
+                        <c:when test="${not empty command.grid}">
+                            <td id="td2" style="display:table-cell;"></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td id="td2"></td>
+                        </c:otherwise>
+                    </c:choose>
+
+
                     <c:forEach items="${period.dayRanges[0].days}" var="d">
                         <th id="day-number" class="day-number">
                             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
@@ -644,14 +676,23 @@ function createMarker(currentDurationIndex, activityName) {
                     </c:forEach>
                     <th>Details</th>
 
-                    <td id="emptyCell" ></td>
-                    <td id="emptyCellNoWidth"></td>
+                    <td class="emptyCell" ></td>
+                    <td class="emptyCellNoWidth"></td>
                     <th>Condition Details</th>
                 </tr>
-                <tbody id="input-body">
-                    <tr id="no-activities-message" style="display:none">
-                        <td></td>
-                        <td colspan="${tableWidth - 1}">This period does not have any activities yet</td>
+
+                    <tr id="no-activities-message" >
+                        <td id="td3"></td>
+                        <c:choose>
+                            <c:when test="${not empty command.grid}">
+                            </c:when>
+                            <c:otherwise>
+                                <td colspan="${tableWidth - 1}">This period does not have any activities yet</td>
+                            </c:otherwise>
+                        </c:choose>
+                        <td class="emptyCell"/>
+                        <td class="emptyCellNoWidth"/>
+                        <td class="emptyCellNoWidth"/>
                     </tr>
                     <c:forEach items="${command.grid}" var="gridRow" varStatus="gridStatus">
                         <tr class="input-row">
@@ -676,7 +717,7 @@ function createMarker(currentDurationIndex, activityName) {
                                             onchange="ajaxform(null, null, null, this, null);" />
                             </td>
                             <!--corresponds to the conditional behavior-->
-                            <td id="emptyCell" ></td>
+                            <td class="emptyCell" ></td>
                             <td class="conditional">
                                 <form:checkbox path="grid[${gridStatus.index}].conditionalCheckbox"
                                                value="${gridRow.conditionalCheckbox}" />
