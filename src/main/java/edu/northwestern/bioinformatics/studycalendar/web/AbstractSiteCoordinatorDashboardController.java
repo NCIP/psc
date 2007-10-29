@@ -47,7 +47,7 @@ public abstract class AbstractSiteCoordinatorDashboardController extends SimpleF
     }
 
     protected User getSiteCoordinator() {
-        return getUserDao().getByName(ApplicationSecurityManager.getUser());
+        return userDao.getByName(ApplicationSecurityManager.getUser());
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {

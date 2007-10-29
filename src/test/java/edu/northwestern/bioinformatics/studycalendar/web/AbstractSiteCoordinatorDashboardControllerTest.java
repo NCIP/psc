@@ -7,11 +7,13 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import static java.util.Arrays.asList;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * @author John Dzak
@@ -38,7 +41,9 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
     private List<Site> sites;
     private List<Study> studies;
     private User siteCoordinator;
+    private Site site0;
     private User user0, user1;
+    private Study study0, study1;
 
     private List<User> users;
 
@@ -53,13 +58,13 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         templateService = registerMockFor(TemplateService.class);
         userService     = registerMockFor(UserService.class);
 
-        command     = registerMockFor(SimpleSiteCoordinatorCommand.class);
-
         controller = new SimpleSiteCoordinatorDashboardController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
+
+        command     = registerMockFor(SimpleSiteCoordinatorCommand.class);
 
         siteCoordinator =  createUser(1, "john", 1L, true, "pass");
 
@@ -67,8 +72,14 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         user1 = createNamedInstance("Jake", User.class);
         users = asList(user0, user1);
 
-        sites     = asList(createNamedInstance("Mayo Clinic", Site.class));
-        studies   = asList(createNamedInstance("Study A", Study.class));
+        site0     = createNamedInstance("Mayo Clinic", Site.class);
+        sites     = asList(site0);
+
+        study0    = createNamedInstance("Study A", Study.class);
+        study1    = createNamedInstance("Study B", Study.class);
+        study1.setAmendment(new Amendment());
+
+        studies   = asList(study0, study1);
 
         SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), siteCoordinator.getPassword());
     }
@@ -80,6 +91,36 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         
         controller.handleRequest(request, response);
         verifyMocks();
+    }
+
+    public void testGetSiteCoordinator() throws Exception {
+        expect(userDao.getByName(siteCoordinator.getName())).andReturn(siteCoordinator);
+        replayMocks();
+
+        User actualSiteCoord = controller.getSiteCoordinator();
+        verifyMocks();
+        assertEquals("Wrong site coordinator", actualSiteCoord.getName(), siteCoordinator.getName());
+    }
+
+    public void testGetAssignableStudies() throws Exception {
+        expect(studyDao.getAll()).andReturn(studies);
+        expect(templateService.checkOwnership(siteCoordinator.getName(), studies)).andReturn(studies);
+        replayMocks();
+
+        List<Study> actualAssignableStudies = controller.getAssignableStudies(siteCoordinator);
+        verifyMocks();
+
+        assertEquals("Wrong site", study1.getName(), actualAssignableStudies.get(0).getName());
+    }
+
+    public void testGetAssignableSites() {
+        expect(siteService.getSitesForSiteCd(siteCoordinator.getName())).andReturn(sites);
+        replayMocks();
+
+        List<Site> sites = controller.getAssignableSites(siteCoordinator);
+        verifyMocks();
+
+        assertEquals("Wrong site", site0.getName(), sites.get(0).getName());
     }
 
     public void expectRefData() throws Exception{
@@ -110,17 +151,19 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
     private class SimpleSiteCoordinatorCommand implements AbstractSiteCoordinatorDashboardCommand {
 
         public List<Study> getAssignableStudies() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         public List<Site> getAssignableSites() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         public List<User> getAssignableUsers() {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
-        public void apply() throws Exception {}
+        public void apply() throws Exception {
+            throw new UnsupportedOperationException();
+        }
     }
 }
