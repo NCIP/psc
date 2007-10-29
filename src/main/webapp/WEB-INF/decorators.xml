@@ -11,6 +11,5 @@
     <excludes>
         <pattern>/*/image/*</pattern>
         <pattern>/*/js/*</pattern>
-        <pattern>/index.html</pattern> 
     </excludes>
 </decorators>
