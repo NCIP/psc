@@ -7,6 +7,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -41,7 +42,7 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
     private List<Site> sites;
     private List<Study> studies;
     private User siteCoordinator;
-    private Site site0;
+    private Site site0, site1;
     private User user0, user1;
     private Study study0, study1;
 
@@ -64,22 +65,27 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
 
-        command     = registerMockFor(SimpleSiteCoordinatorCommand.class);
+        command = registerMockFor(SimpleSiteCoordinatorCommand.class);
 
-        siteCoordinator =  createUser(1, "john", 1L, true, "pass");
+
 
         user0 = createNamedInstance("John", User.class);
         user1 = createNamedInstance("Jake", User.class);
         users = asList(user0, user1);
 
-        site0     = createNamedInstance("Mayo Clinic", Site.class);
-        sites     = asList(site0);
+        site0 = createNamedInstance("Mayo Clinic", Site.class);
+        site1 = createNamedInstance("Northwestern", Site.class);
+        sites = asList(site0, site1);
 
-        study0    = createNamedInstance("Study A", Study.class);
-        study1    = createNamedInstance("Study B", Study.class);
+        study0 = createNamedInstance("Study A", Study.class);
+        study1 = createNamedInstance("Study B", Study.class);
         study1.setAmendment(new Amendment());
+        study1.setStudySites(asList(createStudySite(study1, site0)));
 
-        studies   = asList(study0, study1);
+        studies = asList(study0, study1);
+
+        siteCoordinator = createUser(1, "Site Coord", 1L, true, "pass");
+        siteCoordinator.addUserRole(createUserRole(siteCoordinator, Role.SITE_COORDINATOR, site0, site1));
 
         SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), siteCoordinator.getPassword());
     }
@@ -113,14 +119,35 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         assertEquals("Wrong site", study1.getName(), actualAssignableStudies.get(0).getName());
     }
 
-    public void testGetAssignableSites() {
+    public void testGetAssignableSites() throws Exception {
         expect(siteService.getSitesForSiteCd(siteCoordinator.getName())).andReturn(sites);
         replayMocks();
 
-        List<Site> sites = controller.getAssignableSites(siteCoordinator);
+        List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator);
         verifyMocks();
 
-        assertEquals("Wrong site", site0.getName(), sites.get(0).getName());
+        assertEquals("Wrong number of sites", sites.size(), actualAssignableSites.size());
+        assertEquals("Wrong site", site0.getName(), actualAssignableSites.get(0).getName());
+    }
+
+    public void testGetAssignableSitesDependingOnStudy() throws Exception {
+        expect(siteService.getSitesForSiteCd(siteCoordinator.getName())).andReturn(sites);
+        replayMocks();
+
+        List<Site> actualAssignableSites = controller.getAssignableSites(siteCoordinator, study1);
+        verifyMocks();
+
+        assertEquals("Wrong Site", site0.getName(), actualAssignableSites.get(0).getName());
+    }
+
+    public void testGetAssignableUsers() throws Exception {
+        expect(userService.getParticipantCoordinatorsForSites(sites)).andReturn(users);
+        replayMocks();
+
+        List<User> actualAssignableUsers = userService.getParticipantCoordinatorsForSites(sites);;
+        verifyMocks();
+
+        assertEquals("Wrong Number of Users", users.size(), actualAssignableUsers.size());
     }
 
     public void expectRefData() throws Exception{

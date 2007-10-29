@@ -83,19 +83,15 @@ public abstract class AbstractSiteCoordinatorDashboardController extends SimpleF
     }
 
     protected List<User> getAssignableUsers(User siteCoordinator) {
-        List<Site> sites = getSitesForUser(siteCoordinator);
-        return userService.getParticipantCoordinatorsForSites(sites);
-    }
-
-    public List<Site> getSitesForUser(User user) {
-        Set<Site> sites = new TreeSet<Site>(new NamedComparator());
-        for (UserRole userRole : user.getUserRoles()) {
+        List<Site> sites = new ArrayList<Site>();
+        for (UserRole userRole : siteCoordinator.getUserRoles()) {
             if (userRole.getSites().size() > 0)  {
                 sites.addAll(userRole.getSites());
             }
         }
-
-        return new ArrayList<Site>(sites);
+        List<User> assignableUsers = userService.getParticipantCoordinatorsForSites(sites);
+        Collections.sort(assignableUsers, new NamedComparator());
+        return assignableUsers;
     }
 
     public void setStudyDao(StudyDao studyDao) {
