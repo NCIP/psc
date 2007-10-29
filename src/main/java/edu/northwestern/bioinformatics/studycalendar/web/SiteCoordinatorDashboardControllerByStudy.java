@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+@AccessControl(roles = {Role.SITE_COORDINATOR})
 public class SiteCoordinatorDashboardControllerByStudy extends AbstractSiteCoordinatorDashboardController {
 
     public SiteCoordinatorDashboardControllerByStudy() {

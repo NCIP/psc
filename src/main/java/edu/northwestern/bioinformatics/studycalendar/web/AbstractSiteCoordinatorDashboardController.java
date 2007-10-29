@@ -126,19 +126,7 @@ public abstract class AbstractSiteCoordinatorDashboardController extends SimpleF
         return userDao;
     }
 
-    public SiteDao getSiteDao() {
-        return siteDao;
-    }
-
     public TemplateService getTemplateService() {
         return templateService;
-    }
-
-    public SiteService getSiteService() {
-        return siteService;
-    }
-
-    public UserService getUserService() {
-        return userService;
     }
 }
