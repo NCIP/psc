@@ -15,11 +15,16 @@
     </bean>
     
     <!-- Redirect views -->
+    <bean id="redirectToRoot" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/</value></property>
+    </bean>
+
     <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/public/login</value></property>
     </bean>
-    
+
     <bean id="redirectToStudyList" class="org.springframework.web.servlet.view.RedirectView">
         <property name="contextRelative"><value>true</value></property>
         <property name="url"><value>/pages/cal/studyList</value></property>

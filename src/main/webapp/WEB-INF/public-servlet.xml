@@ -23,9 +23,10 @@
     <bean name="/login" id="loginController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
 
+    <!-- Retained to preserve URL compatibility in case anyone bookmarked this page on vera -->
     <bean name="/welcome" id="welcomeController"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-        <property name="viewName"><value>welcome</value></property>
+        <property name="viewName"><value>redirectToRoot</value></property>
     </bean>
 
     <bean name="/error" id="errorController"

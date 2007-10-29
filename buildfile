@@ -53,4 +53,15 @@ define "psc" do
     filter(_("conf/upt")).include('*.xml').into(_("target/test-classes")).
       using(:ant, {'tomcat.security.dir' => _("target/test-classes")}.merge(dbprops)).run
   end
+
+  # TODO: this is hardcoded to the particular file locations appropriate for vera (at NU)
+  # Note that namespaces embedded into projects don't seem to work with buildr at the moment
+  task :public_demo_build do
+    filter(_("test/public")).include('*.html').into(_("target/public")).
+      using(:ant, {'public-demo.base-url' => 'https://vera.bioinformatics.northwestern.edu/studycalendar/'}).run
+  end
+
+  task :public_demo_deploy => :public_demo_build do
+    cp _("target/public/*.html"), "/opt/tomcat/webapps-vera/studycalendar/"
+  end
 end
