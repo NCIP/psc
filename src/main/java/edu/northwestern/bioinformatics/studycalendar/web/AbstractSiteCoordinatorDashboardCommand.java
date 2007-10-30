@@ -3,12 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
-public abstract class AbstractSiteCoordinatorDashboardCommand<R, C> {
+public abstract class AbstractSiteCoordinatorDashboardCommand<R extends Named, C extends Named> {
     //private Map<R, Map<C, GridCell>> studyAssignmentGrid;
     private List<Study> assignableStudies;
     private List<Site> assignableSites;
@@ -32,7 +35,7 @@ public abstract class AbstractSiteCoordinatorDashboardCommand<R, C> {
         Map<R,Map<C,GridCell>> studyAssignmentGrid = getStudyAssignmentGrid();
 
         for (R rowElement : rowList) {
-            if (!studyAssignmentGrid.containsKey(rowElement)) studyAssignmentGrid.put(rowElement, new HashMap<C, GridCell>());
+            if (!studyAssignmentGrid.containsKey(rowElement)) studyAssignmentGrid.put(rowElement, new TreeMap<C, GridCell>(new NamedComparator()));
             for (C columnElement : columnList) {
                 studyAssignmentGrid.get(rowElement)
                         .put(columnElement,

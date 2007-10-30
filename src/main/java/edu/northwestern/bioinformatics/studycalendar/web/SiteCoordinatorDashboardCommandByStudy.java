@@ -3,10 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
  * @author John Dzak
@@ -19,7 +21,7 @@ public class SiteCoordinatorDashboardCommandByStudy extends AbstractSiteCoordina
 
     public SiteCoordinatorDashboardCommandByStudy(TemplateService templateService, Study study, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
-        studyAssignmentGrid = new HashMap<User, Map<Site, GridCell>>();
+        studyAssignmentGrid = new TreeMap<User, Map<Site, GridCell>>(new NamedComparator());
         this.templateService = templateService;
         this.study           = study;
 

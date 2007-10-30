@@ -46,7 +46,7 @@ public class SiteCoordinatorDashboardControllerByUser extends AbstractSiteCoordi
     }
 
     public AbstractSiteCoordinatorDashboardCommand createSiteCoordinatorDashboardCommand(User selectedUser, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        return new SiteCoordinatorDashboardCommandByUser<Study, Site>(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
+        return new SiteCoordinatorDashboardCommandByUser(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
     }
 
     protected ModelAndView onSubmit(Object o) throws Exception {
