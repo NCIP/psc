@@ -35,7 +35,7 @@ public class SiteParticipantCoordinatorListController extends PscAbstractControl
     //private Map<String, List> participantcoordinators;
 	private SiteDao siteDao;
 	private SiteService siteService;
-	private static final Logger log = LoggerFactory.getLogger(AssignParticipantCoordinatorsToSiteController.class.getName());
+	private static final Logger log = LoggerFactory.getLogger(SiteParticipantCoordinatorListController.class.getName());
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();

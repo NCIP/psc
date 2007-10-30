@@ -88,9 +88,6 @@
                     <c:forEach items="${sites}" var="site" varStatus="status">
                         <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span>
                             <ul class="controls">
-                                <tags:restrictedListItem url="/pages/cal/assignParticipantCoordinatorsToSite" queryString="id=${site.id}" cssClass="control">
-                                    Assign participant coordinators
-                                </tags:restrictedListItem>
                                 <tags:restrictedListItem url="/pages/cal/siteParticipantCoordinatorList" queryString="id=${site.id}" cssClass="control">
                                     Assign study templates to participant coordinators
                                 </tags:restrictedListItem>

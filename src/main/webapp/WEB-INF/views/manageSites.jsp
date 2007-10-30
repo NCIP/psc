@@ -23,6 +23,7 @@
         <table>
             <c:forEach items="${sites}" var="site">
                 <tr>
+                    <td>${site.name}</td>
                     <td><a href="<c:url value="/pages/admin/manage/holidays?site=${site.id}"/>">Manage Holidays and Weekends</a></td>
                 </tr>
             </c:forEach>
