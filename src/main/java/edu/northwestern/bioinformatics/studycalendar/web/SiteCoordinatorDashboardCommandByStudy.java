@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
@@ -26,12 +25,12 @@ public class SiteCoordinatorDashboardCommandByStudy extends AbstractSiteCoordina
         this.study           = study;
 
         if (study != null) {
-            buildStudyAssignmentGrid(assignableUsers, assignableSites);
+            buildGrid(assignableUsers, assignableSites);
         }
     }
 
 
-    public Map<User, Map<Site, GridCell>> getStudyAssignmentGrid() {
+    public Map<User, Map<Site, GridCell>> getGrid() {
         return studyAssignmentGrid;
     }
 

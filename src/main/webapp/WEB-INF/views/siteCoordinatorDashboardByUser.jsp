@@ -17,17 +17,12 @@
             })
         }
         Event.observe(window, "load", registerUserSelector);
-        Event.observe(window, "load", registerStudySelector);
 
     </script>
 
     <style type="text/css">
         div.label {
             width: 50%;
-        }
-
-        div.submit {
-            text-align: left;
         }
 
         form {
@@ -39,7 +34,6 @@
             cursor:pointer;
             white-space:nowrap;
         }
-
 
         table.grid td, table.grid th {
             text-align: center;
@@ -99,17 +93,17 @@
                                 <th>${site.name}</th>
                             </c:forEach>
                         </tr>
-                        <c:forEach items="${command.studyAssignmentGrid}" var="study">
+                        <c:forEach items="${command.grid}" var="study">
                             <tr>
                                 <th>${study.key.name}</th>
 
                                 <c:forEach items="${sites}" var="site">
-                                    <c:if test="${command.studyAssignmentGrid[study.key][site].siteAccessAllowed}">
+                                    <c:if test="${command.grid[study.key][site].siteAccessAllowed}">
                                         <td>
-                                            <form:checkbox path="studyAssignmentGrid[${study.key.id}][${site.id}].selected"/>
+                                            <form:checkbox path="grid[${study.key.id}][${site.id}].selected"/>
                                         </td>
                                     </c:if>
-                                    <c:if test="${not command.studyAssignmentGrid[study.key][site].siteAccessAllowed}">
+                                    <c:if test="${not command.grid[study.key][site].siteAccessAllowed}">
                                         <td class="blocked">&nbsp;</td>
                                     </c:if>
                                 </c:forEach>

@@ -5,13 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.EasyMock.expect;
-import org.springframework.core.GenericCollectionTypeResolver;
 
 import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.lang.reflect.Method;
 
 /**
  * @author John Dzak
@@ -54,12 +51,12 @@ public class SiteCoordinatorDashboardCommandByStudyTest extends StudyCalendarTes
         user1.addUserRole(role1);
     }
 
-    public void testBuildStudyAssignmentGrid() throws Exception {
+    public void testBuildGrid() throws Exception {
         replayMocks();
         SiteCoordinatorDashboardCommandByStudy command = createCommand();
         verifyMocks();
 
-        Map<User, Map<Site, SiteCoordinatorDashboardCommandByStudy.GridCell>> studyAssignmentGrid = command.getStudyAssignmentGrid();
+        Map<User, Map<Site, SiteCoordinatorDashboardCommandByStudy.GridCell>> studyAssignmentGrid = command.getGrid();
 
         assertEquals("Wrong Size", 2, studyAssignmentGrid.keySet().size());
         assertEquals("Wrong Size", 2, studyAssignmentGrid.get(user0).keySet().size());

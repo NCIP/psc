@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
@@ -16,23 +15,23 @@ import java.util.TreeMap;
 public class SiteCoordinatorDashboardCommandByUser extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
     private User user;
     private TemplateService templateService;
-    private Map<Study, Map<Site, GridCell>> studyAssignmentGrid;
+    private Map<Study, Map<Site, GridCell>> grid;
 
 
     public SiteCoordinatorDashboardCommandByUser(TemplateService templateService, User user, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
-        studyAssignmentGrid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
+        grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
         this.templateService = templateService;
         this.user = user;
 
         if (user != null) {
-            buildStudyAssignmentGrid(assignableStudies, assignableSites);
+            buildGrid(assignableStudies, assignableSites);
         }
     }
 
 
-    public Map<Study, Map<Site, GridCell>> getStudyAssignmentGrid() {
-        return studyAssignmentGrid;
+    public Map<Study, Map<Site, GridCell>> getGrid() {
+        return grid;
     }
 
     protected boolean isSiteSelected(Study study, Site site) {

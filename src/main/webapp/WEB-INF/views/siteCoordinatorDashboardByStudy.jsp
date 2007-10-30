@@ -18,16 +18,11 @@
         }
 
         Event.observe(window, "load", registerStudySelector);
-
     </script>
 
     <style type="text/css">
         div.label {
             width: 50%;
-        }
-
-        div.submit {
-            text-align: left;
         }
 
         form {
@@ -39,7 +34,6 @@
             cursor:pointer;
             white-space:nowrap;
         }
-
 
         table.grid td, table.grid th {
             text-align: center;
@@ -96,7 +90,7 @@
                         <tr>
                             <th></th>
 
-                            <c:forEach items="${command.studyAssignmentGrid}" var="user" varStatus="index">
+                            <c:forEach items="${command.grid}" var="user" varStatus="index">
                                 <c:if test="${index.first}">
                                     <c:forEach items="${sites}" var="site">
                                         <th>${site.name}</th>
@@ -104,17 +98,17 @@
                                 </c:if>
                             </c:forEach>
                         </tr>
-                        <c:forEach items="${command.studyAssignmentGrid}" var="user">
+                        <c:forEach items="${command.grid}" var="user">
                             <tr>
                                 <th>${user.key.name}</th>
 
                                 <c:forEach items="${sites}" var="site">
-                                    <c:if test="${command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
+                                    <c:if test="${command.grid[user.key][site].siteAccessAllowed}">
                                         <td>
-                                            <form:checkbox path="studyAssignmentGrid[${user.key.id}][${site.id}].selected"/>
+                                            <form:checkbox path="grid[${user.key.id}][${site.id}].selected"/>
                                         </td>
                                     </c:if>
-                                    <c:if test="${not command.studyAssignmentGrid[user.key][site].siteAccessAllowed}">
+                                    <c:if test="${not command.grid[user.key][site].siteAccessAllowed}">
                                         <td class="blocked">&nbsp;</td>
                                     </c:if>
                                 </c:forEach>

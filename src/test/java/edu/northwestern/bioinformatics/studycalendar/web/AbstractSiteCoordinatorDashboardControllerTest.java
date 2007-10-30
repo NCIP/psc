@@ -177,7 +177,7 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         }
 
 
-        public Map<Study, Map<Site, GridCell>> getStudyAssignmentGrid() {
+        public Map<Study, Map<Site, GridCell>> getGrid() {
             return studyAssignmentGrid;
         }
 
