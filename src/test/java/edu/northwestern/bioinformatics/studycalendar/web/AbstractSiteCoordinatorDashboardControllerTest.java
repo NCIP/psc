@@ -4,25 +4,20 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import static org.easymock.EasyMock.expect;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import static java.util.Arrays.asList;
 import java.util.List;
-import java.util.Collections;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author John Dzak
@@ -175,21 +170,30 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         }
     }
 
-    private class SimpleSiteCoordinatorCommand implements AbstractSiteCoordinatorDashboardCommand {
+    private class SimpleSiteCoordinatorCommand extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
+        private Map<Study, Map<Site, GridCell>> studyAssignmentGrid = new HashMap<Study, Map<Site, GridCell>>();
+        public SimpleSiteCoordinatorCommand(List assignableStudies, List assignableSites, List assignableUsers) {
+            super(assignableStudies, assignableSites, assignableUsers);
+        }
 
-        public List<Study> getAssignableStudies() {
+
+        public Map<Study, Map<Site, GridCell>> getStudyAssignmentGrid() {
+            return studyAssignmentGrid;
+        }
+
+        protected void performCheckAction(Study row, Site column) throws Exception {
             throw new UnsupportedOperationException();
         }
 
-        public List<Site> getAssignableSites() {
+        protected void performUncheckAction(Study row, Site column) throws Exception {
             throw new UnsupportedOperationException();
         }
 
-        public List<User> getAssignableUsers() {
+        protected boolean isSiteSelected(Study rowElement, Site columnElement) {
             throw new UnsupportedOperationException();
         }
 
-        public void apply() throws Exception {
+        protected boolean isSiteAccessAllowed(Study rowElement, Site columnElement) {
             throw new UnsupportedOperationException();
         }
     }

@@ -1,120 +1,57 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.HashMap;
 
 /**
  * @author John Dzak
  */
-public class SiteCoordinatorDashboardCommandByUser implements AbstractSiteCoordinatorDashboardCommand {
-    private Map<Study,Map<Site, StudyAssignmentCell>> studyAssignmentGrid;
+public class SiteCoordinatorDashboardCommandByUser<R, C> extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
     private User user;
     private TemplateService templateService;
-    private List<Study> assignableStudies;
-    private List<Site> assignableSites;
-    private List<User> assignableUsers;
+    private Map<Study, Map<Site, GridCell>> studyAssignmentGrid;
 
 
     public SiteCoordinatorDashboardCommandByUser(TemplateService templateService, User user, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+        super(assignableStudies, assignableSites, assignableUsers);
+        studyAssignmentGrid = new HashMap<Study, Map<Site, GridCell>>();
         this.templateService = templateService;
-        this.assignableStudies = assignableStudies;
-        this.assignableSites = assignableSites;
-        this.assignableUsers = assignableUsers;
         this.user = user;
 
         if (user != null) {
-            buildStudyAssignmentGrid();
+            buildStudyAssignmentGrid(assignableStudies, assignableSites);
         }
     }
 
-    protected void buildStudyAssignmentGrid() {
-        studyAssignmentGrid = new TreeMap<Study,Map<Site, StudyAssignmentCell>>(new NamedComparator());
 
-        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-        for (Study study : assignableStudies) {
-            if (!studyAssignmentGrid.containsKey(study)) studyAssignmentGrid.put(study, new TreeMap<Site, StudyAssignmentCell>(new NamedComparator()));
-            for (Site site : assignableSites) {
-                    studyAssignmentGrid.get(study)
-                            .put(site,
-                                    createStudyAssignmentCell(isSiteSelected(userRole, study, site),
-                                            isSiteAccessAllowed(userRole, study, site)));
-            }
-        }
-    }
-
-    protected boolean isSiteSelected(UserRole userRole, Study study, Site site) {
-        return userRole.getStudySites().contains(findStudySite(study, site));
-    }
-
-    protected boolean isSiteAccessAllowed(UserRole userRole, Study study, Site site) {
-        return (StudySite.findStudySite(study, site) != null && userRole.getSites().contains(site));
-    }
-
-    public Map<Study, Map<Site, StudyAssignmentCell>> getStudyAssignmentGrid() {
+    public Map<Study, Map<Site, GridCell>> getStudyAssignmentGrid() {
         return studyAssignmentGrid;
     }
 
-    public void apply() throws Exception {
-        for (Study study : studyAssignmentGrid.keySet()) {
-            for (Site site : studyAssignmentGrid.get(study).keySet()) {
-                if (studyAssignmentGrid.get(study).get(site).isSelected()) {
-                    templateService.assignTemplateToParticipantCoordinator(study,site, user);
-                } else {
-                    templateService.removeAssignedTemplateFromParticipantCoordinator(study,site, user);
-                }
-            }
-        }
+    protected boolean isSiteSelected(Study study, Site site) {
+        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        return userRole.getStudySites().contains(findStudySite(study, site));
     }
 
-    public static class StudyAssignmentCell {
-        private boolean selected;
-        private boolean siteAccessAllowed;
-
-        public StudyAssignmentCell(boolean selected, boolean siteAccessAllowed) {
-            this.selected = selected;
-            this.siteAccessAllowed = siteAccessAllowed;
-        }
-
-        public boolean isSelected() {
-            return selected;
-        }
-
-        public void setSelected(boolean selected) {
-            this.selected = selected;
-        }
-
-        public boolean isSiteAccessAllowed() {
-            return siteAccessAllowed;
-        }
-
-        public void setSiteAccessAllowed(boolean siteAccessAllowed) {
-            this.siteAccessAllowed = siteAccessAllowed;
-        }
+    protected boolean isSiteAccessAllowed(Study study, Site site) {
+        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        return (StudySite.findStudySite(study, site) != null && userRole.getSites().contains(site));
     }
 
-    protected static StudyAssignmentCell createStudyAssignmentCell(boolean selected, boolean siteAccessAllowed) {
-        return new StudyAssignmentCell(selected, siteAccessAllowed);
+     protected void performCheckAction(Study study, Site site) throws Exception {
+        templateService.assignTemplateToParticipantCoordinator(study,site, user);
+    }
+
+    protected void performUncheckAction(Study study, Site site) throws Exception  {
+        templateService.removeAssignedTemplateFromParticipantCoordinator(study,site, user);
     }
 
     public User getUser() {
         return user;
-    }
-
-    public List<Study> getAssignableStudies() {
-        return assignableStudies;
-    }
-
-    public List<Site> getAssignableSites() {
-        return assignableSites;
-    }
-
-    public List<User> getAssignableUsers() {
-        return assignableUsers;
     }
 }
