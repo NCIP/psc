@@ -10,6 +10,39 @@
 <head>
     <title>New User</title>
     <tags:includeScriptaculous/>
+
+    <script type="text/javascript">
+        <c:if test="${actionText=='Edit'}">
+        function registerEditPasswordLink() {
+            var aElement = $('changePassword')
+            Event.observe(aElement, "click", function(e) {
+                Event.stop(e)
+                $('passwordField').enable();
+                $('rePasswordField').enable();
+                $('cancelChangePassword').show()
+                $('changePassword').hide();
+                $('passwordModified').value = true;
+            })
+        }
+
+        function registerCancelEditPasswordLink() {
+            var aElement = $('cancelChangePassword')
+            Event.observe(aElement, "click", function(e) {
+                Event.stop(e)
+                $('passwordField').clear();
+                $('rePasswordField').clear();
+                $('passwordField').disable();
+                $('rePasswordField').disable();
+                $('cancelChangePassword').hide()
+                $('changePassword').show();
+                $('passwordModified').value = false;
+            })
+        }
+
+        Event.observe(window, "load", registerEditPasswordLink);
+        Event.observe(window, "load", registerCancelEditPasswordLink);
+        </c:if>
+    </script>
     <style type="text/css">
         div.label {
             width: 50%;
@@ -41,6 +74,12 @@
             background-color:#ccc
         }
 
+        .password-edit-link {
+            color:#0000cc;
+            cursor:pointer;
+            white-space:nowrap;
+        }
+
     </style>
 </head>
 <body>
@@ -49,7 +88,12 @@
 
         <form:form method="post">
             <form:hidden path="user.id"/>
+            <form:hidden path="passwordModified"/> 
             <form:errors path="*"/>
+            <c:set var="passwordError" value="false"/>
+            <spring:bind path="command.password">
+                <c:set var="passwordError" value="${status.errors.errorCount > 0}"/>
+            </spring:bind>
             <div class="row">
                 <div class="label" >
                     <form:label path="user.name" >User Name:</form:label>
@@ -65,10 +109,15 @@
             </div>
             <div class="row">
                 <div class="label" >
-                    <form:label path="user.plainTextPassword">Password:</form:label>
+                    <form:label path="password">Password:</form:label>
                 </div>
                 <div class="value">
-                    <form:password path="user.plainTextPassword"/>
+                    <form:password path="password" id="passwordField" disabled="${actionText=='Edit' and not passwordError}"/>
+
+                    <c:if test="${actionText == 'Edit'}">
+                        <span id="changePassword" class="password-edit-link" style="<c:if test="${passwordError}">display:none</c:if>">Change Password</span>
+                        <span id="cancelChangePassword" class="password-edit-link" style="<c:if test="${not passwordError}">display:none</c:if>">Undo Password Changes</span>
+                    </c:if>
                 </div>
             </div>
             <div class="row">
@@ -76,7 +125,7 @@
                     <form:label path="rePassword">Re-Enter Password:</form:label>
                 </div>
                 <div class="value">
-                    <form:password path="rePassword"/>
+                    <form:password path="rePassword" id="rePasswordField" disabled="${actionText=='Edit' and not passwordError}"/>
                 </div>
             </div>
             <div class="row">

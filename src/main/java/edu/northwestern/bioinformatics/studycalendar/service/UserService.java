@@ -23,26 +23,36 @@ public class UserService {
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
     private SiteService siteService;
 
-    public User saveUser(User user) throws Exception {
+    public User saveUser(User user, String password) throws Exception {
         if(user == null)
             return null;
 
         if(user.getCsmUserId() == null) {
-            gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user);
+            gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user, password);
             user.setCsmUserId(csmUser.getUserId());
             if(csmUser.getUserId() == null)
                 throw new StudyCalendarSystemException("Csm User Id is null");
+        } else {
+            gov.nih.nci.security.authorization.domainobjects.User csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
+            csmUser.setPassword(password);
+            userProvisioningManager.modifyUser(csmUser);
         }
+
+        return saveUser(user);
+    }
+
+    public User saveUser(User user) throws Exception {
+        if (user == null) return null;
 
         userDao.save(user);
         return user;
     }
 
-    private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user) throws Exception {
+    private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user, String password) throws Exception {
         gov.nih.nci.security.authorization.domainobjects.User csmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
         csmUser.setLoginName(user.getName());
-        csmUser.setPassword(user.getPlainTextPassword());
+        csmUser.setPassword(password);
         csmUser.setFirstName("");   // Attribute can't be null
         csmUser.setLastName("");    // Attribute can't be null
         userProvisioningManager.createUser(csmUser);

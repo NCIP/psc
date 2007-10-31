@@ -34,7 +34,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public void testBuildRolesGrid() throws Exception {
-        User expectedUser = createUser(-1, "Joe", -1L, true, "pass", Role.STUDY_ADMIN);
+        User expectedUser = createUser(-1, "Joe", -1L, true, Role.STUDY_ADMIN);
         expectedUser.addUserRole(createUserRole(expectedUser, Role.RESEARCH_ASSOCIATE, sites.get(0), sites.get(1)));
 
         expect(siteDao.getAll()).andReturn(sites);
@@ -55,7 +55,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public void testInterpretRolesGrid() throws Exception {
-        User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+        User expectedUser = createUser(-1, "Joe", -1L, true);
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
@@ -87,7 +87,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public void testInterpretRolesGridRemoveRole() throws Exception {
-        User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+        User expectedUser = createUser(-1, "Joe", -1L, true);
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
@@ -119,7 +119,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public void testInterpretRolesGridAddRole() throws Exception {
-        User expectedUser = createUser(-1, "Joe", -1L, true, "pass");
+        User expectedUser = createUser(-1, "Joe", -1L, true);
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))

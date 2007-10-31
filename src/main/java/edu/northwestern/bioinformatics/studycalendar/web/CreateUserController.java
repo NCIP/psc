@@ -80,10 +80,6 @@ public class CreateUserController extends PscCancellableFormController {
 
         CreateUserCommand command = new CreateUserCommand(user, siteDao, userService, userRoleService);
 
-        if (command.getUser().getPassword() != null) {
-            command.setRePassword(command.getUser().getPlainTextPassword());
-        }
-
         return command;
     }
 

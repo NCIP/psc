@@ -18,7 +18,9 @@ import java.util.Set;
 
 public class CreateUserCommand implements Validatable {
     private UserService userService;
+    private String password;
     private String rePassword;
+    private boolean passwordModified;
     private User user;
     private SiteDao siteDao;
     private Map<Site, Map<Role,RoleCell>> rolesGrid;
@@ -29,6 +31,7 @@ public class CreateUserCommand implements Validatable {
         this.siteDao = siteDao;
         this.userService = userService;
         this.userRoleService = userRoleService;
+        this.passwordModified = false;
         
         if(user == null) user = new User();
         buildRolesGrid(user.getUserRoles());
@@ -66,16 +69,14 @@ public class CreateUserCommand implements Validatable {
                     errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
-            try {
-                if (user.getPlainTextPassword() == null || StringUtils.isBlank(user.getPlainTextPassword())){
-                    errors.rejectValue("user.password", "error.user.password.not.specified");
+            if (passwordModified) {
+                if (password == null || StringUtils.isBlank(password)){
+                    errors.rejectValue("password", "error.user.password.not.specified");
                 } else {
-                    if (!user.getPlainTextPassword().equals(rePassword)) {
+                    if (!password.equals(rePassword)) {
                         errors.rejectValue("rePassword", "error.user.repassword.does.not.match.password");
                     }
                 }
-            } catch(StringEncrypter.EncryptionException encryptExcep) {
-                errors.rejectValue("user.password", "error.user.password.not.specified");
             }
         }
 
@@ -84,7 +85,11 @@ public class CreateUserCommand implements Validatable {
 
 
     public User apply() throws Exception {
-        userService.saveUser(user);
+        if (passwordModified || user.getId() == null) {
+            userService.saveUser(user, password);
+        } else {
+            userService.saveUser(user);
+        }
         assignUserRolesFromRolesGrid(rolesGrid);
         return user;
     }
@@ -166,6 +171,14 @@ public class CreateUserCommand implements Validatable {
         return user;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getRePassword() {
         return rePassword;
     }
@@ -188,5 +201,13 @@ public class CreateUserCommand implements Validatable {
 
     public Map<Site, Map<Role, RoleCell>> getRolesGrid() {
         return rolesGrid;
+    }
+
+    public boolean isPasswordModified() {
+        return passwordModified;
+    }
+
+    public void setPasswordModified(boolean passwordModified) {
+        this.passwordModified = passwordModified;
     }
 }

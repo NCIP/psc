@@ -187,7 +187,6 @@
         name="ra_1"
         csm_user_id="-5"
         active_flag="1"
-        password="XlF3h/jI/Eo="
         />
 
     <USERS
@@ -195,7 +194,6 @@
         name="ra_2"
         csm_user_id="-6"
         active_flag="1"
-        password="8pcOSnieyYk="
         />
 
     <USERS
@@ -203,7 +201,6 @@
         name="study_admin1"
         csm_user_id="-7"
         active_flag="1"
-        password="kWIfWvsUd66SoxTyR4VAOg=="
         />
 
     <USERS
@@ -211,7 +208,6 @@
         name="study_admin2"
         csm_user_id="-8"
         active_flag="1"
-        password="kWIfWvsUd65A5ci4Cgt/ZA=="
         />
 
     <USERS
@@ -219,7 +215,6 @@
         name="studycd_1"
         csm_user_id="-3"
         active_flag="1"
-        password="FmsjcRxlRj+thtxFP2ZrIA=="
         />
 
     <USERS
@@ -227,7 +222,6 @@
         name="studycd_2"
         csm_user_id="-4"
         active_flag="1"
-        password="FmsjcRxlRj+q4RawigB4Ig=="
         />
 
     <USERS
@@ -235,7 +229,6 @@
         name="participantcd_1"
         csm_user_id="-9"
         active_flag="1"
-        password="OI/ZpclGdfVLFNx9KBh4vA=="
         />
 
     <USERS
@@ -243,7 +236,6 @@
         name="participantcd_2"
         csm_user_id="-10"
         active_flag="1"
-        password="OI/ZpclGdfUxpYigEeVf4w=="
         />
 
     <USERS
@@ -251,7 +243,6 @@
         name="superuser"
         csm_user_id="-11"
         active_flag="1"
-        password="sAybp9IVe7feRIv4iO8hcA=="
         />
 
     <USERS
@@ -259,7 +250,6 @@
         name="sitecd_1"
         csm_user_id="-12"
         active_flag="1"
-        password="6bmDzryJ1om8j2uyHEABIQ=="
         />
 
     <USERS
@@ -267,7 +257,6 @@
         name="sitecd_2"
         csm_user_id="-13"
         active_flag="1"
-        password="N1jZCkdaS1W8j2uyHEABIQ=="
         />
 
     <USERS
@@ -275,7 +264,6 @@
         name="system_admin1"
         csm_user_id="-14"
         active_flag="1"
-        password="yDq1c1nU4E5FhlAGCu3byg=="
         />
 
     <USERS
@@ -283,7 +271,6 @@
         name="system_admin2"
         csm_user_id="-15"
         active_flag="1"
-        password="yDq1c1nU4E4g7OirUlHC8A=="
         />
 
 

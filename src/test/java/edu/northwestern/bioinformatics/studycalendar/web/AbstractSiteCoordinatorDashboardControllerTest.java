@@ -79,10 +79,10 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
 
         studies = asList(study0, study1);
 
-        siteCoordinator = createUser(1, "Site Coord", 1L, true, "pass");
+        siteCoordinator = createUser(1, "Site Coord", 1L, true);
         siteCoordinator.addUserRole(createUserRole(siteCoordinator, Role.SITE_COORDINATOR, site0, site1));
 
-        SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), siteCoordinator.getPassword());
+        SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), "pass");
     }
 
     public void testGetRefData() throws Exception {

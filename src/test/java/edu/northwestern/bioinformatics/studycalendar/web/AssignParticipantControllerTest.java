@@ -48,7 +48,6 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         request.addParameter("id", study.getId().toString());
 
         user = new User();
-        user.setPlainTextPassword("password123");
         user.setName("user");
         Set<UserRole> userRoles = new HashSet<UserRole>();
         UserRole userRole = new UserRole();

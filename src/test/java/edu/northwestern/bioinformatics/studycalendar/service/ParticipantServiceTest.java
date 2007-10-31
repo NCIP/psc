@@ -58,7 +58,6 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18, "Infusion Details")));           // 25, 53
 
         user = new User();
-        user.setPlainTextPassword("password123");
         Set<UserRole> userRoles = new HashSet<UserRole>();
         UserRole userRole = new UserRole();
         userRole.setRole(Role.PARTICIPANT_COORDINATOR);

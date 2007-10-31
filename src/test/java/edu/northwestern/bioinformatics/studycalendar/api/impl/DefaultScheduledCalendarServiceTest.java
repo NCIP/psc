@@ -92,7 +92,6 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         loadedParticipant = setGridId(PARTICIPANT_BIG_ID, createParticipant("Edward", "Armor-o"));
 
         user = new User();
-        user.setPlainTextPassword("password123");
         Set<UserRole> userRoles = new HashSet<UserRole>();
         UserRole userRole = new UserRole();
         userRole.setRole(Role.PARTICIPANT_COORDINATOR);

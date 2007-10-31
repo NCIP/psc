@@ -196,13 +196,12 @@ public class Fixtures {
         }
     }
 
-    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, String password, Role... roles) throws Exception {
+    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) throws Exception {
         User user = new User();
         user.setId(id);
         user.setName(name);
         user.setCsmUserId(csmUserId);
         user.setActiveFlag(activeFlag);
-        user.setPlainTextPassword(password);
         if (roles != null) {
             user.setUserRoles(new HashSet<UserRole>());
             for(Role role : roles) {

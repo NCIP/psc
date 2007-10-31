@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
-
 import static java.util.Arrays.asList;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
@@ -143,7 +141,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testRemoveProtectionGroupPSCDomainObjects() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
-        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true, "pass");
+        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true);
         user.addUserRole(createUserRole(user, Role.PARTICIPANT_COORDINATOR, expectedSite));
 
         ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
@@ -312,7 +310,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testAssignProtectionGroup() throws Exception {
         Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
-        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true, "pass");
+        edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true);
         Role role = Role.PARTICIPANT_COORDINATOR;
         ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), DomainObjectTools.createExternalObjectId(site));
 

@@ -67,7 +67,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
     public void testSaveUser() throws Exception {
         service.setUserProvisioningManager(userProvisioningManagerStub);
-        User expectedUser = createUser(200, "john", 100L, true, "pass123", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        User expectedUser = createUser(200, "john", 100L, true, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
@@ -87,7 +87,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
 
     public void testGetUserByName() throws Exception {
-        User expectedUser = createUser(-100, "john", -100L, true, "pass123");
+        User expectedUser = createUser(-100, "john", -100L, true);
 
         expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUser);
         replayMocks();
@@ -99,7 +99,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetUserById() throws Exception {
-        User expectedUser = createUser(-200, "john", -100L, false, "pass123", Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+        User expectedUser = createUser(-200, "john", -100L, false, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         expect(userDao.getById(-200)).andReturn(expectedUser);
         replayMocks();
@@ -124,7 +124,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertEquals("Names not equal", expected.getName(), actual.getName());
         assertEquals("Csm user ids not equal", expected.getCsmUserId(), actual.getCsmUserId());
         assertEquals("Active flags not equal", expected.getActiveFlag(), actual.getActiveFlag());
-        assertEquals("Passwords not equal", expected.getPassword(), actual.getPassword());
         assertEquals("Different number of roles", expected.getUserRoles().size(), actual.getUserRoles().size());
 
         Iterator<UserRole> expectedUserRolesIter = expected.getUserRoles().iterator();

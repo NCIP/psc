@@ -27,7 +27,6 @@ public class User extends AbstractMutableDomainObject implements Named {
     private Long csmUserId;
     private Set<UserRole> userRoles;
     private Boolean activeFlag;
-    private String password;
     private List<StudyParticipantAssignment> studyParticipantAssignments;
 
 
@@ -59,29 +58,6 @@ public class User extends AbstractMutableDomainObject implements Named {
 
     public void setActiveFlag(Boolean activeFlag) {
         this.activeFlag = activeFlag;
-    }
-
-    public String getPassword() throws Exception {
-        return password;
-    }
-
-    public void setPassword(String password) throws Exception {
-        this.password = password;
-    }
-
-    @Transient
-    public String getPlainTextPassword() throws StringEncrypter.EncryptionException {
-        if (password == null || StringUtils.isBlank(password))
-            return password;
-        
-        StringEncrypter encrypter = new StringEncrypter();
-        return encrypter.decrypt(password);
-    }
-
-    @Transient
-    public void setPlainTextPassword(String password) throws StringEncrypter.EncryptionException {
-        StringEncrypter encrypter = new StringEncrypter();
-        this.password = encrypter.encrypt(password);
     }
 
     @OneToMany (mappedBy = "user")
