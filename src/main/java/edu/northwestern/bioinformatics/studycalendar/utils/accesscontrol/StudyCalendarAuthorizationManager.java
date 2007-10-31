@@ -203,7 +203,7 @@ public class StudyCalendarAuthorizationManager {
 			
 		if (pgList.size() > 0) {
 			for (ProtectionGroup requiredProtectionGroup : pgList) {
-			   if ((requiredProtectionGroup.getParentProtectionGroup()!=null) && (isSitePG(requiredProtectionGroup))) {
+			   if (isSitePG(requiredProtectionGroup)) {
 				   siteList.add(requiredProtectionGroup);
 			   }
 			}
