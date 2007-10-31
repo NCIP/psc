@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 public class StudyCalendarAuthorizationManager {
 	public static final String APPLICATION_CONTEXT_NAME = "study_calendar";
-	public static final String BASE_SITE_PG = "BaseSitePG";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
     public static final String ASSIGNED_PGS = "ASSIGNED_PGS";
