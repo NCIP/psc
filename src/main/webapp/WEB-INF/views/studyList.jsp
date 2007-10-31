@@ -80,17 +80,6 @@
                 </ul>
             </laf:division>
         </c:if>
-
-        <c:if test="${not empty sites}">
-            <h3>Sites</h3>
-            <laf:division>
-                <ul class="menu">
-                    <c:forEach items="${sites}" var="site" varStatus="status">
-                        <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span></li>
-                    </c:forEach>
-                </ul>
-            </laf:division>
-        </c:if>
 </laf:box>
 </body>
 </html>
