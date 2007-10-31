@@ -283,27 +283,7 @@
             </bean>
         </property>
     </bean>
-
-    <bean name="/cal/siteParticipantCoordinatorList" id="siteParticipantCoordinatorListController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.SiteParticipantCoordinatorListController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>Participant Coordinator List</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
-            </bean>
-        </property>
-    </bean>
-
-     <bean name="/assignTemplatesToOneParticipantCoordinator" id="assignTemplatesToOneParticipantCoordinatorController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.AssignTemplatesToOneParticipantCoordinatorController">
-         <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name"><value>Assign Studies to Participant Coordinator</value></property>
-                 <property name="parent"><ref local="studyListController"/></property>
-             </bean>
-         </property>
-    </bean>
-
+    
      <bean name="/report/builder" id="reportBuilderController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderController">
            <property name="crumb">

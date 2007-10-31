@@ -86,13 +86,7 @@
             <laf:division>
                 <ul class="menu">
                     <c:forEach items="${sites}" var="site" varStatus="status">
-                        <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span>
-                            <ul class="controls">
-                                <tags:restrictedListItem url="/pages/cal/siteParticipantCoordinatorList" queryString="id=${site.id}" cssClass="control">
-                                    Assign study templates to participant coordinators
-                                </tags:restrictedListItem>
-                            </ul>
-                        </li>
+                        <li class="autoclear ${commons:parity(status.count)}"><span class="primary">${site.name}</span></li>
                     </c:forEach>
                 </ul>
             </laf:division>
