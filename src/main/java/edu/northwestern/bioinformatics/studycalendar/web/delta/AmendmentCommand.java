@@ -1,14 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+
+import java.util.Date;
 
 public class AmendmentCommand {
     private Study study;
+    private Date date;
     private String name;
-    private String date;
     private Integer previousAmendment;
 
     private AmendmentDao amendmentDao;
@@ -50,11 +52,11 @@ public class AmendmentCommand {
         this.previousAmendment = previousAmendment;
     }
 
-    public String getDate() {
+    public Date getDate() {
         return date;
     }
                                                                        
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

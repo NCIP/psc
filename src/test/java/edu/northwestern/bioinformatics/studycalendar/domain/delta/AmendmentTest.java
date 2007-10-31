@@ -3,6 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -46,5 +49,16 @@ public class AmendmentTest extends StudyCalendarTestCase {
         assertEquals(2, a2.getPreviousAmendmentsCount());
         assertEquals(1, a1.getPreviousAmendmentsCount());
         assertEquals(0, a0.getPreviousAmendmentsCount());
+    }
+
+    public void testDisplayNameWithDateOnly() throws Exception {
+        a3.setName(null);
+        a3.setDate(DateTools.createDate(2005, Calendar.MARCH, 6));
+        assertEquals("03/06/2005", a3.getDisplayName());
+    }
+
+    public void testDisplayNameWithDateAndName() throws Exception {
+        a3.setDate(DateTools.createDate(2005, Calendar.MARCH, 6));
+        assertEquals("03/06/2005 (A3)", a3.getDisplayName());
     }
 }

@@ -11,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -39,7 +42,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
         remove = Remove.create(pe1);
         delta = Delta.createDeltaFor(new Period(), remove);
         amendment = createAmendments("Oops");
-        amendment.setDate("09/22");
+        amendment.setDate(DateTools.createDate(1922, Calendar.SEPTEMBER, 1));
         amendment.addDelta(delta);
 
         scheduledCalendar = new ScheduledCalendar();
@@ -61,7 +64,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
     public void testOnlyApplicableScheduledEventsUnscheduled() throws Exception {
         scheduledCalendar.addArm(scheduledArm);
 
-        String expectedMessage = "Removed in revision Oops (09/22)";
+        String expectedMessage = "Removed in revision 09/01/1922 (Oops)";
         pe1se0.unscheduleIfOutstanding(expectedMessage);
         pe1se1.unscheduleIfOutstanding(expectedMessage);
 

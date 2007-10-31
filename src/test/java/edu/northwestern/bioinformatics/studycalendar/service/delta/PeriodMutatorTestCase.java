@@ -26,7 +26,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected static final int PERIOD_0_REPS = 3;
     protected static final int PERIOD_1_REPS = 2;
     protected static final Date ARM_START_DATE = DateTools.createDate(2010, Calendar.MARCH, 1);
-    protected static final String REVISION_DISPLAY_NAME = "Oops (09/22)";
+    protected static final String REVISION_DISPLAY_NAME = "02/04/1909 (Oops)";
 
     protected Amendment amendment;
     private Delta<?> delta;
@@ -60,7 +60,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         change = createChange();
         delta = createDelta();
         amendment = Fixtures.createAmendments("Oops");
-        amendment.setDate("09/22");
+        amendment.setDate(DateTools.createDate(1909, Calendar.FEBRUARY, 4));
         amendment.addDelta(delta);
         scheduledCalendar = new ScheduledCalendar();
         scheduledArm = Fixtures.createScheduledArm(arm);

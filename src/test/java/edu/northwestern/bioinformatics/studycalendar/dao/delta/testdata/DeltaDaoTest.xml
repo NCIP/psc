@@ -1,6 +1,6 @@
 <dataset>
-    <AMENDMENTS id="-1" amendment_date="1/2/2525"/>
-    <AMENDMENTS id="-2" amendment_date="1/7/2525"/>
+    <AMENDMENTS id="-1" amendment_date="2525-01-02"/>
+    <AMENDMENTS id="-2" amendment_date="2525-01-07"/>
     <DELTAS
         id="-100"
         node_type="epoch"

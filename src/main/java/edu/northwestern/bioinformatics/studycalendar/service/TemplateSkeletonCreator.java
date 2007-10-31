@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalenda
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 
+import java.util.Date;
+
 /**
  * @author Rhett Sutphin
 */
@@ -24,7 +26,7 @@ class TemplateSkeletonCreatorImpl {
         study.setName(name);
         study.setPlannedCalendar(new PlannedCalendar());
         Amendment start = new Amendment("[Original]");
-        start.setDate("00/0000"); // TODO: might want to use actual date
+        start.setDate(new Date()); // TODO: might want to use NowFactory
         start.addDelta(new PlannedCalendarDelta(study.getPlannedCalendar()));
         study.setDevelopmentAmendment(start);
         return study;

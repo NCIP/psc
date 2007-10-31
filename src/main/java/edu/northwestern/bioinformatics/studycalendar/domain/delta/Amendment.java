@@ -1,23 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.ManyToOne;
-import javax.persistence.Column;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Date;
+
+import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
+import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
@@ -44,10 +44,9 @@ import javax.persistence.Column;
 )
 public class Amendment extends AbstractMutableDomainObject implements Revision {
     private Amendment previousAmendment;
+    private Date date;
     private String name;
     private List<Delta<?>> deltas;
-
-    private String date;
 
     public Amendment() {
         this(null);
@@ -62,8 +61,11 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     @Transient
     public String getDisplayName() {
-        // TODO: this is insufficiently robust.  Should probably prioritize the date, for one.
-        return new StringBuilder(getName()).append(" (").append(getDate()).append(')').toString();
+        StringBuilder n = new StringBuilder(formatDate(getDate()));
+        if (getName() != null) {
+            n.append(" (").append(getName()).append(')');
+        }
+        return n.toString();
     }
 
     /**
@@ -124,12 +126,12 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         this.name = name;
     }
 
-    @Column(name = "amendment_date")
-    public String getDate() {
+    @Column(name = "amendment_date", nullable = false)
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 

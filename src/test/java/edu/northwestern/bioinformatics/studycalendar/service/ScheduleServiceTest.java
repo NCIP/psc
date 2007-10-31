@@ -23,6 +23,8 @@ import java.util.Calendar;
  * @author Rhett Sutphin
  */
 public class ScheduleServiceTest extends StudyCalendarTestCase {
+    private static final String REVISION_DISPLAY_NAME = "10/01/1926 (Leopard)";
+
     private ScheduleService service;
     private ParticipantService participantService;
 
@@ -43,7 +45,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assignment.getScheduledCalendar().addArm(scheduledArm);
 
         amendment = createAmendments("Leopard");
-        amendment.setDate("26/10");
+        amendment.setDate(DateTools.createDate(1926, Calendar.OCTOBER, 1));
 
         service = new ScheduleService();
         // this is a real instance instead of mock because eventually
@@ -59,7 +61,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, 7, amendment);
         assertEquals(2, event.getAllStates().size());
-        assertEquals("Shifted forward 7 days in revision Leopard (26/10)", event.getCurrentState().getReason());
+        assertEquals("Shifted forward 7 days in revision " + REVISION_DISPLAY_NAME, event.getCurrentState().getReason());
         assertEquals(ScheduledEventMode.SCHEDULED, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 8, event.getActualDate());
     }
@@ -71,7 +73,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, -7, amendment);
         assertEquals(3, event.getAllStates().size());
-        assertEquals("Shifted back 7 days in revision Leopard (26/10)", event.getCurrentState().getReason());
+        assertEquals("Shifted back 7 days in revision " + REVISION_DISPLAY_NAME, event.getCurrentState().getReason());
         assertEquals(ScheduledEventMode.CONDITIONAL, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 23, event.getActualDate());
     }

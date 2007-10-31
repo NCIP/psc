@@ -2,12 +2,12 @@
     <AMENDMENTS
         id="-100"
         name="abc"
-        amendment_date="02/2006"
+        amendment_date="2006-02-01"
         />
     <AMENDMENTS
         id="-200"
         name="def"
-        amendment_date="05/2008"
+        amendment_date="2008-05-17"
         previous_amendment='-100'
         />
 
