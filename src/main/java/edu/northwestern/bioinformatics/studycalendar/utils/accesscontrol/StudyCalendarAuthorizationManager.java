@@ -180,25 +180,14 @@ public class StudyCalendarAuthorizationManager {
       	user = userProvisioningManager.getUserById(id);
       	return user;
     }
-    
-    public void createProtectionGroup(String newProtectionGroup, String parentPG) throws Exception {
-    	if (parentPG != null) {
-    		ProtectionGroup parentGroupSearch = new ProtectionGroup();
-    		parentGroupSearch.setProtectionGroupName(parentPG);
-            SearchCriteria protectionGroupSearchCriteria = new ProtectionGroupSearchCriteria(parentGroupSearch);
-    		List parentGroupList = userProvisioningManager.getObjects(protectionGroupSearchCriteria);
-    		
-    		if (parentGroupList.size() > 0) {
-    			ProtectionGroup parentProtectionGroup = (ProtectionGroup) parentGroupList.get(0);
-    			ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
-    			requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
-    			requiredProtectionGroup.setParentProtectionGroup(parentProtectionGroup);
-    			userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
-    			if (log.isDebugEnabled()) {
-					log.debug("new protection group created " + newProtectionGroup);
-				}
-    		}
-    	}
+
+    public void createProtectionGroup(String newProtectionGroup) throws Exception {
+        ProtectionGroup requiredProtectionGroup = new ProtectionGroup();
+        requiredProtectionGroup.setProtectionGroupName(newProtectionGroup);
+        userProvisioningManager.createProtectionGroup(requiredProtectionGroup);
+        if (log.isDebugEnabled()) {
+            log.debug("new protection group created " + newProtectionGroup);
+        }
     }
     
     /**

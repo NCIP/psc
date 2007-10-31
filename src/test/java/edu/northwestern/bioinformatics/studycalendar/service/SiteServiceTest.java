@@ -49,7 +49,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testCreateSite() throws Exception {
 		Site newSite = setId(1, createNamedInstance("new site", Site.class));
 		siteDao.save(newSite);
-		authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", "BaseSitePG");
+		authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 		replayMocks();
 		
 		Site siteCreated = service.createSite(newSite);
@@ -60,7 +60,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     }
 
     public void testSaveSiteProtectionGroup() throws Exception {
-        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1", SiteService.BASE_SITE_PG);
+        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         replayMocks();
 
         service.saveSiteProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");

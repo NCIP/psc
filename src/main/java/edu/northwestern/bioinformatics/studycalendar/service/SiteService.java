@@ -46,7 +46,7 @@ public class SiteService {
     }
     
     protected void saveSiteProtectionGroup(String siteName) throws Exception {
-    	authorizationManager.createProtectionGroup(siteName, BASE_SITE_PG);
+    	authorizationManager.createProtectionGroup(siteName);
     }
 
     public void assignProtectionGroup(Site site, User user, Role role) throws Exception {
