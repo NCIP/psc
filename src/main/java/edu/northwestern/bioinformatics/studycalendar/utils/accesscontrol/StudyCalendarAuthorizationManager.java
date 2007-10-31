@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -372,43 +373,6 @@ public class StudyCalendarAuthorizationManager {
     		}
     	}
     }
-    
-    public void assignProtectionElementToPGs(List<String> pgIdsList, String protectionElementId) throws Exception {
-    	ProtectionElement requiredPE;
-     	try { 
-			requiredPE = userProvisioningManager.getProtectionElement(protectionElementId);
-		} catch (CSObjectNotFoundException ex){
-			ProtectionElement newProtectionElement = new ProtectionElement();
-			newProtectionElement.setObjectId(protectionElementId);
-			newProtectionElement.setProtectionElementName(protectionElementId);
-			userProvisioningManager.createProtectionElement(newProtectionElement);
-			requiredPE = userProvisioningManager.getProtectionElement(protectionElementId);
-		}
-		
-		List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
-    	List<String> pgIds = new ArrayList<String>();
-    	try 
-		{
-    		Long peId = userProvisioningManager.getProtectionElement(protectionElementId).getProtectionElementId();
-    		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
-			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
-				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (isSitePG(protectionGroupForPE)) {
-						assignedPGs.add(protectionGroupForPE);
-					}
-				}
-			}
-		} catch (CSObjectNotFoundException  cse) {
-			if (log.isDebugEnabled()) {
-				log.debug("no assigned protectiongroups for this protection element");
-			}
-		}
-		for (ProtectionGroup assignedPG : assignedPGs) {
-			pgIds.add(assignedPG.getProtectionGroupId().toString());
-		}
-		pgIds.addAll(pgIdsList);
-    	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), pgIds.toArray(new String[0]));
-    }
 
     public void registerUrl(String url, List<String> protectionGroups) {
         if (log.isDebugEnabled()) log.debug("Attempting to register PE for " + url + " in " + protectionGroups);
@@ -492,33 +456,6 @@ public class StudyCalendarAuthorizationManager {
         }
     }
 
-    public Map getProtectionGroups(List<ProtectionGroup> allProtectionGroups, String protectionElementObjectId) throws Exception {
-    	HashMap<String, List> pgHashMap = new HashMap<String, List>();
-		List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
-		List<ProtectionGroup> availablePGs = new ArrayList<ProtectionGroup>();
-		try 
-		{
-			Long peId = userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementId();
-			Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
-			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
-				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (isSitePG(protectionGroupForPE)) {
-						assignedPGs.add(protectionGroupForPE);
-					}
-				}
-			}
-		} catch (CSObjectNotFoundException  cse) {
-			if (log.isDebugEnabled()) {
-				log.debug("no assigned protectiongroups for this protection element");
-			}
-		}
-    	availablePGs = (List) ObjectSetUtil.minus(allProtectionGroups, assignedPGs);
-    	pgHashMap.put(ASSIGNED_PGS, assignedPGs);
-    	pgHashMap.put(AVAILABLE_PGS, availablePGs);
-		return pgHashMap;
-    	
-    }
-    
     public Map getPEForUserProtectionGroup(String pgName, String userId) throws Exception {
     	HashMap<String, List> peHashMap = new HashMap<String, List>();
 		List<ProtectionElement> assignedPEs = new ArrayList<ProtectionElement>();
@@ -562,34 +499,6 @@ public class StudyCalendarAuthorizationManager {
         return studySitePGs;
     }
 
-    public void removeProtectionElementFromPGs(List<String> removePGs, String protectionElementObjectId) throws Exception {
-    	List<ProtectionGroup> assignedPGs = new ArrayList<ProtectionGroup>();
-    	List<String> pgIds = new ArrayList<String>();
-    	ProtectionElement requiredPE;
-    	try 
-		{
-    		Long peId = userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementId();
-    		Set<ProtectionGroup> protectionGroupsForPE = userProvisioningManager.getProtectionGroups(peId.toString());
-			for (ProtectionGroup protectionGroupForPE : protectionGroupsForPE) {
-				if (protectionGroupForPE.getParentProtectionGroup() != null) {
-					if (isSitePG(protectionGroupForPE)) {
-						assignedPGs.add(protectionGroupForPE);
-					}
-				}
-			}
-		} catch (CSObjectNotFoundException  cse) {
-			if (log.isDebugEnabled()) {
-				log.debug("no assigned protectiongroups for this protection element");
-			}
-		}
-		for (ProtectionGroup assignedPG : assignedPGs) {
-			pgIds.add(assignedPG.getProtectionGroupId().toString());
-		}
-		List<String> newList = (List) ObjectSetUtil.minus(pgIds, removePGs);
-		requiredPE = userProvisioningManager.getProtectionElement(protectionElementObjectId);
-    	userProvisioningManager.assignToProtectionGroups(requiredPE.getProtectionElementId().toString(), newList.toArray(new String[0]));
-    }
-    
     public List<Study> checkOwnership(String userName, List<Study> studies) {
         Set<Study> assignedStudies = new LinkedHashSet<Study>();
         User userTemplate = new User();
@@ -777,8 +686,7 @@ public class StudyCalendarAuthorizationManager {
     }
 
     private boolean isSitePG(ProtectionGroup protectionGroup) {
-        ProtectionGroup parentPG = protectionGroup.getParentProtectionGroup();
-        return parentPG != null && parentPG.getProtectionGroupName().equals(BASE_SITE_PG);
+        return protectionGroup.getProtectionGroupName().startsWith(Site.class.getName());
     }
 
     private boolean isStudySitePG(ProtectionGroup protectionGroup) {
