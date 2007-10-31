@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 
 import java.util.Map;
 import java.util.Date;
@@ -33,26 +34,12 @@ import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
  * @author Rhett Sutphin
  */
 public class ControllerTools {
-    private static ThreadLocal<DateFormat> dateFormat = new ThreadLocal<DateFormat>();
-
     private TemplateService templateService;
 
     // TODO: make date format externally configurable
     public PropertyEditor getDateEditor(boolean required) {
         // note that date formats are not threadsafe, so we have to create a new one each time
-        return new CustomDateEditor(createDateFormat(), !required);
-    }
-
-    // TODO: make date format externally configurable
-    public DateFormat createDateFormat() {
-        return new SimpleDateFormat("MM/dd/yyyy");
-    }
-
-    public String formatDate(Date date) {
-        if (dateFormat.get() == null) {
-            dateFormat.set(createDateFormat());
-        }
-        return dateFormat.get().format(date);
+        return new CustomDateEditor(FormatTools.createDateFormat(), !required);
     }
 
     public void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {

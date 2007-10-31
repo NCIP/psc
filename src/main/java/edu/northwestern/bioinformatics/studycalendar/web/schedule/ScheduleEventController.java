@@ -16,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,7 +88,7 @@ public class ScheduleEventController extends PscSimpleFormController {
             return new StringBuilder()
                 .append(evt.getActivity().getName())
                 .append(" on ")
-                .append(getControllerTools().formatDate(evt.getActualDate()))
+                .append(FormatTools.formatDate(evt.getActualDate()))
                 .toString();
         }
 
