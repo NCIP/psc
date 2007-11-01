@@ -18,7 +18,7 @@ import java.util.Map;
 public class SiteCoordinatorDashboardControllerByStudy extends AbstractSiteCoordinatorDashboardController {
 
     public SiteCoordinatorDashboardControllerByStudy() {
-        setFormView("siteCoordinatorDashboardByStudy");
+        setFormView("siteCoordinatorDashboard");
     }
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
@@ -26,7 +26,8 @@ public class SiteCoordinatorDashboardControllerByStudy extends AbstractSiteCoord
 
         Map<String, Object> refdata = super.referenceData(request, o, errors);
 
-        refdata.put("currentStudy", command.getStudy());
+        refdata.put("selected", command.getSelected());
+        refdata.put("submitUrl", "/pages/dashboard/siteCoordinatorScheduleByStudy");
 
         return refdata;
     }
@@ -37,7 +38,7 @@ public class SiteCoordinatorDashboardControllerByStudy extends AbstractSiteCoord
         List<User>  assignableUsers   = getAssignableUsers(siteCoordinator);
         List<Study> assignableStudies = getAssignableStudies(siteCoordinator);
 
-        Integer studyId            = ServletRequestUtils.getIntParameter(request, "study");
+        Integer studyId            = ServletRequestUtils.getIntParameter(request, "selected");
         Study   selectedStudy      = getCurrentStudy(studyId, assignableStudies);
 
         List<Site> assignableSites = getAssignableSites(siteCoordinator, selectedStudy);
@@ -55,7 +56,7 @@ public class SiteCoordinatorDashboardControllerByStudy extends AbstractSiteCoord
 
         RedirectView rv = new RedirectView("siteCoordinatorScheduleByStudy");
 
-        rv.addStaticAttribute("study", command.getStudy().getId());
+        rv.addStaticAttribute("selected", command.getSelected().getId());
 
         return new ModelAndView(rv);
     }

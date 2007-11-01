@@ -4,20 +4,23 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<c:url var="action" value="${submitUrl}" />
+<c:set var="isAssignByStudy" value="${submitUrl == '/pages/dashboard/siteCoordinatorScheduleByStudy'}"/>
+
 <html>
 <head>
     <title>Site Coordinator Dashboard</title>
     <tags:stylesheetLink name="main"/>
     <script type="text/javascript">
-        function registerUserSelector() {
-            var aElement = $('userSelector')
+        function registerSelector() {
+            var aElement = $('selector')
             Event.observe(aElement, "change", function(e) {
                 Event.stop(e)
-                location.href = $('assignmentForm').action + "?user=" + aElement.value;
+                location.href = "${action}?selected=" + aElement.value;
             })
         }
-        Event.observe(window, "load", registerUserSelector);
 
+        Event.observe(window, "load", registerSelector);
     </script>
 
     <style type="text/css">
@@ -53,18 +56,23 @@
 
 <laf:box title="Site Coordinator Dashboard">
     <laf:division>
-        <c:url value="/pages/dashboard/siteCoordinatorScheduleByUser" var="action"/>
-
         <form:form method="post" id="assignmentForm" action="${action}">
             <form:errors path="*"/>
-            <form:hidden path="user"/>
+            <form:hidden path="selected"/>
 
             <div class="links-row">
                 Assign By:
-                <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinatorScheduleByStudy"/>'">Study</span>,
-                Participant Coordinator
+                <c:if test="${isAssignByStudy}">
+                    Study,
+                    <span id="particip-coord-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinatorScheduleByUser"/>'">Participant Coordinator</span>
+                </c:if>
+                <c:if test="${not isAssignByStudy}">
+                    <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinatorScheduleByStudy"/>'">Study</span>,
+                    Participant Coordinator
+                </c:if>
             </div>
             <br/>
+
             <c:choose>
                 <c:when test="${fn:length(studies) < 1 or fn:length(studies) < 1}">
                     There are no studies assigned to your site.
@@ -73,21 +81,33 @@
                     There are no participant coordinators for your site.
                 </c:when>
                 <c:otherwise>
-
                     <div class="row">
                         <div class="label" >
-                            User:
+                            <c:if test="${isAssignByStudy}">
+                                Study:
+                            </c:if>
+                            <c:if test="${not isAssignByStudy}">
+                                Participant Coordinator:
+                            </c:if>
                         </div>
                         <div class="value">
-                            <select id="userSelector">
-                                <c:forEach items="${users}" var="user">
-                                    <option value="${user.id}" <c:if test="${user == currentUser}">selected</c:if>>${user.name}</option>
-                                </c:forEach>
-                            </select>
+                            <c:if test="${isAssignByStudy}">
+                                <select id="selector">
+                                    <c:forEach items="${studies}" var="study">
+                                        <option value="${study.id}" <c:if test="${study == selected}">selected</c:if>>${study.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </c:if>
+                            <c:if test="${not isAssignByStudy}">
+                                <select id="selector">
+                                    <c:forEach items="${users}" var="user">
+                                        <option value="${user.id}" <c:if test="${user == selected}">selected</c:if>>${user.name}</option>
+                                    </c:forEach>
+                                </select>
+                            </c:if>
+
                         </div>
                     </div>
-
-
                     <div class="row">
                         <div class="label" >
                             Assign Participant Coordinators:
@@ -101,17 +121,17 @@
                                         <th>${site.name}</th>
                                     </c:forEach>
                                 </tr>
-                                <c:forEach items="${command.grid}" var="study">
+                                <c:forEach items="${command.grid}" var="x">
                                     <tr>
-                                        <th>${study.key.name}</th>
+                                        <th>${x.key.name}</th>
 
-                                        <c:forEach items="${sites}" var="site">
-                                            <c:if test="${command.grid[study.key][site].siteAccessAllowed}">
+                                        <c:forEach items="${sites}" var="y">
+                                            <c:if test="${command.grid[x.key][y].siteAccessAllowed}">
                                                 <td>
-                                                    <form:checkbox path="grid[${study.key.id}][${site.id}].selected"/>
+                                                    <form:checkbox path="grid[${x.key.id}][${y.id}].selected"/>
                                                 </td>
                                             </c:if>
-                                            <c:if test="${not command.grid[study.key][site].siteAccessAllowed}">
+                                            <c:if test="${not command.grid[x.key][y].siteAccessAllowed}">
                                                 <td class="blocked">&nbsp;</td>
                                             </c:if>
                                         </c:forEach>
@@ -120,8 +140,6 @@
                             </table>
                         </div>
                     </div>
-
-
                     <div class="row">
                         <div class="label" ></div>
                         <div class="value">

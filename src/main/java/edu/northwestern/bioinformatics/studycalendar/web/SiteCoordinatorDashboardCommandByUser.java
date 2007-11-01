@@ -13,18 +13,18 @@ import java.util.TreeMap;
  * @author John Dzak
  */
 public class SiteCoordinatorDashboardCommandByUser extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
-    private User user;
+    private User selected;
     private TemplateService templateService;
     private Map<Study, Map<Site, GridCell>> grid;
 
 
-    public SiteCoordinatorDashboardCommandByUser(TemplateService templateService, User user, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+    public SiteCoordinatorDashboardCommandByUser(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
         grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
         this.templateService = templateService;
-        this.user = user;
+        this.selected = selected;
 
-        if (user != null) {
+        if (selected != null) {
             buildGrid(assignableStudies, assignableSites);
         }
     }
@@ -35,24 +35,24 @@ public class SiteCoordinatorDashboardCommandByUser extends AbstractSiteCoordinat
     }
 
     protected boolean isSiteSelected(Study study, Site site) {
-        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole userRole = UserRole.findByRole(selected.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
         return userRole.getStudySites().contains(findStudySite(study, site));
     }
 
     protected boolean isSiteAccessAllowed(Study study, Site site) {
-        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole userRole = UserRole.findByRole(selected.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
         return (StudySite.findStudySite(study, site) != null && userRole.getSites().contains(site));
     }
 
      protected void performCheckAction(Study study, Site site) throws Exception {
-        templateService.assignTemplateToParticipantCoordinator(study,site, user);
+        templateService.assignTemplateToParticipantCoordinator(study,site, selected);
     }
 
     protected void performUncheckAction(Study study, Site site) throws Exception  {
-        templateService.removeAssignedTemplateFromParticipantCoordinator(study,site, user);
+        templateService.removeAssignedTemplateFromParticipantCoordinator(study,site, selected);
     }
 
-    public User getUser() {
-        return user;
+    public User getSelected() {
+        return selected;
     }
 }

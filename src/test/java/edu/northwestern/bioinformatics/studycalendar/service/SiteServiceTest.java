@@ -28,19 +28,16 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     private SiteService service;
     private StudyCalendarAuthorizationManager authorizationManager;
     private StudySiteDao studySiteDao;
-    private UserDao userDao;
 
 
     protected void setUp() throws Exception {
         super.setUp();
         siteDao = registerMockFor(SiteDao.class);
-        userDao = registerDaoMockFor(UserDao.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
         studySiteDao = registerMockFor(StudySiteDao.class);
 
         service = new SiteService();
         service.setSiteDao(siteDao);
-        service.setUserDao(userDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
 
@@ -86,58 +83,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertEquals(expectedSites.get(0).getName(), actualSites.get(0).getName());
     }
 
-    public void testAssignSiteCoordinatorsInCsm() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.assignProtectionGroupsToUsers(expectedCoordinators,
-                                                           expectedPG,
-                                                           SiteService.SITE_COORDINATOR_ACCESS_ROLE);
-        replayMocks();
-
-        service.assignSiteCoordinatorsInCsm(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-    public void testAssignParticipantCoordinatorsInCsm() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.assignProtectionGroupsToUsers(expectedCoordinators,
-                                                           expectedPG,
-                                                           SiteService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
-        replayMocks();
-
-        service.assignParticipantCoordinatorsInCsm(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-
-    public void testAssignResearchAssociatesInCsm() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedResearchAssociates = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.assignProtectionGroupsToUsers(expectedResearchAssociates,
-                                                           expectedPG,
-                                                           SiteService.RESEARCH_ASSOCIATE_ACCESS_ROLE);
-        replayMocks();
-
-        service.assignSiteResearchAssociatesInCsm(expectedSite, expectedResearchAssociates);
-        verifyMocks();
-    }
-
     public void testRemoveProtectionGroupPSCDomainObjects() throws Exception {
         Site expectedSite = setId(1, createSite("northwestern"));
 
@@ -152,93 +97,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
         service.removeProtectionGroup(expectedSite, user);
         verifyMocks();
-    }
-
-    public void testRemoveProtectionGroup() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        replayMocks();
-
-        service.removeProtectionGroup(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-
-    public void testRemoveParticipantCoordinators() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        replayMocks();
-
-        service.removeParticipantCoordinators(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-    public void testRemoveResearchAssociates() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        List<String> expectedCoordinators = Collections.singletonList("john");
-
-        ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
-
-        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(expectedPG);
-        authorizationManager.removeProtectionGroupUsers(expectedCoordinators, expectedPG);
-        replayMocks();
-
-        service.removeResearchAssociates(expectedSite, expectedCoordinators);
-        verifyMocks();
-    }
-
-    public void testGetSiteCoordinatorLists() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        User myUser = createUser(1L);
-        Map<String, List<User>> expectedUserMap = createUserMap(myUser);
-
-        expect(authorizationManager.getUserPGLists(SiteService.SITE_COORDINATOR_GROUP, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1"))
-                .andReturn(expectedUserMap);
-        replayMocks();
-
-        Map<String, List> actualUserMap = service.getSiteCoordinatorLists(expectedSite);
-        verifyMocks();
-
-        assertEquals(expectedUserMap.size(), actualUserMap.size());
-        assertEquals(expectedUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).size(),
-                        actualUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).size());
-        assertEquals(expectedUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).get(0),
-                        actualUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).get(0));
-
-    }
-
-    public void testGetParticipantCoordinatorLists() throws Exception {
-        Site expectedSite = setId(1, createSite("northwestern"));
-
-        User myUser = createUser(1L);
-        Map<String, List<User>> expectedUserMap = createUserMap(myUser);
-
-        expect(authorizationManager.getUserPGLists(SiteService.PARTICIPANT_COORDINATOR_GROUP, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1"))
-                .andReturn(expectedUserMap);
-        replayMocks();
-
-        Map<String, List> actualUserMap =  service.getParticipantCoordinatorLists(expectedSite);
-        verifyMocks();
-
-        assertEquals(expectedUserMap.size(), actualUserMap.size());
-        assertEquals(expectedUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).size(),
-                        actualUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).size());
-        assertEquals(expectedUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).get(0),
-                        actualUserMap.get(StudyCalendarAuthorizationManager.ASSIGNED_USERS).get(0));
     }
 
     public void testGetSitesForParticipantCoordinators() {
@@ -295,19 +153,6 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         assertTrue(expectedSites.containsAll(actualSites));
     }
 
-    public void testAssignUsersToProtectionGroup() throws Exception {
-        Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
-        List<String> userIds = asList("John");
-        String[] accessRoles = {Role.PARTICIPANT_COORDINATOR.csmRole(), Role.SITE_COORDINATOR.csmRole()};
-        ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), site.getName());
-
-        expect(authorizationManager.getPGByName(createExternalObjectId(site))).andReturn(pg);
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, pg, accessRoles);
-        replayMocks();
-        service.assignProtectionGroup(site, userIds, accessRoles);
-        verifyMocks();
-    }
-
     public void testAssignProtectionGroup() throws Exception {
         Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
         edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true);
@@ -333,16 +178,5 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site expectedSite = createSite(aSiteName);
         expectedStudySite.setSite(expectedSite);
         return expectedStudySite;
-    }
-
-    private User createUser(Long aUserId) {
-        User myUser = new User();
-        myUser.setUserId(aUserId);
-        return myUser;
-    }
-
-    private Map<String, List<User>> createUserMap(User aUser) {
-        List<User> myUserList       = Collections.singletonList(aUser);
-        return Collections.singletonMap(StudyCalendarAuthorizationManager.ASSIGNED_USERS, myUserList);
     }
 }

@@ -24,20 +24,9 @@ import static java.util.Arrays.asList;
  */
 @Transactional
 public class SiteService {
-	public static final String BASE_SITE_PG = "BaseSitePG";
-	public static final String SITE_COORDINATOR_ACCESS_ROLE = Role.STUDY_COORDINATOR.csmRole();
-	public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = Role.PARTICIPANT_COORDINATOR.csmRole();
-    public static final String RESEARCH_ASSOCIATE_ACCESS_ROLE = Role.RESEARCH_ASSOCIATE.csmRole();
-    public static final String SITE_COORDINATOR_GROUP = Role.SITE_COORDINATOR.csmGroup();
-	public static final String PARTICIPANT_COORDINATOR_GROUP = Role.PARTICIPANT_COORDINATOR.csmGroup();
-    public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
-    public static final String AVAILABLE_USERS = "AVAILABLE_USERS";
-	
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
-    private UserDao userDao;
-
 
     public Site createSite(Site site) throws Exception {
         siteDao.save(site);
@@ -59,58 +48,6 @@ public class SiteService {
     	authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 
-    public void assignSiteCoordinatorsInCsm(Site site, List<String> userIds) throws Exception {
-        assignProtectionGroup(site, userIds, SITE_COORDINATOR_ACCESS_ROLE);
-    }
-    
-    public void assignParticipantCoordinatorsInCsm(Site site, List<String> userIds) throws Exception {
-    	assignProtectionGroup(site, userIds, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
-    }
-
-    public void assignSiteResearchAssociatesInCsm(Site site, List<String> userIds) throws Exception {
-        assignProtectionGroup(site, userIds, RESEARCH_ASSOCIATE_ACCESS_ROLE);
-    }
-
-    private void assignProtectionGroup(Site site, List<String> userIds, String accessRole) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, accessRole);
-    }
-
-    public void assignProtectionGroup(Site site, String userId, String[] accessRoles) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(Collections.singletonList(userId), sitePG, accessRoles);
-    }
-
-    public void assignProtectionGroup(Site site, List<String> userIds, String[] accessRoles) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(userIds, sitePG, accessRoles);
-    }
-
-    public void removeProtectionGroup(Site site, List<String> userIds) throws Exception {
-        ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.removeProtectionGroupUsers(userIds, sitePG);
-    }
-
-    public void removeSiteCoordinators(Site site, List<String> userIds) throws Exception {
-        removeProtectionGroup(site, userIds);
-    }
-    
-    public void removeParticipantCoordinators(Site site, List<String> userIds) throws Exception {
-    	removeProtectionGroup(site, userIds);
-    }
-
-    public void removeResearchAssociates(Site site, List<String> userIds) throws Exception{
-        removeProtectionGroup(site, userIds);
-    }
-    
-    public Map getSiteCoordinatorLists(Site site) throws Exception {
-    	return authorizationManager.getUserPGLists(SITE_COORDINATOR_GROUP, createExternalObjectId(site));
-    }
-    
-    public Map getParticipantCoordinatorLists(Site site) throws Exception {
-    	return authorizationManager.getUserPGLists(PARTICIPANT_COORDINATOR_GROUP, createExternalObjectId(site));
-    }
-    
     public List<Site> getSitesForUser(String userName) {
         Set<Site> sites = new LinkedHashSet<Site>();
         sites.addAll(getSitesForSiteCd(userName));
@@ -154,10 +91,5 @@ public class SiteService {
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
-    }
-
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
     }
 }
