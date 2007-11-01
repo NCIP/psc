@@ -74,7 +74,7 @@
             <br/>
 
             <c:choose>
-                <c:when test="${fn:length(studies) < 1 or fn:length(studies) < 1}">
+                <c:when test="${fn:length(studies) < 1 or fn:length(sites) < 1}">
                     There are no studies assigned to your site.
                 </c:when>
                 <c:when test="${fn:length(users) < 1}">
