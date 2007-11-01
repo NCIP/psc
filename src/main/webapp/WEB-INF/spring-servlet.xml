@@ -132,20 +132,18 @@
     <bean name="/cal/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
-    
+    <bean name="/dashboard" id="dashboardController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController"/>
+
     <bean name="/dashboard/participantCoordinatorSchedule" id="dashboardParticipantCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name"><value>PC dashboard</value></property>
-                <!--<property name="parent"><ref local="participantCoordinatorSchedule"/></property>-->
+                <property name="parent"><ref local="dashboardController"/></property>
             </bean>
         </property>
     </bean>
-
-
-    <bean name="/redirectToDashboard" id="redirectToDashboardController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController"/>
 
     <bean name="/dashboard/researchAssociate" id="dashboardResearchAssociateController" autowire="byName"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
@@ -395,7 +393,7 @@
             <list>
                 <bean parent="sectionTemplate" >
                     <property name="displayName"><value>Dashboard</value></property>
-                    <property name="mainController"><value>redirectToDashboardController</value></property>
+                    <property name="mainController"><value>dashboardController</value></property>
                     <property name="pathMapping"><value>/dashboard/**</value></property>
                     <property name="tasks">
                         <list>
