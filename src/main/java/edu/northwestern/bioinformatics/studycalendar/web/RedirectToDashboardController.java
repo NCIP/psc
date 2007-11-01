@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public class RedirectToDashboardController extends AbstractController {
+public class RedirectToDashboardController extends PscAbstractController {
 
     private ScheduledEventDao scheduledEventDao;
     private UserDao userDao;

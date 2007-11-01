@@ -30,7 +30,7 @@ public class StudyListController extends PscAbstractController {
     private SiteService siteService;
 
     public StudyListController() {
-        setCrumb(new DefaultCrumb("Home"));
+        setCrumb(new DefaultCrumb("Studies"));
     }
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

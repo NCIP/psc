@@ -133,7 +133,13 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
     <bean name="/dashboard" id="dashboardController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController"/>
+          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Dashboards</value></property>
+            </bean>
+        </property>
+    </bean>
 
     <bean name="/dashboard/participantCoordinatorSchedule" id="dashboardParticipantCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleController">
@@ -252,26 +258,6 @@
         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
     </bean>
 
-    <bean name="/admin/manage/sites" id="manageSitesController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>Manage Sites</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
-            </bean>
-        </property>
-    </bean>
-
-    <bean name="/admin/manage/newSite" id="newSiteController" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>New Site</value></property>
-                <property name="parent"><ref local="manageSitesController"/></property>
-            </bean>
-        </property>
-    </bean>
-
     <bean name="/cal/assignSite" id="assignSiteController" autowire="byName"  lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
         <property name="crumb">
@@ -287,21 +273,6 @@
            <property name="crumb">
              <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                  <property name="name"><value>Report Builder</value></property>
-                 <property name="parent"><ref local="studyListController"/></property>
-             </bean>
-         </property>
-    </bean>
-
-    <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
-        <property name="crumb.parent"><ref local="listUsersController"/></property>
-    </bean>
-
-    <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
-           <property name="crumb">
-             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                 <property name="name"><value>List Users</value></property>
                  <property name="parent"><ref local="studyListController"/></property>
              </bean>
          </property>
@@ -342,12 +313,52 @@
     <bean name="/simpleReport" id="simpleReportController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.reporting.SimpleReportController"/>
 
+    <bean name="/admin" id="administrationController" autowire="byType"
+        class="edu.northwestern.bioinformatics.studycalendar.web.AdministrationController">
+        <property name="viewName"><value>administration</value></property>
+    </bean>
+
     <bean name="/admin/configure" id="configurationController" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name"><value>Configuration</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
+                <property name="parent"><ref local="administrationController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
+        <property name="crumb.parent"><ref local="listUsersController"/></property>
+    </bean>
+
+    <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>List Users</value></property>
+                 <property name="parent"><ref local="administrationController"/></property>
+             </bean>
+         </property>
+    </bean>
+
+    <bean name="/admin/manage/sites" id="manageSitesController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Manage sites</value></property>
+                <property name="parent"><ref local="administrationController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/admin/manage/newSite" id="newSiteController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New site</value></property>
+                <property name="parent"><ref local="manageSitesController"/></property>
             </bean>
         </property>
     </bean>
@@ -368,11 +379,6 @@
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename"><value>messages</value></property>
-    </bean>
-
-    <bean name="/admin" id="administrationController" autowire="byType"
-        class="edu.northwestern.bioinformatics.studycalendar.web.AdministrationController">
-        <property name="viewName"><value>administration</value></property>
     </bean>
 
     <bean name="/cal/takeParticipantOffStudy" id="participantOffStudyController" autowire="byName"
