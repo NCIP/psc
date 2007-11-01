@@ -30,19 +30,32 @@
         th {
             background-color: #cfc
         }
+
+        .box {
+            margin-left: 2em;
+            float: left;
+        }
+
+        #instructions {
+            width: 60%;
+        }
+
+        #change-log {
+            width: 30%;
+        }
     </style>
 </head>
 <body>
 
 <h1>Patient Study Calendar Phase II: Public test site</h1>
 
-<div class="box">
+<div class="box" id="instructions">
 
 <!-- header -->
 <div class="header">
     <div class="background-L">
         <div class="background-R">
-            <h2></h2>
+            <h2>Testing suggestions</h2>
         </div>
     </div>
 </div>
@@ -80,15 +93,15 @@
         </ol>
 
         <p class="demo-link">
-            Let the testing begin: <a
-            href="pages/redirectToDashboard" target="_blank">Public
-            Test Site - start
-            page</a>
+            Let the testing begin:
+            <a href="pages/redirectToDashboard" target="_blank">Public Test Site - start page</a>
         </p>
 
-        <h2>To test the creation and management of study
-            templates:</h2>
+    </div>
 
+    <h3>To test the creation and management of study templates</h3>
+
+    <div class="content">
         <ol>
             <li>Login using <kbd>superuser</kbd> as both the
                 username and password.
@@ -124,10 +137,11 @@
                 href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>
             </li>
         </ol>
+    </div>
 
-        <h2>To test the creation and management of participant
-            calendars:</h2>
+    <h3>To test the creation and management of participant calendars</h3>
 
+    <div class="content">
         <ol>
             <li>Find a template that is listed under "Completed
                 templates".
@@ -155,26 +169,63 @@
             </li>
         </ol>
 
-        <h2>New features for Release 2:</h2>
+        <p class="demo-link">
+            In case you missed the first one:
+            <a href="pages/redirectToDashboard" target="_blank">Public Test Site - start page</a>
+        </p>
 
-        <ol>
-            <li>New dashboard system presents all pertinent links and information to users.
-            </li>
-            <li>Template amendments are pushed to patient calendars.
-            </li>
-            <li>Drag-and-drop activity interface facilitates creating or amending templates.
-            </li>
-            <li>Icons now clearly show the state of patient activities.
-            </li>
-            <li>Patient calendars can be exported in ICS format.
-            </li>
-            <li>User assignment to sites performed by System Administrator.
-            </li>
-        </ol>
+        <p>
+            Thank you for your participation. Please send
+            feedback to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>.
+        </p>
+    </div>
 
-        <h2>New features from Release 1:</h2>
+</div>
+</div>
+</div> </div> </div> </div>
+</div> </div> </div> </div>
+<!-- end inner border -->
+</div>
+<!-- end box -->
 
-        <ol>
+<div class="box" id="change-log">
+
+<!-- header -->
+<div class="header">
+    <div class="background-L">
+        <div class="background-R">
+            <h2>Phase II change log</h2>
+        </div>
+    </div>
+</div>
+<!-- end header -->
+
+<!-- inner border -->
+<div class="border-T"> <div class="border-L"> <div class="border-R"> <div class="border-B">
+<div class="border-TL"> <div class="border-TR"> <div class="border-BL"> <div class="border-BR">
+<div class="interior">
+<div class="division">
+    <div class="content">
+        <p>Here's what we've added in PSC phase II so far.</p>
+    </div>
+
+    <h3>Construction 2</h3>
+
+    <div class="content">
+        <ul>
+            <li>New dashboard system presents all pertinent links and information to users.</li>
+            <li>Template amendments are pushed to patient calendars.</li>
+            <li>Drag-and-drop activity interface facilitates creating or amending templates.</li>
+            <li>Icons now clearly show the state of patient activities.</li>
+            <li>Patient calendars can be exported in ICS format for Outlook, iCal, etc.</li>
+            <li>User assignment to sites performed by System Administrator.</li>
+        </ul>
+    </div>
+
+    <h3>Construction 1</h3>
+
+    <div class="content">
+        <ul>
             <li>The user can mark events on the template as
                 being conditional and supply the condition.
                 These are then available to be scheduled on a
@@ -197,20 +248,7 @@
                 closely match other applications within the CTMS
                 Workspace.
             </li>
-        </ol>
-
-
-        <p class="demo-link">
-            In case you missed the first one:
-            <a href="pages/redirectToDashboard" target="_blank">Public
-                Test Site - start page</a>
-        </p>
-
-        <p>
-            Thank you for your participation. Please send
-            feedback to <a
-            href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>.
-        </p>
+        </ul>
 
     </div>
 </div>
