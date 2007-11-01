@@ -40,6 +40,13 @@ public class Site extends AbstractMutableDomainObject implements Named {
         studySite.setSite(this);
     }
 
+    public StudySite getStudySite(Study study) {
+        for (StudySite studySite : getStudySites()) {
+            if (studySite.getStudy().equals(study)) return studySite;
+        }
+        return null;
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {

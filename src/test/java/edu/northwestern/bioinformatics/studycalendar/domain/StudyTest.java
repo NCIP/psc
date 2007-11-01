@@ -43,6 +43,24 @@ public class StudyTest extends StudyCalendarTestCase {
         }
     }
 
+    public void testGetStudySiteForNonAssociatedSite() throws Exception {
+        Site s4 = Fixtures.createNamedInstance("S4", Site.class);
+        study.addSite(Fixtures.createNamedInstance("S2", Site.class));
+        study.addSite(Fixtures.createNamedInstance("S3", Site.class));
+
+        assertNull(study.getStudySite(s4));
+    }
+
+    public void testGetStudySiteForAssociatedSite() throws Exception {
+        Site s3 = Fixtures.createNamedInstance("S3", Site.class);
+        study.addSite(Fixtures.createNamedInstance("S2", Site.class));
+        study.addSite(s3);
+
+        assertNotNull(study.getStudySite(s3));
+        assertSame(study, study.getStudySite(s3).getStudy());
+        assertSame(s3, study.getStudySite(s3).getSite());
+    }
+
     public void testBasicAddSite() throws Exception {
         Site expectedSite = Fixtures.createNamedInstance("Site 1", Site.class);
         study.addSite(expectedSite);

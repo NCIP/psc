@@ -79,6 +79,13 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             addStudySite(newSS);
         }
     }
+    
+    public StudySite getStudySite(Site site) {
+        for (StudySite ss : getStudySites()) {
+            if (ss.getSite().equals(site)) return ss;
+        }
+        return null;
+    }
 
     @Transient
     public List<Site> getSites() {
