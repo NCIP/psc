@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
-import gov.nih.nci.security.util.StringEncrypter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
@@ -25,6 +24,7 @@ public class CreateUserCommand implements Validatable {
     private SiteDao siteDao;
     private Map<Site, Map<Role,RoleCell>> rolesGrid;
     private UserRoleService userRoleService;
+    private boolean userActiveFlag;
 
     public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserRoleService userRoleService) {
         this.user = user;
@@ -82,12 +82,12 @@ public class CreateUserCommand implements Validatable {
 
     }
 
-
-
     public User apply() throws Exception {
         if (passwordModified || user.getId() == null) {
+            user.setActiveFlag(userActiveFlag);
             userService.saveUser(user, password);
         } else {
+            user.setActiveFlag(userActiveFlag);
             userService.saveUser(user);
         }
         assignUserRolesFromRolesGrid(rolesGrid);
@@ -209,5 +209,13 @@ public class CreateUserCommand implements Validatable {
 
     public void setPasswordModified(boolean passwordModified) {
         this.passwordModified = passwordModified;
+    }
+
+    public void setUserActiveFlag(boolean userActiveFlag) {
+        this.userActiveFlag = userActiveFlag;
+    }
+
+    public boolean isUserActiveFlag() {
+        return userActiveFlag;
     }
 }

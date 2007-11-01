@@ -7,9 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.authorization.domainobjects.Group;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +18,6 @@ public class UserService {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
-    private SiteService siteService;
 
     public User saveUser(User user, String password) throws Exception {
         if(user == null)
@@ -97,10 +93,5 @@ public class UserService {
     @Required
     public void setUserProvisioningManager(UserProvisioningManager userProvisioningManager) {
         this.userProvisioningManager = userProvisioningManager;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 }

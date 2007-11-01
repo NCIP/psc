@@ -130,10 +130,11 @@
             </div>
             <div class="row">
                 <div class="label" >
-                    <form:label path="user.activeFlag">Enable User:</form:label>
+                    <form:label path="userActiveFlag">Enable User:</form:label>
                 </div>
                 <div class="value">
-                    <form:checkbox path="user.activeFlag" value=""/>
+                    <%--<input type="checkbox" name="command.userActiveFlag" <c:if test="${command.user.activeFlag}">checked="true"</c:if>/>--%>
+                    <input name="userActiveFlag" type="checkbox" <c:if test="${command.user.activeFlag}">checked="true"</c:if>/>
                 </div>
             </div>
             <div class="row">
