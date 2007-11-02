@@ -1,20 +1,21 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorCommandByStudy;
 import static org.easymock.EasyMock.expect;
 
 /**
  * @author John Dzak
  */
-public class SiteCoordinatorDashboardCommandByStudyTest extends StudyCalendarTestCase {
+public class AssignParticipantCoordinatorCommandByStudyTest extends StudyCalendarTestCase {
     private TemplateService templateService;
     private Study study;
     private User user0, user1;
     private Site site0, site1;
-    private SiteCoordinatorDashboardCommandByStudy command;
+    private AssignParticipantCoordinatorCommandByStudy command;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -23,7 +24,7 @@ public class SiteCoordinatorDashboardCommandByStudyTest extends StudyCalendarTes
 
         templateService = registerMockFor(TemplateService.class);
 
-        command = new SiteCoordinatorDashboardCommandByStudy(templateService, study, null, null, null);
+        command = new AssignParticipantCoordinatorCommandByStudy(templateService, study, null, null, null);
 
         site0  = createNamedInstance("Mayo Clinic" , Site.class);
         site1  = createNamedInstance("Northwestern", Site.class);

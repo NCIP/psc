@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -12,13 +12,13 @@ import java.util.TreeMap;
 /**
  * @author John Dzak
  */
-public class SiteCoordinatorDashboardCommandByUser extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
+public class AssignParticipantCoordinatorCommandByUser extends AbstractAssignParticipantCoordinatorCommand<Study, Site> {
     private User selected;
     private TemplateService templateService;
     private Map<Study, Map<Site, GridCell>> grid;
 
 
-    public SiteCoordinatorDashboardCommandByUser(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+    public AssignParticipantCoordinatorCommandByUser(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
         grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
         this.templateService = templateService;

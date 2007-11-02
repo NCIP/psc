@@ -179,12 +179,12 @@
        </property>
     </bean>
 
-    <bean name="/dashboard/siteCoordinatorScheduleByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardControllerByStudy">
+    <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorControllerByStudy">
     </bean>
 
-    <bean name="/dashboard/siteCoordinatorScheduleByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.SiteCoordinatorDashboardControllerByUser">
+    <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorControllerByUser">
     </bean>
 
 

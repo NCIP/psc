@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -15,19 +15,19 @@ import java.util.List;
 import java.util.Map;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public class SiteCoordinatorDashboardControllerByUser extends AbstractSiteCoordinatorDashboardController {
+public class AssignParticipantCoordinatorControllerByUser extends AbstractAssignParticipantCoordinatorController {
 
-    public SiteCoordinatorDashboardControllerByUser() {
+    public AssignParticipantCoordinatorControllerByUser() {
         setFormView("siteCoordinatorDashboard");
     }
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
-        SiteCoordinatorDashboardCommandByUser command = (SiteCoordinatorDashboardCommandByUser) o;
+        AssignParticipantCoordinatorCommandByUser command = (AssignParticipantCoordinatorCommandByUser) o;
 
         Map<String, Object> refdata = super.referenceData(request, o, errors);
 
         refdata.put("selected", command.getSelected());
-        refdata.put("submitUrl", "/pages/dashboard/siteCoordinatorScheduleByUser");
+        refdata.put("submitUrl", "/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByUser");
 
         return refdata;
     }
@@ -46,15 +46,15 @@ public class SiteCoordinatorDashboardControllerByUser extends AbstractSiteCoordi
         return createSiteCoordinatorDashboardCommand(selectedUser, assignableStudies, assignableSites, assignableUsers);
     }
 
-    public AbstractSiteCoordinatorDashboardCommand createSiteCoordinatorDashboardCommand(User selectedUser, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        return new SiteCoordinatorDashboardCommandByUser(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
+    public AbstractAssignParticipantCoordinatorCommand createSiteCoordinatorDashboardCommand(User selectedUser, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+        return new AssignParticipantCoordinatorCommandByUser(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
     }
 
     protected ModelAndView onSubmit(Object o) throws Exception {
-        SiteCoordinatorDashboardCommandByUser command = (SiteCoordinatorDashboardCommandByUser) o;
+        AssignParticipantCoordinatorCommandByUser command = (AssignParticipantCoordinatorCommandByUser) o;
         command.apply();
 
-        RedirectView rv = new RedirectView("siteCoordinatorScheduleByUser");
+        RedirectView rv = new RedirectView("assignParticipantCoordinatorByUser");
 
         rv.addStaticAttribute("selected", command.getSelected().getId());
 

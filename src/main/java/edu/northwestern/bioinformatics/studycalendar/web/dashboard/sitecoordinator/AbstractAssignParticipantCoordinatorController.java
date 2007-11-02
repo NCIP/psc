@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -20,7 +20,7 @@ import org.springframework.web.servlet.mvc.SimpleFormController;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public abstract class AbstractSiteCoordinatorDashboardController extends SimpleFormController {
+public abstract class AbstractAssignParticipantCoordinatorController extends SimpleFormController {
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
@@ -30,7 +30,7 @@ public abstract class AbstractSiteCoordinatorDashboardController extends SimpleF
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String,Object>();
-        AbstractSiteCoordinatorDashboardCommand command = (AbstractSiteCoordinatorDashboardCommand) o;
+        AbstractAssignParticipantCoordinatorCommand command = (AbstractAssignParticipantCoordinatorCommand) o;
         refdata.put("studies", command.getAssignableStudies() );
         refdata.put("sites"  , command.getAssignableSites());
         refdata.put("users"  , command.getAssignableUsers());

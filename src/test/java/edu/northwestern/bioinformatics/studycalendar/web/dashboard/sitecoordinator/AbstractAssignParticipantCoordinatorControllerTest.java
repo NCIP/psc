@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -11,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AbstractAssignParticipantCoordinatorCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AbstractAssignParticipantCoordinatorController;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,8 +25,8 @@ import java.util.HashMap;
 /**
  * @author John Dzak
  */
-public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTestCase {
-    AbstractSiteCoordinatorDashboardController controller;
+public class AbstractAssignParticipantCoordinatorControllerTest extends ControllerTestCase {
+    AbstractAssignParticipantCoordinatorController controller;
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
@@ -31,7 +34,7 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
     private TemplateService templateService;
     private UserService userService;
 
-    private AbstractSiteCoordinatorDashboardCommand command;
+    private AbstractAssignParticipantCoordinatorCommand command;
 
 
     private List<Site> sites;
@@ -54,13 +57,13 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         templateService = registerMockFor(TemplateService.class);
         userService     = registerMockFor(UserService.class);
 
-        controller = new SimpleSiteCoordinatorDashboardController();
+        controller = new SimpleAssignParticipantCoordinatorController();
         controller.setSiteDao(siteDao);
         controller.setStudyDao(studyDao);
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
 
-        command = registerMockFor(SimpleSiteCoordinatorCommand.class);
+        command = registerMockFor(SimpleAssignParticipantCoordinatorCommand.class);
 
 
 
@@ -156,8 +159,8 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         ApplicationSecurityManager.removeUserSession();
     }
 
-    private class SimpleSiteCoordinatorDashboardController extends AbstractSiteCoordinatorDashboardController {
-        public SimpleSiteCoordinatorDashboardController() {
+    private class SimpleAssignParticipantCoordinatorController extends AbstractAssignParticipantCoordinatorController {
+        public SimpleAssignParticipantCoordinatorController() {
             setSiteDao(siteDao);
             setStudyDao(studyDao);
             setUserDao(userDao);
@@ -170,9 +173,9 @@ public class AbstractSiteCoordinatorDashboardControllerTest extends ControllerTe
         }
     }
 
-    private class SimpleSiteCoordinatorCommand extends AbstractSiteCoordinatorDashboardCommand<Study, Site> {
+    private class SimpleAssignParticipantCoordinatorCommand extends AbstractAssignParticipantCoordinatorCommand<Study, Site> {
         private Map<Study, Map<Site, GridCell>> studyAssignmentGrid = new HashMap<Study, Map<Site, GridCell>>();
-        public SimpleSiteCoordinatorCommand(List assignableStudies, List assignableSites, List assignableUsers) {
+        public SimpleAssignParticipantCoordinatorCommand(List assignableStudies, List assignableSites, List assignableUsers) {
             super(assignableStudies, assignableSites, assignableUsers);
         }
 

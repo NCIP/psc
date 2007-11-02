@@ -1,9 +1,10 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.web.AbstractGridCommand;
 
 import java.util.List;
 import java.util.Map;
@@ -12,15 +13,15 @@ import java.util.TreeMap;
 /**
  * @author John Dzak
  */
-public class SiteCoordinatorDashboardCommandByStudy extends AbstractSiteCoordinatorDashboardCommand<User, Site> {
+public class AssignParticipantCoordinatorCommandByStudy extends AbstractAssignParticipantCoordinatorCommand<User, Site> {
     private Study selected;
     private TemplateService templateService;
-    private Map<User, Map<Site, GridCell>> studyAssignmentGrid;
+    private Map<User, Map<Site, AbstractGridCommand.GridCell>> studyAssignmentGrid;
 
 
-    public SiteCoordinatorDashboardCommandByStudy(TemplateService templateService, Study selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+    public AssignParticipantCoordinatorCommandByStudy(TemplateService templateService, Study selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
-        studyAssignmentGrid = new TreeMap<User, Map<Site, GridCell>>(new NamedComparator());
+        studyAssignmentGrid = new TreeMap<User, Map<Site, AbstractGridCommand.GridCell>>(new NamedComparator());
         this.templateService = templateService;
         this.selected = selected;
 
@@ -30,7 +31,7 @@ public class SiteCoordinatorDashboardCommandByStudy extends AbstractSiteCoordina
     }
 
 
-    public Map<User, Map<Site, GridCell>> getGrid() {
+    public Map<User, Map<Site, AbstractGridCommand.GridCell>> getGrid() {
         return studyAssignmentGrid;
     }
 

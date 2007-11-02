@@ -5,7 +5,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:url var="action" value="${submitUrl}" />
-<c:set var="isAssignByStudy" value="${submitUrl == '/pages/dashboard/siteCoordinatorScheduleByStudy'}"/>
+<c:set var="isAssignByStudy" value="${submitUrl == '/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy'}"/>
 
 <html>
 <head>
@@ -64,10 +64,10 @@
                 Assign By:
                 <c:if test="${isAssignByStudy}">
                     Study,
-                    <span id="particip-coord-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinatorScheduleByUser"/>'">Participant Coordinator</span>
+                    <span id="particip-coord-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByUser"/>'">Participant Coordinator</span>
                 </c:if>
                 <c:if test="${not isAssignByStudy}">
-                    <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinatorScheduleByStudy"/>'">Study</span>,
+                    <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy"/>'">Study</span>,
                     Participant Coordinator
                 </c:if>
             </div>
