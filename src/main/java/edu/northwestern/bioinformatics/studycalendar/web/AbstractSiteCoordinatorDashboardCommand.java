@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-public abstract class AbstractSiteCoordinatorDashboardCommand<R extends Named, C extends Named> extends AbstractGridCommand <R, C>{
+/**
+ * @author John Dzak
+ */
+public abstract class AbstractSiteCoordinatorDashboardCommand<R extends Named, C extends Named> extends AbstractGridCommand <R, C> {
     private List<Study> assignableStudies;
     private List<Site> assignableSites;
     private List<User> assignableUsers;

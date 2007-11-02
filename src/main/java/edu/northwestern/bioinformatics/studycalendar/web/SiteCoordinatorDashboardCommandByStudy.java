@@ -24,7 +24,7 @@ public class SiteCoordinatorDashboardCommandByStudy extends AbstractSiteCoordina
         this.templateService = templateService;
         this.selected = selected;
 
-        if (selected != null) {
+        if (selected != null && assignableUsers != null && assignableSites != null) {
             buildGrid(assignableUsers, assignableSites);
         }
     }

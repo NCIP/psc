@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-public abstract class AbstractGridCommand<R extends Named, C extends Named>{
+/**
+ * @author John Dzak
+ */
+public abstract class AbstractGridCommand<R extends Named, C extends Named> {
 
     protected abstract void performCheckAction(R row, C column) throws Exception ;
     protected abstract void performUncheckAction(R row, C column) throws Exception ;
