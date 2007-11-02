@@ -180,11 +180,11 @@
     </bean>
 
     <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorControllerByStudy">
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorByStudyController">
     </bean>
 
     <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorControllerByUser">
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorByUserController">
     </bean>
 
 

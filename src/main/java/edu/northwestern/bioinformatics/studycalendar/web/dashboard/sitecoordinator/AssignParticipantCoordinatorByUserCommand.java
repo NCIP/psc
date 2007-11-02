@@ -12,13 +12,13 @@ import java.util.TreeMap;
 /**
  * @author John Dzak
  */
-public class AssignParticipantCoordinatorCommandByUser extends AbstractAssignParticipantCoordinatorCommand<Study, Site> {
+public class AssignParticipantCoordinatorByUserCommand extends AbstractAssignParticipantCoordinatorCommand<Study, Site> {
     private User selected;
     private TemplateService templateService;
     private Map<Study, Map<Site, GridCell>> grid;
 
 
-    public AssignParticipantCoordinatorCommandByUser(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
+    public AssignParticipantCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
         grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
         this.templateService = templateService;

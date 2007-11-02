@@ -15,14 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public class AssignParticipantCoordinatorControllerByUser extends AbstractAssignParticipantCoordinatorController {
+public class AssignParticipantCoordinatorByUserController extends AbstractAssignParticipantCoordinatorController {
 
-    public AssignParticipantCoordinatorControllerByUser() {
+    public AssignParticipantCoordinatorByUserController() {
         setFormView("siteCoordinatorDashboard");
     }
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
-        AssignParticipantCoordinatorCommandByUser command = (AssignParticipantCoordinatorCommandByUser) o;
+        AssignParticipantCoordinatorByUserCommand command = (AssignParticipantCoordinatorByUserCommand) o;
 
         Map<String, Object> refdata = super.referenceData(request, o, errors);
 
@@ -47,11 +47,11 @@ public class AssignParticipantCoordinatorControllerByUser extends AbstractAssign
     }
 
     public AbstractAssignParticipantCoordinatorCommand createSiteCoordinatorDashboardCommand(User selectedUser, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
-        return new AssignParticipantCoordinatorCommandByUser(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
+        return new AssignParticipantCoordinatorByUserCommand(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
     }
 
     protected ModelAndView onSubmit(Object o) throws Exception {
-        AssignParticipantCoordinatorCommandByUser command = (AssignParticipantCoordinatorCommandByUser) o;
+        AssignParticipantCoordinatorByUserCommand command = (AssignParticipantCoordinatorByUserCommand) o;
         command.apply();
 
         RedirectView rv = new RedirectView("assignParticipantCoordinatorByUser");
