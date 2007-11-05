@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,7 @@ public class BreadcrumbContext {
     private StudySite studySite;
     private Activity activity;
     private User user;
+    private Amendment amendment;
 
     private TemplateService templateService;
 
@@ -140,6 +142,10 @@ public class BreadcrumbContext {
         this.user = user;
     }
 
+    public void setAmendment(Amendment amendment) {
+        this.amendment = amendment;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -202,5 +208,9 @@ public class BreadcrumbContext {
 
     public User getUser() {
         return user;
+    }
+
+    public Amendment getAmendment() {
+        return amendment;
     }
 }

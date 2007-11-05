@@ -114,6 +114,10 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     ////// BEAN PROPERTIES
 
+    /**
+     * The name of the study, also known as the protocol short title.
+     * @return
+     */
     public String getName() {
         return name;
     }
@@ -122,6 +126,10 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         this.name = name;
     }
 
+    /**
+     * The identifier given to the study by the organization in charge of it
+     * @return
+     */
     public String getProtocolAuthorityId() {
         return protocolAuthorityId;
     }

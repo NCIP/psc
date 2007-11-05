@@ -12,6 +12,7 @@ import java.util.Map;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
@@ -42,7 +43,14 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
                 }
             }
         }
-        return BreadcrumbContext.create(basis, templateService);
+        BreadcrumbContext context = BreadcrumbContext.create(basis, templateService);
+        // look for other model fields which can be set into the context
+        for (Object o : model.values()) {
+            if (o instanceof Amendment) {
+                context.setAmendment((Amendment) o);
+            }
+        }
+        return context;
     }
 
     // XXX: quick hack

@@ -156,6 +156,9 @@ public class DisplayTemplateController extends PscAbstractController {
             if (context.getArm() != null) {
                 params.put("arm", context.getArm().getId().toString());
             }
+            if (context.getAmendment() != null) {
+                params.put("amendment", context.getAmendment().getId().toString());
+            }
             return params;
         }
     }

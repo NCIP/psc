@@ -52,10 +52,12 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
     }
 
     @Override
-    protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
-        Map<String, Object> refdata = super.referenceData(request, command, errors);
+    protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
+        Map<String, Object> refdata = super.referenceData(request, oCommand, errors);
         // include period in refdata for breadcrumbs
-        getControllerTools().addHierarchyToModel(((EditPeriodCommand) command).getPeriod(), refdata);
+        EditPeriodCommand command = ((EditPeriodCommand) oCommand);
+        getControllerTools().addHierarchyToModel(command.getPeriod(), refdata);
+        refdata.put("amendment", templateService.findStudy(command.getPeriod()).getDevelopmentAmendment());
         refdata.put("verb", "edit");
         return refdata;
     }

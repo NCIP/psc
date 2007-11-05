@@ -95,6 +95,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         refdata.put("activitiesById", DomainObjectTools.byId(activityDao.getAll()));
         Study study = templateService.findStudy(command.getPeriod());
         Amendment amendment = study.getDevelopmentAmendment();
+        refdata.put("amendment", amendment);
         refdata.put("developmentRevision", amendment);
         refdata.put("revisionChanges", new RevisionChanges(daoFinder, amendment, study, command.getPeriod()));
         getControllerTools().addHierarchyToModel(command.getPeriod(), refdata);
