@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 import java.util.*;
 import java.text.DateFormat;
@@ -110,7 +112,39 @@ public class ParticipantCoordinatorDashboardService {
         c.setTime(date);
         int dayOfTheWeek = c.get(Calendar.DAY_OF_WEEK);
         return dayNames[dayOfTheWeek-1];
-    }    
+    }
+
+
+    public Map<Object, Object> getMapOfOverdueEvents(List<StudyParticipantAssignment> studyParticipantAssignments) {
+        Date currentDate = new Date();
+        Date endDate = shiftStartDayByNumberOfDays(currentDate, -1);
+
+        //list of events overtue
+        Map <Object, Object> participantAndOverDueEvents = new HashMap<Object, Object>();
+        for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
+            List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+
+            Map<Object, Integer> key = new HashMap<Object, Integer>();
+
+            ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
+
+            Date startDate = studyParticipantAssignment.getStartDateEpoch();
+            Collection<ScheduledEvent> collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, startDate, endDate);
+            Participant participant = studyParticipantAssignment.getParticipant();
+
+            for (ScheduledEvent event : collectionOfEvents) {
+                if(event.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+                    events.add(event);
+                }
+            }
+            if (events.size()>0) {
+                key.put(participant, events.size());
+                participantAndOverDueEvents.put(key, studyParticipantAssignment);
+            }
+        }
+        return participantAndOverDueEvents;
+    }
+
 
     public Date shiftStartDayByNumberOfDays(Date startDate, Integer numberOfDays) {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(startDate.getTime());
@@ -142,7 +176,4 @@ public class ParticipantCoordinatorDashboardService {
     public ScheduledEventDao getScheduledEventDao() {
         return scheduledEventDao;
     }
-
-
-
 }

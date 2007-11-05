@@ -151,6 +151,21 @@
         </property>
     </bean>
 
+    <bean name="/dashboard/colleagueParticipantCoordinator" id="colleagueParticipantCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ColleagueParticipantCoordinatorController">
+        <!--<property name="crumb">-->
+            <!--<bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">-->
+                <!--<property name="name"><value>Colleague dashboard</value></property>-->
+                <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
+                <property name="crumb.parent"><ref local="dashboardParticipantCoordinatorController"/></property>
+            <!--</bean>-->
+        <!--</property>-->
+    </bean>
+
+
+    <bean name="/redirectToDashboard" id="redirectToDashboardController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController"/>
+
     <bean name="/dashboard/researchAssociate" id="dashboardResearchAssociateController" autowire="byName"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
        <property name="viewName">
@@ -267,7 +282,7 @@
             </bean>
         </property>
     </bean>
-    
+
      <bean name="/report/builder" id="reportBuilderController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderController">
            <property name="crumb">
@@ -300,7 +315,7 @@
              </bean>
          </property>
     </bean>
-    
+
 
     <bean name="/report/builder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
@@ -373,7 +388,7 @@
         </property>
      </bean>
 
-     
+
     <bean name="/api" id="apiController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
 

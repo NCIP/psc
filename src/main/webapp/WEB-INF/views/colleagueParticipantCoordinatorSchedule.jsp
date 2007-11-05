@@ -13,7 +13,8 @@
     <script type="text/javascript">
 
         function ajaxform() {
-            var href = '<c:url value="/pages/dashboard/participantCoordinatorSchedule"/>'
+            var href = '<c:url value="/pages/dashboard/colleagueParticipantCoordinator?id=${userName.id}" />'
+            console.log("=== href " + href)
             // Set up data variable
             var formdata = "";
             var toDateTemp = 'toDate';
@@ -56,12 +57,19 @@
         }
         ul.menu li.participant {
             padding-left: 4em;
+            padding-right: 0em;
+            padding-top:0em;
+            padding-bottom:0em;
+            margin:0em;
             list-style-type: none;
-            padding-bottom: 1em;
+            /*padding-bottom: 1em;*/
         }
         ul.menu li.controls {
             padding-left: 2em;
             list-style-type: none;
+            margin: 0em;
+            padding-bottom:0em;
+            padding-top:0em;
         }
         h2 {
             margin-top: 2em;
@@ -82,7 +90,7 @@
 </head>
 <body>
     <div class="main">
-        <h1>Welcome, ${userName.name}</h1>
+        <h1>Dashboard for the Colleague, ${userName.name}</h1>
     </div>
     <laf:box title="Past-due activities">
         <ul class="menu">
@@ -104,7 +112,7 @@
                      Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform();" /> days
                 </li>
             <li>
-                Filter by Activity Type:  
+                Filter by Activity Type:
                 <c:forEach items="${activityTypes}" var="activityType">
                     <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} </input>
                 </c:forEach>
@@ -117,59 +125,43 @@
     <laf:box title="Available studies">
         <ul class="menu">
             <c:forEach items="${ownedStudies}" var="study" varStatus="status">
-                <li class="autoclear ">
-                    <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
-                        ${study.name}
-                    </a>
 
-                    <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
-                        <li class="controls ">
-                            ${studySites.site.name}
-                            <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participant</tags:restrictedListItem>
+                <div class="day autoclear ${commons:parity(status.index)}">
+                    <li>
+                        <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
+                            ${study.name}
+                        </a>
 
-                            </ul>
-                            <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">
+                        <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
+                            <li class="controls ">
+                                ${studySites.site.name}
+                                <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">
 
-                                <c:choose>
-                                    <c:when test="${not empty listOfParticipants}">
-                                     <li class="participant">
+                                    <c:choose>
+                                        <c:when test="${not empty listOfParticipants}">
+                                         <li class="participant">
 
-                                         <a href="<c:url value="/pages/cal/schedule?assignment=${listOfParticipants.participant.id}"/>" class="primary">
-                                            ${listOfParticipants.participant.firstName}
-                                            ${listOfParticipants.participant.lastName}
-                                         </a>
+                                             <a href="<c:url value="/pages/cal/schedule?assignment=${listOfParticipants.participant.id}"/>" class="primary">
+                                                ${listOfParticipants.participant.firstName}
+                                                ${listOfParticipants.participant.lastName}
+                                             </a>
 
-                                     </li>                                                                                                                        
-                                </c:when>
-                                <c:otherwise>
-                                    <h3>You have no participants on this study</h3>
-                                </c:otherwise>
-                                </c:choose>
-                            </c:forEach>
-                        </li>
-                    </c:forEach>
-                </li>
+                                         </li>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <h3>You have no participants on this study</h3>
+                                    </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                            </li>
+                        </c:forEach>
+                    </li>
+                </div>
             </c:forEach>
+            <li style="color:red;">
+                ${extraSites}
+            </li>
         </ul>
     </laf:box>
-
-    <laf:box title="Collegues - Participant Coordinators">
-        <ul class="menu">
-            <c:forEach items="${colleguesStudies}" var="mapOfUsersAndStudies" varStatus="status">
-                <li class="autoclear ">
-                    <a href="/studycalendar/pages/dashboard/colleagueParticipantCoordinator?id=${mapOfUsersAndStudies.key.id}"> ${mapOfUsersAndStudies.key.name} </a>
-                    <c:forEach items="${mapOfUsersAndStudies.value}" var="listOfStudiesAndSites" varStatus="listOfStudiesAndSitesStatus">
-                         <li class="participant">
-                            ${listOfStudiesAndSites.site.name}
-                            ${listOfStudiesAndSites.study.name}
-                        </li>
-                    </c:forEach>
-                </li>
-
-            </c:forEach>
-        </ul>
-    </laf:box>
-
 </body>
 </html>
