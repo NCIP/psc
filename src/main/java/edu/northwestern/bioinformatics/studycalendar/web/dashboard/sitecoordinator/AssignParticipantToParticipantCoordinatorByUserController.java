@@ -17,7 +17,7 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
     private StudySiteService studySiteService;
 
     public AssignParticipantToParticipantCoordinatorByUserController() {
-        setFormView("siteCoordinatorDashboard");
+        setFormView("dashboard/sitecoordinator/siteCoordinatorDashboard");
         setSuccessView("studyList");
         setCommandClass(AssignParticipantToParticipantCoordinatorByUserCommand.class);
     }

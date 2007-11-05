@@ -110,7 +110,13 @@
                     </div>
                     <div class="row">
                         <div class="label" >
-                            Assign Participant Coordinators:
+                            Assign Participant
+                            <c:if test="${isAssignByStudy}">
+                                Coordinators:
+                            </c:if>
+                            <c:if test="${not isAssignByStudy}">
+                                Coordinator:
+                            </c:if>
                         </div>
                         <div class="value">
                             <table cellspacing="0" cellpading="0" border="1" class="grid">

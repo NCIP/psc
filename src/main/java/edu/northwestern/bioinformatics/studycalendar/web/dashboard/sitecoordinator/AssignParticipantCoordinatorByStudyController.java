@@ -18,7 +18,7 @@ import java.util.Map;
 public class AssignParticipantCoordinatorByStudyController extends AbstractAssignParticipantCoordinatorController {
 
     public AssignParticipantCoordinatorByStudyController() {
-        setFormView("siteCoordinatorDashboard");
+        setFormView("dashboard/sitecoordinator/siteCoordinatorDashboard");
     }
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
