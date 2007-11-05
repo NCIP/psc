@@ -57,18 +57,18 @@ public class AbstractGridCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong Site Size", sites.size(), command.getGrid().get(study1).keySet().size());
 
         Iterator<Study> actualStudyIter = command.getGrid().keySet().iterator();
-        assertEquals("Wrong Study", study1, actualStudyIter.next());
-        assertEquals("Wrong Study", study0, actualStudyIter.next());
+        assertEquals("Wrong Study", study1.getName(), actualStudyIter.next().getName());
+        assertEquals("Wrong Study", study0.getName(), actualStudyIter.next().getName());
 
 
         Iterator<Site> actualStudy0SiteIter = command.getGrid().get(study0).keySet().iterator();
-        assertEquals("Wrong Site", site1, actualStudy0SiteIter.next());
-        assertEquals("Wrong Site", site0, actualStudy0SiteIter.next());
+        assertEquals("Wrong Site", site1.getName(), actualStudy0SiteIter.next().getName());
+        assertEquals("Wrong Site", site0.getName(), actualStudy0SiteIter.next().getName());
 
 
         Iterator<Site> actualStudy1SiteIter = command.getGrid().get(study1).keySet().iterator();
-        assertEquals("Wrong Site", site1, actualStudy1SiteIter.next());
-        assertEquals("Wrong Site", site0, actualStudy1SiteIter.next());
+        assertEquals("Wrong Site", site1.getName(), actualStudy1SiteIter.next().getName());
+        assertEquals("Wrong Site", site0.getName(), actualStudy1SiteIter.next().getName());
     }
 
     public void testApply() throws Exception {

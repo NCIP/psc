@@ -65,8 +65,6 @@ public class AbstractAssignParticipantCoordinatorControllerTest extends Controll
 
         command = registerMockFor(SimpleAssignParticipantCoordinatorCommand.class);
 
-
-
         user0 = createNamedInstance("John", User.class);
         user1 = createNamedInstance("Jake", User.class);
         users = asList(user0, user1);
