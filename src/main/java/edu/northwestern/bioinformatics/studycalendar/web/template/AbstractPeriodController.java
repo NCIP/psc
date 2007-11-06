@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 public abstract class AbstractPeriodController<C extends PeriodCommand> extends PscSimpleFormController {
     private StudyService studyService;
+    private TemplateService templateService;
 
     protected AbstractPeriodController(Class<C> commandClass) {
         setFormView("editPeriod");
@@ -35,6 +37,9 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("durationUnits", Duration.Unit.values());
+        // for breadcrumbs
+        data.put("amendment",
+            templateService.findStudy(((PeriodCommand) command).getArm()).getDevelopmentAmendment());
         return data;
     }
 

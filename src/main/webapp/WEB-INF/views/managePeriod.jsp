@@ -759,9 +759,8 @@ function createMarker(currentDurationIndex, activityName) {
                 </select>
                 <input type="button" id="add-activity-button" value="Add to period"/>
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
-                <span class="tip">(Be sure to save your changes before leaving this page)</span>
              </div>
-             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?arm=${arm.id}&study=${study.id}"/>'" />
+             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?arm=${arm.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
         </form:form>
     </laf:division>
 </laf:box>
