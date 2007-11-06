@@ -325,11 +325,13 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map<String, Object> map = command.execute(paService);
         verifyMocks();
         assertNotNull("Map is null", map);
-        assertEquals("Map size is incorrect", 1, map.size());
+        assertEquals("Map size is incorrect", 2, map.size());
         Set<String> keys = map.keySet();
-        assertEquals("Keys of the outter map are not the same", "mapOfUserAndCalendar", keys.toArray()[0]);
+        assertTrue("Keys of the outter map are not the same", keys.contains("mapOfUserAndCalendar"));
+        assertTrue("Keys of the outter map are not the same", keys.contains("numberOfDays"));
 
-        Map<String, Object> values = (Map<String, Object>) map.get(keys.toArray()[0]);
+
+        Map<String, Object> values = (Map<String, Object>) map.get("mapOfUserAndCalendar");
         Set<String> dates = values.keySet();
         Date today = new Date();
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);
@@ -465,11 +467,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         Map<String, Object> map = command.execute(paService);
         verifyMocks();
         assertNotNull("Map is null", map);
-        assertEquals("Map size is incorrect", 1, map.size());
+        assertEquals("Map size is incorrect", 2, map.size());
         Set<String> keys = map.keySet();
-        assertEquals("Keys of the outter map are not the same", "mapOfUserAndCalendar", keys.toArray()[0]);
+        assertTrue("Keys of the outter map are not the same", keys.contains("mapOfUserAndCalendar"));
+        assertTrue("Keys of the outter map are not the same", keys.contains("numberOfDays"));
 
-        Map<String, Object> values = (Map<String, Object>) map.get(keys.toArray()[0]);
+        Map<String, Object> values = (Map<String, Object>) map.get("mapOfUserAndCalendar");
         Set<String> dates = values.keySet();
         Date today = new Date();
         Date todayPlusOne = paService.shiftStartDayByNumberOfDays(today, 1);

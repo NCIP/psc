@@ -99,20 +99,22 @@
     <div class="main">
         <h1>Dashboard for the Colleague, ${userName.name}</h1>
     </div>
-    <laf:box title="Past-due activities">
-        <ul class="menu">
-            <li class="autoclear">
-                <c:forEach items="${pastDueActivities}" var="mapOfPastDueActivities" varStatus="keyStatus">
-                    <c:forEach items="${mapOfPastDueActivities.key}" var="mapOfPastDueActivitiesKey" varStatus="keyStatus">
-                        ${mapOfPastDueActivitiesKey.key.firstName} ${mapOfPastDueActivitiesKey.key.lastName} has <a href=
-                            "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivities.value.id}"/>" > ${mapOfPastDueActivitiesKey.value} past-due activities </a>.  Earliest is
-                            from <tags:formatDate value="${mapOfPastDueActivities.value.startDateEpoch}"/>
-                        <br>
+    <c:if test="${not empty pastDueActivities}">
+        <laf:box title="Past-due activities">
+            <ul class="menu">
+                <li class="autoclear">
+                    <c:forEach items="${pastDueActivities}" var="mapOfPastDueActivities" varStatus="keyStatus">
+                        <c:forEach items="${mapOfPastDueActivities.key}" var="mapOfPastDueActivitiesKey" varStatus="keyStatus">
+                            ${mapOfPastDueActivitiesKey.key.firstName} ${mapOfPastDueActivitiesKey.key.lastName} has <a href=
+                                "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivities.value.id}"/>" > ${mapOfPastDueActivitiesKey.value} past-due activities </a>.  Earliest is
+                                from <tags:formatDate value="${mapOfPastDueActivities.value.startDateEpoch}"/>
+                            <br>
+                        </c:forEach>
                     </c:forEach>
-                </c:forEach>
-            </li>
-           </ul>
-    </laf:box>
+                </li>
+               </ul>
+        </laf:box>
+    </c:if>
     <laf:box title="Current activities">
             <ul class="menu">
                 <li class="autoclear">
