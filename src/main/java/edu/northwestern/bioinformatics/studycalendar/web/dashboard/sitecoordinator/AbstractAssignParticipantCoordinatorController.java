@@ -83,15 +83,7 @@ public abstract class AbstractAssignParticipantCoordinatorController extends Sim
     }
 
     protected List<User> getAssignableUsers(User siteCoordinator) {
-        List<Site> sites = new ArrayList<Site>();
-        for (UserRole userRole : siteCoordinator.getUserRoles()) {
-            if (userRole.getSites().size() > 0)  {
-                sites.addAll(userRole.getSites());
-            }
-        }
-        List<User> assignableUsers = userService.getParticipantCoordinatorsForSites(sites);
-        Collections.sort(assignableUsers, new NamedComparator());
-        return assignableUsers;
+        return userService.getAssignableUsers(siteCoordinator);
     }
 
     public void setStudyDao(StudyDao studyDao) {

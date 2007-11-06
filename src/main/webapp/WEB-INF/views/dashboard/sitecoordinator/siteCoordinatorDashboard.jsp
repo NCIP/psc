@@ -94,14 +94,14 @@
                             <c:if test="${isAssignByStudy}">
                                 <select id="selector">
                                     <c:forEach items="${studies}" var="study">
-                                        <option value="${study.id}" <c:if test="${study == selected}">selected</c:if>>${study.name}</option>
+                                        <option value="${study.id}" <c:if test="${study.id == selected.id}">selected</c:if>>${study.name}</option>
                                     </c:forEach>
                                 </select>
                             </c:if>
                             <c:if test="${not isAssignByStudy}">
                                 <select id="selector">
                                     <c:forEach items="${users}" var="user">
-                                        <option value="${user.id}" <c:if test="${user == selected}">selected</c:if>>${user.name}</option>
+                                        <option value="${user.id}" <c:if test="${user.id == selected.id}">selected</c:if>>${user.name}</option>
                                     </c:forEach>
                                 </select>
                             </c:if>

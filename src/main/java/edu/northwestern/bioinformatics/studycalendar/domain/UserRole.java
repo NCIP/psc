@@ -33,7 +33,16 @@ public class UserRole  extends AbstractMutableDomainObject {
         this.role = role;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    public UserRole(User user, Role role, Site... sites) {
+        this.user = user;
+        this.role = role;
+
+        for (Site site: sites) {
+            addSite(site);
+        }
+    }
+
+    @ManyToOne(fetch = FetchType.EAGER)
     public User getUser() {
         return user;
     }

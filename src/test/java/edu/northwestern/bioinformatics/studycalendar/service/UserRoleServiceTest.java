@@ -11,6 +11,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Arrays;
 
 public class UserRoleServiceTest extends StudyCalendarTestCase {
     private SiteService siteService;
@@ -54,13 +56,13 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
     public void testAssignUserRoleNotSiteSpecific() throws Exception {
         Role role = Role.STUDY_ADMIN;
 
-        UserRole userRole = createUserRole(this.user0, role, site0);
+        UserRole userRole = new UserRole(user0, role, site0);
 
         userRoleDao.save(userRole);
         authorizatioManager.assignCsmGroups(user0,  singleton(userRole));
         replayMocks();
 
-        userRoleService.assignUserRole(this.user0, role, site0);
+        userRoleService.assignUserRole(user0, role, site0);
         verifyMocks();
 
         assertEquals("Wrong user role size", 1, user0.getUserRoles().size());
@@ -71,14 +73,14 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
     public void testAssignUserRoleSiteSpecific() throws Exception {
         Role role = Role.PARTICIPANT_COORDINATOR;
-        UserRole userRole = createUserRole(this.user0, role, site0);
+        UserRole userRole = new UserRole(user0, role, site0);
 
         userRoleDao.save(userRole);
-        siteService.assignProtectionGroup(site0, this.user0, role);
+        siteService.assignProtectionGroup(site0, user0, role);
         authorizatioManager.assignCsmGroups(user0, singleton(userRole));
         replayMocks();
 
-        userRoleService.assignUserRole(this.user0, role, site0);
+        userRoleService.assignUserRole(user0, role, site0);
         verifyMocks();
 
         assertEquals("Wrong user role size", 1, user0.getUserRoles().size());
@@ -91,10 +93,10 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         Role role = Role.PARTICIPANT_COORDINATOR;
 
         userRoleDao.save(userRole0);
-        siteService.removeProtectionGroup(site0, this.user1);
+        siteService.removeProtectionGroup(site0, user1);
         replayMocks();
 
-        userRoleService.removeUserRoleAssignment(this.user1, role, site0);
+        userRoleService.removeUserRoleAssignment(user1, role, site0);
         verifyMocks();
 
         assertEquals("Wrong user role size", 1, user1.getUserRoles().size());
@@ -107,11 +109,11 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         Role role = Role.STUDY_ADMIN;
 
         userRoleDao.save(userRole1);
-        userDao.save(this.user2);
+        userDao.save(user2);
         authorizatioManager.assignCsmGroups(user2, Collections.<UserRole>emptySet());
         replayMocks();
 
-        userRoleService.removeUserRoleAssignment(this.user2, role, site0);
+        userRoleService.removeUserRoleAssignment(user2, role, site0);
         verifyMocks();
 
         assertEquals("Wrong user role size", 0, user2.getUserRoles().size());

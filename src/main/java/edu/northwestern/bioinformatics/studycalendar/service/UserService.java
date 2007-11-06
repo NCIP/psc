@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import gov.nih.nci.security.UserProvisioningManager;
@@ -79,6 +80,18 @@ public class UserService {
             }
         }
         return associatedUsers;
+    }
+
+    public List<User> getAssignableUsers(User siteCoordinator) {
+        List<Site> sites = new ArrayList<Site>();
+        for (UserRole userRole : siteCoordinator.getUserRoles()) {
+            if (userRole.getSites().size() > 0)  {
+                sites.addAll(userRole.getSites());
+            }
+        }
+        List<User> assignableUsers = getParticipantCoordinatorsForSites(sites);
+        Collections.sort(assignableUsers, new NamedComparator());
+        return assignableUsers;
     }
 
     ////// CONFIGURATION

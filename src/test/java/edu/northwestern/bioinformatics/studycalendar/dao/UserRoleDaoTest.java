@@ -26,6 +26,7 @@ public class UserRoleDaoTest  extends ContextDaoTestCase<UserRoleDao> {
         Iterator<Site> siteIter = userRole.getSites().iterator();
         assertEquals("Wrong site", "Mayo Clinic", siteIter.next().getName());
         assertEquals("Wrong site", "Northwestern Clinic", siteIter.next().getName());
+        assertEquals("Wrong user name", "Joey", userRole.getUser().getName());
     }
 
     public void testLoadAndRemoveSiteAndSave() throws Exception {

@@ -28,7 +28,7 @@ public class StudySite extends AbstractMutableDomainObject {
     private Site site;
     private Study study;
     private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
-    private List<User> users;
+    private List<UserRole> userRoles;
 
     ////// LOGIC
 
@@ -75,12 +75,12 @@ public class StudySite extends AbstractMutableDomainObject {
         joinColumns = @JoinColumn(name="study_site_id"),
         inverseJoinColumns = @JoinColumn(name="user_role_id")
     )
-    public List<User> getUsers() {
-        return users;
+    public List<UserRole> getUserRoles() {
+        return userRoles;
     }
 
-    public void setUsers(List<User> users) {
-        this.users = users;
+    public void setUserRoles(List<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 
     @Transient
@@ -111,7 +111,7 @@ public class StudySite extends AbstractMutableDomainObject {
         int result;
         result = (site != null ? site.hashCode() : 0);
         result = 29 * result + (study != null ? study.hashCode() : 0);
-        result = 29 * result + (studyParticipantAssignments != null ? studyParticipantAssignments.hashCode() : 0);
+        //result = 29 * result + (studyParticipantAssignments != null ? studyParticipantAssignments.hashCode() : 0);
         return result;
     }
 }

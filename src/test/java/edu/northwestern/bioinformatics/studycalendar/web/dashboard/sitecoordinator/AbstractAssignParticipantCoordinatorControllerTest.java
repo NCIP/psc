@@ -136,16 +136,6 @@ public class AbstractAssignParticipantCoordinatorControllerTest extends Controll
         assertEquals("Wrong Site", site0.getName(), actualAssignableSites.get(0).getName());
     }
 
-    public void testGetAssignableUsers() throws Exception {
-        expect(userService.getParticipantCoordinatorsForSites(sites)).andReturn(users);
-        replayMocks();
-
-        List<User> actualAssignableUsers = userService.getParticipantCoordinatorsForSites(sites);;
-        verifyMocks();
-
-        assertEquals("Wrong Number of Users", users.size(), actualAssignableUsers.size());
-    }
-
     public void expectRefData() throws Exception{
         expect(command.getAssignableStudies()).andReturn(studies);
         expect(command.getAssignableSites()).andReturn(sites);

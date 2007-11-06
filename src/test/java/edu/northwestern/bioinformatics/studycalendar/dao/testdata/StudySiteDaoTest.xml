@@ -16,10 +16,16 @@
         />
 
     <USERS
-        id="-400"
+        id="-1"
         name="Joey"
         csm_user_id="-1"
         active_flag="0"
+        />
+
+    <USER_ROLES
+        id="-400"
+        user_id="-1"
+        csm_group_name="PARTICIPANT_COORDINATOR"
         />
 
     <USER_ROLE_STUDY_SITES

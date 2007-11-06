@@ -7,6 +7,6 @@ public class StudySiteDaoTest  extends ContextDaoTestCase<StudySiteDao> {
         StudySite studySite = getDao().getById(-300);
 
         assertEquals("Wrong Study", "Study A", studySite.getStudy().getName());
-        assertEquals("Wrong User" , "Joey"   , studySite.getUsers().get(0).getName());
+        assertEquals("Wrong User" , "Joey"   , studySite.getUserRoles().get(0).getUser().getName());
     }
 }

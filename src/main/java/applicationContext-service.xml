@@ -34,4 +34,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService"/>
     <bean id="userRoleService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
+    <bean id="studySiteService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
 </beans>
