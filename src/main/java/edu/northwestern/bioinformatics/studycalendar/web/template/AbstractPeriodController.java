@@ -43,7 +43,7 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
         C command = (C) oCommand;
         command.apply();
         Study study = studyService.saveStudyFor(command.getArm());
-        return getControllerTools().redirectToCalendarTemplate(study.getId(), command.getArm().getId());
+        return getControllerTools().redirectToCalendarTemplate(study.getId(), command.getArm().getId(), study.getDevelopmentAmendment().getId());
     }
 
     ////// CONFIGURATION

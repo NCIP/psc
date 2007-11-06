@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -65,7 +66,9 @@ public class EditPeriodControllerTest extends ControllerTestCase {
 
         int armId = 45;
         int studyId = 87;
+        int amendmentId = 55;
         Study study = setId(studyId, Fixtures.createSingleEpochStudy("S", "E"));
+        study.setDevelopmentAmendment(setId(amendmentId, new Amendment("dev")));
         setId(armId, study
             .getPlannedCalendar().getEpochs().get(0).getArms().get(0)).addPeriod(period);
 
@@ -82,6 +85,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         assertEquals("Wrong view", "redirectToCalendarTemplate", mv.getViewName());
         assertEquals("Study ID missing from model", studyId, mv.getModel().get("study"));
         assertEquals("Arm ID missing from model", armId, mv.getModel().get("arm"));
+        assertEquals("Amendment ID missing from model", amendmentId, mv.getModel().get("amendment"));
 
         assertEquals("Duration quantity not updated", expectedQuantity, period.getDuration().getQuantity());
         assertEquals("Duration unit not updated", expectedUnit, period.getDuration().getUnit());

@@ -114,8 +114,14 @@ public class ControllerTools {
 
     @SuppressWarnings({ "unchecked" })
     public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId) {
+        return redirectToCalendarTemplate(studyId, selectedArmId, null);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId, Integer selectedAmendmentId) {
         ModelMap model = new ModelMap("study", studyId);
         if (selectedArmId != null) model.put("arm", selectedArmId);
+        if (selectedAmendmentId != null) model.put("amendment", selectedAmendmentId);
         return new ModelAndView("redirectToCalendarTemplate", model);
     }
 
