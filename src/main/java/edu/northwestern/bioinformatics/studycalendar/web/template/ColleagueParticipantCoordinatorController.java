@@ -173,7 +173,13 @@ public class ColleagueParticipantCoordinatorController extends PscSimpleFormCont
         @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             User user = context.getUser();
-            return Collections.singletonMap("id", user.getId().toString());
+
+            Map<String, String> params = new HashMap<String, String>();
+            if (user != null && user.getId() != null) {
+                params.put("id", user.getId().toString());
+            }
+            return params;
+
         }
     }
 }

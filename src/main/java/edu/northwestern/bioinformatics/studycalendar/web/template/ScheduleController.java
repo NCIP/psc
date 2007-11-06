@@ -55,6 +55,7 @@ public class ScheduleController extends PscSimpleFormController {
         List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(user);
 
         Map<String, Object> model = new HashMap<String, Object>();
+        model.put("numberOfDays", 7);
         model.put("userName", user);
         model.put("ownedStudies", ownedStudies);
         model.put("colleguesStudies", getMapOfColleagueUsersAndStudySites(ownedStudies));

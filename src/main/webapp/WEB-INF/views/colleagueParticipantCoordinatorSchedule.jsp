@@ -14,7 +14,6 @@
 
         function ajaxform() {
             var href = '<c:url value="/pages/dashboard/colleagueParticipantCoordinator?id=${userName.id}" />'
-            console.log("=== href " + href)
             // Set up data variable
             var formdata = "";
             var toDateTemp = 'toDate';
@@ -86,6 +85,14 @@
         tr, td {
             vertical-align:top;
         }
+
+        ul.menu li.colorAndPadding {
+            padding: 0.5em;
+            list-style-type: none;
+            margin: 0.5em;
+            color:red;
+        }
+
     </style>
 </head>
 <body>
@@ -111,16 +118,16 @@
                 <li class="autoclear">
                      Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform();" /> days
                 </li>
-            <li>
-                Filter by Activity Type:
-                <c:forEach items="${activityTypes}" var="activityType">
-                    <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} </input>
-                </c:forEach>
-            </li>
-            <li class="autoclear" id="participant-schedule">
-                 <tags:participantCoordinatorSchedule/>
-            </li>
-        </ul>
+                <li>
+                    Filter by Activity Type:
+                    <c:forEach items="${activityTypes}" var="activityType">
+                        <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} </input>
+                    </c:forEach>
+                </li>
+                <li class="autoclear" id="participant-schedule">
+                     <tags:participantCoordinatorSchedule/>
+                </li>
+            </ul>
     </laf:box>
     <laf:box title="Available studies">
         <ul class="menu">
@@ -158,7 +165,7 @@
                     </li>
                 </div>
             </c:forEach>
-            <li style="color:red;">
+            <li class="colorAndPadding">
                 ${extraSites}
             </li>
         </ul>
