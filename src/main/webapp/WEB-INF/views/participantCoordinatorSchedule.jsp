@@ -180,7 +180,7 @@
         </ul>
     </laf:box>
 
-    <laf:box title="Collegues - Participant Coordinators">
+    <laf:box title="Colleagues - Participant Coordinators">
         <ul class="menu">
             <c:forEach items="${colleguesStudies}" var="mapOfUsersAndStudies" varStatus="status">
                 <li class="autoclear ">
