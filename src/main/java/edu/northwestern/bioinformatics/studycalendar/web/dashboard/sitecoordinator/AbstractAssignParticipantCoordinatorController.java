@@ -83,7 +83,7 @@ public abstract class AbstractAssignParticipantCoordinatorController extends Sim
     }
 
     protected List<User> getAssignableUsers(User siteCoordinator) {
-        return userService.getAssignableUsers(siteCoordinator);
+        return userService.getSiteCoordinatorsAssignableUsers(siteCoordinator);
     }
 
     public void setStudyDao(StudyDao studyDao) {

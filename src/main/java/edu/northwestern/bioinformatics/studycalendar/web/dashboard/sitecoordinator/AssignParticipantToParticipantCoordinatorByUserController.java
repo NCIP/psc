@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public class AssignParticipantToParticipantCoordinatorByUserController extends PscSimpleFormController {
@@ -45,7 +44,7 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
 
         refData.put("displayMap", displayMap);
         refData.put("participantCoordinatorStudySites", studySiteParticipCoordMap);
-        refData.put("assignableUsers", userService.getAssignableUsers(siteCoordinator));
+        refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
         
         return refData;
     }

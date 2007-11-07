@@ -59,12 +59,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
 
         userRole0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
         userRole1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site1);
-        userRole2 = createUserRole(user2, Role.STUDY_ADMIN);
-
-        user0.addUserRole(userRole0);
-        user1.addUserRole(userRole1);
-        user2.addUserRole(userRole2);
-
+        userRole2 = createUserRole(user2, Role.SITE_COORDINATOR, site0);
     }
 
     public void testSaveUser() throws Exception {
@@ -125,10 +120,10 @@ public class UserServiceTest extends StudyCalendarTestCase {
         expect(userDao.getAllParticipantCoordinators()).andReturn(asList(user0, user1));
         replayMocks();
 
-        List<User> actualAssignableUsers = service.getParticipantCoordinatorsForSites(sites);;
+        List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(user2);
         verifyMocks();
 
-        assertEquals("Wrong Number of Users", asList(user0, user1).size(), actualAssignableUsers.size());
+        assertEquals("Wrong Number of Users", 1, actualAssignableUsers.size());
     }
 
     public void assertUserEquals(User expected, User actual) throws Exception{

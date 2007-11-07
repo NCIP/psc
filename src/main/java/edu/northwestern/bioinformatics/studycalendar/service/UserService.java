@@ -82,13 +82,12 @@ public class UserService {
         return associatedUsers;
     }
 
-    public List<User> getAssignableUsers(User siteCoordinator) {
+    public List<User> getSiteCoordinatorsAssignableUsers(User siteCoordinator) {
         List<Site> sites = new ArrayList<Site>();
-        for (UserRole userRole : siteCoordinator.getUserRoles()) {
-            if (userRole.getSites().size() > 0)  {
-                sites.addAll(userRole.getSites());
-            }
-        }
+        UserRole userRole = UserRole.findByRole(siteCoordinator.getUserRoles(), Role.SITE_COORDINATOR);
+
+        sites.addAll(userRole.getSites());
+        
         List<User> assignableUsers = getParticipantCoordinatorsForSites(sites);
         Collections.sort(assignableUsers, new NamedComparator());
         return assignableUsers;
