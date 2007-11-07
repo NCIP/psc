@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleCommand;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
@@ -54,48 +52,72 @@ public class ColleagueParticipantCoordinatorController extends PscSimpleFormCont
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
+        Integer colleagueId = ServletRequestUtils.getIntParameter(httpServletRequest, "id");
 
-        String userName = ApplicationSecurityManager.getUser();
-        List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
+        Collection<Site> sitesForCollegueUser = siteService.getSitesForParticipantCoordinator(userDao.getById(colleagueId).getName());
+        List<Site> sitesToDisplay = getSitesToDisplay(ApplicationSecurityManager.getUser(), userDao.getById(colleagueId).getName());
 
-        Integer collegueId = ServletRequestUtils.getIntParameter(httpServletRequest, "id");
-        User colleagueUser = userDao.getById(collegueId);
+        if (sitesToDisplay.size()< sitesForCollegueUser.size()) {
+            int numberOfUnauthorizedSites = sitesForCollegueUser.size() - sitesToDisplay.size();
+            model.put("extraSites", "** Please note: There are " + numberOfUnauthorizedSites + " site(s) that are not authorized for viewing");
+        }
 
+        model.put("userName", userDao.getById(colleagueId));
+        model.put("ownedStudies", getColleaguesStudies(colleagueId));
+        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(getStudyParticipantAssignments(colleagueId), 7));
+        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(getStudyParticipantAssignments(colleagueId)));
+        model.put("activityTypes", ActivityType.values());
+
+        return model;
+    }
+
+    private List<Site> getSitesToDisplay(String userName, String colleagueName) {
         Collection<Site> sitesForCurrentUser = siteService.getSitesForParticipantCoordinator(userName);
-        Collection<Site> sitesForCollegueUser = siteService.getSitesForParticipantCoordinator(colleagueUser.getName());
+        Collection<Site> sitesForCollegueUser = siteService.getSitesForParticipantCoordinator(colleagueName);
 
         List<Site> sitesToDisplay = new ArrayList<Site>();
         for (Site site: sitesForCurrentUser) {
             if (sitesForCollegueUser.contains(site)) {
                 sitesToDisplay.add(site);
             }
-
         }
-        if (sitesToDisplay.size()< sitesForCollegueUser.size()) {
-            int numberOfUnauthorizedSites = sitesForCollegueUser.size() - sitesToDisplay.size();
-            model.put("extraSites", "** Please note: There are " + numberOfUnauthorizedSites + " site(s) that are not authorized for viewing");
-        }
+        return sitesToDisplay;
+    }
 
-        List<Study> colleguesStudies = new ArrayList<Study>();
+    private List<Study> getColleaguesStudies(Integer colleagueId) throws Exception {
+        String userName = ApplicationSecurityManager.getUser();
+        List<Study> studies = studyDao.getAll();
+        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
+
+        User colleagueUser = userDao.getById(colleagueId);
+        List<Site> sitesToDisplay = getSitesToDisplay(userName, colleagueUser.getName());
+
+        List<Study> colleaguesStudies = new ArrayList<Study>();
         for (Site site : sitesToDisplay) {
             List<StudySite> studySites= site.getStudySites();
             for (StudySite studySite : studySites) {
                 Study study = studySite.getStudy();
-                if (!ownedStudies.contains(study)) {
-                    colleguesStudies.add(study);
+                if (ownedStudies.contains(study)) {
+                    colleaguesStudies.add(study);
                 }
             }
         }
+        return colleaguesStudies;
+    }
 
-        List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(colleagueUser);
-        model.put("userName", colleagueUser);
-        model.put("ownedStudies", colleguesStudies);
-        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studyParticipantAssignments, 7));
-        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studyParticipantAssignments));
-        model.put("activityTypes", ActivityType.values());
+    private List<StudyParticipantAssignment> getStudyParticipantAssignments(Integer colleagueId) throws Exception {
+        List<Study> colleaguesStudies = getColleaguesStudies(colleagueId);
 
-        return model;
+        List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(userDao.getById(colleagueId));
+        List<StudyParticipantAssignment> colleagueOnlystudyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+        for (StudyParticipantAssignment studyParticipantAssignment: studyParticipantAssignments) {
+            Study study = studyParticipantAssignment.getStudySite().getStudy();
+            if (colleaguesStudies.contains(study)) {
+                colleagueOnlystudyParticipantAssignments.add(studyParticipantAssignment);
+            }
+        }
+
+        return colleagueOnlystudyParticipantAssignments;
     }
 
 
@@ -115,7 +137,7 @@ public class ColleagueParticipantCoordinatorController extends PscSimpleFormCont
         scheduleCommand.setUser(user);
         scheduleCommand.setUserDao(userDao);
         scheduleCommand.setScheduledEventDao(scheduledEventDao);
-        Map<String, Object> model = scheduleCommand.execute(getPAService());
+        Map<String, Object> model = scheduleCommand.execute(getPAService(), getStudyParticipantAssignments(colleagueId));
         return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
     }
 

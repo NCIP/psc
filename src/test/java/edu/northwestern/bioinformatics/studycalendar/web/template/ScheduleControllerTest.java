@@ -43,7 +43,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
     private ParticipantService service;
     private ParticipantCoordinatorDashboardService paService;
     StudyParticipantAssignment actualAssignment;
-    private SiteService siteService;
     Collection<Site> sites = new ArrayList<Site>();
     List<User> users = new ArrayList<User>();
     Study study;
@@ -59,7 +58,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
         service.setParticipantDao(participantDao);
 
         paService = new ParticipantCoordinatorDashboardService();
-        siteService = registerMockFor(SiteService.class);
         StudySite expectedStudySite = createStudySite("new york", 1);
 
         sites = Collections.singleton(expectedStudySite.getSite());
@@ -86,7 +84,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setScheduledEventDao(scheduledEventDao);
         controller.setTemplateService(templateService);
         controller.setParticipantCoordinatorDashboardService(paService);
-        controller.setSiteService(siteService);
 
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");
@@ -99,9 +96,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
         expect(templateService.checkOwnership(userName, studies)).andReturn(ownedStudies);
-        expect(siteService.getSitesForParticipantCoordinator(userName)).andReturn(sites);
         expect(userDao.getAllParticipantCoordinators()).andReturn(users);
-        
+
         replayMocks();
             Map<String, Object> refdata = controller.referenceData(request);
         verifyMocks();

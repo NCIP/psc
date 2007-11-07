@@ -30,6 +30,13 @@ public class ScheduleCommand {
         return model;
     }
 
+    public Map<String, Object> execute(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService, List<StudyParticipantAssignment> studyParticipantAssignments ) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("mapOfUserAndCalendar", participantCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignments, getToDate(), getActivityTypes()));
+        model.put("numberOfDays", getToDate());
+        return model;
+    }
+
 
     ////// BOUND PROPERTIES
 

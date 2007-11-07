@@ -137,46 +137,10 @@
                 </li>
             </ul>
     </laf:box>
-    <laf:box title="Available studies">
-        <ul class="menu">
-            <c:forEach items="${ownedStudies}" var="study" varStatus="status">
-
-                <div class="day autoclear ${commons:parity(status.index)}">
-                    <li>
-                        <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
-                            ${study.name}
-                        </a>
-
-                        <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
-                            <li class="controls ">
-                                ${studySites.site.name}
-                                <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">
-
-                                    <c:choose>
-                                        <c:when test="${not empty listOfParticipants}">
-                                         <li class="participant">
-
-                                             <a href="<c:url value="/pages/cal/schedule?assignment=${listOfParticipants.participant.id}"/>" class="primary">
-                                                ${listOfParticipants.participant.firstName}
-                                                ${listOfParticipants.participant.lastName}
-                                             </a>
-
-                                         </li>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <h3>You have no participants on this study</h3>
-                                    </c:otherwise>
-                                    </c:choose>
-                                </c:forEach>
-                            </li>
-                        </c:forEach>
-                    </li>
-                </div>
-            </c:forEach>
+    <ul class="menu">
             <li class="colorAndPadding">
                 ${extraSites}
             </li>
         </ul>
-    </laf:box>
 </body>
 </html>

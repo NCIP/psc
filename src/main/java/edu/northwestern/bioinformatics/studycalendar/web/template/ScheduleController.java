@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 
 @AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
@@ -31,7 +30,6 @@ public class ScheduleController extends PscSimpleFormController {
     private ScheduledEventDao scheduledEventDao;
 	private StudyDao studyDao;
     private UserDao userDao;
-    private SiteService siteService;
     private ParticipantCoordinatorDashboardService participantCoordinatorDashboardService;
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
@@ -68,31 +66,19 @@ public class ScheduleController extends PscSimpleFormController {
 
     public Map<User, List<StudySite>> getMapOfColleagueUsersAndStudySites(List<Study> ownedStudies) throws Exception {
         String userName = ApplicationSecurityManager.getUser();
-        Collection<Site> sites = siteService.getSitesForParticipantCoordinator(userName);
-        List<Study> colleguesStudies = new ArrayList<Study> ();
-        for (Site site : sites) {
-            List<StudySite> studySites= site.getStudySites();
-            for (StudySite studySite : studySites) {
-                Study study = studySite.getStudy();
-                if (!ownedStudies.contains(study)) {
-                    colleguesStudies.add(study);
-
-                }
-            }
-        }
 
         Map<User, List<StudySite>> mapOfUsersAndStudies =  new HashMap<User, List<StudySite>>();
 
         List<User> pcUsers = userDao.getAllParticipantCoordinators();
+        pcUsers.remove(userDao.getByName(userName));
         for (User user : pcUsers) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
-            List<Study> studiesForUser = templateService.checkOwnership(user.getName(), colleguesStudies);
+            List<Study> studiesForUser = templateService.checkOwnership(user.getName(), ownedStudies);
             if (studiesForUser != null && studiesForUser.size()>0) {
                 for (Study study: studiesForUser) {
                     List<StudySite> studysites = study.getStudySites();
                     for (StudySite studySite: studysites){
                         if (!studySiteForMap.contains(studySite)) {
-
                             studySiteForMap.add(studySite);
                         }
                     }
@@ -161,10 +147,5 @@ public class ScheduleController extends PscSimpleFormController {
 
     public void setParticipantCoordinatorDashboardService(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
         this.participantCoordinatorDashboardService = participantCoordinatorDashboardService;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 }
