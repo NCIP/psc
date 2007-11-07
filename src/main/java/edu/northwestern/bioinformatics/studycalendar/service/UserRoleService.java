@@ -2,10 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
@@ -18,6 +15,7 @@ public class UserRoleService {
     private UserRoleDao userRoleDao;
     private UserDao userDao;
     private StudyCalendarAuthorizationManager authorizationManager;
+    private StudySiteService studySiteService;
 
     public void assignUserRole(User user, Role role, Site site) throws Exception {
         UserRole userRole = findByRole(user.getUserRoles(), role);
@@ -45,12 +43,16 @@ public class UserRoleService {
         UserRole userRole = findByRole(user.getUserRoles(), role);
         if (userRole != null) {
             userRole.removeSite(site);
-            
-            userRoleDao.save(userRole);
 
             if (role.isSiteSpecific()) {
                 siteService.removeProtectionGroup(site, user);
+
+                /* Remove orphaned study site relationships */
+                List<StudySite> removeStudySites = studySiteService.getStudySitesForParticipantCoordinator(user, site);
+                userRole.getStudySites().removeAll(removeStudySites);
             }
+
+            userRoleDao.save(userRole);
 
             if (userRole.getSites().isEmpty()) {
                 user.removeUserRole(userRole);
@@ -79,6 +81,15 @@ public class UserRoleService {
         return associatedUsers;
     }
 
+
+    private void removeStudySites(UserRole userRole, Site site) {
+        for (StudySite studySite : userRole.getStudySites()) {
+            if (studySite.getSite().equals(site)) {
+                userRole.removeStudySite(studySite);
+            }
+        }
+    }
+
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
@@ -92,6 +103,11 @@ public class UserRoleService {
     @Required
     public void setUserRoleDao(UserRoleDao userRoleDao) {
         this.userRoleDao = userRoleDao;
+    }
+
+    @Required
+    public void setStudySiteService(StudySiteService studySiteService) {
+        this.studySiteService = studySiteService;
     }
 
     @Required
