@@ -78,6 +78,12 @@
         tr, td {
             vertical-align:top;
         }
+
+        ul.menu li.colorRed {
+            padding:0em;
+            margin:0em;
+            color:red;
+        }
     </style>
 </head>
 <body>
