@@ -13,15 +13,15 @@
                         <c:forEach items="${map.value}" var="eventsMap" varStatus="mapEvent">
                             <tr>
                                 <td>
-                                    <a href="/studycalendar/pages/cal/schedule?calendar=${eventsMap.value[0].scheduledArm.scheduledCalendar.id}&arm=${eventsMap.value[0].scheduledArm.id}"
-                                       title="View entire schedule on ${eventsMap.value[0].scheduledArm.scheduledCalendar.assignment.studySite.study.name}" >${eventsMap.key} -</a><br>
+                                    <a href="<c:url value="/pages/cal/schedule?calendar=${eventsMap.value[0].scheduledArm.scheduledCalendar.id}&arm=${eventsMap.value[0].scheduledArm.id}"/>
+                                       title="View entire schedule on ${eventsMap.value[0].scheduledArm.scheduledCalendar.assignment.studySite.study.name} >${eventsMap.key} -</a><br>
                                 </td>
                                 <td>
                                     <table cellspacing="0" cellpadding="0">
                                         <c:forEach items="${eventsMap.value}" var="mapEventList" varStatus="eventFromList">
                                             <tr>
                                                 <td>
-                                                    <a href="/studycalendar/pages/cal/scheduleEvent?event=${mapEventList.activity.id}" title="Update event">${mapEventList.activity.name}</a><br>
+                                                    <a href="<c:url value="/studycalendar/pages/cal/scheduleEvent?event=${mapEventList.activity.id}"/>"> ${mapEventList.activity.name}</a><br>
                                                 </td>
                                             </tr>
                                          </c:forEach>
