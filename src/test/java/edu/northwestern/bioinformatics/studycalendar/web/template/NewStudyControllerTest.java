@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
@@ -19,6 +20,8 @@ public class NewStudyControllerTest extends ControllerTestCase {
     private NewStudyController controller;
     private StudyService studyService;
     private NewStudyCommand command;
+    private static final int AMENDMENT_ID = 4;
+    private Study study;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,10 +38,11 @@ public class NewStudyControllerTest extends ControllerTestCase {
         };
         controller.setStudyService(studyService);
         controller.setControllerTools(controllerTools);
+        study = setId(ID, new Study());
+        study.setDevelopmentAmendment(setId(AMENDMENT_ID, new Amendment("dev")));
     }
 
     public void testHandle() throws Exception {
-        Study study = setId(ID, new Study());
         expect(command.create()).andReturn(study);
 
         replayMocks();
@@ -46,14 +50,15 @@ public class NewStudyControllerTest extends ControllerTestCase {
         verifyMocks();
 
         assertEquals("redirectToCalendarTemplate", mv.getViewName());
-        assertEquals(1, mv.getModel().size());
+        assertEquals(2, mv.getModel().size());
         assertContainsPair(mv.getModel(), "study", ID);
+        assertContainsPair(mv.getModel(), "amendment", AMENDMENT_ID);
     }
     
     public void testBindMode() throws Exception {
         request.setParameter("base", "BLANK");
         command.setBase(TemplateSkeletonCreator.BLANK);
-        expect(command.create()).andReturn(setId(ID, new Study()));
+        expect(command.create()).andReturn(study);
 
         replayMocks();
         controller.handleRequest(request, response);
