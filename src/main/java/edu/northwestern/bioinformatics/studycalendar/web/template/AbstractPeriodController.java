@@ -57,4 +57,9 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
     }
+
+    @Required
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
+    }
 }
