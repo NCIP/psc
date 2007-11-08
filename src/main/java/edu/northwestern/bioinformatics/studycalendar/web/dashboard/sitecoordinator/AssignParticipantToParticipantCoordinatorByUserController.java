@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -12,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -25,11 +25,12 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
     private StudySiteDao studySiteDao;
     private UserService userService;
     private ParticipantDao participantDao;
+    private StudyDao studyDao;
+    private SiteDao siteDao;
 
     public AssignParticipantToParticipantCoordinatorByUserController() {
         setFormView("dashboard/sitecoordinator/assignParticipantToParticipantCoordinator");
         setSuccessView("studyList");
-        setCommandClass(AssignParticipantToParticipantCoordinatorByUserCommand.class);
     }
 
     protected Map referenceData(HttpServletRequest request) throws Exception {
@@ -38,13 +39,18 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
         User siteCoordinator = getSiteCoordinator();
 
         Integer participantCoordinatorId = ServletRequestUtils.getIntParameter(request, "selected");
+        User participantCoordinator = null;
+        if (participantCoordinatorId != null ) {
+            participantCoordinator = userDao.getById(participantCoordinatorId);
+        }
 
-        Map<Site, Map<Study, List<Participant>>> displayMap = buildDisplayMap(participantCoordinatorId);
-        Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = buildStudySiteParticipantCoordinatorMap(participantCoordinatorId);
+        Map<Site, Map<Study, List<Participant>>> displayMap = buildDisplayMap(participantCoordinator);
+        Map<Study, Map<Site, List<User>>> studySiteParticipCoordMap = buildStudySiteParticipantCoordinatorMap(participantCoordinator);
 
         refData.put("displayMap", displayMap);
         refData.put("participantCoordinatorStudySites", studySiteParticipCoordMap);
         refData.put("assignableUsers", userService.getSiteCoordinatorsAssignableUsers(siteCoordinator));
+        refData.put("selectedId", participantCoordinatorId);
         
         return refData;
     }
@@ -53,18 +59,41 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
         super.initBinder(request, binder);
 
         binder.registerCustomEditor(User.class, new DaoBasedEditor(userDao));
+        binder.registerCustomEditor(Site.class, "site", new DaoBasedEditor(siteDao));
+        binder.registerCustomEditor(Study.class, "study", new DaoBasedEditor(studyDao));
+        binder.registerCustomEditor(Participant.class, "participantCoordinator", new DaoBasedEditor(participantDao));
+        binder.registerCustomEditor(Participant.class, "participants", new DaoBasedEditor(participantDao));
+    }
+
+
+    protected ModelAndView onSubmit(Object o) throws Exception {
+        AssignParticipantToParticipantCoordinatorByUserCommand command = (AssignParticipantToParticipantCoordinatorByUserCommand) o;
+
+        command.assignParticipantsToParticipantCoordinator();
+        
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("study", command.getStudy());
+        model.put("site", command.getSite());
+        model.put("participants", buildParticipants(findStudySite(command.getStudy(), command.getSite()), null));
+
+        return new ModelAndView("dashboard/sitecoordinator/ajax/displayParticipants", model);
+    }
+
+
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        AssignParticipantToParticipantCoordinatorByUserCommand command = new AssignParticipantToParticipantCoordinatorByUserCommand();
+        command.setParticipantDao(participantDao);
+        return command;
     }
 
     protected User getSiteCoordinator() {
         return userDao.getByName(ApplicationSecurityManager.getUser());
     }
                                                                                                                 
-    protected Map<Site, Map<Study, List<Participant>>> buildDisplayMap(Integer participantCoordinatorId) {
+    protected Map<Site, Map<Study, List<Participant>>> buildDisplayMap(User participantCoordinator) {
         Map<Site, Map<Study, List<Participant>>> displayMap = new TreeMap<Site, Map<Study, List<Participant>>>(new NamedComparator());
 
-        if (participantCoordinatorId != null ) {
 
-            User participantCoordinator = userDao.getById(participantCoordinatorId);
             if (participantCoordinator != null ) {
 
                 List<StudySite> studySites = studySiteService.getAllStudySitesForParticipantCoordinator(participantCoordinator);
@@ -73,13 +102,7 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
                     Site site = studySite.getSite();
                     Study study = studySite.getStudy();
 
-                    List<Participant> studyParticipants = new ArrayList<Participant>();
-                    for (StudyParticipantAssignment assignment : studySite.getStudyParticipantAssignments()) {
-                        Participant participant = assignment.getParticipant();
-                        if (!assignment.isExpired()) {
-                            studyParticipants.add(participant);
-                        }
-                    }
+                    List<Participant> studyParticipants = buildParticipants(studySite, participantCoordinator);
 
                     if (studyParticipants.size() > 0) {
                         if (!displayMap.containsKey(site)) {
@@ -90,26 +113,35 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
                             displayMap.get(site).put(study, new ArrayList<Participant>());
                         }
 
-                        Collections.sort(displayMap.get(site).get(study), new Comparator<Participant>(){
-                            public int compare(Participant participant, Participant participant1) {
-                                return participant.getLastFirst().compareTo(participant1.getLastFirst());
-                            }
-                        });
-
                         displayMap.get(site).get(study).addAll(studyParticipants);
                     }
                 }
             }
-        }
         return displayMap;
     }
 
-    protected Map<Study, Map<Site, List<User>>> buildStudySiteParticipantCoordinatorMap(Integer participantCoordinatorId) {
+    protected List<Participant> buildParticipants(StudySite studySite, User participantCoordinator) {
+        List<Participant> studyParticipants = new ArrayList<Participant>();
+        if (studySite != null ) {
+            for (StudyParticipantAssignment assignment : studySite.getStudyParticipantAssignments()) {
+                Participant participant = assignment.getParticipant();
+                if (assignment.getParticipantCoordinator().equals(participantCoordinator) && !assignment.isExpired()) {
+                    studyParticipants.add(participant);
+                }
+            }
+        }
+
+        Collections.sort(studyParticipants, new Comparator<Participant>(){
+            public int compare(Participant participant, Participant participant1) {
+                return participant.getLastFirst().compareTo(participant1.getLastFirst());
+            }
+        });
+        return studyParticipants;
+    }
+
+    protected Map<Study, Map<Site, List<User>>> buildStudySiteParticipantCoordinatorMap(User participantCoordinator) {
         Map<Study ,Map<Site, List<User>>> studySiteParticipantCoordinatorMap = new HashMap<Study ,Map<Site, List<User>>>();
 
-        if (participantCoordinatorId != null ) {
-
-            User participantCoordinator = userDao.getById(participantCoordinatorId);
             if (participantCoordinator != null ) {
 
                 List<StudySite> studySites = studySiteService.getAllStudySitesForParticipantCoordinator(participantCoordinator);
@@ -119,7 +151,6 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
                     List<UserRole> userRoles = studySite.getUserRoles();
                     for (UserRole userRole : userRoles ) {
                         User user = userRole.getUser();
-                        System.out.println(user.getName());
                         if (!user.equals(participantCoordinator)) {
                             otherStudySiteParticipantCoords.add(user);
                         }
@@ -131,7 +162,6 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
                     studySiteParticipantCoordinatorMap.get(studySite.getStudy()).put(studySite.getSite(), otherStudySiteParticipantCoords);
                 }
             }
-        }
         return studySiteParticipantCoordinatorMap;
     }
 
@@ -153,5 +183,13 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
 
     public void setParticipantDao(ParticipantDao participantDao) {
         this.participantDao = participantDao;
+    }
+
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
 }

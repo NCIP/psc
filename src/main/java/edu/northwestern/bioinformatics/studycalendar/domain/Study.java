@@ -155,7 +155,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         this.studySites = studySites;
     }
 
-    @OneToMany (mappedBy = "study",fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "study",fetch = FetchType.   EAGER)
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public List<StudySite> getStudySites() {
         return studySites;

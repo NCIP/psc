@@ -1,18 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.EasyMock.expect;
+import org.springframework.web.servlet.ModelAndView;
 
 import static java.util.Arrays.asList;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.*;
 
 public class AssignParticipantToParticipantCoordinatorByUserControllerTest extends ControllerTestCase {
     private AssignParticipantToParticipantCoordinatorByUserController controller;
@@ -34,16 +38,28 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
     private StudySite studySite2;
     private Site site2;
     private StudySite studySite3;
+    private StudyDao studyDao;
+    private SiteDao siteDao;
+    private UserService userService;
+    private ParticipantDao participantDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         userDao = registerDaoMockFor(UserDao.class);
         studySiteService = registerMockFor(StudySiteService.class);
+        userService = registerMockFor(UserService.class);
+        studyDao = registerMockFor(StudyDao.class);
+        siteDao = registerMockFor(SiteDao.class);
+        participantDao = registerDaoMockFor(ParticipantDao.class);
 
         controller = new AssignParticipantToParticipantCoordinatorByUserController();
         controller.setUserDao(userDao);
         controller.setStudySiteService(studySiteService);
+        controller.setUserService(userService);
+        controller.setStudyDao(studyDao);
+        controller.setSiteDao(siteDao);
+        controller.setParticipantDao(participantDao);
 
         study0 = createNamedInstance("Study A", Study.class);
         study1 = createNamedInstance("Study B", Study.class);
@@ -67,11 +83,16 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
         UserRole role1 = createUserRole(participantCoord1, Role.PARTICIPANT_COORDINATOR, site0, site1);
         UserRole role2 = createUserRole(participantCoord2, Role.PARTICIPANT_COORDINATOR, site1);
 
+        /* assign participantCoord0 to studySite0, studySite1, studySite2 */
         assignStudySite(studySite0, role0);
         assignStudySite(studySite1, role0);
         assignStudySite(studySite2, role0);
+
+        /* assign participantCoord1 to studySite0, studySite1 */
         assignStudySite(studySite0, role1);
         assignStudySite(studySite1, role1);
+
+        /* assign participantCoord2 to studySite2, studySite3 */
         assignStudySite(studySite1, role2);
         assignStudySite(studySite3, role0);
 
@@ -80,18 +101,17 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
         participant2 = createParticipant("Bob"  , "Smith");
         participant3 = createParticipant("Fred" , "Smith");
 
-        createStudyParticipantAssignment(participant0, studySite0);
-        createStudyParticipantAssignment(participant1, studySite1);
-        createStudyParticipantAssignment(participant2, studySite2);
-        createStudyParticipantAssignment(participant3, studySite2);
+        createStudyParticipantAssignment(participant0, studySite0, participantCoord0);
+        createStudyParticipantAssignment(participant1, studySite1, participantCoord0);
+        createStudyParticipantAssignment(participant2, studySite2, participantCoord0);
+        createStudyParticipantAssignment(participant3, studySite2, participantCoord0);
     }
 
     public void testBuildDisplayMap() throws Exception {
-        expect(userDao.getById(participantCoord0.getId())).andReturn(participantCoord0);
         expect(studySiteService.getAllStudySitesForParticipantCoordinator(participantCoord0)).andReturn(getStudySitesForUser(participantCoord0));
         replayMocks();
 
-        Map<Site, Map<Study, List<Participant>>> actualDisplayMap = controller.buildDisplayMap(participantCoord0.getId());
+        Map<Site, Map<Study, List<Participant>>> actualDisplayMap = controller.buildDisplayMap(participantCoord0);
         verifyMocks();
 
         assertEquals("Wrong number of sites", asList(site0, site1).size(), actualDisplayMap.keySet().size());
@@ -121,24 +141,30 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
         assertEquals("Wrong participant", participant3.getFullName(), actualDisplayMap.get(site0).get(study1).get(1).getFullName());
     }
 
-    public void testBuildDisplayMapParticipantNotFound() throws Exception {
-        Integer NON_EXISTENT_ID = -1;
-        
-        expect(userDao.getById(NON_EXISTENT_ID)).andReturn(null);
+    public void testBuildDisplayMapfWithNoParticipantsAssigned() throws Exception {
+        expect(studySiteService.getAllStudySitesForParticipantCoordinator(participantCoord1)).andReturn(getStudySitesForUser(participantCoord1));
         replayMocks();
 
-        Map<Site, Map<Study, List<Participant>>> actualDisplayMap = controller.buildDisplayMap(NON_EXISTENT_ID);
+        Map<Site, Map<Study, List<Participant>>> actualDisplayMap = controller.buildDisplayMap(participantCoord1);
+        verifyMocks();
+
+        assertEquals("Wrong number of sites", 0, actualDisplayMap.keySet().size());
+    }
+
+    public void testBuildDisplayMapParticipantNotFound() throws Exception {
+        replayMocks();
+
+        Map<Site, Map<Study, List<Participant>>> actualDisplayMap = controller.buildDisplayMap(null);
         verifyMocks();
 
         assertEquals("Wrong number of sites", 0, actualDisplayMap.keySet().size());
     }
 
     public void testBuildStudySiteParticipantCoordinatorMap() throws Exception {
-        expect(userDao.getById(participantCoord0.getId())).andReturn(participantCoord0);
         expect(studySiteService.getAllStudySitesForParticipantCoordinator(participantCoord0)).andReturn(getStudySitesForUser(participantCoord0));
         replayMocks();
 
-        Map<Study, Map<Site, List<User>>> map = controller.buildStudySiteParticipantCoordinatorMap(participantCoord0.getId());
+        Map<Study, Map<Site, List<User>>> map = controller.buildStudySiteParticipantCoordinatorMap(participantCoord0);
         verifyMocks();
 
         assertEquals("Wrong number of participant coordinators", 1, map.get(studySite0.getStudy()).get(studySite0.getSite()).size());
@@ -150,13 +176,35 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
         assertEquals("Wrong participant coordinator", participantCoord2.getName(), map.get(studySite1.getStudy()).get(studySite1.getSite()).get(1).getName());
     }
 
+    public void testInitBinder() throws Exception {
+        TestInitBinderController tibController = new TestInitBinderController();
+        request.addParameter("study", "1");
+        request.addParameter("site", "2");
+        request.addParameter("participants", "3");
+        request.addParameter("participants", "4");
+        request.addParameter("participantCoordinator", "5");
+        request.setMethod("POST");
+
+        expect(studyDao.getById(1)).andReturn(study1);
+        expect(siteDao.getById(2)).andReturn(site2);
+        expect(participantDao.getById(3)).andReturn(participant3);
+        expect(participantDao.getById(4)).andReturn(participant0);
+        expect(userDao.getById(5)).andReturn(participantCoord0);
+        replayMocks();
+
+        tibController.handleRequest(request, response);
+
+        verifyMocks();
+    }
+
     private List<StudySite> getStudySitesForUser(User user) {
         return findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR).getStudySites();
     }
 
-    private StudyParticipantAssignment createStudyParticipantAssignment(Participant participant, StudySite studySite) {
+    private StudyParticipantAssignment createStudyParticipantAssignment(Participant participant, StudySite studySite, User participantCoordinator) {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         assignment.setParticipant(participant);
+        assignment.setParticipantCoordinator(participantCoordinator);
         participant.addAssignment(assignment);
         assignment.setStudySite(studySite);
         if (studySite.getStudyParticipantAssignments() == null) {
@@ -174,4 +222,20 @@ public class AssignParticipantToParticipantCoordinatorByUserControllerTest exten
 
         studySite.setUserRoles(userRoles);
     }
+
+   public class TestInitBinderController extends AssignParticipantToParticipantCoordinatorByUserController {
+       public TestInitBinderController() {
+           super();
+           this.setUserDao(userDao);
+           this.setStudySiteService(studySiteService);
+           this.setUserService(userService);
+           this.setStudyDao(studyDao);
+           this.setSiteDao(siteDao);
+           this.setParticipantDao(participantDao);
+       }
+
+       protected ModelAndView onSubmit(Object o) throws Exception {
+           return new ModelAndView();
+       }
+   }
 }

@@ -47,7 +47,7 @@ public class UserRoleService {
             if (role.isSiteSpecific()) {
                 siteService.removeProtectionGroup(site, user);
 
-                /* Remove orphaned study site relationships */
+                /* Remove StudySite relationships for site being removed */
                 List<StudySite> removeStudySites = studySiteService.getStudySitesForParticipantCoordinator(user, site);
                 userRole.getStudySites().removeAll(removeStudySites);
             }

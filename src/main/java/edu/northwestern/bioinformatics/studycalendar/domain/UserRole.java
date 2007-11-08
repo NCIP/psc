@@ -42,7 +42,8 @@ public class UserRole  extends AbstractMutableDomainObject {
         }
     }
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     public User getUser() {
         return user;
     }

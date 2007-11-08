@@ -70,11 +70,7 @@ public class StudySite extends AbstractMutableDomainObject {
         return studyParticipantAssignments;
     }
 
-    @ManyToMany
-    @JoinTable( name="user_role_study_sites",
-        joinColumns = @JoinColumn(name="study_site_id"),
-        inverseJoinColumns = @JoinColumn(name="user_role_id")
-    )
+    @ManyToMany(mappedBy = "studySites")
     public List<UserRole> getUserRoles() {
         return userRoles;
     }
