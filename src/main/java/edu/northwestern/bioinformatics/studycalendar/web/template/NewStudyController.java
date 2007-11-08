@@ -28,7 +28,7 @@ public class NewStudyController extends PscAbstractCommandController<NewStudyCom
     @Override
     protected ModelAndView handle(NewStudyCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Study study = command.create();
-        return getControllerTools().redirectToCalendarTemplate(study.getId());
+        return getControllerTools().redirectToCalendarTemplate(study.getId(), null, study.getDevelopmentAmendment().getId());
     }
 
     ////// CONFIGURATION
