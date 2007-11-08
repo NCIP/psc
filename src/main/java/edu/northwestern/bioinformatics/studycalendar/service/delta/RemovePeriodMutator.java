@@ -36,7 +36,7 @@ public class RemovePeriodMutator extends RemoveMutator {
         for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
             log.debug("Applying removal of {} to {}", removedPeriod, scheduledArm.getName());
             for (ScheduledEvent se : scheduledArm.getEvents()) {
-                Period period = templateService.findParent(se.getPlannedEvent());
+                Period period = templateService.findParent(se.getPlannedActivity());
                 if (period.equals(removedPeriod)) {
                     se.unscheduleIfOutstanding("Removed in revision " + rev.getDisplayName());
                 }

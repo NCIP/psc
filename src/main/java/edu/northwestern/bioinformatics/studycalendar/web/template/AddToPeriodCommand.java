@@ -23,7 +23,7 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
         newEvent.setCondition(getConditionalDetails());
         Add add = Add.create(newEvent);
         amendmentService.updateDevelopmentAmendment(getPeriod(), add);
-        setPlannedEvent(newEvent);
+        setPlannedActivity(newEvent);
         return newEvent;
     }
 
@@ -45,7 +45,7 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
         return newEvent;
     }
 
-    private void setPlannedEvent(PlannedActivity event) {
+    private void setPlannedActivity(PlannedActivity event) {
         this.newEvent = event;
     }
 }

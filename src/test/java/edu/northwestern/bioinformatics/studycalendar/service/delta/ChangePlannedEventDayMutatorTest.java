@@ -53,7 +53,7 @@ public class ChangePlannedEventDayMutatorTest extends StudyCalendarTestCase {
 
     private ScheduledEvent createScheduledEvent() {
         ScheduledEvent se = new ScheduledEvent();
-        se.setPlannedEvent(plannedEvent);
+        se.setPlannedActivity(plannedEvent);
         return se;
     }
 

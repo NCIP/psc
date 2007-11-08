@@ -76,7 +76,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
     private ScheduledEvent createUnschedulableMockEvent(PlannedActivity event) throws NoSuchMethodException {
         ScheduledEvent semimock = registerMockFor(ScheduledEvent.class,
             ScheduledEvent.class.getMethod("unscheduleIfOutstanding", String.class));
-        semimock.setPlannedEvent(event);
+        semimock.setPlannedActivity(event);
         return semimock;
     }
 }

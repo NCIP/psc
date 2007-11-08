@@ -165,7 +165,7 @@ public class Fixtures {
     public static ScheduledEvent createScheduledEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
         ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedEvent(baseEvent);
+        event.setPlannedActivity(baseEvent);
         event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
         event.changeState(new Scheduled(null, DateUtils.createDate(year, month, day)));
@@ -176,7 +176,7 @@ public class Fixtures {
         PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
         baseEvent.setCondition("Details");
         ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedEvent(baseEvent);
+        event.setPlannedActivity(baseEvent);
         event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
         event.changeState(new Conditional(null, DateUtils.createDate(year, month, day)));

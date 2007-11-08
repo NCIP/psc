@@ -261,7 +261,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         int expectedYear, int expectedMonth, int expectedDayOfMonth,
         int expectedPlannedEventId, ScheduledEvent actualEvent
     ) {
-        assertEquals("Wrong associated planned event", expectedPlannedEventId, (int) actualEvent.getPlannedEvent().getId());
+        assertEquals("Wrong associated planned event", expectedPlannedEventId, (int) actualEvent.getPlannedActivity().getId());
         assertDayOfDate("Wrong ideal date", expectedYear, expectedMonth, expectedDayOfMonth, actualEvent.getIdealDate());
         assertTrue("Wrong current state mode", actualEvent.getCurrentState() instanceof Scheduled);
         Scheduled currentState = (Scheduled) actualEvent.getCurrentState();

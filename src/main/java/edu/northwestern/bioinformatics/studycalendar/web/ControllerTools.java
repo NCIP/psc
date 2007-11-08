@@ -49,7 +49,7 @@ public class ControllerTools {
     public void addHierarchyToModel(ScheduledEvent event, Map<String, Object> model) {
         model.put("scheduledEvent", event);
         if (event != null) {
-            addHierarchyToModel(event.getPlannedEvent(), model);
+            addHierarchyToModel(event.getPlannedActivity(), model);
             addHierarchyToModel(event.getScheduledArm(), model);
         }
     }

@@ -24,7 +24,7 @@ abstract class AbstractChangePeriodDurationMutator extends AbstractPeriodPropert
     public void apply(ScheduledCalendar calendar) {
         for (ScheduledArm arm : getScheduledArmsToMutate(calendar)) {
             for (ScheduledEvent event : arm.getEvents()) {
-                if (getChangedPeriod().equals(templateService.findParent(event.getPlannedEvent()))) {
+                if (getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     scheduleService.reviseDate(event, durationChangeInDays() * event.getRepetitionNumber(),
                         change.getDelta().getRevision());
                 }

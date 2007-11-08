@@ -39,7 +39,7 @@ import java.util.List;
 )
 public class ScheduledEvent extends AbstractMutableDomainObject {
     private ScheduledArm scheduledArm;
-    private PlannedActivity plannedEvent;
+    private PlannedActivity plannedActivity;
     private Date idealDate;
     private String notes;
     private ScheduledEventState currentState;
@@ -137,12 +137,12 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     }
 
     @ManyToOne
-    public PlannedActivity getPlannedEvent() {
-        return plannedEvent;
+    public PlannedActivity getPlannedActivity() {
+        return plannedActivity;
     }
 
-    public void setPlannedEvent(PlannedActivity plannedEvent) {
-        this.plannedEvent = plannedEvent;
+    public void setPlannedActivity(PlannedActivity plannedActivity) {
+        this.plannedActivity = plannedActivity;
     }
 
     @Type(type = "edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledEventStateType")
@@ -235,7 +235,7 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
             .append("[idealDate=").append(getIdealDate())
-            .append("; plannedEvent=").append(getPlannedEvent().getId())
+            .append("; plannedActivity=").append(getPlannedActivity().getId())
             .append("; repetition=").append(getRepetitionNumber())
             .append(']').toString();
     }

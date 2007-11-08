@@ -36,7 +36,7 @@ public class ScheduledEventDao extends StudyCalendarMutableDomainObjectDao<Sched
         PlannedActivity source, ScheduledCalendar calendar
     ) {
         return getHibernateTemplate().find(
-            "from ScheduledEvent e where e.plannedEvent = ? and e.scheduledArm.scheduledCalendar = ?",
+            "from ScheduledEvent e where e.plannedActivity = ? and e.scheduledArm.scheduledCalendar = ?",
             new Object[] { source, calendar });
     }
 }

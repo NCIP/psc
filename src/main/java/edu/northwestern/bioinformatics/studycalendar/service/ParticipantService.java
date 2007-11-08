@@ -200,7 +200,7 @@ public class ParticipantService {
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
     protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity plannedEvent) {
         ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedEvent(plannedEvent);
+        event.setPlannedActivity(plannedEvent);
         return event;
     }
 
@@ -376,15 +376,15 @@ public class ParticipantService {
             int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
             if (dateCompare != 0) return dateCompare;
 
-            if (e1.getPlannedEvent() == null && e2.getPlannedEvent() == null) {
+            if (e1.getPlannedActivity() == null && e2.getPlannedActivity() == null) {
                 return 0;
-            } else if (e1.getPlannedEvent() == null) {
+            } else if (e1.getPlannedActivity() == null) {
                 return -1;
-            } else if (e2.getPlannedEvent() == null) {
+            } else if (e2.getPlannedActivity() == null) {
                 return 1;
             }
 
-            return e1.getPlannedEvent().getId().compareTo(e2.getPlannedEvent().getId());
+            return e1.getPlannedActivity().getId().compareTo(e2.getPlannedActivity().getId());
         }
     }
 }

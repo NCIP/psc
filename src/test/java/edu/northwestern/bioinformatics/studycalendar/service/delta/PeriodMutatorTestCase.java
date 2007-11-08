@@ -79,10 +79,10 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         scheduledEvents = new ScheduledEvent[2][2][3];
         for (ScheduledEvent event : scheduledArm.getEvents()) {
             int period, pe;
-            if      (event.getPlannedEvent() == p0e0) { period = 0; pe = 0; }
-            else if (event.getPlannedEvent() == p0e1) { period = 0; pe = 1; }
-            else if (event.getPlannedEvent() == p1e0) { period = 1; pe = 0; }
-            else if (event.getPlannedEvent() == p1e1) { period = 1; pe = 1; }
+            if      (event.getPlannedActivity() == p0e0) { period = 0; pe = 0; }
+            else if (event.getPlannedActivity() == p0e1) { period = 0; pe = 1; }
+            else if (event.getPlannedActivity() == p1e0) { period = 1; pe = 0; }
+            else if (event.getPlannedActivity() == p1e1) { period = 1; pe = 1; }
             else throw new Error("Test setup failure: not all planned events accounted for");
 
             scheduledEvents[period][pe][event.getRepetitionNumber()] = event;
@@ -126,7 +126,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         } catch (NoSuchMethodException e) {
             throw new Error("This shouldn't happen", e);
         }
-        semimock.setPlannedEvent(event);
+        semimock.setPlannedActivity(event);
         return semimock;
     }
 }

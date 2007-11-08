@@ -27,7 +27,7 @@ public class RemovePlannedEventMutator extends RemoveMutator {
         Revision revision = change.getDelta().getRevision();
         for (ScheduledArm scheduledArm : calendar.getScheduledArms()) {
             for (ScheduledEvent event : scheduledArm.getEvents()) {
-                if (removedPlannedEvent.equals(event.getPlannedEvent())) {
+                if (removedPlannedEvent.equals(event.getPlannedActivity())) {
                     event.unscheduleIfOutstanding("Removed in revision " + revision.getDisplayName());
                 }
             }

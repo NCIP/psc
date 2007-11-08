@@ -130,7 +130,7 @@ public class BreadcrumbContext {
     public void setScheduledEvent(ScheduledEvent scheduledEvent) {
         if (scheduledEvent == null) return;
         setScheduledArm(scheduledEvent.getScheduledArm());
-        setPlannedActivity(scheduledEvent.getPlannedEvent());
+        setPlannedActivity(scheduledEvent.getPlannedActivity());
         this.scheduledEvent = scheduledEvent;
     }
 
