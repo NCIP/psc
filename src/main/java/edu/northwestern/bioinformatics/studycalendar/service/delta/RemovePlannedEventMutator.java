@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -12,7 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
  * @author Rhett Sutphin
  */
 public class RemovePlannedEventMutator extends RemoveMutator {
-    public RemovePlannedEventMutator(Remove remove, PlannedEventDao dao) {
+    public RemovePlannedEventMutator(Remove remove, PlannedActivityDao dao) {
         super(remove, dao);
     }
 

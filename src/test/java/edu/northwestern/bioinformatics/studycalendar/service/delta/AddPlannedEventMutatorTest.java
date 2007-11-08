@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.easymock.classextension.EasyMock;
@@ -31,7 +31,7 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
     private PlannedActivity plannedEvent;
     private ScheduledCalendar scheduledCalendar;
 
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private ParticipantService participantService;
     private TemplateService templateService;
 
@@ -48,12 +48,12 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
 
         scheduledCalendar = new ScheduledCalendar();
 
-        plannedEventDao = registerDaoMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         participantService = registerMockFor(ParticipantService.class);
         templateService = registerMockFor(TemplateService.class);
 
         mutator = new AddPlannedEventMutator(
-            add, plannedEventDao, participantService, templateService);
+            add, plannedActivityDao, participantService, templateService);
 
         expect(templateService.findParent(period)).andReturn(arm);
     }

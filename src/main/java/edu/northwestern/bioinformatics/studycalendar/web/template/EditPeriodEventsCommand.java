@@ -11,7 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
@@ -34,7 +34,7 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     private static final Logger log = LoggerFactory.getLogger(EditPeriodEventsCommand.class.getName());
 
     protected Period period;
-    protected PlannedEventDao plannedEventDao;
+    protected PlannedActivityDao plannedActivityDao;
     protected AmendmentService amendmentService;
     protected StudyService studyService;
 
@@ -234,12 +234,12 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     }
 
 
-    public PlannedEventDao getPlannedEventDao() {
-        return plannedEventDao;
+    public PlannedActivityDao getPlannedEventDao() {
+        return plannedActivityDao;
     }
 
-    public void setPlannedEventDao(PlannedEventDao plannedEventDao) {
-        this.plannedEventDao = plannedEventDao;
+    public void setPlannedEventDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
     }
 
     public void setDaoFinder(DaoFinder daoFinder) {

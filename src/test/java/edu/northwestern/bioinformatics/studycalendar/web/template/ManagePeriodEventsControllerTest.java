@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -27,7 +27,7 @@ import java.util.Map;
 public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private ManagePeriodEventsController controller = new ManagePeriodEventsController();
     private PeriodDao periodDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private ActivityDao activityDao;
     private Period period, revisedPeriod;
     private List<Activity> activities = new LinkedList<Activity>();
@@ -53,7 +53,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         periodDao = registerDaoMockFor(PeriodDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
-        plannedEventDao = registerMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         deltaService = registerMockFor(DeltaService.class);
         studyService = registerMockFor(StudyService.class);
@@ -61,7 +61,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
-        controller.setPlannedEventDao(plannedEventDao);
+        controller.setPlannedEventDao(plannedActivityDao);
         controller.setControllerTools(controllerTools);
         controller.setDeltaService(deltaService);
         controller.setAmendmentService(amendmentService);
@@ -73,7 +73,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
-        command = new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
+        command = new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
     }
 
     private ManagePeriodEventsCommand handleAndReturnBoundCommand() throws Exception {

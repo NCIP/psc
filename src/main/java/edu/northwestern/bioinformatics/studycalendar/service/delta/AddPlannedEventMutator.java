@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -20,7 +20,7 @@ public class AddPlannedEventMutator extends CollectionAddMutator {
     private TemplateService templateService;
 
     public AddPlannedEventMutator(
-        Add change, PlannedEventDao dao,
+        Add change, PlannedActivityDao dao,
         ParticipantService participantService, TemplateService templateService
     ) {
         super(change, dao);

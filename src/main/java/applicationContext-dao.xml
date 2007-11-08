@@ -213,7 +213,7 @@
     <bean id="epochDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.EpochDao"/>
     <bean id="armDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ArmDao"/>
     <bean id="activityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao"/>
-    <bean id="plannedEventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao"/>
+    <bean id="plannedActivityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao"/>
     <bean id="periodDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao"/>
 
     <bean id="siteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SiteDao"/>

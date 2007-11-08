@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static org.easymock.EasyMock.expect;
@@ -24,7 +24,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
     private DeleteFromPeriodCommand command = new DeleteFromPeriodCommand();
     private Period period;
     private PeriodDao periodDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     public int PERIOD_ID = 10;
     public AmendmentService amendmentService;
     public StudyService studyService;
@@ -35,7 +35,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         periodDao = registerMockFor(PeriodDao.class);
-        plannedEventDao = registerMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         studyService = registerMockFor(StudyService.class);
 
@@ -51,7 +51,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         period.setId(PERIOD_ID);
 
         command.setPeriodDao(periodDao);
-        command.setPlannedEventDao(plannedEventDao);
+        command.setPlannedEventDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
         command.setStudyService(studyService);
     }
@@ -67,7 +67,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         ids.add(eventOne.getId());
         command.setEventIds(ids);
         command.setColumnNumber(0);
-        expect(plannedEventDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(same(period), removeFor(eventOne));
         replayMocks();

@@ -14,7 +14,7 @@ public class DeleteFromPeriodCommand extends EditPeriodEventsCommand{
 
     protected PlannedActivity performEdit() {
         Integer id = getEventIds().get(getColumnNumber());
-        PlannedActivity plannedEvent = plannedEventDao.getById(id);
+        PlannedActivity plannedEvent = plannedActivityDao.getById(id);
         Remove remove = Remove.create(plannedEvent);
         amendmentService.updateDevelopmentAmendment(getPeriod(), remove);
         return null;

@@ -13,7 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -50,7 +50,7 @@ public class MutatorFactory {
         if (target instanceof Arm) {
             return new AddPeriodMutator(add, (PeriodDao) dao, participantService);
         } else if (target instanceof Period) {
-            return new AddPlannedEventMutator(add, (PlannedEventDao) dao,
+            return new AddPlannedEventMutator(add, (PlannedActivityDao) dao,
                 participantService, templateService);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
@@ -64,7 +64,7 @@ public class MutatorFactory {
         if (target instanceof Arm) {
             return new RemovePeriodMutator(remove, (PeriodDao) dao, templateService);
         } else if (target instanceof Period) {
-            return new RemovePlannedEventMutator(remove, (PlannedEventDao) dao);
+            return new RemovePlannedEventMutator(remove, (PlannedActivityDao) dao);
         } else {
             return new RemoveMutator(remove, dao);
         }

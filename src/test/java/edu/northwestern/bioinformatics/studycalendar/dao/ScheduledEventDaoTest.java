@@ -16,7 +16,7 @@ import java.util.Date;
  * @author Rhett Sutphin
  */
 public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao> {
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
     @Override
@@ -24,8 +24,8 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         super.setUp();
         scheduledCalendarDao
             = (ScheduledCalendarDao) getApplicationContext().getBean("scheduledCalendarDao");
-        plannedEventDao
-            = (PlannedEventDao) getApplicationContext().getBean("plannedEventDao");
+        plannedActivityDao
+            = (PlannedActivityDao) getApplicationContext().getBean("plannedActivityDao");
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
     
     public void testGetScheduledEventsFromPlannedEvent() throws Exception {
         Collection<ScheduledEvent> matches = getDao().getEventsFromPlannedEvent(
-            plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21));
+            plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21));
         assertEquals("Wrong number of matches", 2, matches.size());
         Collection<Integer> actualIds = DomainObjectTools.collectIds(matches);
         assertContains(actualIds, -30);
@@ -64,7 +64,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         loaded.setDetails("F9");
         ScheduledEvent queried = null;
 
-        for (ScheduledEvent e : getDao().getEventsFromPlannedEvent(plannedEventDao.getById(-6), scheduledCalendarDao.getById(-21))) {
+        for (ScheduledEvent e : getDao().getEventsFromPlannedEvent(plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21))) {
             if (e.getId() == -30) {
                 queried = e;
                 break;

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
     private MoveEventCommand command = new MoveEventCommand();
     private Period period;
     private PeriodDao periodDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     public int PERIOD_ID = 10;
     public AmendmentService amendmentService;
     public Activity activity;
@@ -38,7 +38,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         periodDao = registerMockFor(PeriodDao.class);
-        plannedEventDao = registerMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
         activity = createNamedInstance("Three", Activity.class);
@@ -53,7 +53,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         period.setId(PERIOD_ID);
 
         command.setPeriodDao(periodDao);
-        command.setPlannedEventDao(plannedEventDao);
+        command.setPlannedEventDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
     }
 
@@ -71,7 +71,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         command.setMoveTo(4);
 
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        expect(plannedEventDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("day", command.getMoveFrom() + 1, command.getMoveTo() + 1));

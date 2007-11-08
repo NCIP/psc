@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -30,7 +30,7 @@ import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.*;
 public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     private ManagePeriodEventsCommand command;
     private Period period;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private AmendmentService amendmentService;
 
     private List<Activity> activities;
@@ -40,7 +40,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         period = createPeriod("src", 13, 7, 2);
-        plannedEventDao = registerMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
         study = Fixtures.createBasicTemplate();
@@ -168,7 +168,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         rowToUpdate.setColumnNumber(-1);
         rowToUpdate.setDetails("Det B");
 
-        expect(plannedEventDao.getById(23)).andReturn(existingEvent);
+        expect(plannedActivityDao.getById(23)).andReturn(existingEvent);
         amendmentService.updateDevelopmentAmendment(existingEvent,
             PropertyChange.create("details", "Det A", "Det B"));
 
@@ -193,7 +193,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         rowToUpdate.setConditionalUpdated(true);
         rowToUpdate.setConditionalDetails(expectedConditionalDetails);
 
-        expect(plannedEventDao.getById(23)).andReturn(existingEvent);
+        expect(plannedActivityDao.getById(23)).andReturn(existingEvent);
         amendmentService.updateDevelopmentAmendment(existingEvent,
             PropertyChange.create("condition", initialConditionalDetails, expectedConditionalDetails));
 
@@ -218,7 +218,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         rowToUpdate.setConditionalUpdated(true);
         rowToUpdate.setConditionalDetails(expectedConditionalDetails);
 
-        expect(plannedEventDao.getById(existingEvent.getId())).andReturn(existingEvent);
+        expect(plannedActivityDao.getById(existingEvent.getId())).andReturn(existingEvent);
         amendmentService.updateDevelopmentAmendment(existingEvent,
             PropertyChange.create("condition", null, expectedConditionalDetails));
 
@@ -329,7 +329,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     private void initCommand() {
-        command = new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
+        command = new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
     }
 
     private PlannedActivity createPlannedEvent(int activityId, int day, Integer id) {

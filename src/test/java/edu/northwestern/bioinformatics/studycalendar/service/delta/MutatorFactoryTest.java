@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
@@ -25,7 +25,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     private EpochDao epochDao;
     private ArmDao armDao;
     private PeriodDao periodDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -36,7 +36,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
             epochDao = registerDaoMockFor(EpochDao.class),
             armDao = registerDaoMockFor(ArmDao.class),
             periodDao = registerDaoMockFor(PeriodDao.class),
-            plannedEventDao = registerDaoMockFor(PlannedEventDao.class)
+            plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class)
         );
 
         factory.setDaoFinder(finder);

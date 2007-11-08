@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 /**
  * @author Rhett Sutphin
  */
-public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
+public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedActivityDao> {
     public void testGetById() throws Exception {
         PlannedActivity loaded = getDao().getById(-12);
 

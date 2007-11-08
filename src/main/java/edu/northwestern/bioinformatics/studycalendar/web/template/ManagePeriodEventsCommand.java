@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class ManagePeriodEventsCommand {
     private static final Logger log = LoggerFactory.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private AmendmentService amendmentService;
     private GridRow oldRow;
 
@@ -37,9 +37,9 @@ public class ManagePeriodEventsCommand {
      */
     private List<GridRow> grid;
 
-    public ManagePeriodEventsCommand(Period period, PlannedEventDao plannedEventDao, AmendmentService amendmentService) {
+    public ManagePeriodEventsCommand(Period period, PlannedActivityDao plannedActivityDao, AmendmentService amendmentService) {
         this.period = period;
-        this.plannedEventDao = plannedEventDao;
+        this.plannedActivityDao = plannedActivityDao;
         this.amendmentService = amendmentService;
         grid = createGrid();
     }
@@ -118,7 +118,7 @@ public class ManagePeriodEventsCommand {
     private void updateConditionalParameters(GridRow row) {
         for (Integer id: row.getEventIds()) {
             if (id != null && id>-1) {
-                PlannedActivity event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedActivityDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
                     PropertyChange.create("condition", event.getCondition(),
                         row.getConditionalDetails()));
@@ -149,7 +149,7 @@ public class ManagePeriodEventsCommand {
     private void updateDetails(GridRow row, String details){
         for (Integer id: row.getEventIds()) {
             if (id != null && id >-1) {
-                PlannedActivity event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedActivityDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
                     PropertyChange.create("details", event.getDetails(), details));
             }

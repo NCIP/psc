@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -44,7 +44,7 @@ import java.util.Map;
 public class ManagePeriodEventsController  extends PscSimpleFormController {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private StudyService studyService;
     private DeltaService deltaService;
     private AmendmentService amendmentService;
@@ -65,7 +65,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         if (!isFormSubmission(request)) { // TODO: the need for this branch points up that the AJAX requests should be handled by a different controller
             period = deltaService.revise(period);
         }
-        return new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
+        return new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
     }
 
     @Override
@@ -138,8 +138,8 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     }
 
     @Required
-    public void setPlannedEventDao(PlannedEventDao plannedEventDao) {
-        this.plannedEventDao = plannedEventDao;
+    public void setPlannedEventDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
     }
 
     @Required

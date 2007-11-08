@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
  * @author Rhett Sutphin
  */
 @Transactional (readOnly=true)
-public class PlannedEventDao extends StudyCalendarMutableDomainObjectDao<PlannedActivity> {
+public class PlannedActivityDao extends StudyCalendarMutableDomainObjectDao<PlannedActivity> {
     @Override
     public Class<PlannedActivity> domainClass() {
         return PlannedActivity.class;

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import static org.easymock.EasyMock.expect;
 
@@ -16,7 +16,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
     private UpdatePeriodCommand command = new UpdatePeriodCommand();
     private Period period;
     private PeriodDao periodDao;
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     public int PERIOD_ID = 10;
     public AmendmentService amendmentService;
     public Activity activity;
@@ -30,7 +30,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         periodDao = registerMockFor(PeriodDao.class);
-        plannedEventDao = registerMockFor(PlannedEventDao.class);
+        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
         activity = createNamedInstance("Three", Activity.class);
@@ -49,7 +49,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         period.setId(PERIOD_ID);
 
         command.setPeriodDao(periodDao);
-        command.setPlannedEventDao(plannedEventDao);
+        command.setPlannedEventDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
     }
 
@@ -67,7 +67,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setColumnNumber(-1);
         
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        expect(plannedEventDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("details", eventDetails, detailsToChange));
@@ -95,7 +95,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setColumnNumber(0);
 
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        expect(plannedEventDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("condition", eventConditionalDetails, detailsToChange));

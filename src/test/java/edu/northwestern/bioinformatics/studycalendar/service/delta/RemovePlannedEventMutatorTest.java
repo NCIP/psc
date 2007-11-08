@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -29,7 +29,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
     ScheduledCalendar scheduledCalendar;
     ScheduledArm scheduledArm;
 
-    private PlannedEventDao plannedEventDao;
+    private PlannedActivityDao plannedActivityDao;
     private ScheduledEvent pe0se0, pe1se0, pe1se1, pe2se0, pe0se1;
 
     @Override
@@ -53,8 +53,8 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
         scheduledArm.addEvent(pe2se0 = createUnschedulableMockEvent(pe2));
         scheduledArm.addEvent(pe0se1 = createUnschedulableMockEvent(pe0));
 
-        plannedEventDao = registerDaoMockFor(PlannedEventDao.class);
-        mutator = new RemovePlannedEventMutator(remove, plannedEventDao);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+        mutator = new RemovePlannedEventMutator(remove, plannedActivityDao);
     }
 
     public void testAppliesToLiveSchedules() throws Exception {
