@@ -104,6 +104,8 @@
                                         <option value="${user.id}" <c:if test="${user.id == selected.id}">selected</c:if>>${user.name}</option>
                                     </c:forEach>
                                 </select>
+                                <input type="button" value="Studies" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByUser"/>?selected=${selected.id}'"/>
+                                <input type="button" value="Participants" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantToParticipantCoordinatorByUser"/>?selected=${selected.id}'"/>
                             </c:if>
 
                         </div>
