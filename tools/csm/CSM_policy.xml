@@ -144,6 +144,7 @@
 
     <CSM_USER_GROUP USER_GROUP_ID="-19" user_id="-14" GROUP_ID="7" />
     <CSM_USER_GROUP USER_GROUP_ID="-20" user_id="-15" GROUP_ID="7" />
+    <CSM_USER_GROUP USER_GROUP_ID="-21" user_id="-11" GROUP_ID="7" />
 
 
 
@@ -344,5 +345,54 @@
         user_id="-13"
         />
 
+    <USER_ROLES
+        id="-18"
+        csm_group_name="SYSTEM_ADMINISTRATOR"
+        user_id="-9"/>
+
+    <USER_ROLE_SITES
+         user_role_id="-1"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-2"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-7"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-8"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-11"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-12"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-13"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-14"
+         site_id="1"
+         />
+
+    <USER_ROLE_SITES
+         user_role_id="-15"
+         site_id="1"
+         />
 
 </dataset>
