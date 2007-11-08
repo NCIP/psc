@@ -13,6 +13,7 @@ public class AssignParticipantToParticipantCoordinatorByUserCommand {
     private User participantCoordinator;
     private Study study;
     private Site site;
+    private User selected;
 
     public void assignParticipantsToParticipantCoordinator() {
         StudySite studySite = findStudySite(study, site);
@@ -47,6 +48,10 @@ public class AssignParticipantToParticipantCoordinatorByUserCommand {
         this.site = site;
     }
 
+    public void setSelected(User selected) {
+        this.selected = selected;
+    }
+
     public List<Participant> getParticipants() {
         return participants;
     }
@@ -61,5 +66,9 @@ public class AssignParticipantToParticipantCoordinatorByUserCommand {
 
     public Site getSite() {
         return site;
+    }
+
+    public User getSelected() {
+        return selected;
     }
 }

@@ -74,7 +74,7 @@ public class AssignParticipantToParticipantCoordinatorByUserController extends P
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("study", command.getStudy());
         model.put("site", command.getSite());
-        model.put("participants", buildParticipants(findStudySite(command.getStudy(), command.getSite()), null));
+        model.put("participants", buildParticipants(findStudySite(command.getStudy(), command.getSite()), command.getSelected()));
 
         return new ModelAndView("dashboard/sitecoordinator/ajax/displayParticipants", model);
     }
