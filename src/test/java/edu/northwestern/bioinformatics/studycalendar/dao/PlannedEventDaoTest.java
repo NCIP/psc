@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 /**
  * @author Rhett Sutphin
  */
 public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
     public void testGetById() throws Exception {
-        PlannedEvent loaded = getDao().getById(-12);
+        PlannedActivity loaded = getDao().getById(-12);
 
         assertEquals("Wrong id", -12, (int) loaded.getId());
         assertEquals("Wrong day number", new Integer(4), loaded.getDay());
@@ -19,14 +19,14 @@ public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
     }
 
     public void testPeriodBidirectional() throws Exception {
-        PlannedEvent loaded = getDao().getById(-12);
+        PlannedActivity loaded = getDao().getById(-12);
         assertTrue(loaded.getPeriod().getPlannedEvents().contains(loaded));
     }
 
     public void testSaveDetached() throws Exception {
         Integer id;
         {
-            PlannedEvent plannedEvent = new PlannedEvent();
+            PlannedActivity plannedEvent = new PlannedActivity();
             plannedEvent.setDay(5);
             plannedEvent.setActivity(getDao().getById(-12).getActivity());
             getDao().save(plannedEvent);
@@ -36,7 +36,7 @@ public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedEventDao> {
 
         interruptSession();
 
-        PlannedEvent loaded = getDao().getById(id);
+        PlannedActivity loaded = getDao().getById(id);
         assertNotNull("Could not reload", loaded);
         assertEquals("Wrong event loaded", 5, (int) loaded.getDay());
     }

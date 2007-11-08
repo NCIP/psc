@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
@@ -55,7 +55,7 @@ public class ManagePeriodEventsCommand {
         Map<String, GridRow> bins = new LinkedHashMap<String, GridRow>();
         Integer dayCount = src.getDuration().getDays();
         Map<String, int[]> counts = new HashMap<String, int[]>();
-        for (PlannedEvent event : src.getPlannedEvents()) {
+        for (PlannedActivity event : src.getPlannedEvents()) {
             String activityAndDetails = GridRow.key(event);
             if (counts.get(activityAndDetails) == null) {
                 counts.put(activityAndDetails, new int[dayCount]);
@@ -76,7 +76,7 @@ public class ManagePeriodEventsCommand {
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public PlannedEvent apply() {
+    public PlannedActivity apply() {
         // calculate difference from bound grid
          for (GridRow bound : getGrid()) {
             setOldRow(bound);
@@ -118,7 +118,7 @@ public class ManagePeriodEventsCommand {
     private void updateConditionalParameters(GridRow row) {
         for (Integer id: row.getEventIds()) {
             if (id != null && id>-1) {
-                PlannedEvent event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
                     PropertyChange.create("condition", event.getCondition(),
                         row.getConditionalDetails()));
@@ -126,8 +126,8 @@ public class ManagePeriodEventsCommand {
         }
     }
 
-    protected PlannedEvent addEvent(GridRow row) {
-        PlannedEvent newEvent = new PlannedEvent();
+    protected PlannedActivity addEvent(GridRow row) {
+        PlannedActivity newEvent = new PlannedActivity();
         newEvent.setDay(row.getColumnNumber()+1);
         newEvent.setActivity(row.getActivity());
         newEvent.setDetails(row.getDetails());
@@ -139,7 +139,7 @@ public class ManagePeriodEventsCommand {
     }
 
     private void removeEvent(Integer eventId) {
-        for (PlannedEvent event : period.getPlannedEvents()) {
+        for (PlannedActivity event : period.getPlannedEvents()) {
             if (eventId.equals(event.getId())) {
                 amendmentService.updateDevelopmentAmendment(period, Remove.create(event));
             }
@@ -149,7 +149,7 @@ public class ManagePeriodEventsCommand {
     private void updateDetails(GridRow row, String details){
         for (Integer id: row.getEventIds()) {
             if (id != null && id >-1) {
-                PlannedEvent event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
                     PropertyChange.create("details", event.getDetails(), details));
             }
@@ -209,11 +209,11 @@ public class ManagePeriodEventsCommand {
             return activity.getId() + details + conditionalDetails;
         }
 
-        public static String key(PlannedEvent event) {
+        public static String key(PlannedActivity event) {
             return key(event.getActivity(), event.getDetails(), event.getCondition());
         }
 
-        public void addId(PlannedEvent event) {
+        public void addId(PlannedActivity event) {
             int id = event.getId();
             int day = event.getDay();
             this.getEventIds().set(day-1, id);

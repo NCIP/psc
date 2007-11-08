@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -70,8 +70,8 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
             delta = new ArmDelta((Arm) node);
         } else if (node instanceof Period) {
             delta = new PeriodDelta((Period) node);
-        } else if (node instanceof PlannedEvent) {
-            delta = new PlannedEventDelta((PlannedEvent) node);
+        } else if (node instanceof PlannedActivity) {
+            delta = new PlannedEventDelta((PlannedActivity) node);
         } else {
             throw new StudyCalendarError("Unimplemented node type: %s", node.getClass().getName());
         }

@@ -47,7 +47,7 @@ public class Fixtures {
                 arm.setId(++armId);
                 for (Period period : arm.getPeriods()) {
                     period.setId(++periodId);
-                    for (PlannedEvent event : period.getPlannedEvents()) {
+                    for (PlannedActivity event : period.getPlannedEvents()) {
                         event.setId(++plannedEventId);
                     }
                 }
@@ -74,8 +74,8 @@ public class Fixtures {
         return p;
     }
 
-    public static PlannedEvent createPlannedEvent(String activityName, int day) {
-        PlannedEvent event = new PlannedEvent();
+    public static PlannedActivity createPlannedEvent(String activityName, int day) {
+        PlannedActivity event = new PlannedActivity();
         Activity activity = createNamedInstance(activityName, Activity.class);
         activity.setType(ActivityType.LAB_TEST);
         event.setActivity(activity);
@@ -83,8 +83,8 @@ public class Fixtures {
         return event;
     }
 
-    public static PlannedEvent createPlannedEvent(String activityName, int day, String details) {
-        PlannedEvent event = createPlannedEvent(activityName, day);
+    public static PlannedActivity createPlannedEvent(String activityName, int day, String details) {
+        PlannedActivity event = createPlannedEvent(activityName, day);
         event.setDetails(details);
         return event;
     }
@@ -163,7 +163,7 @@ public class Fixtures {
     }
 
     public static ScheduledEvent createScheduledEvent(String activityName, int year, int month, int day) {
-        PlannedEvent baseEvent = createPlannedEvent(activityName, 0);
+        PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(baseEvent);
         event.setActivity(createActivity(activityName));
@@ -173,7 +173,7 @@ public class Fixtures {
     }
 
     public static ScheduledEvent createConditionalEvent(String activityName, int year, int month, int day) {
-        PlannedEvent baseEvent = createPlannedEvent(activityName, 0);
+        PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
         baseEvent.setCondition("Details");
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(baseEvent);

@@ -98,7 +98,7 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     public void testGetNextArmPerProtocolStartDate() throws Exception {
         Arm arm = Epoch.create("Screening").getArms().get(0);
         Period period = createPeriod("P1", 4, 7, 3);
-        PlannedEvent plannedEvent = createPlannedEvent("ABC", 4);
+        PlannedActivity plannedEvent = createPlannedEvent("ABC", 4);
         period.addPlannedEvent(plannedEvent);
         arm.addPeriod(period); // arm length is 21 days
 

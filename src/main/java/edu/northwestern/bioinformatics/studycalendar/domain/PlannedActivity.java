@@ -10,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.FetchType;
 import javax.persistence.Transient;
-import javax.persistence.Column;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -19,13 +18,13 @@ import java.util.ArrayList;
  * @author Yufang Wang
  */
 @Entity
-@Table (name = "planned_events")
+@Table (name = "planned_activities")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_planned_events_id")
+        @Parameter(name="sequence", value="seq_planned_activities_id")
     }
 )
-public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<PlannedEvent> {
+public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<PlannedActivity> {
     private Activity activity;
     private Integer day;
     private String details;
@@ -35,7 +34,7 @@ public class PlannedEvent extends PlanTreeNode<Period> implements Comparable<Pla
 
     @Override public Class<Period> parentClass() { return Period.class; }
 
-    public int compareTo(PlannedEvent other) {
+    public int compareTo(PlannedActivity other) {
         // by day
         int dayDiff = getDay() - other.getDay();
         if (dayDiff != 0) return dayDiff;

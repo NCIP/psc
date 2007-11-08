@@ -19,7 +19,7 @@ public class BreadcrumbContext {
     private Epoch epoch;
     private Arm arm;
     private Period period;
-    private PlannedEvent plannedEvent;
+    private PlannedActivity plannedActivity;
 
     private Participant participant;
     private StudyParticipantAssignment studyParticipantAssignment;
@@ -96,11 +96,11 @@ public class BreadcrumbContext {
         this.period = period;
     }
 
-    public void setPlannedEvent(PlannedEvent plannedEvent) {
-        if (plannedEvent != null) {
-            setPeriod(templateService.findParent(plannedEvent));
+    public void setPlannedActivity(PlannedActivity plannedActivity) {
+        if (plannedActivity != null) {
+            setPeriod(templateService.findParent(plannedActivity));
         }
-        this.plannedEvent = plannedEvent;
+        this.plannedActivity = plannedActivity;
     }
 
     public void setParticipant(Participant participant) {
@@ -130,7 +130,7 @@ public class BreadcrumbContext {
     public void setScheduledEvent(ScheduledEvent scheduledEvent) {
         if (scheduledEvent == null) return;
         setScheduledArm(scheduledEvent.getScheduledArm());
-        setPlannedEvent(scheduledEvent.getPlannedEvent());
+        setPlannedActivity(scheduledEvent.getPlannedEvent());
         this.scheduledEvent = scheduledEvent;
     }
 
@@ -178,8 +178,8 @@ public class BreadcrumbContext {
         return period;
     }
 
-    public PlannedEvent getPlannedEvent() {
-        return plannedEvent;
+    public PlannedActivity getPlannedActivity() {
+        return plannedActivity;
     }
 
     public Participant getParticipant() {

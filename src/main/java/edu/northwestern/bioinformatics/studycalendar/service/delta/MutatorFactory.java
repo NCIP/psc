@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -87,7 +87,7 @@ public class MutatorFactory {
             }
             // fall through
         }
-        if (target instanceof PlannedEvent) {
+        if (target instanceof PlannedActivity) {
             if ("day".equals(change.getPropertyName())) {
                 return new ChangePlannedEventDayMutator(change, scheduledEventDao, scheduleService);
             } else if ("details".equals(change.getPropertyName())) {

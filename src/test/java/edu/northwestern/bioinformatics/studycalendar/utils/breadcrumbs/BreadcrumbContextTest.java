@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.*;
@@ -26,17 +26,17 @@ public class BreadcrumbContextTest extends StudyCalendarTestCase {
         Epoch epoch = new Epoch();
         Arm arm = new Arm();
         Period period = new Period();
-        PlannedEvent plannedEvent = new PlannedEvent();
-        expect(templateService.findParent(plannedEvent)).andReturn(period);
+        PlannedActivity plannedActivity = new PlannedActivity();
+        expect(templateService.findParent(plannedActivity)).andReturn(period);
         expect(templateService.findParent(period)).andReturn(arm);
         expect(templateService.findParent(arm)).andReturn(epoch);
         expect(templateService.findParent(epoch)).andReturn(plannedCalendar);
 
         replayMocks();
-        BreadcrumbContext context = BreadcrumbContext.create(plannedEvent, templateService);
+        BreadcrumbContext context = BreadcrumbContext.create(plannedActivity, templateService);
         verifyMocks();
 
-        assertSame(plannedEvent, context.getPlannedEvent());
+        assertSame(plannedActivity, context.getPlannedActivity());
         assertSame(period, context.getPeriod());
         assertSame(arm, context.getArm());
         assertSame(epoch, context.getEpoch());

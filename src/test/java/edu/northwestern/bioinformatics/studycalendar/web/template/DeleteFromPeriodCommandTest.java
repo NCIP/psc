@@ -58,7 +58,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
 
     public void testPerformEdit() throws Exception {
         command.setId(period.getId());
-        PlannedEvent eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedEvent(1, 25);
         eventOne.setId(21);
         period.addPlannedEvent(eventOne);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
@@ -78,7 +78,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
     }
 
     public void testGetLocalModel() throws Exception {
-        PlannedEvent eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedEvent(2, 26);
         eventTwo.setId(22);
         period.addPlannedEvent(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
@@ -99,48 +99,48 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
 
 
     private static abstract class AbstractPlannedEventMatcher implements IArgumentMatcher {
-        protected PlannedEvent expectedPlannedEvent;
+        protected PlannedActivity expectedPlannedEvent;
 
-        public AbstractPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public AbstractPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             this.expectedPlannedEvent = expectedPlannedEvent;
         }
 
-        protected boolean plannedEventMatches(PlannedEvent actual) {
+        protected boolean plannedEventMatches(PlannedActivity actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
                     && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 
-    public static Add removeFor(PlannedEvent event) {
+    public static Add removeFor(PlannedActivity event) {
         EasyMock.reportMatcher(new RemoveForPlannedEventMatcher(event));
         return null;
     }
 
     private static class RemoveForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public RemoveForPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public RemoveForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             super(expectedPlannedEvent);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Remove)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedEvent) (PlanTreeNode) ((Remove) object).getChild());
+            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Remove for PlannedEvent activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Remove for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
         }
     }
 
-    private PlannedEvent createPlannedEvent(int day, Integer id) {
+    private PlannedActivity createPlannedEvent(int day, Integer id) {
         return createPlannedEvent(day, null, id, null);
     }
 
-    private PlannedEvent createPlannedEvent(
+    private PlannedActivity createPlannedEvent(
         int day, String details, Integer id, String conditionalDetails
     ) {
-        PlannedEvent evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);

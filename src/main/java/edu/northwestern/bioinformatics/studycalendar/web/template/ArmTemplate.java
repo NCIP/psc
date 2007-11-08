@@ -4,7 +4,7 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
@@ -153,8 +153,8 @@ public class ArmTemplate {
             return number;
         }
 
-        public List<PlannedEvent> getEvents() {
-            List<PlannedEvent> events = new ArrayList<PlannedEvent>();
+        public List<PlannedActivity> getEvents() {
+            List<PlannedActivity> events = new ArrayList<PlannedActivity>();
             for (DayOfPeriod period : getPeriods()) {
                 events.addAll(period.getEvents());
             }
@@ -169,14 +169,14 @@ public class ArmTemplate {
     public class DayOfPeriod {
         private Day day;
         private Period period;
-        private List<PlannedEvent> events;
+        private List<PlannedActivity> events;
 
         public DayOfPeriod(Day day, Period period) {
             this.period = period;
             this.day = day;
-            this.events = new LinkedList<PlannedEvent>();
+            this.events = new LinkedList<PlannedActivity>();
 
-            for (PlannedEvent pe : period.getPlannedEvents()) {
+            for (PlannedActivity pe : period.getPlannedEvents()) {
                 if (pe.getDaysInArm().contains(day.getNumber())) {
                     events.add(pe);
                 }
@@ -215,7 +215,7 @@ public class ArmTemplate {
             return period.getId();
         }
 
-        public List<PlannedEvent> getEvents() {
+        public List<PlannedActivity> getEvents() {
             return events;
         }
 

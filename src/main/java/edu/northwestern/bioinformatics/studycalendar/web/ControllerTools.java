@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -78,7 +78,7 @@ public class ControllerTools {
         }
     }
 
-    public void addHierarchyToModel(PlannedEvent event, Map<String, Object> model) {
+    public void addHierarchyToModel(PlannedActivity event, Map<String, Object> model) {
         model.put("plannedEvent", event);
         if (event != null) addHierarchyToModel(templateService.findParent(event), model);
     }

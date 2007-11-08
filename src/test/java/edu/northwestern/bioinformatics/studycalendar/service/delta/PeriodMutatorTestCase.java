@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -37,7 +37,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected Period period0;
     /** period1 is the period to which the delta applies */
     protected Period period1;
-    protected PlannedEvent p0e0, p0e1, p1e0, p1e1;
+    protected PlannedActivity p0e0, p0e1, p1e0, p1e1;
 
     protected ScheduledCalendar scheduledCalendar;
     protected ScheduledArm scheduledArm;
@@ -70,7 +70,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
 
         ParticipantService participantService = new ParticipantService() {
             @Override
-            protected ScheduledEvent createEmptyScheduledEventFor(PlannedEvent event) {
+            protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity event) {
                 return createUnschedulableMockEvent(event);
             }
         };
@@ -89,7 +89,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         }
     }
 
-    protected final ScheduledEvent getScheduledEventFixture(PlannedEvent plannedEvent, int repetition) {
+    protected final ScheduledEvent getScheduledEventFixture(PlannedActivity plannedEvent, int repetition) {
         if      (plannedEvent == p0e0) { return getScheduledEventFixture(0, 0, repetition); }
         else if (plannedEvent == p0e1) { return getScheduledEventFixture(0, 1, repetition); }
         else if (plannedEvent == p1e0) { return getScheduledEventFixture(1, 0, repetition); }
@@ -118,7 +118,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         assertTrue(getMutator().appliesToExistingSchedules());
     }
 
-    private ScheduledEvent createUnschedulableMockEvent(PlannedEvent event) {
+    private ScheduledEvent createUnschedulableMockEvent(PlannedActivity event) {
         ScheduledEvent semimock;
         try {
             semimock = registerMockFor(ScheduledEvent.class,

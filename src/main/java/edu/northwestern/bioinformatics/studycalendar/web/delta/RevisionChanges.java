@@ -12,7 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
@@ -97,8 +97,8 @@ public class RevisionChanges {
             }
         } else if (PlannedCalendar.class.isAssignableFrom(node.getClass())) {
             sb.append("the template");
-        } else if (PlannedEvent.class.isAssignableFrom(node.getClass())) {
-            PlannedEvent e = (PlannedEvent) node;
+        } else if (PlannedActivity.class.isAssignableFrom(node.getClass())) {
+            PlannedActivity e = (PlannedActivity) node;
             if (e.getActivity() == null) {
                 sb.append("a planned activity");
             } else {
@@ -115,7 +115,7 @@ public class RevisionChanges {
         if (node instanceof Epoch) return "epoch";
         if (node instanceof Arm) return "arm";  // segment?
         if (node instanceof Period) return "period";
-        if (node instanceof PlannedEvent) return "planned activity";
+        if (node instanceof PlannedActivity) return "planned activity";
         // note that this default is not generally suitable because the actual
         // class might be, e.g., a CGLIB dynamic subclass
         return node.getClass().getSimpleName().toLowerCase();

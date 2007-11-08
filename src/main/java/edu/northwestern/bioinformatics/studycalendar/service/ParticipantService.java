@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -131,7 +131,7 @@ public class ParticipantService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledArm targetArm) {
         log.debug("Adding events from period {}", period);
-        for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
+        for (PlannedActivity plannedEvent : period.getPlannedEvents()) {
             schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm);
         }
     }
@@ -145,7 +145,7 @@ public class ParticipantService {
         Period period, Amendment sourceAmendment, ScheduledArm targetArm, int repetitionNumber
     ) {
         log.debug("Adding events for rep {} from period {}", repetitionNumber, period);
-        for (PlannedEvent plannedEvent : period.getPlannedEvents()) {
+        for (PlannedActivity plannedEvent : period.getPlannedEvents()) {
             schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, repetitionNumber);
         }
     }
@@ -155,7 +155,7 @@ public class ParticipantService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedEvent(
-        PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm
+        PlannedActivity plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm
     ) {
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
             schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, r);
@@ -167,7 +167,7 @@ public class ParticipantService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedEvent(
-        PlannedEvent plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
+        PlannedActivity plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
         int repetitionNumber
     ) {
         log.debug("Adding event {} from planned event {}", repetitionNumber, plannedEvent);
@@ -198,7 +198,7 @@ public class ParticipantService {
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
-    protected ScheduledEvent createEmptyScheduledEventFor(PlannedEvent plannedEvent) {
+    protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity plannedEvent) {
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedEvent(plannedEvent);
         return event;

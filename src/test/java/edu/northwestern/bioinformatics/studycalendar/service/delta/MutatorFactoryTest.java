@@ -15,7 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 /**
  * @author Rhett Sutphin
@@ -110,21 +110,21 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     }
 
     public void testCreatePlannedEventDetailsMutator() throws Exception {
-        Mutator actual = factory.createMutator(new PlannedEvent(), PropertyChange.create("details", "F", "Fprime"));
+        Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("details", "F", "Fprime"));
         assertNotNull(actual);
         assertEquals(ChangePlannedEventSimplePropertyMutator.class, actual.getClass());
     }
 
     /* TODO: pending
     public void testCreatePlannedEventConditionMutator() throws Exception {
-        Mutator actual = factory.createMutator(new PlannedEvent(), PropertyChange.create("condition", "F", "Fprime"));
+        Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("condition", "F", "Fprime"));
         assertNotNull(actual);
         assertEquals(ChangePlannedEventSimplePropertyMutator.class, actual.getClass());
     }
     */
 
     public void testCreatePlannedEventDayMutator() throws Exception {
-        Mutator actual = factory.createMutator(new PlannedEvent(), PropertyChange.create("day", "4", "18"));
+        Mutator actual = factory.createMutator(new PlannedActivity(), PropertyChange.create("day", "4", "18"));
         assertNotNull(actual);
         assertEquals(ChangePlannedEventDayMutator.class, actual.getClass());
     }

@@ -36,7 +36,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
+public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
     implements Named, Comparable<Period>
 {
     private static final int DEFAULT_REPETITIONS = 1;
@@ -59,9 +59,9 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
     ////// LOGIC
 
     @Override public Class<Arm> parentClass() { return Arm.class; }
-    @Override public Class<PlannedEvent> childClass() { return PlannedEvent.class; }
+    @Override public Class<PlannedActivity> childClass() { return PlannedActivity.class; }
 
-    public void addPlannedEvent(PlannedEvent event) {
+    public void addPlannedEvent(PlannedActivity event) {
         addChild(event);
     }
 
@@ -175,11 +175,11 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedEvent>
     @Cascade(value = { CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.REPLICATE,
             CascadeType.SAVE_UPDATE })
-    public List<PlannedEvent> getPlannedEvents() {
+    public List<PlannedActivity> getPlannedEvents() {
         return getChildren();
     }
 
-    public void setPlannedEvents(List<PlannedEvent> plannedEvents) {
+    public void setPlannedEvents(List<PlannedActivity> plannedEvents) {
         setChildren(plannedEvents);
     }
 

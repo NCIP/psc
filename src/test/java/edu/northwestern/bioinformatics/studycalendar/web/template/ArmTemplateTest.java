@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
@@ -74,14 +74,14 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
     }
 
     public void testEventsForDay() throws Exception {
-        List<PlannedEvent> actualEvents = template.getMonths().get(0).getDays().get(8).getEvents();
+        List<PlannedActivity> actualEvents = template.getMonths().get(0).getDays().get(8).getEvents();
         assertEquals(2, actualEvents.size());
         assertEquals("Sailing", actualEvents.get(0).getActivity().getName());
         assertEquals("Skydiving", actualEvents.get(1).getActivity().getName());
     }
 
     public void testEventsForNegativeDay() throws Exception {
-        List<PlannedEvent> actualEvents = template.getMonths().get(0).getDays().get(-13).getEvents();
+        List<PlannedActivity> actualEvents = template.getMonths().get(0).getDays().get(-13).getEvents();
         assertEquals(1, actualEvents.size());
         assertEquals("Surfing", actualEvents.get(0).getActivity().getName());
     }

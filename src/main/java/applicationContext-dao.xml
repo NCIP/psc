@@ -32,7 +32,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
@@ -123,7 +123,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Study</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Activity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ActivityType</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>

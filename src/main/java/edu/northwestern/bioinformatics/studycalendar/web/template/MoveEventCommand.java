@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 import java.util.Map;
@@ -12,12 +12,12 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
 
     private static final Logger log = LoggerFactory.getLogger(UpdatePeriodCommand.class.getName());
 
-    PlannedEvent newEvent = null;
+    PlannedActivity newEvent = null;
 
-    protected PlannedEvent performEdit() {
+    protected PlannedActivity performEdit() {
         for (Integer id: getEventIds()) {
             if (id != null && id>-1) {
-                PlannedEvent event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedEventDao.getById(id);
                 event.setDay(getColumnNumber()+1);
                 setNewEvent(event);
                 amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
@@ -43,11 +43,11 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
     }
 
 
-    public PlannedEvent getNewEvent() {
+    public PlannedActivity getNewEvent() {
         return newEvent;
     }
 
-    public void setNewEvent(PlannedEvent newEvent) {
+    public void setNewEvent(PlannedActivity newEvent) {
         this.newEvent = newEvent;
     }
 }

@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
  * @author Rhett Sutphin
  */
 public class PlannedEventTest extends StudyCalendarTestCase {
-    private PlannedEvent e0, e1;
+    private PlannedActivity e0, e1;
     private Activity activity0, activity1;
 
     protected void setUp() throws Exception {
@@ -16,10 +16,10 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         activity1 = new Activity();
         activity1.setType(ActivityType.INTERVENTION);
 
-        e0 = new PlannedEvent();
+        e0 = new PlannedActivity();
         e0.setDay(1);
         e0.setActivity(activity0);
-        e1 = new PlannedEvent();
+        e1 = new PlannedActivity();
         e1.setDay(2);
         e1.setActivity(activity1);
     }
@@ -65,7 +65,7 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         assertDaysInArm(e1, -20, -13);
     }
 
-    private void assertDaysInArm(PlannedEvent e, int... expectedDays) {
+    private void assertDaysInArm(PlannedActivity e, int... expectedDays) {
         assertEquals("Wrong number of days in arm", expectedDays.length, e.getDaysInArm().size());
         for (int i = 0; i < expectedDays.length; i++) {
             int expectedDay = expectedDays[i];
@@ -75,7 +75,7 @@ public class PlannedEventTest extends StudyCalendarTestCase {
     }
 
     public void testCloneDoesNotDeepCloneActivity() throws Exception {
-        PlannedEvent clone = (PlannedEvent) e0.clone();
+        PlannedActivity clone = (PlannedActivity) e0.clone();
         assertSame("Activity is not same object", e0.getActivity(), clone.getActivity());
     }
 

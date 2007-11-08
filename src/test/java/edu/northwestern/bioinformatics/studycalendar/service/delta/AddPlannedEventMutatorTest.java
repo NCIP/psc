@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
@@ -28,7 +28,7 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
 
     private Arm arm;
     private Period period;
-    private PlannedEvent plannedEvent;
+    private PlannedActivity plannedEvent;
     private ScheduledCalendar scheduledCalendar;
 
     private PlannedEventDao plannedEventDao;

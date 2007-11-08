@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -110,7 +110,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         BindException errors
     ) throws Exception {
         ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
-        PlannedEvent event = command.apply();
+        PlannedActivity event = command.apply();
         studyService.saveStudyFor(command.getPeriod());
         ManagePeriodEventsCommand.GridRow row = command.getOldRow();
 

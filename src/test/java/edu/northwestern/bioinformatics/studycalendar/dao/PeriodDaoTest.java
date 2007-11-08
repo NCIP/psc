@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 import java.util.Iterator;
 import java.util.Set;
@@ -30,9 +30,9 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         Period loaded = getDao().getById(-100);
 
         assertNotNull("Test period not found", loaded);
-        List<PlannedEvent> loadedEvents = loaded.getPlannedEvents();
+        List<PlannedActivity> loadedEvents = loaded.getPlannedEvents();
         assertEquals("Wrong number of planned events", 3, loadedEvents.size());
-        Iterator<PlannedEvent> iterator = loadedEvents.iterator();
+        Iterator<PlannedActivity> iterator = loadedEvents.iterator();
         assertTrue(iterator.hasNext());
         assertEquals("Wrong first event", new Integer(-2003), iterator.next().getId());
         assertTrue(iterator.hasNext());
@@ -47,7 +47,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
             Period loaded = getDao().getById(-100);
             assertNotNull("Test period not found", loaded);
 
-            PlannedEvent newEvent = new PlannedEvent();
+            PlannedActivity newEvent = new PlannedActivity();
             newEvent.setDay(4);
             newEvent.setActivity(activityDao.getById(-1001));
             loaded.addPlannedEvent(newEvent);
@@ -64,7 +64,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
             Period reloaded = getDao().getById(-100);
             assertEquals("Wrong number of events", 4, reloaded.getPlannedEvents().size());
 
-            Iterator<PlannedEvent> iterator = reloaded.getPlannedEvents().iterator();
+            Iterator<PlannedActivity> iterator = reloaded.getPlannedEvents().iterator();
             assertTrue(iterator.hasNext());
             assertEquals("Wrong first event", new Integer(-2003), iterator.next().getId());
             assertTrue(iterator.hasNext());

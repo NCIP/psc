@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -20,7 +20,7 @@ import java.util.Calendar;
 public class ChangePlannedEventSimplePropertyMutatorTest extends StudyCalendarTestCase {
     private ChangePlannedEventSimplePropertyMutator mutator;
     private PropertyChange change;
-    private PlannedEvent plannedEvent;
+    private PlannedActivity plannedEvent;
     private Delta<?> delta;
     private ScheduledCalendar scheduledCalendar;
 

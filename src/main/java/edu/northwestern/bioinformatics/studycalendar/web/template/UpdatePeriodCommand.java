@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
 import java.util.Map;
@@ -12,9 +12,9 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
 
     private static final Logger log = LoggerFactory.getLogger(UpdatePeriodCommand.class.getName());
 
-    PlannedEvent newEvent = null;
+    PlannedActivity newEvent = null;
 
-    protected PlannedEvent performEdit() {
+    protected PlannedActivity performEdit() {
         if (isDetailsUpdated()) {
             updateDetails(getDetails());
         } else if (isConditionalUpdated()) {
@@ -44,7 +44,7 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
     private void updateConditionalParameters() {
         for (Integer id: getEventIds()) {
             if (id != null && id>-1) {
-                PlannedEvent event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
                     PropertyChange.create("condition", event.getCondition(),
                         getConditionalDetails()));
@@ -55,7 +55,7 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
      private void updateDetails(String details){
         for (Integer id: getEventIds()) {
             if (id != null && id >-1) {
-                PlannedEvent event = plannedEventDao.getById(id);
+                PlannedActivity event = plannedEventDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("details", event.getDetails(), details));
             }
         }

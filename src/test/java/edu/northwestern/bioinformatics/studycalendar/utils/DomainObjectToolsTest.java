@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -118,7 +118,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(PlannedCalendar.class, Epoch.class);
         assertIsMoreSpecific(Epoch.class, Arm.class);
         assertIsMoreSpecific(Arm.class, Period.class);
-        assertIsMoreSpecific(Period.class, PlannedEvent.class);
+        assertIsMoreSpecific(Period.class, PlannedActivity.class);
     }
 
     public void testSpecificityWithDynamicSubclasses() {
@@ -137,7 +137,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     }
 
     public void testPlannedLessSpecificThanScheduled() throws Exception {
-        assertIsMoreSpecific(PlannedEvent.class, StudyParticipantAssignment.class);
+        assertIsMoreSpecific(PlannedActivity.class, StudyParticipantAssignment.class);
     }
 
     public void testMoreSpecificThanSelf() throws Exception {

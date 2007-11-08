@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 import java.util.Arrays;
 
@@ -31,7 +31,7 @@ public class DeltaTest extends StudyCalendarTestCase {
     }
 
     public void testDeltaForPlannedEvent() throws Exception {
-        assertDeltaFor(new PlannedEvent(), PlannedEventDelta.class);
+        assertDeltaFor(new PlannedActivity(), PlannedEventDelta.class);
     }
 
     public void testAddChange() throws Exception {

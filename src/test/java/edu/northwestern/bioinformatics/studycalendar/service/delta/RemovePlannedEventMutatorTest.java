@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -25,7 +25,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
     private Delta<?> delta;
     private Amendment amendment;
 
-    private PlannedEvent pe0, pe1, pe2;
+    private PlannedActivity pe0, pe1, pe2;
     ScheduledCalendar scheduledCalendar;
     ScheduledArm scheduledArm;
 
@@ -73,7 +73,7 @@ public class RemovePlannedEventMutatorTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    private ScheduledEvent createUnschedulableMockEvent(PlannedEvent event) throws NoSuchMethodException {
+    private ScheduledEvent createUnschedulableMockEvent(PlannedActivity event) throws NoSuchMethodException {
         ScheduledEvent semimock = registerMockFor(ScheduledEvent.class,
             ScheduledEvent.class.getMethod("unscheduleIfOutstanding", String.class));
         semimock.setPlannedEvent(event);

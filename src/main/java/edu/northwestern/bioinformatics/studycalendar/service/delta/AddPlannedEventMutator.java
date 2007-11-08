@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
@@ -35,7 +35,7 @@ public class AddPlannedEventMutator extends CollectionAddMutator {
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        PlannedEvent event = (PlannedEvent) findChild();
+        PlannedActivity event = (PlannedActivity) findChild();
         // Second cast works around a dumb javac bug
         Period period = (Period) (PlanTreeNode) change.getDelta().getNode();
         Arm arm = templateService.findParent(period);

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import org.hibernate.Hibernate;
 
 /**
@@ -38,7 +38,7 @@ public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<Plan
                 for (Period period : arm.getPeriods()) {
                     Hibernate.initialize(period);
                     Hibernate.initialize(period.getPlannedEvents());
-                    for (PlannedEvent event : period.getPlannedEvents()) {
+                    for (PlannedActivity event : period.getPlannedEvents()) {
                         Hibernate.initialize(event);
                         Hibernate.initialize(event.getActivity());
                     }

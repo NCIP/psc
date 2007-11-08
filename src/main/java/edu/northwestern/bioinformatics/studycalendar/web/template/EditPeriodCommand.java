@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
@@ -72,7 +72,7 @@ public class EditPeriodCommand implements PeriodCommand {
     private void removeInvalidPlannedEvents() {
         // look for PlannedEvents that are now invalid
         DayRange peDayRange = new DefaultDayRange(1, getPeriod().getDuration().getDays());
-        for (PlannedEvent event : originalPeriod.getPlannedEvents()) {
+        for (PlannedActivity event : originalPeriod.getPlannedEvents()) {
             if (!peDayRange.containsDay(event.getDay())) {
                 amendmentService.updateDevelopmentAmendment(originalPeriod, Remove.create(event));
             }

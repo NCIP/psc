@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -62,8 +62,8 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     public void testChangesOnlyForTargetNodeAndChildrenIfProvided() throws Exception {
         Period p1 = setId(1, Fixtures.createPeriod("P1", 3, 6, 1));
         Period p2 = setId(2, Fixtures.createPeriod("P2", 1, 17, 42));
-        PlannedEvent event1 = setId(3, new PlannedEvent());
-        PlannedEvent event2 = setId(4, new PlannedEvent());
+        PlannedActivity event1 = setId(3, new PlannedActivity());
+        PlannedActivity event2 = setId(4, new PlannedActivity());
         armB.addPeriod(p1);
         p1.addPlannedEvent(event1);
         armB.addPeriod(p2);
@@ -110,12 +110,12 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
     }
 
     public void testNodeNameForPlannedEventWithActivity() throws Exception {
-        PlannedEvent pe = Fixtures.createPlannedEvent("CBC", 4);
+        PlannedActivity pe = Fixtures.createPlannedEvent("CBC", 4);
         assertEquals("a planned CBC", RevisionChanges.getNodeName(pe));
     }
     
     public void testNodeNameForPlannedEventWithoutActivity() throws Exception {
-        assertEquals("a planned activity", RevisionChanges.getNodeName(new PlannedEvent()));
+        assertEquals("a planned activity", RevisionChanges.getNodeName(new PlannedActivity()));
     }
 
     public void testSentenceForReorderUp() throws Exception {

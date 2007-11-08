@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -12,15 +12,15 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 @DiscriminatorValue(value="event")
-public class PlannedEventDelta extends Delta<PlannedEvent> {
+public class PlannedEventDelta extends Delta<PlannedActivity> {
     public PlannedEventDelta() { }
 
-    public PlannedEventDelta(PlannedEvent node) { super(node); }
+    public PlannedEventDelta(PlannedActivity node) { super(node); }
 
     @ManyToOne
     @JoinColumn(name = "node_id")
     @Override
-    public PlannedEvent getNode() {
+    public PlannedActivity getNode() {
         return super.getNode();
     }
 }

@@ -104,7 +104,7 @@
         duration_quantity="14"
         />
     <ACTIVITIES id="12" name="Twelve" activity_type_id="1"/>
-    <PLANNED_EVENTS
+    <PLANNED_ACTIVITIES
         id="-4"
         period_id="-3"
         activity_id="12"

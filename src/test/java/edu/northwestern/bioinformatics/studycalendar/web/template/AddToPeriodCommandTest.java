@@ -51,7 +51,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         command.setConditionalDetails(null);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
-        PlannedEvent event = new PlannedEvent();
+        PlannedActivity event = new PlannedActivity();
         event.setDay(command.getColumnNumber()+1);
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
@@ -60,7 +60,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
-        PlannedEvent expectedEvent = command.performEdit();
+        PlannedActivity expectedEvent = command.performEdit();
         verifyMocks();
 
         assertEquals(1, command.getPeriod().getPlannedEvents().size());
@@ -79,7 +79,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         command.setConditionalDetails(null);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
-        PlannedEvent event = new PlannedEvent();
+        PlannedActivity event = new PlannedActivity();
         event.setDay(command.getColumnNumber()+1);
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
@@ -88,7 +88,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
-        PlannedEvent expectedEvent = command.performEdit();
+        PlannedActivity expectedEvent = command.performEdit();
         Map<String, Object> map = command.getLocalModel();
         verifyMocks();
 
@@ -101,37 +101,37 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
 
 
     private static abstract class AbstractPlannedEventMatcher implements IArgumentMatcher {
-        protected PlannedEvent expectedPlannedEvent;
+        protected PlannedActivity expectedPlannedEvent;
 
-        public AbstractPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public AbstractPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             this.expectedPlannedEvent = expectedPlannedEvent;
         }
 
-        protected boolean plannedEventMatches(PlannedEvent actual) {
+        protected boolean plannedEventMatches(PlannedActivity actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
                     && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 
-    public static Add addFor(PlannedEvent event) {
+    public static Add addFor(PlannedActivity event) {
         EasyMock.reportMatcher(new AddForPlannedEventMatcher(event));
         return null;
     }
 
     private static class AddForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public AddForPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public AddForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             super(expectedPlannedEvent);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Add)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedEvent) (PlanTreeNode) ((Add) object).getChild());
+            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Add for PlannedEvent activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Add for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
         }
     }
 }

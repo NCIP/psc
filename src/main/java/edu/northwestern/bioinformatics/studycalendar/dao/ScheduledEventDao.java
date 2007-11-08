@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 import java.util.Collection;
 import java.util.Date;
@@ -33,7 +33,7 @@ public class ScheduledEventDao extends StudyCalendarMutableDomainObjectDao<Sched
 
     @SuppressWarnings({ "unchecked" })
     public Collection<ScheduledEvent> getEventsFromPlannedEvent(
-        PlannedEvent source, ScheduledCalendar calendar
+        PlannedActivity source, ScheduledCalendar calendar
     ) {
         return getHibernateTemplate().find(
             "from ScheduledEvent e where e.plannedEvent = ? and e.scheduledArm.scheduledCalendar = ?",

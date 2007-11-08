@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -92,7 +92,7 @@ public class DeltaDaoTest extends DaoTestCase {
     public void testGetPlannedEventDelta() throws Exception {
         Delta<?> actual = deltaDao.getById(-210);
         assertTrue("Delta's node is not a planned event",
-            PlannedEvent.class.isAssignableFrom(actual.getNode().getClass()));
+            PlannedActivity.class.isAssignableFrom(actual.getNode().getClass()));
     }
 
     public void testFindOriginalAddDeltaForArm() throws Exception {

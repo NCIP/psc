@@ -39,7 +39,7 @@ import java.util.List;
 )
 public class ScheduledEvent extends AbstractMutableDomainObject {
     private ScheduledArm scheduledArm;
-    private PlannedEvent plannedEvent;
+    private PlannedActivity plannedEvent;
     private Date idealDate;
     private String notes;
     private ScheduledEventState currentState;
@@ -137,11 +137,11 @@ public class ScheduledEvent extends AbstractMutableDomainObject {
     }
 
     @ManyToOne
-    public PlannedEvent getPlannedEvent() {
+    public PlannedActivity getPlannedEvent() {
         return plannedEvent;
     }
 
-    public void setPlannedEvent(PlannedEvent plannedEvent) {
+    public void setPlannedEvent(PlannedActivity plannedEvent) {
         this.plannedEvent = plannedEvent;
     }
 

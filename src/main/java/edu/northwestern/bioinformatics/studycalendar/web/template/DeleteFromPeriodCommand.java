@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 
 import java.util.Map;
@@ -12,9 +12,9 @@ public class DeleteFromPeriodCommand extends EditPeriodEventsCommand{
 
     private static final Logger log = LoggerFactory.getLogger(DeleteFromPeriodCommand.class.getName());
 
-    protected PlannedEvent performEdit() {
+    protected PlannedActivity performEdit() {
         Integer id = getEventIds().get(getColumnNumber());
-        PlannedEvent plannedEvent = plannedEventDao.getById(id);
+        PlannedActivity plannedEvent = plannedEventDao.getById(id);
         Remove remove = Remove.create(plannedEvent);
         amendmentService.updateDevelopmentAmendment(getPeriod(), remove);
         return null;

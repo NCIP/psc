@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -19,7 +19,7 @@ import java.util.Arrays;
  */
 public class ChangePlannedEventDayMutatorTest extends StudyCalendarTestCase {
     private ChangePlannedEventDayMutator mutator;
-    private PlannedEvent plannedEvent;
+    private PlannedActivity plannedEvent;
     private ScheduledEvent se0, se1;
     private PropertyChange change;
     private ScheduledEventDao scheduledEventDao;

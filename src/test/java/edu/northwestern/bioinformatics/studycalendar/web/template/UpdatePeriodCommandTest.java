@@ -55,7 +55,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
     public void testPerformEditOnDetails() throws Exception {
         command.setId(period.getId());
-        PlannedEvent eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedEvent(1, 25);
         eventOne.setId(21);
         eventOne.setDetails(eventDetails);
         period.addPlannedEvent(eventOne);
@@ -82,7 +82,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
     public void testPerformEditOnConditionalDetails() throws Exception {
         command.setId(period.getId());
-        PlannedEvent eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedEvent(1, 25);
         eventOne.setId(21);
         eventOne.setCondition(eventConditionalDetails);
         period.addPlannedEvent(eventOne);
@@ -109,7 +109,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
     }
 
     public void testGetLocalModelWithDetails() throws Exception {
-        PlannedEvent eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedEvent(2, 26);
         eventTwo.setId(22);
         command.setDetails(eventDetails);
         period.addPlannedEvent(eventTwo);
@@ -130,7 +130,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
      }
 
     public void testGetLocalModelWithConditionalDetails() throws Exception {
-        PlannedEvent eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedEvent(2, 26);
         eventTwo.setId(22);
         command.setConditionalDetails(eventConditionalDetails);
         command.setConditionalUpdated(true);
@@ -151,14 +151,14 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         assertEquals("Map's row number is wrong", 3, map.get("rowNumber"));
      }
 
-    private PlannedEvent createPlannedEvent(int day, Integer id) {
+    private PlannedActivity createPlannedEvent(int day, Integer id) {
         return createPlannedEvent(day, null, id, null);
     }
 
-    private PlannedEvent createPlannedEvent(
+    private PlannedActivity createPlannedEvent(
         int day, String details, Integer id, String conditionalDetails
     ) {
-        PlannedEvent evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);

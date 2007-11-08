@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
@@ -114,8 +114,8 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
     }
 
     public void testPurgeOldPlannedEvents() throws Exception {
-        PlannedEvent chem = Fixtures.createPlannedEvent("Chem-7", 3);
-        PlannedEvent cbc = Fixtures.createPlannedEvent("CBC", 70);
+        PlannedActivity chem = Fixtures.createPlannedEvent("Chem-7", 3);
+        PlannedActivity cbc = Fixtures.createPlannedEvent("CBC", 70);
         period.addPlannedEvent(chem);
         period.addPlannedEvent(cbc);
         command.getPeriod().getDuration().setQuantity(60);

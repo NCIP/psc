@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
@@ -23,7 +23,7 @@ public class RemovePlannedEventMutator extends RemoveMutator {
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        PlannedEvent removedPlannedEvent = (PlannedEvent) findChild();
+        PlannedActivity removedPlannedEvent = (PlannedActivity) findChild();
         Revision revision = change.getDelta().getRevision();
         for (ScheduledArm scheduledArm : calendar.getScheduledArms()) {
             for (ScheduledEvent event : scheduledArm.getEvents()) {

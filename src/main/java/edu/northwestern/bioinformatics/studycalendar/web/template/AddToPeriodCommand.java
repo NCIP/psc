@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +13,10 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
 
     private static final Logger log = LoggerFactory.getLogger(AddToPeriodCommand.class.getName());
 
-    PlannedEvent newEvent = null;
+    PlannedActivity newEvent = null;
 
-    protected PlannedEvent performEdit() {
-        newEvent = new PlannedEvent();
+    protected PlannedActivity performEdit() {
+        newEvent = new PlannedActivity();
         newEvent.setDay(getColumnNumber()+1);
         newEvent.setActivity(getActivity());
         newEvent.setDetails(getDetails());
@@ -41,11 +41,11 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
         return map;
     }
 
-    private PlannedEvent getEvent() {
+    private PlannedActivity getEvent() {
         return newEvent;
     }
 
-    private void setPlannedEvent(PlannedEvent event) {
+    private void setPlannedEvent(PlannedActivity event) {
         this.newEvent = event;
     }
 }

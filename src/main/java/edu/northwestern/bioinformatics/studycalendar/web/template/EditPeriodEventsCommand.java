@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * Time: 12:42:08 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class EditPeriodEventsCommand implements EditCommand<PlannedEvent> {
+public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActivity> {
     private static final Logger log = LoggerFactory.getLogger(EditPeriodEventsCommand.class.getName());
 
     protected Period period;
@@ -74,7 +74,7 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedEven
     /**
      * Template method that performs the actual work of the command
      */
-    protected abstract PlannedEvent performEdit();
+    protected abstract PlannedActivity performEdit();
 
     public abstract String getRelativeViewName();
 
@@ -82,9 +82,9 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedEven
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public PlannedEvent apply() {
+    public PlannedActivity apply() {
         log.info("inside EditPeriodEventsCommand ");
-        PlannedEvent event = performEdit();
+        PlannedActivity event = performEdit();
         setStudy(studyService.saveStudyFor(getPeriod()));
         return event;
     }

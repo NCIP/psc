@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedEventDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -94,7 +94,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         initCommand();
 
         command.getGrid().add(row1);
-        PlannedEvent event1 = new PlannedEvent();
+        PlannedActivity event1 = new PlannedActivity();
         event1.setDetails(row1.getDetails());
         event1.setActivity(row1.getActivity());
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event1));
@@ -107,7 +107,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyDoesNotAddOverExisting() throws Exception {
-        PlannedEvent expectedEvent = createPlannedEvent(3, 4, 25);
+        PlannedActivity expectedEvent = createPlannedEvent(3, 4, 25);
 
         period.addPlannedEvent(expectedEvent);
         initCommand();
@@ -121,7 +121,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyAddSecond() throws Exception {
-        PlannedEvent expectedEvent = createPlannedEvent(3, 4, 25);
+        PlannedActivity expectedEvent = createPlannedEvent(3, 4, 25);
 
         period.addPlannedEvent(expectedEvent);
         initCommand();
@@ -141,7 +141,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyRemove() throws Exception {
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, 23);
+        PlannedActivity existingEvent = createPlannedEvent(4, 2, 23);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -159,7 +159,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyChangeDetailsDirectly() throws Exception {
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 23, null);
+        PlannedActivity existingEvent = createPlannedEvent(4, 2, "Det A", 23, null);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -177,14 +177,14 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals(1, period.getPlannedEvents().size());
-        PlannedEvent actual = period.getPlannedEvents().get(0);
+        PlannedActivity actual = period.getPlannedEvents().get(0);
         assertEquals("Details should not be updated in place", "Det A", actual.getDetails());
     }
 
     public void testApplyConditionalDetailsDirectly() throws Exception {
         String initialConditionalDetails = "InitialConditionalDetails";
         String expectedConditionalDetails = "ExpectedConditionalDetails";
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 23, initialConditionalDetails);
+        PlannedActivity existingEvent = createPlannedEvent(4, 2, "Det A", 23, initialConditionalDetails);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -202,14 +202,14 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals(1, period.getPlannedEvents().size());
-        PlannedEvent actual = period.getPlannedEvents().get(0);
+        PlannedActivity actual = period.getPlannedEvents().get(0);
         assertEquals("ConditionalDetails should not be directly updated", initialConditionalDetails,
             actual.getCondition());
     }
 
     public void testApplyConditionalDetailsWithUncheckedCheckbox() throws Exception {
         String expectedConditionalDetails = "ExpectedConditionalDetails";
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, 23);
+        PlannedActivity existingEvent = createPlannedEvent(4, 2, 23);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -228,7 +228,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testApplyAnotherWithDifferentDetails() throws Exception {
-        PlannedEvent existingEvent = createPlannedEvent(4, 2, "Det A", 2, null);
+        PlannedActivity existingEvent = createPlannedEvent(4, 2, "Det A", 2, null);
         period.addPlannedEvent(existingEvent);
         initCommand();
 
@@ -239,7 +239,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         command.setOldRow(row);
         command.getGrid().add(row);
 
-        PlannedEvent addedEvent = createPlannedEvent(4, 2, "Det B", null, null);
+        PlannedActivity addedEvent = createPlannedEvent(4, 2, "Det B", null, null);
         amendmentService.updateDevelopmentAmendment(same(period), addFor(addedEvent));
 
         replayMocks();
@@ -252,79 +252,79 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     private static abstract class AbstractPlannedEventMatcher implements IArgumentMatcher {
-        protected PlannedEvent expectedPlannedEvent;
+        protected PlannedActivity expectedPlannedEvent;
 
-        public AbstractPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public AbstractPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             this.expectedPlannedEvent = expectedPlannedEvent;
         }
 
-        protected boolean plannedEventMatches(PlannedEvent actual) {
+        protected boolean plannedEventMatches(PlannedActivity actual) {
             return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
                     && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
                     && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
         }
     }
 
-    public static PlannedEvent eqPlannedEvent(PlannedEvent event) {
+    public static PlannedActivity eqPlannedEvent(PlannedActivity event) {
         EasyMock.reportMatcher(new PlannedEventMatcher(event));
         return null;
     }
 
     private static class PlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public PlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public PlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             super(expectedPlannedEvent);
         }
 
         public boolean matches(Object object) {
-            if (!(object instanceof PlannedEvent)) return false;
+            if (!(object instanceof PlannedActivity)) return false;
 
-            return plannedEventMatches((PlannedEvent) object);
+            return plannedEventMatches((PlannedActivity) object);
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("PlannedEvent activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
         }
     }
 
-    public static Add addFor(PlannedEvent event) {
+    public static Add addFor(PlannedActivity event) {
         EasyMock.reportMatcher(new AddForPlannedEventMatcher(event));
         return null;
     }
 
     private static class AddForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public AddForPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public AddForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             super(expectedPlannedEvent);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Add)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedEvent) (PlanTreeNode) ((Add) object).getChild());
+            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Add for PlannedEvent activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Add for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
         }
     }
 
-    public static Add removeFor(PlannedEvent event) {
+    public static Add removeFor(PlannedActivity event) {
         EasyMock.reportMatcher(new RemoveForPlannedEventMatcher(event));
         return null;
     }
 
     private static class RemoveForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public RemoveForPlannedEventMatcher(PlannedEvent expectedPlannedEvent) {
+        public RemoveForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
             super(expectedPlannedEvent);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Remove)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedEvent) (PlanTreeNode) ((Remove) object).getChild());
+            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Remove for PlannedEvent activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Remove for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
         }
     }
 
@@ -332,15 +332,15 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         command = new ManagePeriodEventsCommand(period, plannedEventDao, amendmentService);
     }
 
-    private PlannedEvent createPlannedEvent(int activityId, int day, Integer id) {
+    private PlannedActivity createPlannedEvent(int activityId, int day, Integer id) {
         return createPlannedEvent(activityId, day, null, id, null);
     }
 
-    private PlannedEvent createPlannedEvent(
+    private PlannedActivity createPlannedEvent(
         int activityIndex, int day, String details, Integer id, String conditionalDetails
     ) {
         Activity activity = activities.get(activityIndex);
-        PlannedEvent evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);

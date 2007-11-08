@@ -23,8 +23,8 @@
     <ARMS id="-3" epoch_id="-2" name="A"/>
     <ARMS id="-4" epoch_id="-2" name="B"/>
     <PERIODS id="-5" arm_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
-    <PLANNED_EVENTS id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
-    <PLANNED_EVENTS id="-7" period_id="-5" day="4" activity_id="-100"/>
+    <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
+    <PLANNED_ACTIVITIES id="-7" period_id="-5" day="4" activity_id="-100"/>
 
     <SCHEDULED_CALENDARS
         id="-20"

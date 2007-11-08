@@ -68,7 +68,7 @@
         duration_quantity="7"
         repetitions="4"
         />
-    <planned_events
+    <planned_activities
         id="-50"
         period_id="-40"
         activity_id="-100"
@@ -87,13 +87,13 @@
         duration_quantity="14"
         repetitions="4"
         />
-    <planned_events
+    <planned_activities
         id="-53"
         period_id="-41"
         activity_id="-100"
         day="3"
         />
-    <planned_events
+    <planned_activities
         id="-52"
         period_id="-41"
         activity_id="-101"
@@ -120,7 +120,7 @@
         duration_quantity="10"
         repetitions="1"
         />
-    <planned_events
+    <planned_activities
         id="-55"
         period_id="-42"
         activity_id="-100"

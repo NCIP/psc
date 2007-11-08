@@ -25,21 +25,21 @@
         activity_type_id="5"
         />
 
-    <PLANNED_EVENTS
+    <PLANNED_ACTIVITIES
         id="-2001"
         version="0"
         activity_id="-1001"
         period_id="-100"
         day="3"
         />
-    <PLANNED_EVENTS
+    <PLANNED_ACTIVITIES
         id="-2002"
         version="0"
         activity_id="-1001"
         period_id="-100"
         day="1"
         />
-    <PLANNED_EVENTS
+    <PLANNED_ACTIVITIES
         id="-2003"
         version="0"
         activity_id="-1002"

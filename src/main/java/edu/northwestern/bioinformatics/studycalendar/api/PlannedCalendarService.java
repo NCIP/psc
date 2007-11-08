@@ -35,7 +35,7 @@ public interface PlannedCalendarService {
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Epoch
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Arm
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Period
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.PlannedEvent
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity
      */
     PlannedCalendar getPlannedCalendar(Study study);
 }
