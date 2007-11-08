@@ -50,130 +50,12 @@ public class StudyCalendarAuthorizationManager {
     public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
     public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
     
-//    private static Log log = LogFactory.getLog(StudyCalendarAuthorizationManager.class);
     private static Logger log = LoggerFactory.getLogger(StudyCalendarAuthorizationManager.class);
 
     private UserProvisioningManager userProvisioningManager;
     private SiteDao siteDao;
 
-    public void assignProtectionElementsToUsers(List<String> userIds, String protectionElementObjectId) throws Exception
-	{
-    	boolean protectionElementPresent = false;
-    	ProtectionElement pElement = new ProtectionElement();
-			
-		try { 
-			pElement = userProvisioningManager.getProtectionElement(protectionElementObjectId);
-			protectionElementPresent = true;
-		} catch (CSObjectNotFoundException ex){
-			ProtectionElement newProtectionElement = new ProtectionElement();
-			newProtectionElement.setObjectId(protectionElementObjectId);
-			newProtectionElement.setProtectionElementName(protectionElementObjectId);
-			userProvisioningManager.createProtectionElement(newProtectionElement);
-			pElement = userProvisioningManager.getProtectionElement(protectionElementObjectId);
-			//userProvisioningManager.setOwnerForProtectionElement(protectionElementObjectId, userIds.toArray(new String[0]));
-			//userProvisioningManager.assignOwners(protectionElementObjectId, userIds.toArray(new String[0]));
-		}
-		userProvisioningManager.assignOwners(pElement.getProtectionElementId().toString(), userIds.toArray(new String[0]));
-		/*if (protectionElementPresent)
-		{
-			if (log.isDebugEnabled()) {
-				log.debug(" The given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
-			}
-			for (String userId : userIds)
-			{
-				String userName = getUserObject(userId).getLoginName();
-				if (!(userProvisioningManager.checkOwnership((String)userName, protectionElementObjectId)))
-				{
-					if (log.isDebugEnabled()) {
-						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is not owned by " + userName);
-					}
-					userProvisioningManager.setOwnerForProtectionElement((String)userName, protectionElementObjectId, userProvisioningManager.getProtectionElement(protectionElementObjectId).getAttribute());
-				} else {
-					if (log.isDebugEnabled()) {
-						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is owned by " + userName);
-					}
-				}
-			
-			}
-		}*/
-	}
-    	
-    public void assignMultipleProtectionElements(String userId, List<String> protectionElementObjectIds) throws Exception
-	{
-    	boolean protectionElementPresent = false;
-    	String userName = getUserObject(userId).getLoginName();
-		for (String protectionElementObjectId : protectionElementObjectIds)	{
-			try { 
-				userProvisioningManager.getProtectionElement(protectionElementObjectId);
-				protectionElementPresent = true;
-			} catch (CSObjectNotFoundException ex){
-				ProtectionElement newProtectionElement = new ProtectionElement();
-				newProtectionElement.setObjectId(protectionElementObjectId);
-				newProtectionElement.setProtectionElementName(protectionElementObjectId);
-				userProvisioningManager.createProtectionElement(newProtectionElement);
-				//protection element attribute name is set to be the same as protection element object id
-				userProvisioningManager.setOwnerForProtectionElement(userName, protectionElementObjectId, protectionElementObjectId);
-			}
-		
-			if (protectionElementPresent)
-			{
-				if (log.isDebugEnabled()) {
-					log.debug(" The given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is present in Database");
-				}
-				if (!(userProvisioningManager.checkOwnership(userName, protectionElementObjectId)))
-				{
-					if (log.isDebugEnabled()) {
-						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is not owned by " + userName);
-					}
-					userProvisioningManager.setOwnerForProtectionElement(userName, protectionElementObjectId, userProvisioningManager.getProtectionElement(protectionElementObjectId).getAttribute());
-				} else {
-					if (log.isDebugEnabled()) 
-						log.debug(" Given Protection Element: " + userProvisioningManager.getProtectionElement(protectionElementObjectId).getProtectionElementName()+ "is owned by " + userName);
-				}
-			}
-		}
-	}
-    
-    //get users of a group, associated with a protection element, and also those not associated
-	public Map getUsers(String groupName, String pgId, String pgName) throws Exception {
-		HashMap<String, List> usersMap = new HashMap<String, List>();
-		List<User> usersForRequiredGroup = getUsersForGroup(groupName);
-        usersMap = (HashMap) getUserListsForProtectionElement(usersForRequiredGroup, pgId, pgName);
-		
-        
-		return usersMap;
-	}
-    
-	
-	private Map getUserListsForProtectionElement(List<User> users, String pgpeId, String pgName) throws Exception {
-		HashMap<String, List> userHashMap = new HashMap<String, List>();
-		List<User> assignedUsers = new ArrayList<User>();
-		List<User> availableUsers = new ArrayList<User>();
-		ProtectionGroup pGroup = getPGByName(pgName);
-		List<User> usersForSite = new ArrayList<User>();
-		for (User user : users) {
-			Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
-            for (ProtectionGroupRoleContext pgrc : pgRoleContext) {
-                if (pgrc.getProtectionGroup().getProtectionGroupName().equals(pgName)) {
-                    usersForSite.add(user);
-                }
-            }
-		}
-		for (User userSite : usersForSite) {
-			Set<ProtectionGroupRoleContext> userSiteRoleContext = getProtectionGroupRoleContexts(userSite);
-            for (ProtectionGroupRoleContext pgrcSite : userSiteRoleContext) {
-                if (pgrcSite.getProtectionGroup().getProtectionGroupName().equals(pgpeId)) {
-                    assignedUsers.add(userSite);
-                }
-            }
-		}
-		availableUsers  = (List) ObjectSetUtil.minus(usersForSite, assignedUsers);
-		
-		userHashMap.put(ASSIGNED_USERS, assignedUsers);
-		userHashMap.put(AVAILABLE_USERS, availableUsers);
-		return userHashMap;
-	}
-	
+
     public User getUserObject(String id) throws Exception {
     	User user = null;
       	user = userProvisioningManager.getUserById(id);
@@ -249,56 +131,6 @@ public class StudyCalendarAuthorizationManager {
         }
 		return usersForRequiredGroup;
     }
-    
-    /**
-     * Method to retrieve users who have the given protection group assigned to them.
-     * (can be used for retrieving site coordinators for site protection groups)
-     * @param group
-     * @param protectionGroupName
-     * @return
-     * @throws Exception
-     */
-    public Map getUserPGLists(String group, String protectionGroupName) throws Exception {
-		List<User> usersForRequiredGroup = getUsersForGroup(group);
-		return getUserListsForProtectionGroup(usersForRequiredGroup, protectionGroupName);
-    }
-    
-    /**
-     * 
-     * @param users
-     * @param protectionGroupName
-     * @return
-     * @throws Exception
-     */
-    
-    private Map getUserListsForProtectionGroup(List<User> users, String protectionGroupName) throws Exception {
-		HashMap<String, List> userHashMap = new HashMap<String, List>();
-		List<User> assignedUsers = new ArrayList<User>();
-		List<User> availableUsers = new ArrayList<User>();
-		for (User user : users)
-		{
-			boolean isAssigned = false;
-            Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
-			List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList(pgRoleContext);
-			if (pgRoleContextList.size() != 0) {
-				for (ProtectionGroupRoleContext pgrc : pgRoleContextList) {
-					if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
-						assignedUsers.add(user);
-						isAssigned = true;
-						break;
-					} 
-				}
-				if (!isAssigned) {
-					availableUsers.add(user);
-				}
-			} else { 
-				availableUsers.add(user);
-			}
-		}
-		userHashMap.put(ASSIGNED_USERS, assignedUsers);
-		userHashMap.put(AVAILABLE_USERS, availableUsers);
-		return userHashMap;
-	}
 
     public void assignProtectionGroupsToUsers(String userId, ProtectionGroup protectionGroup, String roleName) throws Exception {
         assignProtectionGroupsToUsers(asList(userId), protectionGroup, roleName);
@@ -444,28 +276,6 @@ public class StudyCalendarAuthorizationManager {
         }
     }
 
-    public Map getPEForUserProtectionGroup(String pgName, String userId) throws Exception {
-    	HashMap<String, List> peHashMap = new HashMap<String, List>();
-		List<ProtectionElement> assignedPEs = new ArrayList<ProtectionElement>();
-		List<ProtectionElement> availablePEs = new ArrayList<ProtectionElement>();
-		
-		Set<ProtectionElement> allAssignedPEsForPGs = userProvisioningManager.getProtectionElements(getPGByName(pgName).getProtectionGroupId().toString());
-		
-		for (ProtectionElement userPE : allAssignedPEsForPGs) {
-			String userName = getUserObject(userId).getLoginName();
-			if (userProvisioningManager.checkOwnership(userName, userPE.getObjectId()))
-			{
-				assignedPEs.add(userPE);
-			}
-		}
-		
-		availablePEs = (List) ObjectSetUtil.minus(allAssignedPEsForPGs, assignedPEs);
-    	peHashMap.put(ASSIGNED_PES, assignedPEs);
-    	peHashMap.put(AVAILABLE_PES, availablePEs);
-		return peHashMap;
-		
-    }
-    
     public List<ProtectionGroup> getSitePGsForUser(String userName) {
         return getSitePGs(userProvisioningManager.getUser(userName));
     }
@@ -569,11 +379,6 @@ public class StudyCalendarAuthorizationManager {
 		   }
     	return false;
     }
-    
-    public User getUserForLogin(String userName) {
-    	return userProvisioningManager.getUser(userName);
-    }
-
 
 
     public void assignCsmGroups(edu.northwestern.bioinformatics.studycalendar.domain.User user, Set<UserRole> userRoles) throws Exception {
