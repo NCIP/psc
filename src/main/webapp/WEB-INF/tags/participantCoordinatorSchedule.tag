@@ -21,7 +21,7 @@
                                         <c:forEach items="${eventsMap.value}" var="mapEventList" varStatus="eventFromList">
                                             <tr>
                                                 <td>
-                                                    <a href="<c:url value="/studycalendar/pages/cal/scheduleEvent?event=${mapEventList.activity.id}"/>"> ${mapEventList.activity.name}</a><br>
+                                                    <a href="<c:url value="/pages/cal/scheduleEvent?event=${mapEventList.activity.id}"/>"> ${mapEventList.activity.name}</a><br>
                                                 </td>
                                             </tr>
                                          </c:forEach>
