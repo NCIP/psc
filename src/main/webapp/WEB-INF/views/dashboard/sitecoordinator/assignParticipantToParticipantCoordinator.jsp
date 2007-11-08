@@ -32,9 +32,10 @@
       <style type="text/css">
           ul.levelOne {border:1px solid #ccc; padding-left:0;}
           ul.levelTwo {padding-left:1.4em}
-          ul.levelThree {padding-left:.5em}
+          ul.levelThree {padding-left:.5em; padding-top:0;}
           li.levelOne, .levelTwo, .levelThree {padding:3px}
           li.levelOne {list-style: none; border-bottom:1px solid #ccc;}
+          li.levelTwo {padding-bottom:0}
           li.levelThree {list-style: none;}
           label {font-weight:bold;}
           div.row div.label{
