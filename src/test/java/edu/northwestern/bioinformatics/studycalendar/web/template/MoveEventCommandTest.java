@@ -53,7 +53,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         period.setId(PERIOD_ID);
 
         command.setPeriodDao(periodDao);
-        command.setPlannedEventDao(plannedActivityDao);
+        command.setPlannedActivityDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
     }
 
