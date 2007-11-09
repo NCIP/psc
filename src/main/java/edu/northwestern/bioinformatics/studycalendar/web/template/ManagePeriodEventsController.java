@@ -138,7 +138,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     }
 
     @Required
-    public void setPlannedEventDao(PlannedActivityDao plannedActivityDao) {
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
     }
 

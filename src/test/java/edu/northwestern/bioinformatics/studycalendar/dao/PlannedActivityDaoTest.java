@@ -3,9 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 /**
- * @author Rhett Sutphin
+ * Created by IntelliJ IDEA.
+ * User: nshurupova
+ * Date: Nov 9, 2007
+ * Time: 12:31:20 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class PlannedEventDaoTest extends ContextDaoTestCase<PlannedActivityDao> {
+public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDao> {
     public void testGetById() throws Exception {
         PlannedActivity loaded = getDao().getById(-12);
 

@@ -234,11 +234,11 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     }
 
 
-    public PlannedActivityDao getPlannedEventDao() {
+    public PlannedActivityDao getPlannedActivityDao() {
         return plannedActivityDao;
     }
 
-    public void setPlannedEventDao(PlannedActivityDao plannedActivityDao) {
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
     }
 

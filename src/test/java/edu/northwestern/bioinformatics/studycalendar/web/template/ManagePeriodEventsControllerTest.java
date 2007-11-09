@@ -61,7 +61,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         controller.setPeriodDao(periodDao);
         controller.setActivityDao(activityDao);
-        controller.setPlannedEventDao(plannedActivityDao);
+        controller.setPlannedActivityDao(plannedActivityDao);
         controller.setControllerTools(controllerTools);
         controller.setDeltaService(deltaService);
         controller.setAmendmentService(amendmentService);
