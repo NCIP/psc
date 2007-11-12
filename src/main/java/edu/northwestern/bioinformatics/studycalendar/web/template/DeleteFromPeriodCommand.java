@@ -14,14 +14,14 @@ public class DeleteFromPeriodCommand extends EditPeriodEventsCommand{
 
     protected PlannedActivity performEdit() {
         Integer id = getEventIds().get(getColumnNumber());
-        PlannedActivity plannedEvent = plannedActivityDao.getById(id);
-        Remove remove = Remove.create(plannedEvent);
+        PlannedActivity plannedActivity = plannedActivityDao.getById(id);
+        Remove remove = Remove.create(plannedActivity);
         amendmentService.updateDevelopmentAmendment(getPeriod(), remove);
         return null;
     }
 
     public String getRelativeViewName() {
-        return "removePlannedEvent";
+        return "removePlannedActivity";
     }
 
     public Map<String, Object> getLocalModel() {

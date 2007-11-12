@@ -1,19 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 
 /**
  * @author Rhett Sutphin
  */
-public class ChangePlannedEventDayMutator extends AbstractChangePlannedEventMutator {
+public class ChangePlannedActivityDayMutator extends AbstractChangePlannedActivityMutator {
     private ScheduleService scheduleService;
     private int amount;
 
-    public ChangePlannedEventDayMutator(
+    public ChangePlannedActivityDayMutator(
         PropertyChange change, ScheduledEventDao scheduledEventDao, ScheduleService scheduleService
     ) {
         super(change, scheduledEventDao);

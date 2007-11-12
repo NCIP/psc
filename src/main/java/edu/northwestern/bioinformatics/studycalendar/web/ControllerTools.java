@@ -79,7 +79,7 @@ public class ControllerTools {
     }
 
     public void addHierarchyToModel(PlannedActivity event, Map<String, Object> model) {
-        model.put("plannedEvent", event);
+        model.put("plannedActivity", event);
         if (event != null) addHierarchyToModel(templateService.findParent(event), model);
     }
 

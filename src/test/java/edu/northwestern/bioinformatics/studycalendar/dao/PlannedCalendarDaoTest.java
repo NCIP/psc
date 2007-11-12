@@ -91,22 +91,22 @@ public class PlannedCalendarDaoTest extends DaoTestCase {
         assertEquals("Wrong reps", expectedRepetitions, actual.getRepetitions());
     }
 
-    public void testPlannedEventsInitialized() throws Exception {
+    public void testPlannedActivitiesInitialized() throws Exception {
         PlannedCalendar calendar = assertGetAndInitialize();
 
-        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getDay());
-        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(0).getDay());
-        assertEquals(8, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(1).getDay());
-        assertEquals(1, (int) calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getDay());
+        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedActivities().get(0).getDay());
+        assertEquals(3, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedActivities().get(0).getDay());
+        assertEquals(8, (int) calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedActivities().get(1).getDay());
+        assertEquals(1, (int) calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedActivities().get(0).getDay());
     }
 
     public void testActivitiesInitialized() throws Exception {
         PlannedCalendar calendar = assertGetAndInitialize();
 
-        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
-        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
-        assertEquals("Activity 2", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedEvents().get(1).getActivity().getName());
-        assertEquals("Activity 1", calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedEvents().get(0).getActivity().getName());
+        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(0).getPeriods().first().getPlannedActivities().get(0).getActivity().getName());
+        assertEquals("Activity 1", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedActivities().get(0).getActivity().getName());
+        assertEquals("Activity 2", calendar.getEpochs().get(0).getArms().get(1).getPeriods().first().getPlannedActivities().get(1).getActivity().getName());
+        assertEquals("Activity 1", calendar.getEpochs().get(1).getArms().get(0).getPeriods().first().getPlannedActivities().get(0).getActivity().getName());
     }
 
     private PlannedCalendar assertGetAndInitialize() {

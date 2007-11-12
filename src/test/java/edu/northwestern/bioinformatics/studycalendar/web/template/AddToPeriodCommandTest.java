@@ -56,14 +56,14 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
         event.setCondition(command.getConditionalDetails());
-        period.addPlannedEvent(event);
+        period.addPlannedActivity(event);
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
         PlannedActivity expectedEvent = command.performEdit();
         verifyMocks();
 
-        assertEquals(1, command.getPeriod().getPlannedEvents().size());
+        assertEquals(1, command.getPeriod().getPlannedActivities().size());
         assertEquals("Event's activity is wrong", expectedEvent.getActivity(), activity);
         assertEquals("Event's details are wrong", expectedEvent.getDetails(), details );
         assertEquals("Event's day is wrong", (int) expectedEvent.getDay(), 3 );
@@ -84,7 +84,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         event.setActivity(command.getActivity());
         event.setDetails(command.getDetails());
         event.setCondition(command.getConditionalDetails());
-        period.addPlannedEvent(event);
+        period.addPlannedActivity(event);
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
@@ -100,38 +100,38 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
 
 
 
-    private static abstract class AbstractPlannedEventMatcher implements IArgumentMatcher {
-        protected PlannedActivity expectedPlannedEvent;
+    private static abstract class AbstractPlannedActivityMatcher implements IArgumentMatcher {
+        protected PlannedActivity expectedPlannedActivity;
 
-        public AbstractPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
-            this.expectedPlannedEvent = expectedPlannedEvent;
+        public AbstractPlannedActivityMatcher(PlannedActivity expectedPlannedActivity) {
+            this.expectedPlannedActivity = expectedPlannedActivity;
         }
 
-        protected boolean plannedEventMatches(PlannedActivity actual) {
-            return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
-                    && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
+        protected boolean plannedActivityMatches(PlannedActivity actual) {
+            return nullSafeEquals(expectedPlannedActivity.getActivity(), actual.getActivity())
+                    && nullSafeEquals(expectedPlannedActivity.getDetails(), actual.getDetails())
+                    && nullSafeEquals(expectedPlannedActivity.getCondition(), actual.getCondition());
         }
     }
 
     public static Add addFor(PlannedActivity event) {
-        EasyMock.reportMatcher(new AddForPlannedEventMatcher(event));
+        EasyMock.reportMatcher(new AddForPlannedActivityMatcher(event));
         return null;
     }
 
-    private static class AddForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public AddForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
-            super(expectedPlannedEvent);
+    private static class AddForPlannedActivityMatcher extends AbstractPlannedActivityMatcher {
+        public AddForPlannedActivityMatcher(PlannedActivity expectedPlannedActivity) {
+            super(expectedPlannedActivity);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Add)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
+            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Add for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Add for PlannedActivity activity=").append(expectedPlannedActivity.getActivity());
         }
     }
 }

@@ -3,9 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 /**
- * @author Rhett Sutphin
+ * Created by IntelliJ IDEA.
+ * User: nshurupova
+ * Date: Nov 9, 2007
+ * Time: 1:44:41 PM
+ * To change this template use File | Settings | File Templates.
  */
-public class PlannedEventTest extends StudyCalendarTestCase {
+public class PlannedActivityTest extends StudyCalendarTestCase {
     private PlannedActivity e0, e1;
     private Activity activity0, activity1;
 
@@ -28,7 +32,7 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         assertNegative(e0.compareTo(e1));
         assertPositive(e1.compareTo(e0));
     }
-    
+
     public void testNaturalOrderConsidersActivity() throws Exception {
         e0.setDay(e1.getDay());
         assertPositive(e0.compareTo(e1));
@@ -43,8 +47,8 @@ public class PlannedEventTest extends StudyCalendarTestCase {
 
     private void changePeriod(int startDay, int dayCount, int repetitions) {
         Period p0 = Fixtures.createPeriod("P0", startDay, dayCount, repetitions);
-        p0.addPlannedEvent(e0);
-        p0.addPlannedEvent(e1);
+        p0.addPlannedActivity(e0);
+        p0.addPlannedActivity(e1);
     }
 
     public void testDaysInArmOffset() throws Exception {
@@ -58,7 +62,7 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         assertDaysInArm(e0, 8, 12, 16);
         assertDaysInArm(e1, 9, 13, 17);
     }
-    
+
     public void testDayInArmNegative() throws Exception {
         changePeriod(-21, 7, 2);
         assertDaysInArm(e0, -21, -14);
@@ -83,7 +87,7 @@ public class PlannedEventTest extends StudyCalendarTestCase {
         e0.setCondition("Only if you roll 2, 4, or 5");
         assertEquals(ScheduledEventMode.CONDITIONAL, e0.getInitialScheduledMode());
     }
-    
+
     public void testScheduledModeWhenNotConditional() throws Exception {
         e0.setCondition(" ");
         e1.setCondition(null);

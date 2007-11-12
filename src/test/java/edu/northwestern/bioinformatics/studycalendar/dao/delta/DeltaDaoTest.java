@@ -89,7 +89,7 @@ public class DeltaDaoTest extends DaoTestCase {
         assertEquals("Wrong node", -1, (int) actual.getNode().getId());
     }
 
-    public void testGetPlannedEventDelta() throws Exception {
+    public void testGetPlannedActivityDelta() throws Exception {
         Delta<?> actual = deltaDao.getById(-210);
         assertTrue("Delta's node is not a planned event",
             PlannedActivity.class.isAssignableFrom(actual.getNode().getClass()));

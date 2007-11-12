@@ -19,13 +19,13 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
         super.setUp();
         arm = new Arm();
         Period pA = setId(1, createPeriod("A", 1, 7, 7));
-        pA.addPlannedEvent(createPlannedEvent("Sailing", 1));
+        pA.addPlannedActivity(createPlannedActivity("Sailing", 1));
         Period pB = setId(2, createPeriod("B", 3, 5, 8));
-        pB.addPlannedEvent(createPlannedEvent("Skydiving", 1));
+        pB.addPlannedActivity(createPlannedActivity("Skydiving", 1));
         Period pC = setId(3, createPeriod("C", 2, 1, 1));
-        pC.addPlannedEvent(createPlannedEvent("Skiing", 1));
+        pC.addPlannedActivity(createPlannedActivity("Skiing", 1));
         Period pD = setId(4, createPeriod("D", -13, 7, 1));
-        pD.addPlannedEvent(createPlannedEvent("Surfing", 1));
+        pD.addPlannedActivity(createPlannedActivity("Surfing", 1));
 
         arm.addPeriod(pA);
         arm.addPeriod(pB);

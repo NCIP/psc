@@ -50,7 +50,7 @@ public class MutatorFactory {
         if (target instanceof Arm) {
             return new AddPeriodMutator(add, (PeriodDao) dao, participantService);
         } else if (target instanceof Period) {
-            return new AddPlannedEventMutator(add, (PlannedActivityDao) dao,
+            return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
                 participantService, templateService);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
@@ -64,7 +64,7 @@ public class MutatorFactory {
         if (target instanceof Arm) {
             return new RemovePeriodMutator(remove, (PeriodDao) dao, templateService);
         } else if (target instanceof Period) {
-            return new RemovePlannedEventMutator(remove, (PlannedActivityDao) dao);
+            return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);
         } else {
             return new RemoveMutator(remove, dao);
         }
@@ -89,9 +89,9 @@ public class MutatorFactory {
         }
         if (target instanceof PlannedActivity) {
             if ("day".equals(change.getPropertyName())) {
-                return new ChangePlannedEventDayMutator(change, scheduledEventDao, scheduleService);
+                return new ChangePlannedActivityDayMutator(change, scheduledEventDao, scheduleService);
             } else if ("details".equals(change.getPropertyName())) {
-                return new ChangePlannedEventSimplePropertyMutator(change, scheduledEventDao);
+                return new ChangePlannedActivitySimplePropertyMutator(change, scheduledEventDao);
             }
             // fall through
         }

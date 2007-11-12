@@ -55,10 +55,10 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
     public void testPerformEditOnDetails() throws Exception {
         command.setId(period.getId());
-        PlannedActivity eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         eventOne.setDetails(eventDetails);
-        period.addPlannedEvent(eventOne);
+        period.addPlannedActivity(eventOne);
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
@@ -76,16 +76,16 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.performEdit();
         verifyMocks();
         
-        assertEquals(1, period.getPlannedEvents().size());
-        assertEquals("Details should not be updated in place", eventDetails, command.getPeriod().getPlannedEvents().get(0).getDetails());
+        assertEquals(1, period.getPlannedActivities().size());
+        assertEquals("Details should not be updated in place", eventDetails, command.getPeriod().getPlannedActivities().get(0).getDetails());
     }
 
     public void testPerformEditOnConditionalDetails() throws Exception {
         command.setId(period.getId());
-        PlannedActivity eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         eventOne.setCondition(eventConditionalDetails);
-        period.addPlannedEvent(eventOne);
+        period.addPlannedActivity(eventOne);
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
@@ -104,15 +104,15 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.performEdit();
         verifyMocks();
 
-        assertEquals(1, period.getPlannedEvents().size());
-        assertEquals("Details should not be updated in place", eventConditionalDetails, command.getPeriod().getPlannedEvents().get(0).getCondition());
+        assertEquals(1, period.getPlannedActivities().size());
+        assertEquals("Details should not be updated in place", eventConditionalDetails, command.getPeriod().getPlannedActivities().get(0).getCondition());
     }
 
     public void testGetLocalModelWithDetails() throws Exception {
-        PlannedActivity eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
         command.setDetails(eventDetails);
-        period.addPlannedEvent(eventTwo);
+        period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
         command.setColumnNumber(-1);
@@ -130,11 +130,11 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
      }
 
     public void testGetLocalModelWithConditionalDetails() throws Exception {
-        PlannedActivity eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
         command.setConditionalDetails(eventConditionalDetails);
         command.setConditionalUpdated(true);
-        period.addPlannedEvent(eventTwo);
+        period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
         command.setColumnNumber(1);
@@ -151,14 +151,14 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         assertEquals("Map's row number is wrong", 3, map.get("rowNumber"));
      }
 
-    private PlannedActivity createPlannedEvent(int day, Integer id) {
-        return createPlannedEvent(day, null, id, null);
+    private PlannedActivity createPlannedActivity(int day, Integer id) {
+        return createPlannedActivity(day, null, id, null);
     }
 
-    private PlannedActivity createPlannedEvent(
+    private PlannedActivity createPlannedActivity(
         int day, String details, Integer id, String conditionalDetails
     ) {
-        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedActivity(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);

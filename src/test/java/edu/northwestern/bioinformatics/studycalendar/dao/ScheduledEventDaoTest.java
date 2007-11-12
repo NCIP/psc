@@ -50,8 +50,8 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         assertEquals("Wrong details", "Nice Details!!", loaded.getDetails());
     }
     
-    public void testGetScheduledEventsFromPlannedEvent() throws Exception {
-        Collection<ScheduledEvent> matches = getDao().getEventsFromPlannedEvent(
+    public void testGetScheduledEventsFromPlannedActivity() throws Exception {
+        Collection<ScheduledEvent> matches = getDao().getEventsFromPlannedActivity(
             plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21));
         assertEquals("Wrong number of matches", 2, matches.size());
         Collection<Integer> actualIds = DomainObjectTools.collectIds(matches);
@@ -64,7 +64,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
         loaded.setDetails("F9");
         ScheduledEvent queried = null;
 
-        for (ScheduledEvent e : getDao().getEventsFromPlannedEvent(plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21))) {
+        for (ScheduledEvent e : getDao().getEventsFromPlannedActivity(plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21))) {
             if (e.getId() == -30) {
                 queried = e;
                 break;

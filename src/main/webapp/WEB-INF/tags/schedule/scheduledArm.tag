@@ -85,7 +85,7 @@
                                         <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
                                 </li>
                                 <li class="event-details">
-                                    <c:if test="${not empty event.plannedEvent.condition}">Conditional (${event.plannedEvent.condition})</c:if>
+                                    <c:if test="${not empty event.plannedActivity.condition}">Conditional (${event.plannedActivity.condition})</c:if>
                                 </li>
                             </c:forEach>
                         </ul>

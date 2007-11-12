@@ -68,20 +68,20 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertDayRange(5, 7, actual.get(3));
     }
 
-    public void testAddPlannedEventMaintainsBidirectionality() throws Exception {
-        PlannedActivity e = createPlannedEvent("Any", 5);
+    public void testAddPlannedActivityMaintainsBidirectionality() throws Exception {
+        PlannedActivity e = createPlannedActivity("Any", 5);
         assertNull(e.getPeriod());
-        period.addPlannedEvent(e);
+        period.addPlannedActivity(e);
         assertSame(period, e.getPeriod());
     }
 
-    public void testAddPlannedEventAdds() throws Exception {
-        assertEquals(0, period.getPlannedEvents().size());
-        PlannedActivity e = createPlannedEvent("Any", 5);
-        period.addPlannedEvent(e);
+    public void testAddPlannedActivitiesAdds() throws Exception {
+        assertEquals(0, period.getPlannedActivities().size());
+        PlannedActivity e = createPlannedActivity("Any", 5);
+        period.addPlannedActivity(e);
 
-        assertEquals(1, period.getPlannedEvents().size());
-        assertSame(e, period.getPlannedEvents().iterator().next());
+        assertEquals(1, period.getPlannedActivities().size());
+        assertSame(e, period.getPlannedActivities().iterator().next());
     }
 
     public void testSortAscendingByStartDayFirst() throws Exception {

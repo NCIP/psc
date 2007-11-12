@@ -187,16 +187,16 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         verifyMocks();
     }
 
-    public static PlannedActivity eqPlannedEvent(PlannedActivity event) {
-        EasyMock.reportMatcher(new PlannedEventMatcher(event));
+    public static PlannedActivity eqPlannedActivity(PlannedActivity event) {
+        EasyMock.reportMatcher(new PlannedActivityMatcher(event));
         return null;
     }
 
-    private static class PlannedEventMatcher implements IArgumentMatcher {
-        private PlannedActivity expectedPlannedEvent;
+    private static class PlannedActivityMatcher implements IArgumentMatcher {
+        private PlannedActivity expectedPlannedActivity;
 
-        public PlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
-            this.expectedPlannedEvent = expectedPlannedEvent;
+        public PlannedActivityMatcher(PlannedActivity expectedPlannedActivity) {
+            this.expectedPlannedActivity = expectedPlannedActivity;
         }
 
         public boolean matches(Object object) {
@@ -208,7 +208,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("PlannedActivity activity=").append(expectedPlannedActivity.getActivity());
         }
     }
 }

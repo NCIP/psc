@@ -159,7 +159,6 @@
                                 <c:choose>
                                     <c:when test="${not empty listOfParticipants}">
                                      <li class="participant">
-
                                          <a href="<c:url value="/pages/cal/schedule?assignment=${listOfParticipants.participant.id}"/>" class="primary">
                                             ${listOfParticipants.participant.firstName}
                                             ${listOfParticipants.participant.lastName}

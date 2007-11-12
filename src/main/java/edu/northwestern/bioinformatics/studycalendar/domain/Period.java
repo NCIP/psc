@@ -61,7 +61,7 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
     @Override public Class<Arm> parentClass() { return Arm.class; }
     @Override public Class<PlannedActivity> childClass() { return PlannedActivity.class; }
 
-    public void addPlannedEvent(PlannedActivity event) {
+    public void addPlannedActivity(PlannedActivity event) {
         addChild(event);
     }
 
@@ -175,12 +175,12 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
     @Cascade(value = { CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.REPLICATE,
             CascadeType.SAVE_UPDATE })
-    public List<PlannedActivity> getPlannedEvents() {
+    public List<PlannedActivity> getPlannedActivities() {
         return getChildren();
     }
 
-    public void setPlannedEvents(List<PlannedActivity> plannedEvents) {
-        setChildren(plannedEvents);
+    public void setPlannedActivities(List<PlannedActivity> plannedActivities) {
+        setChildren(plannedActivities);
     }
 
     ////// OBJECT METHODS

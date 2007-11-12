@@ -4,31 +4,31 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPeriod;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledArm;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
  */
-public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
-    private static final int PLANNED_EVENT_ID = 21;
+public class AddPlannedActivityMutatorTest extends StudyCalendarTestCase {
+    private static final int PLANNED_ACTIVITY_ID = 21;
 
-    private AddPlannedEventMutator mutator;
+    private AddPlannedActivityMutator mutator;
 
     private Amendment amendment;
     private Add add;
 
     private Arm arm;
     private Period period;
-    private PlannedActivity plannedEvent;
+    private PlannedActivity plannedActivity;
     private ScheduledCalendar scheduledCalendar;
 
     private PlannedActivityDao plannedActivityDao;
@@ -41,8 +41,8 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
         arm = setId(45, new Arm());
         period = setId(81, createPeriod("P1", 4, 17, 8));
 
-        plannedEvent = setId(21, createPlannedEvent("Swim", 8));
-        add = Add.create(plannedEvent, 4);
+        plannedActivity = setId(21, Fixtures.createPlannedActivity("Swim", 8));
+        add = Add.create(plannedActivity, 4);
         amendment = createAmendments("Oops");
         amendment.addDelta(Delta.createDeltaFor(period, add));
 
@@ -52,7 +52,7 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
         participantService = registerMockFor(ParticipantService.class);
         templateService = registerMockFor(TemplateService.class);
 
-        mutator = new AddPlannedEventMutator(
+        mutator = new AddPlannedActivityMutator(
             add, plannedActivityDao, participantService, templateService);
 
         expect(templateService.findParent(period)).andReturn(arm);
@@ -76,7 +76,7 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
         scheduledCalendar.addArm(createScheduledArm(arm));
 
-        participantService.schedulePlannedEvent(plannedEvent, period, amendment, scheduledCalendar.getScheduledArms().get(1));
+        participantService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledArms().get(1));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -88,11 +88,12 @@ public class AddPlannedEventMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
         scheduledCalendar.addArm(createScheduledArm(arm));
 
-        participantService.schedulePlannedEvent(plannedEvent, period, amendment, scheduledCalendar.getScheduledArms().get(0));
-        participantService.schedulePlannedEvent(plannedEvent, period, amendment, scheduledCalendar.getScheduledArms().get(2));
+        participantService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledArms().get(0));
+        participantService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledArms().get(2));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
     }
 }
+

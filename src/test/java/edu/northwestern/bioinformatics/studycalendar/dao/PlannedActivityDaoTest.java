@@ -24,18 +24,18 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
 
     public void testPeriodBidirectional() throws Exception {
         PlannedActivity loaded = getDao().getById(-12);
-        assertTrue(loaded.getPeriod().getPlannedEvents().contains(loaded));
+        assertTrue(loaded.getPeriod().getPlannedActivities().contains(loaded));
     }
 
     public void testSaveDetached() throws Exception {
         Integer id;
         {
-            PlannedActivity plannedEvent = new PlannedActivity();
-            plannedEvent.setDay(5);
-            plannedEvent.setActivity(getDao().getById(-12).getActivity());
-            getDao().save(plannedEvent);
-            assertNotNull("not saved", plannedEvent.getId());
-            id = plannedEvent.getId();
+            PlannedActivity plannedActivity = new PlannedActivity();
+            plannedActivity.setDay(5);
+            plannedActivity.setActivity(getDao().getById(-12).getActivity());
+            getDao().save(plannedActivity);
+            assertNotNull("not saved", plannedActivity.getId());
+            id = plannedActivity.getId();
         }
 
         interruptSession();

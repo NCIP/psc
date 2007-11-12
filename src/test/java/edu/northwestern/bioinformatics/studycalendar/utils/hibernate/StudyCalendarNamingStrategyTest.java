@@ -14,7 +14,7 @@ public class StudyCalendarNamingStrategyTest extends StudyCalendarTestCase {
     private StudyCalendarNamingStrategy strategy = new StudyCalendarNamingStrategy();
 
     public void testForeignKeyColumn() throws Exception {
-        assertEquals("planned_event_id", strategy.foreignKeyColumnName("plannedEvent", DC, DC, DC));
+        assertEquals("planned_activity_id", strategy.foreignKeyColumnName("plannedActivity", DC, DC, DC));
     }
 
     public void testTableName() throws Exception {

@@ -30,8 +30,8 @@ public class DeltaTest extends StudyCalendarTestCase {
         assertDeltaFor(new Period(), PeriodDelta.class);
     }
 
-    public void testDeltaForPlannedEvent() throws Exception {
-        assertDeltaFor(new PlannedActivity(), PlannedEventDelta.class);
+    public void testDeltaForPlannedActivity() throws Exception {
+        assertDeltaFor(new PlannedActivity(), PlannedActivityDelta.class);
     }
 
     public void testAddChange() throws Exception {

@@ -113,11 +113,11 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testPurgeOldPlannedEvents() throws Exception {
-        PlannedActivity chem = Fixtures.createPlannedEvent("Chem-7", 3);
-        PlannedActivity cbc = Fixtures.createPlannedEvent("CBC", 70);
-        period.addPlannedEvent(chem);
-        period.addPlannedEvent(cbc);
+    public void testPurgeOldPlannedActivities() throws Exception {
+        PlannedActivity chem = Fixtures.createPlannedActivity("Chem-7", 3);
+        PlannedActivity cbc = Fixtures.createPlannedActivity("CBC", 70);
+        period.addPlannedActivity(chem);
+        period.addPlannedActivity(cbc);
         command.getPeriod().getDuration().setQuantity(60);
 
         expectPropertyUpdate("duration.quantity", "71", "60");

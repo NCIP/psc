@@ -1,20 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
-
-import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
  */
-public class ChangePlannedEventSimplePropertyMutator extends AbstractChangePlannedEventMutator {
+public class ChangePlannedActivitySimplePropertyMutator extends AbstractChangePlannedActivityMutator {
 
-    public ChangePlannedEventSimplePropertyMutator(PropertyChange change, ScheduledEventDao scheduledEventDao) {
+    public ChangePlannedActivitySimplePropertyMutator(PropertyChange change, ScheduledEventDao scheduledEventDao) {
         super(change, scheduledEventDao);
     }
 

@@ -32,7 +32,7 @@ public class ScheduledEventDao extends StudyCalendarMutableDomainObjectDao<Sched
     }
 
     @SuppressWarnings({ "unchecked" })
-    public Collection<ScheduledEvent> getEventsFromPlannedEvent(
+    public Collection<ScheduledEvent> getEventsFromPlannedActivity(
         PlannedActivity source, ScheduledCalendar calendar
     ) {
         return getHibernateTemplate().find(

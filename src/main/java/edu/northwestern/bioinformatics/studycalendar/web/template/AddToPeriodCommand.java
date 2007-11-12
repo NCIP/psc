@@ -28,7 +28,7 @@ public class AddToPeriodCommand extends EditPeriodEventsCommand{
     }
 
     public String getRelativeViewName() {
-        return "addPlannedEvent";
+        return "addPlannedActivity";
     }
 
     public Map<String, Object> getLocalModel() {

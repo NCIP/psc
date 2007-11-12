@@ -58,9 +58,9 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
 
     public void testPerformEdit() throws Exception {
         command.setId(period.getId());
-        PlannedActivity eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
-        period.addPlannedEvent(eventOne);
+        period.addPlannedActivity(eventOne);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
         List<Integer> ids = new ArrayList<Integer>();
@@ -74,13 +74,13 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         command.performEdit();
         verifyMocks();
 
-        assertEquals("Event should not be directly removed", 1, period.getPlannedEvents().size());
+        assertEquals("Event should not be directly removed", 1, period.getPlannedActivities().size());
     }
 
     public void testGetLocalModel() throws Exception {
-        PlannedActivity eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
-        period.addPlannedEvent(eventTwo);
+        period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
         command.setColumnNumber(2);
@@ -98,49 +98,49 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
 
 
 
-    private static abstract class AbstractPlannedEventMatcher implements IArgumentMatcher {
-        protected PlannedActivity expectedPlannedEvent;
+    private static abstract class AbstractPlannedActivityMatcher implements IArgumentMatcher {
+        protected PlannedActivity expectedPlannedActivity;
 
-        public AbstractPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
-            this.expectedPlannedEvent = expectedPlannedEvent;
+        public AbstractPlannedActivityMatcher(PlannedActivity expectedPlannedActivity) {
+            this.expectedPlannedActivity = expectedPlannedActivity;
         }
 
-        protected boolean plannedEventMatches(PlannedActivity actual) {
-            return nullSafeEquals(expectedPlannedEvent.getActivity(), actual.getActivity())
-                    && nullSafeEquals(expectedPlannedEvent.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedEvent.getCondition(), actual.getCondition());
+        protected boolean plannedActivityMatches(PlannedActivity actual) {
+            return nullSafeEquals(expectedPlannedActivity.getActivity(), actual.getActivity())
+                    && nullSafeEquals(expectedPlannedActivity.getDetails(), actual.getDetails())
+                    && nullSafeEquals(expectedPlannedActivity.getCondition(), actual.getCondition());
         }
     }
 
     public static Add removeFor(PlannedActivity event) {
-        EasyMock.reportMatcher(new RemoveForPlannedEventMatcher(event));
+        EasyMock.reportMatcher(new RemoveForPlannedActivityMatcher(event));
         return null;
     }
 
-    private static class RemoveForPlannedEventMatcher extends AbstractPlannedEventMatcher {
-        public RemoveForPlannedEventMatcher(PlannedActivity expectedPlannedEvent) {
-            super(expectedPlannedEvent);
+    private static class RemoveForPlannedActivityMatcher extends AbstractPlannedActivityMatcher {
+        public RemoveForPlannedActivityMatcher(PlannedActivity expectedPlannedActivity) {
+            super(expectedPlannedActivity);
         }
 
         public boolean matches(Object object) {
             if (!(object instanceof Remove)) return false;
             // Double cast to work around a javac bug
-            return plannedEventMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
+            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
-            sb.append("Remove for PlannedActivity activity=").append(expectedPlannedEvent.getActivity());
+            sb.append("Remove for PlannedActivity activity=").append(expectedPlannedActivity.getActivity());
         }
     }
 
-    private PlannedActivity createPlannedEvent(int day, Integer id) {
-        return createPlannedEvent(day, null, id, null);
+    private PlannedActivity createPlannedActivity(int day, Integer id) {
+        return createPlannedActivity(day, null, id, null);
     }
 
-    private PlannedActivity createPlannedEvent(
+    private PlannedActivity createPlannedActivity(
         int day, String details, Integer id, String conditionalDetails
     ) {
-        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedActivity(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);

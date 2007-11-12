@@ -53,7 +53,7 @@ public class EditPeriodCommand implements PeriodCommand {
 
     public void apply() {
         updateRevWithChangedProperties();
-        removeInvalidPlannedEvents();
+        removeInvalidPlannedActivities();
     }
 
     private void updateRevWithChangedProperties() {
@@ -69,10 +69,10 @@ public class EditPeriodCommand implements PeriodCommand {
         }
     }
 
-    private void removeInvalidPlannedEvents() {
-        // look for PlannedEvents that are now invalid
+    private void removeInvalidPlannedActivities() {
+        // look for PlannedActivity that are now invalid
         DayRange peDayRange = new DefaultDayRange(1, getPeriod().getDuration().getDays());
-        for (PlannedActivity event : originalPeriod.getPlannedEvents()) {
+        for (PlannedActivity event : originalPeriod.getPlannedActivities()) {
             if (!peDayRange.containsDay(event.getDay())) {
                 amendmentService.updateDevelopmentAmendment(originalPeriod, Remove.create(event));
             }

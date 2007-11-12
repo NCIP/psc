@@ -40,15 +40,15 @@ public class Fixtures {
 
     public static void assignIds(Study study) {
         study.getPlannedCalendar().setId(1);
-        int epochId = 10, armId = 100, periodId = 1000, plannedEventId = 10000;
+        int epochId = 10, armId = 100, periodId = 1000, plannedActivityId = 10000;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(++epochId);
             for (Arm arm : epoch.getArms()) {
                 arm.setId(++armId);
                 for (Period period : arm.getPeriods()) {
                     period.setId(++periodId);
-                    for (PlannedActivity event : period.getPlannedEvents()) {
-                        event.setId(++plannedEventId);
+                    for (PlannedActivity event : period.getPlannedActivities()) {
+                        event.setId(++plannedActivityId);
                     }
                 }
             }
@@ -74,7 +74,7 @@ public class Fixtures {
         return p;
     }
 
-    public static PlannedActivity createPlannedEvent(String activityName, int day) {
+    public static PlannedActivity createPlannedActivity(String activityName, int day) {
         PlannedActivity event = new PlannedActivity();
         Activity activity = createNamedInstance(activityName, Activity.class);
         activity.setType(ActivityType.LAB_TEST);
@@ -83,8 +83,8 @@ public class Fixtures {
         return event;
     }
 
-    public static PlannedActivity createPlannedEvent(String activityName, int day, String details) {
-        PlannedActivity event = createPlannedEvent(activityName, day);
+    public static PlannedActivity createPlannedActivity(String activityName, int day, String details) {
+        PlannedActivity event = createPlannedActivity(activityName, day);
         event.setDetails(details);
         return event;
     }
@@ -163,7 +163,7 @@ public class Fixtures {
     }
 
     public static ScheduledEvent createScheduledEvent(String activityName, int year, int month, int day) {
-        PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
+        PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedActivity(baseEvent);
         event.setActivity(createActivity(activityName));
@@ -173,7 +173,7 @@ public class Fixtures {
     }
 
     public static ScheduledEvent createConditionalEvent(String activityName, int year, int month, int day) {
-        PlannedActivity baseEvent = createPlannedEvent(activityName, 0);
+        PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
         ScheduledEvent event = new ScheduledEvent();
         event.setPlannedActivity(baseEvent);

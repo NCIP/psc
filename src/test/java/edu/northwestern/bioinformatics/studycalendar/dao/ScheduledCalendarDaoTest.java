@@ -129,7 +129,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
             ScheduledEvent event = new ScheduledEvent();
             event.setIdealDate(expectedIdealDate);
-            event.setPlannedActivity(arm3.getPeriods().iterator().next().getPlannedEvents().get(0));
+            event.setPlannedActivity(arm3.getPeriods().iterator().next().getPlannedActivities().get(0));
             event.changeState(new Occurred(expectedReason, expectedActualDate));
             event.setActivity(expectedActivity);
             event.setSourceAmendment(expectedAmendment);

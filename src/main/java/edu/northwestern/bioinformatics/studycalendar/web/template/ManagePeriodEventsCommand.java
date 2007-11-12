@@ -55,7 +55,7 @@ public class ManagePeriodEventsCommand {
         Map<String, GridRow> bins = new LinkedHashMap<String, GridRow>();
         Integer dayCount = src.getDuration().getDays();
         Map<String, int[]> counts = new HashMap<String, int[]>();
-        for (PlannedActivity event : src.getPlannedEvents()) {
+        for (PlannedActivity event : src.getPlannedActivities()) {
             String activityAndDetails = GridRow.key(event);
             if (counts.get(activityAndDetails) == null) {
                 counts.put(activityAndDetails, new int[dayCount]);
@@ -139,7 +139,7 @@ public class ManagePeriodEventsCommand {
     }
 
     private void removeEvent(Integer eventId) {
-        for (PlannedActivity event : period.getPlannedEvents()) {
+        for (PlannedActivity event : period.getPlannedActivities()) {
             if (eventId.equals(event.getId())) {
                 amendmentService.updateDevelopmentAmendment(period, Remove.create(event));
             }

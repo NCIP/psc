@@ -131,8 +131,8 @@ public class ParticipantService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledArm targetArm) {
         log.debug("Adding events from period {}", period);
-        for (PlannedActivity plannedEvent : period.getPlannedEvents()) {
-            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm);
+        for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm);
         }
     }
 
@@ -145,8 +145,8 @@ public class ParticipantService {
         Period period, Amendment sourceAmendment, ScheduledArm targetArm, int repetitionNumber
     ) {
         log.debug("Adding events for rep {} from period {}", repetitionNumber, period);
-        for (PlannedActivity plannedEvent : period.getPlannedEvents()) {
-            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, repetitionNumber);
+        for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm, repetitionNumber);
         }
     }
 
@@ -154,11 +154,11 @@ public class ParticipantService {
      * Derives scheduled events from the given planned event and applies them to the given scheduled arm.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void schedulePlannedEvent(
-        PlannedActivity plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm
+    public void schedulePlannedActivity(
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledArm targetArm
     ) {
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
-            schedulePlannedEvent(plannedEvent, period, sourceAmendment, targetArm, r);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm, r);
         }
     }
 
@@ -166,11 +166,11 @@ public class ParticipantService {
      * Derives a single scheduled event from the given planned event and applies it to the given scheduled arm.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void schedulePlannedEvent(
-        PlannedActivity plannedEvent, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
+    public void schedulePlannedActivity(
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
         int repetitionNumber
     ) {
-        log.debug("Adding event {} from planned event {}", repetitionNumber, plannedEvent);
+        log.debug("Adding event {} from planned activity {}", repetitionNumber, plannedActivity);
 
         // amount needed to shift the relative days in the period such that
         // the relative day 0 falls on armStateDate.  E.g., if the arm starts on
@@ -180,27 +180,27 @@ public class ParticipantService {
 
         int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * repetitionNumber;
         log.debug(" - rep {}; offset: {}", repetitionNumber, repOffset);
-        ScheduledEvent event = createEmptyScheduledEventFor(plannedEvent);
+        ScheduledEvent event = createEmptyScheduledEventFor(plannedActivity);
         event.setRepetitionNumber(repetitionNumber);
-        event.setIdealDate(idealDate(repOffset + plannedEvent.getDay(), targetArm.getStartDate()));
+        event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetArm.getStartDate()));
 
         DatedScheduledEventState initialState
-            = (DatedScheduledEventState) plannedEvent.getInitialScheduledMode().createStateInstance();
+            = (DatedScheduledEventState) plannedActivity.getInitialScheduledMode().createStateInstance();
         initialState.setReason("Initialized from template");
         initialState.setDate(event.getIdealDate());
         event.changeState(initialState);
 
-        event.setDetails(plannedEvent.getDetails());
-        event.setActivity(plannedEvent.getActivity());
+        event.setDetails(plannedActivity.getDetails());
+        event.setActivity(plannedActivity.getActivity());
         event.setSourceAmendment(sourceAmendment);
 
         targetArm.addEvent(event);
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
-    protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity plannedEvent) {
+    protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity plannedActivity) {
         ScheduledEvent event = new ScheduledEvent();
-        event.setPlannedActivity(plannedEvent);
+        event.setPlannedActivity(plannedActivity);
         return event;
     }
 

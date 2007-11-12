@@ -629,7 +629,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         Study study = Fixtures.createBasicTemplate();
         Period p = Fixtures.createPeriod("P0", 3, 17, 1);
-        PlannedActivity p0e0 = Fixtures.createPlannedEvent("P0E0", 4);
+        PlannedActivity p0e0 = Fixtures.createPlannedActivity("P0E0", 4);
         study.getPlannedCalendar().getEpochs().get(1).getArms().get(1).addPeriod(p);
 
         expect(deltaDao.findDeltaWhereAdded(p0e0)).andReturn(null);

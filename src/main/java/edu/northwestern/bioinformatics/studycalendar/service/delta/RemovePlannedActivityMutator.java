@@ -1,18 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 
 /**
  * @author Rhett Sutphin
  */
-public class RemovePlannedEventMutator extends RemoveMutator {
-    public RemovePlannedEventMutator(Remove remove, PlannedActivityDao dao) {
+public class RemovePlannedActivityMutator extends RemoveMutator {
+    public RemovePlannedActivityMutator(Remove remove, PlannedActivityDao dao) {
         super(remove, dao);
     }
 
@@ -23,14 +23,15 @@ public class RemovePlannedEventMutator extends RemoveMutator {
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        PlannedActivity removedPlannedEvent = (PlannedActivity) findChild();
+        PlannedActivity removedPlannedActivity = (PlannedActivity) findChild();
         Revision revision = change.getDelta().getRevision();
         for (ScheduledArm scheduledArm : calendar.getScheduledArms()) {
             for (ScheduledEvent event : scheduledArm.getEvents()) {
-                if (removedPlannedEvent.equals(event.getPlannedActivity())) {
+                if (removedPlannedActivity.equals(event.getPlannedActivity())) {
                     event.unscheduleIfOutstanding("Removed in revision " + revision.getDisplayName());
                 }
             }
         }
     }
 }
+

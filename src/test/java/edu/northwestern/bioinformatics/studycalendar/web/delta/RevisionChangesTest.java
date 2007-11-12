@@ -65,9 +65,9 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         PlannedActivity event1 = setId(3, new PlannedActivity());
         PlannedActivity event2 = setId(4, new PlannedActivity());
         armB.addPeriod(p1);
-        p1.addPlannedEvent(event1);
+        p1.addPlannedActivity(event1);
         armB.addPeriod(p2);
-        p2.addPlannedEvent(event2);
+        p2.addPlannedActivity(event2);
 
         getTestingDeltaService().updateRevision(rev, treatment, PropertyChange.create("name", "Treatment", "Megatreatment"));
         getTestingDeltaService().updateRevision(rev, armB, PropertyChange.create("name", "B", "Beta"));
@@ -109,12 +109,12 @@ public class RevisionChangesTest extends StudyCalendarTestCase {
         assertEquals("the template", RevisionChanges.getNodeName(new PlannedCalendar()));
     }
 
-    public void testNodeNameForPlannedEventWithActivity() throws Exception {
-        PlannedActivity pe = Fixtures.createPlannedEvent("CBC", 4);
+    public void testNodeNameForPlannedActivityWithActivity() throws Exception {
+        PlannedActivity pe = Fixtures.createPlannedActivity("CBC", 4);
         assertEquals("a planned CBC", RevisionChanges.getNodeName(pe));
     }
     
-    public void testNodeNameForPlannedEventWithoutActivity() throws Exception {
+    public void testNodeNameForPlannedActivityWithoutActivity() throws Exception {
         assertEquals("a planned activity", RevisionChanges.getNodeName(new PlannedActivity()));
     }
 

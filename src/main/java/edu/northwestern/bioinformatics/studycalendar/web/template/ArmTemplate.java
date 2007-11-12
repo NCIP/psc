@@ -43,7 +43,7 @@ public class ArmTemplate {
 
     public boolean getHasEvents() {
         for (Period period : arm.getPeriods()) {
-            if (period.getPlannedEvents().size() > 0) {
+            if (period.getPlannedActivities().size() > 0) {
                 return true;
             }
         }
@@ -176,7 +176,7 @@ public class ArmTemplate {
             this.day = day;
             this.events = new LinkedList<PlannedActivity>();
 
-            for (PlannedActivity pe : period.getPlannedEvents()) {
+            for (PlannedActivity pe : period.getPlannedActivities()) {
                 if (pe.getDaysInArm().contains(day.getNumber())) {
                     events.add(pe);
                 }

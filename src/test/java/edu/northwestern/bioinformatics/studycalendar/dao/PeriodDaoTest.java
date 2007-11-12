@@ -30,7 +30,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
         Period loaded = getDao().getById(-100);
 
         assertNotNull("Test period not found", loaded);
-        List<PlannedActivity> loadedEvents = loaded.getPlannedEvents();
+        List<PlannedActivity> loadedEvents = loaded.getPlannedActivities();
         assertEquals("Wrong number of planned events", 3, loadedEvents.size());
         Iterator<PlannedActivity> iterator = loadedEvents.iterator();
         assertTrue(iterator.hasNext());
@@ -50,7 +50,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
             PlannedActivity newEvent = new PlannedActivity();
             newEvent.setDay(4);
             newEvent.setActivity(activityDao.getById(-1001));
-            loaded.addPlannedEvent(newEvent);
+            loaded.addPlannedActivity(newEvent);
 
             getDao().save(loaded);
 
@@ -62,9 +62,9 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
 
         {
             Period reloaded = getDao().getById(-100);
-            assertEquals("Wrong number of events", 4, reloaded.getPlannedEvents().size());
+            assertEquals("Wrong number of events", 4, reloaded.getPlannedActivities().size());
 
-            Iterator<PlannedActivity> iterator = reloaded.getPlannedEvents().iterator();
+            Iterator<PlannedActivity> iterator = reloaded.getPlannedActivities().iterator();
             assertTrue(iterator.hasNext());
             assertEquals("Wrong first event", new Integer(-2003), iterator.next().getId());
             assertTrue(iterator.hasNext());

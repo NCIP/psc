@@ -51,11 +51,11 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         a1.setId(1);
         a1.setName("CBC");
                                                                                                         // days
-        p1.addPlannedEvent(setId(1, createPlannedEvent("CBC", 1, "CBC Details")));                      // 1, 8, 15
-        p1.addPlannedEvent(setId(2, createPlannedEvent("Vitals", 3, "Vitals Details")));                // 3, 10, 17
-        p2.addPlannedEvent(setId(3, createPlannedEvent("Questionnaire", 1, "Questionnaire Details")));  // 3
-        p3.addPlannedEvent(setId(4, createPlannedEvent("Infusion", 1, "Infusion Details")));            // 8, 36
-        p3.addPlannedEvent(setId(5, createPlannedEvent("Infusion", 18, "Infusion Details")));           // 25, 53
+        p1.addPlannedActivity(setId(1, createPlannedActivity("CBC", 1, "CBC Details")));                      // 1, 8, 15
+        p1.addPlannedActivity(setId(2, createPlannedActivity("Vitals", 3, "Vitals Details")));                // 3, 10, 17
+        p2.addPlannedActivity(setId(3, createPlannedActivity("Questionnaire", 1, "Questionnaire Details")));  // 3
+        p3.addPlannedActivity(setId(4, createPlannedActivity("Infusion", 1, "Infusion Details")));            // 8, 36
+        p3.addPlannedActivity(setId(5, createPlannedActivity("Infusion", 18, "Infusion Details")));           // 25, 53
 
         user = new User();
         Set<UserRole> userRoles = new HashSet<UserRole>();
@@ -75,7 +75,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
         Arm expectedArm = Epoch.create("Treatment", "A", "B", "C").getArms().get(1);
         expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
-        expectedArm.getPeriods().iterator().next().addPlannedEvent(createPlannedEvent("Any", 4));
+        expectedArm.getPeriods().iterator().next().addPlannedActivity(createPlannedActivity("Any", 4));
 
         Participant participantExpectedSave = createParticipant("Alice", "Childress");
 
@@ -259,9 +259,9 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
     private void assertNewlyScheduledEvent(
         int expectedYear, int expectedMonth, int expectedDayOfMonth,
-        int expectedPlannedEventId, ScheduledEvent actualEvent
+        int expectedPlannedActivityId, ScheduledEvent actualEvent
     ) {
-        assertEquals("Wrong associated planned event", expectedPlannedEventId, (int) actualEvent.getPlannedActivity().getId());
+        assertEquals("Wrong associated planned event", expectedPlannedActivityId, (int) actualEvent.getPlannedActivity().getId());
         assertDayOfDate("Wrong ideal date", expectedYear, expectedMonth, expectedDayOfMonth, actualEvent.getIdealDate());
         assertTrue("Wrong current state mode", actualEvent.getCurrentState() instanceof Scheduled);
         Scheduled currentState = (Scheduled) actualEvent.getCurrentState();
@@ -271,11 +271,11 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
     private void assertNewlyScheduledEvent(
         int expectedYear, int expectedMonth, int expectedDayOfMonth,
-        int expectedPlannedEventId, String expectedDetails,
+        int expectedPlannedActivityId, String expectedDetails,
         Activity expectedActivity, int expectedRepetitionNumber,
         ScheduledEvent actualEvent
     ){
-        assertNewlyScheduledEvent(expectedYear, expectedMonth, expectedDayOfMonth, expectedPlannedEventId, actualEvent);
+        assertNewlyScheduledEvent(expectedYear, expectedMonth, expectedDayOfMonth, expectedPlannedActivityId, actualEvent);
         assertEquals("Wrong details", expectedDetails, actualEvent.getDetails());
         assertEquals("Wrong repetition number", expectedRepetitionNumber, (int) actualEvent.getRepetitionNumber());
         assertNotNull("No activity", actualEvent.getActivity());
@@ -348,7 +348,7 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
         Arm scheduledArm = epoch.getArms().get(0);
         Period p1 = createPeriod("P1", 1, 7, 3);
         scheduledArm.addPeriod(p1);
-        p1.addPlannedEvent(setId(1, createPlannedEvent("CBC", 1)));
+        p1.addPlannedActivity(setId(1, createPlannedActivity("CBC", 1)));
         
         StudySite studySite = new StudySite();
         Site site = new Site();

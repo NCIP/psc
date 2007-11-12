@@ -71,7 +71,7 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
         } else if (node instanceof Period) {
             delta = new PeriodDelta((Period) node);
         } else if (node instanceof PlannedActivity) {
-            delta = new PlannedEventDelta((PlannedActivity) node);
+            delta = new PlannedActivityDelta((PlannedActivity) node);
         } else {
             throw new StudyCalendarError("Unimplemented node type: %s", node.getClass().getName());
         }

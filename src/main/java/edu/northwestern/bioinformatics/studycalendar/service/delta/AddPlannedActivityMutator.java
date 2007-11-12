@@ -1,25 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 
 /**
  * @author Rhett Sutphin
  */
-public class AddPlannedEventMutator extends CollectionAddMutator {
+public class AddPlannedActivityMutator extends CollectionAddMutator {
     private ParticipantService participantService;
     private TemplateService templateService;
 
-    public AddPlannedEventMutator(
+    public AddPlannedActivityMutator(
         Add change, PlannedActivityDao dao,
         ParticipantService participantService, TemplateService templateService
     ) {
@@ -41,7 +36,7 @@ public class AddPlannedEventMutator extends CollectionAddMutator {
         Arm arm = templateService.findParent(period);
 
         for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
-            participantService.schedulePlannedEvent(event, period, (Amendment) change.getDelta().getRevision(), scheduledArm);
+            participantService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledArm);
         }
     }
 }

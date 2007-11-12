@@ -2,20 +2,20 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
 
 /**
  * @author Rhett Sutphin
  */
 @Entity
 @DiscriminatorValue(value="event")
-public class PlannedEventDelta extends Delta<PlannedActivity> {
-    public PlannedEventDelta() { }
+public class PlannedActivityDelta extends Delta<PlannedActivity> {
+    public PlannedActivityDelta() { }
 
-    public PlannedEventDelta(PlannedActivity node) { super(node); }
+    public PlannedActivityDelta(PlannedActivity node) { super(node); }
 
     @ManyToOne
     @JoinColumn(name = "node_id")

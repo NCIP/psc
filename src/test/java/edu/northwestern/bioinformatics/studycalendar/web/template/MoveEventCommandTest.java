@@ -59,10 +59,10 @@ public class MoveEventCommandTest extends EditCommandTestCase {
 
     public void testPerformEdit() throws Exception {
         command.setId(period.getId());
-        PlannedActivity eventOne = createPlannedEvent(1, 25);
+        PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         eventOne.setDetails(eventDetails);
-        period.addPlannedEvent(eventOne);
+        period.addPlannedActivity(eventOne);
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
@@ -80,17 +80,17 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         command.performEdit();
         verifyMocks();
 
-        assertEquals(1, period.getPlannedEvents().size());
-        assertEquals("Details should not be updated in place", 1, (int) command.getPeriod().getPlannedEvents().get(0).getDay());        
+        assertEquals(1, period.getPlannedActivities().size());
+        assertEquals("Details should not be updated in place", 1, (int) command.getPeriod().getPlannedActivities().get(0).getDay());
     }
 
     public void testGetLocalModel() throws Exception {
-        PlannedActivity eventTwo = createPlannedEvent(2, 26);
+        PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
 
         command.setNewEvent(eventTwo);
         command.setDetails(eventDetails);
-        period.addPlannedEvent(eventTwo);
+        period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
         command.setMoveFrom(2);
@@ -108,14 +108,14 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         assertEquals("Map's row number is wrong", 0, map.get("rowNumber"));
      }
 
-    private PlannedActivity createPlannedEvent(int day, Integer id) {
-        return createPlannedEvent(day, null, id, null);
+    private PlannedActivity createPlannedActivity(int day, Integer id) {
+        return createPlannedActivity(day, null, id, null);
     }
 
-    private PlannedActivity createPlannedEvent(
+    private PlannedActivity createPlannedActivity(
         int day, String details, Integer id, String conditionalDetails
     ) {
-        PlannedActivity evt = Fixtures.createPlannedEvent(activity.getName(), day);
+        PlannedActivity evt = Fixtures.createPlannedActivity(activity.getName(), day);
         evt.setId(id);
         evt.setActivity(activity);
         evt.setDetails(details);
