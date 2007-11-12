@@ -116,8 +116,8 @@
               <form:errors path="*"/>
               <div class="links-row">
                   Assign By:
-                      <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy"/>'">Study</span>,
-                      Participant Coordinator
+                  <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy"/>'">Study</span>,
+                  Participant Coordinator
               </div>
               <br/>
               <div class="row">
@@ -136,58 +136,58 @@
               </div>
           </form:form>
           <br/>
-              <label id="participants-info" style="display:none">No participants assigned to this participant coordinator.</label>
+          <label id="participants-info" style="display:none">No participants assigned to this participant coordinator.</label>
 
-              <c:if test="${fn:length(displayMap) > 0}">
-                  <div class="row" id="participants-table">
-                      <div class="label">
-                          Re-assign Participant:
-                      </div>
-                      <div class="value">
-                          <ul class="sites">
-                              <c:forEach items="${displayMap}" var="site">
-                                  <li><label class="site">${site.key.name}</label>
-
-                                      <ul class="studies">
-                                          <c:forEach items="${site.value}" var="study">
-                                          <li class="study">
-                                              <form:form action="${action}">
-                                                  <input type="hidden" name="study" value="${study.key.id}"/>
-                                                  <input type="hidden" name="site" value="${site.key.id}"/>
-                                                  <input type="hidden" name="selected" value="${selectedId}"/>
-
-                                                  <div class="row">
-                                                      <div class="study">${study.key.name}</div>
-                                                      <div class="value">
-                                                          <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) < 1}">
-                                                              There are no participant coordinators for this study site.
-                                                          </c:if>
-                                                          <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) >= 1}">
-                                                              <select name="participantCoordinator">
-                                                                  <option></option>
-                                                                  <c:forEach items="${participantCoordinatorStudySites[study.key][site.key]}" var="user">
-                                                                      <option value="${user.id}">${user.name}</option>
-                                                                  </c:forEach>
-                                                              </select>
-                                                              <input type="button" value="Assign Participant Coordinator" onclick="assignmentButtonClicked(this.form)"/>
-                                                              <tags:activityIndicator id="assign-in-progress-indicator"/>
-                                                          </c:if>
-                                                      </div>
-                                                  </div>
-                                                  <ul id="${study.key.id}_${site.key.id}" class="participants">
-                                                      <sitecoord:displayParticipants study="${study.key}" site="${site.key}" participants="${study.value}"/>
-                                                  </ul>
-
-                                              </form:form>
-                                              </c:forEach>
-                                          </li>
-                                      </ul>
-                                  </li>
-                              </c:forEach>
-                          </ul>
-                      </div>
+          <c:if test="${fn:length(displayMap) > 0}">
+              <div class="row" id="participants-table">
+                  <div class="label">
+                      Re-assign Participant:
                   </div>
-              </c:if>
+                  <div class="value">
+                      <ul class="sites">
+                          <c:forEach items="${displayMap}" var="site">
+                              <li><label class="site">${site.key.name}</label>
+
+                                  <ul class="studies">
+                                      <c:forEach items="${site.value}" var="study">
+                                      <li class="study">
+                                          <form:form action="${action}">
+                                              <input type="hidden" name="study" value="${study.key.id}"/>
+                                              <input type="hidden" name="site" value="${site.key.id}"/>
+                                              <input type="hidden" name="selected" value="${selectedId}"/>
+
+                                              <div class="row">
+                                                  <div class="study">${study.key.name}</div>
+                                                  <div class="value">
+                                                      <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) < 1}">
+                                                          There are no participant coordinators for this study site.
+                                                      </c:if>
+                                                      <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) >= 1}">
+                                                          <select name="participantCoordinator">
+                                                              <option></option>
+                                                              <c:forEach items="${participantCoordinatorStudySites[study.key][site.key]}" var="user">
+                                                                  <option value="${user.id}">${user.name}</option>
+                                                              </c:forEach>
+                                                          </select>
+                                                          <input type="button" value="Assign Participant Coordinator" onclick="assignmentButtonClicked(this.form)"/>
+                                                          <tags:activityIndicator id="assign-in-progress-indicator"/>
+                                                      </c:if>
+                                                  </div>
+                                              </div>
+                                              <ul id="${study.key.id}_${site.key.id}" class="participants">
+                                                  <sitecoord:displayParticipants study="${study.key}" site="${site.key}" participants="${study.value}"/>
+                                              </ul>
+
+                                          </form:form>
+                                          </c:forEach>
+                                      </li>
+                                  </ul>
+                              </li>
+                          </c:forEach>
+                      </ul>
+                  </div>
+              </div>
+          </c:if>
       </laf:division>
   </laf:box>
   </body>
