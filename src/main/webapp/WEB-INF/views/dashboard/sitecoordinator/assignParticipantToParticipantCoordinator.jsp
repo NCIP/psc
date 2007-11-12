@@ -34,15 +34,15 @@
             var studySiteId = studyId + '_' + siteId;
             if($(studySiteId).descendants().size() < 1) {
                 $(studySiteId).ancestors().each(function(a) {
-                    // Remove Study
                     if (a.match('li.study')) {
 
                         var studies = a.up();
                         var site = studies.up();
                         var sites = site.up();
 
-
+                        // Remove Study
                         a.remove();
+
                         // Remove Studies
                         if (studies.descendants().size() == 0) {
                             studies.remove();
@@ -68,7 +68,7 @@
         }
 
         Event.observe(window, "load", registerSelector);
-        <c:if test="${fn:length(displayMap) < 1}">
+        <c:if test="${fn:length(displayMap) eq 0}">
             Event.observe(window, "load", showParticipantsInfo);
         </c:if>
 
