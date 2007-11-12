@@ -23,49 +23,93 @@
 
             SC.asyncSubmit(form, {
                 onComplete: function() {
-                    $('assign-in-progress-indicator').conceal();
+                    if($('assign-in-progress-indicator')) {
+                        $('assign-in-progress-indicator').conceal();
+                    }
                 }
             })
         }
 
-        function collapseList(studyId, siteId) {
-            if($(studyId + '_' + siteId).decendants() < 1) {
-                
+        function hideEmptyLists(studyId, siteId) {
+            var studySiteId = studyId + '_' + siteId;
+            if($(studySiteId).descendants().size() < 1) {
+                $(studySiteId).ancestors().each(function(a) {
+                    // Remove Study
+                    if (a.match('li.study')) {
+
+                        var studies = a.up();
+                        var site = studies.up();
+                        var sites = site.up();
+
+
+                        a.remove();
+                        // Remove Studies
+                        if (studies.descendants().size() == 0) {
+                            studies.remove();
+                        }
+
+                        // Remove Site, site will always have 1 descendant for the site label
+                        if(site.descendants().size() <= 1) {
+                            site.remove();
+                        }
+
+                        // Remove Sites
+                        if(sites.descendants().size() == 0) {
+                            $('participants-table').remove()
+                            $('participants-info').show()
+                        }
+                    }
+                })
             }
         }
 
+        function showParticipantsInfo() {
+            $('participants-info').show()
+        }
+
         Event.observe(window, "load", registerSelector);
+        <c:if test="${fn:length(displayMap) < 1}">
+            Event.observe(window, "load", showParticipantsInfo);
+        </c:if>
+
       </script>
       <style type="text/css">
-          dl.levelOne {
-              border:1px solid #000;
+          ul {
+              padding:0;
+          }
+
+          ul.sites {
               width:80%
           }
 
-          dt.site {
-            border-bottom:1px solid #000;
-            padding:.2em;
-            font-weight:bold;
-          }
-
-          dd {
-              margin: 0;
-              padding-left:1em
-          }
-
-          div.row div.label div.inside {
-              text-align:left;
-          }
-
-          dl.study {
+          ul.participants {
               padding-bottom:1em
           }
 
+          li {
+              margin: 0;
+              padding-left:1em;
+              list-style:none;
+          }
+
+          label.site {
+              padding:.2em;
+              font-weight:bold;
+          }
+
+          div.row div.study {
+              float:left;
+          }
+
+          label.participant {
+              font-weight:normal;
+          }
+
           .site-coord-dash-link {
-            color:#0000cc;
-            cursor:pointer;
-            white-space:nowrap;
-         }
+              color:#0000cc;
+              cursor:pointer;
+              white-space:nowrap;
+          }
       </style>
   </head>
   <body>
@@ -96,72 +140,58 @@
               </div>
           </form:form>
           <br/>
-          <c:choose>
-              <c:when test="${fn:length(displayMap) < 1}">
-                  No participants assigned to this participant coordinator.
-              </c:when>
+              <label id="participants-info" style="display:none">No participants assigned to this participant coordinator.</label>
 
-              <c:otherwise>
-                  <div class="row">
+              <c:if test="${fn:length(displayMap) > 0}">
+                  <div class="row" id="participants-table">
                       <div class="label">
                           Re-assign Participant:
                       </div>
                       <div class="value">
-                          <dl class="levelOne">
+                          <ul class="sites">
                               <c:forEach items="${displayMap}" var="site">
-                                  <dt class="site">${site.key.name}</dt>
+                                  <li><label class="site">${site.key.name}</label>
 
-                                  <c:forEach items="${site.value}" var="study">
-                                      <dd>
-                                          <dl class="study">
+                                      <ul class="studies">
+                                          <c:forEach items="${site.value}" var="study">
+                                          <li class="study">
                                               <form:form action="${action}">
-
                                                   <input type="hidden" name="study" value="${study.key.id}"/>
                                                   <input type="hidden" name="site" value="${site.key.id}"/>
                                                   <input type="hidden" name="selected" value="${selectedId}"/>
 
-                                                  <dt class="study">
-                                                      <div class="row">
-                                                          <div class="label">
-                                                              <div class="inside">${study.key.name}</div>
-                                                          </div>
-                                                          <div class="value">
-                                                              <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) < 1}">
-                                                                  There are no participant coordinators for this study site.
-                                                              </c:if>
-                                                              <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) >= 1}">
-                                                                  <select name="participantCoordinator">
-                                                                      <option></option>
-                                                                      <c:forEach items="${participantCoordinatorStudySites[study.key][site.key]}" var="user">
-                                                                          <option value="${user.id}">${user.name}</option>
-                                                                      </c:forEach>
-                                                                  </select>
-                                                                  <input type="button" value="Assign Participant Coordinator" onclick="assignmentButtonClicked(this.form)"/>
-                                                                  <tags:activityIndicator id="assign-in-progress-indicator"/>
-                                                              </c:if>
-                                                          </div>
+                                                  <div class="row">
+                                                      <div class="study">${study.key.name}</div>
+                                                      <div class="value">
+                                                          <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) < 1}">
+                                                              There are no participant coordinators for this study site.
+                                                          </c:if>
+                                                          <c:if test="${fn:length(participantCoordinatorStudySites[study.key][site.key]) >= 1}">
+                                                              <select name="participantCoordinator">
+                                                                  <option></option>
+                                                                  <c:forEach items="${participantCoordinatorStudySites[study.key][site.key]}" var="user">
+                                                                      <option value="${user.id}">${user.name}</option>
+                                                                  </c:forEach>
+                                                              </select>
+                                                              <input type="button" value="Assign Participant Coordinator" onclick="assignmentButtonClicked(this.form)"/>
+                                                              <tags:activityIndicator id="assign-in-progress-indicator"/>
+                                                          </c:if>
                                                       </div>
-                                                  </dt>
-
-                                                  <dd>
-                                                      <dl id="${study.key.id}_${site.key.id}">
-                                                          <sitecoord:displayParticipants study="${study.key}" site="${site.key}" participants="${study.value}"/>
-                                                      </dl>
-                                                  </dd>
-
+                                                  </div>
+                                                  <ul id="${study.key.id}_${site.key.id}" class="participants">
+                                                      <sitecoord:displayParticipants study="${study.key}" site="${site.key}" participants="${study.value}"/>
+                                                  </ul>
 
                                               </form:form>
-                                          </dl>
-                                      </dd>
-                                  </c:forEach>
-
+                                              </c:forEach>
+                                          </li>
+                                      </ul>
+                                  </li>
                               </c:forEach>
-                          </dl>
+                          </ul>
                       </div>
                   </div>
-              </c:otherwise>
-          </c:choose>
-
+              </c:if>
       </laf:division>
   </laf:box>
   </body>

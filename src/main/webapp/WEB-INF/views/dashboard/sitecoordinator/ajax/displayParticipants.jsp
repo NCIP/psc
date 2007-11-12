@@ -5,3 +5,5 @@
 <jsgen:replaceHtml targetElement="${study.id}_${site.id}">
     <sitecoord:displayParticipants study="${study}" site="${site}" participants="${participants}" />    
 </jsgen:replaceHtml>
+
+hideEmptyLists(${study.id}, ${site.id})
