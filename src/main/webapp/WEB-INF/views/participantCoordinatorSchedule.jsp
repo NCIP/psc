@@ -151,15 +151,16 @@
 
                         <li class="noMargin ">
                              <h3 class="site">${studySites.site.name} </h3>
+                            
                              <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participant</tags:restrictedListItem>
                             </ul>
-                            <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">
 
+                            <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">
                                 <c:choose>
                                     <c:when test="${not empty listOfParticipants}">
                                      <li class="participant">
-                                         <a href="<c:url value="/pages/cal/schedule?assignment=${listOfParticipants.participant.id}"/>" class="primary">
+                                         <a href="<c:url value="/pages/cal/schedule?calendar=${listOfParticipants.scheduledCalendar.id}"/>" class="primary">
                                             ${listOfParticipants.participant.firstName}
                                             ${listOfParticipants.participant.lastName}
                                          </a>
