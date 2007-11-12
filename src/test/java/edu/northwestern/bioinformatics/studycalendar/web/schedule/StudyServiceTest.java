@@ -74,7 +74,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
 
-        List<ScheduledEvent> list = arm0.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
+        List<ScheduledActivity> list = arm0.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
         
         assertEquals("Wrong number of events on July 4th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
@@ -109,7 +109,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
 
-        List<ScheduledEvent> list = arm1.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
+        List<ScheduledActivity> list = arm1.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         assertEquals("Wrong number of events on August 8th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());

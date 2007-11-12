@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 
 import java.util.Date;
@@ -21,7 +21,7 @@ public class BatchRescheduleCommand {
     private ScheduledEventMode<?> newMode;
     private Integer dateOffset;
     private String newReason;
-    private Set<ScheduledEvent> events;
+    private Set<ScheduledActivity> events;
     private ScheduledCalendar scheduledCalendar;
 
     private ScheduledCalendarDao scheduledCalendarDao;
@@ -33,7 +33,7 @@ public class BatchRescheduleCommand {
     public void apply() {
         if (getNewMode() == null) return;
 
-        for (ScheduledEvent event : events) {
+        for (ScheduledActivity event : events) {
             if (event.isValidNewState(newMode.getClazz())) {
                 changeState(event);
             }
@@ -41,7 +41,7 @@ public class BatchRescheduleCommand {
         scheduledCalendarDao.save(getScheduledCalendar());
     }
 
-    private void changeState(ScheduledEvent event) {
+    private void changeState(ScheduledActivity event) {
         ScheduledEventState newState = getNewMode().createStateInstance();
         newState.setReason(createReason());
         if (newState instanceof DatedScheduledEventState) {
@@ -102,11 +102,11 @@ public class BatchRescheduleCommand {
         this.dateOffset = dateOffset;
     }
 
-    public Set<ScheduledEvent> getEvents() {
+    public Set<ScheduledActivity> getEvents() {
         return events;
     }
 
-    public void setEvents(Set<ScheduledEvent> events) {
+    public void setEvents(Set<ScheduledActivity> events) {
         this.events = events;
     }
 }

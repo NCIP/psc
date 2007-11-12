@@ -25,7 +25,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private SiteDao siteDao;
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
     private UserDao userDao;
 
@@ -71,20 +71,20 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         }
     }
 
-    public Collection<ScheduledEvent> getScheduledEvents(
+    public Collection<ScheduledActivity> getScheduledActivities(
         Study study, Participant participant, Site site, Date startDate, Date endDate
     ) {
         ParameterLoader loader = new ParameterLoader(study, participant, site);
         ScheduledCalendar calendar = loader.findAssignment().getScheduledCalendar();
-        return scheduledEventDao.getEventsByDate(calendar, startDate, endDate);
+        return scheduledActivityDao.getEventsByDate(calendar, startDate, endDate);
     }
 
-    public ScheduledEvent changeEventState(ScheduledEvent event, ScheduledEventState newState) {
+    public ScheduledActivity changeEventState(ScheduledActivity event, ScheduledEventState newState) {
         ParameterLoader loader = new ParameterLoader(event);
 
-        loader.getScheduledEvent().changeState(newState);
-        scheduledEventDao.save(loader.getScheduledEvent());
-        return loader.getScheduledEvent();
+        loader.getScheduledActivity().changeState(newState);
+        scheduledActivityDao.save(loader.getScheduledActivity());
+        return loader.getScheduledActivity();
     }
 
     public void scheduleNextArm(
@@ -149,8 +149,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
     
     @Required
@@ -191,7 +191,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         private Participant participant;
         private Site site;
         private Arm arm;
-        private ScheduledEvent scheduledEvent;
+        private ScheduledActivity scheduledActivity;
 
         public ParameterLoader(Study study, Participant participant, Site site) {
             loadStudy(study);
@@ -212,8 +212,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             loadArm(arm);
         }
 
-        public ParameterLoader(ScheduledEvent scheduledEvent) {
-            loadEvent(scheduledEvent);
+        public ParameterLoader(ScheduledActivity scheduledActivity) {
+            loadEvent(scheduledActivity);
         }
 
         ////// LOADING
@@ -234,8 +234,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             this.arm = parameterArm == null ? null : load(parameterArm, armDao);
         }
 
-        private void loadEvent(ScheduledEvent parameterEvent) {
-            this.scheduledEvent = load(parameterEvent, scheduledEventDao);
+        private void loadEvent(ScheduledActivity parameterEvent) {
+            this.scheduledActivity = load(parameterEvent, scheduledActivityDao);
         }
 
         ////// LOGIC
@@ -286,8 +286,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             }
         }
 
-        public ScheduledEvent getScheduledEvent() {
-            return scheduledEvent;
+        public ScheduledActivity getScheduledActivity() {
+            return scheduledActivity;
         }
     }
 

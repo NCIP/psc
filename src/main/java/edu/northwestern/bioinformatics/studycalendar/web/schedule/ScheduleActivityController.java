@@ -5,15 +5,14 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
@@ -28,24 +27,24 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
-public class ScheduleEventController extends PscSimpleFormController {
+public class ScheduleActivityController extends PscSimpleFormController {
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
-    public ScheduleEventController() {
+    public ScheduleActivityController() {
         setBindOnNewForm(true);
-        setCommandClass(ScheduleEventCommand.class);
+        setCommandClass(ScheduleActivityCommand.class);
         setCrumb(new Crumb());
     }
 
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new ScheduleEventCommand(scheduledCalendarDao);
+        return new ScheduleActivityCommand(scheduledCalendarDao);
     }
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
-        getControllerTools().registerDomainObjectEditor(binder, "event", scheduledEventDao);
+        getControllerTools().registerDomainObjectEditor(binder, "event", scheduledActivityDao);
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode",
             new ControlledVocabularyEditor(ScheduledEventMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -55,7 +54,7 @@ public class ScheduleEventController extends PscSimpleFormController {
         HttpServletRequest request, HttpServletResponse response, BindException errors
     ) throws Exception {
         Map<String, Object> model = errors.getModel();
-        ScheduleEventCommand command = (ScheduleEventCommand) errors.getTarget();
+        ScheduleActivityCommand command = (ScheduleActivityCommand) errors.getTarget();
         getControllerTools().addHierarchyToModel(command.getEvent(), model);
 //        model.put("modes", ScheduledEventMode.values());
         model.put("modes", command.getEventSpecificMode());
@@ -63,7 +62,7 @@ public class ScheduleEventController extends PscSimpleFormController {
     }
 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
-        ScheduleEventCommand command = (ScheduleEventCommand) oCommand;
+        ScheduleActivityCommand command = (ScheduleActivityCommand) oCommand;
         command.apply();
         Map<String, Object> model = new HashMap<String, Object>();
         ScheduledArm arm = command.getEvent().getScheduledArm();
@@ -78,13 +77,13 @@ public class ScheduleEventController extends PscSimpleFormController {
         this.scheduledCalendarDao = scheduledCalendarDao;
     }
 
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
 
     private class Crumb extends DefaultCrumb {
         public String getName(BreadcrumbContext context) {
-            ScheduledEvent evt = context.getScheduledEvent();
+            ScheduledActivity evt = context.getScheduledActivity();
             return new StringBuilder()
                 .append(evt.getActivity().getName())
                 .append(" on ")
@@ -93,7 +92,7 @@ public class ScheduleEventController extends PscSimpleFormController {
         }
 
         public Map<String, String> getParameters(BreadcrumbContext context) {
-            return createParameters("event", context.getScheduledEvent().getId().toString());
+            return createParameters("event", context.getScheduledActivity().getId().toString());
         }
     }
 }

@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -18,35 +18,35 @@ import java.util.Calendar;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleEventControllerTest extends ControllerTestCase {
-    private ScheduleEventController controller;
+public class ScheduleActivityControllerTest extends ControllerTestCase {
+    private ScheduleActivityController controller;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
-    private ScheduleEventCommand command;
+    private ScheduleActivityCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
-        command = registerMockFor(ScheduleEventCommand.class,
-            ScheduleEventCommand.class.getMethod("apply"));
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
+        command = registerMockFor(ScheduleActivityCommand.class,
+            ScheduleActivityCommand.class.getMethod("apply"));
 
-        controller = new ScheduleEventController() {
+        controller = new ScheduleActivityController() {
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
                 return command;
             }
         };
         controller.setScheduledCalendarDao(scheduledCalendarDao);
-        controller.setScheduledEventDao(scheduledEventDao);
+        controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setControllerTools(controllerTools);
 
         request.setMethod("GET");
     }
 
     public void testBindEvent() throws Exception {
-        ScheduledEvent event = setId(16, createScheduledEvent("SBC", 2002, Calendar.MAY, 3));
-        expect(scheduledEventDao.getById(16)).andReturn(event);
+        ScheduledActivity event = setId(16, createScheduledEvent("SBC", 2002, Calendar.MAY, 3));
+        expect(scheduledActivityDao.getById(16)).andReturn(event);
         request.setParameter("event", "16");
 
         expectShowFormWithNoErrors();
@@ -111,7 +111,7 @@ public class ScheduleEventControllerTest extends ControllerTestCase {
     }
 
     public void testChangeStateOnSubmit() throws Exception {
-        command.setEvent(new ScheduledEvent());
+        command.setEvent(new ScheduledActivity());
         command.getEvent().setScheduledArm(new ScheduledArm());
         command.getEvent().getScheduledArm().setScheduledCalendar(new ScheduledCalendar());
         request.setMethod("POST");

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -30,7 +30,7 @@ import java.util.*;
 public class ColleagueParticipantCoordinatorController extends PscSimpleFormController {
 	private TemplateService templateService;
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 	private StudyDao studyDao;
     private UserDao userDao;
     private SiteService siteService;
@@ -136,7 +136,7 @@ public class ColleagueParticipantCoordinatorController extends PscSimpleFormCont
 
         scheduleCommand.setUser(user);
         scheduleCommand.setUserDao(userDao);
-        scheduleCommand.setScheduledEventDao(scheduledEventDao);
+        scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = scheduleCommand.execute(getPAService(), getStudyParticipantAssignments(colleagueId));
         return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
     }
@@ -166,11 +166,11 @@ public class ColleagueParticipantCoordinatorController extends PscSimpleFormCont
         return userDao;
     }
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
-    public ScheduledEventDao getScheduledEventDao() {
-        return scheduledEventDao;
+    public ScheduledActivityDao getScheduledActivityDao() {
+        return scheduledActivityDao;
     }
 
     public ParticipantCoordinatorDashboardService getPAService() {

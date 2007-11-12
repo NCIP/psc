@@ -125,7 +125,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 	// }
 
 	public void testUpdateCompositeUserTypeHasSubpropertyValues() throws Exception {
-		// ScheduledEvent#currentDate uses a CompositeUserType
+		// ScheduledActivity#currentDate uses a CompositeUserType
 		// TODO
 	}
 

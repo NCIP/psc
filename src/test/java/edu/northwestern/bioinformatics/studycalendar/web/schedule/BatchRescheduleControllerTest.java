@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -17,14 +17,14 @@ import java.util.Iterator;
  */
 public class BatchRescheduleControllerTest extends ControllerTestCase {
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private BatchRescheduleController controller;
     private BatchRescheduleCommand command;
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         command = registerMockFor(BatchRescheduleCommand.class, BatchRescheduleCommand.class.getMethod("apply"));
         controller = new BatchRescheduleController() {
             @Override
@@ -34,7 +34,7 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
         };
         
         controller.setScheduledCalendarDao(scheduledCalendarDao);
-        controller.setScheduledEventDao(scheduledEventDao);
+        controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setControllerTools(controllerTools);
     }
 
@@ -72,12 +72,12 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
     }
 
     public void testBindScheduledEvents() throws Exception {
-        ScheduledEvent expectedEvent = Fixtures.setId(7, new ScheduledEvent());
-        ScheduledEvent expectedEvent2 = Fixtures.setId(8, new ScheduledEvent());
+        ScheduledActivity expectedEvent = Fixtures.setId(7, new ScheduledActivity());
+        ScheduledActivity expectedEvent2 = Fixtures.setId(8, new ScheduledActivity());
         request.addParameter("events", "7");
         request.addParameter("events", "8");
-        expect(scheduledEventDao.getById(7)).andReturn(expectedEvent);
-        expect(scheduledEventDao.getById(8)).andReturn(expectedEvent2);
+        expect(scheduledActivityDao.getById(7)).andReturn(expectedEvent);
+        expect(scheduledActivityDao.getById(8)).andReturn(expectedEvent2);
         doHandle();
         Iterator actualEvents = command.getEvents().iterator();
         assertSame(expectedEvent, actualEvents.next());

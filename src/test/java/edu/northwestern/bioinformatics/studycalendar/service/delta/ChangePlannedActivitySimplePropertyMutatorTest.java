@@ -6,9 +6,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 
 import java.util.Calendar;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     private Delta<?> delta;
     private ScheduledCalendar scheduledCalendar;
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -35,15 +35,15 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
         change = PropertyChange.create("details", "D", "Dprime");
         delta = Delta.createDeltaFor(plannedActivity, change);
 
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
 
-        mutator = new ChangePlannedActivitySimplePropertyMutator(change, scheduledEventDao);
+        mutator = new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
     }
 
     public void testApplyDetails() throws Exception {
-        ScheduledEvent expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4);
         expectedSE.setDetails("D");
-        EasyMock.expect(scheduledEventDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
 
         replayMocks();
@@ -53,9 +53,9 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyToOccurredDetails() throws Exception {
-        ScheduledEvent expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4, new Occurred());
+        ScheduledActivity expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4, new Occurred());
         expectedSE.setDetails("D");
-        EasyMock.expect(scheduledEventDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
 
         replayMocks();

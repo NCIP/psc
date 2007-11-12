@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
@@ -22,19 +22,19 @@ import java.util.Collection;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleEventCommandTest extends StudyCalendarTestCase {
+public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
     private static final String NEW_REASON = "New Reason";
     private static final Date NEW_DATE = DateUtils.createDate(2003, Calendar.MARCH, 14);
 
-    private ScheduleEventCommand command;
+    private ScheduleActivityCommand command;
 
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEvent event;
+    private ScheduledActivity event;
 
     protected void setUp() throws Exception {
         super.setUp();
         scheduledCalendarDao = registerMockFor(ScheduledCalendarDao.class);
-        command = new ScheduleEventCommand(scheduledCalendarDao);
+        command = new ScheduleActivityCommand(scheduledCalendarDao);
 
         event = Fixtures.createScheduledEvent("ABC", 2003, Calendar.MARCH, 13);
         event.setScheduledArm(new ScheduledArm());
@@ -101,7 +101,7 @@ public class ScheduleEventCommandTest extends StudyCalendarTestCase {
 
 
     public void testEventSpecificModesForConditionalEvent() throws Exception {
-        ScheduledEvent conditionalEvent = Fixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
+        ScheduledActivity conditionalEvent = Fixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
         conditionalEvent.changeState(new Scheduled("Schedule", DateUtils.createDate(2003, Calendar.MARCH, 13)));
         command.setEvent(conditionalEvent);
         command.setNewMode(ScheduledEventMode.SCHEDULED);

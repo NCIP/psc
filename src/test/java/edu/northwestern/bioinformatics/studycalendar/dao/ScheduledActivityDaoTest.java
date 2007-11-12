@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -15,7 +15,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao> {
+public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivityDao> {
     private PlannedActivityDao plannedActivityDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
@@ -34,7 +34,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
     }
     
     public void testGetById() throws Exception {
-        ScheduledEvent loaded = getDao().getById(-10);
+        ScheduledActivity loaded = getDao().getById(-10);
 
         assertEquals("Wrong planned event", -6, (int) loaded.getPlannedActivity().getId());
         assertEquals("Wrong scheduled arm", -22, (int) loaded.getScheduledArm().getId());
@@ -51,7 +51,7 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
     }
     
     public void testGetScheduledEventsFromPlannedActivity() throws Exception {
-        Collection<ScheduledEvent> matches = getDao().getEventsFromPlannedActivity(
+        Collection<ScheduledActivity> matches = getDao().getEventsFromPlannedActivity(
             plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21));
         assertEquals("Wrong number of matches", 2, matches.size());
         Collection<Integer> actualIds = DomainObjectTools.collectIds(matches);
@@ -60,11 +60,11 @@ public class ScheduledEventDaoTest extends ContextDaoTestCase<ScheduledEventDao>
     }
 
     public void testLoadedAndQueriedScheduledEventsFromSameSessionAreSame() throws Exception {
-        ScheduledEvent loaded = getDao().getById(-30);
+        ScheduledActivity loaded = getDao().getById(-30);
         loaded.setDetails("F9");
-        ScheduledEvent queried = null;
+        ScheduledActivity queried = null;
 
-        for (ScheduledEvent e : getDao().getEventsFromPlannedActivity(plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21))) {
+        for (ScheduledActivity e : getDao().getEventsFromPlannedActivity(plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21))) {
             if (e.getId() == -30) {
                 queried = e;
                 break;

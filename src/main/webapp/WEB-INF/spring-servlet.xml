@@ -271,8 +271,8 @@
     <bean name="/cal/schedule/display/*.ics" id="displayICSCalendarController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayICSCalendarController"/>
 
-    <bean name="/cal/scheduleEvent" id="scheduleEventController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleEventController">
+    <bean name="/cal/scheduleActivity" id="scheduleActivityController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleActivityController">
         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
     </bean>
 

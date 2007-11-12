@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 
 public class RedirectToDashboardController extends PscAbstractController {
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private UserDao userDao;
 
     private static final Logger log = LoggerFactory.getLogger(RedirectToDashboardController.class.getName());
@@ -63,10 +63,10 @@ public class RedirectToDashboardController extends PscAbstractController {
         return userDao;
     }
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
-    public ScheduledEventDao getScheduledEventDao() {
-        return scheduledEventDao;
+    public ScheduledActivityDao getScheduledActivityDao() {
+        return scheduledActivityDao;
     }
 }

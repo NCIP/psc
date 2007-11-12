@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 public class ParticipantCoordinatorDashboardService {
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     final String dayNames[] =
     {"Sunday",
@@ -33,7 +33,7 @@ public class ParticipantCoordinatorDashboardService {
 
     public Map<String, Object> getMapOfCurrentEvents(List<StudyParticipantAssignment> studyParticipantAssignments, int initialShiftDate) {
         Date startDate = new Date();
-        Collection<ScheduledEvent> collectionOfEvents;
+        Collection<ScheduledActivity> collectionOfEvents;
         SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
 
         Map <String, Object> participantAndEvents;
@@ -43,14 +43,14 @@ public class ParticipantCoordinatorDashboardService {
             participantAndEvents = new HashMap<String, Object>();
             for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
 
-                List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+                List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
                 ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
-                collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
+                collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
 
                 Participant participant = studyParticipantAssignment.getParticipant();
                 String participantName = participant.getFullName();
                 if (collectionOfEvents.size()>0) {
-                    for (ScheduledEvent event : collectionOfEvents) {
+                    for (ScheduledActivity event : collectionOfEvents) {
                         events.add(event);
                     }
                 }
@@ -70,7 +70,7 @@ public class ParticipantCoordinatorDashboardService {
     public Map<String, Object> getMapOfCurrentEventsForSpecificActivity(
             List<StudyParticipantAssignment> studyParticipantAssignments, int initialShiftDate, Map<ActivityType, Boolean> activities) {
         Date startDate = new Date();
-        Collection<ScheduledEvent> collectionOfEvents;
+        Collection<ScheduledActivity> collectionOfEvents;
         SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
 
         Map <String, Object> participantAndEvents;
@@ -79,14 +79,14 @@ public class ParticipantCoordinatorDashboardService {
             Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
             participantAndEvents = new HashMap<String, Object>();
             for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
-                List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+                List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
                 ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
-                collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
+                collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, tempStartDate, tempStartDate);
                 Participant participant = studyParticipantAssignment.getParticipant();
                 String participantName = participant.getFullName();
 
                 if (collectionOfEvents.size()>0) {
-                    for (ScheduledEvent event : collectionOfEvents) {
+                    for (ScheduledActivity event : collectionOfEvents) {
                         ActivityType eventActivityType = event.getActivity().getType();
                         Boolean value = activities.get(eventActivityType);
                         if (value) {
@@ -122,17 +122,17 @@ public class ParticipantCoordinatorDashboardService {
         //list of events overtue
         Map <Object, Object> participantAndOverDueEvents = new HashMap<Object, Object>();
         for (StudyParticipantAssignment studyParticipantAssignment : studyParticipantAssignments) {
-            List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+            List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
 
             Map<Object, Integer> key = new HashMap<Object, Integer>();
 
             ScheduledCalendar calendar = studyParticipantAssignment.getScheduledCalendar();
 
             Date startDate = studyParticipantAssignment.getStartDateEpoch();
-            Collection<ScheduledEvent> collectionOfEvents = getScheduledEventDao().getEventsByDate(calendar, startDate, endDate);
+            Collection<ScheduledActivity> collectionOfEvents = getScheduledActivityDao().getEventsByDate(calendar, startDate, endDate);
             Participant participant = studyParticipantAssignment.getParticipant();
 
-            for (ScheduledEvent event : collectionOfEvents) {
+            for (ScheduledActivity event : collectionOfEvents) {
                 if(event.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
                     events.add(event);
                 }
@@ -170,10 +170,10 @@ public class ParticipantCoordinatorDashboardService {
 
 
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
-    public ScheduledEventDao getScheduledEventDao() {
-        return scheduledEventDao;
+    public ScheduledActivityDao getScheduledActivityDao() {
+        return scheduledActivityDao;
     }
 }

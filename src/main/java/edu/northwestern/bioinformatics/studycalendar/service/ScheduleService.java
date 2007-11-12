@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
@@ -27,7 +27,7 @@ public class ScheduleService {
      * @param amount
      * @param source
      */
-    public void reviseDate(ScheduledEvent event, int amount, Revision source) {
+    public void reviseDate(ScheduledActivity event, int amount, Revision source) {
         if (!event.getCurrentState().getMode().isOutstanding()) return;
         Calendar newDate = Calendar.getInstance();
         DatedScheduledEventState currentState = (DatedScheduledEventState) event.getCurrentState();

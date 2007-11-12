@@ -14,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -29,7 +29,7 @@ public class MutatorFactory {
     private ParticipantService participantService;
     private TemplateService templateService;
     private ScheduleService scheduleService;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -89,9 +89,9 @@ public class MutatorFactory {
         }
         if (target instanceof PlannedActivity) {
             if ("day".equals(change.getPropertyName())) {
-                return new ChangePlannedActivityDayMutator(change, scheduledEventDao, scheduleService);
+                return new ChangePlannedActivityDayMutator(change, scheduledActivityDao, scheduleService);
             } else if ("details".equals(change.getPropertyName())) {
-                return new ChangePlannedActivitySimplePropertyMutator(change, scheduledEventDao);
+                return new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
             }
             // fall through
         }
@@ -133,7 +133,7 @@ public class MutatorFactory {
     }
 
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
 }

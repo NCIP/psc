@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -42,7 +42,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected ScheduledCalendar scheduledCalendar;
     protected ScheduledArm scheduledArm;
     /** Indexes are [period][event][repetition] */
-    private ScheduledEvent[][][] scheduledEvents;
+    private ScheduledActivity[][][] scheduledEvents;
 
     private Mutator mutator;
 
@@ -70,14 +70,14 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
 
         ParticipantService participantService = new ParticipantService() {
             @Override
-            protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity event) {
+            protected ScheduledActivity createEmptyScheduledEventFor(PlannedActivity event) {
                 return createUnschedulableMockEvent(event);
             }
         };
         participantService.schedulePeriod(period0, amendment, scheduledArm);
         participantService.schedulePeriod(period1, amendment, scheduledArm);
-        scheduledEvents = new ScheduledEvent[2][2][3];
-        for (ScheduledEvent event : scheduledArm.getEvents()) {
+        scheduledEvents = new ScheduledActivity[2][2][3];
+        for (ScheduledActivity event : scheduledArm.getEvents()) {
             int period, pe;
             if      (event.getPlannedActivity() == p0e0) { period = 0; pe = 0; }
             else if (event.getPlannedActivity() == p0e1) { period = 0; pe = 1; }
@@ -89,7 +89,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         }
     }
 
-    protected final ScheduledEvent getScheduledEventFixture(PlannedActivity plannedActivity, int repetition) {
+    protected final ScheduledActivity getScheduledEventFixture(PlannedActivity plannedActivity, int repetition) {
         if      (plannedActivity == p0e0) { return getScheduledEventFixture(0, 0, repetition); }
         else if (plannedActivity == p0e1) { return getScheduledEventFixture(0, 1, repetition); }
         else if (plannedActivity == p1e0) { return getScheduledEventFixture(1, 0, repetition); }
@@ -97,7 +97,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         else throw new Error("Test setup failure: non-fixture PE: " + plannedActivity);
     }
 
-    protected final ScheduledEvent getScheduledEventFixture(int period, int plannedActivity, int repetition) {
+    protected final ScheduledActivity getScheduledEventFixture(int period, int plannedActivity, int repetition) {
         return scheduledEvents[period][plannedActivity][repetition];
     }
 
@@ -118,11 +118,11 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         assertTrue(getMutator().appliesToExistingSchedules());
     }
 
-    private ScheduledEvent createUnschedulableMockEvent(PlannedActivity event) {
-        ScheduledEvent semimock;
+    private ScheduledActivity createUnschedulableMockEvent(PlannedActivity event) {
+        ScheduledActivity semimock;
         try {
-            semimock = registerMockFor(ScheduledEvent.class,
-            ScheduledEvent.class.getMethod("unscheduleIfOutstanding", String.class));
+            semimock = registerMockFor(ScheduledActivity.class,
+            ScheduledActivity.class.getMethod("unscheduleIfOutstanding", String.class));
         } catch (NoSuchMethodException e) {
             throw new Error("This shouldn't happen", e);
         }

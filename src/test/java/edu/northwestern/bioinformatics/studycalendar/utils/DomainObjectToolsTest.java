@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -133,7 +133,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(Participant.class, StudyParticipantAssignment.class);
         assertIsMoreSpecific(StudyParticipantAssignment.class, ScheduledCalendar.class);
         assertIsMoreSpecific(ScheduledCalendar.class, ScheduledArm.class);
-        assertIsMoreSpecific(ScheduledArm.class, ScheduledEvent.class);
+        assertIsMoreSpecific(ScheduledArm.class, ScheduledActivity.class);
     }
 
     public void testPlannedLessSpecificThanScheduled() throws Exception {
@@ -152,7 +152,7 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
 
         assertIsMoreSpecific(anon.getClass(), Site.class);
         assertIsMoreSpecific(anon.getClass(), Study.class);
-        assertIsMoreSpecific(anon.getClass(), ScheduledEvent.class);
+        assertIsMoreSpecific(anon.getClass(), ScheduledActivity.class);
     }
 
     private void assertIsMoreSpecific(Class<? extends DomainObject> lessSpecific, Class<? extends DomainObject> moreSpecific) {

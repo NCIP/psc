@@ -23,9 +23,9 @@ public class StudyService {
         Activity reconsent = activityDao.getByName("Reconsent");
         for(StudyParticipantAssignment assignment: participantAssignments) {
             if (!assignment.isExpired()) {
-                ScheduledEvent upcomingScheduledEvent = getNextScheduledEvent(assignment.getScheduledCalendar(), startDate);
+                ScheduledActivity upcomingScheduledEvent = getNextScheduledEvent(assignment.getScheduledCalendar(), startDate);
                 if (upcomingScheduledEvent != null) {
-                    ScheduledEvent reconsentEvent = new ScheduledEvent();
+                    ScheduledActivity reconsentEvent = new ScheduledActivity();
                     reconsentEvent.setIdealDate(upcomingScheduledEvent.getActualDate());
                     reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledEvent.getActualDate()));
                     reconsentEvent.setDetails(details);
@@ -37,13 +37,13 @@ public class StudyService {
         studyDao.save(study);
     }
 
-    private ScheduledEvent getNextScheduledEvent(ScheduledCalendar calendar, Date startDate) {
+    private ScheduledActivity getNextScheduledEvent(ScheduledCalendar calendar, Date startDate) {
         for (ScheduledArm arm : calendar.getScheduledArms()) {
             if (!arm.isComplete()) {
-                Map<Date, List<ScheduledEvent>> eventsByDate = arm.getEventsByDate();
+                Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();
                 for(Date date: eventsByDate.keySet()) {
-                    List<ScheduledEvent> events = eventsByDate.get(date);
-                    for(ScheduledEvent event : events) {
+                    List<ScheduledActivity> events = eventsByDate.get(date);
+                    for(ScheduledActivity event : events) {
                         if ((event.getActualDate().after(startDate) || event.getActualDate().equals(startDate))
                                 && ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode() ) {
                             return event;

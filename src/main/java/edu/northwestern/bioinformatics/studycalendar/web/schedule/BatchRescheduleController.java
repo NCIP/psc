@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 @AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
 public class BatchRescheduleController extends PscAbstractCommandController<BatchRescheduleCommand> {
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private ScheduledCalendarDao scheduledCalendarDao;
 
     public BatchRescheduleController() {
@@ -37,7 +37,7 @@ public class BatchRescheduleController extends PscAbstractCommandController<Batc
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
 
-        getControllerTools().registerDomainObjectEditor(binder, "events", scheduledEventDao);
+        getControllerTools().registerDomainObjectEditor(binder, "events", scheduledActivityDao);
         getControllerTools().registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(ScheduledEventMode.class, "newMode", new ControlledVocabularyEditor(ScheduledEventMode.class));
@@ -52,8 +52,8 @@ public class BatchRescheduleController extends PscAbstractCommandController<Batc
     ////// CONFIGURATION
 
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
 
     public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {

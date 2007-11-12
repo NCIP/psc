@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
@@ -44,7 +44,7 @@ public interface ScheduledCalendarService {
      * @return The full schedule, with all scheduled arms and scheduled events, as it currently exists.
      * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar
      * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity
      */
     ScheduledCalendar getScheduledCalendar(Study study, Participant participant, Site site);
 
@@ -59,7 +59,7 @@ public interface ScheduledCalendarService {
      * @param startDate The beginning of the range of dates to include.  If null, there is no early limit.
      * @param endDate The end of the range of dates to include.  If null, there is no late limit.
      */
-    Collection<ScheduledEvent> getScheduledEvents(
+    Collection<ScheduledActivity> getScheduledActivities(
         Study study, Participant participant, Site site, Date startDate, Date endDate);
 
     /**
@@ -73,7 +73,7 @@ public interface ScheduledCalendarService {
      * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred
      * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled
      */
-    ScheduledEvent changeEventState(ScheduledEvent event, ScheduledEventState newState);
+    ScheduledActivity changeEventState(ScheduledActivity event, ScheduledEventState newState);
 
     /**
      * Indicate the next arm for the participant's schedule.

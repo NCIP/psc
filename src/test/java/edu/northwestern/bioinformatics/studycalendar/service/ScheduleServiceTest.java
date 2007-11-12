@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -56,7 +56,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForScheduledScheduledEvent() throws Exception {
-        ScheduledEvent event = createScheduledEvent("DC", 2004, Calendar.APRIL, 1);
+        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 1);
         scheduledArm.addEvent(event);
 
         service.reviseDate(event, 7, amendment);
@@ -67,7 +67,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForConditionalScheduledEvent() throws Exception {
-        ScheduledEvent event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
             new Conditional("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
         scheduledArm.addEvent(event);
 
@@ -79,7 +79,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForOccurredScheduledEvent() throws Exception {
-        ScheduledEvent event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
             new Occurred("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
         scheduledArm.addEvent(event);
 
@@ -90,7 +90,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForCanceledScheduledEvent() throws Exception {
-        ScheduledEvent event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
             new Canceled("DC"));
         scheduledArm.addEvent(event);
 
@@ -101,7 +101,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReviseDateForNotApplicableScheduledEvent() throws Exception {
-        ScheduledEvent event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
             new NotApplicable("DC"));
         scheduledArm.addEvent(event);
 
@@ -116,7 +116,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         noThursdays.setDayOfTheWeek("Thursday");
         site.getHolidaysAndWeekends().add(noThursdays);
 
-        ScheduledEvent event = createScheduledEvent("DC", 2007, Calendar.OCTOBER, 2);
+        ScheduledActivity event = createScheduledEvent("DC", 2007, Calendar.OCTOBER, 2);
         scheduledArm.addEvent(event);
 
         service.reviseDate(event, 2, amendment);

@@ -29,7 +29,7 @@ import java.io.Serializable;
  * Hibernate {@link org.hibernate.usertype.UserType} that loads
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState}
  * values for the
- * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent#getCurrentState}
+ * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity#getCurrentState}
  * property polymorphically.
  *
  * @author Rhett Sutphin

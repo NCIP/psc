@@ -37,7 +37,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_scheduled_events_id")
     }
 )
-public class ScheduledEvent extends AbstractMutableDomainObject {
+public class ScheduledActivity extends AbstractMutableDomainObject {
     private ScheduledArm scheduledArm;
     private PlannedActivity plannedActivity;
     private Date idealDate;

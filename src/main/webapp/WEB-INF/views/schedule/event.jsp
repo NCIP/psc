@@ -79,16 +79,16 @@
         <form:form>
             <div class="row even">
                 <div class="label">Activity</div>
-                <div class="value">${scheduledEvent.activity.name}</div>
+                <div class="value">${scheduledActivity.activity.name}</div>
             </div>
             <div class="row odd">
                 <div class="label">Details</div>
-                <div class="value">${scheduledEvent.details}</div>
+                <div class="value">${scheduledActivity.details}</div>
             </div>
-            <c:if test="${not empty scheduledEvent.plannedActivity.condition}">
+            <c:if test="${not empty scheduledActivity.plannedActivity.condition}">
                 <div class="row even">
                     <div class="label">Condition</div>
-                    <div class="value">${scheduledEvent.plannedActivity.condition}</div>
+                    <div class="value">${scheduledActivity.plannedActivity.condition}</div>
                 </div>
             </c:if>
             <div class="row even">
@@ -98,10 +98,10 @@
                 </div>
                 <div class="value">
                     <ul id="states">
-                        <c:forEach items="${scheduledEvent.previousStates}" var="state">
+                        <c:forEach items="${scheduledActivity.previousStates}" var="state">
                             <li class="previous">${state.textSummary}</li>
                         </c:forEach>
-                        <li class="current">${scheduledEvent.currentState.textSummary}</li>
+                        <li class="current">${scheduledActivity.currentState.textSummary}</li>
                     </ul>
                     <label id="new-mode-selector-group">Change to
                         <form:select path="newMode" id="new-mode-selector">

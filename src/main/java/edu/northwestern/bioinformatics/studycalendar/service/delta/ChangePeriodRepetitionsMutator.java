@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
@@ -42,7 +42,7 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
 
     private void decrease(Collection<ScheduledArm> arms) {
         for (ScheduledArm scheduledArm : arms) {
-            for (ScheduledEvent event : scheduledArm.getEvents()) {
+            for (ScheduledActivity event : scheduledArm.getEvents()) {
                 if (event.getRepetitionNumber() >= newRepetitionCount && getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     log.debug("Possibly canceling event from rep {}", event.getRepetitionNumber());
                     event.unscheduleIfOutstanding(createDecreaseMessage(event));
@@ -51,7 +51,7 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
         }
     }
 
-    private String createDecreaseMessage(ScheduledEvent event) {
+    private String createDecreaseMessage(ScheduledActivity event) {
         return new StringBuilder()
             .append("Repetition ").append(event.getRepetitionNumber() + 1)
             .append(" removed in revision ")

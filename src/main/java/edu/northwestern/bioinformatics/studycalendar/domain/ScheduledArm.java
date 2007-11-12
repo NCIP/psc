@@ -29,7 +29,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 )
 public class ScheduledArm extends AbstractMutableDomainObject {
     private ScheduledCalendar scheduledCalendar;
-    private List<ScheduledEvent> events = new LinkedList<ScheduledEvent>();
+    private List<ScheduledActivity> events = new LinkedList<ScheduledActivity>();
     private Integer startDay;
     private Date startDate;
 
@@ -37,7 +37,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
 
     ////// LOGIC
 
-    public void addEvent(ScheduledEvent event) {
+    public void addEvent(ScheduledActivity event) {
         getEvents().add(event);
         event.setScheduledArm(this);
     }
@@ -67,12 +67,12 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public SortedMap<Date, List<ScheduledEvent>> getEventsByDate() {
-        SortedMap<Date, List<ScheduledEvent>> byDate = new TreeMap<Date, List<ScheduledEvent>>();
-        for (ScheduledEvent event : getEvents()) {
+    public SortedMap<Date, List<ScheduledActivity>> getEventsByDate() {
+        SortedMap<Date, List<ScheduledActivity>> byDate = new TreeMap<Date, List<ScheduledActivity>>();
+        for (ScheduledActivity event : getEvents()) {
             Date key = event.getActualDate();
             if (!byDate.containsKey(key)) {
-                byDate.put(key, new LinkedList<ScheduledEvent>());
+                byDate.put(key, new LinkedList<ScheduledActivity>());
             }
             byDate.get(key).add(event);
         }
@@ -94,7 +94,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
 
     @Transient
     public boolean isComplete() {
-        for (ScheduledEvent event : getEvents()) {
+        for (ScheduledActivity event : getEvents()) {
             if (event.getCurrentState().getMode().isOutstanding()) {
                 return false;
             }
@@ -103,7 +103,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     public void unscheduleOutstandingEvents(String reason) {
-        for (ScheduledEvent event : getEvents()) event.unscheduleIfOutstanding(reason);
+        for (ScheduledActivity event : getEvents()) event.unscheduleIfOutstanding(reason);
     }
 
     ////// BEAN PROPERTIES
@@ -111,11 +111,11 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     @OneToMany(mappedBy = "scheduledArm")
     @OrderBy(clause="ideal_date")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<ScheduledEvent> getEvents() {
+    public List<ScheduledActivity> getEvents() {
         return events;
     }
 
-    public void setEvents(List<ScheduledEvent> events) {
+    public void setEvents(List<ScheduledActivity> events) {
         this.events = events;
     }
 

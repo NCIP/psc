@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
@@ -35,7 +35,7 @@ public class RemovePeriodMutator extends RemoveMutator {
         Revision rev = change.getDelta().getRevision();
         for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
             log.debug("Applying removal of {} to {}", removedPeriod, scheduledArm.getName());
-            for (ScheduledEvent se : scheduledArm.getEvents()) {
+            for (ScheduledActivity se : scheduledArm.getEvents()) {
                 Period period = templateService.findParent(se.getPlannedActivity());
                 if (period.equals(removedPeriod)) {
                     se.unscheduleIfOutstanding("Removed in revision " + rev.getDisplayName());

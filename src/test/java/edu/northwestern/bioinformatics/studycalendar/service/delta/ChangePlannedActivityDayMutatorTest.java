@@ -2,14 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import static org.easymock.EasyMock.expect;
 
@@ -21,9 +21,9 @@ import java.util.Arrays;
 public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
     private ChangePlannedActivityDayMutator mutator;
     private PlannedActivity plannedActivity;
-    private ScheduledEvent se0, se1;
+    private ScheduledActivity se0, se1;
     private PropertyChange change;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private Amendment amendment;
     private ScheduleService scheduleService;
     private ScheduledCalendar scheduledCalendar;
@@ -42,24 +42,24 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
         amendment.addDelta(Delta.createDeltaFor(plannedActivity, change));
 
         scheduleService = registerMockFor(ScheduleService.class);
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
     }
 
     private ChangePlannedActivityDayMutator getMutator() {
         if (mutator == null) {
-            mutator = new ChangePlannedActivityDayMutator(change, scheduledEventDao, scheduleService);
+            mutator = new ChangePlannedActivityDayMutator(change, scheduledActivityDao, scheduleService);
         }
         return mutator;
     }
 
-    private ScheduledEvent createScheduledEvent() {
-        ScheduledEvent se = new ScheduledEvent();
+    private ScheduledActivity createScheduledEvent() {
+        ScheduledActivity se = new ScheduledActivity();
         se.setPlannedActivity(plannedActivity);
         return se;
     }
 
     public void testShiftForward() throws Exception {
-        expect(scheduledEventDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(se0, se1));
         scheduleService.reviseDate(se0, 2, amendment);
         scheduleService.reviseDate(se1, 2, amendment);
@@ -72,7 +72,7 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
     public void testShiftBack() throws Exception {
         change.setNewValue("1");
 
-        expect(scheduledEventDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
+        expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(se0, se1));
         scheduleService.reviseDate(se0, -1, amendment);
         scheduleService.reviseDate(se1, -1, amendment);

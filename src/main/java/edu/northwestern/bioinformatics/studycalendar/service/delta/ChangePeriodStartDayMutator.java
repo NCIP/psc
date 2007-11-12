@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 
@@ -25,7 +25,7 @@ public class ChangePeriodStartDayMutator extends AbstractPeriodPropertyChangeMut
     @Override
     public void apply(ScheduledCalendar calendar) {
         for (ScheduledArm scheduledArm : getScheduledArmsToMutate(calendar)) {
-            for (ScheduledEvent event : scheduledArm.getEvents()) {
+            for (ScheduledActivity event : scheduledArm.getEvents()) {
                 if (getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     scheduleService.reviseDate(event, shiftAmount, change.getDelta().getRevision());
                 }

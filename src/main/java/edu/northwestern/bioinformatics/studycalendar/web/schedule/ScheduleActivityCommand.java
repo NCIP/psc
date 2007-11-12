@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleEventCommand {
-    private static final Logger log = LoggerFactory.getLogger(ScheduleEventCommand.class.getName());
+public class ScheduleActivityCommand {
+    private static final Logger log = LoggerFactory.getLogger(ScheduleActivityCommand.class.getName());
 
-    private ScheduledEvent event;
+    private ScheduledActivity event;
     private ScheduledEventMode newMode;
     private String newReason;
     private Date newDate;
@@ -28,7 +28,7 @@ public class ScheduleEventCommand {
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
-    public ScheduleEventCommand(ScheduledCalendarDao scheduledCalendarDao) {
+    public ScheduleActivityCommand(ScheduledCalendarDao scheduledCalendarDao) {
         this.scheduledCalendarDao = scheduledCalendarDao;
     }
 
@@ -57,11 +57,11 @@ public class ScheduleEventCommand {
 
     ////// BOUND PROPERTIES
 
-    public ScheduledEvent getEvent() {
+    public ScheduledActivity getEvent() {
         return event;
     }
 
-    public void setEvent(ScheduledEvent event) {
+    public void setEvent(ScheduledActivity event) {
         this.event = event;
     }
 

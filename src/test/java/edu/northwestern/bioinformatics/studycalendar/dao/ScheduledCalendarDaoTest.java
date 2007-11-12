@@ -50,7 +50,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong number of events in arm 0", 5, cal.getScheduledArms().get(0).getEvents().size());
         assertEquals("Wrong number of events in arm 1", 0, cal.getScheduledArms().get(1).getEvents().size());
 
-        ScheduledEvent event = cal.getScheduledArms().get(0).getEvents().get(0);
+        ScheduledActivity event = cal.getScheduledArms().get(0).getEvents().get(0);
         assertEquals("Wrong event", -10, (int) event.getId());
         assertEquals("Wrong base event for event", -6, (int) event.getPlannedActivity().getId());
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, event.getIdealDate());
@@ -127,7 +127,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             ScheduledArm lastScheduledArm = Fixtures.createScheduledArm(arm4);
             calendar.addArm(lastScheduledArm);
 
-            ScheduledEvent event = new ScheduledEvent();
+            ScheduledActivity event = new ScheduledActivity();
             event.setIdealDate(expectedIdealDate);
             event.setPlannedActivity(arm3.getPeriods().iterator().next().getPlannedActivities().get(0));
             event.changeState(new Occurred(expectedReason, expectedActualDate));
@@ -151,7 +151,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong arm 2", -4, (int) reloaded.getScheduledArms().get(2).getArm().getId());
 
         assertEquals("Wrong number of events for last arm", 1, reloaded.getScheduledArms().get(2).getEvents().size());
-        ScheduledEvent loadedEvent = reloaded.getScheduledArms().get(2).getEvents().get(0);
+        ScheduledActivity loadedEvent = reloaded.getScheduledArms().get(2).getEvents().get(0);
         assertSameDay("Wrong ideal date", expectedIdealDate, loadedEvent.getIdealDate());
         assertEquals("Wrong planned event", -7, (int) loadedEvent.getPlannedActivity().getId());
 

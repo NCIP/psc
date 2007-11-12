@@ -27,7 +27,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordina
 public class ScheduleController extends PscSimpleFormController {
 	private TemplateService templateService;
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 	private StudyDao studyDao;
     private UserDao userDao;
     private ParticipantCoordinatorDashboardService participantCoordinatorDashboardService;
@@ -104,7 +104,7 @@ public class ScheduleController extends PscSimpleFormController {
         User user = userDao.getByName(userName);
         scheduleCommand.setUser(user);
         scheduleCommand.setUserDao(userDao);
-        scheduleCommand.setScheduledEventDao(scheduledEventDao);
+        scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = scheduleCommand.execute(getPAService());
         return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
     }
@@ -134,11 +134,11 @@ public class ScheduleController extends PscSimpleFormController {
         return userDao;
     }
     @Required
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
-    public ScheduledEventDao getScheduledEventDao() {
-        return scheduledEventDao;
+    public ScheduledActivityDao getScheduledActivityDao() {
+        return scheduledActivityDao;
     }
 
     public ParticipantCoordinatorDashboardService getPAService() {

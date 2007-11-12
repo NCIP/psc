@@ -24,7 +24,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 /**
  * @author Rhett Sutphin
  */
-@Entity // This isn't really an entity, but the @OneToMany from ScheduledEvent doesn't work otherwise
+@Entity // This isn't really an entity, but the @OneToMany from ScheduledActivity doesn't work otherwise
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
         @Parameter(name="sequence", value="seq_scheduled_event_states_id")

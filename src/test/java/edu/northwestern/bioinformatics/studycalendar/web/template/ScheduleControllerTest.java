@@ -25,7 +25,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
 	private TemplateService templateService;
 
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 	private StudyDao studyDao;
     private UserDao userDao;
     private User user;
@@ -69,7 +69,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
         studyDao = registerDaoMockFor(StudyDao.class);
         userDao = registerDaoMockFor(UserDao.class);
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
 
         templateService = registerMockFor(TemplateService.class);
         command = registerMockFor(ScheduleCommand.class);
@@ -81,7 +81,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         };
         controller.setStudyDao(studyDao);
         controller.setUserDao(userDao);
-        controller.setScheduledEventDao(scheduledEventDao);
+        controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setTemplateService(templateService);
         controller.setParticipantCoordinatorDashboardService(paService);
 
@@ -122,7 +122,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
     public void testOnSubmit() throws Exception {
         command.setUser(user);
         command.setUserDao(userDao);
-        command.setScheduledEventDao(scheduledEventDao);
+        command.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = null;
         expect(command.execute(paService)).andReturn(model);
         replayMocks();

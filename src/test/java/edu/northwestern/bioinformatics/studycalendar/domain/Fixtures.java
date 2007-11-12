@@ -154,17 +154,17 @@ public class Fixtures {
         return scheduledArm;
     }
 
-    public static ScheduledEvent createScheduledEvent(
+    public static ScheduledActivity createScheduledEvent(
         String activityName, int year, int month, int day, ScheduledEventState state
     ) {
-        ScheduledEvent event = createScheduledEvent(activityName, year, month, day);
+        ScheduledActivity event = createScheduledEvent(activityName, year, month, day);
         event.changeState(state);
         return event;
     }
 
-    public static ScheduledEvent createScheduledEvent(String activityName, int year, int month, int day) {
+    public static ScheduledActivity createScheduledEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
-        ScheduledEvent event = new ScheduledEvent();
+        ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(baseEvent);
         event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
@@ -172,10 +172,10 @@ public class Fixtures {
         return event;
     }
 
-    public static ScheduledEvent createConditionalEvent(String activityName, int year, int month, int day) {
+    public static ScheduledActivity createConditionalEvent(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         baseEvent.setCondition("Details");
-        ScheduledEvent event = new ScheduledEvent();
+        ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(baseEvent);
         event.setActivity(createActivity(activityName));
         event.setIdealDate(DateUtils.createDate(year, month, day - 2));
@@ -190,8 +190,8 @@ public class Fixtures {
     }
 
 
-    public static void addEvents(ScheduledArm scheduledArm, ScheduledEvent... events) {
-        for (ScheduledEvent event : events) {
+    public static void addEvents(ScheduledArm scheduledArm, ScheduledActivity... events) {
+        for (ScheduledActivity event : events) {
             scheduledArm.addEvent(event);
         }
     }

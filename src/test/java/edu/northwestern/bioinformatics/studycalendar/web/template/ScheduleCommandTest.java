@@ -10,7 +10,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledEvent;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addEvents;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
 
 import java.util.*;
@@ -24,7 +24,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     private User user;
     private String userName;
     private UserDao userDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     private ScheduleCommand command = new ScheduleCommand();
     private ParticipantCoordinatorDashboardService paService;
@@ -39,15 +39,15 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         user.setName(userName);
         userDao = registerDaoMockFor(UserDao.class);
         userDao = registerMockFor(UserDao.class);
-        scheduledEventDao = registerMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerMockFor(ScheduledActivityDao.class);
 
-        command.setScheduledEventDao(scheduledEventDao);
+        command.setScheduledActivityDao(scheduledActivityDao);
         command.setUserDao(userDao);
         command.setUser(user);
         command.setToDate(3);
 
         paService = new ParticipantCoordinatorDashboardService();
-        paService.setScheduledEventDao(scheduledEventDao);
+        paService.setScheduledActivityDao(scheduledActivityDao);
 
     }
 
@@ -82,7 +82,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         ScheduledCalendar calendar;
 
-        ScheduledEvent e1, e2, e3;
+        ScheduledActivity e1, e2, e3;
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addArm(new ScheduledArm());
@@ -106,21 +106,21 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         List<StudyParticipantAssignment> studyParticipantAssignment = new ArrayList<StudyParticipantAssignment>();
         studyParticipantAssignment.add(assignment);
 
-        Collection<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
         events.add(e1);
         Date startDate = new Date();
         Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(events);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(events);
 
-        Collection<ScheduledEvent> eventsTwo = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwo = new ArrayList<ScheduledActivity>();
         eventsTwo.add(e2);
         Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwo);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwo);
 
-        Collection<ScheduledEvent> eventsThree = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThree = new ArrayList<ScheduledActivity>();
         eventsThree.add(e3);
         Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
 
         replayMocks();
         Map<String, Object> map = paService.getMapOfCurrentEvents(studyParticipantAssignment, 3);
@@ -157,7 +157,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         StudyParticipantAssignment assignment = new StudyParticipantAssignment();
         ScheduledCalendar calendar;
 
-        ScheduledEvent e1, e2, e3;
+        ScheduledActivity e1, e2, e3;
 
         calendar = setId(6, new ScheduledCalendar());
         calendar.addArm(new ScheduledArm());
@@ -190,21 +190,21 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         activities.put(ActivityType.INTERVENTION, true);
 
 
-        Collection<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
         events.add(e1);
         Date startDate = new Date();
         Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(events);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(events);
 
-        Collection<ScheduledEvent> eventsTwo = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwo = new ArrayList<ScheduledActivity>();
         eventsTwo.add(e2);
         Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwo);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwo);
 
-        Collection<ScheduledEvent> eventsThree = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThree = new ArrayList<ScheduledActivity>();
         eventsThree.add(e3);
         Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
 
         replayMocks();
         Map<String, Object> map = paService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignment, 3, activities);
@@ -247,7 +247,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledCalendar calendar;
         ScheduledCalendar calendarTwo;
 
-        ScheduledEvent e1, e2, e3, e5, e6, e7;
+        ScheduledActivity e1, e2, e3, e5, e6, e7;
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
         activities.put(ActivityType.LAB_TEST, true);
@@ -294,30 +294,30 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         expect(userDao.getAssignments(user)).andReturn(studyParticipantAssignments);
 
 
-        Collection<ScheduledEvent> eventsForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsForKate = new ArrayList<ScheduledActivity>();
         eventsForKate.add(e1);
-        Collection<ScheduledEvent> eventsForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsForBill = new ArrayList<ScheduledActivity>();
         Date startDate = new Date();
         Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(eventsForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateOne, tempStartDateOne)).andReturn(eventsForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(eventsForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateOne, tempStartDateOne)).andReturn(eventsForBill);
 
-        Collection<ScheduledEvent> eventsTwoForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwoForKate = new ArrayList<ScheduledActivity>();
         eventsTwoForKate.add(e2);
-        Collection<ScheduledEvent> eventsTwoForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwoForBill = new ArrayList<ScheduledActivity>();
         eventsTwoForBill.add(e5);
         Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForBill);
 
-        Collection<ScheduledEvent> eventsThreeForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThreeForKate = new ArrayList<ScheduledActivity>();
         eventsThreeForKate.add(e3);
-        Collection<ScheduledEvent> eventsThreeForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThreeForBill = new ArrayList<ScheduledActivity>();
         eventsThreeForBill.add(e6);
 
         Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForBill);
 
         command.setActivityTypes(activities);
 
@@ -382,7 +382,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledCalendar calendar;
         ScheduledCalendar calendarTwo;
 
-        ScheduledEvent e1, e2, e3, e5, e6, e7;
+        ScheduledActivity e1, e2, e3, e5, e6, e7;
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
         activities.put(ActivityType.DISEASE_MEASURE, true);
@@ -436,30 +436,30 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         expect(userDao.getAssignments(user)).andReturn(studyParticipantAssignments);
 
 
-        Collection<ScheduledEvent> eventsForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsForKate = new ArrayList<ScheduledActivity>();
         eventsForKate.add(e1);
-        Collection<ScheduledEvent> eventsForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsForBill = new ArrayList<ScheduledActivity>();
         Date startDate = new Date();
         Date tempStartDateOne = paService.shiftStartDayByNumberOfDays(startDate, 0);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(eventsForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateOne, tempStartDateOne)).andReturn(eventsForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateOne, tempStartDateOne)).andReturn(eventsForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateOne, tempStartDateOne)).andReturn(eventsForBill);
 
-        Collection<ScheduledEvent> eventsTwoForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwoForKate = new ArrayList<ScheduledActivity>();
         eventsTwoForKate.add(e2);
-        Collection<ScheduledEvent> eventsTwoForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsTwoForBill = new ArrayList<ScheduledActivity>();
         eventsTwoForBill.add(e5);
         Date tempStartDateTwo = paService.shiftStartDayByNumberOfDays(startDate, 1);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateTwo, tempStartDateTwo)).andReturn(eventsTwoForBill);
 
-        Collection<ScheduledEvent> eventsThreeForKate = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThreeForKate = new ArrayList<ScheduledActivity>();
         eventsThreeForKate.add(e3);
-        Collection<ScheduledEvent> eventsThreeForBill = new ArrayList<ScheduledEvent>();
+        Collection<ScheduledActivity> eventsThreeForBill = new ArrayList<ScheduledActivity>();
         eventsThreeForBill.add(e6);
 
         Date tempStartDateThree = paService.shiftStartDayByNumberOfDays(startDate, 2);
-        expect(scheduledEventDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForKate);
-        expect(scheduledEventDao.getEventsByDate(calendarTwo, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForBill);
+        expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForKate);
+        expect(scheduledActivityDao.getEventsByDate(calendarTwo, tempStartDateThree, tempStartDateThree)).andReturn(eventsThreeForBill);
 
         command.setActivityTypes(activities);
 

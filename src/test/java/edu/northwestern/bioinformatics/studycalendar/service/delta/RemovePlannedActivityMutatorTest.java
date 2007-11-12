@@ -26,7 +26,7 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
     ScheduledArm scheduledArm;
 
     private PlannedActivityDao plannedActivityDao;
-    private ScheduledEvent pe0se0, pe1se0, pe1se1, pe2se0, pe0se1;
+    private ScheduledActivity pe0se0, pe1se0, pe1se1, pe2se0, pe0se1;
 
     @Override
     protected void setUp() throws Exception {
@@ -69,9 +69,9 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    private ScheduledEvent createUnschedulableMockEvent(PlannedActivity event) throws NoSuchMethodException {
-        ScheduledEvent semimock = registerMockFor(ScheduledEvent.class,
-            ScheduledEvent.class.getMethod("unscheduleIfOutstanding", String.class));
+    private ScheduledActivity createUnschedulableMockEvent(PlannedActivity event) throws NoSuchMethodException {
+        ScheduledActivity semimock = registerMockFor(ScheduledActivity.class,
+            ScheduledActivity.class.getMethod("unscheduleIfOutstanding", String.class));
         semimock.setPlannedActivity(event);
         return semimock;
     }

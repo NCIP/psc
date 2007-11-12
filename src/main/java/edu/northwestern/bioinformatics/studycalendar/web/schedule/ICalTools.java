@@ -24,7 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
@@ -57,11 +57,11 @@ public class ICalTools {
 
 				// now add the events in calendar.
 				for (ScheduledArm scheduledArm : scheduledArms) {
-					SortedMap<Date, List<ScheduledEvent>> events = scheduledArm.getEventsByDate();
+					SortedMap<Date, List<ScheduledActivity>> events = scheduledArm.getEventsByDate();
 					for (Date date : events.keySet()) {
-						List<ScheduledEvent> event = events.get(date);
-						for (final ScheduledEvent scheduleEvent : event) {
-							VEvent vEvent = generateAllDayEventForAnScheduleEventOfPatient(scheduleEvent, date,
+						List<ScheduledActivity> event = events.get(date);
+						for (final ScheduledActivity scheduleActivity : event) {
+							VEvent vEvent = generateAllDayEventForAnScheduleEventOfPatient(scheduleActivity, date,
 									studyParticipantAssignment.getParticipant());
 							if (vEvent != null) {
 								icsCalendar.getComponents().add(vEvent);
@@ -82,22 +82,22 @@ public class ICalTools {
 	 * of {@link ScheduledEventMode.SCHEDULED}
 	 * 
 	 * @param participant patient on which study is done
-	 * @param scheduledEvent the scheduled event for which ics calendar event need to be generated
+	 * @param scheduledActivity the scheduled event for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
 	 * @param participant
 	 * 
-	 * @return the ics calendar event. Returns null if scheduledEvent has no activity or date is null or ScheduleEvent is not of
+	 * @return the ics calendar event. Returns null if scheduledActivity has no activity or date is null or ScheduleEvent is not of
 	 *         {@link ScheduledEventMode.SCHEDULED}
 	 */
-	private static VEvent generateAllDayEventForAnScheduleEventOfPatient(final ScheduledEvent scheduledEvent,
+	private static VEvent generateAllDayEventForAnScheduleEventOfPatient(final ScheduledActivity scheduledActivity,
 			final Date date, final Participant participant) {
-		final Activity activity = scheduledEvent.getActivity();
-		if (activity != null && date != null && scheduledEvent.getCurrentState() != null
-				&& scheduledEvent.getCurrentState().getMode() != null
-				&& scheduledEvent.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+		final Activity activity = scheduledActivity.getActivity();
+		if (activity != null && date != null && scheduledActivity.getCurrentState() != null
+				&& scheduledActivity.getCurrentState().getMode() != null
+				&& scheduledActivity.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
 			String eventDetails = activity.getName();
-			if (scheduledEvent.getDetails() != null && !scheduledEvent.getDetails().trim().equalsIgnoreCase("")) {
-				eventDetails = eventDetails + " (" + scheduledEvent.getDetails() + ")";
+			if (scheduledActivity.getDetails() != null && !scheduledActivity.getDetails().trim().equalsIgnoreCase("")) {
+				eventDetails = eventDetails + " (" + scheduledActivity.getDetails() + ")";
 			}
 
 			VEvent vEvent = new VEvent(new net.fortuna.ical4j.model.Date(date.getTime()), eventDetails);

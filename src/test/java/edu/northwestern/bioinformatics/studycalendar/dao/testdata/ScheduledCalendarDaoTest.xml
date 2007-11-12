@@ -52,7 +52,7 @@
     <SCHEDULED_EVENT_MODES id="2" name="occurred"/>
     <SCHEDULED_EVENT_MODES id="3" name="canceled"/>
 
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-10"
         scheduled_arm_id="-22"
         planned_activity_id="-6"
@@ -89,7 +89,7 @@
         actual_date="2006-10-25"
         reason="Called to reschedule"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-15"
         scheduled_arm_id="-22"
         planned_activity_id="-6"
@@ -100,7 +100,7 @@
         details="Nice Details!!"
         source_amendment_id="-17"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-16"
         scheduled_arm_id="-22"
         planned_activity_id="-6"
@@ -111,7 +111,7 @@
         details="Nice Details!!"
         source_amendment_id="-17"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-17"
         scheduled_arm_id="-22"
         planned_activity_id="-6"
@@ -121,7 +121,7 @@
         details="Nice Details!!"
         source_amendment_id="-17"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-18"
         scheduled_arm_id="-22"
         planned_activity_id="-6"
@@ -145,7 +145,7 @@
         start_day="2"
         list_index="0"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-30"
         scheduled_arm_id="-23"
         planned_activity_id="-6"
@@ -154,7 +154,7 @@
         activity_id="-100"
         source_amendment_id="-17"
         />
-    <SCHEDULED_EVENTS
+    <SCHEDULED_ACTIVITIES
         id="-31"
         scheduled_arm_id="-23"
         planned_activity_id="-6"

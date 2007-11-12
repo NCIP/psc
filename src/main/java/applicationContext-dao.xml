@@ -41,7 +41,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled</value>
@@ -132,7 +132,7 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled</value>
@@ -223,7 +223,7 @@
 
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>
     <bean id="scheduledArmDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao"/>
-    <bean id="scheduledEventDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao"/>
+    <bean id="scheduledActivityDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao"/>
     <bean id="adverseEventNotificationDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.AdverseEventNotificationDao"/>
 
     <bean id="loginAuditDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.auditing.LoginAuditDao"/>

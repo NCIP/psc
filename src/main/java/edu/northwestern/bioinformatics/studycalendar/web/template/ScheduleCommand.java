@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledEventDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 
 import java.util.*;
 
@@ -14,7 +14,7 @@ public class ScheduleCommand {
     private Integer toDate;
     private User user;
     private UserDao userDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
 
     private Map<ActivityType, Boolean> activityTypes = new HashMap<ActivityType, Boolean>();
     private ActivityType activityType;
@@ -66,12 +66,12 @@ public class ScheduleCommand {
         this.userDao = userDao;
     }
 
-    public ScheduledEventDao getScheduledEventDao() {
-        return scheduledEventDao;
+    public ScheduledActivityDao getScheduledActivityDao() {
+        return scheduledActivityDao;
     }
 
-    public void setScheduledEventDao(ScheduledEventDao scheduledEventDao) {
-        this.scheduledEventDao = scheduledEventDao;
+    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
 
 

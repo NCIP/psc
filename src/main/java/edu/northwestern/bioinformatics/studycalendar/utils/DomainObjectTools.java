@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -46,7 +46,7 @@ public class DomainObjectTools {
         StudyParticipantAssignment.class,
         ScheduledCalendar.class,
         ScheduledArm.class,
-        ScheduledEvent.class
+        ScheduledActivity.class
     );
 
     public static <T extends DomainObject> Map<Integer, T> byId(List<T> objs) {

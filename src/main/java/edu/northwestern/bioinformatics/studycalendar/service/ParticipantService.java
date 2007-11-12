@@ -13,7 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -180,7 +180,7 @@ public class ParticipantService {
 
         int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * repetitionNumber;
         log.debug(" - rep {}; offset: {}", repetitionNumber, repOffset);
-        ScheduledEvent event = createEmptyScheduledEventFor(plannedActivity);
+        ScheduledActivity event = createEmptyScheduledEventFor(plannedActivity);
         event.setRepetitionNumber(repetitionNumber);
         event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetArm.getStartDate()));
 
@@ -198,24 +198,24 @@ public class ParticipantService {
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
-    protected ScheduledEvent createEmptyScheduledEventFor(PlannedActivity plannedActivity) {
-        ScheduledEvent event = new ScheduledEvent();
+    protected ScheduledActivity createEmptyScheduledEventFor(PlannedActivity plannedActivity) {
+        ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(plannedActivity);
         return event;
     }
 
     private void avoidBlackoutDates(ScheduledArm arm, Site site) {
-       List<ScheduledEvent> listOfEvents = arm.getEvents();
-        for (ScheduledEvent event : listOfEvents) {
+       List<ScheduledActivity> listOfEvents = arm.getEvents();
+        for (ScheduledActivity event : listOfEvents) {
             avoidBlackoutDates(event, site);
         }
     }
 
-    public void avoidBlackoutDates(ScheduledEvent event) {
+    public void avoidBlackoutDates(ScheduledActivity event) {
         avoidBlackoutDates(event, event.getScheduledArm().getScheduledCalendar().getAssignment().getStudySite().getSite());
     }
 
-    private void avoidBlackoutDates(ScheduledEvent event, Site site) {
+    private void avoidBlackoutDates(ScheduledActivity event, Site site) {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Calendar dateCalendar = Calendar.getInstance();
         Date date = event.getActualDate();
@@ -274,7 +274,7 @@ public class ParticipantService {
     }
 
     // package level for testing
-    void shiftToAvoidBlackoutDate(Date date, ScheduledEvent event, Site site, String reason) {
+    void shiftToAvoidBlackoutDate(Date date, ScheduledActivity event, Site site, String reason) {
         date = shiftDayByOne(date);
         Scheduled s = new Scheduled(RESCHEDULED + reason, date);
         event.changeState(s);
@@ -324,9 +324,9 @@ public class ParticipantService {
     public StudyParticipantAssignment takeParticipantOffStudy(StudyParticipantAssignment studyAssignment, Date offStudyDate) {
         ScheduledCalendar calendar = studyAssignment.getScheduledCalendar();
 
-        List<ScheduledEvent> upcomingScheduledEvents = getPotentialUpcomingEvents(calendar, offStudyDate);
+        List<ScheduledActivity> upcomingScheduledEvents = getPotentialUpcomingEvents(calendar, offStudyDate);
 
-        for(ScheduledEvent event: upcomingScheduledEvents) {
+        for(ScheduledActivity event: upcomingScheduledEvents) {
             if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
                 event.changeState(new Canceled("Off Study"));
             } else if (ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode()) {
@@ -339,14 +339,14 @@ public class ParticipantService {
         return studyAssignment;
     }
 
-    private List<ScheduledEvent> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
-        List<ScheduledEvent> upcomingScheduledEvents = new ArrayList<ScheduledEvent>();
+    private List<ScheduledActivity> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
+        List<ScheduledActivity> upcomingScheduledEvents = new ArrayList<ScheduledActivity>();
         for (ScheduledArm arm : calendar.getScheduledArms()) {
             if (!arm.isComplete()) {
-                Map<Date, List<ScheduledEvent>> eventsByDate = arm.getEventsByDate();
+                Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();
                 for(Date date: eventsByDate.keySet()) {
-                    List<ScheduledEvent> events = eventsByDate.get(date);
-                    for(ScheduledEvent event : events) {
+                    List<ScheduledActivity> events = eventsByDate.get(date);
+                    for(ScheduledActivity event : events) {
                         if ((offStudyDate.before(event.getActualDate()) || offStudyDate.equals(event.getActualDate()))
                                 && (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()
                                 || ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode())) {
@@ -369,10 +369,10 @@ public class ParticipantService {
         this.siteService = siteService;
     }
 
-    private static class DatabaseEventOrderComparator implements Comparator<ScheduledEvent> {
-        public static final Comparator<? super ScheduledEvent> INSTANCE = new DatabaseEventOrderComparator();
+    private static class DatabaseEventOrderComparator implements Comparator<ScheduledActivity> {
+        public static final Comparator<? super ScheduledActivity> INSTANCE = new DatabaseEventOrderComparator();
 
-        public int compare(ScheduledEvent e1, ScheduledEvent e2) {
+        public int compare(ScheduledActivity e1, ScheduledActivity e2) {
             int dateCompare = e1.getIdealDate().compareTo(e2.getIdealDate());
             if (dateCompare != 0) return dateCompare;
 

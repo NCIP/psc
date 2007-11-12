@@ -81,7 +81,7 @@
                                         </c:otherwise>
                                     </c:choose>
 
-                                        <a href="<c:url value="/pages/cal/scheduleEvent?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
+                                        <a href="<c:url value="/pages/cal/scheduleActivity?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
                                         <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
                                 </li>
                                 <li class="event-details">

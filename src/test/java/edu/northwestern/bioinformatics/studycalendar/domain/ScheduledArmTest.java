@@ -70,9 +70,9 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         scheduledArm.addEvent(createScheduledEvent("Three", 2006, Calendar.SEPTEMBER, 18));
         scheduledArm.addEvent(createScheduledEvent("Two", 2006, Calendar.SEPTEMBER, 24));
 
-        Map<Date, List<ScheduledEvent>> byDate = scheduledArm.getEventsByDate();
+        Map<Date, List<ScheduledActivity>> byDate = scheduledArm.getEventsByDate();
         assertEquals(3, byDate.size());
-        Iterator<Map.Entry<Date, List<ScheduledEvent>>> entries = byDate.entrySet().iterator();
+        Iterator<Map.Entry<Date, List<ScheduledActivity>>> entries = byDate.entrySet().iterator();
 
         assertTrue(entries.hasNext());
         assertEventDayRecord(entries.next(), 2006, Calendar.SEPTEMBER, 18, "Three");
@@ -84,13 +84,13 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     }
 
     private void assertEventDayRecord(
-        Map.Entry<Date, List<ScheduledEvent>> actual, int year, int month, int day, String... expectedActivities
+        Map.Entry<Date, List<ScheduledActivity>> actual, int year, int month, int day, String... expectedActivities
     ) {
         assertDayOfDate("Wrong key", year, month, day, actual.getKey());
-        List<ScheduledEvent> actualEvents = actual.getValue();
+        List<ScheduledActivity> actualEvents = actual.getValue();
         assertEquals("Wrong number of activities", expectedActivities.length, actualEvents.size());
         for (int i = 0; i < actualEvents.size(); i++) {
-            ScheduledEvent actualEvent = actualEvents.get(i);
+            ScheduledActivity actualEvent = actualEvents.get(i);
             assertEquals("Event mismatch at " + i, expectedActivities[i], actualEvent.getActivity().getName());
         }
     }

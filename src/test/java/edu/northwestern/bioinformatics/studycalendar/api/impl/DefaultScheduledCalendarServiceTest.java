@@ -22,7 +22,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private static final String SITE_BIG_ID = "SITE-GUID";
     private static final String PARTICIPANT_BIG_ID = "PARTICPANT-GUID";
     private static final String ARM_BIG_ID = "ARM-GUID";
-    private static final String SCHEDULED_EVENT_BIG_ID = "EVENT-GUID";
+    private static final String SCHEDULED_ACTIVITY_BIG_ID = "EVENT-GUID";
     private static final String ASSIGNMENT_BIG_ID = "ASSIGNMENT-GUID";
     private static final Date START_DATE = new Date();
 
@@ -33,7 +33,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private ParticipantService participantService;
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledEventDao scheduledEventDao;
+    private ScheduledActivityDao scheduledActivityDao;
     private StudyParticipantAssignmentDao assignmentDao;
     private UserDao userDao;
 
@@ -41,14 +41,14 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private Site parameterSite;
     private Participant parameterParticipant;
     private Arm parameterArm;
-    private ScheduledEvent parameterEvent;
+    private ScheduledActivity parameterEvent;
     private StudyParticipantAssignment parameterAssignment;
 
     private Study loadedStudy;
     private Site loadedSite;
     private Participant loadedParticipant;
     private Arm loadedArm;
-    private ScheduledEvent loadedEvent;
+    private ScheduledActivity loadedEvent;
     private User user;
 
     @Override
@@ -60,7 +60,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         participantDao = registerDaoMockFor(ParticipantDao.class);
         participantService = registerMockFor(ParticipantService.class);
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
-        scheduledEventDao = registerDaoMockFor(ScheduledEventDao.class);
+        scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         assignmentDao = registerDaoMockFor(StudyParticipantAssignmentDao.class);
         userDao = registerDaoMockFor(UserDao.class);
 
@@ -71,7 +71,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setSiteDao(siteDao);
         service.setArmDao(armDao);
         service.setScheduledCalendarDao(scheduledCalendarDao);
-        service.setScheduledEventDao(scheduledEventDao);
+        service.setScheduledActivityDao(scheduledActivityDao);
         service.setStudyParticipantAssignmentDao(assignmentDao);
         service.setUserDao(userDao);
 
@@ -79,14 +79,14 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         parameterSite = setGridId(SITE_BIG_ID, new Site());
         parameterParticipant = setGridId(PARTICIPANT_BIG_ID, new Participant());
         parameterArm = setGridId(ARM_BIG_ID, new Arm());
-        parameterEvent = setGridId(SCHEDULED_EVENT_BIG_ID, new ScheduledEvent());
+        parameterEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID, new ScheduledActivity());
         parameterAssignment = setGridId(ASSIGNMENT_BIG_ID, new StudyParticipantAssignment());
 
         loadedStudy = setGridId(STUDY_BIG_ID, Fixtures.createBasicTemplate());
         loadedSite = setGridId(SITE_BIG_ID, createNamedInstance("NU", Site.class));
         loadedStudy.addSite(loadedSite);
         loadedArm = setGridId(ARM_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
-        loadedEvent = setGridId(SCHEDULED_EVENT_BIG_ID,
+        loadedEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID,
             Fixtures.createScheduledEvent("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
 
         loadedParticipant = setGridId(PARTICIPANT_BIG_ID, createParticipant("Edward", "Armor-o"));
@@ -326,23 +326,23 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    ////// TESTS FOR getScheduledEvents
+    ////// TESTS FOR getScheduledActivities
 
     public void testGetEventsByDateRange() throws Exception {
         setAssigned();
         Date stop = new Date();
-        Collection<ScheduledEvent> expectedMatches = new LinkedList<ScheduledEvent>();
+        Collection<ScheduledActivity> expectedMatches = new LinkedList<ScheduledActivity>();
         StudyParticipantAssignment expectedAssignment
             = loadedStudy.getStudySites().get(0).getStudyParticipantAssignments().get(0);
 
         expect(participantDao.getAssignment(loadedParticipant, loadedStudy, loadedSite))
             .andReturn(expectedAssignment);
-        expect(scheduledEventDao.getEventsByDate(expectedAssignment.getScheduledCalendar(), START_DATE, stop))
+        expect(scheduledActivityDao.getEventsByDate(expectedAssignment.getScheduledCalendar(), START_DATE, stop))
             .andReturn(expectedMatches);
 
         replayMocks();
         assertSame(expectedMatches,
-            service.getScheduledEvents(parameterStudy, parameterParticipant, parameterSite, START_DATE, stop));
+            service.getScheduledActivities(parameterStudy, parameterParticipant, parameterSite, START_DATE, stop));
         verifyMocks();
     }
 
@@ -350,8 +350,8 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
     public void testChange() throws Exception {
         Canceled newState = new Canceled();
-        expect(scheduledEventDao.getByGridId(parameterEvent)).andReturn(loadedEvent);
-        scheduledEventDao.save(loadedEvent);
+        expect(scheduledActivityDao.getByGridId(parameterEvent)).andReturn(loadedEvent);
+        scheduledActivityDao.save(loadedEvent);
 
         replayMocks();
         service.changeEventState(parameterEvent, newState);

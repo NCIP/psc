@@ -25,7 +25,7 @@ public class BreadcrumbContext {
     private StudyParticipantAssignment studyParticipantAssignment;
     private ScheduledCalendar scheduledCalendar;
     private ScheduledArm scheduledArm;
-    private ScheduledEvent scheduledEvent;
+    private ScheduledActivity scheduledActivity;
 
     private Site site;
     private StudySite studySite;
@@ -127,11 +127,11 @@ public class BreadcrumbContext {
         this.scheduledArm = scheduledArm;
     }
 
-    public void setScheduledEvent(ScheduledEvent scheduledEvent) {
-        if (scheduledEvent == null) return;
-        setScheduledArm(scheduledEvent.getScheduledArm());
-        setPlannedActivity(scheduledEvent.getPlannedActivity());
-        this.scheduledEvent = scheduledEvent;
+    public void setScheduledActivity(ScheduledActivity scheduledActivity) {
+        if (scheduledActivity == null) return;
+        setScheduledArm(scheduledActivity.getScheduledArm());
+        setPlannedActivity(scheduledActivity.getPlannedActivity());
+        this.scheduledActivity = scheduledActivity;
     }
 
     public void setActivity(Activity activity) {
@@ -198,8 +198,8 @@ public class BreadcrumbContext {
         return scheduledArm;
     }
 
-    public ScheduledEvent getScheduledEvent() {
-        return scheduledEvent;
+    public ScheduledActivity getScheduledActivity() {
+        return scheduledActivity;
     }
 
     public Activity getActivity() {

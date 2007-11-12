@@ -18,7 +18,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
@@ -142,26 +142,26 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		return scheduledArm;
 	}
 
-	private List<ScheduledEvent> createScheduleEvents(final String name, final int count,
+	private List<ScheduledActivity> createScheduleEvents(final String name, final int count,
 			final ScheduledEventMode eventMode) {
-		List<ScheduledEvent> events = new ArrayList<ScheduledEvent>();
+		List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
 		for (int i = 0; i < count; i++) {
-			ScheduledEvent scheduledEvent = new ScheduledEvent();
+			ScheduledActivity scheduledActivity = new ScheduledActivity();
 			Activity activity = createActivity(name + i);
-			scheduledEvent.setActivity(activity);
-			scheduledEvent.setDetails("details:" + i);
-			scheduledEvent.setNotes("notes:" + i);
+			scheduledActivity.setActivity(activity);
+			scheduledActivity.setDetails("details:" + i);
+			scheduledActivity.setNotes("notes:" + i);
 			if (eventMode.equals(ScheduledEventMode.SCHEDULED)) {
 				Scheduled newState = new Scheduled();
-				scheduledEvent.changeState(newState);
+				scheduledActivity.changeState(newState);
 			}
 			else if (eventMode.equals(ScheduledEventMode.CONDITIONAL)) {
 				Conditional newState = new Conditional();
-				scheduledEvent.changeState(newState);
+				scheduledActivity.changeState(newState);
 			}
 			java.util.Calendar calendar = new GregorianCalendar(2007, java.util.Calendar.OCTOBER, 10 + i);
-			scheduledEvent.setIdealDate(new Date(calendar.getTimeInMillis()));
-			events.add(scheduledEvent);
+			scheduledActivity.setIdealDate(new Date(calendar.getTimeInMillis()));
+			events.add(scheduledActivity);
 		}
 		return events;
 	}

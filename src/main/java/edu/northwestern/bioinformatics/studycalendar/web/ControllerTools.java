@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
@@ -46,8 +46,8 @@ public class ControllerTools {
         binder.registerCustomEditor(dao.domainClass(), field, new DaoBasedEditor(dao));
     }
 
-    public void addHierarchyToModel(ScheduledEvent event, Map<String, Object> model) {
-        model.put("scheduledEvent", event);
+    public void addHierarchyToModel(ScheduledActivity event, Map<String, Object> model) {
+        model.put("scheduledActivity", event);
         if (event != null) {
             addHierarchyToModel(event.getPlannedActivity(), model);
             addHierarchyToModel(event.getScheduledArm(), model);
