@@ -4,5 +4,5 @@
 <%@attribute name="participants" type="java.util.Collection" required="true" %>
 
 <c:forEach items="${participants}" var="participant">
-    <li class="levelThree"><input type="checkbox" name="participants" value="${participant.id}"/>&nbsp;${participant.fullName}</li>
+    <dd class="levelThree"><input type="checkbox" name="participants" value="${participant.id}"/>&nbsp;${participant.fullName}</dd>
 </c:forEach>
