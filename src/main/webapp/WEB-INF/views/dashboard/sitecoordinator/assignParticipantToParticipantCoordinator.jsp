@@ -101,10 +101,6 @@
               float:left;
           }
 
-          label.participant {
-              font-weight:normal;
-          }
-
           .site-coord-dash-link {
               color:#0000cc;
               cursor:pointer;
