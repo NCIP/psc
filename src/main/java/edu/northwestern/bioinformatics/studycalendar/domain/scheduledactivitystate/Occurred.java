@@ -1,6 +1,6 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
 import java.util.Date;
 import java.util.List;
@@ -44,5 +44,5 @@ public class Occurred extends DatedScheduledEventState {
     }
 
     @Transient // use superclass annotation
-    public ScheduledEventMode getMode() { return ScheduledEventMode.OCCURRED; }
+    public ScheduledActivityMode getMode() { return ScheduledActivityMode.OCCURRED; }
 }

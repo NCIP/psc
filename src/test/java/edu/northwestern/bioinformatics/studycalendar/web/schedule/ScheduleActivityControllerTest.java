@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
@@ -59,7 +59,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
 
         expectShowFormWithNoErrors();
 
-        assertSame(ScheduledEventMode.OCCURRED, command.getNewMode());
+        assertSame(ScheduledActivityMode.OCCURRED, command.getNewMode());
     }
 
     public void testBindNoMode() throws Exception {

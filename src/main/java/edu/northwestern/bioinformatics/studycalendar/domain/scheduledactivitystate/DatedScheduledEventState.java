@@ -1,6 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
-
-import org.hibernate.annotations.Type;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Column;

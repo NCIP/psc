@@ -1,24 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 
 import java.util.Date;
 import java.util.Calendar;
 import java.util.Set;
-import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 public class BatchRescheduleCommand {
-    private ScheduledEventMode<?> newMode;
+    private ScheduledActivityMode<?> newMode;
     private Integer dateOffset;
     private String newReason;
     private Set<ScheduledActivity> events;
@@ -53,7 +50,7 @@ public class BatchRescheduleCommand {
     private Date createDate(Date baseDate) {
         Calendar c = Calendar.getInstance();
         c.setTime(baseDate);
-        if(ScheduledEventMode.OCCURRED != getNewMode()) {
+        if(ScheduledActivityMode.OCCURRED != getNewMode()) {
             c.add(Calendar.DATE, getDateOffset());
         }
         return c.getTime();
@@ -86,11 +83,11 @@ public class BatchRescheduleCommand {
         this.newReason = newReason;
     }
 
-    public ScheduledEventMode<?> getNewMode() {
+    public ScheduledActivityMode<?> getNewMode() {
         return newMode;
     }
 
-    public void setNewMode(ScheduledEventMode<?> newMode) {
+    public void setNewMode(ScheduledActivityMode<?> newMode) {
         this.newMode = newMode;
     }
 

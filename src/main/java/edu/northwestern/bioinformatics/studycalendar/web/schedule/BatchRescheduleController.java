@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
@@ -40,7 +40,7 @@ public class BatchRescheduleController extends PscAbstractCommandController<Batc
         getControllerTools().registerDomainObjectEditor(binder, "events", scheduledActivityDao);
         getControllerTools().registerDomainObjectEditor(binder, "scheduledCalendar", scheduledCalendarDao);
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-        binder.registerCustomEditor(ScheduledEventMode.class, "newMode", new ControlledVocabularyEditor(ScheduledEventMode.class));
+        binder.registerCustomEditor(ScheduledActivityMode.class, "newMode", new ControlledVocabularyEditor(ScheduledActivityMode.class));
     }
 
     @Override

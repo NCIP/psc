@@ -1,7 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -70,10 +70,10 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
 
     ////// BEAN PROPERTIES
 
-    @Type(type = "scheduledEventMode")
+    @Type(type = "scheduledActivityMode")
     @Column(name = "mode_id", insertable = false, updatable = false)
-    public abstract ScheduledEventMode getMode();
-    void setMode(ScheduledEventMode mode) { /* for hibernate; value ignored */ }
+    public abstract ScheduledActivityMode getMode();
+    void setMode(ScheduledActivityMode mode) { /* for hibernate; value ignored */ }
 
     public String getReason() {
         return reason;

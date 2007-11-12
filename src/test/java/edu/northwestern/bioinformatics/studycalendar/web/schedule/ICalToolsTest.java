@@ -19,10 +19,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 
 /**
  * @author Saurabh Agrawal
@@ -84,9 +84,9 @@ public class ICalToolsTest extends junit.framework.TestCase {
 
 		ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
-		ScheduledArm scheduledArm1 = createScheduleArmWithSomeEvents("arm1", 3, ScheduledEventMode.SCHEDULED);
-		ScheduledArm scheduledArm2 = createScheduleArmWithSomeEvents("arm2", 5, ScheduledEventMode.SCHEDULED);
-		ScheduledArm scheduledArm3 = createScheduleArmWithSomeEvents("arm3", 6, ScheduledEventMode.CANCELED);
+		ScheduledArm scheduledArm1 = createScheduleArmWithSomeEvents("arm1", 3, ScheduledActivityMode.SCHEDULED);
+		ScheduledArm scheduledArm2 = createScheduleArmWithSomeEvents("arm2", 5, ScheduledActivityMode.SCHEDULED);
+		ScheduledArm scheduledArm3 = createScheduleArmWithSomeEvents("arm3", 6, ScheduledActivityMode.CANCELED);
 		scheduledCalendar.addArm(scheduledArm1);
 		scheduledCalendar.addArm(scheduledArm2);
 		scheduledCalendar.addArm(scheduledArm3);
@@ -134,7 +134,7 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	}
 
 	private ScheduledArm createScheduleArmWithSomeEvents(final String name, final int count,
-			final ScheduledEventMode eventMode) {
+			final ScheduledActivityMode eventMode) {
 		ScheduledArm scheduledArm = new ScheduledArm();
 
 		// add few schedule events
@@ -143,7 +143,7 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	}
 
 	private List<ScheduledActivity> createScheduleEvents(final String name, final int count,
-			final ScheduledEventMode eventMode) {
+			final ScheduledActivityMode eventMode) {
 		List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
 		for (int i = 0; i < count; i++) {
 			ScheduledActivity scheduledActivity = new ScheduledActivity();
@@ -151,11 +151,11 @@ public class ICalToolsTest extends junit.framework.TestCase {
 			scheduledActivity.setActivity(activity);
 			scheduledActivity.setDetails("details:" + i);
 			scheduledActivity.setNotes("notes:" + i);
-			if (eventMode.equals(ScheduledEventMode.SCHEDULED)) {
+			if (eventMode.equals(ScheduledActivityMode.SCHEDULED)) {
 				Scheduled newState = new Scheduled();
 				scheduledActivity.changeState(newState);
 			}
-			else if (eventMode.equals(ScheduledEventMode.CONDITIONAL)) {
+			else if (eventMode.equals(ScheduledActivityMode.CONDITIONAL)) {
 				Conditional newState = new Conditional();
 				scheduledActivity.changeState(newState);
 			}

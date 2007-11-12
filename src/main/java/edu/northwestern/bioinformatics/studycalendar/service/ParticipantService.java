@@ -14,16 +14,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHol
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
@@ -327,9 +327,9 @@ public class ParticipantService {
         List<ScheduledActivity> upcomingScheduledEvents = getPotentialUpcomingEvents(calendar, offStudyDate);
 
         for(ScheduledActivity event: upcomingScheduledEvents) {
-            if (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()) {
+            if (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()) {
                 event.changeState(new Canceled("Off Study"));
-            } else if (ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode()) {
+            } else if (ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode()) {
                 event.changeState(new NotApplicable("Off Study"));
             }
         }
@@ -348,8 +348,8 @@ public class ParticipantService {
                     List<ScheduledActivity> events = eventsByDate.get(date);
                     for(ScheduledActivity event : events) {
                         if ((offStudyDate.before(event.getActualDate()) || offStudyDate.equals(event.getActualDate()))
-                                && (ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode()
-                                || ScheduledEventMode.CONDITIONAL == event.getCurrentState().getMode())) {
+                                && (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()
+                                || ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode())) {
                             upcomingScheduledEvents.add(event);
                         }
                     }

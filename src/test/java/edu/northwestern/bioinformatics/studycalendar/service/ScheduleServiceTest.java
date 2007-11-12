@@ -4,16 +4,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.DayOfTheWeek;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
@@ -62,7 +61,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         service.reviseDate(event, 7, amendment);
         assertEquals(2, event.getAllStates().size());
         assertEquals("Shifted forward 7 days in revision " + REVISION_DISPLAY_NAME, event.getCurrentState().getReason());
-        assertEquals(ScheduledEventMode.SCHEDULED, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 8, event.getActualDate());
     }
 
@@ -74,7 +73,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         service.reviseDate(event, -7, amendment);
         assertEquals(3, event.getAllStates().size());
         assertEquals("Shifted back 7 days in revision " + REVISION_DISPLAY_NAME, event.getCurrentState().getReason());
-        assertEquals(ScheduledEventMode.CONDITIONAL, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.CONDITIONAL, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 23, event.getActualDate());
     }
 
@@ -85,7 +84,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, -7, amendment);
         assertEquals(2, event.getAllStates().size());
-        assertEquals(ScheduledEventMode.OCCURRED, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.OCCURRED, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 30, event.getActualDate());
     }
 
@@ -96,7 +95,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, -7, amendment);
         assertEquals(2, event.getAllStates().size());
-        assertEquals(ScheduledEventMode.CANCELED, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.CANCELED, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 24, event.getActualDate());
     }
 
@@ -107,7 +106,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, -7, amendment);
         assertEquals(2, event.getAllStates().size());
-        assertEquals(ScheduledEventMode.NOT_APPLICABLE, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.NOT_APPLICABLE, event.getCurrentState().getMode());
         assertDayOfDate(2004, Calendar.APRIL, 24, event.getActualDate());
     }
 
@@ -121,7 +120,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
 
         service.reviseDate(event, 2, amendment);
 
-        assertEquals(ScheduledEventMode.SCHEDULED, event.getCurrentState().getMode());
+        assertEquals(ScheduledActivityMode.SCHEDULED, event.getCurrentState().getMode());
         assertDayOfDate(2007, Calendar.OCTOBER, 5, event.getActualDate());
         assertEquals(3, event.getAllStates().size());
     }

@@ -3,9 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -87,7 +87,7 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
         return state;
     }
 
-    private void expectGetStateFields(ScheduledEventMode expectedMode, boolean expectDate) throws SQLException {
+    private void expectGetStateFields(ScheduledActivityMode expectedMode, boolean expectDate) throws SQLException {
         if (expectDate) expect(rs.getDate(COLUMN_NAMES[2])).andReturn(new java.sql.Date(DATE.getTime()));
         expect(rs.getString(COLUMN_NAMES[1])).andReturn(REASON);
         expect(rs.getInt(COLUMN_NAMES[0])).andReturn(expectedMode.getId());
@@ -136,7 +136,7 @@ public class ScheduledEventStateTypeTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    private void expectSetStateFields(ScheduledEventMode expectedMode, int index, boolean expectDate) throws SQLException {
+    private void expectSetStateFields(ScheduledActivityMode expectedMode, int index, boolean expectDate) throws SQLException {
         st.setObject(index + 0, expectedMode.getId(), Types.INTEGER);
         st.setString(index + 1, REASON);
         st.setDate(index + 2, expectDate ? new java.sql.Date(DATE.getTime()) : null);

@@ -2,12 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -106,7 +106,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         
         scheduledActivity.changeState(new Occurred());
         assertEquals("Wrong states size", 2, scheduledActivity.getAllStates().size());
-        assertEquals("Wrong event state", ScheduledEventMode.CANCELED, scheduledActivity.getCurrentState().getMode());
+        assertEquals("Wrong event state", ScheduledActivityMode.CANCELED, scheduledActivity.getCurrentState().getMode());
     }
 
     public void testScheduleConditional() throws Exception {
@@ -149,7 +149,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
         assertEquals("State not changed", 2, scheduledActivity.getAllStates().size());
-        assertEquals("State not changed", ScheduledEventMode.CANCELED,
+        assertEquals("State not changed", ScheduledActivityMode.CANCELED,
             scheduledActivity.getCurrentState().getMode());
         assertEquals("New state has wrong reason", "Testing",
             scheduledActivity.getCurrentState().getReason());
@@ -161,7 +161,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
         assertEquals("State not changed", 2, scheduledActivity.getAllStates().size());
-        assertEquals("State not changed", ScheduledEventMode.NOT_APPLICABLE,
+        assertEquals("State not changed", ScheduledActivityMode.NOT_APPLICABLE,
             scheduledActivity.getCurrentState().getMode());
         assertEquals("New state has wrong reason", "Testing",
             scheduledActivity.getCurrentState().getReason());
@@ -173,7 +173,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
         assertEquals("State changed", 1, scheduledActivity.getAllStates().size());
-        assertEquals("State changed", ScheduledEventMode.CANCELED,
+        assertEquals("State changed", ScheduledActivityMode.CANCELED,
             scheduledActivity.getCurrentState().getMode());
     }
 
@@ -183,7 +183,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
         assertEquals("State changed", 1, scheduledActivity.getAllStates().size());
-        assertEquals("State changed", ScheduledEventMode.OCCURRED,
+        assertEquals("State changed", ScheduledActivityMode.OCCURRED,
             scheduledActivity.getCurrentState().getMode());
     }
 
@@ -193,7 +193,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
 
         scheduledActivity.unscheduleIfOutstanding("Testing");
         assertEquals("State changed", 1, scheduledActivity.getAllStates().size());
-        assertEquals("State changed", ScheduledEventMode.NOT_APPLICABLE,
+        assertEquals("State changed", ScheduledActivityMode.NOT_APPLICABLE,
             scheduledActivity.getCurrentState().getMode());
     }
 }

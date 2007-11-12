@@ -25,7 +25,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 
 /**
@@ -79,7 +79,7 @@ public class ICalTools {
 
 	/**
 	 * Generate an all day ics calendar event for an schedule event of Patient. Currently calendar event is created only for ScheduleEvent
-	 * of {@link ScheduledEventMode.SCHEDULED}
+	 * of {@link ScheduledActivityMode.SCHEDULED}
 	 * 
 	 * @param participant patient on which study is done
 	 * @param scheduledActivity the scheduled event for which ics calendar event need to be generated
@@ -87,14 +87,14 @@ public class ICalTools {
 	 * @param participant
 	 * 
 	 * @return the ics calendar event. Returns null if scheduledActivity has no activity or date is null or ScheduleEvent is not of
-	 *         {@link ScheduledEventMode.SCHEDULED}
+	 *         {@link ScheduledActivityMode.SCHEDULED}
 	 */
 	private static VEvent generateAllDayEventForAnScheduleEventOfPatient(final ScheduledActivity scheduledActivity,
 			final Date date, final Participant participant) {
 		final Activity activity = scheduledActivity.getActivity();
 		if (activity != null && date != null && scheduledActivity.getCurrentState() != null
 				&& scheduledActivity.getCurrentState().getMode() != null
-				&& scheduledActivity.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+				&& scheduledActivity.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED)) {
 			String eventDetails = activity.getName();
 			if (scheduledActivity.getDetails() != null && !scheduledActivity.getDetails().trim().equalsIgnoreCase("")) {
 				eventDetails = eventDetails + " (" + scheduledActivity.getDetails() + ")";

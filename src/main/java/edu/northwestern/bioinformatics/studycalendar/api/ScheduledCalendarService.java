@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
 
 import java.util.Collection;
 import java.util.Date;
@@ -69,9 +69,9 @@ public interface ScheduledCalendarService {
      * @param event
      * @param newState
      * @return The same event, updated into the new state
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled
      */
     ScheduledActivity changeEventState(ScheduledActivity event, ScheduledEventState newState);
 

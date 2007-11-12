@@ -1,7 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -33,7 +33,7 @@ public class Conditional extends DatedScheduledEventState {
     }
 
     @Transient // use superclass annotation
-    public ScheduledEventMode getMode() { return ScheduledEventMode.CONDITIONAL; }
+    public ScheduledActivityMode getMode() { return ScheduledActivityMode.CONDITIONAL; }
 
 
     @Transient

@@ -15,10 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Collection;
 import java.util.ArrayList;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
 
 /**
  * @author Rhett Sutphin

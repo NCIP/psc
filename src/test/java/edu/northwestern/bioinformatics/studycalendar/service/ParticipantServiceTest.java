@@ -7,10 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.*;
@@ -438,13 +437,13 @@ public class ParticipantServiceTest extends StudyCalendarTestCase {
 
         CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 4, actualAssignment.getEndDateEpoch());
 
-        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm0.getEvents().get(2).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm0.getEvents().get(3).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.OCCURRED, arm1.getEvents().get(0).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledEventMode.NOT_APPLICABLE, arm1.getEvents().get(4).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, arm0.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm0.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, arm1.getEvents().get(0).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.NOT_APPLICABLE, arm1.getEvents().get(4).getCurrentState().getMode());
     }
 
     public void testScheduleArmWithOffStudyParticipant() {

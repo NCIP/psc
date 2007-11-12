@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 

@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,7 @@ public class StudyService {
                     List<ScheduledActivity> events = eventsByDate.get(date);
                     for(ScheduledActivity event : events) {
                         if ((event.getActualDate().after(startDate) || event.getActualDate().equals(startDate))
-                                && ScheduledEventMode.SCHEDULED == event.getCurrentState().getMode() ) {
+                                && ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode() ) {
                             return event;
                         }
                     }

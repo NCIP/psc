@@ -133,7 +133,7 @@ public class ParticipantCoordinatorDashboardService {
             Participant participant = studyParticipantAssignment.getParticipant();
 
             for (ScheduledActivity event : collectionOfEvents) {
-                if(event.getCurrentState().getMode().equals(ScheduledEventMode.SCHEDULED)) {
+                if(event.getCurrentState().getMode().equals(ScheduledActivityMode.SCHEDULED)) {
                     events.add(event);
                 }
             }

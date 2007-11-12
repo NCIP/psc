@@ -48,9 +48,9 @@
         list_index="0"
         />
 
-    <SCHEDULED_EVENT_MODES id="1" name="scheduled"/>
-    <SCHEDULED_EVENT_MODES id="2" name="occurred"/>
-    <SCHEDULED_EVENT_MODES id="3" name="canceled"/>
+    <SCHEDULED_ACTIVITY_MODES id="1" name="scheduled"/>
+    <SCHEDULED_ACTIVITY_MODES id="2" name="occurred"/>
+    <SCHEDULED_ACTIVITY_MODES id="3" name="canceled"/>
 
     <SCHEDULED_ACTIVITIES
         id="-10"

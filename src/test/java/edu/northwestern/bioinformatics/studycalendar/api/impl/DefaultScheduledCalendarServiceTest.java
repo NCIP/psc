@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.*;
@@ -358,7 +358,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("New state not applied", 3, loadedEvent.getAllStates().size());
-        assertEquals("New state not applied", ScheduledEventMode.CANCELED,
+        assertEquals("New state not applied", ScheduledActivityMode.CANCELED,
             loadedEvent.getCurrentState().getMode());
     }
 

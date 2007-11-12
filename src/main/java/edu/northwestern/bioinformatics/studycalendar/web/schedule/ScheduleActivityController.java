@@ -7,7 +7,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -45,8 +45,8 @@ public class ScheduleActivityController extends PscSimpleFormController {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
         getControllerTools().registerDomainObjectEditor(binder, "event", scheduledActivityDao);
-        binder.registerCustomEditor(ScheduledEventMode.class, "newMode",
-            new ControlledVocabularyEditor(ScheduledEventMode.class, true));
+        binder.registerCustomEditor(ScheduledActivityMode.class, "newMode",
+            new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
@@ -56,7 +56,7 @@ public class ScheduleActivityController extends PscSimpleFormController {
         Map<String, Object> model = errors.getModel();
         ScheduleActivityCommand command = (ScheduleActivityCommand) errors.getTarget();
         getControllerTools().addHierarchyToModel(command.getEvent(), model);
-//        model.put("modes", ScheduledEventMode.values());
+//        model.put("modes", ScheduledActivityMode.values());
         model.put("modes", command.getEventSpecificMode());
         return new ModelAndView("schedule/event", model);
     }

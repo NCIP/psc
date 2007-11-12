@@ -2,9 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
 
 import java.util.Date;
 import java.util.List;
@@ -21,7 +21,7 @@ public class ScheduleActivityCommand {
     private static final Logger log = LoggerFactory.getLogger(ScheduleActivityCommand.class.getName());
 
     private ScheduledActivity event;
-    private ScheduledEventMode newMode;
+    private ScheduledActivityMode newMode;
     private String newReason;
     private Date newDate;
     private String newNotes;
@@ -65,18 +65,18 @@ public class ScheduleActivityCommand {
         this.event = event;
     }
 
-    public ScheduledEventMode getNewMode() {
+    public ScheduledActivityMode getNewMode() {
         return newMode;
     }
 
-    public void setNewMode(ScheduledEventMode newMode) {
+    public void setNewMode(ScheduledActivityMode newMode) {
         this.newMode = newMode;
     }
 
-    public Collection<ScheduledEventMode> getEventSpecificMode(){
-        List<ScheduledEventMode> availableModes =  new ArrayList<ScheduledEventMode>();
+    public Collection<ScheduledActivityMode> getEventSpecificMode(){
+        List<ScheduledActivityMode> availableModes =  new ArrayList<ScheduledActivityMode>();
         if (event != null) {
-            availableModes = ScheduledEventMode.getAvailableModes(event.getCurrentState(), event.isConditionalEvent());
+            availableModes = ScheduledActivityMode.getAvailableModes(event.getCurrentState(), event.isConditionalEvent());
         }
         return availableModes;
     }

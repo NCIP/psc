@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -100,7 +100,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
 
     @Transient
     public boolean isConditionalState() {
-        return ScheduledEventMode.CONDITIONAL == getCurrentState().getMode();
+        return ScheduledActivityMode.CONDITIONAL == getCurrentState().getMode();
     }
 
     @Transient
@@ -111,7 +111,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     @Transient
     public boolean isConditionalEvent() {
         for (ScheduledEventState state : getAllStates()) {
-            if (state.getMode() == ScheduledEventMode.CONDITIONAL) return true;
+            if (state.getMode() == ScheduledActivityMode.CONDITIONAL) return true;
         }
         return false;
     }

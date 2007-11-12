@@ -1,15 +1,16 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate;
+package edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Transient;
+
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
@@ -20,15 +21,18 @@ import java.util.ArrayList;
         @Parameter(name="sequence", value="seq_scheduled_event_states_id")
     }
 )
-@DiscriminatorValue(value = "3")
-public class Canceled extends ScheduledEventState {
+@DiscriminatorValue(value = "5")
+public class NotApplicable extends ScheduledEventState {
 
-    public Canceled() { }
+    public NotApplicable() { }
 
-    public Canceled(String reason) { super(reason); }
+    public NotApplicable(String reason) {
+        super(reason);
+    }
 
     ////// LOGIC
 
+    @Override
     @Transient
     public String getTextSummary() {
         StringBuilder sb = new StringBuilder().append(StringUtils.capitalize(getMode().getName()));
@@ -38,16 +42,17 @@ public class Canceled extends ScheduledEventState {
         return sb.toString();
     }
 
+    @Override
     @Transient
     public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
+        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
         availableStates.add(Scheduled.class);
-        availableStates.add(Canceled.class);
         return availableStates;
     }
 
     ////// BEAN PROPERTIES
 
+    @Override
     @Transient // use superclass annotation
-    public ScheduledEventMode getMode() { return ScheduledEventMode.CANCELED; }
+    public ScheduledActivityMode getMode() { return ScheduledActivityMode.NOT_APPLICABLE; }
 }

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -42,7 +42,7 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
         
         request.addParameter("newMode", "1");
         doHandle();
-        assertEquals(ScheduledEventMode.SCHEDULED, command.getNewMode());
+        assertEquals(ScheduledActivityMode.SCHEDULED, command.getNewMode());
     }
 
     public void testBindReason() throws Exception {

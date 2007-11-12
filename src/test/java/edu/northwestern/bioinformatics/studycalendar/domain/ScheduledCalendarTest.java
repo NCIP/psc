@@ -3,16 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledEvent;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.List;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Collection;
 
 import org.easymock.classextension.EasyMock;
 

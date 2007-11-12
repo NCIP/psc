@@ -54,11 +54,11 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     }
 
     @Transient
-    public ScheduledEventMode getInitialScheduledMode() {
+    public ScheduledActivityMode getInitialScheduledMode() {
         if (StringUtils.isBlank(getCondition())) {
-            return ScheduledEventMode.SCHEDULED;
+            return ScheduledActivityMode.SCHEDULED;
         } else {
-            return ScheduledEventMode.CONDITIONAL;
+            return ScheduledActivityMode.CONDITIONAL;
         }
     }
 

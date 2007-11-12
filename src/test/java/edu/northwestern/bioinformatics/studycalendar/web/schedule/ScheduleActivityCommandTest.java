@@ -7,12 +7,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -46,7 +46,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
     }
 
     public void testCreateCanceledState() throws Exception {
-        command.setNewMode(ScheduledEventMode.CANCELED);
+        command.setNewMode(ScheduledActivityMode.CANCELED);
         replayMocks();
 
         ScheduledEventState created = command.createState();
@@ -55,7 +55,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
     }
 
     public void testCreateScheduledState() throws Exception {
-        command.setNewMode(ScheduledEventMode.SCHEDULED);
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
         replayMocks();
 
         ScheduledEventState created = command.createState();
@@ -65,7 +65,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
     }
     
     public void testCreateOccurredState() throws Exception {
-        command.setNewMode(ScheduledEventMode.OCCURRED);
+        command.setNewMode(ScheduledActivityMode.OCCURRED);
         replayMocks();
 
         ScheduledEventState created = command.createState();
@@ -78,7 +78,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         assertEquals("Unexpeced number of initial states", 1, event.getAllStates().size());
         assertNull(event.getNotes());
 
-        command.setNewMode(ScheduledEventMode.OCCURRED);
+        command.setNewMode(ScheduledActivityMode.OCCURRED);
         command.setNewNotes("Change-o");
         scheduledCalendarDao.save(event.getScheduledArm().getScheduledCalendar());
 
@@ -86,15 +86,15 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         command.apply();
         verifyMocks();
         assertEquals("Wrong number of states", 2, event.getAllStates().size());
-        assertEquals("Wrong mode for current state", ScheduledEventMode.OCCURRED, event.getCurrentState().getMode());
+        assertEquals("Wrong mode for current state", ScheduledActivityMode.OCCURRED, event.getCurrentState().getMode());
         assertEquals("Wrong reason for current state", NEW_REASON, event.getCurrentState().getReason());
         assertEquals("Wrong notes", "Change-o", event.getNotes());
     }
 
     public void testEventSpecificModesForNonConditionalEvent() throws Exception {
-        command.setNewMode(ScheduledEventMode.SCHEDULED);
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
         replayMocks();
-        Collection<ScheduledEventMode> collection = command.getEventSpecificMode();
+        Collection<ScheduledActivityMode> collection = command.getEventSpecificMode();
         System.out.println("collection " + collection);
         assertEquals("Wrong number of modes", 3, collection.size());
     }
@@ -104,9 +104,9 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         ScheduledActivity conditionalEvent = Fixtures.createConditionalEvent("ABC", 2003, Calendar.MARCH, 13);
         conditionalEvent.changeState(new Scheduled("Schedule", DateUtils.createDate(2003, Calendar.MARCH, 13)));
         command.setEvent(conditionalEvent);
-        command.setNewMode(ScheduledEventMode.SCHEDULED);
+        command.setNewMode(ScheduledActivityMode.SCHEDULED);
         replayMocks();
-        Collection<ScheduledEventMode> collection = command.getEventSpecificMode();
+        Collection<ScheduledActivityMode> collection = command.getEventSpecificMode();
         System.out.println("collection " + collection);
         assertEquals("Wrong number of modes", 5, collection.size());
     }

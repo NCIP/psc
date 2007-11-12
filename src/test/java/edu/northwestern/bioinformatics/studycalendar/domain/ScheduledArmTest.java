@@ -4,10 +4,10 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledeventstate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 
 import java.util.List;
 import java.util.Calendar;
@@ -174,13 +174,13 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
         scheduledArm.unscheduleOutstandingEvents("Testing");
 
         assertEquals("Scheduled event not changed", 2, scheduledArm.getEvents().get(0).getAllStates().size());
-        assertEquals("Scheduled not changed to canceled", ScheduledEventMode.CANCELED,
+        assertEquals("Scheduled not changed to canceled", ScheduledActivityMode.CANCELED,
             scheduledArm.getEvents().get(0).getCurrentState().getMode());
         assertEquals("Scheduled new mode has wrong reason", "Testing",
             scheduledArm.getEvents().get(0).getCurrentState().getReason());
 
         assertEquals("Conditional event not changed", 3, scheduledArm.getEvents().get(3).getAllStates().size());
-        assertEquals("Conditional not changed to NA", ScheduledEventMode.NOT_APPLICABLE,
+        assertEquals("Conditional not changed to NA", ScheduledActivityMode.NOT_APPLICABLE,
             scheduledArm.getEvents().get(3).getCurrentState().getMode());
         assertEquals("Conditional new mode has wrong reason", "Testing",
             scheduledArm.getEvents().get(3).getCurrentState().getReason());

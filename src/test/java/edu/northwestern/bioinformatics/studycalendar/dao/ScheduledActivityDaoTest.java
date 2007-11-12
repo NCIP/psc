@@ -4,7 +4,7 @@ import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledEventMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
@@ -43,7 +43,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEquals("Wrong notes", "Boo!", loaded.getNotes());
 
         assertEquals("Wrong current reason", "Success", loaded.getCurrentState().getReason());
-        assertEquals("Wrong current mode", ScheduledEventMode.OCCURRED, loaded.getCurrentState().getMode());
+        assertEquals("Wrong current mode", ScheduledActivityMode.OCCURRED, loaded.getCurrentState().getMode());
 
         assertEquals("Wrong number of previous states", 3, loaded.getPreviousStates().size());
 
