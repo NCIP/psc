@@ -27,7 +27,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @Entity // This isn't really an entity, but the @OneToMany from ScheduledActivity doesn't work otherwise
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_activity_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_activity_stat_id")
     }
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)

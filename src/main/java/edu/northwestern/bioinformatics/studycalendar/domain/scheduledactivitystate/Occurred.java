@@ -19,7 +19,7 @@ import javax.persistence.Transient;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_activity_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_activity_stat_id")
     }
 )
 @DiscriminatorValue(value = "2")
