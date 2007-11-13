@@ -23,21 +23,21 @@ public class StudyService {
         Activity reconsent = activityDao.getByName("Reconsent");
         for(StudyParticipantAssignment assignment: participantAssignments) {
             if (!assignment.isExpired()) {
-                ScheduledActivity upcomingScheduledEvent = getNextScheduledEvent(assignment.getScheduledCalendar(), startDate);
-                if (upcomingScheduledEvent != null) {
+                ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment.getScheduledCalendar(), startDate);
+                if (upcomingScheduledActivity != null) {
                     ScheduledActivity reconsentEvent = new ScheduledActivity();
-                    reconsentEvent.setIdealDate(upcomingScheduledEvent.getActualDate());
-                    reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledEvent.getActualDate()));
+                    reconsentEvent.setIdealDate(upcomingScheduledActivity.getActualDate());
+                    reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledActivity.getActualDate()));
                     reconsentEvent.setDetails(details);
                     reconsentEvent.setActivity(reconsent);
-                    upcomingScheduledEvent.getScheduledArm().addEvent(reconsentEvent);
+                    upcomingScheduledActivity.getScheduledArm().addEvent(reconsentEvent);
                 }
             }
         }
         studyDao.save(study);
     }
 
-    private ScheduledActivity getNextScheduledEvent(ScheduledCalendar calendar, Date startDate) {
+    private ScheduledActivity getNextScheduledActivity(ScheduledCalendar calendar, Date startDate) {
         for (ScheduledArm arm : calendar.getScheduledArms()) {
             if (!arm.isComplete()) {
                 Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();

@@ -45,7 +45,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     }
 
     public void testBindEvent() throws Exception {
-        ScheduledActivity event = setId(16, createScheduledEvent("SBC", 2002, Calendar.MAY, 3));
+        ScheduledActivity event = setId(16, createScheduledActivity("SBC", 2002, Calendar.MAY, 3));
         expect(scheduledActivityDao.getById(16)).andReturn(event);
         request.setParameter("event", "16");
 

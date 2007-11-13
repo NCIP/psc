@@ -9,10 +9,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.Calendar;
@@ -36,7 +36,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         scheduledCalendarDao = registerMockFor(ScheduledCalendarDao.class);
         command = new ScheduleActivityCommand(scheduledCalendarDao);
 
-        event = Fixtures.createScheduledEvent("ABC", 2003, Calendar.MARCH, 13);
+        event = Fixtures.createScheduledActivity("ABC", 2003, Calendar.MARCH, 13);
         event.setScheduledArm(new ScheduledArm());
         event.getScheduledArm().setScheduledCalendar(new ScheduledCalendar());
 
@@ -49,7 +49,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         command.setNewMode(ScheduledActivityMode.CANCELED);
         replayMocks();
 
-        ScheduledEventState created = command.createState();
+        ScheduledActivityState created = command.createState();
         assertTrue(created instanceof Canceled);
         assertEquals(NEW_REASON, created.getReason());
     }
@@ -58,20 +58,20 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         command.setNewMode(ScheduledActivityMode.SCHEDULED);
         replayMocks();
 
-        ScheduledEventState created = command.createState();
+        ScheduledActivityState created = command.createState();
         assertTrue(created instanceof Scheduled);
         assertEquals(NEW_REASON, created.getReason());
-        assertEquals(NEW_DATE, ((DatedScheduledEventState) created).getDate());
+        assertEquals(NEW_DATE, ((DatedScheduledActivityState) created).getDate());
     }
     
     public void testCreateOccurredState() throws Exception {
         command.setNewMode(ScheduledActivityMode.OCCURRED);
         replayMocks();
 
-        ScheduledEventState created = command.createState();
+        ScheduledActivityState created = command.createState();
         assertTrue(created instanceof Occurred);
         assertEquals(NEW_REASON, created.getReason());
-        assertEquals(NEW_DATE, ((DatedScheduledEventState) created).getDate());
+        assertEquals(NEW_DATE, ((DatedScheduledActivityState) created).getDate());
     }
 
     public void testChangeState() throws Exception {

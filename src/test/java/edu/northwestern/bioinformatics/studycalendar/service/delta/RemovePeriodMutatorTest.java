@@ -46,19 +46,19 @@ public class RemovePeriodMutatorTest extends PeriodMutatorTestCase<Remove> {
         verifyMocks();
     }
 
-    public void testUnschedulesScheduledEventsFromPeriodOnly() throws Exception {
+    public void testUnschedulesScheduledActivitiesFromPeriodOnly() throws Exception {
         expect(templateService.findParent(p0e0)).andReturn(period0).times(3);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(3);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(2);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(2);
 
         String expectedMessage = "Removed in revision " + REVISION_DISPLAY_NAME;
-        getScheduledEventFixture(p0e0, 0).unscheduleIfOutstanding(expectedMessage);
-        getScheduledEventFixture(p0e1, 0).unscheduleIfOutstanding(expectedMessage);
-        getScheduledEventFixture(p0e0, 1).unscheduleIfOutstanding(expectedMessage);
-        getScheduledEventFixture(p0e1, 1).unscheduleIfOutstanding(expectedMessage);
-        getScheduledEventFixture(p0e0, 2).unscheduleIfOutstanding(expectedMessage);
-        getScheduledEventFixture(p0e1, 2).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e0, 0).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e1, 0).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e0, 1).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e1, 1).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e0, 2).unscheduleIfOutstanding(expectedMessage);
+        getScheduledActivityFixture(p0e1, 2).unscheduleIfOutstanding(expectedMessage);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

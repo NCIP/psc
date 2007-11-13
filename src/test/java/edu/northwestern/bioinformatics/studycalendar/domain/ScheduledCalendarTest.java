@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledEvent;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
 import java.util.List;

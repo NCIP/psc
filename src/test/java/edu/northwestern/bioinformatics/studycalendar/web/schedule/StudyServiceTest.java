@@ -43,22 +43,22 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         staticNowFactory = new StaticNowFactory();
     }
 
-    public void testScheduleReconsentAfterScheduledEventOnOccurredEvent() throws Exception{
+    public void testScheduleReconsentAfterScheduledActivityOnOccurredEvent() throws Exception{
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 2));
 
         ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(Fixtures.createScheduledEvent("AAA", 2005, Calendar.JULY, 1));
-        arm0.addEvent(Fixtures.createScheduledEvent("BBB", 2005, Calendar.JULY, 2,
+        arm0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
+        arm0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 3))));
-        arm0.addEvent(Fixtures.createScheduledEvent("CCC", 2005, Calendar.JULY, 4));
-        arm0.addEvent(Fixtures.createScheduledEvent("DDD", 2005, Calendar.JULY, 8));
+        arm0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
+        arm0.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
         calendar.addArm(arm0);
 
         ScheduledArm arm1 = new ScheduledArm();
-        arm1.addEvent(Fixtures.createScheduledEvent("EEE", 2005, Calendar.AUGUST, 1,
+        arm1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        arm1.addEvent(Fixtures.createScheduledEvent("FFF", 2005, Calendar.AUGUST, 3));
-        arm1.addEvent(Fixtures.createScheduledEvent("GGG", 2005, Calendar.AUGUST, 8));
+        arm1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
+        arm1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
         calendar.addArm(arm1);
 
         List<StudyParticipantAssignment> assignments = Collections.singletonList(participantAssignment);
@@ -79,21 +79,21 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
     }
 
-    public void testScheduleReconsentForSecondArmOnSameDayAsScheduledEvent() throws Exception{
+    public void testScheduleReconsentForSecondArmOnSameDayAsScheduledActivity() throws Exception{
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(Fixtures.createScheduledEvent("AAA", 2005, Calendar.JULY, 1,
+        arm0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
-        arm0.addEvent(Fixtures.createScheduledEvent("BBB", 2005, Calendar.JULY, 3));
-        arm0.addEvent(Fixtures.createScheduledEvent("CCC", 2005, Calendar.JULY, 8));
+        arm0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
+        arm0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
         calendar.addArm(arm0);
 
         ScheduledArm arm1 = new ScheduledArm();
-        arm1.addEvent(Fixtures.createScheduledEvent("DDD", 2005, Calendar.AUGUST, 1,
+        arm1.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        arm1.addEvent(Fixtures.createScheduledEvent("EEE", 2005, Calendar.AUGUST, 3));
-        arm1.addEvent(Fixtures.createScheduledEvent("FFF", 2005, Calendar.AUGUST, 8));
+        arm1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
+        arm1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
         calendar.addArm(arm1);
 
         List<StudyParticipantAssignment> assignments = Collections.singletonList(participantAssignment);

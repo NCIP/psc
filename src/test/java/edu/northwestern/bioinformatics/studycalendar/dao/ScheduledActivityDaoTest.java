@@ -50,7 +50,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertEquals("Wrong details", "Nice Details!!", loaded.getDetails());
     }
     
-    public void testGetScheduledEventsFromPlannedActivity() throws Exception {
+    public void testGetScheduledActivitiesFromPlannedActivity() throws Exception {
         Collection<ScheduledActivity> matches = getDao().getEventsFromPlannedActivity(
             plannedActivityDao.getById(-6), scheduledCalendarDao.getById(-21));
         assertEquals("Wrong number of matches", 2, matches.size());
@@ -59,7 +59,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         assertContains(actualIds, -31);
     }
 
-    public void testLoadedAndQueriedScheduledEventsFromSameSessionAreSame() throws Exception {
+    public void testLoadedAndQueriedScheduledActivitiesFromSameSessionAreSame() throws Exception {
         ScheduledActivity loaded = getDao().getById(-30);
         loaded.setDetails("F9");
         ScheduledActivity queried = null;

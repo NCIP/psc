@@ -41,7 +41,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected ScheduledCalendar scheduledCalendar;
     protected ScheduledArm scheduledArm;
     /** Indexes are [period][event][repetition] */
-    private ScheduledActivity[][][] scheduledEvents;
+    private ScheduledActivity[][][] scheduledActivities;
 
     private Mutator mutator;
 
@@ -69,13 +69,13 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
 
         ParticipantService participantService = new ParticipantService() {
             @Override
-            protected ScheduledActivity createEmptyScheduledEventFor(PlannedActivity event) {
+            protected ScheduledActivity createEmptyScheduledActivityFor(PlannedActivity event) {
                 return createUnschedulableMockEvent(event);
             }
         };
         participantService.schedulePeriod(period0, amendment, scheduledArm);
         participantService.schedulePeriod(period1, amendment, scheduledArm);
-        scheduledEvents = new ScheduledActivity[2][2][3];
+        scheduledActivities = new ScheduledActivity[2][2][3];
         for (ScheduledActivity event : scheduledArm.getEvents()) {
             int period, pe;
             if      (event.getPlannedActivity() == p0e0) { period = 0; pe = 0; }
@@ -84,20 +84,20 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
             else if (event.getPlannedActivity() == p1e1) { period = 1; pe = 1; }
             else throw new Error("Test setup failure: not all planned events accounted for");
 
-            scheduledEvents[period][pe][event.getRepetitionNumber()] = event;
+            scheduledActivities[period][pe][event.getRepetitionNumber()] = event;
         }
     }
 
-    protected final ScheduledActivity getScheduledEventFixture(PlannedActivity plannedActivity, int repetition) {
-        if      (plannedActivity == p0e0) { return getScheduledEventFixture(0, 0, repetition); }
-        else if (plannedActivity == p0e1) { return getScheduledEventFixture(0, 1, repetition); }
-        else if (plannedActivity == p1e0) { return getScheduledEventFixture(1, 0, repetition); }
-        else if (plannedActivity == p1e1) { return getScheduledEventFixture(1, 1, repetition); }
+    protected final ScheduledActivity getScheduledActivityFixture(PlannedActivity plannedActivity, int repetition) {
+        if      (plannedActivity == p0e0) { return getScheduledActivityFixture(0, 0, repetition); }
+        else if (plannedActivity == p0e1) { return getScheduledActivityFixture(0, 1, repetition); }
+        else if (plannedActivity == p1e0) { return getScheduledActivityFixture(1, 0, repetition); }
+        else if (plannedActivity == p1e1) { return getScheduledActivityFixture(1, 1, repetition); }
         else throw new Error("Test setup failure: non-fixture PE: " + plannedActivity);
     }
 
-    protected final ScheduledActivity getScheduledEventFixture(int period, int plannedActivity, int repetition) {
-        return scheduledEvents[period][plannedActivity][repetition];
+    protected final ScheduledActivity getScheduledActivityFixture(int period, int plannedActivity, int repetition) {
+        return scheduledActivities[period][plannedActivity][repetition];
     }
 
     protected abstract C createChange();

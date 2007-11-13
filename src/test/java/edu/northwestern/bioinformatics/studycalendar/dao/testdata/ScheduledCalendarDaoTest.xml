@@ -66,25 +66,25 @@
         source_amendment_id="-17"
         repetition_number="3"
         />
-    <SCHEDULED_EVENT_STATES
+    <SCHEDULED_ACTIVITY_STATES
         id="-11"
         list_index="0"
-        scheduled_event_id="-10"
+        scheduled_activity_id="-10"
         mode_id="1"
         actual_date="2006-10-22"
         reason="Initial input"
         />
-    <SCHEDULED_EVENT_STATES
+    <SCHEDULED_ACTIVITY_STATES
         id="-12"
         list_index="1"
-        scheduled_event_id="-10"
+        scheduled_activity_id="-10"
         mode_id="3"
         reason="Called to cancel"
         />
-    <SCHEDULED_EVENT_STATES
+    <SCHEDULED_ACTIVITY_STATES
         id="-13"
         list_index="2"
-        scheduled_event_id="-10"
+        scheduled_activity_id="-10"
         mode_id="1"
         actual_date="2006-10-25"
         reason="Called to reschedule"

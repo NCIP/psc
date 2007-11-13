@@ -17,11 +17,11 @@ import java.util.List;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_event_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_actiivity_states_id")
     }
 )
 @DiscriminatorValue(value = "4")
-public class Conditional extends DatedScheduledEventState {
+public class Conditional extends DatedScheduledActivityState {
     public Conditional() { }
 
     public Conditional(String reason, Date date) {
@@ -37,8 +37,8 @@ public class Conditional extends DatedScheduledEventState {
 
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
+    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledActivityState>> availableStates = getAvailableConditionalStates(conditional);
         availableStates.add(Scheduled.class);
         return availableStates;
     }

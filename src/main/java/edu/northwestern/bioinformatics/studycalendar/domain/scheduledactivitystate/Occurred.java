@@ -19,11 +19,11 @@ import javax.persistence.Transient;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_event_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_activity_states_id")
     }
 )
 @DiscriminatorValue(value = "2")
-public class Occurred extends DatedScheduledEventState {
+public class Occurred extends DatedScheduledActivityState {
     public Occurred() { }
 
     public Occurred(String reason, Date date) {
@@ -36,8 +36,8 @@ public class Occurred extends DatedScheduledEventState {
 
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
+    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledActivityState>> availableStates = new ArrayList();
         availableStates.add(Occurred.class);
         availableStates.add(Scheduled.class);
         return availableStates;

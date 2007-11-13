@@ -65,10 +65,10 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     }
 
     public void testEventsByDay() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("One", 2006, Calendar.SEPTEMBER, 20));
-        scheduledArm.addEvent(createScheduledEvent("Two", 2006, Calendar.SEPTEMBER, 20));
-        scheduledArm.addEvent(createScheduledEvent("Three", 2006, Calendar.SEPTEMBER, 18));
-        scheduledArm.addEvent(createScheduledEvent("Two", 2006, Calendar.SEPTEMBER, 24));
+        scheduledArm.addEvent(createScheduledActivity("One", 2006, Calendar.SEPTEMBER, 20));
+        scheduledArm.addEvent(createScheduledActivity("Two", 2006, Calendar.SEPTEMBER, 20));
+        scheduledArm.addEvent(createScheduledActivity("Three", 2006, Calendar.SEPTEMBER, 18));
+        scheduledArm.addEvent(createScheduledActivity("Two", 2006, Calendar.SEPTEMBER, 24));
 
         Map<Date, List<ScheduledActivity>> byDate = scheduledArm.getEventsByDate();
         assertEquals(3, byDate.size());
@@ -110,33 +110,33 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
     }
 
     public void testIsNotCompleteIfAnyEventInScheduledState() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 9, new Occurred()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 18));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 9, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 18));
 
         assertFalse(scheduledArm.isComplete());
     }
 
     public void testIsCompleteIfAllEventsAreCanceled() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Canceled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Canceled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Canceled()));
 
         assertTrue(scheduledArm.isComplete());
     }
 
     public void testIsCompleteIfAllEventsAreOccurred() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Occurred()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
 
         assertTrue(scheduledArm.isComplete());
     }
 
     public void testIsCompleteIfNoEventsAreScheduled() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
-        scheduledArm.addEvent(createScheduledEvent("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 5, new Canceled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", 2005, Calendar.OCTOBER, 6, new Occurred()));
 
         assertTrue(scheduledArm.isComplete());
     }
@@ -147,28 +147,28 @@ public class ScheduledArmTest extends StudyCalendarTestCase {
 
 
         calendar.add(Calendar.MONTH, -1);
-        scheduledArm.addEvent(createScheduledEvent("ABC", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledActivity("ABC", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
         calendar.add(Calendar.MONTH, 2);
-        scheduledArm.addEvent(createScheduledEvent("DEF", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Occurred()));
+        scheduledArm.addEvent(createScheduledActivity("DEF", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Occurred()));
         calendar.add(Calendar.MONTH, 1);
-        scheduledArm.addEvent(createScheduledEvent("GHI", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledActivity("GHI", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
         calendar.add(Calendar.MONTH, 1);
-        scheduledArm.addEvent(createScheduledEvent("JKL", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
+        scheduledArm.addEvent(createScheduledActivity("JKL", calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), 4, new Scheduled()));
 
-        Date d = scheduledArm.getNextScheduledEvent(now.getTime()).getActualDate();
+        Date d = scheduledArm.getNextScheduledActivity(now.getTime()).getActualDate();
 
         assertTrue(scheduledArm.getEvents().get(2).getActualDate() == d);
     }   */
 
     public void testUnscheduleAllOutstandingEvents() throws Exception {
-        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 1));
-        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 2,
+        scheduledArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
+        scheduledArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 2,
             new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 4))));
-        scheduledArm.addEvent(createScheduledEvent("CBC", 2005, Calendar.AUGUST, 3,
+        scheduledArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 3,
             new Canceled()));
-        scheduledArm.addEvent(createScheduledEvent("Maybe CBC", 2005, Calendar.AUGUST, 4,
+        scheduledArm.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 4,
             new Conditional()));
-        scheduledArm.addEvent(createScheduledEvent("Maybe CBC", 2005, Calendar.AUGUST, 5,
+        scheduledArm.addEvent(createScheduledActivity("Maybe CBC", 2005, Calendar.AUGUST, 5,
             new NotApplicable()));
 
         scheduledArm.unscheduleOutstandingEvents("Testing");

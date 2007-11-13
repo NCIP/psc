@@ -71,7 +71,7 @@ public class BatchRescheduleControllerTest extends ControllerTestCase {
         assertEquals(5, (int) command.getDateOffset());
     }
 
-    public void testBindScheduledEvents() throws Exception {
+    public void testBindScheduledActivities() throws Exception {
         ScheduledActivity expectedEvent = Fixtures.setId(7, new ScheduledActivity());
         ScheduledActivity expectedEvent2 = Fixtures.setId(8, new ScheduledActivity());
         request.addParameter("events", "7");

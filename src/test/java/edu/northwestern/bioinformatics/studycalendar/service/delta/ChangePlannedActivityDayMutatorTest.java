@@ -33,8 +33,8 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
         super.setUp();
 
         plannedActivity = Fixtures.createPlannedActivity("Rolling", 2);
-        se0 = createScheduledEvent();
-        se1 = createScheduledEvent();
+        se0 = createScheduledActivity();
+        se1 = createScheduledActivity();
         scheduledCalendar = new ScheduledCalendar();
 
         change = PropertyChange.create("day", "2", "4");
@@ -52,7 +52,7 @@ public class ChangePlannedActivityDayMutatorTest extends StudyCalendarTestCase {
         return mutator;
     }
 
-    private ScheduledActivity createScheduledEvent() {
+    private ScheduledActivity createScheduledActivity() {
         ScheduledActivity se = new ScheduledActivity();
         se.setPlannedActivity(plannedActivity);
         return se;

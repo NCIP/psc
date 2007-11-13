@@ -11,12 +11,12 @@ import java.text.SimpleDateFormat;
  * @author Rhett Sutphin
  */
 @MappedSuperclass
-public abstract class DatedScheduledEventState extends ScheduledEventState {
+public abstract class DatedScheduledActivityState extends ScheduledActivityState {
     private Date date;
 
-    public DatedScheduledEventState() { }
+    public DatedScheduledActivityState() { }
 
-    public DatedScheduledEventState(String reason, Date date) {
+    public DatedScheduledActivityState(String reason, Date date) {
         super(reason);
         this.date = date;
     }
@@ -51,7 +51,7 @@ public abstract class DatedScheduledEventState extends ScheduledEventState {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        DatedScheduledEventState that = (DatedScheduledEventState) o;
+        DatedScheduledActivityState that = (DatedScheduledActivityState) o;
 
         if (date != null ? !date.equals(that.date) : that.date != null) return false;
 

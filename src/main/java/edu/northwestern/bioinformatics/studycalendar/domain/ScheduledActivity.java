@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -42,8 +42,8 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     private PlannedActivity plannedActivity;
     private Date idealDate;
     private String notes;
-    private ScheduledEventState currentState;
-    private List<ScheduledEventState> previousStates = new LinkedList<ScheduledEventState>();
+    private ScheduledActivityState currentState;
+    private List<ScheduledActivityState> previousStates = new LinkedList<ScheduledActivityState>();
     private String details;
     private Activity activity;
     private Amendment sourceAmendment;
@@ -51,7 +51,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
 
     ////// LOGIC
 
-    public void changeState(ScheduledEventState newState) {
+    public void changeState(ScheduledActivityState newState) {
         if (isChangeable()){
             if (getCurrentState() != null) {
                 previousStates.add(getCurrentState());
@@ -74,8 +74,8 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public List<ScheduledEventState> getAllStates() {
-        List<ScheduledEventState> all = new ArrayList<ScheduledEventState>();
+    public List<ScheduledActivityState> getAllStates() {
+        List<ScheduledActivityState> all = new ArrayList<ScheduledActivityState>();
         if (getPreviousStates() != null) all.addAll(getPreviousStates());
         if (getCurrentState() != null) all.add(getCurrentState());
         return all;
@@ -84,11 +84,11 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     @Transient
     public Date getActualDate() {
         Date actualDate = null;
-        List<ScheduledEventState> states = getAllStates();
+        List<ScheduledActivityState> states = getAllStates();
         Collections.reverse(states);
-        for (ScheduledEventState state : states) {
-            if (state instanceof DatedScheduledEventState) {
-                actualDate = ((DatedScheduledEventState) state).getDate();
+        for (ScheduledActivityState state : states) {
+            if (state instanceof DatedScheduledActivityState) {
+                actualDate = ((DatedScheduledActivityState) state).getDate();
                 break;
             }
         }
@@ -104,13 +104,13 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public boolean isValidNewState(Class<? extends ScheduledEventState> newStateClass) {
+    public boolean isValidNewState(Class<? extends ScheduledActivityState> newStateClass) {
         return getCurrentState().getAvailableStates(isConditionalEvent()).contains(newStateClass);
     }
 
     @Transient
     public boolean isConditionalEvent() {
-        for (ScheduledEventState state : getAllStates()) {
+        for (ScheduledActivityState state : getAllStates()) {
             if (state.getMode() == ScheduledActivityMode.CONDITIONAL) return true;
         }
         return false;
@@ -118,7 +118,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
 
     public void unscheduleIfOutstanding(String reason) {
         if (getCurrentState().getMode().isOutstanding()) {
-            ScheduledEventState newState
+            ScheduledActivityState newState
                 = getCurrentState().getMode().getUnscheduleMode().createStateInstance();
             newState.setReason(reason);
             changeState(newState);
@@ -145,30 +145,30 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
         this.plannedActivity = plannedActivity;
     }
 
-    @Type(type = "edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledEventStateType")
+    @Type(type = "edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledActivityStateType")
     @Columns(columns = {
         @Column(name = "current_state_mode_id"),
         @Column(name = "current_state_reason"),
         @Column(name = "current_state_date")
     })
-    public ScheduledEventState getCurrentState() {
+    public ScheduledActivityState getCurrentState() {
         return currentState;
     }
 
-    private void setCurrentState(ScheduledEventState currentState) {
+    private void setCurrentState(ScheduledActivityState currentState) {
         this.currentState = currentState;
     }
 
     @OneToMany(cascade = javax.persistence.CascadeType.ALL)
-    @JoinColumn(name = "scheduled_event_id", insertable = true, updatable = true, nullable = false)
+    @JoinColumn(name = "scheduled_activity_id", insertable = true, updatable = true, nullable = false)
     @Cascade({CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     @IndexColumn(name = "list_index")
     @NotNull
-    public List<ScheduledEventState> getPreviousStates() {
+    public List<ScheduledActivityState> getPreviousStates() {
         return previousStates;
     }
 
-    public void setPreviousStates(List<ScheduledEventState> previousStates) {
+    public void setPreviousStates(List<ScheduledActivityState> previousStates) {
         this.previousStates = previousStates;
     }
 

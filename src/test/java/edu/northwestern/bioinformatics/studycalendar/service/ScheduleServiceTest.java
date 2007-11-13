@@ -54,8 +54,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         service.setParticipantService(participantService);
     }
 
-    public void testReviseDateForScheduledScheduledEvent() throws Exception {
-        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 1);
+    public void testReviseDateForScheduledScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 1);
         scheduledArm.addEvent(event);
 
         service.reviseDate(event, 7, amendment);
@@ -65,8 +65,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 8, event.getActualDate());
     }
 
-    public void testReviseDateForConditionalScheduledEvent() throws Exception {
-        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+    public void testReviseDateForConditionalScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
             new Conditional("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
         scheduledArm.addEvent(event);
 
@@ -77,8 +77,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 23, event.getActualDate());
     }
 
-    public void testReviseDateForOccurredScheduledEvent() throws Exception {
-        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+    public void testReviseDateForOccurredScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
             new Occurred("DC", DateTools.createDate(2004, Calendar.APRIL, 30)));
         scheduledArm.addEvent(event);
 
@@ -88,8 +88,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 30, event.getActualDate());
     }
 
-    public void testReviseDateForCanceledScheduledEvent() throws Exception {
-        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+    public void testReviseDateForCanceledScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
             new Canceled("DC"));
         scheduledArm.addEvent(event);
 
@@ -99,8 +99,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 24, event.getActualDate());
     }
 
-    public void testReviseDateForNotApplicableScheduledEvent() throws Exception {
-        ScheduledActivity event = createScheduledEvent("DC", 2004, Calendar.APRIL, 24,
+    public void testReviseDateForNotApplicableScheduledActivity() throws Exception {
+        ScheduledActivity event = createScheduledActivity("DC", 2004, Calendar.APRIL, 24,
             new NotApplicable("DC"));
         scheduledArm.addEvent(event);
 
@@ -110,12 +110,12 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         assertDayOfDate(2004, Calendar.APRIL, 24, event.getActualDate());
     }
 
-    public void testReviseDateForScheduledScheduledEventAvoidsBlackouts() throws Exception {
+    public void testReviseDateForScheduledScheduledActivityAvoidsBlackouts() throws Exception {
         DayOfTheWeek noThursdays = new DayOfTheWeek();
         noThursdays.setDayOfTheWeek("Thursday");
         site.getHolidaysAndWeekends().add(noThursdays);
 
-        ScheduledActivity event = createScheduledEvent("DC", 2007, Calendar.OCTOBER, 2);
+        ScheduledActivity event = createScheduledActivity("DC", 2007, Calendar.OCTOBER, 2);
         scheduledArm.addEvent(event);
 
         service.reviseDate(event, 2, amendment);

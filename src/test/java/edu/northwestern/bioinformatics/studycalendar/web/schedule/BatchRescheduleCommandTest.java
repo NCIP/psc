@@ -28,9 +28,9 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         calendar.addArm(new ScheduledArm());
         calendar.addArm(new ScheduledArm());
 
-        e1 =  createScheduledEvent("C", 2005, Calendar.APRIL, 1, new Canceled());
-        e2 =  createScheduledEvent("O", 2005, Calendar.APRIL, 3, new Occurred());
-        e3 =  createScheduledEvent("S", 2005, Calendar.APRIL, 4);
+        e1 =  createScheduledActivity("C", 2005, Calendar.APRIL, 1, new Canceled());
+        e2 =  createScheduledActivity("O", 2005, Calendar.APRIL, 3, new Occurred());
+        e3 =  createScheduledActivity("S", 2005, Calendar.APRIL, 4);
         e4 =  createConditionalEvent("X", 2005, Calendar.APRIL, 5);
 
         addEvents(
@@ -42,9 +42,9 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         );
 
 
-        e5 = createScheduledEvent("C", 2005, Calendar.APRIL, 10, new Canceled());
-        e6 = createScheduledEvent("O", 2005, Calendar.APRIL, 13, new Occurred());
-        e7 = createScheduledEvent("S", 2005, Calendar.APRIL, 14);
+        e5 = createScheduledActivity("C", 2005, Calendar.APRIL, 10, new Canceled());
+        e6 = createScheduledActivity("O", 2005, Calendar.APRIL, 13, new Occurred());
+        e7 = createScheduledActivity("S", 2005, Calendar.APRIL, 14);
         e8 = createConditionalEvent("X", 2005, Calendar.APRIL, 15);
 
         addEvents(
@@ -92,14 +92,14 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.SCHEDULED, prevSched0.getCurrentState().getMode());
         assertEquals("Wrong new state for previously scheduled event", "Batch change: Vacation", prevSched0.getCurrentState().getReason());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 11,
-            ((DatedScheduledEventState) prevSched0.getCurrentState()).getDate());
+            ((DatedScheduledActivityState) prevSched0.getCurrentState()).getDate());
 
         ScheduledActivity prevSched1 = calendar.getScheduledArms().get(1).getEvents().get(2);
         assertEquals("New state not added to scheduled event in arm 1", 2, prevSched1.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.SCHEDULED, prevSched1.getCurrentState().getMode());
         assertEquals("Wrong new state for previously scheduled event", "Batch change: Vacation", prevSched1.getCurrentState().getReason());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 21,
-            ((DatedScheduledEventState) prevSched1.getCurrentState()).getDate());
+            ((DatedScheduledActivityState) prevSched1.getCurrentState()).getDate());
     }
 
     public void testApplyOccured() throws Exception {
@@ -116,7 +116,7 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("New state not added to scheduled event in arm 0", 2, prevSched0.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.OCCURRED, prevSched0.getCurrentState().getMode());
         assertDayOfDate("Wrong new date for previously scheduled event", 2005, Calendar.APRIL, 4,
-            ((DatedScheduledEventState) prevSched0.getCurrentState()).getDate());
+            ((DatedScheduledActivityState) prevSched0.getCurrentState()).getDate());
         ScheduledActivity prevSched1 = calendar.getScheduledArms().get(1).getEvents().get(0);
         assertEquals("New state added to scheduled event in arm 1", 2, prevSched1.getAllStates().size());
         assertEquals("Wrong new state for previously scheduled event", ScheduledActivityMode.CANCELED, prevSched1.getCurrentState().getMode());

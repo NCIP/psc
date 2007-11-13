@@ -11,8 +11,8 @@
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
-    <tags:javascriptLink name="scheduled-event"/>
-    <tags:javascriptLink name="scheduled-event-batch"/>
+    <tags:javascriptLink name="scheduled-activity"/>
+    <tags:javascriptLink name="scheduled-activity-batch"/>
     <style type="text/css">
         h1 { float: left };
         

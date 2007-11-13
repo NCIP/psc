@@ -28,7 +28,7 @@ public class SimpleReportController extends AbstractController {
         List<ReportRow> reportRows = new ArrayList<ReportRow>();
         ArrayList<Site> sites = new ArrayList<Site>();
         reportRows = reportRowDao.getFilteredReport((List) sites, (List)  new ArrayList<Site>(),(List)  new ArrayList<Site>(), "", "");
-        model.put("scheduledEvents", reportRows);
+        model.put("scheduledActivities", reportRows);
         return new ModelAndView("reporting/simpleReport", model);
 	}
 	

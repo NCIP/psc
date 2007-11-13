@@ -57,7 +57,7 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
         assertTrue(mutator.appliesToExistingSchedules());
     }
 
-    public void testOnlyApplicableScheduledEventsUnscheduled() throws Exception {
+    public void testOnlyApplicableScheduledActivitiesUnscheduled() throws Exception {
         scheduledCalendar.addArm(scheduledArm);
 
         String expectedMessage = "Removed in revision 09/01/1922 (Oops)";

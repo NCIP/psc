@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
@@ -153,15 +153,15 @@ public class Fixtures {
         return scheduledArm;
     }
 
-    public static ScheduledActivity createScheduledEvent(
-        String activityName, int year, int month, int day, ScheduledEventState state
+    public static ScheduledActivity createScheduledActivity(
+        String activityName, int year, int month, int day, ScheduledActivityState state
     ) {
-        ScheduledActivity event = createScheduledEvent(activityName, year, month, day);
+        ScheduledActivity event = createScheduledActivity(activityName, year, month, day);
         event.changeState(state);
         return event;
     }
 
-    public static ScheduledActivity createScheduledEvent(String activityName, int year, int month, int day) {
+    public static ScheduledActivity createScheduledActivity(String activityName, int year, int month, int day) {
         PlannedActivity baseEvent = createPlannedActivity(activityName, 0);
         ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(baseEvent);

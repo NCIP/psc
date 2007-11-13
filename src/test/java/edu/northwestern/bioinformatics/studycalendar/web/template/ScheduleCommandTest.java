@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createParticipant;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledEvent;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addEvents;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
@@ -93,9 +93,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int month = c.get(Calendar.MONTH);
         int year = c.get(Calendar.YEAR);
 
-        e1 =  createScheduledEvent("C", year, month, day);
-        e2 =  createScheduledEvent("O", year, month, day+1);
-        e3 =  createScheduledEvent("S", year, month, day+2);
+        e1 =  createScheduledActivity("C", year, month, day);
+        e2 =  createScheduledActivity("O", year, month, day+1);
+        e3 =  createScheduledActivity("S", year, month, day+2);
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
 
@@ -168,11 +168,11 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int month = c.get(Calendar.MONTH);
         int year = c.get(Calendar.YEAR);
 
-        e1 =  createScheduledEvent("C", year, month, day);
+        e1 =  createScheduledActivity("C", year, month, day);
         e1.setActivity(Fixtures.createActivity("Activity1"));
-        e2 =  createScheduledEvent("O", year, month, day+1);
+        e2 =  createScheduledActivity("O", year, month, day+1);
         e2.setActivity(Fixtures.createActivity("Activity2"));
-        e3 =  createScheduledEvent("S", year, month, day+2);
+        e3 =  createScheduledActivity("S", year, month, day+2);
         e3.getActivity().setType(ActivityType.INTERVENTION);
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
@@ -264,16 +264,16 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int month = c.get(Calendar.MONTH);
         int year = c.get(Calendar.YEAR);
 
-        e1 =  createScheduledEvent("C", year, month, day);
-        e2 =  createScheduledEvent("O", year, month, day+1);
-        e3 =  createScheduledEvent("S", year, month, day+2);
+        e1 =  createScheduledActivity("C", year, month, day);
+        e2 =  createScheduledActivity("O", year, month, day+1);
+        e3 =  createScheduledActivity("S", year, month, day+2);
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
 
 
-        e5 = createScheduledEvent("C", year, month, day +1, new Canceled());
-        e6 = createScheduledEvent("O", year, month, day +2, new Occurred());
-        e7 = createScheduledEvent("S", year, month, day +3);
+        e5 = createScheduledActivity("C", year, month, day +1, new Canceled());
+        e6 = createScheduledActivity("O", year, month, day +2, new Occurred());
+        e7 = createScheduledActivity("S", year, month, day +3);
 
         addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);
 
@@ -402,19 +402,19 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         int month = c.get(Calendar.MONTH);
         int year = c.get(Calendar.YEAR);
 
-        e1 =  createScheduledEvent("C", year, month, day);
+        e1 =  createScheduledActivity("C", year, month, day);
         e1.getActivity().setType(ActivityType.PROCEDURE);
-        e2 =  createScheduledEvent("O", year, month, day+1);
+        e2 =  createScheduledActivity("O", year, month, day+1);
         e2.getActivity().setType(ActivityType.INTERVENTION);
-        e3 =  createScheduledEvent("S", year, month, day+2);
+        e3 =  createScheduledActivity("S", year, month, day+2);
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
 
 
-        e5 = createScheduledEvent("C", year, month, day +1);
-        e6 = createScheduledEvent("O", year, month, day +2);
+        e5 = createScheduledActivity("C", year, month, day +1);
+        e6 = createScheduledActivity("O", year, month, day +2);
         e6.getActivity().setType(ActivityType.INTERVENTION);
-        e7 = createScheduledEvent("S", year, month, day +3);
+        e7 = createScheduledActivity("S", year, month, day +3);
 
 
         addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);

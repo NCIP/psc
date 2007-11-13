@@ -87,7 +87,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         loadedStudy.addSite(loadedSite);
         loadedArm = setGridId(ARM_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
         loadedEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID,
-            Fixtures.createScheduledEvent("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
+            Fixtures.createScheduledActivity("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
 
         loadedParticipant = setGridId(PARTICIPANT_BIG_ID, createParticipant("Edward", "Armor-o"));
 

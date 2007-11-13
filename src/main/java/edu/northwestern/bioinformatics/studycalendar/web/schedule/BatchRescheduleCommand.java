@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 
 import java.util.Date;
@@ -39,10 +39,10 @@ public class BatchRescheduleCommand {
     }
 
     private void changeState(ScheduledActivity event) {
-        ScheduledEventState newState = getNewMode().createStateInstance();
+        ScheduledActivityState newState = getNewMode().createStateInstance();
         newState.setReason(createReason());
-        if (newState instanceof DatedScheduledEventState) {
-            ((DatedScheduledEventState) newState).setDate(createDate(event.getActualDate()));
+        if (newState instanceof DatedScheduledActivityState) {
+            ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
         }
         event.changeState(newState);
     }

@@ -132,11 +132,11 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		ScheduledArm scheduledArm = new ScheduledArm();
 
 		// add few schedule events
-		scheduledArm.setEvents(createScheduleEvents("event:" + name, count, eventMode));
+		scheduledArm.setEvents(createScheduleActivities("event:" + name, count, eventMode));
 		return scheduledArm;
 	}
 
-	private List<ScheduledActivity> createScheduleEvents(final String name, final int count,
+	private List<ScheduledActivity> createScheduleActivities(final String name, final int count,
 			final ScheduledActivityMode eventMode) {
 		List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
 		for (int i = 0; i < count; i++) {

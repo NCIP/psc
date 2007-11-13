@@ -37,12 +37,12 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(1, PERIOD_1_REPS);
 
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 1),  5, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 1),  5, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 2), 10, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 2), 10, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 1),  5, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 1),  5, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 2), 10, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 2), 10, amendment);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);
@@ -58,12 +58,12 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(1, PERIOD_1_REPS);
 
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 1), -1, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 1), -1, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 2), -2, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 2), -2, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 1), -1, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 1), -1, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 2), -2, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 2), -2, amendment);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);
@@ -83,12 +83,12 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(1, PERIOD_1_REPS);
 
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 0),  0, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 1), 28, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 1), 28, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e0, 2), 56, amendment);
-        scheduleService.reviseDate(getScheduledEventFixture(p0e1, 2), 56, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 0),  0, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 1), 28, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 1), 28, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e0, 2), 56, amendment);
+        scheduleService.reviseDate(getScheduledActivityFixture(p0e1, 2), 56, amendment);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

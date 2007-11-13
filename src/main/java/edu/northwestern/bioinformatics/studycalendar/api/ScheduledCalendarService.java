@@ -9,7 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 
 import java.util.Collection;
 import java.util.Date;
@@ -73,7 +73,7 @@ public interface ScheduledCalendarService {
      * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred
      * @see edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled
      */
-    ScheduledActivity changeEventState(ScheduledActivity event, ScheduledEventState newState);
+    ScheduledActivity changeEventState(ScheduledActivity event, ScheduledActivityState newState);
 
     /**
      * Indicate the next arm for the participant's schedule.

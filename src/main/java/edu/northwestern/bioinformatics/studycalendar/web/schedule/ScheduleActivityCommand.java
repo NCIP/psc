@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 
 import java.util.Date;
 import java.util.List;
@@ -46,11 +46,11 @@ public class ScheduleActivityCommand {
         return getNewMode() != null;
     }
 
-    public ScheduledEventState createState() {
-        ScheduledEventState instance = getNewMode().createStateInstance();
+    public ScheduledActivityState createState() {
+        ScheduledActivityState instance = getNewMode().createStateInstance();
         instance.setReason(getNewReason());
-        if (instance instanceof DatedScheduledEventState) {
-            ((DatedScheduledEventState) instance).setDate(getNewDate());
+        if (instance instanceof DatedScheduledActivityState) {
+            ((DatedScheduledActivityState) instance).setDate(getNewDate());
         }
         return instance;
     }

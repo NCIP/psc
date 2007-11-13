@@ -219,7 +219,7 @@
             <fileset dir="${src-dir.main}">
                 <include name="**/api/*.java"/>
                 <include name="**/domain/*.java"/>
-                <include name="**/domain/scheduledeventstate/*.java"/>
+                <include name="**/domain/scheduledactivitystate/*.java"/>
             </fileset>
             <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
         </javadoc>

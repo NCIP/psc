@@ -41,7 +41,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyDetails() throws Exception {
-        ScheduledActivity expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4);
+        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4);
         expectedSE.setDetails("D");
         EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));
@@ -53,7 +53,7 @@ public class ChangePlannedActivitySimplePropertyMutatorTest extends StudyCalenda
     }
 
     public void testApplyToOccurredDetails() throws Exception {
-        ScheduledActivity expectedSE = Fixtures.createScheduledEvent("Elph", 2007, Calendar.MARCH, 4, new Occurred());
+        ScheduledActivity expectedSE = Fixtures.createScheduledActivity("Elph", 2007, Calendar.MARCH, 4, new Occurred());
         expectedSE.setDetails("D");
         EasyMock.expect(scheduledActivityDao.getEventsFromPlannedActivity(plannedActivity, scheduledCalendar))
             .andReturn(Arrays.asList(expectedSE));

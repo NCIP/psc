@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.api.impl;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -79,7 +79,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         return scheduledActivityDao.getEventsByDate(calendar, startDate, endDate);
     }
 
-    public ScheduledActivity changeEventState(ScheduledActivity event, ScheduledEventState newState) {
+    public ScheduledActivity changeEventState(ScheduledActivity event, ScheduledActivityState newState) {
         ParameterLoader loader = new ParameterLoader(event);
 
         loader.getScheduledActivity().changeState(newState);

@@ -21,7 +21,7 @@ import java.util.ArrayList;
     }
 )
 @DiscriminatorValue(value = "3")
-public class Canceled extends ScheduledEventState {
+public class Canceled extends ScheduledActivityState {
 
     public Canceled() { }
 
@@ -39,8 +39,8 @@ public class Canceled extends ScheduledEventState {
     }
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> availableStates = new ArrayList();
+    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledActivityState>> availableStates = new ArrayList();
         availableStates.add(Scheduled.class);
         availableStates.add(Canceled.class);
         return availableStates;

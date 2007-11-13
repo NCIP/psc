@@ -27,18 +27,18 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @Entity // This isn't really an entity, but the @OneToMany from ScheduledActivity doesn't work otherwise
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_event_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_activity_states_id")
     }
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(name = "scheduled_event_states")
+@Table(name = "scheduled_activity_states")
 @DiscriminatorColumn(name = "mode_id", discriminatorType = DiscriminatorType.INTEGER)
-public abstract class ScheduledEventState extends AbstractMutableDomainObject implements Cloneable, Serializable {
+public abstract class ScheduledActivityState extends AbstractMutableDomainObject implements Cloneable, Serializable {
     private String reason;
 
-    protected ScheduledEventState() { }
+    protected ScheduledActivityState() { }
 
-    protected ScheduledEventState(String reason) {
+    protected ScheduledActivityState(String reason) {
         this.reason = reason;
     }
 
@@ -56,8 +56,8 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
     protected void appendSummaryMiddle(StringBuilder sb) { }
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableConditionalStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> list = new ArrayList<Class<? extends ScheduledEventState>>();
+    public List<Class<? extends ScheduledActivityState>> getAvailableConditionalStates(boolean conditional) {
+        List<Class<? extends ScheduledActivityState>> list = new ArrayList<Class<? extends ScheduledActivityState>>();
         if (conditional) {
             list.add(Conditional.class);
             list.add(NotApplicable.class);
@@ -66,7 +66,7 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
     }
 
     @Transient
-    public abstract List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional);
+    public abstract List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional);
 
     ////// BEAN PROPERTIES
 
@@ -98,7 +98,7 @@ public abstract class ScheduledEventState extends AbstractMutableDomainObject im
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ScheduledEventState that = (ScheduledEventState) o;
+        ScheduledActivityState that = (ScheduledActivityState) o;
 
         if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
 

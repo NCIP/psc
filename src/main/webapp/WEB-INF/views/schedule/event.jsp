@@ -54,7 +54,7 @@
             margin-left: 12em;
         }
     </style>
-    < tags:javascriptLink name="scheduled-event"/>
+    < tags:javascriptLink name="scheduled-activity"/>
     <script type="text/javascript">
         function registerStateHistoryControl() {
             Event.observe("show-history-control", "click", function(e) {

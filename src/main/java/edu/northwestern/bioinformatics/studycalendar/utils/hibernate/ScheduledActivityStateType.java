@@ -10,13 +10,9 @@ import org.hibernate.engine.SessionImplementor;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
@@ -27,15 +23,15 @@ import java.io.Serializable;
 
 /**
  * Hibernate {@link org.hibernate.usertype.UserType} that loads
- * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState}
+ * {@link edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState}
  * values for the
  * {@link edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity#getCurrentState}
  * property polymorphically.
  *
  * @author Rhett Sutphin
  */
-public class ScheduledEventStateType implements CompositeUserType {
-    private static Logger log = HibernateTypeUtils.getLog(ScheduledEventStateType.class);
+public class ScheduledActivityStateType implements CompositeUserType {
+    private static Logger log = HibernateTypeUtils.getLog(ScheduledActivityStateType.class);
     private static final Type MODE_TYPE = Hibernate.custom(ControlledVocabularyObjectType.class, new String[] { "enumClass" }, new String[] { ScheduledActivityMode.class.getName() });
 
     private static final String[] PROPERTY_NAMES = new String[] { "mode", "reason", "date" };
@@ -81,7 +77,7 @@ public class ScheduledEventStateType implements CompositeUserType {
     }
 
     public Class returnedClass() {
-        return ScheduledEventState.class;
+        return ScheduledActivityState.class;
     }
 
     public boolean equals(Object x, Object y) throws HibernateException {
@@ -95,26 +91,26 @@ public class ScheduledEventStateType implements CompositeUserType {
     public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
         // we don't know the owner yet, but that's okay because the MODE_TYPE doesn't use it.
         ScheduledActivityMode mode = (ScheduledActivityMode) MODE_TYPE.nullSafeGet(rs, names[MODE_INDEX], session, null);
-        ScheduledEventState loaded = createStateObject(mode);
+        ScheduledActivityState loaded = createStateObject(mode);
         if (loaded == null) return null;
 
         loaded.setReason(rs.getString(names[REASON_INDEX]));
-        if (loaded instanceof DatedScheduledEventState) {
-            ((DatedScheduledEventState) loaded).setDate(rs.getDate(names[DATE_INDEX]));
+        if (loaded instanceof DatedScheduledActivityState) {
+            ((DatedScheduledActivityState) loaded).setDate(rs.getDate(names[DATE_INDEX]));
         }
         return loaded;
     }
 
     public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
-        ScheduledEventState toSet = (ScheduledEventState) value;
+        ScheduledActivityState toSet = (ScheduledActivityState) value;
         java.sql.Date date = null;
         String reason = null;
         ScheduledActivityMode mode = null;
         if (toSet != null) {
             mode = toSet.getMode();
             reason = toSet.getReason();
-            if (toSet instanceof DatedScheduledEventState) {
-                Date dateToSet = ((DatedScheduledEventState) toSet).getDate();
+            if (toSet instanceof DatedScheduledActivityState) {
+                Date dateToSet = ((DatedScheduledActivityState) toSet).getDate();
                 date = dateToSet == null ? null : new java.sql.Date(dateToSet.getTime());
             }
         }
@@ -129,7 +125,7 @@ public class ScheduledEventStateType implements CompositeUserType {
     }
 
     // TODO: why isn't this using SchedEventMode.createStateInstance?
-    private ScheduledEventState createStateObject(ScheduledActivityMode mode) {
+    private ScheduledActivityState createStateObject(ScheduledActivityMode mode) {
         if (ScheduledActivityMode.SCHEDULED == mode) {
             return new Scheduled();
         } else if (ScheduledActivityMode.OCCURRED == mode) {
@@ -162,6 +158,6 @@ public class ScheduledEventStateType implements CompositeUserType {
     }
 
     public Object deepCopy(Object value) throws HibernateException {
-        return value == null ? null : ((ScheduledEventState) value).clone();
+        return value == null ? null : ((ScheduledActivityState) value).clone();
     }
 }

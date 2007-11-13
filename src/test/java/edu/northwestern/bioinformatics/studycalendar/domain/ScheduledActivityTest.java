@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
@@ -77,7 +77,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
     public void testGetAllWithCurrentOnly() throws Exception {
         scheduledActivity.setPreviousStates(null); // paranoia
         scheduledActivity.changeState(new Canceled("A"));
-        List<ScheduledEventState> all = scheduledActivity.getAllStates();
+        List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(1, all.size());
         assertEquals("A", all.get(0).getReason());
     }
@@ -87,7 +87,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         scheduledActivity.changeState(new Canceled("B"));
         scheduledActivity.changeState(new Canceled("C"));
 
-        List<ScheduledEventState> all = scheduledActivity.getAllStates();
+        List<ScheduledActivityState> all = scheduledActivity.getAllStates();
         assertEquals(3, all.size());
         assertEquals("A", all.get(0).getReason());
         assertEquals("B", all.get(1).getReason());
@@ -143,7 +143,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         assertFalse("Should not be valid new state", scheduledActivity.isValidNewState(Canceled.class));
     }
 
-    public void testUnscheduleScheduledEvent() throws Exception {
+    public void testUnscheduleScheduledActivity() throws Exception {
         scheduledActivity.changeState(new Scheduled());
         assertEquals("Test setup failure", 1, scheduledActivity.getAllStates().size());
 

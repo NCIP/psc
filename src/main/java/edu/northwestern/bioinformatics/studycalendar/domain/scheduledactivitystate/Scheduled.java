@@ -17,11 +17,11 @@ import org.hibernate.annotations.Parameter;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_event_states_id")
+        @Parameter(name="sequence", value="seq_scheduled_activity_states_id")
     }
 )
 @DiscriminatorValue(value = "1")
-public class Scheduled extends DatedScheduledEventState {
+public class Scheduled extends DatedScheduledActivityState {
     public Scheduled() { }
 
     public Scheduled(String reason, Date date) {
@@ -37,8 +37,8 @@ public class Scheduled extends DatedScheduledEventState {
 
 
     @Transient
-    public List<Class<? extends ScheduledEventState>> getAvailableStates(boolean conditional) {
-        List<Class<? extends ScheduledEventState>> availableStates = getAvailableConditionalStates(conditional);
+    public List<Class<? extends ScheduledActivityState>> getAvailableStates(boolean conditional) {
+        List<Class<? extends ScheduledActivityState>> availableStates = getAvailableConditionalStates(conditional);
         availableStates.add(Occurred.class);
         availableStates.add(Scheduled.class);
         availableStates.add(Canceled.class);

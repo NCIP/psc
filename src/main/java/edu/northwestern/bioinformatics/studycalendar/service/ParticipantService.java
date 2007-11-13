@@ -21,7 +21,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledEventState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import org.slf4j.Logger;
@@ -180,12 +180,12 @@ public class ParticipantService {
 
         int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * repetitionNumber;
         log.debug(" - rep {}; offset: {}", repetitionNumber, repOffset);
-        ScheduledActivity event = createEmptyScheduledEventFor(plannedActivity);
+        ScheduledActivity event = createEmptyScheduledActivityFor(plannedActivity);
         event.setRepetitionNumber(repetitionNumber);
         event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetArm.getStartDate()));
 
-        DatedScheduledEventState initialState
-            = (DatedScheduledEventState) plannedActivity.getInitialScheduledMode().createStateInstance();
+        DatedScheduledActivityState initialState
+            = (DatedScheduledActivityState) plannedActivity.getInitialScheduledMode().createStateInstance();
         initialState.setReason("Initialized from template");
         initialState.setDate(event.getIdealDate());
         event.changeState(initialState);
@@ -198,7 +198,7 @@ public class ParticipantService {
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
-    protected ScheduledActivity createEmptyScheduledEventFor(PlannedActivity plannedActivity) {
+    protected ScheduledActivity createEmptyScheduledActivityFor(PlannedActivity plannedActivity) {
         ScheduledActivity event = new ScheduledActivity();
         event.setPlannedActivity(plannedActivity);
         return event;
@@ -324,9 +324,9 @@ public class ParticipantService {
     public StudyParticipantAssignment takeParticipantOffStudy(StudyParticipantAssignment studyAssignment, Date offStudyDate) {
         ScheduledCalendar calendar = studyAssignment.getScheduledCalendar();
 
-        List<ScheduledActivity> upcomingScheduledEvents = getPotentialUpcomingEvents(calendar, offStudyDate);
+        List<ScheduledActivity> upcomingScheduledActivities = getPotentialUpcomingEvents(calendar, offStudyDate);
 
-        for(ScheduledActivity event: upcomingScheduledEvents) {
+        for(ScheduledActivity event: upcomingScheduledActivities) {
             if (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()) {
                 event.changeState(new Canceled("Off Study"));
             } else if (ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode()) {
@@ -340,7 +340,7 @@ public class ParticipantService {
     }
 
     private List<ScheduledActivity> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
-        List<ScheduledActivity> upcomingScheduledEvents = new ArrayList<ScheduledActivity>();
+        List<ScheduledActivity> upcomingScheduledActivities = new ArrayList<ScheduledActivity>();
         for (ScheduledArm arm : calendar.getScheduledArms()) {
             if (!arm.isComplete()) {
                 Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();
@@ -350,13 +350,13 @@ public class ParticipantService {
                         if ((offStudyDate.before(event.getActualDate()) || offStudyDate.equals(event.getActualDate()))
                                 && (ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()
                                 || ScheduledActivityMode.CONDITIONAL == event.getCurrentState().getMode())) {
-                            upcomingScheduledEvents.add(event);
+                            upcomingScheduledActivities.add(event);
                         }
                     }
                 }
             }
         }
-        return upcomingScheduledEvents;
+        return upcomingScheduledActivities;
     }
 
     ////// CONFIGURATION

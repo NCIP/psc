@@ -61,7 +61,7 @@ public class ICalTools {
 					for (Date date : events.keySet()) {
 						List<ScheduledActivity> event = events.get(date);
 						for (final ScheduledActivity scheduleActivity : event) {
-							VEvent vEvent = generateAllDayEventForAnScheduleEventOfPatient(scheduleActivity, date,
+							VEvent vEvent = generateAllDayEventForAnScheduleActivityOfPatient(scheduleActivity, date,
 									studyParticipantAssignment.getParticipant());
 							if (vEvent != null) {
 								icsCalendar.getComponents().add(vEvent);
@@ -78,18 +78,18 @@ public class ICalTools {
 	}
 
 	/**
-	 * Generate an all day ics calendar event for an schedule event of Patient. Currently calendar event is created only for ScheduleEvent
+	 * Generate an all day ics calendar event for an schedule activity of Patient. Currently calendar event is created only for ScheduleActivity
 	 * of {@link ScheduledActivityMode.SCHEDULED}
 	 * 
 	 * @param participant patient on which study is done
-	 * @param scheduledActivity the scheduled event for which ics calendar event need to be generated
+	 * @param scheduledActivity the scheduled activity for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
 	 * @param participant
 	 * 
-	 * @return the ics calendar event. Returns null if scheduledActivity has no activity or date is null or ScheduleEvent is not of
+	 * @return the ics calendar event. Returns null if scheduledActivity has no activity or date is null or ScheduleActivity is not of
 	 *         {@link ScheduledActivityMode.SCHEDULED}
 	 */
-	private static VEvent generateAllDayEventForAnScheduleEventOfPatient(final ScheduledActivity scheduledActivity,
+	private static VEvent generateAllDayEventForAnScheduleActivityOfPatient(final ScheduledActivity scheduledActivity,
 			final Date date, final Participant participant) {
 		final Activity activity = scheduledActivity.getActivity();
 		if (activity != null && date != null && scheduledActivity.getCurrentState() != null

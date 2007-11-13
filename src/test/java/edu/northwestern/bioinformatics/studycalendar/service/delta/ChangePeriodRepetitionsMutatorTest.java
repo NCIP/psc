@@ -49,10 +49,10 @@ public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<Pr
         expect(templateService.findParent(p1e0)).andReturn(period1).times(PERIOD_1_REPS - 1);
         expect(templateService.findParent(p1e1)).andReturn(period1).times(PERIOD_1_REPS - 1);
 
-        getScheduledEventFixture(p0e0, 2).unscheduleIfOutstanding("Repetition 3 removed in revision " + REVISION_DISPLAY_NAME);
-        getScheduledEventFixture(p0e0, 1).unscheduleIfOutstanding("Repetition 2 removed in revision " + REVISION_DISPLAY_NAME);
-        getScheduledEventFixture(p0e1, 2).unscheduleIfOutstanding("Repetition 3 removed in revision " + REVISION_DISPLAY_NAME);
-        getScheduledEventFixture(p0e1, 1).unscheduleIfOutstanding("Repetition 2 removed in revision " + REVISION_DISPLAY_NAME);
+        getScheduledActivityFixture(p0e0, 2).unscheduleIfOutstanding("Repetition 3 removed in revision " + REVISION_DISPLAY_NAME);
+        getScheduledActivityFixture(p0e0, 1).unscheduleIfOutstanding("Repetition 2 removed in revision " + REVISION_DISPLAY_NAME);
+        getScheduledActivityFixture(p0e1, 2).unscheduleIfOutstanding("Repetition 3 removed in revision " + REVISION_DISPLAY_NAME);
+        getScheduledActivityFixture(p0e1, 1).unscheduleIfOutstanding("Repetition 2 removed in revision " + REVISION_DISPLAY_NAME);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

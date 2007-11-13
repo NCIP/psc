@@ -5,7 +5,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
 <div>Simple Report</div>
-<c:forEach items="${scheduledEvents}" var="event" varStatus="status">
+<c:forEach items="${scheduledActivities}" var="event" varStatus="status">
 	<div>	
 		<c:out value="${event.eventId}"/>
 		<c:out value="${event.eventName}"/>
