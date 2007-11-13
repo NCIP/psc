@@ -153,7 +153,7 @@
                              <h3 class="site">${studySites.site.name} </h3>
                             
                              <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participant</tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}&siteId=${studySites.site.id}">Assign participant</tags:restrictedListItem>
                             </ul>
 
                             <c:forEach items="${studySites.studyParticipantAssignments}" var="listOfParticipants" varStatus="listOfParticipantsStatus">

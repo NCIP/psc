@@ -3,10 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.loadFromExternalObjectId;
@@ -74,6 +71,17 @@ public class SiteService {
             sites.add(studySite.getSite());
         }
         return sites;
+    }
+
+    public Collection<Site> getSitesForParticipantCoordinator(String userName, Study study) {
+        Collection<Site> sites = getSitesForParticipantCoordinator(userName);
+        Set<Site> sitesForStudy = new HashSet<Site>();
+        for (Site site : sites) {
+            if (StudySite.findStudySite(study, site) != null) {
+                sitesForStudy.add(site);
+            }
+        }
+        return sitesForStudy;
     }
 
     ////// CONFIGURATION

@@ -12,24 +12,33 @@ public class StudySiteService {
         if (user != null) {
             UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
             if (userRole != null) {
-                studySites = userRole.getStudySites();
+                studySites.addAll(userRole.getStudySites());
             }
         }
         return studySites;
     }
 
     public List<StudySite> getStudySitesForParticipantCoordinator(User user, Site site) {
-        List<StudySite> studySites = new ArrayList<StudySite>();
-        if (user != null) {
-            UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
-            if (userRole != null) {
-                for (StudySite studySite : userRole.getStudySites()) {
-                    if (studySite.getSite().equals(site)) {
-                        studySites.add(studySite);
-                    }
-                }
+        List<StudySite> allStudySites = getAllStudySitesForParticipantCoordinator(user);
+        List<StudySite> availableStudySites = new ArrayList<StudySite>();
+
+        for (StudySite studySite : allStudySites) {
+            if (studySite.getSite().equals(site)) {
+                availableStudySites.add(studySite);
             }
         }
-        return studySites;
+        return availableStudySites;
+    }
+
+    public List<StudySite> getStudySitesForParticipantCoordinator(User user, Study study) {
+        List<StudySite> allStudySites = getAllStudySitesForParticipantCoordinator(user);
+        List<StudySite> availableStudySites = new ArrayList<StudySite>();
+
+        for (StudySite studySite : allStudySites) {
+            if (studySite.getStudy().equals(study)) {
+                availableStudySites.add(studySite);
+            }
+        }
+        return availableStudySites;
     }
 }

@@ -31,7 +31,7 @@
 
         <form:form method="post">
             <form:errors path="*"/>
-            <input type="hidden" name="studySite" value="${studySite.id}"/>
+            <input type="hidden" name="study" value="${study.id}"/>
             <div class="row">
                 <div class="label">
                     <form:label path="participant">Participant</form:label>
@@ -43,6 +43,22 @@
                 </div>
             </div>
             <p><a href="<c:url value="/pages/cal/createParticipant?id=${study.id}"/>">Create New Participant</a></p>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="site">Site</form:label>
+                    </div>
+                    <div class="value">
+                        <c:if test="${fn:length(sites) gt 1}">
+                            <form:select path="site">
+                                <form:options items="${sites}" itemLabel="name" itemValue="id"/>
+                            </form:select>
+                        </c:if>
+                        <c:if test="${fn:length(sites) eq 1}">
+                            ${sites[0].name}
+                            <input type="hidden" name="site" value="${sites[0].id}"/>
+                        </c:if>
+                    </div>
+                </div>
 
             <c:if test="${not empty arms}">
                 <div class="row">

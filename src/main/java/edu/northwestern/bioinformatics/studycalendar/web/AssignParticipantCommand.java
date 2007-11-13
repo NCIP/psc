@@ -10,10 +10,11 @@ import java.util.Date;
  * @author Padmaja Vedula
  */
 public class AssignParticipantCommand {
-    private StudySite studySite;
     private Participant participant;
     private Arm arm;
     private Date startDate;
+    private Site site;
+    private Study study;
     private User participantCoordinator;
 
     private ParticipantService participantService;
@@ -31,6 +32,10 @@ public class AssignParticipantCommand {
         return effectiveArm;
     }
 
+    private StudySite getStudySite() {
+        return StudySite.findStudySite(getStudy(), getSite());
+    }
+
     ////// CONFIGURATION
 
     public void setParticipantService(ParticipantService participantService) {
@@ -45,14 +50,6 @@ public class AssignParticipantCommand {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
-    }
-
-    public StudySite getStudySite() {
-        return studySite;
-    }
-
-    public void setStudySite(StudySite studySite) {
-        this.studySite = studySite;
     }
 
     public Participant getParticipant() {
@@ -77,5 +74,21 @@ public class AssignParticipantCommand {
 
     public void setParticipantCoordinator(User participantCoordinator) {
         this.participantCoordinator = participantCoordinator;
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+
+    public Study getStudy() {
+        return study;
+    }
+
+    public void setStudy(Study study) {
+        this.study = study;
     }
 }

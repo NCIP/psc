@@ -1,11 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import static java.util.Arrays.asList;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.StudySiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -15,33 +22,42 @@ import java.util.*;
  */
 public class AssignParticipantControllerTest extends ControllerTestCase {
     private ParticipantDao participantDao;
-    private StudySiteDao studySiteDao;
+    private SiteService siteService;
     private StudyDao studyDao;
+    private SiteDao siteDao;
     private ArmDao armDao;
-    private UserDao userDao;
 
+    private UserDao userDao;
     private AssignParticipantController controller;
     private Study study;
     private List<Participant> participants;
     private User user;
+    private StudySite studySite;
+    private Site site;
+    private List<Site> sites;
 
     protected void setUp() throws Exception {
         super.setUp();
         participantDao = registerDaoMockFor(ParticipantDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
-        studySiteDao = registerDaoMockFor(StudySiteDao.class);
+        siteService = registerMockFor(SiteService.class);
         armDao = registerDaoMockFor(ArmDao.class);
         userDao = registerDaoMockFor(UserDao.class);
+        siteDao = registerDaoMockFor(SiteDao.class);
 
         controller = new AssignParticipantController();
         controller.setParticipantDao(participantDao);
+        controller.setSiteService(siteService);
         controller.setStudyDao(studyDao);
-        controller.setStudySiteDao(studySiteDao);
+        controller.setSiteDao(siteDao);
+        controller.setUserDao(userDao);
         controller.setArmDao(armDao);
         controller.setControllerTools(controllerTools);
 
+
         study = setId(40, createNamedInstance("Protocol 1138", Study.class));
-        createStudySite(study, createNamedInstance("Seattle", Site.class));
+        site  = createNamedInstance("Seattle", Site.class);
+        studySite = createStudySite(study, site);
         PlannedCalendar calendar = new PlannedCalendar();
         calendar.addEpoch(Epoch.create("Treatment", "A", "B", "C"));
         study.setPlannedCalendar(calendar);
@@ -55,7 +71,16 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         userRoles.add(userRole);
         user.setUserRoles(userRoles);
 
+        sites = asList(site);
         participants = new LinkedList<Participant>();
+
+        SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
+    }
+
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testParticipantAssignedOnSubmit() throws Exception {
@@ -63,7 +88,7 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         AssignParticipantController mockableController = new MockableCommandController(mockCommand);
         mockableController.setUserDao(userDao);
         mockCommand.setParticipantCoordinator(user);
-        expect(userDao.getByName(null)).andReturn(user).anyTimes();
+        expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
         StudyParticipantAssignment assignment = setId(14, new StudyParticipantAssignment());
 
         expect(mockCommand.assignParticipant()).andReturn(assignment);
@@ -90,9 +115,26 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
         assertEquals(expectedArm, command.getArm());
     }
 
+    public void testBindStudy() throws Exception {
+        request.setParameter("study", "15");
+        Study expectedStudy = setId(15, createNamedInstance("Study B", Study.class));
+        expect(studyDao.getById(15)).andReturn(expectedStudy);
+        AssignParticipantCommand command = getAndReturnCommand("study");
+        assertEquals(expectedStudy, command.getStudy());
+    }
+
+    public void testBindSite() throws Exception {
+        request.setParameter("site", "25");
+        Site expectedSite = setId(25, createNamedInstance("Northwestern", Site.class));
+        expect(siteDao.getById(25)).andReturn(expectedSite);
+        AssignParticipantCommand command = getAndReturnCommand("site");
+        assertEquals(expectedSite, command.getSite());
+    }
+
     private AssignParticipantCommand getAndReturnCommand(String expectNoErrorsForField) throws Exception {
         request.setMethod("GET");
         expectRefDataCalls();
+        expectFormBackingDataCalls();
         replayMocks();
         Map<String, Object> model = controller.handleRequest(request, response).getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
@@ -105,6 +147,12 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
     private void expectRefDataCalls() {
         expect(participantDao.getAll()).andReturn(participants);
         expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(siteService.getSitesForParticipantCoordinator(user.getName(), study)).andReturn(sites);
+    }
+
+    private void expectFormBackingDataCalls() {
+        expect(studyDao.getById(study.getId())).andReturn(study);
+        expect(siteService.getSitesForParticipantCoordinator(user.getName(), study)).andReturn(sites);
     }
 
     public void testRefdataIncludesStudy() throws Exception {
@@ -112,7 +160,9 @@ public class AssignParticipantControllerTest extends ControllerTestCase {
     }
 
     public void testRefdataIncludesStudySite() throws Exception {
-        assertSame(study.getStudySites().get(0), getRefdata().get("studySite"));
+        List actualSites = ((ArrayList)getRefdata().get("sites"));
+        assertEquals(sites.size(), actualSites.size());
+        assertEquals(sites.get(0), actualSites.get(0));
     }
 
     public void testRefdataIncludesParticipants() throws Exception {
