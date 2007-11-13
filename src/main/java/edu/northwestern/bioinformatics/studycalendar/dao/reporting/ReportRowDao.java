@@ -53,9 +53,9 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"inner join participants p on pa.participant_id=p.id " +
 				"inner join scheduled_calendars sc on pa.id=sc.assignment_id " +
 				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_events se on sa.id=se.scheduled_arm_id " +
-				"inner join scheduled_event_modes sem on se.current_state_mode_id=sem.id " +
-				"inner join planned_events pe on se.planned_activity_id=pe.id " +
+				"inner join scheduled_activities sa on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_activity_modes sam on se.current_state_mode_id=sem.id " +
+				"inner join planned_activities pa on se.planned_activity_id=pe.id " +
 				"inner join activities act on pe.activity_id=act.id " +
 				"inner join arms a on sa.arm_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
@@ -117,9 +117,9 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"inner join participants p on pa.participant_id=p.id " +
 				"inner join scheduled_calendars sc on pa.id=sc.assignment_id " +
 				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_events se on sa.id=se.scheduled_arm_id " +
-				"inner join scheduled_event_modes sem on se.current_state_mode_id=sem.id " +
-				"inner join planned_events pe on se.planned_activity_id=pe.id " +
+				"inner join scheduled_activities sa on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_activity_modes sam on se.current_state_mode_id=sem.id " +
+				"inner join planned_activities pa on se.planned_activity_id=pe.id " +
 				"inner join activities act on pe.activity_id=act.id " +
 				"inner join arms a on sa.arm_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
