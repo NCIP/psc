@@ -1,17 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.Summary;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -23,6 +11,16 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
 import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Summary;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * @author Saurabh Agrawal
@@ -94,10 +92,6 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		studyParticipantAssignment.setScheduledCalendar(scheduledCalendar);
 
 		Calendar calendar = ICalTools.generateICalendar(studyParticipantAssignment);
-		FileOutputStream outputStream = new FileOutputStream("abc.ics");
-		final CalendarOutputter output = new CalendarOutputter();
-		output.setValidating(false);
-		output.output(calendar, outputStream);
 
 		assertEquals("calendar should have 8(5+3) events", 8, calendar.getComponents().size());
 		assertEquals("calendar  should have only 4 properties..", 4, calendar.getProperties().size());
