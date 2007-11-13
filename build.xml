@@ -1,6 +1,8 @@
 <project name="caBIG Study Calendar" default="compile">
 
     <!-- PROPERTIES AND PATHS -->
+    <property name="application-short-name" value="psc"/>
+
     <property name="src-dir.main"      value="src/main/java"/>
     <property name="src-dir.unit-test" value="src/test/java"/>
     <property name="src-dir.web"       value="src/main/webapp"/>
@@ -89,6 +91,8 @@
 
     <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.unit-test"/>
     <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="cp.integrated-test"/>
+    <taskdef name="datasource-properties"
+             classname="gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask" classpathref="cp.main"/>
 
     <!-- TARGETS -->
 
@@ -97,21 +101,14 @@
         <mkdir dir="${build-dir.unit-test}"/>
         <mkdir dir="${metrics-dir}"/>
 
-        <property name="config.database.file" value="db/${config.database}.properties"/>
-        <fail message="Database not configured (could not read ${config.database.file}.).  See db/readme.txt.">
-            <condition>
-                <not><available file="${config.database.file}"/></not>
-            </condition>
-        </fail>
-        <property file="${config.database.file}"/>
-        <!-- default UPT dialect to same as SC's, if not already set -->
-        <property name="datasource.dialect.upt" value="${datasource.dialect}"/>
+        <datasource-properties applicationDirectoryName="${application-short-name}"
+                               databaseConfigurationName="${config.database}"/>
         <echo>All database ops for this build will use ${datasource.url}</echo>
     </target>
 
     <target name="default-properties">
         <property name="test.failfast" value="false"/>
-        <property name="config.database" value="studycalendar"/>
+        <property name="config.database" value="datasource"/>
     </target>
 
     <target name="clean">
@@ -122,7 +119,15 @@
     </target>
 
     <target name="resources" description="Copy resources into classpath" depends="init">
-        <copy file="${config.database.file}" tofile="${build-dir.main}/datasource.properties" overwrite="true"/>
+        <copy todir="${build-dir.main}" filtering="true" overwrite="true">
+            <fileset dir="${src-dir.main}">
+                <include name="applicationContext-spring.xml"/>
+            </fileset>
+            <filterset>
+                <filter token="config.database" value="${config.database}"/>
+                <filter token="application-short-name" value="${application-short-name}"/>
+            </filterset>
+        </copy>
         <copy todir="${build-dir.main}">
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
@@ -142,8 +147,11 @@
             </fileset>
             <filterset>
                 <filter token="tomcat.security.dir" value="${build-dir.csm}"/>
-                <filter token="datasource.dialect.upt" value="${datasource.dialect.upt}"/>
-                <filtersfile file="${config.database.file}"/>
+                <filter token="datasource.dialect.upt" value=""/>
+                <filter token="datasource.driver" value="${datasource.driver}"/>
+                <filter token="datasource.url" value="${datasource.url}"/>
+                <filter token="datasource.username" value="${datasource.username}"/>
+                <filter token="datasource.password" value="${datasource.password}"/>
             </filterset>
         </copy>
     </target>
@@ -333,12 +341,12 @@
         <property name="create-hsqldb.url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/${create-hsqldb.dbname}"/>
         <delete dir="${hsqldb-dir}"/>
 
-        <propertyfile file="db/hsqldb.properties">
+        <propertyfile file="${user.home}/.psc/hsqldb.properties">
             <entry key="datasource.url"      value="${create-hsqldb.url}"/>
             <entry key="datasource.username" value="sa"/>
             <entry key="datasource.password" value=""/>
-            <entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>
-            <entry key="bering.dialect"      value="edu.northwestern.bioinformatics.bering.dialect.Hsqldb"/>
+            <!--<entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>-->
+            <!--<entry key="bering.dialect"      value="edu.northwestern.bioinformatics.bering.dialect.Hsqldb"/>-->
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
         </propertyfile>
 

@@ -1,0 +1,15 @@
+# The JDBC connection parameters for your datasource
+datasource.url=jdbc:postgresql:psc
+datasource.username=
+datasource.password=
+
+## DB-specific config:  uncomment the line for the database you are using
+
+#### PostgreSQL
+# datasource.driver=org.postgresql.Driver
+
+#### HSQLDB
+# datasource.driver=org.hsqldb.jdbcDriver
+
+#### Oracle
+# datasource.driver=oracle.jdbc.OracleDriver
