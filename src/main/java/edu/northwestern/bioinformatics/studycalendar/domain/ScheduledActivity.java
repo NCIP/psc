@@ -230,7 +230,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public boolean isPlannedScheduledEvent() {
+    public boolean isPlannedScheduledActivity() {
         return (getPlannedActivity() != null);
     }
 
@@ -242,7 +242,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
             .append("[idealDate=").append(getIdealDate());
 
             // Create flag for reconsent events
-            if (isPlannedScheduledEvent()) {
+            if (isPlannedScheduledActivity()) {
                 sb.append("; plannedActivity=").append(getPlannedActivity().getId());
             }
             sb.append("; repetition=").append(getRepetitionNumber())
