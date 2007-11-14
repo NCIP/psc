@@ -229,6 +229,11 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
         this.repetitionNumber = repetitionNumber;
     }
 
+    @Transient
+    public boolean isPlannedScheduledEvent() {
+        return (getPlannedActivity() != null);
+    }
+
     ////// OBJECT METHODS
 
     @Override
@@ -237,7 +242,7 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
             .append("[idealDate=").append(getIdealDate());
 
             // Create flag for reconsent events
-            if (getPlannedActivity() != null) {
+            if (isPlannedScheduledEvent()) {
                 sb.append("; plannedActivity=").append(getPlannedActivity().getId());
             }
             sb.append("; repetition=").append(getRepetitionNumber())
