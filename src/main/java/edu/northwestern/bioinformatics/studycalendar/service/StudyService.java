@@ -30,6 +30,7 @@ public class StudyService {
                     reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledActivity.getActualDate()));
                     reconsentEvent.setDetails(details);
                     reconsentEvent.setActivity(reconsent);
+                    reconsentEvent.setSourceAmendment(study.getAmendment());
                     upcomingScheduledActivity.getScheduledArm().addEvent(reconsentEvent);
                 }
             }

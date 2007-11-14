@@ -233,10 +233,15 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
 
     @Override
     public String toString() {
-        return new StringBuilder(getClass().getSimpleName())
-            .append("[idealDate=").append(getIdealDate())
-            .append("; plannedActivity=").append(getPlannedActivity().getId())
-            .append("; repetition=").append(getRepetitionNumber())
-            .append(']').toString();
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName())
+            .append("[idealDate=").append(getIdealDate());
+
+            // Create flag for reconsent events
+            if (getPlannedActivity() != null) {
+                sb.append("; plannedActivity=").append(getPlannedActivity().getId());
+            }
+            sb.append("; repetition=").append(getRepetitionNumber())
+              .append(']');
+        return sb.toString();
     }
 }
