@@ -48,7 +48,7 @@ public class UserRoleService {
                 siteService.removeProtectionGroup(site, user);
 
                 /* Remove StudySite relationships for site being removed */
-                List<StudySite> removeStudySites = studySiteService.getStudySitesForParticipantCoordinator(user, site);
+                List<StudySite> removeStudySites = studySiteService.getStudySitesForSubjectCoordinator(user, site);
                 userRole.getStudySites().removeAll(removeStudySites);
             }
 

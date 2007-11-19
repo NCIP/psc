@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 /**
  * @author Rhett Sutphin
@@ -18,8 +18,8 @@ public class StudyCalendarNamingStrategyTest extends StudyCalendarTestCase {
     }
 
     public void testTableName() throws Exception {
-        assertEquals("participants", strategy.classToTableName(Participant.class.getName()));
-        assertEquals("study_participant_assignments", strategy.classToTableName(StudyParticipantAssignment.class.getName()));
+        assertEquals("subjects", strategy.classToTableName(Subject.class.getName()));
+        assertEquals("study_subject_assignments", strategy.classToTableName(StudySubjectAssignment.class.getName()));
         assertEquals("activities", strategy.classToTableName(Activity.class.getName()));
     }
 }

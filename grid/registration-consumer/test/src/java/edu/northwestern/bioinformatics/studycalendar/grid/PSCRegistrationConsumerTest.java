@@ -21,15 +21,15 @@ import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.ccts.grid.ParticipantType;
@@ -51,9 +51,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
 	private ApplicationContext ctx;
 
-	private ParticipantDao participantDao;
+	private SubjectDao subjectDao;
 
-	private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+	private StudySubjectAssignmentDao studySubjectAssignmentDao;
 
 	private StudyDao studyDao;
 
@@ -87,10 +87,10 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 				"classpath:applicationContext-dao.xml", "classpath:applicationContext-security.xml",
 				"classpath:applicationContext-service.xml", "classpath:applicationContext-spring.xml" });
 
-		participantDao = (ParticipantDao) ctx.getBean("participantDao");
+		subjectDao = (SubjectDao) ctx.getBean("subjectDao");
 		studyDao = (StudyDao) ctx.getBean("studyDao");
 		siteDao = (SiteDao) ctx.getBean("siteDao");
-		studyParticipantAssignmentDao = (StudyParticipantAssignmentDao) ctx.getBean("studyParticipantAssignmentDao");
+		studySubjectAssignmentDao = (StudySubjectAssignmentDao) ctx.getBean("studySubjectAssignmentDao");
 		studySiteDao = (StudySiteDao) ctx.getBean("studySiteDao");
 	}
 
@@ -170,23 +170,23 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 	}
 
 	private void validateRegistration(final Registration registration) {
-		// first validate participant
-		Participant participantToBeValidated = participantDao.getByGridId(registration.getParticipant().getGridId());
-		validateParticipant(participantToBeValidated, registration.getParticipant());
+		// first validate subject
+		Subject participantToBeValidated = subjectDao.getByGridId(registration.getSubject().getGridId());
+		validateParticipant(participantToBeValidated, registration.getSubject());
 
 		Study study = studyDao.getById(-1);
 		Site site = siteDao.getById(-1);
 		assertNotNull(site);
 		assertNotNull(study);
-		StudyParticipantAssignment studyParticipantAssignment = participantDao.getAssignment(participantToBeValidated,
+		StudySubjectAssignment studySubjectAssignment = subjectDao.getAssignment(participantToBeValidated,
 				study, site);
 
-		assertNotNull(studyParticipantAssignment);
+		assertNotNull(studySubjectAssignment);
 
 		// TODO: Check if it was correctly populated.
 	}
 
-	private void validateParticipant(final Participant participantToBeValidated,
+	private void validateParticipant(final Subject participantToBeValidated,
 			final ParticipantType registerdParticipant) {
 		assertEquals(registerdParticipant.getBirthDate(), participantToBeValidated.getDateOfBirth());
 		assertEquals(registerdParticipant.getAdministrativeGenderCode(), participantToBeValidated.getGender());

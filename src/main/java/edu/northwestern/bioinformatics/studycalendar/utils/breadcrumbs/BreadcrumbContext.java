@@ -21,8 +21,8 @@ public class BreadcrumbContext {
     private Period period;
     private PlannedActivity plannedActivity;
 
-    private Participant participant;
-    private StudyParticipantAssignment studyParticipantAssignment;
+    private Subject subject;
+    private StudySubjectAssignment studySubjectAssignment;
     private ScheduledCalendar scheduledCalendar;
     private ScheduledArm scheduledArm;
     private ScheduledActivity scheduledActivity;
@@ -103,20 +103,20 @@ public class BreadcrumbContext {
         this.plannedActivity = plannedActivity;
     }
 
-    public void setParticipant(Participant participant) {
-        this.participant = participant;
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
-    public void setStudyParticipantAssignment(StudyParticipantAssignment studyParticipantAssignment) {
-        if (studyParticipantAssignment == null) return;
-        setParticipant(studyParticipantAssignment.getParticipant());
-        setPlannedCalendar(studyParticipantAssignment.getStudySite().getStudy().getPlannedCalendar());
-        this.studyParticipantAssignment = studyParticipantAssignment;
+    public void setStudySubjectAssignment(StudySubjectAssignment studySubjectAssignment) {
+        if (studySubjectAssignment == null) return;
+        setSubject(studySubjectAssignment.getSubject());
+        setPlannedCalendar(studySubjectAssignment.getStudySite().getStudy().getPlannedCalendar());
+        this.studySubjectAssignment = studySubjectAssignment;
     }
 
     public void setScheduledCalendar(ScheduledCalendar scheduledCalendar) {
         if (scheduledCalendar == null) return;
-        setStudyParticipantAssignment(scheduledCalendar.getAssignment());
+        setStudySubjectAssignment(scheduledCalendar.getAssignment());
         this.scheduledCalendar = scheduledCalendar;
     }
 
@@ -182,12 +182,12 @@ public class BreadcrumbContext {
         return plannedActivity;
     }
 
-    public Participant getParticipant() {
-        return participant;
+    public Subject getSubject() {
+        return subject;
     }
 
-    public StudyParticipantAssignment getStudyParticipantAssignment() {
-        return studyParticipantAssignment;
+    public StudySubjectAssignment getStudySubjectAssignment() {
+        return studySubjectAssignment;
     }
 
     public ScheduledCalendar getScheduledCalendar() {

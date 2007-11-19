@@ -39,7 +39,7 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
         csmUser.setLoginName(user.getName());
 
         Group group = new Group();
-        group.setGroupName(Role.PARTICIPANT_COORDINATOR.csmGroup());
+        group.setGroupName(Role.SUBJECT_COORDINATOR.csmGroup());
         groups = Collections.singleton(group);
     }
 

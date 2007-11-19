@@ -3,10 +3,10 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 /**
  * @author Saurabh Agrawal
@@ -28,7 +28,7 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		controller = new DisplayICSCalendarController();
-		controller.setStudyParticipantAssignmentDao(new MockStudyParticipantDao());
+		controller.setStudySubjectAssignmentDao (new MockStudySubjectDao());
 
 	}
 
@@ -60,15 +60,15 @@ public class DisplayICSCalendarControllerTest extends junit.framework.TestCase {
 
 	}
 
-	private class MockStudyParticipantDao extends StudyParticipantAssignmentDao {
+	private class MockStudySubjectDao extends StudySubjectAssignmentDao {
 		@Override
-		public StudyParticipantAssignment getByGridId(final String gridId) {
-			StudyParticipantAssignment studyParticipantAssignment = new StudyParticipantAssignment();
-			studyParticipantAssignment.setGridId(gridId);
-			Participant participant = Fixtures.createParticipant("firstName", "lastName");
-			studyParticipantAssignment.setParticipant(participant);
+		public StudySubjectAssignment getByGridId(final String gridId) {
+			StudySubjectAssignment studySubjectAssignment = new StudySubjectAssignment();
+			studySubjectAssignment.setGridId(gridId);
+			Subject subject = Fixtures.createSubject("firstName", "lastName");
+			studySubjectAssignment.setSubject(subject);
 
-			return studyParticipantAssignment;
+			return studySubjectAssignment;
 		}
 	}
 }

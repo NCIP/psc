@@ -10,15 +10,15 @@ function replaceOptions(selectElt, text, value) {
 	}
 }
 
-replaceOptions('participants', [
-<c:forEach items="${participants}" var="participant">
-	"${participant.lastName}, ${participant.firstName}",
+replaceOptions('subjects', [
+<c:forEach items="${subjects}" var="subject">
+	"${subject.lastName}, ${subject.firstName}",
 </c:forEach>], [
-<c:forEach items="${participants}" var="participant">
-	"${participant.id}",
+<c:forEach items="${subjects}" var="subject">
+	"${subject.id}",
 </c:forEach>]);
 
-SC.slideAndShow('participantSelectorForm');
+SC.slideAndShow('subjectSelectorForm');
 
 var studiesFilterList = ""; 
 <c:forEach items="${studiesSelected}" var="selectedStudy"> 

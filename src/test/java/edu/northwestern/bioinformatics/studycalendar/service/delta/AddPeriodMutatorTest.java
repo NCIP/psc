@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 /**
  * @author Rhett Sutphin
@@ -29,7 +29,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
     private ScheduledCalendar scheduledCalendar;
 
     private PeriodDao periodDao;
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     @Override
     protected void setUp() throws Exception {
@@ -44,9 +44,9 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar = new ScheduledCalendar();
 
         periodDao = registerDaoMockFor(PeriodDao.class);
-        participantService = registerMockFor(ParticipantService.class); 
+        subjectService = registerMockFor(SubjectService.class);
 
-        mutator = new AddPeriodMutator(add, periodDao, participantService);
+        mutator = new AddPeriodMutator(add, periodDao, subjectService);
     }
 
     public void testAppliesToSchedules() throws Exception {
@@ -67,7 +67,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
         scheduledCalendar.addArm(createScheduledArm(arm));
 
-        participantService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(1));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(1));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -79,8 +79,8 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
         scheduledCalendar.addArm(createScheduledArm(arm));
 
-        participantService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(0));
-        participantService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(2));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(0));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(2));
 
         replayMocks();
         mutator.apply(scheduledCalendar);

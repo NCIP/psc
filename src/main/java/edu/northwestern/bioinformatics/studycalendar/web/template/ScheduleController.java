@@ -21,16 +21,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
 	private TemplateService templateService;
 
     private ScheduledActivityDao scheduledActivityDao;
 	private StudyDao studyDao;
     private UserDao userDao;
-    private ParticipantCoordinatorDashboardService participantCoordinatorDashboardService;
+    private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
 
@@ -41,7 +41,7 @@ public class ScheduleController extends PscSimpleFormController {
 
 
     public ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors) throws Exception {
-        setFormView("/participantCoordinatorSchedule");
+        setFormView("/subjectCoordinatorSchedule");
         return showForm(request, response, errors, null);
     }
 
@@ -50,15 +50,15 @@ public class ScheduleController extends PscSimpleFormController {
         List<Study> studies = studyDao.getAll();
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
         User user = userDao.getByName(userName);
-        List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(user);
+        List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("numberOfDays", 7);
         model.put("userName", user);
         model.put("ownedStudies", ownedStudies);
         model.put("colleguesStudies", getMapOfColleagueUsersAndStudySites(ownedStudies));
-        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studyParticipantAssignments, 7));
-        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studyParticipantAssignments));
+        model.put("mapOfUserAndCalendar", getPAService().getMapOfCurrentEvents(studySubjectAssignments, 7));
+        model.put("pastDueActivities", getPAService().getMapOfOverdueEvents(studySubjectAssignments));
         model.put("activityTypes", ActivityType.values());
         
         return model;
@@ -69,7 +69,7 @@ public class ScheduleController extends PscSimpleFormController {
 
         Map<User, List<StudySite>> mapOfUsersAndStudies =  new HashMap<User, List<StudySite>>();
 
-        List<User> pcUsers = userDao.getAllParticipantCoordinators();
+        List<User> pcUsers = userDao.getAllSubjectCoordinators();
         pcUsers.remove(userDao.getByName(userName));
         for (User user : pcUsers) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
@@ -106,7 +106,7 @@ public class ScheduleController extends PscSimpleFormController {
         scheduleCommand.setUserDao(userDao);
         scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = scheduleCommand.execute(getPAService());
-        return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
+        return new ModelAndView("template/ajax/listOfSubjectsAndEvents", model);
     }
 
     protected void initBinder(HttpServletRequest httpServletRequest,
@@ -141,11 +141,11 @@ public class ScheduleController extends PscSimpleFormController {
         return scheduledActivityDao;
     }
 
-    public ParticipantCoordinatorDashboardService getPAService() {
-        return participantCoordinatorDashboardService;
+    public SubjectCoordinatorDashboardService getPAService() {
+        return subjectCoordinatorDashboardService;
     }
 
-    public void setParticipantCoordinatorDashboardService(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
-        this.participantCoordinatorDashboardService = participantCoordinatorDashboardService;
+    public void setSubjectCoordinatorDashboardService(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService) {
+        this.subjectCoordinatorDashboardService = subjectCoordinatorDashboardService;
     }
 }

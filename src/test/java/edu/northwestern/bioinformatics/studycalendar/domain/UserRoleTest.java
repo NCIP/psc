@@ -16,12 +16,12 @@ public class UserRoleTest extends StudyCalendarTestCase {
     public void testFindByRole() throws Exception {
         User user = createNamedInstance("John", User.class);
 
-        UserRole userRole0 = createUserRole(user, Role.PARTICIPANT_COORDINATOR);
+        UserRole userRole0 = createUserRole(user, Role.SUBJECT_COORDINATOR);
         UserRole userRole1 = createUserRole(user, Role.SITE_COORDINATOR);
 
         Set<UserRole> userRoles = new HashSet(asList(userRole0, userRole1));
 
-        UserRole actualUserRole = findByRole(userRoles, Role.PARTICIPANT_COORDINATOR);
+        UserRole actualUserRole = findByRole(userRoles, Role.SUBJECT_COORDINATOR);
         assertTrue("Wrong User Role", userRole0 == actualUserRole);
     }
 

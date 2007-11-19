@@ -67,12 +67,12 @@ public class UserService {
         return userDao.getById(id);
     }
 
-    public List<User> getParticipantCoordinatorsForSites(List<Site> sites) {
-        List<User> users = userDao.getAllParticipantCoordinators();
+    public List<User> getSubjectCoordinatorsForSites(List<Site> sites) {
+        List<User> users = userDao.getAllSubjectCoordinators();
         List<User> associatedUsers = new ArrayList<User>();
         for (User user : users) {
             for (Site site : sites) {
-                UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+                UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
                 if (userRole != null && userRole.getSites().contains(site)) {
                     associatedUsers.add(user);
                     break;
@@ -90,7 +90,7 @@ public class UserService {
 
             sites.addAll(userRole.getSites());
 
-            assignableUsers = getParticipantCoordinatorsForSites(sites);
+            assignableUsers = getSubjectCoordinatorsForSites(sites);
             Collections.sort(assignableUsers, new NamedComparator());
         }
 

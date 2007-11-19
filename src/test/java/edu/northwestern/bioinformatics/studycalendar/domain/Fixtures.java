@@ -129,18 +129,18 @@ public class Fixtures {
         return studySite;
     }
 
-    public static Participant createParticipant(String firstName, String lastName) {
-        Participant p = new Participant();
+    public static Subject createSubject(String firstName, String lastName) {
+        Subject p = new Subject();
         p.setFirstName(firstName);
         p.setLastName(lastName);
         return p;
     }
 
-    public static StudyParticipantAssignment createAssignment(Study study, Site site, Participant participant) {
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+    public static StudySubjectAssignment createAssignment(Study study, Site site, Subject subject) {
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         StudySite ss = createStudySite(study, site);
         assignment.setStudySite(ss);
-        assignment.setParticipant(participant);
+        assignment.setSubject(subject);
         assignment.setScheduledCalendar(new ScheduledCalendar());
         return assignment;
     }

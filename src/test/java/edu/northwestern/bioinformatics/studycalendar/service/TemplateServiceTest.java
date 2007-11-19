@@ -104,60 +104,60 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testAssignTemplateToParticipantCoordinatorRequiresSite() throws Exception {
+    public void testAssignTemplateToSubjectCoordinatorRequiresSite() throws Exception {
         try {
-            service.assignTemplateToParticipantCoordinator(null, null, null);
+            service.assignTemplateToSubjectCoordinator(null, null, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of studyTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
         }
     }
 
-    public void testAssignTemplateToParticipantCoordinatorRequiresStudy() throws Exception {
+    public void testAssignTemplateToSubjectCoordinatorRequiresStudy() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         try {
-            service.assignTemplateToParticipantCoordinator(study, null, null);
+            service.assignTemplateToSubjectCoordinator(study, null, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of siteTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
         }
     }
 
-    public void testAssignTemplateToParticipantCoordinatorRequiresUser() throws Exception {
+    public void testAssignTemplateToSubjectCoordinatorRequiresUser() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         Site  site  = createNamedInstance("asdf", Site.class);
         try {
-            service.assignTemplateToParticipantCoordinator(study, site, null);
+            service.assignTemplateToSubjectCoordinator(study, site, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of userTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
         }
     }
 
-    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresSite() throws Exception {
+    public void testRemoveAssignedTemplateFromSubjectCoordinatorRequiresSite() throws Exception {
         try {
-            service.removeAssignedTemplateFromParticipantCoordinator(null, null, null);
+            service.removeAssignedTemplateFromSubjectCoordinator(null, null, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of studyTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDY_IS_NULL, ise.getMessage());
         }
     }
 
-    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresStudy() throws Exception {
+    public void testRemoveAssignedTemplateFromSubjectCoordinatorRequiresStudy() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         try {
-            service.removeAssignedTemplateFromParticipantCoordinator(study, null, null);
+            service.removeAssignedTemplateFromSubjectCoordinator(study, null, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of siteTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
         }
     }
 
-    public void testRemoveAssignedTemplateFromParticipantCoordinatorRequiresUser() throws Exception {
+    public void testRemoveAssignedTemplateFromSubjectCoordinatorRequiresUser() throws Exception {
         Study study = createNamedInstance("sldfksdfjk", Study.class);
         Site  site  = createNamedInstance("asdf", Site.class);
         try {
-            service.removeAssignedTemplateFromParticipantCoordinator(study, site, null);
+            service.removeAssignedTemplateFromSubjectCoordinator(study, site, null);
             fail("Expected IllegalArgumentException. Null object is passed instead of userTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
@@ -195,7 +195,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testAssignTemplateToParticipantCoordinator() throws Exception {
+    public void testAssignTemplateToSubjectCoordinator() throws Exception {
         Site  site          = setId(1, createNamedInstance("Northwestern", Site.class));
         Study study         = setId(1, createNamedInstance("Study A", Study.class));
         StudySite studySite = setId(1, createStudySite(study, site));
@@ -204,25 +204,25 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
         user.setCsmUserId(1L);
 
-        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site);
+        UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site);
         user.addUserRole(userRole);
 
         userRoleDao.save(userRole);
 
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
         List<String> assignedUserId = asList(user.getCsmUserId().toString());
-        authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+        authorizationManager.createAndAssignPGToUser(assignedUserId, studySitePGName, TemplateService.SUBJECT_COORDINATOR_ACCESS_ROLE);
         replayMocks();
 
         edu.northwestern.bioinformatics.studycalendar.domain.User actualUser =
-                service.assignTemplateToParticipantCoordinator(study, site, user);
+                service.assignTemplateToSubjectCoordinator(study, site, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
     }
 
-    public void testAssignTemplateToParticipantCoordinatorStudySiteAlreadyExists() throws Exception {
+    public void testAssignTemplateToSubjectCoordinatorStudySiteAlreadyExists() throws Exception {
         Site  site          = setId(1, createNamedInstance("Northwestern", Site.class));
         Study study         = setId(1, createNamedInstance("Study A", Study.class));
         StudySite studySite = setId(1, createStudySite(study, site));
@@ -231,21 +231,21 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
         user.setCsmUserId(1L);
 
-        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site);
+        UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site);
         user.addUserRole(userRole);
         userRole.addStudySite(studySite);
 
         replayMocks();
 
         edu.northwestern.bioinformatics.studycalendar.domain.User actualUser =
-                service.assignTemplateToParticipantCoordinator(study, site, user);
+                service.assignTemplateToSubjectCoordinator(study, site, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
     }
 
-    public void testRemoveAssignedTemplateFromParticipantCoordinator() throws Exception {
+    public void testRemoveAssignedTemplateFromSubjectCoordinator() throws Exception {
         Site site0  = setId(1, createNamedInstance("Northwestern", Site.class));
         Site site1  = setId(2, createNamedInstance("Mayo", Site.class));
         Study study = setId(1, createNamedInstance("Study A", Study.class));
@@ -257,7 +257,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 setId(1, createNamedInstance("John", edu.northwestern.bioinformatics.studycalendar.domain.User.class));
         user.setCsmUserId(1L);
 
-        UserRole userRole = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        UserRole userRole = createUserRole(user, Role.SUBJECT_COORDINATOR, site0, site1);
         userRole.addStudySite(studySite0);
         userRole.addStudySite(studySite1);
 
@@ -272,10 +272,10 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
         edu.northwestern.bioinformatics.studycalendar.domain.User actualUser
-                = service.removeAssignedTemplateFromParticipantCoordinator(study, site0, user);
+                = service.removeAssignedTemplateFromSubjectCoordinator(study, site0, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles() , Role.PARTICIPANT_COORDINATOR);
+        UserRole actualUserRole = findByRole(actualUser.getUserRoles() , Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site0 size", 1, actualUserRole.getStudySites().size());
         assertEquals("Wrong study site", studySite1, actualUserRole.getStudySites().get(0));
     }
@@ -298,7 +298,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         String studySitePGName = DomainObjectTools.createExternalObjectId(studySite1);
 
-        authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, TemplateService.PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+        authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, TemplateService.SUBJECT_COORDINATOR_ACCESS_ROLE);
         replayMocks();
         service.assignMultipleTemplates(studyTemplates, site1, userId);
         verifyMocks();
@@ -428,9 +428,9 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         StudySite studySite1 = setId(1, createStudySite(studyTemplate1, site1));
         allTemplates.add(site1.getStudySites().get(0).getStudy());
 
-        User participantCdUser = new User();
-        participantCdUser.setUserId(10001L);
-        expect(authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite1), participantCdUser.getUserId().toString())).andReturn(true);
+        User subjectCdUser = new User();
+        subjectCdUser.setUserId(10001L);
+        expect(authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite1), subjectCdUser.getUserId().toString())).andReturn(true);
         assignedTemplates.add(studySite1.getStudy());
         availableTemplates = (List) ObjectSetUtil.minus(allTemplates, assignedTemplates);
         templatesMap.put(StudyCalendarAuthorizationManager.ASSIGNED_PES, assignedTemplates);
@@ -438,15 +438,15 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
         Map<String, List> templateListToCompare;
         replayMocks();
-        templateListToCompare = service.getTemplatesLists(site1, participantCdUser);
+        templateListToCompare = service.getTemplatesLists(site1, subjectCdUser);
         verifyMocks();
         assertEquals(templatesMap,templateListToCompare);
     }
 
     public void testGetTemplatesListsRequiresSite() throws Exception {
-        User participantCdUser = new User();
+        User subjectCdUser = new User();
         try {
-            service.getTemplatesLists(null, participantCdUser);
+            service.getTemplatesLists(null, subjectCdUser);
             fail("Expected IllegalArgumentException. Null object is passed instead of site ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.SITE_IS_NULL, ise.getMessage());
@@ -579,7 +579,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Site site2 = createNamedInstance("Dartmouth", Site.class);
         StudySite notInUse = setId(10, createStudySite(study, site1));
         StudySite inUse = setId(11, createStudySite(study, site2));
-        inUse.getStudyParticipantAssignments().add(new StudyParticipantAssignment());
+        inUse.getStudySubjectAssignments().add(new StudySubjectAssignment());
 
         siteDao.save(site1);
         studyDao.save(study);
@@ -591,7 +591,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             service.removeTemplateFromSites(study, asList(site1, site2));
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
-            assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are participant(s) assigned", scve.getMessage());
+            assertEquals("Cannot remove 1 site (Dartmouth) from study ECOG 1234 because there are subject(s) assigned", scve.getMessage());
         }
         verifyMocks();
 

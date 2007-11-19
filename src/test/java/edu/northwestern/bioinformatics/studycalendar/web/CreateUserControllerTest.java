@@ -44,7 +44,7 @@ public class CreateUserControllerTest extends ControllerTestCase {
         controller.setValidateOnBinding(false);
     }
 
-    public void testParticipantAssignedOnSubmit() throws Exception {
+    public void testSubjectAssignedOnSubmit() throws Exception {
         CreateUserController mockableController = new MockableCommandController();
         expect(command.apply()).andReturn(createNamedInstance("Joe", User.class));
         replayMocks();

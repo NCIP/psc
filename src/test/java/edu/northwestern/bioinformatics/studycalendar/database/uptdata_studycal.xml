@@ -31,7 +31,7 @@
     <CSM_GROUP
         group_id="3"
         group_name="PARTICIPANT_COORDINATOR"
-        group_desc="participant coordinator group"
+        group_desc="subject coordinator group"
         update_date="2006-09-18 10:00:00.000000000"
         application_id="2"/>
 
@@ -138,8 +138,8 @@
 
     <CSM_PROTECTION_GROUP
         protection_group_id="12"
-        protection_group_name="ParticipantAssignmentAccess"
-        protection_group_description="access to create and assign participants"
+        protection_group_name="SubjectAssignmentAccess"
+        protection_group_description="access to create and assign subjects"
         application_id="2"
         large_element_count_flag="0"
         update_date="2006-09-14"
@@ -184,7 +184,7 @@
     <CSM_ROLE
         role_id="4"
         role_name="PARTICIPANT_COORDINATOR"
-        role_description="participant coordinator"
+        role_description="subject coordinator"
         application_id="2"
         active_flag="1"
         update_date="2006-09-07"
@@ -354,19 +354,19 @@
 
     <CSM_USER
         user_id="9"
-        login_name="participantcd_1"
-        first_name="participant"
+        login_name="subjectcd_1"
+        first_name="subject"
         last_name="coordinator"
-        password="participantcd_1"
+        password="subjectcd_1"
         update_date="2006-09-07"
         />
 
     <CSM_USER
         user_id="10"
-        login_name="participantcd_2"
-        first_name="Participant"
+        login_name="subjectcd_2"
+        first_name="Subject"
         last_name="Coordinator2"
-        password="participantcd_2"
+        password="subjectcd_2"
         update_date="2006-09-07"
         />
 

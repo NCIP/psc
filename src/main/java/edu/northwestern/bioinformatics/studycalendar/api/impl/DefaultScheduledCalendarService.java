@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarServic
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -19,31 +19,31 @@ import java.util.Date;
  */
 @Transactional
 public class DefaultScheduledCalendarService implements ScheduledCalendarService {
-    private ParticipantDao participantDao;
-    private ParticipantService participantService;
+    private SubjectDao subjectDao;
+    private SubjectService subjectService;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private ArmDao armDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
-    private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+    private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private UserDao userDao;
 
-    public ScheduledCalendar assignParticipant(
-        Study study, Participant participant, Site site, Arm firstArm, Date startDate,String assignmentGridId
+    public ScheduledCalendar assignSubject(
+        Study study, Subject subject, Site site, Arm firstArm, Date startDate,String assignmentGridId
     ) {
         ParameterLoader loader = new ParameterLoader(study, site, firstArm);
 
-        Participant loadedParticipant = load(participant, participantDao, false);
-        if (loadedParticipant == null) {
-            participantDao.save(participant);
-            loadedParticipant = participant;
+        Subject loadedSubject = load(subject, subjectDao, false);
+        if (loadedSubject == null) {
+            subjectDao.save(subject);
+            loadedSubject = subject;
         } else {
-            StudyParticipantAssignment assignment = participantDao.getAssignment(
-                loadedParticipant, loader.getStudy(), loader.getSite());
+            StudySubjectAssignment assignment = subjectDao.getAssignment(
+                loadedSubject, loader.getStudy(), loader.getSite());
             if (assignment != null) {
                 throw new IllegalArgumentException(
-                    "Participant already assigned to this study.  " +
+                    "Subject already assigned to this study.  " +
                     "Use scheduleNextArm to change to the next arm.");
             }
         }
@@ -53,15 +53,15 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
 
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
-        StudyParticipantAssignment newAssignment = participantService.assignParticipant(
-            loadedParticipant, join, loader.getArm(), startDate, assignmentGridId, user);
+        StudySubjectAssignment newAssignment = subjectService.assignSubject(
+            loadedSubject, join, loader.getArm(), startDate, assignmentGridId, user);
         return newAssignment.getScheduledCalendar();
     }
 
-    public ScheduledCalendar getScheduledCalendar(Study study, Participant participant, Site site) {
-        ParameterLoader loader = new ParameterLoader(study, participant, site);
+    public ScheduledCalendar getScheduledCalendar(Study study, Subject subject, Site site) {
+        ParameterLoader loader = new ParameterLoader(study, subject, site);
 
-        StudyParticipantAssignment assignment = loader.findAssignment();
+        StudySubjectAssignment assignment = loader.findAssignment();
         if (assignment == null) {
             return null;
         } else {
@@ -72,9 +72,9 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     public Collection<ScheduledActivity> getScheduledActivities(
-        Study study, Participant participant, Site site, Date startDate, Date endDate
+        Study study, Subject subject, Site site, Date startDate, Date endDate
     ) {
-        ParameterLoader loader = new ParameterLoader(study, participant, site);
+        ParameterLoader loader = new ParameterLoader(study, subject, site);
         ScheduledCalendar calendar = loader.findAssignment().getScheduledCalendar();
         return scheduledActivityDao.getEventsByDate(calendar, startDate, endDate);
     }
@@ -88,44 +88,44 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     public void scheduleNextArm(
-        Study study, Participant participant, Site site, Arm nextArm, NextArmMode mode, Date startDate
+        Study study, Subject subject, Site site, Arm nextArm, NextArmMode mode, Date startDate
     ) {
-        ParameterLoader loader = new ParameterLoader(study, participant, site, nextArm);
-        participantService.scheduleArm(loader.findAssignment(), loader.getArm(), startDate, mode);
+        ParameterLoader loader = new ParameterLoader(study, subject, site, nextArm);
+        subjectService.scheduleArm(loader.findAssignment(), loader.getArm(), startDate, mode);
     }
 
-    public void registerSevereAdverseEvent(Study study, Participant participant, Site site, AdverseEvent adverseEvent) {
-        ParameterLoader loader = new ParameterLoader(study, participant, site);
-        StudyParticipantAssignment assignment = loader.findAssignment();
+    public void registerSevereAdverseEvent(Study study, Subject subject, Site site, AdverseEvent adverseEvent) {
+        ParameterLoader loader = new ParameterLoader(study, subject, site);
+        StudySubjectAssignment assignment = loader.findAssignment();
         if (assignment == null) {
-            throw new IllegalArgumentException("Participant is not assigned to this study at this site");
+            throw new IllegalArgumentException("Subject is not assigned to this study at this site");
         }
         registerAeInternal(assignment, adverseEvent);
     }
     
-    public void registerSevereAdverseEvent(StudyParticipantAssignment assignment, AdverseEvent adverseEvent){
-        StudyParticipantAssignment loadedAssignment = load(assignment, studyParticipantAssignmentDao);
+    public void registerSevereAdverseEvent(StudySubjectAssignment assignment, AdverseEvent adverseEvent){
+        StudySubjectAssignment loadedAssignment = load(assignment, studySubjectAssignmentDao);
         registerAeInternal(loadedAssignment, adverseEvent);
     }
 
-    private void registerAeInternal(StudyParticipantAssignment assignment, AdverseEvent adverseEvent) {
+    private void registerAeInternal(StudySubjectAssignment assignment, AdverseEvent adverseEvent) {
         AdverseEventNotification notification = new AdverseEventNotification();
         notification.setAdverseEvent(adverseEvent);
         assignment.addAeNotification(notification);
 
-        participantDao.save(assignment.getParticipant());
+        subjectDao.save(assignment.getSubject());
     }
 
     ////// CONFIGURATION
 
     @Required
-    public void setParticipantDao(ParticipantDao participantDao) {
-        this.participantDao = participantDao;
+    public void setSubjectDao(SubjectDao subjectDao) {
+        this.subjectDao = subjectDao;
     }
 
     @Required
-    public void setParticipantService(ParticipantService participantService) {
-        this.participantService = participantService;
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     @Required
@@ -154,8 +154,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
     
     @Required
-    public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
-        this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
+    public void setStudySubjectAssignmentDao (StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        this.studySubjectAssignmentDao = studySubjectAssignmentDao;
     }
 
     @Required
@@ -188,20 +188,20 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
 
     private class ParameterLoader {
         private Study study;
-        private Participant participant;
+        private Subject subject;
         private Site site;
         private Arm arm;
         private ScheduledActivity scheduledActivity;
 
-        public ParameterLoader(Study study, Participant participant, Site site) {
+        public ParameterLoader(Study study, Subject subject, Site site) {
             loadStudy(study);
-            loadParticipant(participant);
+            loadSubject(subject);
             loadSite(site);
         }
 
-        public ParameterLoader(Study study, Participant participant, Site site, Arm arm) {
+        public ParameterLoader(Study study, Subject subject, Site site, Arm arm) {
             loadStudy(study);
-            loadParticipant(participant);
+            loadSubject(subject);
             loadSite(site);
             loadArm(arm);
         }
@@ -226,8 +226,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             this.site = load(parameterSite, siteDao);
         }
 
-        private void loadParticipant(Participant parameterParticipant) {
-            this.participant = load(parameterParticipant, participantDao);
+        private void loadSubject(Subject parameterSubject) {
+            this.subject = load(parameterSubject, subjectDao);
         }
 
         private void loadArm(Arm parameterArm) {
@@ -260,8 +260,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                 + " not part of template for study " + getStudy().getGridId());
         }
 
-        public StudyParticipantAssignment findAssignment() {
-            return participantDao.getAssignment(getParticipant(), getStudy(), getSite());
+        public StudySubjectAssignment findAssignment() {
+            return subjectDao.getAssignment(getSubject(), getStudy(), getSite());
         }
 
         ////// ACCESSORS
@@ -270,8 +270,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             return study;
         }
 
-        public Participant getParticipant() {
-            return participant;
+        public Subject getSubject() {
+            return subject;
         }
 
         public Site getSite() {

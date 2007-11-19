@@ -56,7 +56,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
         site0 = createNamedInstance("Northwestern", Site.class);
         site1 = createNamedInstance("Mayo Clinic", Site.class);
 
-        userRole0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        userRole0 = createUserRole(user0, Role.SUBJECT_COORDINATOR, site0, site1);
         userRole1 = createUserRole(user1, Role.STUDY_ADMIN);
 
         user0.addUserRole(userRole0);
@@ -85,7 +85,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testAssignUserRoleSiteSpecific() throws Exception {
-        Role role = Role.PARTICIPANT_COORDINATOR;
+        Role role = Role.SUBJECT_COORDINATOR;
         UserRole userRole = new UserRole(user2, role, site0);
 
         userRoleDao.save(userRole);
@@ -103,9 +103,9 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRemoveUserRoleAssignmentSiteSpecific() throws Exception {
-        Role role = Role.PARTICIPANT_COORDINATOR;
+        Role role = Role.SUBJECT_COORDINATOR;
 
-        expect(studySiteService.getStudySitesForParticipantCoordinator(user0, site0)).andReturn(asList(studySite0));
+        expect(studySiteService.getStudySitesForSubjectCoordinator(user0, site0)).andReturn(asList(studySite0));
         userRoleDao.save(userRole0);
         siteService.removeProtectionGroup(site0, user0);
         replayMocks();

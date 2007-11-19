@@ -24,18 +24,18 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
     }
 )
 public class AdverseEventNotification extends AbstractMutableDomainObject {
-    private StudyParticipantAssignment assignment;
+    private StudySubjectAssignment assignment;
     private AdverseEvent adverseEvent;
     private boolean dismissed;
 
     ////// BEAN PROPERTIES
 
     @ManyToOne
-    public StudyParticipantAssignment getAssignment() {
+    public StudySubjectAssignment getAssignment() {
         return assignment;
     }
 
-    public void setAssignment(StudyParticipantAssignment assignment) {
+    public void setAssignment(StudySubjectAssignment assignment) {
         this.assignment = assignment;
     }
 

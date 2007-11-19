@@ -34,7 +34,7 @@ import org.springframework.web.servlet.mvc.AbstractController;
  *
  */
 
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ReportBuilderSelectSitesController extends AbstractController {
     private SiteDao siteDao;
     private TemplateService templateService;

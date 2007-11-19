@@ -12,7 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
@@ -67,14 +67,14 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         scheduledArm.setStartDate(ARM_START_DATE);
         scheduledCalendar.addArm(scheduledArm);
 
-        ParticipantService participantService = new ParticipantService() {
+        SubjectService subjectService = new SubjectService() {
             @Override
             protected ScheduledActivity createEmptyScheduledActivityFor(PlannedActivity event) {
                 return createUnschedulableMockEvent(event);
             }
         };
-        participantService.schedulePeriod(period0, amendment, scheduledArm);
-        participantService.schedulePeriod(period1, amendment, scheduledArm);
+        subjectService.schedulePeriod(period0, amendment, scheduledArm);
+        subjectService.schedulePeriod(period1, amendment, scheduledArm);
         scheduledActivities = new ScheduledActivity[2][2][3];
         for (ScheduledActivity event : scheduledArm.getEvents()) {
             int period, pe;

@@ -15,7 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class MutatorFactory {
     private DaoFinder daoFinder;
-    private ParticipantService participantService;
+    private SubjectService subjectService;
     private TemplateService templateService;
     private ScheduleService scheduleService;
     private ScheduledActivityDao scheduledActivityDao;
@@ -48,10 +48,10 @@ public class MutatorFactory {
     private <T extends PlanTreeNode<?>> Mutator createAddMutator(T target, Add add) {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
         if (target instanceof Arm) {
-            return new AddPeriodMutator(add, (PeriodDao) dao, participantService);
+            return new AddPeriodMutator(add, (PeriodDao) dao, subjectService);
         } else if (target instanceof Period) {
             return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
-                participantService, templateService);
+                    subjectService, templateService);
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
         } else {
@@ -79,7 +79,7 @@ public class MutatorFactory {
             if ("startDay".equals(change.getPropertyName())) {
                 return new ChangePeriodStartDayMutator(change, templateService, scheduleService);
             } else if ("repetitions".equals(change.getPropertyName())) {
-                return new ChangePeriodRepetitionsMutator(change, templateService, participantService);
+                return new ChangePeriodRepetitionsMutator(change, templateService, subjectService);
             } else if ("duration.quantity".equals(change.getPropertyName())) {
                 return new ChangePeriodDurationQuantityMutator(change, templateService, scheduleService);
             } else if ("duration.unit".equals(change.getPropertyName())) {
@@ -118,8 +118,8 @@ public class MutatorFactory {
     }
 
     @Required
-    public void setParticipantService(ParticipantService participantService) {
-        this.participantService = participantService;
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     @Required

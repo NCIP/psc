@@ -57,8 +57,8 @@ public class UserServiceTest extends StudyCalendarTestCase {
         site1 = createNamedInstance("Mayo Clinic", Site.class);
         sites = asList(site0, site1);
 
-        userRole0 = createUserRole(user0, Role.PARTICIPANT_COORDINATOR, site0, site1);
-        userRole1 = createUserRole(user1, Role.PARTICIPANT_COORDINATOR, site1);
+        userRole0 = createUserRole(user0, Role.SUBJECT_COORDINATOR, site0, site1);
+        userRole1 = createUserRole(user1, Role.SUBJECT_COORDINATOR, site1);
         userRole2 = createUserRole(user2, Role.SITE_COORDINATOR, site0);
     }
 
@@ -107,17 +107,17 @@ public class UserServiceTest extends StudyCalendarTestCase {
         assertUserEquals(expectedUser, actualUser);
     }
 
-    public void testGetParticipantCoordinatorsForSites() throws Exception {
-        expect(userDao.getAllParticipantCoordinators()).andReturn(asList(user0, user1));
+    public void testGetSubjectCoordinatorsForSites() throws Exception {
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
         replayMocks();
-        List<User> actualParticipantCoordinators = service.getParticipantCoordinatorsForSites(asList(site0));
+        List<User> actualSubjectCoordinators = service.getSubjectCoordinatorsForSites(asList(site0));
         verifyMocks();
-        assertEquals("Wrong number of users", 1, actualParticipantCoordinators.size());
-        assertEquals("Wrong user", user0.getName(), actualParticipantCoordinators.get(0).getName());
+        assertEquals("Wrong number of users", 1, actualSubjectCoordinators.size());
+        assertEquals("Wrong user", user0.getName(), actualSubjectCoordinators.get(0).getName());
     }
 
     public void testGetAssignableUsers() throws Exception {
-        expect(userDao.getAllParticipantCoordinators()).andReturn(asList(user0, user1));
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
         replayMocks();
 
         List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(user2);

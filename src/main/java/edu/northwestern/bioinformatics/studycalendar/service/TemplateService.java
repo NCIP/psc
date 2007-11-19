@@ -32,8 +32,8 @@ import java.util.*;
  */
 @Transactional
 public class TemplateService {
-    public static final String PARTICIPANT_COORDINATOR_ACCESS_ROLE = "PARTICIPANT_COORDINATOR";
-    public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
+    public static final String SUBJECT_COORDINATOR_ACCESS_ROLE = "SUBJECT_COORDINATOR";
+    public static final String SUBJECT_COORDINATOR_GROUP = "SUBJECT_COORDINATOR";
     private StudyCalendarAuthorizationManager authorizationManager;
     private StudyDao studyDao;
     private SiteDao siteDao;
@@ -68,7 +68,7 @@ public class TemplateService {
 
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User
-            assignTemplateToParticipantCoordinator( Study study,
+            assignTemplateToSubjectCoordinator( Study study,
                                                     Site site,
                                                     edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         if (study == null) {
@@ -81,7 +81,7 @@ public class TemplateService {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
 
-        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole userRole = findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
         if (!userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.addStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
@@ -93,7 +93,7 @@ public class TemplateService {
     }
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User
-            removeAssignedTemplateFromParticipantCoordinator(Study study,
+            removeAssignedTemplateFromSubjectCoordinator(Study study,
                                                              Site site,
                                                              edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         if (study == null) {
@@ -105,7 +105,7 @@ public class TemplateService {
         if (user == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
-        UserRole userRole = findByRole(user.getUserRoles(), Role.PARTICIPANT_COORDINATOR);
+        UserRole userRole = findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
         if (userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.removeStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
@@ -156,7 +156,7 @@ public class TemplateService {
                 if (it.hasNext()) msg.append(", ");
             }
             msg.append(") from study ").append(studyTemplate.getName())
-                .append(" because there are participant(s) assigned");
+                .append(" because there are subject(s) assigned");
             throw new StudyCalendarValidationException(msg.toString());
         }
     }
@@ -180,7 +180,7 @@ public class TemplateService {
             for (StudySite studySite : studySites) {
                 if (studySite.getSite().getId().intValue() == site.getId().intValue()) {
                     String studySitePGName = DomainObjectTools.createExternalObjectId(studySite);
-                    authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, PARTICIPANT_COORDINATOR_ACCESS_ROLE);
+                    authorizationManager.createAndAssignPGToUser(assignedUserIds, studySitePGName, SUBJECT_COORDINATOR_ACCESS_ROLE);
                 }
             }
         }
@@ -207,11 +207,11 @@ public class TemplateService {
         return siteLists;
     }
     
-    public Map getTemplatesLists(Site site, User participantCdUser) throws Exception {
+    public Map getTemplatesLists(Site site, User subjectCdUser) throws Exception {
         if (site == null) {
             throw new IllegalArgumentException(SITE_IS_NULL);
         }
-        if (participantCdUser == null) {
+        if (subjectCdUser == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
         Map<String, List> templatesMap = new HashMap<String, List>();
@@ -221,7 +221,7 @@ public class TemplateService {
         List<StudySite> studySites = site.getStudySites();
         for (StudySite studySite : studySites) {
             allTemplates.add(studySite.getStudy());
-            if (authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite), participantCdUser.getUserId().toString())) {
+            if (authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite), subjectCdUser.getUserId().toString())) {
                 assignedTemplates.add(studySite.getStudy());
             }
         }

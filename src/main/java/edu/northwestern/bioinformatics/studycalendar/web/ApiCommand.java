@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 
 /**
@@ -13,7 +13,7 @@ public class ApiCommand {
     private String method;
 
     private Study study = new Study();
-    private Participant participant = new Participant();
+    private Subject subject = new Subject();
     private Site site = new Site();
     private AdverseEvent adverseEvent = new AdverseEvent();
 
@@ -26,7 +26,7 @@ public class ApiCommand {
     public Object execute() {
         if ("registerSevereAdverseEvent".equals(getMethod())) {
             scheduledCalendarService.registerSevereAdverseEvent(
-                getStudy(), getParticipant(), getSite(), getAdverseEvent());
+                getStudy(), getSubject(), getSite(), getAdverseEvent());
         } else {
             throw new IllegalArgumentException("This interface doesn't support the " + getMethod() + " method");
         }
@@ -51,12 +51,12 @@ public class ApiCommand {
         this.study = study;
     }
 
-    public Participant getParticipant() {
-        return participant;
+    public Subject getSubject() {
+        return subject;
     }
 
-    public void setParticipant(Participant participant) {
-        this.participant = participant;
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
     public Site getSite() {

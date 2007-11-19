@@ -102,7 +102,7 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         role0.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR.csmRole());
         role0.setId(7L);
         Role role1 = new Role();
-        role1.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.PARTICIPANT_COORDINATOR.csmRole());
+        role1.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR.csmRole());
         role1.setId(4L);
 
         String userId = "1";

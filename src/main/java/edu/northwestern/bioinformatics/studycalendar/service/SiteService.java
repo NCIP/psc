@@ -48,7 +48,7 @@ public class SiteService {
     public List<Site> getSitesForUser(String userName) {
         Set<Site> sites = new LinkedHashSet<Site>();
         sites.addAll(getSitesForSiteCd(userName));
-        sites.addAll(getSitesForParticipantCoordinator(userName));
+        sites.addAll(getSitesForSubjectCoordinator(userName));
 
         return new ArrayList<Site>(sites);
     }
@@ -62,7 +62,7 @@ public class SiteService {
         return sites;
     }
 
-    public Collection<Site> getSitesForParticipantCoordinator(String userName) {
+    public Collection<Site> getSitesForSubjectCoordinator(String userName) {
         List<ProtectionGroup> studySitePGs = authorizationManager.getStudySitePGsForUser(userName);
         Set<Site> sites = new LinkedHashSet<Site>();
         for (ProtectionGroup studySitePG : studySitePGs) {
@@ -73,8 +73,8 @@ public class SiteService {
         return sites;
     }
 
-    public Collection<Site> getSitesForParticipantCoordinator(String userName, Study study) {
-        Collection<Site> sites = getSitesForParticipantCoordinator(userName);
+    public Collection<Site> getSitesForSubjectCoordinator(String userName, Study study) {
+        Collection<Site> sites = getSitesForSubjectCoordinator(userName);
         Set<Site> sitesForStudy = new HashSet<Site>();
         for (Site site : sites) {
             if (StudySite.findStudySite(study, site) != null) {

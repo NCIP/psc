@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class BatchRescheduleController extends PscAbstractCommandController<BatchRescheduleCommand> {
 
     private ScheduledActivityDao scheduledActivityDao;

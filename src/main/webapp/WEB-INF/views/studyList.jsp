@@ -72,7 +72,7 @@
                             <ul class="controls">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                                 <c:if test="${not empty study.studySites}">
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignParticipant" queryString="id=${study.id}">Assign participants</tags:restrictedListItem>
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="id=${study.id}">Assign subjects</tags:restrictedListItem>
                                 </c:if>
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">Schedule reconsent</tags:restrictedListItem>
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">Add amendment</tags:restrictedListItem>

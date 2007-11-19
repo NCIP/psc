@@ -8,21 +8,19 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.LinkedList;
 
 /**
  * @author Rhett Sutphin
  */
 public class AddPeriodMutator extends CollectionAddMutator {
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
-    public AddPeriodMutator(Add change, PeriodDao dao, ParticipantService participantService) {
+    public AddPeriodMutator(Add change, PeriodDao dao, SubjectService subjectService) {
         super(change, dao);
-        this.participantService = participantService;
+        this.subjectService = subjectService;
     }
 
     @Override
@@ -34,7 +32,7 @@ public class AddPeriodMutator extends CollectionAddMutator {
     public void apply(ScheduledCalendar calendar) {
         Period newPeriod = (Period) findChild();
         for (ScheduledArm scheduledArm : findMatchingArms(calendar)) {
-            participantService.schedulePeriod(newPeriod,
+            subjectService.schedulePeriod(newPeriod,
                 // TODO: make this cast unnecessary
                 (Amendment) change.getDelta().getRevision(), scheduledArm);
         }

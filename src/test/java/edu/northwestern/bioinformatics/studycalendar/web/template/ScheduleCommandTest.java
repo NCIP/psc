@@ -5,13 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createParticipant;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.addEvents;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 
 import java.util.*;
 import java.text.DateFormat;
@@ -27,7 +27,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     private ScheduledActivityDao scheduledActivityDao;
 
     private ScheduleCommand command = new ScheduleCommand();
-    private ParticipantCoordinatorDashboardService paService;
+    private SubjectCoordinatorDashboardService paService;
 
 
     @Override
@@ -46,7 +46,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         command.setUser(user);
         command.setToDate(3);
 
-        paService = new ParticipantCoordinatorDashboardService();
+        paService = new SubjectCoordinatorDashboardService();
         paService.setScheduledActivityDao(scheduledActivityDao);
 
     }
@@ -77,9 +77,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     }
 
     public void testGetMapOfCurrentEvents() throws Exception {
-        Participant participant = setId(11, createParticipant("Fred", "Jones"));
+        Subject subject = setId(11, createSubject("Fred", "Jones"));
         StudySite studySite = setId(14, createStudySite(null, null));
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar calendar;
 
         ScheduledActivity e1, e2, e3;
@@ -99,12 +99,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
 
-        assignment.setParticipant(participant);
+        assignment.setSubject(subject);
         assignment.setStudySite(studySite);
         assignment.setStartDateEpoch(new Date());
         assignment.setScheduledCalendar(calendar);
-        List<StudyParticipantAssignment> studyParticipantAssignment = new ArrayList<StudyParticipantAssignment>();
-        studyParticipantAssignment.add(assignment);
+        List<StudySubjectAssignment> studySubjectAssignment = new ArrayList<StudySubjectAssignment>();
+        studySubjectAssignment.add(assignment);
 
         Collection<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
         events.add(e1);
@@ -123,7 +123,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
 
         replayMocks();
-        Map<String, Object> map = paService.getMapOfCurrentEvents(studyParticipantAssignment, 3);
+        Map<String, Object> map = paService.getMapOfCurrentEvents(studySubjectAssignment, 3);
         verifyMocks();
 
         assertNotNull("Map is null", map);
@@ -152,9 +152,9 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
 
     public void testGetMapOfCurrentEventsForSpecificActivity() throws Exception {
-        Participant participant = setId(11, createParticipant("Fred", "Jones"));
+        Subject subject = setId(11, createSubject("Fred", "Jones"));
         StudySite studySite = setId(14, createStudySite(null, null));
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar calendar;
 
         ScheduledActivity e1, e2, e3;
@@ -177,12 +177,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
 
-        assignment.setParticipant(participant);
+        assignment.setSubject(subject);
         assignment.setStudySite(studySite);
         assignment.setStartDateEpoch(new Date());
         assignment.setScheduledCalendar(calendar);
-        List<StudyParticipantAssignment> studyParticipantAssignment = new ArrayList<StudyParticipantAssignment>();
-        studyParticipantAssignment.add(assignment);
+        List<StudySubjectAssignment> studySubjectAssignment = new ArrayList<StudySubjectAssignment>();
+        studySubjectAssignment.add(assignment);
 
         Map<ActivityType, Boolean> activities = new HashMap<ActivityType, Boolean>();
         activities.put(ActivityType.DISEASE_MEASURE, true);
@@ -207,7 +207,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         expect(scheduledActivityDao.getEventsByDate(calendar, tempStartDateThree, tempStartDateThree)).andReturn(eventsThree);
 
         replayMocks();
-        Map<String, Object> map = paService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignment, 3, activities);
+        Map<String, Object> map = paService.getMapOfCurrentEventsForSpecificActivity(studySubjectAssignment, 3, activities);
         verifyMocks();
 
         assertNotNull("Map is null", map);
@@ -238,12 +238,12 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
 
     public void testExecute() throws Exception {
-        Participant participantOne = setId(1, createParticipant("Kate", "Kateson"));
-        Participant participantTwo = setId(2, createParticipant("Bill", "Billman"));
+        Subject subjectOne = setId(1, createSubject("Kate", "Kateson"));
+        Subject subjectTwo = setId(2, createSubject("Bill", "Billman"));
 
         StudySite studySite = setId(14, createStudySite(null, null));
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
-        StudyParticipantAssignment assignmentTwo = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        StudySubjectAssignment assignmentTwo = new StudySubjectAssignment();
         ScheduledCalendar calendar;
         ScheduledCalendar calendarTwo;
 
@@ -277,21 +277,21 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);
 
-        assignment.setParticipant(participantOne);
+        assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);
         assignment.setStartDateEpoch(new Date());
         assignment.setScheduledCalendar(calendar);
 
-        assignmentTwo.setParticipant(participantTwo);
+        assignmentTwo.setSubject(subjectTwo);
         assignmentTwo.setStudySite(studySite);
         assignmentTwo.setStartDateEpoch(paService.shiftStartDayByNumberOfDays(new Date(), 2));
         assignmentTwo.setScheduledCalendar(calendarTwo);
 
-        List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
-        studyParticipantAssignments.add(assignment);
-        studyParticipantAssignments.add(assignmentTwo);
+        List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
+        studySubjectAssignments.add(assignment);
+        studySubjectAssignments.add(assignmentTwo);
 
-        expect(userDao.getAssignments(user)).andReturn(studyParticipantAssignments);
+        expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments);
 
 
         Collection<ScheduledActivity> eventsForKate = new ArrayList<ScheduledActivity>();
@@ -355,30 +355,30 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
 
         Set<String> valueOneKey = valueOne.keySet();
-        assertEquals("Wrong number of participants ", 1, valueOneKey.size());
-        String participantKey = (String) valueOneKey.toArray()[0];
-        String expectedParticipantKeyOne = participantOne.getFullName();
-        assertEquals("Participants are not the same", expectedParticipantKeyOne, participantKey);
+        assertEquals("Wrong number of subjects ", 1, valueOneKey.size());
+        String subjectKey = (String) valueOneKey.toArray()[0];
+        String expectedSubjectKeyOne = subjectOne.getFullName();
+        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey);
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
         Set<String> valueTwoKey = valueTwo.keySet();
-        assertEquals("Wrong number of participants ", 2, valueTwoKey.size());
+        assertEquals("Wrong number of subjects ", 2, valueTwoKey.size());
         assertEquals("Date " + todayPlusOne + "has more than one event", 2, valueTwo.values().size());
 
         Set<String> valueThreeKey = valueThree.keySet();
-        assertEquals("Wrong number of participants ", 2, valueThreeKey.size());
+        assertEquals("Wrong number of subjects ", 2, valueThreeKey.size());
         assertEquals("Date " + todayPlusTwo + "has more than one event", 2, valueThree.values().size());
 
     }
 
 
     public void testExecuteWithDifferentActivityTypes() throws Exception {
-        Participant participantOne = setId(1, createParticipant("Kate", "Kateson"));
-        Participant participantTwo = setId(2, createParticipant("Bill", "Billman"));
+        Subject subjectOne = setId(1, createSubject("Kate", "Kateson"));
+        Subject subjectTwo = setId(2, createSubject("Bill", "Billman"));
 
         StudySite studySite = setId(14, createStudySite(null, null));
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
-        StudyParticipantAssignment assignmentTwo = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        StudySubjectAssignment assignmentTwo = new StudySubjectAssignment();
         ScheduledCalendar calendar;
         ScheduledCalendar calendarTwo;
 
@@ -419,21 +419,21 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
 
         addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);
 
-        assignment.setParticipant(participantOne);
+        assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);
         assignment.setStartDateEpoch(new Date());
         assignment.setScheduledCalendar(calendar);
 
-        assignmentTwo.setParticipant(participantTwo);
+        assignmentTwo.setSubject(subjectTwo);
         assignmentTwo.setStudySite(studySite);
         assignmentTwo.setStartDateEpoch(paService.shiftStartDayByNumberOfDays(new Date(), 2));
         assignmentTwo.setScheduledCalendar(calendarTwo);
 
-        List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
-        studyParticipantAssignments.add(assignment);
-        studyParticipantAssignments.add(assignmentTwo);
+        List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
+        studySubjectAssignments.add(assignment);
+        studySubjectAssignments.add(assignmentTwo);
 
-        expect(userDao.getAssignments(user)).andReturn(studyParticipantAssignments);
+        expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments);
 
 
         Collection<ScheduledActivity> eventsForKate = new ArrayList<ScheduledActivity>();
@@ -495,18 +495,18 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         assertEquals("ValueThree doesn't contain the right number of events", 1, valueTwo.values().size());
 
         Set<String> valueOneKey = valueOne.keySet();
-        assertEquals("Wrong number of participants ", 1, valueOneKey.size());
-        String participantKey = (String) valueOneKey.toArray()[0];
-        String expectedParticipantKeyOne = participantOne.getFullName() ;
-        assertEquals("Participants are not the same", expectedParticipantKeyOne, participantKey);
+        assertEquals("Wrong number of subjects ", 1, valueOneKey.size());
+        String subjectKey = (String) valueOneKey.toArray()[0];
+        String expectedSubjectKeyOne = subjectOne.getFullName() ;
+        assertEquals("Subjects are not the same", expectedSubjectKeyOne, subjectKey);
         assertEquals("Date " + today + "has more than one event", 1, valueOne.values().size());
 
         Set<String> valueTwoKey = valueTwo.keySet();
-        assertEquals("Wrong number of participants ", 1, valueTwoKey.size());
+        assertEquals("Wrong number of subjects ", 1, valueTwoKey.size());
         assertEquals("Date " + todayPlusOne + "has more than one event", 1, valueTwo.values().size());
 
         Set<String> valueThreeKey = valueThree.keySet();
-        assertEquals("Wrong number of participants ", 1, valueThreeKey.size());
+        assertEquals("Wrong number of subjects ", 1, valueThreeKey.size());
         assertEquals("Date " + todayPlusTwo + "has more than one event", 1, valueThree.values().size());
 
     }

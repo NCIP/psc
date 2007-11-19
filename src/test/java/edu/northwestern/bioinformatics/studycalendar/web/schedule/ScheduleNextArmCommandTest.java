@@ -5,9 +5,9 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 
@@ -19,17 +19,17 @@ import java.util.Date;
  */
 public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
     private ScheduleNextArmCommand command;
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     protected void setUp() throws Exception {
         super.setUp();
-        participantService = registerMockFor(ParticipantService.class);
-        command = new ScheduleNextArmCommand(participantService);
+        subjectService = registerMockFor(SubjectService.class);
+        command = new ScheduleNextArmCommand(subjectService);
     }
 
     public void testSchedule() throws Exception {
         ScheduledArm expectedScheduledArm = new ScheduledArm();
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar cal = new ScheduledCalendar();
         assignment.setScheduledCalendar(cal);
         Arm arm = new Arm();
@@ -39,7 +39,7 @@ public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
         command.setStartDate(start);
         command.setMode(NextArmMode.IMMEDIATE);
 
-        expect(participantService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
+        expect(subjectService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
             .andReturn(expectedScheduledArm);
         replayMocks();
 

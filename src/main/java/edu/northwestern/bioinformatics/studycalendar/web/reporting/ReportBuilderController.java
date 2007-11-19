@@ -15,19 +15,16 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +38,7 @@ public class ReportBuilderController extends PscSimpleFormController {
     private SiteService siteService;
     private SiteDao siteDao;
     private StudyDao studyDao;
-    private ParticipantDao participantDao;
+    private SubjectDao subjectDao;
     private static final Logger log = LoggerFactory.getLogger(ReportBuilderController.class.getName());
     private ReportRowDao reportRowDao;
 
@@ -55,7 +52,7 @@ public class ReportBuilderController extends PscSimpleFormController {
         super.initBinder(request, binder);
         getControllerTools().registerDomainObjectEditor(binder, "sitesFilter", siteDao);
         getControllerTools().registerDomainObjectEditor(binder, "studiesFilter", studyDao);
-        getControllerTools().registerDomainObjectEditor(binder, "participantsFilter", participantDao);
+        getControllerTools().registerDomainObjectEditor(binder, "subjectsFilter", subjectDao);
     }
 
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
@@ -76,15 +73,15 @@ public class ReportBuilderController extends PscSimpleFormController {
         String endDate = reportCommand.getEndDate();
         List<Study> studies = reportCommand.getStudiesFilter();
         List<Site> sites = reportCommand.getSitesFilter();
-        List<Participant> participants = reportCommand.getParticipantsFilter();
-        
+        List<Subject> subjects = reportCommand.getSubjectsFilter();
+
         if(startDate == null) {startDate = "";}
         if(endDate == null) {endDate = "";}
         if(sites == null) {sites = new ArrayList<Site>();}
         if(studies == null) {studies = new ArrayList<Study>();}
-        if(participants == null) {participants = new ArrayList<Participant>();}
+        if(subjects == null) {subjects = new ArrayList<Subject>();}
 
-        Collection reportRows = initializeBeanCollection(sites, studies, participants, startDate, endDate);
+        Collection reportRows = initializeBeanCollection(sites, studies, subjects, startDate, endDate);
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
         model.put("datasource", dataSource);
         String format = new String();
@@ -101,8 +98,8 @@ public class ReportBuilderController extends PscSimpleFormController {
 
     }
 
-    private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
-        List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, participants, startDate, endDate);
+    private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Subject> subjects, String startDate, String endDate) {
+        List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, subjects, startDate, endDate);
 
         return reportRows;
     }
@@ -126,8 +123,8 @@ public class ReportBuilderController extends PscSimpleFormController {
     }
 
     @Required
-    public void setParticipantDao(ParticipantDao participantDao) {
-        this.participantDao = participantDao;
+    public void setSubjectDao(SubjectDao subjectDao) {
+        this.subjectDao = subjectDao;
     }
 
     @Required

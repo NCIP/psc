@@ -17,19 +17,18 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 /**
  * @author Jaron Sampson
  *
  */
 
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ReportBuilderSelectStudiesController extends AbstractController {
     private StudyDao studyDao;
 	
@@ -43,10 +42,10 @@ public class ReportBuilderSelectStudiesController extends AbstractController {
 			studies.add(studyDao.getById(id));
 		}
 		model.put("studiesSelected", studies);
-		Set<Participant> participants = getParticipantsForStudies(studies);
-		model.put("participants", participants);
+		Set<Subject> subjects = getSubjectsForStudies(studies);
+		model.put("subjects", subjects);
 		
-        return new ModelAndView("reporting/ajax/participantsByStudies", model);	
+        return new ModelAndView("reporting/ajax/subjectsByStudies", model);
         }
 
 	//CONFIG
@@ -59,15 +58,15 @@ public class ReportBuilderSelectStudiesController extends AbstractController {
 	
 	//helper functions
 	//////////////////
-	private Set<Participant> getParticipantsForStudies(Collection<Study> studies) {
-		   Set<Participant> participants = new HashSet<Participant>();
+	private Set<Subject> getSubjectsForStudies(Collection<Study> studies) {
+		   Set<Subject> subjects = new HashSet<Subject>();
 		   for(Study study : studies) {
-		     List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
-		     for(StudyParticipantAssignment assignment : assignments) {
-		       participants.add(assignment.getParticipant());
+		     List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
+		     for(StudySubjectAssignment assignment : assignments) {
+		       subjects.add(assignment.getSubject());
 		     }
 		   }
-		   return participants;
+		   return subjects;
 		}
 	
 }

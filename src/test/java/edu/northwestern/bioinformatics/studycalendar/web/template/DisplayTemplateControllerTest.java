@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -70,7 +70,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.addParameter("study", study.getId().toString());
 
         expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Collections.<StudyParticipantAssignment>emptyList()).anyTimes();
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Collections.<StudySubjectAssignment>emptyList()).anyTimes();
     }
 
     public void testView() throws Exception {
@@ -108,7 +108,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         reset(studyDao);
         expect(studyDao.getById(study.getId())).andReturn(study);
         
-        List<StudyParticipantAssignment> expectedAssignments = Arrays.asList(new StudyParticipantAssignment(), new StudyParticipantAssignment(), new StudyParticipantAssignment());
+        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
 
         Map<String, Object> actualModel = getAndReturnModel();

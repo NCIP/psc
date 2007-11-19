@@ -2,17 +2,9 @@ package edu.northwestern.bioinformatics.studycalendar.web.taglibs.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.acegisecurity.vote.AbstractAccessDecisionManager;
-import org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap;
-import org.acegisecurity.intercept.web.FilterSecurityInterceptor;
-import org.acegisecurity.intercept.ObjectDefinitionSource;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.ConfigAttributeDefinition;
-import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.GrantedAuthority;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.JspTagException;
@@ -34,7 +26,7 @@ public class RoleSecureOperation extends TagSupport {
 
     private String element;
 
-    private final String PARTICIPANT_COORDINATOR_STRING = "Participant Coordinator";
+    private final String SUBJECT_COORDINATOR_STRING = "Subject Coordinator";
     private final String STUDY_COORDINATOR_STRING = "Study Coordinator";
     private final String SITE_COORDINATOR_STRING = "Site Coordinator";
     private final String STUDY_ADMIN_STRING = "Study Admin";
@@ -87,8 +79,8 @@ public class RoleSecureOperation extends TagSupport {
 
     protected Role getElementRole(String role) {
         log.info("Method getElementRoles: Looking up role for " + getElement());
-        if (PARTICIPANT_COORDINATOR_STRING.equals(role)) {
-            return Role.PARTICIPANT_COORDINATOR;
+        if (SUBJECT_COORDINATOR_STRING.equals(role)) {
+            return Role.SUBJECT_COORDINATOR;
         } else if (SITE_COORDINATOR_STRING.equals(role)) {
             return Role.SITE_COORDINATOR;
         } else if (STUDY_COORDINATOR_STRING.equals(role)) {

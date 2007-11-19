@@ -9,7 +9,7 @@ public enum Role implements CodedEnum<String> {
     STUDY_COORDINATOR       ("STUDY_COORDINATOR"   , false),
     STUDY_ADMIN             ("STUDY_ADMIN"         , false),
     SYSTEM_ADMINISTRATOR    ("SYSTEM_ADMINISTRATOR", false),
-    PARTICIPANT_COORDINATOR ("PARTICIPANT_COORDINATOR"    ),
+    SUBJECT_COORDINATOR     ("SUBJECT_COORDINATOR"    ),
     RESEARCH_ASSOCIATE      ("RESEARCH_ASSOCIATE"         ),
     SITE_COORDINATOR        ("SITE_COORDINATOR"           );
 

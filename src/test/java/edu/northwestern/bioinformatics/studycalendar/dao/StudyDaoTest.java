@@ -8,7 +8,7 @@ import java.util.List;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 /**
@@ -88,8 +88,8 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         // assertEquals("Wrong operation", Operation.CREATE, event.getElementRoles());
     }
 
-    public void testGetStudyParticipantAssigments() throws Exception {
-        List<StudyParticipantAssignment> actual = dao.getAssignmentsForStudy(-100);
+    public void testGetStudySubjectAssigments() throws Exception {
+        List<StudySubjectAssignment> actual = dao.getAssignmentsForStudy(-100);
         assertEquals("Wrong number of assigments", 2, actual.size());
         List<Integer> ids = new ArrayList<Integer>(DomainObjectTools.collectIds(actual));
 

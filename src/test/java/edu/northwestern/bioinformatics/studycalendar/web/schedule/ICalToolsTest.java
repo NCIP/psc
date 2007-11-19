@@ -1,14 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import net.fortuna.ical4j.model.Calendar;
@@ -28,7 +20,7 @@ import java.util.List;
 @SuppressWarnings("unchecked")
 public class ICalToolsTest extends junit.framework.TestCase {
 
-	private StudyParticipantAssignment studyParticipantAssignment;
+	private StudySubjectAssignment studySubjectAssignment;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -37,18 +29,18 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	}
 
 	/**
-	 * Test the generate calendar method for null or empty study participant assignment.
+	 * Test the generate calendar method for null or empty study subject assignment.
 	 * 
 	 * @throws Exception the exception
 	 */
-	public void testGenerateCalendarForNullOrEmptyStudyParticipantAssignment() throws Exception {
+	public void testGenerateCalendarForNullOrEmptyStudySubjectAssignment() throws Exception {
 
-		Calendar calendar = ICalTools.generateICalendar(studyParticipantAssignment);
+		Calendar calendar = ICalTools.generateICalendar(studySubjectAssignment);
 		assertNotNull(calendar);
 		assertEquals(0, calendar.getComponents().size());
 
-		studyParticipantAssignment = new StudyParticipantAssignment();
-		calendar = ICalTools.generateICalendar(studyParticipantAssignment);
+		studySubjectAssignment = new StudySubjectAssignment();
+		calendar = ICalTools.generateICalendar(studySubjectAssignment);
 		assertNotNull(calendar);
 		assertEquals(0, calendar.getComponents().size());
 
@@ -60,11 +52,11 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	 */
 	public void testGenerateCalendarForPatientHavingEmptySchedule() throws Exception {
 
-		studyParticipantAssignment = new StudyParticipantAssignment();
+		studySubjectAssignment = new StudySubjectAssignment();
 		ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
-		studyParticipantAssignment.setScheduledCalendar(scheduledCalendar);
+		studySubjectAssignment.setScheduledCalendar(scheduledCalendar);
 
-		Calendar calendar = ICalTools.generateICalendar(studyParticipantAssignment);
+		Calendar calendar = ICalTools.generateICalendar(studySubjectAssignment);
 		assertEquals(0, calendar.getComponents().size());
 		assertEquals("calendar should be empty but it should have 4 properties..", 4, calendar.getProperties().size());
 
@@ -76,9 +68,9 @@ public class ICalToolsTest extends junit.framework.TestCase {
 	 */
 	public void testGenerateCalendarForPatientHavingNonEmptySchedule() throws Exception {
 
-		studyParticipantAssignment = new StudyParticipantAssignment();
-		Participant participant = Fixtures.createParticipant("firstName", "lastName");
-		studyParticipantAssignment.setParticipant(participant);
+		studySubjectAssignment = new StudySubjectAssignment();
+		Subject subject = Fixtures.createSubject("firstName", "lastName");
+		studySubjectAssignment.setSubject(subject);
 
 		ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
@@ -89,9 +81,9 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		scheduledCalendar.addArm(scheduledArm2);
 		scheduledCalendar.addArm(scheduledArm3);
 
-		studyParticipantAssignment.setScheduledCalendar(scheduledCalendar);
+		studySubjectAssignment.setScheduledCalendar(scheduledCalendar);
 
-		Calendar calendar = ICalTools.generateICalendar(studyParticipantAssignment);
+		Calendar calendar = ICalTools.generateICalendar(studySubjectAssignment);
 
 		assertEquals("calendar should have 8(5+3) events", 8, calendar.getComponents().size());
 		assertEquals("calendar  should have only 4 properties..", 4, calendar.getProperties().size());

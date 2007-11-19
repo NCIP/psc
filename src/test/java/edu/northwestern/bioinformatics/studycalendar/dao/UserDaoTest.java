@@ -79,18 +79,18 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
     }
 
-    public void getParticipantAssignmentsList() throws Exception {
+    public void getSubjectAssignmentsList() throws Exception {
         User actualUser = getDao().getById(-100);
 
         assertNotNull("User not found", actualUser);
 
-        List<StudyParticipantAssignment> studyParticipantAssignments = actualUser.getStudyParticipantAssignments();
-        assertNotNull("StudyParticipantAssignments not found", studyParticipantAssignments);
-        assertEquals("Wrong quantity of assignments", 3, studyParticipantAssignments.size());
+        List<StudySubjectAssignment> studySubjectAssignments = actualUser.getStudySubjectAssignments();
+        assertNotNull("StudySubjectAssignments not found", studySubjectAssignments);
+        assertEquals("Wrong quantity of assignments", 3, studySubjectAssignments.size());
 
-        assertEquals("Wrong first date", "2008-01-01 00:00:00.0", studyParticipantAssignments.get(0).getStartDateEpoch().toString());
-        assertEquals("Wrong second date", "2007-10-10 00:00:00.0", studyParticipantAssignments.get(1).getStartDateEpoch().toString());
-        assertEquals("Wrong third date", "2006-09-15 00:00:00.0", studyParticipantAssignments.get(2).getStartDateEpoch().toString());    }
+        assertEquals("Wrong first date", "2008-01-01 00:00:00.0", studySubjectAssignments.get(0).getStartDateEpoch().toString());
+        assertEquals("Wrong second date", "2007-10-10 00:00:00.0", studySubjectAssignments.get(1).getStartDateEpoch().toString());
+        assertEquals("Wrong third date", "2006-09-15 00:00:00.0", studySubjectAssignments.get(2).getStartDateEpoch().toString());    }
 
     public void testLoadAndSave() throws Exception {
         Integer savedId;
@@ -145,11 +145,11 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         }
     }
 
-    public void testGetAllParticipantCoordinators() throws Exception {
-        List<User> users = getDao().getAllParticipantCoordinators();
+    public void testGetAllSubjectCoordinators() throws Exception {
+        List<User> users = getDao().getAllSubjectCoordinators();
 
-        assertEquals("Wrong number of participant Coordinators", 2, users.size());
-        assertEquals("wrong participant coordinator", "PC A", users.get(0).getName());
-        assertEquals("wrong participant coordinator", "PC B", users.get(1).getName());
+        assertEquals("Wrong number of subject Coordinators", 2, users.size());
+        assertEquals("wrong subject coordinator", "PC A", users.get(0).getName());
+        assertEquals("wrong subject coordinator", "PC B", users.get(1).getName());
     }
 }

@@ -17,8 +17,8 @@ public class StudySiteTest extends StudyCalendarTestCase {
     }
     
     public void testUsedWhenUsed() throws Exception {
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
-        studySite.getStudyParticipantAssignments().add(assignment);
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        studySite.getStudySubjectAssignments().add(assignment);
         assertTrue(studySite.isUsed());
     }
 

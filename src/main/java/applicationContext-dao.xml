@@ -35,8 +35,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Subject</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar</value>
@@ -126,8 +126,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Site</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySite</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.Participant</value>
-                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.Subject</value>
+                <value>edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.Epoch</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar</value>
@@ -217,8 +217,8 @@
     <bean id="periodDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao"/>
 
     <bean id="siteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SiteDao"/>
-    <bean id="participantDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao"/>
-    <bean id="studyParticipantAssignmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao"/>
+    <bean id="subjectDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao"/>
+    <bean id="studySubjectAssignmentDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao"/>
     <bean id="studySiteDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao"/>
 
     <bean id="scheduledCalendarDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao"/>

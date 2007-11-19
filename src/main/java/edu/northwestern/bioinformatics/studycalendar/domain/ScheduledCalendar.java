@@ -28,7 +28,7 @@ import java.util.ArrayList;
     }
 )
 public class ScheduledCalendar extends AbstractMutableDomainObject {
-    private StudyParticipantAssignment assignment;
+    private StudySubjectAssignment assignment;
     private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
 
     ////// LOGIC
@@ -59,11 +59,11 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
 
     @ManyToOne
     @JoinColumn(name = "assignment_id")
-    public StudyParticipantAssignment getAssignment() {
+    public StudySubjectAssignment getAssignment() {
         return assignment;
     }
 
-    public void setAssignment(StudyParticipantAssignment assignment) {
+    public void setAssignment(StudySubjectAssignment assignment) {
         this.assignment = assignment;
     }
 

@@ -6,7 +6,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <%--<title>Edit event for ${participant.fullName}</title>--%>
+    <%--<title>Edit event for ${subject.fullName}</title>--%>
     <style type="text/css">
         #states li.previous {
             display: none;
@@ -73,8 +73,8 @@
     </script>
 </head>
 <body>
-<%--<h1>Edit event for ${participant.fullName}</h1>--%>
-<laf:box title="Edit event for ${participant.fullName}">
+<%--<h1>Edit event for ${subject.fullName}</h1>--%>
+<laf:box title="Edit event for ${subject.fullName}">
     <laf:division>
         <form:form>
             <div class="row even">

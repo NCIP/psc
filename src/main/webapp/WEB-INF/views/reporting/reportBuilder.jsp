@@ -62,22 +62,22 @@
         	})
         }
 
-		function registerParticipantSelectorFormBack() {
-            Event.observe("participantSelectorFormBack", "click", function() {
-                SC.slideAndHide("participantSelectorForm")
+		function registerSubjectSelectorFormBack() {
+            Event.observe("subjectSelectorFormBack", "click", function() {
+                SC.slideAndHide("subjectSelectorForm")
                 SC.slideAndShow('studySelectorForm')
                 $('studiesFilterDisplay').innerHTML = "None selected"
             })
         }
         
-		function registerParticipantSelectorFormNext() {
-            Event.observe("participantSelectorFormNext", "click", function() {
-            	$('participants-indicator').reveal();
-                SC.slideAndHide("participantSelectorForm", {
+		function registerSubjectSelectorFormNext() {
+            Event.observe("subjectSelectorFormNext", "click", function() {
+            	$('subjects-indicator').reveal();
+                SC.slideAndHide("subjectSelectorForm", {
                     afterFinish: function() {
-	                    SC.asyncSubmit("participantSelectorForm", {
+	                    SC.asyncSubmit("subjectSelectorForm", {
 	                        onComplete: function() {
-	                            $('participants-indicator').conceal();
+	                            $('subjects-indicator').conceal();
 	                        }
 	                    })
                     }
@@ -88,8 +88,8 @@
 		function registerDateRangeSelectorFormBack() {
             Event.observe("dateRangeSelectorFormBack", "click", function() {
                 SC.slideAndHide("dateRangeSelectorForm")
-                SC.slideAndShow('participantSelectorForm')
-                $('participantsFilterDisplay').innerHTML = "None selected"
+                SC.slideAndShow('subjectSelectorForm')
+                $('subjectsFilterDisplay').innerHTML = "None selected"
             })
         }
 
@@ -112,8 +112,8 @@
     	Event.observe(window, "load", registerSiteSelectorFormNext)  	
     	Event.observe(window, "load", registerStudySelectorFormBack)
     	Event.observe(window, "load", registerStudySelectorFormNext)   	
-    	Event.observe(window, "load", registerParticipantSelectorFormBack)   	
-    	Event.observe(window, "load", registerParticipantSelectorFormNext)   	
+    	Event.observe(window, "load", registerSubjectSelectorFormBack)
+    	Event.observe(window, "load", registerSubjectSelectorFormNext)
     	Event.observe(window, "load", registerDateRangeSelectorFormBack)   	
     	Event.observe(window, "load", registerDateRangeSelectorFormFinish)   	
 	</script>
@@ -158,19 +158,19 @@
     </div>    
 </form>
 
-<c:url value="/pages/report/builder/selectParticipants" var="partipantSelectorFormAction"/>
-<form method="post" action="${partipantSelectorFormAction}" id="participantSelectorForm" style="display: none">
+<c:url value="/pages/report/builder/selectSubjects" var="subjectSelectorFormAction"/>
+<form method="post" action="${subjectSelectorFormAction}" id="subjectSelectorForm" style="display: none">
 	<div class="row">
         <div class="label">
-            <label>Participants</label>
+            <label>Subjects</label>
         </div>
         <div class="value">
-            <tags:activityIndicator id="participants-indicator"/>
-            <select id="participants" name="participants" multiple="true">
+            <tags:activityIndicator id="subjects-indicator"/>
+            <select id="subjects" name="subjects" multiple="true">
             </select>
         </div>
         <div class="value">
-            <input type="button" id="participantSelectorFormBack" value="Back"/><input type="button" id="participantSelectorFormNext" value="Next"/>            
+            <input type="button" id="subjectSelectorFormBack" value="Back"/><input type="button" id="subjectSelectorFormNext" value="Next"/>
         </div>
     </div>
 </form>
@@ -213,8 +213,8 @@
 			<div id="sitesFilterDisplay">None selected</div>
 		<div><strong>Studies:</strong></div>
 			<div id="studiesFilterDisplay">None selected</div>
-		<div><strong>Participants:</strong></div>
-			<div id="participantsFilterDisplay">None selected</div>
+		<div><strong>Subjects:</strong></div>
+			<div id="subjectsFilterDisplay">None selected</div>
 		<div>
 			<div><strong>Occuring after (mm/dd/yyyy):</strong></div>
 			<div id="startDateDisplay">Any date</div>

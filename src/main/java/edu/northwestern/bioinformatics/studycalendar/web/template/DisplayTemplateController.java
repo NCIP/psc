@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -54,11 +54,11 @@ public class DisplayTemplateController extends PscAbstractController {
         model.put("arm", new ArmTemplate(arm));
 
         if (study.isAvailableForAssignment()) {
-            List<StudyParticipantAssignment> offStudyAssignments = new ArrayList<StudyParticipantAssignment>();
-            List<StudyParticipantAssignment> onStudyAssignments = new ArrayList<StudyParticipantAssignment>();
-            List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
+            List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
+            List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
+            List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
 
-            for(StudyParticipantAssignment currentAssignment: assignments) {
+            for(StudySubjectAssignment currentAssignment: assignments) {
                 if (currentAssignment.getEndDateEpoch() == null)
                     onStudyAssignments.add(currentAssignment);                                                                                                                                                                             
                 else

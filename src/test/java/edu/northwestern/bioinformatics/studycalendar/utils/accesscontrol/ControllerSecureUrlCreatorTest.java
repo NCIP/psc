@@ -70,7 +70,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
 
         Iterator configAttribIter = defs.getConfigAttributes();
         assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "PARTICIPANT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
+        assertEquals("Wrong Role", "SUBJECT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
     }
 
     public void testNoGroupAllowsAll() throws Exception {
@@ -84,7 +84,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "STUDY_ADMIN", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SYSTEM_ADMINISTRATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "PARTICIPANT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
+        assertEquals("Wrong Role", "SUBJECT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "RESEARCH_ASSOCIATE", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SITE_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
     }
@@ -130,7 +130,7 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
     @AccessControl(roles = STUDY_COORDINATOR)
     public static class SingleGroupController extends TestingController { }
 
-    @AccessControl(roles = { STUDY_COORDINATOR, PARTICIPANT_COORDINATOR })
+    @AccessControl(roles = { STUDY_COORDINATOR, SUBJECT_COORDINATOR })
     public static class MultiGroupController extends TestingController { }
 
     public static class NoGroupController extends TestingController { }

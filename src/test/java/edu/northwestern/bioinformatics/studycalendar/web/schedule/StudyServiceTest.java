@@ -21,7 +21,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private ActivityDao activityDao;
     private Study study;
-    StudyParticipantAssignment participantAssignment;
+    StudySubjectAssignment subjectAssignment;
     ScheduledCalendar calendar;
     StaticNowFactory staticNowFactory;
 
@@ -36,9 +36,9 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         calendar = new ScheduledCalendar();
 
-        participantAssignment = new StudyParticipantAssignment();
-        participantAssignment.setParticipant(createParticipant("John", "Doe"));
-        participantAssignment.setScheduledCalendar(calendar);
+        subjectAssignment = new StudySubjectAssignment();
+        subjectAssignment.setSubject(createSubject("John", "Doe"));
+        subjectAssignment.setScheduledCalendar(calendar);
 
         staticNowFactory = new StaticNowFactory();
     }
@@ -61,7 +61,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         arm1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
         calendar.addArm(arm1);
 
-        List<StudyParticipantAssignment> assignments = Collections.singletonList(participantAssignment);
+        List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
 
         Activity reconsent = setId(1, createNamedInstance("Reconsent", Activity.class));
@@ -96,7 +96,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         arm1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
         calendar.addArm(arm1);
 
-        List<StudyParticipantAssignment> assignments = Collections.singletonList(participantAssignment);
+        List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
 
         Activity reconsent = setId(1, createNamedInstance("Reconsent", Activity.class));

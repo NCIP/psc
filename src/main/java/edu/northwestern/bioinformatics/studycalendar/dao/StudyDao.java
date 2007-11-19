@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import org.springframework.transaction.annotation.Transactional;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 
 import java.util.List;
 
@@ -22,9 +22,9 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public List<StudyParticipantAssignment> getAssignmentsForStudy(Integer studyId) {
+    public List<StudySubjectAssignment> getAssignmentsForStudy(Integer studyId) {
         return getHibernateTemplate().find(
-            "select a from StudyParticipantAssignment a inner join a.studySite ss inner join a.participant p where ss.study.id = ? order by p.lastName, p.firstName", 
+            "select a from StudySubjectAssignment a inner join a.studySite ss inner join a.subject p where ss.study.id = ? order by p.lastName, p.firstName",
             studyId);
     }
 }

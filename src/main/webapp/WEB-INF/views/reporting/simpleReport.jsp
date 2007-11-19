@@ -17,7 +17,7 @@
 		--<c:out value="${event.epochName}"/>
 	</div>
 	<div>
-		---<c:out value="${event.participantName}"/>
+		---<c:out value="${event.subjectName}"/>
 		----<c:out value="${event.studyName}"/>
 		----<c:out value="${event.siteName}"/>
 	</div>

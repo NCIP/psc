@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -11,15 +11,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
  * @author Rhett Sutphin
  */
 public class AddPlannedActivityMutator extends CollectionAddMutator {
-    private ParticipantService participantService;
+    private SubjectService subjectService;
     private TemplateService templateService;
 
     public AddPlannedActivityMutator(
         Add change, PlannedActivityDao dao,
-        ParticipantService participantService, TemplateService templateService
+        SubjectService subjectService, TemplateService templateService
     ) {
         super(change, dao);
-        this.participantService = participantService;
+        this.subjectService = subjectService;
         this.templateService = templateService;
     }
 
@@ -36,7 +36,7 @@ public class AddPlannedActivityMutator extends CollectionAddMutator {
         Arm arm = templateService.findParent(period);
 
         for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
-            participantService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledArm);
+            subjectService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledArm);
         }
     }
 }

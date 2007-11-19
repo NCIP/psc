@@ -27,12 +27,12 @@ public class User extends AbstractMutableDomainObject implements Named {
     private Long csmUserId;
     private Set<UserRole> userRoles;
     private Boolean activeFlag;
-    private List<StudyParticipantAssignment> studyParticipantAssignments;
+    private List<StudySubjectAssignment> studySubjectAssignments;
 
 
     public User() {
         this.userRoles = new HashSet<UserRole>();
-        this.studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+        this.studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
         this.activeFlag = true;
     }
 
@@ -91,15 +91,15 @@ public class User extends AbstractMutableDomainObject implements Named {
         return name;
     }
     
-    @OneToMany (mappedBy = "participantCoordinator")
+    @OneToMany (mappedBy = "subjectCoordinator")
     @OrderBy // order by ID for testing consistency
     @Cascade (value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
-        return studyParticipantAssignments;
+    public List<StudySubjectAssignment> getStudySubjectAssignments() {
+        return studySubjectAssignments;
     }
 
-    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
-        this.studyParticipantAssignments = studyParticipantAssignments;
+    public void setStudySubjectAssignments(List<StudySubjectAssignment> studySubjectAssignments) {
+        this.studySubjectAssignments = studySubjectAssignments;
     }
 
     public boolean equals(Object o) {

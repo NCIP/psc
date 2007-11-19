@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 
@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
  * @author Rhett Sutphin
  */
 public class DisplayScheduleCommand {
-    private StudyParticipantAssignment assignment;
+    private StudySubjectAssignment assignment;
     private ScheduledCalendar calendar;
     private ScheduledArm arm;
 
@@ -17,7 +17,7 @@ public class DisplayScheduleCommand {
        getters and setters.
      */
 
-    public StudyParticipantAssignment getAssignment() {
+    public StudySubjectAssignment getAssignment() {
         if (assignment != null) {
             return assignment;
         } else if (calendar != null) {
@@ -37,7 +37,7 @@ public class DisplayScheduleCommand {
 
     //////
 
-    public void setAssignment(StudyParticipantAssignment assignment) {
+    public void setAssignment(StudySubjectAssignment assignment) {
         this.assignment = assignment;
     }
 

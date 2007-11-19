@@ -27,7 +27,7 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 public class StudySite extends AbstractMutableDomainObject {
     private Site site;
     private Study study;
-    private List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+    private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private List<UserRole> userRoles;
 
     ////// LOGIC
@@ -35,7 +35,7 @@ public class StudySite extends AbstractMutableDomainObject {
     /** Are there any assignments using this relationship? */
     @Transient
     public boolean isUsed() {
-        return getStudyParticipantAssignments().size() > 0;
+        return getStudySubjectAssignments().size() > 0;
     }
 
     ////// BEAN PROPERTIES
@@ -60,14 +60,14 @@ public class StudySite extends AbstractMutableDomainObject {
         return study;
     }
 
-    public void setStudyParticipantAssignments(List<StudyParticipantAssignment> studyParticipantAssignments) {
-        this.studyParticipantAssignments = studyParticipantAssignments;
+    public void setStudySubjectAssignments(List<StudySubjectAssignment> studySubjectAssignments) {
+        this.studySubjectAssignments = studySubjectAssignments;
     }
 
     @OneToMany (mappedBy = "studySite")
     @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<StudyParticipantAssignment> getStudyParticipantAssignments() {
-        return studyParticipantAssignments;
+    public List<StudySubjectAssignment> getStudySubjectAssignments() {
+        return studySubjectAssignments;
     }
 
     @ManyToMany(mappedBy = "studySites")
@@ -107,7 +107,7 @@ public class StudySite extends AbstractMutableDomainObject {
         int result;
         result = (site != null ? site.hashCode() : 0);
         result = 29 * result + (study != null ? study.hashCode() : 0);
-        //result = 29 * result + (studyParticipantAssignments != null ? studyParticipantAssignments.hashCode() : 0);
+        //result = 29 * result + (studySubjectAssignments != null ? studySubjectAssignments.hashCode() : 0);
         return result;
     }
 }

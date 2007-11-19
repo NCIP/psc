@@ -5,12 +5,9 @@ import edu.northwestern.bioinformatics.studycalendar.service.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,8 +15,6 @@ import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
-
-import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 
 public class ScheduleControllerTest extends ControllerTestCase {
 
@@ -36,13 +31,13 @@ public class ScheduleControllerTest extends ControllerTestCase {
     List<Study> ownedStudies = new ArrayList<Study>();
     List<Site> ownedSites;
     List<Study> studies = new ArrayList<Study>();
-    List<StudyParticipantAssignment> studyParticipantAssignments = new ArrayList<StudyParticipantAssignment>();
+    List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private ScheduleCommand command;
 
-    private ParticipantDao participantDao;
-    private ParticipantService service;
-    private ParticipantCoordinatorDashboardService paService;
-    StudyParticipantAssignment actualAssignment;
+    private SubjectDao subjectDao;
+    private SubjectService service;
+    private SubjectCoordinatorDashboardService paService;
+    StudySubjectAssignment actualAssignment;
     Collection<Site> sites = new ArrayList<Site>();
     List<User> users = new ArrayList<User>();
     Study study;
@@ -53,11 +48,11 @@ public class ScheduleControllerTest extends ControllerTestCase {
         userName = "USER NAME";
         user.setName(userName);
         SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
-        participantDao = registerMockFor(ParticipantDao.class);
-        service = new ParticipantService();
-        service.setParticipantDao(participantDao);
+        subjectDao = registerMockFor(SubjectDao.class);
+        service = new SubjectService();
+        service.setSubjectDao(subjectDao);
 
-        paService = new ParticipantCoordinatorDashboardService();
+        paService = new SubjectCoordinatorDashboardService();
         StudySite expectedStudySite = createStudySite("new york", 1);
 
         sites = Collections.singleton(expectedStudySite.getSite());
@@ -83,20 +78,20 @@ public class ScheduleControllerTest extends ControllerTestCase {
         controller.setUserDao(userDao);
         controller.setScheduledActivityDao(scheduledActivityDao);
         controller.setTemplateService(templateService);
-        controller.setParticipantCoordinatorDashboardService(paService);
+        controller.setSubjectCoordinatorDashboardService(paService);
 
         request.setMethod("GET"); // To simplify the binding tests
         request.addParameter("id", "15");
 
         expect(userDao.getByName(userName)).andReturn(user).anyTimes();
-        expect(userDao.getAssignments(user)).andReturn(studyParticipantAssignments).anyTimes();
+        expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
 
     }
 
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
         expect(templateService.checkOwnership(userName, studies)).andReturn(ownedStudies);
-        expect(userDao.getAllParticipantCoordinators()).andReturn(users);
+        expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 
         replayMocks();
             Map<String, Object> refdata = controller.referenceData(request);
@@ -129,7 +124,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
         ModelAndView mv = controller.onSubmit(request, response, command, null);
         verifyMocks();
-        assertEquals("Key from Model and View is wrong ", "template/ajax/listOfParticipantsAndEvents", mv.getViewName());
+        assertEquals("Key from Model and View is wrong ", "template/ajax/listOfSubjectsAndEvents", mv.getViewName());
     }
 
     protected void tearDown() throws Exception {

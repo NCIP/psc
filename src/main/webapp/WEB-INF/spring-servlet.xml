@@ -141,23 +141,23 @@
         </property>
     </bean>
 
-    <bean name="/dashboard/participantCoordinatorSchedule" id="dashboardParticipantCoordinatorController" autowire="byName"
+    <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>PC dashboard</value></property>
+                <property name="name"><value>SC dashboard</value></property>
                 <property name="parent"><ref local="dashboardController"/></property>
             </bean>
         </property>
     </bean>
 
-    <bean name="/dashboard/colleagueParticipantCoordinator" id="colleagueParticipantCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.ColleagueParticipantCoordinatorController">
+    <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ColleagueSubjectCoordinatorController">
         <!--<property name="crumb">-->
             <!--<bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">-->
                 <!--<property name="name"><value>Colleague dashboard</value></property>-->
                 <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
-                <property name="crumb.parent"><ref local="dashboardParticipantCoordinatorController"/></property>
+                <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
             <!--</bean>-->
         <!--</property>-->
     </bean>
@@ -194,16 +194,16 @@
        </property>
     </bean>
 
-    <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorByStudyController">
+    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByStudyController">
     </bean>
 
-    <bean name="/dashboard/siteCoordinator/assignParticipantCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantCoordinatorByUserController">
+    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByUserController">
     </bean>
 
-    <bean name="/dashboard/siteCoordinator/assignParticipantToParticipantCoordinatorByUser" id="dashboardSiteCoordinatorControllerReassignParticipants" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignParticipantToParticipantCoordinatorByUserController">
+    <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
     </bean>
 
     <bean name="/cal/newPeriod" id="newPeriodController" autowire="byName"
@@ -226,18 +226,18 @@
         </property>
     </bean>
 
-    <bean name="/cal/createParticipant" id="newParticipantController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.NewParticipantController">
+    <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSubjectController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>New Participant</value></property>
+                <property name="name"><value>New Subject</value></property>
                 <property name="parent"><ref local="studyListController"/></property>
             </bean>
         </property>
     </bean>
 
-    <bean name="/cal/assignParticipant" id="assignParticipantController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.AssignParticipantController">
+    <bean name="/cal/assignSubject" id="assignSubjectController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSubjectController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
@@ -324,8 +324,8 @@
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
     <bean name="/report/builder/selectStudies" id="reportBuilderSelectStudiesController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectStudiesController"/>
-    <bean name="/report/builder/selectParticipants" id="reportBuilderSelectParticipantsController" autowire="byName"
-      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectParticipantsController"/>
+    <bean name="/report/builder/selectSubjects" id="reportBuilderSelectSubjectsController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSubjectsController"/>
     <bean name="/report/builder/selectDateRange" id="reportBuilderSelectDateRangeController" autowire="byName"
       class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectDateRangeController"/>
     <bean name="/simpleReport" id="simpleReportController" autowire="byName"
@@ -399,8 +399,8 @@
         <property name="basename"><value>messages</value></property>
     </bean>
 
-    <bean name="/cal/takeParticipantOffStudy" id="participantOffStudyController" autowire="byName"
-           class="edu.northwestern.bioinformatics.studycalendar.web.ParticipantOffStudyController">
+    <bean name="/cal/takeSubjectOffStudy" id="subjectOffStudyController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.SubjectOffStudyController">
          <property name="crumb.parent"><ref local="displayScheduleController"/></property>
     </bean>
 
@@ -422,8 +422,8 @@
                     <property name="tasks">
                         <list>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Participant Coordinator</value></property>
-                                <property name="linkName"><value>dashboardParticipantCoordinatorController</value></property>
+                                <property name="displayName"><value>Subject Coordinator</value></property>
+                                <property name="linkName"><value>dashboardSubjectCoordinatorController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

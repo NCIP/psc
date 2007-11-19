@@ -97,7 +97,7 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
     public void testChangeStateCanceledToOccurredWithOffStudy() throws Exception {
         scheduledActivity.changeState(new Scheduled("New", DateUtils.createDate(2007, Calendar.SEPTEMBER, 2)));
         ScheduledCalendar calendar = new ScheduledCalendar();
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         calendar.setAssignment(assignment);
         calendar.addArm(new ScheduledArm());
         calendar.getScheduledArms().get(0).addEvent(scheduledActivity);

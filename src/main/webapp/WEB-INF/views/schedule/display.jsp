@@ -7,7 +7,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</title>
+    <title>Subject Schedule for ${subject.fullName} on ${plannedCalendar.name}</title>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
@@ -328,29 +328,29 @@
     </script>
 </head>
 <body>
-<h1>Participant Schedule for ${participant.fullName} on ${plannedCalendar.name}</h1>
+<h1>Subject Schedule for ${subject.fullName} on ${plannedCalendar.name}</h1>
 
 <div id="schedule-controls">
     <c:if test="${assignment.endDateEpoch == null}">
-        <a class="control" href="<c:url value="/pages/cal/takeParticipantOffStudy?assignment=${assignment.id}"/>">Take participant off study</a>
+        <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take subject off study</a>
     </c:if>
     <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
 </div>
 <div id="schedule-switch">
     <c:if test="${not empty onStudyAssignments}">
-        View schedule for current participant
-        <select id="assigned-participant-selector">
+        View schedule for current subject
+        <select id="assigned-subject-selector">
             <c:forEach items="${onStudyAssignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
             </c:forEach>
         </select>
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
     </c:if>
     <c:if test="${not empty offStudyAssignments}">
-        View schedule for historical participant
-        <select id="offstudy-assigned-participant-selector">
+        View schedule for historical subject
+        <select id="offstudy-assigned-subject-selector">
             <c:forEach items="${offStudyAssignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.participant.lastFirst}</option>
+                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
             </c:forEach>
         </select>
         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
@@ -362,13 +362,13 @@
 <laf:division id="external-apps">
     <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
     <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-    View this participant's
+    View this subject's
     <c:if test="${caaersAvail}">
         <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
     </c:if>
     <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
     <c:if test="${labViewerAvail}">
-        <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${participant.personId}">lab results</a>
+        <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${subject.personId}">lab results</a>
     </c:if>
 
     <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
@@ -376,7 +376,7 @@
             <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
             <div class="content" style="display: none">
                 <p>
-                    An adverse event was reported for this participant.  Please consider how
+                    An adverse event was reported for this subject.  Please consider how
                     this should impact future scheduling.
                 </p>
                 <h3>Details</h3>

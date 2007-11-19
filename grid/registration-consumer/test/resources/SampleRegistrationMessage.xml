@@ -11,7 +11,7 @@
 		<shortTitleText>ShortTitleText1</shortTitleText>
 		<longTitleText>LongTitleText1</longTitleText>
 	</studyRef>
-	<participant gridId="AAAAA11111GridID">
+	<subject gridId="AAAAA11111GridID">
 		<firstName>Rudolph</firstName>
 		<lastName>Clooney</lastName>
 		<administrativeGenderCode>M</administrativeGenderCode>
@@ -30,7 +30,7 @@
 			<primaryIndicator>false</primaryIndicator>
 			<systemName>C3PR</systemName>
 		</identifier>
-	</participant>
+	</subject>
 	<startDate>2007-09-27</startDate>
 	<informedConsentFormSignedDate>2007-09-27</informedConsentFormSignedDate>
 	<informedConsentVersion>1.0</informedConsentVersion>

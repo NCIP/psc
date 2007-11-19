@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ParticipantDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
@@ -23,7 +23,7 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 	private SiteService siteService;
 	private SiteDao siteDao;
 	private StudyDao studyDao;
-	private ParticipantDao participantDao;
+	private SubjectDao subjectDao;
 	private ReportRowDao reportRowDao;
 
 	protected void setUp() throws Exception {
@@ -31,7 +31,7 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 
 		siteDao = registerDaoMockFor(SiteDao.class);
 		studyDao = registerDaoMockFor(StudyDao.class);
-		participantDao = registerDaoMockFor(ParticipantDao.class);
+		subjectDao = registerDaoMockFor(SubjectDao.class);
 		reportRowDao = registerMockFor(ReportRowDao.class);
 		siteService = registerMockFor(SiteService.class);
 		
@@ -39,7 +39,7 @@ public class ReportBuilderControllerTest extends ControllerTestCase {
 		controller = new ReportBuilderController();
 		controller.setSiteDao(siteDao);
 		controller.setStudyDao(studyDao);
-		controller.setParticipantDao(participantDao);
+		controller.setSubjectDao(subjectDao);
 		controller.setReportRowDao(reportRowDao);
 		controller.setSiteService(siteService);
 	}

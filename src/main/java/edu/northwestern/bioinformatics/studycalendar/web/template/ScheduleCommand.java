@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 
 import java.util.*;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 
 public class ScheduleCommand {
     private Integer toDate;
@@ -22,17 +22,17 @@ public class ScheduleCommand {
 
     private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
 
-    public Map<String, Object> execute(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService) {
-        List<StudyParticipantAssignment> studyParticipantAssignments = getUserDao().getAssignments(getUser());
+    public Map<String, Object> execute(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService) {
+        List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(getUser());
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("mapOfUserAndCalendar", participantCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignments, getToDate(), getActivityTypes()));
+        model.put("mapOfUserAndCalendar", subjectCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studySubjectAssignments, getToDate(), getActivityTypes()));
         model.put("numberOfDays", getToDate());
         return model;
     }
 
-    public Map<String, Object> execute(ParticipantCoordinatorDashboardService participantCoordinatorDashboardService, List<StudyParticipantAssignment> studyParticipantAssignments ) {
+    public Map<String, Object> execute(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService, List<StudySubjectAssignment> studySubjectAssignments ) {
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("mapOfUserAndCalendar", participantCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studyParticipantAssignments, getToDate(), getActivityTypes()));
+        model.put("mapOfUserAndCalendar", subjectCoordinatorDashboardService.getMapOfCurrentEventsForSpecificActivity(studySubjectAssignments, getToDate(), getActivityTypes()));
         model.put("numberOfDays", getToDate());
         return model;
     }

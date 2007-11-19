@@ -19,9 +19,9 @@ public class StudyService {
     private TemplateService templateService;
 
     public void scheduleReconsent(Study study, Date startDate, String details) throws Exception {
-        List<StudyParticipantAssignment> participantAssignments = studyDao.getAssignmentsForStudy(study.getId());
+        List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
-        for(StudyParticipantAssignment assignment: participantAssignments) {
+        for(StudySubjectAssignment assignment: subjectAssignments) {
             if (!assignment.isExpired()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment.getScheduledCalendar(), startDate);
                 if (upcomingScheduledActivity != null) {

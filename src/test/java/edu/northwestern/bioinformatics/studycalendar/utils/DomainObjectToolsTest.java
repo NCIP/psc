@@ -1,19 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.TestObject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 
@@ -129,15 +116,15 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     }
 
     public void testScheduledTypeSpecificity() throws Exception {
-        assertIsMoreSpecific(Study.class, Participant.class);
-        assertIsMoreSpecific(Participant.class, StudyParticipantAssignment.class);
-        assertIsMoreSpecific(StudyParticipantAssignment.class, ScheduledCalendar.class);
+        assertIsMoreSpecific(Study.class, Subject.class);
+        assertIsMoreSpecific(Subject.class, StudySubjectAssignment.class);
+        assertIsMoreSpecific(StudySubjectAssignment.class, ScheduledCalendar.class);
         assertIsMoreSpecific(ScheduledCalendar.class, ScheduledArm.class);
         assertIsMoreSpecific(ScheduledArm.class, ScheduledActivity.class);
     }
 
     public void testPlannedLessSpecificThanScheduled() throws Exception {
-        assertIsMoreSpecific(PlannedActivity.class, StudyParticipantAssignment.class);
+        assertIsMoreSpecific(PlannedActivity.class, StudySubjectAssignment.class);
     }
 
     public void testMoreSpecificThanSelf() throws Exception {

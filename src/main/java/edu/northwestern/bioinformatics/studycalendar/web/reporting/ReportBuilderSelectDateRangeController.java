@@ -19,7 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
  *
  */
 
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ReportBuilderSelectDateRangeController extends AbstractController {
 
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {

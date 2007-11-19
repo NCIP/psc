@@ -13,14 +13,14 @@ function replaceOptions(selectElt, text, value) {
 SC.slideAndShow('dateRangeSelectorForm');
 
 
-var participantsFilterList = ""; 
-<c:forEach items="${participantsSelected}" var="participant"> 
-	participantsFilterList = "<div> " + participantsFilterList + "${participant.lastName}, ${participant.firstName} </div>"; 
+var subjectsFilterList = "";
+<c:forEach items="${subjectsSelected}" var="subject">
+	subjectsFilterList = "<div> " + subjectsFilterList + "${subject.lastName}, ${subject.firstName} </div>";
 </c:forEach> 
-$('participantsFilterDisplay').innerHTML = participantsFilterList;    
+$('subjectsFilterDisplay').innerHTML = subjectsFilterList;
 
 <jsgen:insertHtml targetElement="reportBuilderForm" position="bottom">
-<c:forEach items="${participantsSelected}" var="selectedParticipant"> 
-	<input type="hidden" name="participantsFilter" value="${selectedParticipant.id}"/> 
+<c:forEach items="${subjectsSelected}" var="selectedSubject">
+	<input type="hidden" name="subjectsFilter" value="${selectedSubject.id}"/>
 </c:forEach> 
 </jsgen:insertHtml>

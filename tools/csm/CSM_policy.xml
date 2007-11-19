@@ -60,19 +60,19 @@
 
     <CSM_USER
         user_id="-9"
-        login_name="participantcd_1"
-        first_name="participant"
+        login_name="subjectcd_1"
+        first_name="subject"
         last_name="coordinator"
-        password="OI/ZpclGdfVLFNx9KBh4vA=="
+        password="j+RMIVbr+Ne/PGQF/SaS6w=="
         update_date="2006-09-07"
         />
 
     <CSM_USER
         user_id="-10"
-        login_name="participantcd_2"
-        first_name="Participant"
+        login_name="subjectcd_2"
+        first_name="Subject"
         last_name="Coordinator2"
-        password="OI/ZpclGdfUxpYigEeVf4w=="
+        password="j+RMIVbr+Ne8j34LGrV4ew=="
         update_date="2006-09-07"
         />
 
@@ -194,14 +194,14 @@
 
     <USERS
         id="-7"
-        name="participantcd_1"
+        name="subjectcd_1"
         csm_user_id="-9"
         active_flag="1"
         />
 
     <USERS
         id="-8"
-        name="participantcd_2"
+        name="subjectcd_2"
         csm_user_id="-10"
         active_flag="1"
         />
@@ -281,13 +281,13 @@
 
     <USER_ROLES
         id="-7"
-        csm_group_name="PARTICIPANT_COORDINATOR"
+        csm_group_name="SUBJECT_COORDINATOR"
         user_id="-7"
         />
 
     <USER_ROLES
         id="-8"
-        csm_group_name="PARTICIPANT_COORDINATOR"
+        csm_group_name="SUBJECT_COORDINATOR"
         user_id="-8"
         />
 
@@ -305,7 +305,7 @@
 
     <USER_ROLES
         id="-11"
-        csm_group_name="PARTICIPANT_COORDINATOR"
+        csm_group_name="SUBJECT_COORDINATOR"
         user_id="-9"
         />
 

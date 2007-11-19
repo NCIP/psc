@@ -20,13 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 /**
  * Utility class which provides functionality of generating ics calendar.
@@ -37,23 +31,23 @@ public class ICalTools {
 	private static final Log logger = LogFactory.getLog(ICalTools.class);
 
 	/**
-	 * Generate ICS calendar for a studyParticipantAssignment.
+	 * Generate ICS calendar for a studySubjectAssignment.
 	 * 
-	 * @param studyParticipantAssignment the study participant assignment
+	 * @param studySubjectAssignment the study subject assignment
 	 * 
-	 * @return the calendar. Returns empty calendar if there is no schedule for the studyParticipantAssignment
+	 * @return the calendar. Returns empty calendar if there is no schedule for the studySubjectAssignment
 	 */
-	public static Calendar generateICalendar(final StudyParticipantAssignment studyParticipantAssignment) {
+	public static Calendar generateICalendar(final StudySubjectAssignment studySubjectAssignment) {
 		Calendar icsCalendar = new Calendar();
-		if (studyParticipantAssignment != null) {
+		if (studySubjectAssignment != null) {
 
-			ScheduledCalendar scheduleCalendar = studyParticipantAssignment.getScheduledCalendar();
+			ScheduledCalendar scheduleCalendar = studySubjectAssignment.getScheduledCalendar();
 			List<ScheduledArm> scheduledArms = null;
 
 			if (scheduleCalendar != null) {
 				// first generate the calendar skeleton
 				icsCalendar = generateCalendarSkeleton();
-				scheduledArms = studyParticipantAssignment.getScheduledCalendar().getScheduledArms();
+				scheduledArms = studySubjectAssignment.getScheduledCalendar().getScheduledArms();
 
 				// now add the events in calendar.
 				for (ScheduledArm scheduledArm : scheduledArms) {
@@ -62,7 +56,7 @@ public class ICalTools {
 						List<ScheduledActivity> event = events.get(date);
 						for (final ScheduledActivity scheduleActivity : event) {
 							VEvent vEvent = generateAllDayEventForAnScheduleActivityOfPatient(scheduleActivity, date,
-									studyParticipantAssignment.getParticipant());
+									studySubjectAssignment.getSubject());
 							if (vEvent != null) {
 								icsCalendar.getComponents().add(vEvent);
 							}
@@ -81,16 +75,16 @@ public class ICalTools {
 	 * Generate an all day ics calendar event for an schedule activity of Patient. Currently calendar event is created only for ScheduleActivity
 	 * of {@link ScheduledActivityMode.SCHEDULED}
 	 * 
-	 * @param participant patient on which study is done
+	 * @param subject patient on which study is done
 	 * @param scheduledActivity the scheduled activity for which ics calendar event need to be generated
 	 * @param date the date when event occurs.
-	 * @param participant
+	 * @param subject
 	 * 
 	 * @return the ics calendar event. Returns null if scheduledActivity has no activity or date is null or ScheduleActivity is not of
 	 *         {@link ScheduledActivityMode.SCHEDULED}
 	 */
 	private static VEvent generateAllDayEventForAnScheduleActivityOfPatient(final ScheduledActivity scheduledActivity,
-			final Date date, final Participant participant) {
+			final Date date, final Subject subject) {
 		final Activity activity = scheduledActivity.getActivity();
 		if (activity != null && date != null && scheduledActivity.getCurrentState() != null
 				&& scheduledActivity.getCurrentState().getMode() != null
@@ -105,8 +99,8 @@ public class ICalTools {
 			// initialize as an all-day event..
 			vEvent.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
 
-			if (participant != null) {
-				String eventDescrtiption = participant.getLastFirst();
+			if (subject != null) {
+				String eventDescrtiption = subject.getLastFirst();
 				Description description = new Description(eventDescrtiption);
 				vEvent.getProperties().add(description);
 			}

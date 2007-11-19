@@ -25,7 +25,7 @@ SC.Main.registerGoToScheduleControl = function() {
         Event.observe('go-to-schedule-control', "click", function(e) {
             Event.stop(e)
             var a = $('go-to-schedule-control')
-            var scheduleId = $F('assigned-participant-selector')
+            var scheduleId = $F('assigned-subject-selector')
             window.location.href = a.href + "?calendar=" + scheduleId;
         })
     }
@@ -38,7 +38,7 @@ SC.Main.registerGoToScheduleControl = function() {
         Event.observe('go-to-schedule-control', "click", function(e) {
             Event.stop(e)
             var a = $('go-to-schedule-control')
-            var scheduleId = $F('assigned-participant-selector')
+            var scheduleId = $F('assigned-subject-selector')
             window.location.href = a.href + "?calendar=" + scheduleId;
         })
     }
@@ -50,7 +50,7 @@ SC.Main.registerOffStudyGoToScheduleControl = function() {
         Event.observe('offstudy-go-to-schedule-control', "click", function(e) {
             Event.stop(e)
             var a = $('offstudy-go-to-schedule-control')
-            var scheduleId = $F('offstudy-assigned-participant-selector')
+            var scheduleId = $F('offstudy-assigned-subject-selector')
             window.location.href = a.href + "?calendar=" + scheduleId;
         })
     }

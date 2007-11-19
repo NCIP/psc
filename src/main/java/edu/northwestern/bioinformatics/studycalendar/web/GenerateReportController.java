@@ -27,7 +27,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
  * @author Yufang Wang
  */
 
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class GenerateReportController extends SimpleFormController {
 	private ReportRowDao reportRowDao;
 	
@@ -66,7 +66,7 @@ public class GenerateReportController extends SimpleFormController {
 		private String dateStr;
 		private String studyId;
 		private String siteId;
-		private String participantId;
+		private String subjectId;
 		private String eventId;
 		private String epochId;
 		private String armId;
@@ -75,7 +75,7 @@ public class GenerateReportController extends SimpleFormController {
 		
 		private String studyName;
 		private String siteName;
-		private String participantName;
+		private String subjectName;
 		private String eventName;
 		private String epochName;
 		private String armName;
@@ -88,8 +88,8 @@ public class GenerateReportController extends SimpleFormController {
 			this.studyName = studyname;
 			this.siteId = siteid;
 			this.siteName = sitename;
-			this.participantId = pid;
-			this.participantName = pname;
+			this.subjectId = pid;
+			this.subjectName = pname;
 			this.eventId = eventid;
 			this.eventName = eventname;
 			this.epochId = epochid;
@@ -139,20 +139,20 @@ public class GenerateReportController extends SimpleFormController {
 			return this.siteName;
 		}
 
-		public void setParticipantId(String pid){
-			this.participantId = pid;
+		public void setSubjectId(String pid){
+			this.subjectId = pid;
 		}
 		
-		public String getParticipantId(){
-			return this.participantId;
+		public String getSubjectId(){
+			return this.subjectId;
 		}
 		
-		public void setParticipantName(String pname) {
-			this.participantName = pname;
+		public void setSubjectName(String pname) {
+			this.subjectName = pname;
 		}
 		
-		public String getParticipantName() {
-			return this.participantName;
+		public String getSubjectName() {
+			return this.subjectName;
 		}
 
 		public void setEventId(String eventid){

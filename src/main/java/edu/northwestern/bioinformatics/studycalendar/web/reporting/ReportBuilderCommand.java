@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 import java.util.List;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 /*
  * @author Yufang Wang
@@ -16,7 +16,7 @@ public class ReportBuilderCommand {
 	private Boolean excelFormat;
 	private List<Study> studiesFilter;
 	private List<Site> sitesFilter;
-	private List<Participant> participantsFilter;
+	private List<Subject> subjectsFilter;
 
     public String getStartDate() {
         return startDate;
@@ -42,12 +42,12 @@ public class ReportBuilderCommand {
 		this.sitesFilter = siteFilter;
 	}
 
-	public List<Participant> getParticipantsFilter() {
-		return participantsFilter;
+	public List<Subject> getSubjectsFilter() {
+		return subjectsFilter;
 	}
 
-	public void setParticipantsFilter(List<Participant> participantsFilter) {
-		this.participantsFilter = participantsFilter;
+	public void setSubjectsFilter(List<Subject> subjectsFilter) {
+		this.subjectsFilter = subjectsFilter;
 	}
 
 	public List<Study> getStudiesFilter() {

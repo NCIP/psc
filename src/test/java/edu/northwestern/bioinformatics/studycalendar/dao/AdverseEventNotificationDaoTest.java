@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotifica
  */
 public class AdverseEventNotificationDaoTest extends ContextDaoTestCase<AdverseEventNotificationDao> {
     protected String getTestDataFileName() {
-        return "testdata/StudyParticipantAssignmentDaoTest.xml";
+        return "testdata/StudySubjectAssignmentDaoTest.xml";
     }
 
     public void testGet() throws Exception {

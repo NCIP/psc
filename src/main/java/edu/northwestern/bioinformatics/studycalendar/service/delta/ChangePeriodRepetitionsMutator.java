@@ -6,25 +6,22 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
-import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Collection;
-
-import org.apache.commons.logging.Log;
 
 /**
  * @author Rhett Sutphin
  */
 public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChangeMutator {
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     private int oldRepetitionCount;
     private int newRepetitionCount;
 
-    public ChangePeriodRepetitionsMutator(PropertyChange change, TemplateService templateService, ParticipantService participantService) {
+    public ChangePeriodRepetitionsMutator(PropertyChange change, TemplateService templateService, SubjectService subjectService) {
         super(change, templateService);
-        this.participantService = participantService;
+        this.subjectService = subjectService;
 
         oldRepetitionCount = Integer.parseInt(change.getOldValue());
         newRepetitionCount = Integer.parseInt(change.getNewValue());
@@ -62,7 +59,7 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
     private void increase(Collection<ScheduledArm> arms) {
         for (int r = oldRepetitionCount ; r < newRepetitionCount ; r++) {
             for (ScheduledArm scheduledArm : arms) {
-                participantService.schedulePeriod(getChangedPeriod(),
+                subjectService.schedulePeriod(getChangedPeriod(),
                     // TODO: eliminate this cast
                     (Amendment) change.getDelta().getRevision(), scheduledArm, r);
             }

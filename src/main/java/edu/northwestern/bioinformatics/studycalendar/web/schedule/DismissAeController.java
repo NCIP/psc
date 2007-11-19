@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class DismissAeController extends PscAbstractCommandController<DismissAeCommand> {
     private AdverseEventNotificationDao notificationDao;
 

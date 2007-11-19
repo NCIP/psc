@@ -40,14 +40,14 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         studySites = asList(studySite0, studySite1, studySite2, studySite3);
 
         user  = createNamedInstance("John", User.class);
-        UserRole role = createUserRole(user, Role.PARTICIPANT_COORDINATOR, site0, site1);
+        UserRole role = createUserRole(user, Role.SUBJECT_COORDINATOR, site0, site1);
         role.setStudySites(studySites);
         user.addUserRole(role);
 
     }
 
-    public void testGetAllStudySitesForParticipantCoordinator() {
-        List<StudySite> actualStudySites = service.getAllStudySitesForParticipantCoordinator(user);
+    public void testGetAllStudySitesForSubjectCoordinator() {
+        List<StudySite> actualStudySites = service.getAllStudySitesForSubjectCoordinator(user);
         assertEquals("Wrong number of Study Sites", studySites.size(), actualStudySites.size());
         assertEquals("Wrong Study Site", studySite0, actualStudySites.get(0));
         assertEquals("Wrong Study Site", studySite1, actualStudySites.get(1));
@@ -55,14 +55,14 @@ public class StudySiteServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong Study Site", studySite3, actualStudySites.get(3));
     }
 
-    public void testGetStudySitesForParticipantCoordinatorFromSite() {
-        List<StudySite> actualStudySites = service.getStudySitesForParticipantCoordinator(user, site1);
+    public void testGetStudySitesForSubjectCoordinatorFromSite() {
+        List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, site1);
         assertEquals("Wrong number of Study Sites", 1, actualStudySites.size());
         assertEquals("Wrong Study Site", studySite3, actualStudySites.get(0));
     }
 
-    public void testGetStudySitesForParticipantCoordinatorFromStudy() {
-        List<StudySite> actualStudySites = service.getStudySitesForParticipantCoordinator(user, study2);
+    public void testGetStudySitesForSubjectCoordinatorFromStudy() {
+        List<StudySite> actualStudySites = service.getStudySitesForSubjectCoordinator(user, study2);
         assertEquals("Wrong number of Study Sites", 2, actualStudySites.size());
         assertEquals("Wrong Study Site", studySite2, actualStudySites.get(0));
         assertEquals("Wrong Study Site", studySite3, actualStudySites.get(1));

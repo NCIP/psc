@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 /**
  * @author Saurabh Agrawal
@@ -23,7 +23,7 @@ public class DisplayICSCalendarController extends AbstractController {
 
 	private static final Logger log = LoggerFactory.getLogger(DisplayICSCalendarController.class.getName());
 
-	private StudyParticipantAssignmentDao studyParticipantAssignmentDao;
+	private StudySubjectAssignmentDao studySubjectAssignmentDao;
 
 	public DisplayICSCalendarController() {
 		// supports only get
@@ -38,10 +38,10 @@ public class DisplayICSCalendarController extends AbstractController {
 		String gridId = findGridIdInRequest(request);
 
 		if (gridId != null) {
-			StudyParticipantAssignment studyParticipantAssignment = studyParticipantAssignmentDao.getByGridId(gridId);
-			Calendar icsCalendar = ICalTools.generateICalendar(studyParticipantAssignment);
+			StudySubjectAssignment studySubjectAssignment = studySubjectAssignmentDao.getByGridId(gridId);
+			Calendar icsCalendar = ICalTools.generateICalendar(studySubjectAssignment);
 
-			String fileName = generateICSfileName(studyParticipantAssignment);
+			String fileName = generateICSfileName(studySubjectAssignment);
 
 			// response.setContentType("application/ics");
 			response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
@@ -55,33 +55,33 @@ public class DisplayICSCalendarController extends AbstractController {
 
 		}
 
-		// return new ModelAndView("template/ajax/listOfParticipantsAndEvents", model);
+		// return new ModelAndView("template/ajax/listOfSubjectsAndEvents", model);
 		return null;
 	}
 
 	/**
 	 * Generate ICS file name as lastname_firstname_studyprotocolauthorityid
 	 * 
-	 * @param studyParticipantAssignment the study participant assignment
+	 * @param studySubjectAssignment the study subject assignment
 	 * 
 	 * @return the string
 	 */
-	private String generateICSfileName(final StudyParticipantAssignment studyParticipantAssignment) {
-		StringBuffer fileName = new StringBuffer(studyParticipantAssignment.getGridId());
-		Participant participant = studyParticipantAssignment.getParticipant();
-		if (participant != null) {
+	private String generateICSfileName(final StudySubjectAssignment studySubjectAssignment) {
+		StringBuffer fileName = new StringBuffer(studySubjectAssignment.getGridId());
+		Subject subject = studySubjectAssignment.getSubject();
+		if (subject != null) {
 			fileName = new StringBuffer("");
-			if (participant.getLastName() != null) {
-				fileName.append(participant.getLastName() + "-");
+			if (subject.getLastName() != null) {
+				fileName.append(subject.getLastName() + "-");
 			}
-			if (participant.getFirstName() != null) {
-				fileName.append(participant.getFirstName() + "-");
+			if (subject.getFirstName() != null) {
+				fileName.append(subject.getFirstName() + "-");
 			}
 		}
-		if (studyParticipantAssignment.getStudySite() != null
-				&& studyParticipantAssignment.getStudySite().getStudy() != null
-				&& studyParticipantAssignment.getStudySite().getStudy().getProtocolAuthorityId() != null) {
-			fileName.append(studyParticipantAssignment.getStudySite().getStudy().getProtocolAuthorityId());
+		if (studySubjectAssignment.getStudySite() != null
+				&& studySubjectAssignment.getStudySite().getStudy() != null
+				&& studySubjectAssignment.getStudySite().getStudy().getProtocolAuthorityId() != null) {
+			fileName.append(studySubjectAssignment.getStudySite().getStudy().getProtocolAuthorityId());
 		}
 		return fileName.append(".ics").toString();
 	}
@@ -110,8 +110,8 @@ public class DisplayICSCalendarController extends AbstractController {
 
 	// //// CONFIGURATION
 	@Required
-	public void setStudyParticipantAssignmentDao(final StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
-		this.studyParticipantAssignmentDao = studyParticipantAssignmentDao;
+	public void setStudySubjectAssignmentDao (final StudySubjectAssignmentDao studySubjectAssignmentDao) {
+		this.studySubjectAssignmentDao = studySubjectAssignmentDao;
 	}
 
 }

@@ -8,12 +8,11 @@ import org.springframework.validation.BindException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
@@ -23,9 +22,9 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleNextArmController extends PscAbstractCommandController<ScheduleNextArmCommand> {
-    private ParticipantService participantService;
+    private SubjectService subjectService;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ArmDao armDao;
 
@@ -35,7 +34,7 @@ public class ScheduleNextArmController extends PscAbstractCommandController<Sche
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new ScheduleNextArmCommand(participantService);
+        return new ScheduleNextArmCommand(subjectService);
     }
 
     @Override
@@ -58,8 +57,8 @@ public class ScheduleNextArmController extends PscAbstractCommandController<Sche
     /////// CONFIGURATION
 
     @Required
-    public void setParticipantService(ParticipantService participantService) {
-        this.participantService = participantService;
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     @Required

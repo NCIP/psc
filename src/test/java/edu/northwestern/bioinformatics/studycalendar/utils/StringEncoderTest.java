@@ -28,8 +28,8 @@ public class StringEncoderTest extends StudyCalendarTestCase {
         System.out.println("study_admin2: "    + se.encrypt("study_admin2"));
         System.out.println("studycd_1: "       + se.encrypt("studycd_1"));
         System.out.println("studycd_2: "       + se.encrypt("studycd_2"));
-        System.out.println("participantcd_1: " + se.encrypt("participantcd_1"));
-        System.out.println("participantcd_2: " + se.encrypt("participantcd_2"));
+        System.out.println("subjectcd_1: " + se.encrypt("subjectcd_1"));
+        System.out.println("subjectcd_2: " + se.encrypt("subjectcd_2"));
         System.out.println("sc_systemadmin: "  + se.encrypt("systemadmin"));
         System.out.println("sitecd_1: "        + se.encrypt("sitecd_1"));
         System.out.println("sitecd_2: "        + se.encrypt("sitecd_2"));

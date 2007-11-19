@@ -4,16 +4,15 @@ import org.hibernate.Session;
 import org.hibernate.SQLQuery;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.hibernate.HibernateException;
 //import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -49,14 +48,14 @@ public class ReportRowDao extends HibernateDaoSupport {
 			"from "+
 				"sites si inner join study_sites ss on si.id=ss.site_id " +
 				"inner join studies st on st.id=ss.study_id " +
-				"inner join participant_assignments pa on ss.id=pa.study_site_id " +
-				"inner join participants p on pa.participant_id=p.id " +
-				"inner join scheduled_calendars sc on pa.id=sc.assignment_id " +
+				"inner join subject_assignments sas on ss.id=pa.study_site_id " +
+				"inner join subjects s on sas.subject_id=p.id " +
+				"inner join scheduled_calendars sc on sas.id=sc.assignment_id " +
 				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_activities sa on sa.id=se.scheduled_arm_id " +
-				"inner join scheduled_activity_modes sam on se.current_state_mode_id=sem.id " +
-				"inner join planned_activities pa on se.planned_activity_id=pe.id " +
-				"inner join activities act on pe.activity_id=act.id " +
+				"inner join scheduled_activities sac on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_activity_modes sam on sac.current_state_mode_id=sem.id " +
+				"inner join planned_activities pa on sac.planned_activity_id=pe.id " +
+				"inner join activities act on pa.activity_id=act.id " +
 				"inner join arms a on sa.arm_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
 			"order by se.id";
@@ -88,10 +87,10 @@ public class ReportRowDao extends HibernateDaoSupport {
 	} 
 */
 	@SuppressWarnings("unchecked")
-	public List<ReportRow> getFilteredReport(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
+	public List<ReportRow> getFilteredReport(List<Site> sites, List<Study> studies, List<Subject> subjects, String startDate, String endDate) {
 		final List<Site> sitesFinal = sites;
 		final List<Study> studiesFinal = studies;
-		final List<Participant> participantsFinal = participants;
+		final List<Subject> subjectsFinal = subjects;
 		final String startDateFinal = startDate;
 		final String endDateFinal = endDate;
 		
@@ -113,17 +112,17 @@ public class ReportRowDao extends HibernateDaoSupport {
 			"from "+
 				"sites si inner join study_sites ss on si.id=ss.site_id " +
 				"inner join studies st on st.id=ss.study_id " +
-				"inner join participant_assignments pa on ss.id=pa.study_site_id " +
-				"inner join participants p on pa.participant_id=p.id " +
-				"inner join scheduled_calendars sc on pa.id=sc.assignment_id " +
+				"inner join subject_assignments sas on ss.id=pa.study_site_id " +
+				"inner join subjects s on sas.subject_id=p.id " +
+				"inner join scheduled_calendars sc on sas.id=sc.assignment_id " +
 				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_activities sa on sa.id=se.scheduled_arm_id " +
-				"inner join scheduled_activity_modes sam on se.current_state_mode_id=sem.id " +
-				"inner join planned_activities pa on se.planned_activity_id=pe.id " +
-				"inner join activities act on pe.activity_id=act.id " +
+				"inner join scheduled_activities sac on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_activity_modes sam on sac.current_state_mode_id=sem.id " +
+				"inner join planned_activities pa on sac.planned_activity_id=pe.id " +
+				"inner join activities act on pa.activity_id=act.id " +
 				"inner join arms a on sa.arm_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
-				getWhere(sitesFinal, studiesFinal, participantsFinal, startDateFinal, endDateFinal) + 
+				getWhere(sitesFinal, studiesFinal, subjectsFinal, startDateFinal, endDateFinal) +
 			" order by se.id";
 				
 				log.debug("%%%%%%%%%%%%" + query.toString());
@@ -136,13 +135,13 @@ public class ReportRowDao extends HibernateDaoSupport {
 		
 	}
 	
-	private String getWhere(List<Site> sites, List<Study> studies, List<Participant> participants, String startDate, String endDate) {
+	private String getWhere(List<Site> sites, List<Study> studies, List<Subject> subjects, String startDate, String endDate) {
 		String where = new String();
 		
 		List<String> wheres = new ArrayList<String>();
 		if(!"".equals(getSitesWheres(sites))) { wheres.add(getSitesWheres(sites));}
 		if(!"".equals(getStudiesWheres(studies))) { wheres.add(getStudiesWheres(studies));}
-		if(!"".equals(getParticipantsWheres(participants))) {wheres.add(getParticipantsWheres(participants));}
+		if(!"".equals(getSubjectsWheres(subjects))) {wheres.add(getSubjectsWheres(subjects));}
 		if(!"".equals(getDateWheres(startDate, endDate))) {wheres.add(getDateWheres(startDate, endDate));}
 		
 		if(wheres.isEmpty()) {
@@ -203,16 +202,16 @@ public class ReportRowDao extends HibernateDaoSupport {
 		return where;
 	}
 	
-	private String getParticipantsWheres(List<Participant> participants) {
+	private String getSubjectsWheres(List<Subject> subjects) {
 		String where = new String();
-		if(participants.isEmpty()) {
+		if(subjects.isEmpty()) {
 			return where;
 		} else {
 			where = "p.id IN (";
-			ListIterator<Participant> iter = participants.listIterator();
+			ListIterator<Subject> iter = subjects.listIterator();
 			while(iter.hasNext()) {
-				Participant participant = iter.next();
-				where += participant.getId();
+				Subject subject = iter.next();
+				where += subject.getId();
 				if(iter.hasNext()) { where += ",";}
 			}
 			where += ") ";

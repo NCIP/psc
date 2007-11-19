@@ -24,8 +24,8 @@ import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
  * @author Rhett Sutphin
  */
 public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalendarDao> {
-    private ParticipantDao participantDao
-        = (ParticipantDao) getApplicationContext().getBean("participantDao");
+    private SubjectDao subjectDao
+            = (SubjectDao) getApplicationContext().getBean("subjectDao");
     private ArmDao armDao
         = (ArmDao) getApplicationContext().getBean("armDao");
     private AmendmentDao amendmentDao
@@ -115,10 +115,10 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         Amendment expectedAmendment = amendmentDao.getById(-17);
 
         {
-            Participant participant = participantDao.getById(-1);
+            Subject subject = subjectDao.getById(-1);
 
             ScheduledCalendar calendar = new ScheduledCalendar();
-            calendar.setAssignment(participant.getAssignments().get(0));
+            calendar.setAssignment(subject.getAssignments().get(0));
             assertEquals(-2, (int) calendar.getAssignment().getId());
             Arm arm4 = armDao.getById(-4);
             Arm arm3 = armDao.getById(-3);

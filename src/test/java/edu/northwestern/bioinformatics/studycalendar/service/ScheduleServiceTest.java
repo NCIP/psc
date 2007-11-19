@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
@@ -25,7 +25,7 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
     private static final String REVISION_DISPLAY_NAME = "10/01/1926 (Leopard)";
 
     private ScheduleService service;
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     private ScheduledArm scheduledArm;
     private Site site;
@@ -38,8 +38,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         // Just so there's a non-null chain from event to Site
         site = createNamedInstance("The Sun", Site.class);
         Study study = createBasicTemplate();
-        StudyParticipantAssignment assignment
-            = createAssignment(study, site, createParticipant("Alice", "Wonder"));
+        StudySubjectAssignment assignment
+            = createAssignment(study, site, createSubject("Alice", "Wonder"));
         scheduledArm = new ScheduledArm();
         assignment.getScheduledCalendar().addArm(scheduledArm);
 
@@ -50,8 +50,8 @@ public class ScheduleServiceTest extends StudyCalendarTestCase {
         // this is a real instance instead of mock because eventually
         // some or all of the methods invoked by SS on PS are going to
         // be moved into SS.
-        participantService = new ParticipantService();
-        service.setParticipantService(participantService);
+        subjectService = new SubjectService();
+        service.setSubjectService(subjectService);
     }
 
     public void testReviseDateForScheduledScheduledActivity() throws Exception {

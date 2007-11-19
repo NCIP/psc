@@ -5,7 +5,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:url var="action" value="${submitUrl}" />
-<c:set var="isAssignByStudy" value="${submitUrl == '/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy'}"/>
+<c:set var="isAssignByStudy" value="${submitUrl == '/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy'}"/>
 
 <html>
 <head>
@@ -64,11 +64,11 @@
                 Assign By:
                 <c:if test="${isAssignByStudy}">
                     Study,
-                    <span id="particip-coord-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByUser"/>'">Participant Coordinator</span>
+                    <span id="particip-coord-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByUser"/>'">Subject Coordinator</span>
                 </c:if>
                 <c:if test="${not isAssignByStudy}">
-                    <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByStudy"/>'">Study</span>,
-                    Participant Coordinator
+                    <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>'">Study</span>,
+                    Subject Coordinator
                 </c:if>
             </div>
             <br/>
@@ -78,7 +78,7 @@
                     There are no studies assigned to your site.
                 </c:when>
                 <c:when test="${fn:length(users) < 1}">
-                    There are no participant coordinators for your site.
+                    There are no subject coordinators for your site.
                 </c:when>
                 <c:otherwise>
                     <div class="row">
@@ -87,7 +87,7 @@
                                 Study:
                             </c:if>
                             <c:if test="${not isAssignByStudy}">
-                                Participant Coordinator:
+                                Subject Coordinator:
                             </c:if>
                         </div>
                         <div class="value">
@@ -104,15 +104,15 @@
                                         <option value="${user.id}" <c:if test="${user.id == selected.id}">selected</c:if>>${user.name}</option>
                                     </c:forEach>
                                 </select>
-                                <input type="button" value="Studies" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantCoordinatorByUser"/>?selected=${selected.id}'"/>
-                                <input type="button" value="Participants" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignParticipantToParticipantCoordinatorByUser"/>?selected=${selected.id}'"/>
+                                <input type="button" value="Studies" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByUser"/>?selected=${selected.id}'"/>
+                                <input type="button" value="Subjects" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"/>?selected=${selected.id}'"/>
                             </c:if>
 
                         </div>
                     </div>
                     <div class="row">
                         <div class="label" >
-                            Assign Participant
+                            Assign Subject
                             <c:if test="${isAssignByStudy}">
                                 Coordinators:
                             </c:if>

@@ -7,7 +7,7 @@ import java.util.Date;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import gov.nih.nci.cabig.ctms.grid.ae.beans.AENotificationType;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumer;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.InvalidRegistration;
@@ -64,7 +64,7 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumer {
             throw new InvalidRegistration();
         }
 
-        StudyParticipantAssignment assignment = new StudyParticipantAssignment();
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setGridId(gridId);
 
         AdverseEvent event = new AdverseEvent();

@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Date;
 
@@ -17,16 +17,16 @@ public class ScheduleNextArmCommand {
     private Date startDate;
     private NextArmMode mode;
 
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
-    public ScheduleNextArmCommand(ParticipantService participantService) {
-        this.participantService = participantService;
+    public ScheduleNextArmCommand(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 
     ////// LOGIC
 
     public ScheduledArm schedule() {
-        return participantService.scheduleArm(
+        return subjectService.scheduleArm(
             getCalendar().getAssignment(), getArm(), getStartDate(), getMode());
     }
 

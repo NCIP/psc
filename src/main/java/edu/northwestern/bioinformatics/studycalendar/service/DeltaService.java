@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
@@ -53,11 +53,11 @@ public class DeltaService {
     }
 
     /**
-     * Applies the given amendment to the calendar for the participant in the
+     * Applies the given amendment to the calendar for the subject in the
      * given assignment.
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public void amend(StudyParticipantAssignment assignment, Amendment amendment) {
+    public void amend(StudySubjectAssignment assignment, Amendment amendment) {
         apply(assignment.getScheduledCalendar(), amendment);
         assignment.setCurrentAmendment(amendment);
     }

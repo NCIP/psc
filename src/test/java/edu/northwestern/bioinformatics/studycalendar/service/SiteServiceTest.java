@@ -87,7 +87,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         Site expectedSite = setId(1, createSite("northwestern"));
 
         edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true);
-        user.addUserRole(createUserRole(user, Role.PARTICIPANT_COORDINATOR, expectedSite));
+        user.addUserRole(createUserRole(user, Role.SUBJECT_COORDINATOR, expectedSite));
 
         ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
 
@@ -99,7 +99,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetSitesForParticipantCoordinators() {
+    public void testGetSitesForSubjectCoordinators() {
         ProtectionGroup expectedPG = createProtectionGroup(1L, "edu.northwestern.bioinformatics.studycalendar.domain.StudySite.1");
         List<ProtectionGroup> expectedPGs = Collections.singletonList(expectedPG);
 
@@ -113,7 +113,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
                 .andReturn(expectedStudySite);
         replayMocks();
 
-        Collection<Site> actualSites = service.getSitesForParticipantCoordinator("john");
+        Collection<Site> actualSites = service.getSitesForSubjectCoordinator("john");
         verifyMocks();
 
         assertEquals(expectedSites.size(), actualSites.size());
@@ -156,7 +156,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
     public void testAssignProtectionGroup() throws Exception {
         Site site = setId(1, Fixtures.createNamedInstance("Mayo Clinic", Site.class));
         edu.northwestern.bioinformatics.studycalendar.domain.User user = Fixtures.createUser(1, "John", 1L, true);
-        Role role = Role.PARTICIPANT_COORDINATOR;
+        Role role = Role.SUBJECT_COORDINATOR;
         ProtectionGroup pg = createProtectionGroup(new Long(site.getId()), DomainObjectTools.createExternalObjectId(site));
 
         expect(authorizationManager.getPGByName(pg.getProtectionGroupName())).andReturn(pg);

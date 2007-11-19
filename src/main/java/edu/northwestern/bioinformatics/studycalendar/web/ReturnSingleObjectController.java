@@ -24,7 +24,7 @@ import java.util.HashMap;
  * @author Rhett Sutphin
  */
 // If this actually gets reused, it'll have to be subclassed for different access permissions
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ReturnSingleObjectController<T extends DomainObject> implements Controller {
     private StudyCalendarDao<T> dao;
     private String parameterName;

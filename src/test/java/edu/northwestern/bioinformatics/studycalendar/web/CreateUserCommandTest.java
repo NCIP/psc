@@ -48,7 +48,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong number checked for site specific Role", Role.values().length, rolesGrid.get(sites.get(0)).size());
         assertTrue("Role should be true for all sites", rolesGrid.get(sites.get(0)).get(Role.STUDY_ADMIN).isSelected());
         assertTrue("Role should be true for all sites", rolesGrid.get(sites.get(1)).get(Role.STUDY_ADMIN).isSelected());
-        assertFalse("Role should not be true for this site", rolesGrid.get(sites.get(0)).get(Role.PARTICIPANT_COORDINATOR).isSelected());
+        assertFalse("Role should not be true for this site", rolesGrid.get(sites.get(0)).get(Role.SUBJECT_COORDINATOR).isSelected());
         assertTrue("Role should not be true for this site",  rolesGrid.get(sites.get(0)).get(Role.RESEARCH_ASSOCIATE).isSelected());
         assertTrue("Role should not be true for this site",  rolesGrid.get(sites.get(1)).get(Role.RESEARCH_ASSOCIATE).isSelected());
 
@@ -59,14 +59,14 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
-                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+                createUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0), sites.get(1))
         );
         expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
 
         expect(siteDao.getAll()).andReturn(sites);
 
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(1));
 
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));
@@ -91,14 +91,14 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, Role.STUDY_ADMIN),
-                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+                createUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0), sites.get(1))
         );
         expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
 
         expect(siteDao.getAll()).andReturn(sites);
 
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(1));
 
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));
@@ -122,14 +122,14 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         User expectedUser = createUser(-1, "Joe", -1L, true);
 
         List<UserRole> expectedUserRoles = Arrays.asList(
-                createUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0), sites.get(1))
+                createUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0), sites.get(1))
         );
         expectedUser.setUserRoles(new HashSet<UserRole>(expectedUserRoles));
 
         expect(siteDao.getAll()).andReturn(sites);
 
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(0));
-        userRoleService.assignUserRole(expectedUser, Role.PARTICIPANT_COORDINATOR, sites.get(1));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(0));
+        userRoleService.assignUserRole(expectedUser, Role.SUBJECT_COORDINATOR, sites.get(1));
 
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(0));
         userRoleService.removeUserRoleAssignment(expectedUser, Role.SITE_COORDINATOR, sites.get(1));

@@ -5,7 +5,7 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Participant;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -55,23 +55,23 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 			RegistrationFailed {
 
 		Study study = new Study();
-		Participant participant = new Participant();
+		Subject subject = new Subject();
 		Site site = new Site();
 		ScheduledCalendarService svc = (ScheduledCalendarService) ctx.getBean(SERVICE_BEAN_NAME);
 
 		site.setGridId(registration.getStudySite().getGridId());
 		study.setGridId(registration.getStudyRef().getGridId());
 
-		ParticipantType partBean = registration.getParticipant();
-		participant.setGridId(partBean.getGridId());
+		ParticipantType partBean = registration.getSubject();
+		subject.setGridId(partBean.getGridId());
 
-		participant.setGender(partBean.getAdministrativeGenderCode());
-		participant.setDateOfBirth(partBean.getBirthDate());
-		participant.setFirstName(partBean.getFirstName());
-		participant.setLastName(partBean.getLastName());
+		subject.setGender(partBean.getAdministrativeGenderCode());
+		subject.setDateOfBirth(partBean.getBirthDate());
+		subject.setFirstName(partBean.getFirstName());
+		subject.setLastName(partBean.getLastName());
 
 		String mrn = findIdentifierValue(partBean.getIdentifier(), MRN_IDENTIFIER_TYPE);
-		participant.setPersonId(mrn);
+		subject.setPersonId(mrn);
 
 		String registrationGridId = registration.getGridId();
 		// Using the informed consent date as the calendar start date
@@ -89,7 +89,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 			arm.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm()
 					.getGridId());
 		}
-		ScheduledCalendar scheduledCalendar = svc.assignParticipant(study, participant, site, arm, startDate,
+		ScheduledCalendar scheduledCalendar = svc.assignSubject(study, subject, site, arm, startDate,
 				registrationGridId);
 		logger.debug("Created assignment " + scheduledCalendar.getId());
 		return registration;

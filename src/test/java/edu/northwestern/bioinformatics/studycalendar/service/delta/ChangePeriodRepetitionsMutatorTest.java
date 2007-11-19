@@ -1,9 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.ParticipantService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import static org.easymock.EasyMock.expect;
 
 /**
@@ -11,13 +10,13 @@ import static org.easymock.EasyMock.expect;
  */
 public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<PropertyChange> {
     private TemplateService templateService;
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         templateService = registerMockFor(TemplateService.class);
-        participantService = registerMockFor(ParticipantService.class);
+        subjectService = registerMockFor(SubjectService.class);
     }
 
     @Override
@@ -27,13 +26,13 @@ public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<Pr
 
     @Override
     protected Mutator createMutator() {
-        return new ChangePeriodRepetitionsMutator(change, templateService, participantService);
+        return new ChangePeriodRepetitionsMutator(change, templateService, subjectService);
     }
 
     public void testIncreaseReps() throws Exception {
         expect(templateService.findParent(period0)).andReturn(arm);
-        participantService.schedulePeriod(period0, amendment, scheduledArm, 3);
-        participantService.schedulePeriod(period0, amendment, scheduledArm, 4);
+        subjectService.schedulePeriod(period0, amendment, scheduledArm, 3);
+        subjectService.schedulePeriod(period0, amendment, scheduledArm, 4);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

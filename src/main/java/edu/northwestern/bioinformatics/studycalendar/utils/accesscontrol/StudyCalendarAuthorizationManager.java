@@ -47,7 +47,7 @@ public class StudyCalendarAuthorizationManager {
     public static final String AVAILABLE_PGS = "AVAILABLE_PGS";
     public static final String ASSIGNED_PES = "ASSIGNED_PES";
     public static final String AVAILABLE_PES = "AVAILABLE_PES";
-    public static final String PARTICIPANT_COORDINATOR_GROUP = "PARTICIPANT_COORDINATOR";
+    public static final String SUBJECT_COORDINATOR_GROUP = "SUBJECT_COORDINATOR";
     public static final String SITE_COORDINATOR_GROUP = "SITE_COORDINATOR";
     
     private static Logger log = LoggerFactory.getLogger(StudyCalendarAuthorizationManager.class);
@@ -285,7 +285,7 @@ public class StudyCalendarAuthorizationManager {
         List<ProtectionGroup> studySitePGs = new ArrayList<ProtectionGroup>();
 
         for (Group group : getGroups(user)) {
-            if (group.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
+            if (group.getGroupName().equals(SUBJECT_COORDINATOR_GROUP)) {
                 Set<ProtectionGroupRoleContext> pgRoleContexts = getProtectionGroupRoleContexts(user);
                 for (ProtectionGroupRoleContext pgrc : pgRoleContexts) {
                     if (isStudySitePG(pgrc.getProtectionGroup())) {
@@ -308,9 +308,9 @@ public class StudyCalendarAuthorizationManager {
             Set<Group> userGroups = getGroups(user);
             if (userGroups.size() > 0) {
                    Group requiredGroup = userGroups.iterator().next();
-                   if (requiredGroup.getGroupName().equals(PARTICIPANT_COORDINATOR_GROUP)) {
+                   if (requiredGroup.getGroupName().equals(SUBJECT_COORDINATOR_GROUP)) {
                        for (Study study : studies) {
-                           if (checkParticipantCoordinatorOwnership(user, study)) {
+                           if (checkSubjectCoordinatorOwnership(user, study)) {
                                assignedStudies.add(study);
                            }
                        }
@@ -445,7 +445,7 @@ public class StudyCalendarAuthorizationManager {
         return false;
     }
 
-    private boolean checkParticipantCoordinatorOwnership(User user, Study study) {
+    private boolean checkSubjectCoordinatorOwnership(User user, Study study) {
         String userName = user.getLoginName();
         List<StudySite> studySites = study.getStudySites();
         for (StudySite studySite : studySites) {

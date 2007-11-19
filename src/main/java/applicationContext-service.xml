@@ -12,8 +12,8 @@
 
     <tx:annotation-driven/>
 
-    <bean id="participantService" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantService"/>
+    <bean id="subjectService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService"/>
     <bean id="siteService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
     <bean id="templateService" autowire="byName" lazy-init="true"
@@ -30,8 +30,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
     <bean id="mutatorFactory" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
-    <bean id="participantCoordinatorDashboardService" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ParticipantCoordinatorDashboardService"/>
+    <bean id="subjectCoordinatorDashboardService" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
     <bean id="userRoleService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
     <bean id="studySiteService" autowire="byName" lazy-init="true"

@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudyParticipantAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
@@ -70,10 +70,10 @@ public class ControllerTools {
         }
     }
 
-    public void addHierarchyToModel(StudyParticipantAssignment assignment, Map<String, Object> model) {
+    public void addHierarchyToModel(StudySubjectAssignment assignment, Map<String, Object> model) {
         model.put("assignment", assignment);
         if (assignment != null) {
-            model.put("participant", assignment.getParticipant());
+            model.put("subject", assignment.getSubject());
             model.put("scheduledCalendar", assignment.getScheduledCalendar());
         }
     }

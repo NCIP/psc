@@ -3,10 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyParticipantAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
@@ -28,9 +27,9 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
-    private StudyParticipantAssignmentDao assignmentDao;
+    private StudySubjectAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledArmDao scheduledArmDao;
     private StudyDao studyDao;
@@ -44,14 +43,14 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         getControllerTools().registerDomainObjectEditor(binder, "arm", scheduledArmDao);
         getControllerTools().registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
-        binder.registerCustomEditor(StudyParticipantAssignment.class, "assignment",
+        binder.registerCustomEditor(StudySubjectAssignment.class, "assignment",
             new GridIdentifiableDaoBasedEditor(assignmentDao));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected ModelAndView handle(DisplayScheduleCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        StudyParticipantAssignment assignment = command.getAssignment();
+        StudySubjectAssignment assignment = command.getAssignment();
 
         ModelMap model = new ModelMap();
         getControllerTools().addHierarchyToModel(assignment.getScheduledCalendar(), model);
@@ -62,11 +61,11 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
 
         Study study = assignment.getStudySite().getStudy();
         if (study != null) {
-            List<StudyParticipantAssignment> offStudyAssignments = new ArrayList<StudyParticipantAssignment>();
-            List<StudyParticipantAssignment> onStudyAssignments = new ArrayList<StudyParticipantAssignment>();
-            List<StudyParticipantAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
+            List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
+            List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
+            List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(study.getId());
             model.addObject("assignments", assignments);
-            for(StudyParticipantAssignment currentAssignment: assignments) {
+            for(StudySubjectAssignment currentAssignment: assignments) {
                 if (currentAssignment.getEndDateEpoch() == null)
                     onStudyAssignments.add(currentAssignment);
                 else
@@ -98,8 +97,8 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     ////// CONFIGURATION
 
     @Required
-    public void setStudyParticipantAssignmentDao(StudyParticipantAssignmentDao studyParticipantAssignmentDao) {
-        this.assignmentDao = studyParticipantAssignmentDao;
+    public void setStudySubjectAssignmentDao (StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        this.assignmentDao = studySubjectAssignmentDao;
     }
 
     @Required
@@ -121,7 +120,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         @Override
         public String getName(BreadcrumbContext context) {
             return new StringBuilder()
-                .append("Schedule for ").append(context.getParticipant().getFullName())
+                .append("Schedule for ").append(context.getSubject().getFullName())
                 .toString();
         }
 

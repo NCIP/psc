@@ -13,7 +13,7 @@ import gov.nih.nci.cabig.ctms.lang.StringTools;
  * @author Rhett Sutphin
  */
 public class ScheduleService {
-    private ParticipantService participantService;
+    private SubjectService subjectService;
 
     /**
      * Shifts the given event by the given number of days, if the event is outstanding.
@@ -36,7 +36,7 @@ public class ScheduleService {
         newState.setReason(createShiftReason(amount, source));
         event.changeState(newState);
 
-        participantService.avoidBlackoutDates(event);
+        subjectService.avoidBlackoutDates(event);
     }
 
     private String createShiftReason(int amount, Revision source) {
@@ -50,7 +50,7 @@ public class ScheduleService {
     ////// CONFIGURATION
 
     @Required
-    public void setParticipantService(ParticipantService participantService) {
-        this.participantService = participantService;
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 }

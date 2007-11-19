@@ -34,8 +34,8 @@ import java.util.Date;
 										@FieldResult( name = "idealDate", column = "ideal_date"),
 										@FieldResult( name = "armName", column = "arm_name"),
 										@FieldResult( name = "epochName", column = "epoch_name"),
-										@FieldResult( name = "participantFirstName", column = "p_first_name"),
-										@FieldResult( name = "participantLastName", column = "p_last_name"),
+										@FieldResult( name = "subjectFirstName", column = "p_first_name"),
+										@FieldResult( name = "subjectLastName", column = "p_last_name"),
 										@FieldResult( name = "studyName", column = "study_name"),
 										@FieldResult( name = "siteName", column = "site_name")
 				            }
@@ -48,8 +48,8 @@ public class ReportRow extends HibernateDaoSupport {
 	private Date idealDate;
 	private String studyName;
 	private String siteName;
-	private String participantFirstName;
-	private String participantLastName;
+	private String subjectFirstName;
+	private String subjectLastName;
 	private String eventName;
 	private String epochName;
 	private String armName;
@@ -120,25 +120,25 @@ public class ReportRow extends HibernateDaoSupport {
 	return this.siteName;
 	}
 	
-	public void setParticipantFirstName(String pfname) {
-	this.participantFirstName = pfname;
+	public void setSubjectFirstName(String pfname) {
+	this.subjectFirstName = pfname;
 	}
 	
-	public String getParticipantFirstName() {
-	return this.participantFirstName;
+	public String getSubjectFirstName() {
+	return this.subjectFirstName;
 	}
 	
-	public void setParticipantLastName(String plname) {
-	this.participantLastName = plname;
+	public void setSubjectLastName(String plname) {
+	this.subjectLastName = plname;
 	}
 	
-	public String getParticipantLastName() {
-	return this.participantLastName;
+	public String getSubjectLastName() {
+	return this.subjectLastName;
 	}
 	
 	@Transient
-	public String getParticipantName() {
-		return this.participantFirstName + " " + this.participantLastName;
+	public String getSubjectName() {
+		return this.subjectFirstName + " " + this.subjectLastName;
 	}
 	
 	public void setEventName(String eventname) {

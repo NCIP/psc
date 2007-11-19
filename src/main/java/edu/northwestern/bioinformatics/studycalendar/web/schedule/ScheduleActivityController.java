@@ -26,7 +26,7 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = Role.PARTICIPANT_COORDINATOR)
+@AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleActivityController extends PscSimpleFormController {
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;

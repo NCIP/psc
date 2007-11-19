@@ -498,15 +498,15 @@
             <c:if test="${empty developmentRevision}">
                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                 <c:if test="${not empty study.studySites}">
-                    <tags:restrictedListItem url="/pages/cal/assignParticipant" queryString="id=${study.id}" cssClass="control"
-                        >Assign Participant</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="id=${study.id}" cssClass="control"
+                        >Assign Subject</tags:restrictedListItem>
                 </c:if>
                 <c:if test="${not empty onStudyAssignments}">
                     <security:secureOperation element="/pages/cal/schedule">
                     <li>View schedule (On Study) for
-                        <select id="assigned-participant-selector">
+                        <select id="assigned-subject-selector">
                             <c:forEach items="${onStudyAssignments}" var="assignment">
-                                <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
+                                <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
                             </c:forEach>
                         </select>
                         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
@@ -516,9 +516,9 @@
                 <c:if test="${not empty offStudyAssignments}">
                     <security:secureOperation element="/pages/cal/schedule">
                     <li>View schedule (Off Study) for
-                        <select id="offstudy-assigned-participant-selector">
+                        <select id="offstudy-assigned-subject-selector">
                             <c:forEach items="${offStudyAssignments}" var="assignment">
-                                <option value="${assignment.scheduledCalendar.id}">${assignment.participant.lastFirst}</option>
+                                <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
                             </c:forEach>
                         </select>
                         <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
