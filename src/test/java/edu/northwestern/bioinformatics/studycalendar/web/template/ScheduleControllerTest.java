@@ -1,11 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 
@@ -14,49 +24,45 @@ import javax.servlet.http.HttpServletRequest;
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class ScheduleControllerTest extends ControllerTestCase {
+    private ScheduleController controller;
 
-	private TemplateService templateService;
+    private TemplateService templateService;
 
     private ScheduledActivityDao scheduledActivityDao;
-	private StudyDao studyDao;
+    private StudyDao studyDao;
     private UserDao userDao;
     private User user;
 
-    private ScheduleController controller;
     private String userName;
 
-    List<Study> ownedStudies = new ArrayList<Study>();
-    List<Site> ownedSites;
-    List<Study> studies = new ArrayList<Study>();
-    List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
+    private List<Study> ownedStudies = new ArrayList<Study>();
+    private List<Study> studies = new ArrayList<Study>();
+    private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private ScheduleCommand command;
 
     private SubjectDao subjectDao;
     private SubjectService service;
     private SubjectCoordinatorDashboardService paService;
-    StudySubjectAssignment actualAssignment;
-    Collection<Site> sites = new ArrayList<Site>();
-    List<User> users = new ArrayList<User>();
-    Study study;
+    private List<User> users = new ArrayList<User>();
+    private Study study;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         user = new User();
         userName = "USER NAME";
         user.setName(userName);
         SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
-        subjectDao = registerMockFor(SubjectDao.class);
+        subjectDao = registerDaoMockFor(SubjectDao.class);
         service = new SubjectService();
         service.setSubjectDao(subjectDao);
 
         paService = new SubjectCoordinatorDashboardService();
-        StudySite expectedStudySite = createStudySite("new york", 1);
-
-        sites = Collections.singleton(expectedStudySite.getSite());
-
 
         study = setId(100, Fixtures.createBasicTemplate());
         studies.add(study);
@@ -70,6 +76,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
         command = registerMockFor(ScheduleCommand.class);
 
         controller = new ScheduleController(){
+            @Override
             protected Object formBackingObject(HttpServletRequest request) throws Exception {
                 return command;
             }
@@ -85,7 +92,12 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
         expect(userDao.getByName(userName)).andReturn(user).anyTimes();
         expect(userDao.getAssignments(user)).andReturn(studySubjectAssignments).anyTimes();
+    }
 
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testReferenceData() throws Exception {
@@ -97,22 +109,10 @@ public class ScheduleControllerTest extends ControllerTestCase {
             Map<String, Object> refdata = controller.referenceData(request);
         verifyMocks();
         assertSame(user, refdata.get("userName"));
-        Object mapOfUserAndCalendar = refdata.get("mapOfUserAndCalendar");
-        Object ownedStudies = refdata.get("ownedStudies");
-        Object pastDueActivities = refdata.get("pastDueActivities");
-        assertNotNull("MapOfUserAndCalendar is Null", mapOfUserAndCalendar);
-        assertNotNull("ownedStudies is Null", ownedStudies);
-        assertNotNull("pastDueActivities is Null", pastDueActivities);
-
+        assertNotNull("MapOfUserAndCalendar is Null", refdata.get("mapOfUserAndCalendar"));
+        assertNotNull("ownedStudies is Null", refdata.get("ownedStudies"));
+        assertNotNull("pastDueActivities is Null", refdata.get("pastDueActivities"));
     }
-
-    public void testFormBackingObject() throws Exception {
-        replayMocks();
-        Object object = controller.formBackingObject(request);
-        verifyMocks();
-        assertEquals("Not the correct command", command, object);
-    }
-
 
     public void testOnSubmit() throws Exception {
         command.setUser(user);
@@ -125,23 +125,6 @@ public class ScheduleControllerTest extends ControllerTestCase {
         ModelAndView mv = controller.onSubmit(request, response, command, null);
         verifyMocks();
         assertEquals("Key from Model and View is wrong ", "template/ajax/listOfSubjectsAndEvents", mv.getViewName());
-    }
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        ApplicationSecurityManager.removeUserSession();
-    }
-
-   private Site createSite(String aSiteName) {
-        return createNamedInstance(aSiteName, Site.class);
-    }
-
-    private StudySite createStudySite(String aSiteName, Integer aId) {
-        StudySite expectedStudySite = new StudySite();
-        expectedStudySite.setId(aId);
-        Site expectedSite = createSite(aSiteName);
-        expectedStudySite.setSite(expectedSite);
-        return expectedStudySite;
     }
 }
 
