@@ -290,6 +290,7 @@
                 <path refid="cp.unit-test"/>
                 <path refid="cp.emma"/>
             </classpath>
+            <jvmarg value="-XX:MaxPermSize=256m"/>
             <jvmarg value="-Demma.coverage.out.file=${coverage-dir}/coverage.emma"/>
             <jvmarg value="-Demma.coverage.out.merge=false"/>
             <jvmarg value="-Dgov.nih.nci.security.configFile=${build-dir.csm}/ApplicationSecurityConfig.xml"/>
