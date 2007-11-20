@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.io.Serializable;
 
 @Transactional
-public class UserService {
+public class UserService implements Serializable {
 
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;

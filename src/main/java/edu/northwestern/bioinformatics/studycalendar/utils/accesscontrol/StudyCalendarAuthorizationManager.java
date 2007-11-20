@@ -25,6 +25,7 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.*;
+import java.io.Serializable;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -39,7 +40,7 @@ import org.slf4j.LoggerFactory;
 
 // TODO: None of these methods should throw checked exceptions
 
-public class StudyCalendarAuthorizationManager {
+public class StudyCalendarAuthorizationManager implements Serializable {
 	public static final String APPLICATION_CONTEXT_NAME = "study_calendar";
     public static final String ASSIGNED_USERS = "ASSIGNED_USERS";
     public static final String AVAILABLE_USERS = "AVAILABLE_USERS";

@@ -5,9 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
+import java.io.Serializable;
 
 
-public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
+public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implements Serializable {
     @Override public Class<User> domainClass() { return User.class; }
 
     public List<User> getAll() {
@@ -34,10 +35,11 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> {
     }
 
     public List<User> getAllSubjectCoordinators() {
-         List<User> results = getHibernateTemplate().find(
-                 "select u  from User u join u.userRoles r " +
-                           "where r.role = '" + Role.SUBJECT_COORDINATOR + "'" +
-                           "order by u.name");
-        return results;
+        return getByRole(Role.SUBJECT_COORDINATOR);
+    }
+    
+    public List<User> getByRole(Role role) {
+        return getHibernateTemplate()
+                .find("select u from User u join u.userRoles r where r.role = ? order by u.name", role);
     }
 }

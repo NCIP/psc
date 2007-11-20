@@ -154,5 +154,13 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         return command;
     }
 
+    public void testUserDefaultsToNewWhenNotSet() throws Exception {
+        expect(siteDao.getAll()).andReturn(Collections.<Site>emptyList());
+        replayMocks();
 
+        CreateUserCommand command = new CreateUserCommand(null, siteDao, userService, userRoleService);
+        assertNotNull(command.getUser());
+        assertNull(command.getUser().getId());
+        assertNull(command.getUser().getName());
+    }
 }

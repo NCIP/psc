@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 
-import java.util.*;
+import java.util.List;
+import java.util.Iterator;
 
 public class UserDaoTest extends ContextDaoTestCase<UserDao> {
 
@@ -77,6 +81,12 @@ public class UserDaoTest extends ContextDaoTestCase<UserDao> {
         assertEquals("Wrong csm user id", -150, (long)actualUser.getCsmUserId());
         assertEquals("Wrong Role Size", 0, actualUser.getUserRoles().size());
         assertEquals("Wrong active flag value", new Boolean(false), actualUser.getActiveFlag());
+    }
+
+    public void testGetUsersByRole() throws Exception {
+        List<User> studyadmins = getDao().getByRole(Role.STUDY_ADMIN);
+        assertEquals("Wrong number of users found", 1, studyadmins.size());
+        assertEquals("Wrong user found", -200, (int) studyadmins.get(0).getId());
     }
 
     public void getSubjectAssignmentsList() throws Exception {

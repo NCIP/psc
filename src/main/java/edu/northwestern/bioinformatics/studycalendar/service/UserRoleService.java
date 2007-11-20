@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Required;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class UserRoleService {
+public class UserRoleService implements Serializable {
     private SiteService siteService;
     private UserRoleDao userRoleDao;
     private UserDao userDao;

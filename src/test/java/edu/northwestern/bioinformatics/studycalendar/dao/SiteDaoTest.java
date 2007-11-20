@@ -22,23 +22,6 @@ public class SiteDaoTest extends DaoTestCase {
         assertEquals("Wrong name", "default", actual.getName());
     }
 
-    public void testGetDefaultSite() throws Exception {
-        Site actual = siteDao.getDefaultSite();
-        assertNotNull("Default study not found", actual);
-        assertEquals(Site.DEFAULT_SITE_NAME, actual.getName());
-    }
-
-    public void testErrorIfNoDefaultSite() throws Exception {
-        getJdbcTemplate().update("DELETE FROM sites WHERE name=?", new Object[] { Site.DEFAULT_SITE_NAME });
-
-        try {
-            siteDao.getDefaultSite();
-            fail("No error");
-        } catch (StudyCalendarError error) {
-            assertEquals("No default site in database (should have a site named '" + Site.DEFAULT_SITE_NAME + "')", error.getMessage());
-        }
-    }
-
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
         List<Holiday> list = actual.getHolidaysAndWeekends();
@@ -79,4 +62,15 @@ public class SiteDaoTest extends DaoTestCase {
                 reloaded.getHolidaysAndWeekends().get(2));
     }
 
+    public void testCount() throws Exception {
+        assertEquals("Should be one site, to start", 1, siteDao.getCount());
+
+        Site newSite = new Site();
+        newSite.setName("Hampshire");
+        siteDao.save(newSite);
+        assertEquals("Should be two sites after saving", 2, siteDao.getCount());
+
+        getJdbcTemplate().update("DELETE FROM sites");
+        assertEquals("And now there should be none", 0, siteDao.getCount());
+    }
 }

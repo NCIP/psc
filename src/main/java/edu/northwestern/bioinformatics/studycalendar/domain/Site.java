@@ -14,6 +14,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
 /**
  * @author Padmaja Vedula
@@ -25,9 +26,7 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_sites_id")
     }
 )
-public class Site extends AbstractMutableDomainObject implements Named {
-    public static final String DEFAULT_SITE_NAME = "default";
-
+public class Site extends AbstractMutableDomainObject implements Named, Serializable {
     private String name;
     private List<StudySite> studySites = new ArrayList<StudySite>();
 

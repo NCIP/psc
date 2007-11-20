@@ -14,6 +14,16 @@
         </param-value>
     </context-param>
 
+    <filter>
+        <filter-name>setup-or-not</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.SetupOrNotFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>setup-or-not</filter-name>
+        <url-pattern>/pages/*</url-pattern>
+        <url-pattern>/public/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>Acegi Filter Chain Proxy</filter-name>
@@ -130,6 +140,17 @@
     <servlet-mapping>
         <servlet-name>public</servlet-name>
         <url-pattern>/public/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>setup</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>setup</servlet-name>
+        <url-pattern>/setup/*</url-pattern>
     </servlet-mapping>
 
     <servlet>

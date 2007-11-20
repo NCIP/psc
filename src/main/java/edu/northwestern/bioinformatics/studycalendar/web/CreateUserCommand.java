@@ -14,8 +14,9 @@ import org.springframework.validation.Errors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.io.Serializable;
 
-public class CreateUserCommand implements Validatable {
+public class CreateUserCommand implements Validatable, Serializable {
     private UserService userService;
     private String password;
     private String rePassword;
@@ -27,14 +28,13 @@ public class CreateUserCommand implements Validatable {
     private boolean userActiveFlag;
 
     public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserRoleService userRoleService) {
-        this.user = user;
+        this.user = user == null ? new User() : user;
         this.siteDao = siteDao;
         this.userService = userService;
         this.userRoleService = userRoleService;
         this.passwordModified = false;
         
-        if(user == null) user = new User();
-        buildRolesGrid(user.getUserRoles());
+        buildRolesGrid(this.user.getUserRoles());
     }
 
     private void buildRolesGrid(Set<UserRole> userRoles) {
@@ -136,7 +136,7 @@ public class CreateUserCommand implements Validatable {
         }
     }
 
-    public static class RoleCell {
+    public static class RoleCell implements Serializable {
         private boolean selected;
         private boolean siteSpecific;
 

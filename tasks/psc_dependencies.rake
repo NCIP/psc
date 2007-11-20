@@ -55,9 +55,12 @@ JAKARTA_COMMONS = [
 
 SPRING = [
   "org.springframework:spring:jar:#{SPRING_VERSION}",
+  "org.springframework:spring-webflow:jar:1.0.5",
+  "org.springframework:spring-binding:jar:1.0.5",
   "javax.activation:activation:jar:1.0.2",
   "javax.mail:mail:jar:1.3.2",
-  eponym("oro", "2.0.8")
+  eponym("oro", "2.0.8"),
+  eponym("ognl", "2.6.9") # For webflow
 ]
 
 HIBERNATE = [

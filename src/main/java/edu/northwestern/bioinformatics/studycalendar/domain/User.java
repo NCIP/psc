@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.io.Serializable;
 
 @Entity
 @Table (name = "users")
@@ -21,8 +22,7 @@ import java.util.Set;
         @Parameter(name="sequence", value="seq_users_id")
     }
 )
-
-public class User extends AbstractMutableDomainObject implements Named {
+public class User extends AbstractMutableDomainObject implements Named, Serializable {
     private String name;
     private Long csmUserId;
     private Set<UserRole> userRoles;

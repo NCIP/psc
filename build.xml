@@ -515,13 +515,17 @@
         <mkdir dir="${tomcat.security.dir}"/>
         <copy todir="${tomcat.security.dir}" overwrite="true">
             <filterset>
-                <filtersfile file="${config.database.file}"/>
+                <filter token="datasource.driver" value="${datasource.driver}"/>
+                <filter token="datasource.url" value="${datasource.url}"/>
+                <filter token="datasource.username" value="${datasource.username}"/>
+                <filter token="datasource.password" value="${datasource.password}"/>
                 <filter token="tomcat.security.dir" value="${tomcat.security.dir}"/>
-                <filter token="datasource.dialect.upt" value="${datasource.dialect.upt}"/>
             </filterset>
             <fileset dir="conf/upt">
+<!-- TODO: verify that these aren't needed and then delete them
                 <include name="ApplicationSecurityConfig.xml"/>
                 <include name="studycal.hibernate.cfg.xml"/>
+-->
                 <include name="csm_jaas.config"/>
             </fileset>
         </copy>

@@ -1,0 +1,20 @@
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
+    >
+    <bean id="setupStatus" class="edu.northwestern.bioinformatics.studycalendar.web.setup.SetupStatus" autowire="byName"/>
+
+    <!-- TODO: not sure if these beans should go here or somewhere specific to the flow -->
+    <bean id="siteFormAction" class="org.springframework.webflow.action.FormAction">
+        <property name="formObjectClass" value="edu.northwestern.bioinformatics.studycalendar.domain.Site"/>
+        <!-- TODO:
+        <property name="validator">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.domain.validators.SiteValidator"/>
+        </property>
+        -->
+    </bean>
+
+    <bean id="adminFormAction" class="edu.northwestern.bioinformatics.studycalendar.web.setup.FirstAdministratorFormAction" autowire="byName"/>
+</beans>

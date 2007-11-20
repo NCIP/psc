@@ -8,19 +8,18 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>caBIG Study Calendar Module - <decorator:title/></title>
+    <title>caBIG Study Calendar Module - Initial setup - <decorator:title/></title>
     <laf:stylesheetLink name="debug"/>
     <laf:stylesheetLink name="common"/>
     <laf:stylesheetLink name="calendar-blue"/>
     <tags:stylesheetLink name="lightbox"/>
-    <tags:stylesheetLink name="error-console"/>
     <tags:stylesheetLink name="common"/>
+    <tags:stylesheetLink name="setup"/>
 
     <laf:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
     <tags:javascriptLink name="lightbox"/>
-    <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
 
     <style type="text/css" xml:space="preserve">
@@ -29,9 +28,9 @@
     <decorator:head/>
   </head>
   <body>
-<tags:header/>
-<tags:breadcrumbs anchors="${breadcrumbs}"/>
+  <tags:header/>
 <laf:body>
+    <h1>One-time PSC setup</h1>
     <laf:flashMessage/>
     <decorator:body/>
 </laf:body>
@@ -42,8 +41,6 @@
     </div>
 </laf:footer>
 
-<tags:ssoForm/>
-<tags:errorConsole/>
 <c:if test="${configuration.map.showDebugInformation}">
     <laf:debugInfo/>
 </c:if>

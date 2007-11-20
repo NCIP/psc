@@ -4,6 +4,10 @@
 -->
 
 <decorators defaultdir="/WEB-INF/decorators">
+    <decorator name="setup" page="setup.jsp">
+        <pattern>/setup/*</pattern>
+    </decorator>
+
     <decorator name="standard" page="standard.jsp">
         <pattern>/*</pattern>
     </decorator>
