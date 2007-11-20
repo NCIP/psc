@@ -68,6 +68,7 @@ public class SiteDaoTest extends DaoTestCase {
         Site newSite = new Site();
         newSite.setName("Hampshire");
         siteDao.save(newSite);
+        interruptSession();
         assertEquals("Should be two sites after saving", 2, siteDao.getCount());
 
         getJdbcTemplate().update("DELETE FROM sites");
