@@ -13,29 +13,28 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class UpdatePeriodCommandTest  extends EditCommandTestCase {
+    private static final int PERIOD_ID = 10;
+
     private UpdatePeriodCommand command = new UpdatePeriodCommand();
     private Period period;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
-    public int PERIOD_ID = 10;
-    public AmendmentService amendmentService;
-    public Activity activity;
-    public String periodDetails;
+    private AmendmentService amendmentService;
+    private Activity activity;
 
-    public String detailsToChange;
-    public String eventDetails;
-    public String eventConditionalDetails;
+    private String detailsToChange;
+    private String eventDetails;
+    private String eventConditionalDetails;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerMockFor(PeriodDao.class);
-        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
+        periodDao = registerDaoMockFor(PeriodDao.class);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
         activity = createNamedInstance("Three", Activity.class);
         activity.setId(3);
-        periodDetails = "DETAILS";
 
         detailsToChange = "New event details";
         eventDetails = "Event details";
