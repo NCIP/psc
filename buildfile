@@ -15,7 +15,7 @@ define "psc" do
   resources.from(_("src/main/java")).exclude("**/*.java")
   compile.options.target = "1.5"
   compile.with CTMS_COMMONS, CORE_COMMONS, SECURITY, XML, SPRING, HIBERNATE, 
-    LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, WEB, DB, CONTAINER_PROVIDED
+    LOGBACK, SLF4J, JAKARTA_COMMONS, CAGRID, BERING, WEB, DB, CONTAINER_PROVIDED
   
   test.resources.from(_("src/test/java")).exclude("**/*.java")
   test.with(UNIT_TESTING).include("*Test")

@@ -4,6 +4,7 @@
     <property name="application-short-name" value="psc"/>
 
     <property name="src-dir.main"      value="src/main/java"/>
+    <property name="src-dir.bering"    value="src/main/db/migrate"/>
     <property name="src-dir.unit-test" value="src/test/java"/>
     <property name="src-dir.web"       value="src/main/webapp"/>
 
@@ -133,6 +134,12 @@
                 <include name="**/*.xml"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.ftl"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${build-dir.main}/db/migrate"/>
+        <copy todir="${build-dir.main}/db/migrate">
+            <fileset dir="${src-dir.bering}">
+                <include name="**/*.groovy"/>
             </fileset>
         </copy>
         <copy todir="${build-dir.unit-test}">

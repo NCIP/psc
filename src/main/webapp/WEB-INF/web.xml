@@ -14,6 +14,22 @@
         </param-value>
     </context-param>
 
+    <context-param>
+        <param-name>beringContextConfigLocation</param-name>
+        <param-value>
+            classpath:applicationContext-spring.xml
+            classpath:applicationContext-db.xml
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
     <filter>
         <filter-name>setup-or-not</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.SetupOrNotFilter</filter-class>
@@ -115,10 +131,6 @@
         <filter-name>Sitemesh</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
 
     <servlet>
         <servlet-name>spring</servlet-name>

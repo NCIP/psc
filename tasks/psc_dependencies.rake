@@ -68,9 +68,8 @@ HIBERNATE = [
   "org.hibernate:hibernate-annotations:jar:3.2.0.ga",
   eponym("antlr", "2.7.6"),
   eponym("c3p0", "0.9.1"),
-  eponym("cglib", "2.1_3"),
+  "cglib:cglib-nodep:jar:2.1_3",
   "net.sf.ehcache:ehcache:jar:1.2.3",
-  group("asm", "asm-attrs", :under => "asm", :version => "1.5.3"),
   "javax.transaction:jta:jar:1.0.1B",
   "javax.persistence:persistence-api:jar:1.0"
 ]
@@ -114,7 +113,13 @@ CAGRID = [
   "org.globus:cog-url:jar:1.2"
 ]
 
-WEB = [  
+BERING = [
+  "edu.northwestern.bioinformatics:bering:jar:0.6.1",
+  eponym("groovy", "1.0-jsr-06"),
+  eponym("asm", "2.2.3")
+]
+
+WEB = [
   "itext:itext:jar:1.3.1",
   "opensymphony:sitemesh:jar:2.2.1",
   "poi:poi-2.5.1-final:jar:20040804",

@@ -53,13 +53,19 @@
         </property>
     </bean>
 
-<!--
-    <bean id="lobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler">
-        <property name="nativeJdbcExtractor">
-            <bean class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"/>
-        </property>
+    <!-- For manual testing and bering.  Not for the deployed application. -->
+    <bean id="nonPooledDataSource" lazy-init="true" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${datasource.driver}"/>
+        <property name="url" value="${datasource.url}"/>
+        <property name="username" value="${datasource.username}"/>
+        <property name="password" value="${datasource.password}"/>
     </bean>
--->
+
+    <bean id="beringMigrator" class="edu.northwestern.bioinformatics.bering.servlet.DeployedMigrator">
+        <!-- We can't use the local pool data source because its validation query
+             is dependent on bering having run at least once. -->
+        <property name="dataSource"><ref bean="nonPooledDataSource"/></property>
+    </bean>
 
     <bean id="hibernateProperties" class="gov.nih.nci.cabig.ctms.tools.spring.HibernatePropertiesFactoryBean">
         <property name="dialectName"><value>${hibernate.dialect}</value></property>
