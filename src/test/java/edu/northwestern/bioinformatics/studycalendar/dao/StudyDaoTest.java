@@ -54,6 +54,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         {
             Study study = new Study();
             study.setName("New study");
+             study.setLongTitle("New study");
             dao.save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);
@@ -74,6 +75,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         {
             Study study = new Study();
             study.setName("New study");
+             study.setLongTitle("New study");
             dao.save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);
@@ -104,7 +106,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertEquals("Wrong id", -100, (int) actual.getId());
         assertEquals("Wrong name", "First Study", actual.getName());
         assertEquals("Wrong grid ID", "long-GUID-string", actual.getGridId());
-        assertEquals("Wrong protocol auth id", "NCI-IS-WATCHING", actual.getProtocolAuthorityId());
+        assertEquals("Wrong protocol auth id", "NCI-IS-WATCHING", actual.getAssignedIdentifier());
     }
 
 }

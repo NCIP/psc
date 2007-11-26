@@ -13,18 +13,21 @@
         id="-100"
         version="0"
         name="First Study"
+        long_title="First Study"    
         grid_id="long-GUID-string"
-        protocol_authority_id="NCI-IS-WATCHING"
+        assigned_identifier="NCI-IS-WATCHING"   
         amendment_id="-45"
         dev_amendment_id="-55"
+          
         />
     <STUDIES
         id="-101"
         version="0"
         name="Study #2"
+        long_title="Study # 2"
         />
 
-    <SITES id="-40" name="North Pole"/>
+    <SITES id="-40" name="North Pole" />
 
     <STUDY_SITES
         id="-15"

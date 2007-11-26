@@ -493,6 +493,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
         studyTemplate1.setName(userName);
+        studyTemplate1.setLongTitle(userName);
         List<Study> expectedStudyTemplates = new ArrayList<Study>();
         expect(authorizationManager.checkOwnership(userName, studyTemplates)).andReturn(expectedStudyTemplates);
 

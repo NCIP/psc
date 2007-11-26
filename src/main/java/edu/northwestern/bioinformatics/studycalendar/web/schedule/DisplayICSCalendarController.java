@@ -78,10 +78,9 @@ public class DisplayICSCalendarController extends AbstractController {
 				fileName.append(subject.getFirstName() + "-");
 			}
 		}
-		if (studySubjectAssignment.getStudySite() != null
-				&& studySubjectAssignment.getStudySite().getStudy() != null
-				&& studySubjectAssignment.getStudySite().getStudy().getProtocolAuthorityId() != null) {
-			fileName.append(studySubjectAssignment.getStudySite().getStudy().getProtocolAuthorityId());
+		if (studySubjectAssignment.getStudySite() != null && studySubjectAssignment.getStudySite().getStudy() != null
+				&& studySubjectAssignment.getStudySite().getStudy().getAssignedIdentifier() != null) {
+			fileName.append(studySubjectAssignment.getStudySite().getStudy().getAssignedIdentifier());
 		}
 		return fileName.append(".ics").toString();
 	}
@@ -110,7 +109,7 @@ public class DisplayICSCalendarController extends AbstractController {
 
 	// //// CONFIGURATION
 	@Required
-	public void setStudySubjectAssignmentDao (final StudySubjectAssignmentDao studySubjectAssignmentDao) {
+	public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
 		this.studySubjectAssignmentDao = studySubjectAssignmentDao;
 	}
 

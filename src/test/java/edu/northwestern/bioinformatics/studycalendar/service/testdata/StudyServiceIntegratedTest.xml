@@ -1,7 +1,7 @@
 <dataset>
     <!-- This test is save-only - these are here for cleanup -->
     <AMENDMENTS id="-1" amendment_date="2007-01-01"/>
-    <STUDIES id="-1" name="Don't care"/>
+    <STUDIES id="-1" name="Don't care" long_title="Study"/>
     <PLANNED_CALENDARS id="-1" study_id="-1"/>
     <EPOCHS id="-1" planned_calendar_id="-1" name="Don't care"/>
     <STUDY_SEGMENTS id="-1" epoch_id="-1" name="Don't care"/>

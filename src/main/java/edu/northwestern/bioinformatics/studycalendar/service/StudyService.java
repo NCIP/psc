@@ -1,97 +1,129 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+
 @Transactional
 public class StudyService {
-    private ActivityDao activityDao;
-    private StudyDao studyDao;
-    private DeltaService deltaService;
-    private TemplateService templateService;
+	private ActivityDao activityDao;
 
-    public void scheduleReconsent(Study study, Date startDate, String details) throws Exception {
-        List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
-        Activity reconsent = activityDao.getByName("Reconsent");
-        for(StudySubjectAssignment assignment: subjectAssignments) {
-            if (!assignment.isExpired()) {
-                ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment.getScheduledCalendar(), startDate);
-                if (upcomingScheduledActivity != null) {
-                    ScheduledActivity reconsentEvent = new ScheduledActivity();
-                    reconsentEvent.setIdealDate(upcomingScheduledActivity.getActualDate());
-                    reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledActivity.getActualDate()));
-                    reconsentEvent.setDetails(details);
-                    reconsentEvent.setActivity(reconsent);
-                    reconsentEvent.setSourceAmendment(study.getAmendment());
-                    upcomingScheduledActivity.getScheduledStudySegment().addEvent(reconsentEvent);
-                }
-            }
-        }
-        studyDao.save(study);
-    }
+	private StudyDao studyDao;
 
-    private ScheduledActivity getNextScheduledActivity(ScheduledCalendar calendar, Date startDate) {
-        for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
-            if (!studySegment.isComplete()) {
-                Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
-                for(Date date: eventsByDate.keySet()) {
-                    List<ScheduledActivity> events = eventsByDate.get(date);
-                    for(ScheduledActivity event : events) {
-                        if ((event.getActualDate().after(startDate) || event.getActualDate().equals(startDate))
-                                && ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode() ) {
-                            return event;
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
+	private DeltaService deltaService;
 
-    // TODO: need replace all business uses of StudyDao#save with this method
-    public void save(Study study) {
-        studyDao.save(study);
-        if (study.getAmendment() != null) {
-            deltaService.saveRevision(study.getAmendment());
-        }
-        if (study.getDevelopmentAmendment() != null) {
-            deltaService.saveRevision(study.getDevelopmentAmendment());
-        }
-    }
+	private TemplateService templateService;
 
-    public Study saveStudyFor(PlanTreeNode<?> node) {
-        Study study = templateService.findStudy(node);
-        save(study);
-        return study;
-    }
+	private PlannedCalendarDao plannedCalendarDao;
 
-    ////// CONFIGURATION
+	public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
+		List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
+		Activity reconsent = activityDao.getByName("Reconsent");
+		for (StudySubjectAssignment assignment : subjectAssignments) {
+			if (!assignment.isExpired()) {
+				ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
+						.getScheduledCalendar(), startDate);
+				if (upcomingScheduledActivity != null) {
+					ScheduledActivity reconsentEvent = new ScheduledActivity();
+					reconsentEvent.setIdealDate(upcomingScheduledActivity.getActualDate());
+					reconsentEvent.changeState(new Scheduled("Created From Reconsent", upcomingScheduledActivity
+							.getActualDate()));
+					reconsentEvent.setDetails(details);
+					reconsentEvent.setActivity(reconsent);
+					reconsentEvent.setSourceAmendment(study.getAmendment());
+					upcomingScheduledActivity.getScheduledStudySegment().addEvent(reconsentEvent);
+				}
+			}
+		}
+		studyDao.save(study);
+	}
 
-    @Required
-    public void setActivityDao(ActivityDao activityDao) {
-        this.activityDao = activityDao;
-    }
+	private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
+		for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
+			if (!studySegment.isComplete()) {
+				Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
+				for (Date date : eventsByDate.keySet()) {
+					List<ScheduledActivity> events = eventsByDate.get(date);
+					for (ScheduledActivity event : events) {
+						if ((event.getActualDate().after(startDate) || event.getActualDate().equals(startDate))
+								&& ScheduledActivityMode.SCHEDULED == event.getCurrentState().getMode()) {
+							return event;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
 
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
+	// TODO: need replace all business uses of StudyDao#save with this method
+	public void save(final Study study) {
+		studyDao.save(study);
+		if (study.getAmendment() != null) {
+			deltaService.saveRevision(study.getAmendment());
+		}
+		if (study.getDevelopmentAmendment() != null) {
+			deltaService.saveRevision(study.getDevelopmentAmendment());
+		}
+	}
 
-    @Required
-    public void setDeltaService(DeltaService deltaService) {
-        this.deltaService = deltaService;
-    }
+	public Study saveStudyFor(final PlanTreeNode<?> node) {
+		Study study = templateService.findStudy(node);
+		save(study);
+		return study;
+	}
 
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
+	public Study getStudyNyAssignedIdentifier(final String assignedIdentifier) {
+
+		Study systemStudy = studyDao.getByAssignedIdentifier(assignedIdentifier);
+		if (systemStudy == null) {
+			return null;
+		}
+
+		plannedCalendarDao.initialize(systemStudy.getPlannedCalendar());
+		return systemStudy;
+	}
+
+	// //// CONFIGURATION
+
+	@Required
+	public void setActivityDao(final ActivityDao activityDao) {
+		this.activityDao = activityDao;
+	}
+
+	@Required
+	public void setStudyDao(final StudyDao studyDao) {
+		this.studyDao = studyDao;
+	}
+
+	@Required
+	public void setDeltaService(final DeltaService deltaService) {
+		this.deltaService = deltaService;
+	}
+
+	@Required
+	public void setTemplateService(final TemplateService templateService) {
+		this.templateService = templateService;
+	}
+
+	@Required
+	public void setPlannedCalendarDao(final PlannedCalendarDao plannedCalendarDao) {
+		this.plannedCalendarDao = plannedCalendarDao;
+	}
 }

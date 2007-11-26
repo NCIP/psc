@@ -20,80 +20,96 @@ import java.io.Serializable;
  * @author Padmaja Vedula
  */
 @Entity
-@Table (name = "sites")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_sites_id")
-    }
-)
+@Table(name = "sites")
+@GenericGenerator(name = "id-generator", strategy = "native", parameters = { @Parameter(name = "sequence", value = "seq_sites_id") })
 public class Site extends AbstractMutableDomainObject implements Named, Serializable {
-    private String name;
-    private List<StudySite> studySites = new ArrayList<StudySite>();
+	private String name;
 
-    private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
+	private List<StudySite> studySites = new ArrayList<StudySite>();
 
-    ////// LOGIC
+	private String assignedIdentifier;
 
-    public void addStudySite(StudySite studySite) {
-        getStudySites().add(studySite);
-        studySite.setSite(this);
-    }
+	private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
 
-    public StudySite getStudySite(Study study) {
-        for (StudySite studySite : getStudySites()) {
-            if (studySite.getStudy().equals(study)) return studySite;
-        }
-        return null;
-    }
+	// //// LOGIC
 
-    ////// BEAN PROPERTIES
+	public void addStudySite(final StudySite studySite) {
+		getStudySites().add(studySite);
+		studySite.setSite(this);
+	}
 
-    public String getName() {
-        return name;
-    }
+	public StudySite getStudySite(final Study study) {
+		for (StudySite studySite : getStudySites()) {
+			if (studySite.getStudy().equals(study)) {
+				return studySite;
+			}
+		}
+		return null;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	// //// BEAN PROPERTIES
 
-    public void setStudySites(List<StudySite> studySites) {
-        this.studySites = studySites;
-    }
+	public String getName() {
+		return name;
+	}
 
-    @OneToMany (mappedBy = "site",fetch = FetchType.EAGER)
-    @OrderBy // order by ID for testing consistency
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<StudySite> getStudySites() {
-        return studySites;
-    }
+	public void setName(final String name) {
+		this.name = name;
+	}
 
-    public void setHolidaysAndWeekends (List<Holiday> holidaysAndWeekends) {
-        this.holidaysAndWeekends = holidaysAndWeekends;
-    }
+	public void setStudySites(final List<StudySite> studySites) {
+		this.studySites = studySites;
+	}
 
-    @OneToMany
-    @JoinColumn(name = "site_id", nullable = false)
-    @OrderBy // order by ID for testing consistency
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public List<Holiday> getHolidaysAndWeekends() {
-        return holidaysAndWeekends;
-    }
+	@OneToMany(mappedBy = "site", fetch = FetchType.EAGER)
+	@OrderBy
+	// order by ID for testing consistency
+	@Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+	public List<StudySite> getStudySites() {
+		return studySites;
+	}
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+	public void setHolidaysAndWeekends(final List<Holiday> holidaysAndWeekends) {
+		this.holidaysAndWeekends = holidaysAndWeekends;
+	}
 
-        Site site = (Site) o;
+	@OneToMany
+	@JoinColumn(name = "site_id", nullable = false)
+	@OrderBy
+	// order by ID for testing consistency
+	@Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+	public List<Holiday> getHolidaysAndWeekends() {
+		return holidaysAndWeekends;
+	}
 
-        if (name != null ? !name.equals(site.name) : site.name != null) return false;
+	@Override
+	public boolean equals(final Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
-        return true;
-    }
+		Site site = (Site) o;
 
-    @Override
-    public int hashCode() {
-        return (name != null ? name.hashCode() : 0);
-    }
+		if (name != null ? !name.equals(site.name) : site.name != null) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return name != null ? name.hashCode() : 0;
+	}
+
+	public String getAssignedIdentifier() {
+		return assignedIdentifier;
+	}
+
+	public void setAssignedIdentifier(final String assignedIdentifier) {
+		this.assignedIdentifier = assignedIdentifier;
+	}
 }
-

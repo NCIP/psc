@@ -2,6 +2,7 @@
     <STUDIES
         id="-100"
         name="Study A"
+        long_title="Study A"    
         />
 
     <SITES

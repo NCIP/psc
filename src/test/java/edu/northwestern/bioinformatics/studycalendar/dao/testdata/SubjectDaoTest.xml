@@ -19,16 +19,19 @@
         />
     <SITES
         id="-1001"
-        name="New Site"/>
+        name="New Site"
+       />
     <AMENDMENTS id="-55" amendment_date="2005-01-08"/>
     <STUDIES
         id="-2001"
         name="New Study"
+        long_title="New Study"    
         />
     <STUDIES
         id="-2000"
         name="Old Study"
         amendment_id="-55"
+        long_title="Old Study"
         />
     <STUDY_SITES
         id="-3001"

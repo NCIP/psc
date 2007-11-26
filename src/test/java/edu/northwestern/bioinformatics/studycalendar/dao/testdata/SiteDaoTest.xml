@@ -1,7 +1,8 @@
 <dataset>
     <SITES
         id="-4"
-        name="default"/>
+        name="default"
+        assigned_identifier="assignedId"    />
 
     <HOLIDAYS
         id="-1"

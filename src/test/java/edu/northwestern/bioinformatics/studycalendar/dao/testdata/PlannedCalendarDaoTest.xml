@@ -1,5 +1,5 @@
 <dataset>
-    <STUDIES id="-150" version="0" name="Study"/>
+    <STUDIES id="-150" version="0" long_title="Study" name="Study" />
     <PLANNED_CALENDARS
         id="-100"
         version="0"
@@ -42,6 +42,7 @@
         id="-23"
         grid_id="UNIQUE!"
         name="ECOG 1234"
+        long_title="UNIQUE!"
         />
     <planned_calendars
         id="-10"

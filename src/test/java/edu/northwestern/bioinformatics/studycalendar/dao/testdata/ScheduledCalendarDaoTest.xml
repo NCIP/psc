@@ -3,7 +3,7 @@
 
     <AMENDMENTS id="-17" amendment_date="2007-06-14"/>
 
-    <STUDIES id="-1" name="Foo" amendment_id="-17"/>
+    <STUDIES id="-1" name="Foo" amendment_id="-17" long_title="Foo"/>
     <STUDY_SITES id="-1" site_id="-1" study_id="-1"/>
     <SITES id="-1" name="DC"/>
 
@@ -165,7 +165,7 @@
         />
 
     <!-- For filtering tests -->
-    <STUDIES id="-2" name="Bar" amendment_id="-17"/>
+    <STUDIES id="-2" name="Bar" amendment_id="-17" long_title="Bar"/>
     <SITES id="-2" name="Baltimore"/>
     <STUDY_SITES id="-2" site_id="-1" study_id="-2"/>
     <STUDY_SITES id="-3" site_id="-2" study_id="-2"/>

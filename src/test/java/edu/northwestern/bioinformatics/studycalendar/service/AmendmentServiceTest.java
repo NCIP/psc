@@ -97,6 +97,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
     public void testGetAmendedWhenAmendmentNotRelevant() throws Exception {
         study.setName("Study E");
+        study.setLongTitle("Study E");
         Amendment irrelevant = setGridId("B0-GRID", createAmendments("B0"));
         try {
             service.getAmendedStudy(study, irrelevant);

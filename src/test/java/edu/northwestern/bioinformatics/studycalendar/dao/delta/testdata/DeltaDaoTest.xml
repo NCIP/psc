@@ -79,7 +79,7 @@
         old_value="-3"
         delta_id="-103"
     />
-    <STUDIES id="-2" name="Protocol"/>
+    <STUDIES id="-2" name="Protocol" long_title="Protocol"/>
     <PLANNED_CALENDARS id="-2" study_id="-2"/>    
     <EPOCHS
         id="-1"
