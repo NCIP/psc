@@ -8,11 +8,11 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Date;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.apache.commons.lang.StringUtils;
 import org.dbunit.DBTestCase;
 import org.dbunit.PropertiesBasedJdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -21,17 +21,19 @@ import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import gov.nih.nci.cagrid.common.Utils;
+import gov.nih.nci.ccts.grid.IdentifierType;
+import gov.nih.nci.ccts.grid.OrganizationAssignedIdentifierType;
 import gov.nih.nci.ccts.grid.ParticipantType;
 import gov.nih.nci.ccts.grid.Registration;
 import gov.nih.nci.ccts.grid.client.RegistrationConsumerClient;
@@ -57,9 +59,13 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
 	private StudyDao studyDao;
 
+	private StudyService studyService;
+
 	private SiteDao siteDao;
 
 	private StudySiteDao studySiteDao;
+
+	private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
 	private void init() {
 		clientConfigFile = System.getProperty("psc.test.clientConfigFile",
@@ -73,7 +79,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 				"http://localhost:8080/wsrf/services/cagrid/RegistrationConsumer");
 
 		String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
-		String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://localhost:5432/studycalendar");
+		String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://localhost:5432/psc");
 		String usr = System.getProperty("psc.test.db.usr", "psc");
 		String pwd = System.getProperty("psc.test.db.pwd", "psc");
 
@@ -82,16 +88,19 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
 		System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
 
-		ctx = new ClassPathXmlApplicationContext(new String[] { "classpath:applicationContext.xml",
+		ctx = new ClassPathXmlApplicationContext(new String[] {
+				// "classpath:applicationContext.xml",
 				"classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
 				"classpath:applicationContext-dao.xml", "classpath:applicationContext-security.xml",
-				"classpath:applicationContext-service.xml", "classpath:applicationContext-spring.xml" });
+				"classpath:applicationContext-service.xml", "classpath:applicationContext-db.xml",
+				"classpath:applicationContext-spring.xml" });
 
 		subjectDao = (SubjectDao) ctx.getBean("subjectDao");
 		studyDao = (StudyDao) ctx.getBean("studyDao");
 		siteDao = (SiteDao) ctx.getBean("siteDao");
 		studySubjectAssignmentDao = (StudySubjectAssignmentDao) ctx.getBean("studySubjectAssignmentDao");
 		studySiteDao = (StudySiteDao) ctx.getBean("studySiteDao");
+		studyService = (StudyService) ctx.getBean("studyService");
 	}
 
 	public PSCRegistrationConsumerTest() {
@@ -129,10 +138,10 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 	public void testCreateRegistrationLocal() {
 		Registration reg = getRegistration();
 		try {
-			DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+			// DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
 			RegistrationConsumer consumer = new PSCRegistrationConsumer();
 			consumer.register(reg);
-			DataAuditInfo.setLocal(null);
+			// DataAuditInfo.setLocal(null);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
@@ -169,25 +178,51 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 		return reg;
 	}
 
+	private String findIdentifierOfType(final IdentifierType[] idTypes, final String ofType) {
+		if (idTypes == null) {
+			return null;
+		}
+		for (IdentifierType idType : idTypes) {
+			if (idType instanceof OrganizationAssignedIdentifierType && StringUtils.equals(idType.getType(), ofType)) {
+				return idType.getValue();
+			}
+		}
+		return null;
+	}
+
+	private StudySite findStudySite(final Study study, final String siteNCICode) {
+		for (StudySite studySite : study.getStudySites()) {
+			if (StringUtils.equals(studySite.getSite().getAssignedIdentifier(), siteNCICode)) {
+				return studySite;
+			}
+		}
+		return null;
+	}
+
 	private void validateRegistration(final Registration registration) {
 		// first validate subject
-		Subject participantToBeValidated = subjectDao.getByGridId(registration.getSubject().getGridId());
-		validateParticipant(participantToBeValidated, registration.getSubject());
+		Subject subjectToBeValidated = subjectDao.findSubjectByPersonId(findIdentifierOfType(registration
+				.getParticipant().getIdentifier(), "MRN"));
+		assertNotNull(subjectToBeValidated);
+		validateParticipant(subjectToBeValidated, registration.getParticipant());
 
-		Study study = studyDao.getById(-1);
-		Site site = siteDao.getById(-1);
-		assertNotNull(site);
+		Study study = studyService.getStudyNyAssignedIdentifier(findIdentifierOfType(registration.getStudyRef()
+				.getIdentifier(), COORDINATING_CENTER_IDENTIFIER_TYPE));
+		String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
+		StudySite studySite = findStudySite(study, siteNCICode);
+
+		assertNotNull(studySite);
+		assertNotNull(studySite.getSite());
 		assertNotNull(study);
-		StudySubjectAssignment studySubjectAssignment = subjectDao.getAssignment(participantToBeValidated,
-				study, site);
+		StudySubjectAssignment studySubjectAssignment = subjectDao.getAssignment(subjectToBeValidated, study, studySite
+				.getSite());
 
 		assertNotNull(studySubjectAssignment);
 
 		// TODO: Check if it was correctly populated.
 	}
 
-	private void validateParticipant(final Subject participantToBeValidated,
-			final ParticipantType registerdParticipant) {
+	private void validateParticipant(final Subject participantToBeValidated, final ParticipantType registerdParticipant) {
 		assertEquals(registerdParticipant.getBirthDate(), participantToBeValidated.getDateOfBirth());
 		assertEquals(registerdParticipant.getAdministrativeGenderCode(), participantToBeValidated.getGender());
 		assertEquals(registerdParticipant.getFirstName(), participantToBeValidated.getFirstName());
@@ -213,7 +248,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 	@Override
 	protected IDataSet getDataSet() throws Exception {
 
-		String fileName = "test_data.xml";
+		String fileName = "grid/registration-consumer/test/resources/test_data.xml";
 		File testFile = new File(fileName);
 		if (!testFile.exists()) {
 			throw new RuntimeException(fileName + " not found.");

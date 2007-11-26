@@ -8,21 +8,19 @@ import gov.nih.nci.cabig.ctms.grid.ae.beans.AENotificationType;
 import gov.nih.nci.cabig.ctms.grid.ae.client.AdverseEventConsumerClient;
 import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumer;
 import gov.nih.nci.cagrid.common.Utils;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import org.dbunit.DBTestCase;
+import org.dbunit.PropertiesBasedJdbcDatabaseTester;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSet;
+import org.dbunit.operation.DatabaseOperation;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.Date;
-
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import org.dbunit.DBTestCase;
-import org.dbunit.PropertiesBasedJdbcDatabaseTester;
-import org.dbunit.dataset.IDataSet;
-import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
