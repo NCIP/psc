@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
  * @author Rhett Sutphin
  */
 @Entity
-@DiscriminatorValue(value="studysegment")
+@DiscriminatorValue(value="segmnt")
 public class StudySegmentDelta extends Delta<StudySegment> {
     public StudySegmentDelta() { }
 

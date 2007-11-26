@@ -6,10 +6,10 @@ class RenameArmsTable extends edu.northwestern.bioinformatics.bering.Migration {
         renameColumn("periods", "arm_id", "study_segment_id")
         renameColumn("scheduled_activities", "scheduled_arm_id", "scheduled_study_segment_id")
 
-        execute("UPDATE delta_node_types SET node_type='studysegment' WHERE node_type='arm'");
+        execute("UPDATE delta_node_types SET node_type='segmnt' WHERE node_type='arm'");
         execute("UPDATE delta_node_types SET node_table='study_segments' WHERE node_table='arms'");
 
-        execute("UPDATE deltas SET node_type='studysegment' WHERE node_type='arm'");
+        execute("UPDATE deltas SET node_type='segmnt' WHERE node_type='arm'");
 
     }
 
@@ -20,9 +20,9 @@ class RenameArmsTable extends edu.northwestern.bioinformatics.bering.Migration {
         renameColumn("periods", "study_segment_id", "arm_id")
         renameColumn("scheduled_activities", "scheduled_study_segment_id", "scheduled_arm_id")
 
-        execute("UPDATE delta_node_types SET node_type='arm' WHERE node_type='studysegment'");
+        execute("UPDATE delta_node_types SET node_type='arm' WHERE node_type='segmnt'");
         execute("UPDATE delta_node_types SET node_table='arms' WHERE node_table='study_segments'");
 
-        execute("UPDATE deltas SET node_type='arm' WHERE node_type='studysegment'");
+        execute("UPDATE deltas SET node_type='arm' WHERE node_type='segmnt'");
     }
 }
