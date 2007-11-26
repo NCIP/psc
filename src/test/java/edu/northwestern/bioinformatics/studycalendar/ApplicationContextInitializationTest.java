@@ -7,7 +7,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
 
 /**
- * These tests are intended to verify that the various application contexts will all load when
+ * These tests are intended to verify that the various application contexts will all readAndSave when
  * the application is deployed.
  *
  * @author Rhett Sutphin

@@ -33,6 +33,8 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
     private String name;
     private String description;
     private ActivityType type;
+    private Source source;
+    private String code;
 
     ///// LOGIC
 
@@ -50,6 +52,14 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
     ///// BEAN PROPERTIES
 
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     public String getName() {
         return name;
     }
@@ -64,6 +74,16 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "source_id")
+    public Source getSource() {
+        return source;
+    }
+
+    public void setSource(Source source) {
+        this.source = source;
     }
 
     @Type(type = "activityType")

@@ -7,7 +7,6 @@ import org.hibernate.usertype.ParameterizedType;
 import org.hibernate.HibernateException;
 //import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 import java.lang.reflect.Method;
@@ -26,7 +25,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
  * Required parameter:
  * <dl>
  *   <dt><code>enumClass</code></dt>
- *   <dd>Typesafe enumeration class of which this type instance will load instances</dd>
+ *   <dd>Typesafe enumeration class of which this type instance will readAndSave instances</dd>
  * </dl>
  * Optional parameters:
  * <dl>

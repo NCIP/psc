@@ -613,6 +613,10 @@ function createMarker(currentDurationIndex, activityName) {
         display:none;
     }
 
+    #new-activities-link-separator {
+        padding:0 1em 0 1em;
+    }
+
 </style>
 </head>
 <body>
@@ -758,7 +762,8 @@ function createMarker(currentDurationIndex, activityName) {
                     <option>Loading...</option>
                 </select>
                 <input type="button" id="add-activity-button" value="Add to period"/>
-                <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
+                <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a> <span id="new-activities-link-separator">or</span>
+                <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import activities from xml</a>
              </div>
              <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
         </form:form>

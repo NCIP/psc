@@ -17,7 +17,7 @@ public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<Plan
     }
 
     /**
-     * Fully load all the template ("planned") child objects of this calendar.
+     * Fully readAndSave all the template ("planned") child objects of this calendar.
      * This is only necessary if the object is going to be passed outside of the scope of
      * its creating session.  (Otherwise, hibernate dynamic loading works fine.)
      * <p>

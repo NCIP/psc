@@ -2,7 +2,12 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
     void up() {
         execute("DELETE FROM activity_types");
         // do manual inserts to get explicit IDs on all platforms
-        execute("INSERT INTO activity_types (id, name) VALUES (1, 'Disease Measure')");
+
+        /*******************************************************************************
+        * Commented out to prevent creation of activities, since for new activity model
+        * you will have to import your activities.
+        *******************************************************************************/
+        /*
         execute("INSERT INTO activity_types (id, name) VALUES (2, 'Intervention')");
         execute("INSERT INTO activity_types (id, name) VALUES (3, 'Lab Test')");
         execute("INSERT INTO activity_types (id, name) VALUES (4, 'Procedure')");
@@ -67,6 +72,8 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
         insert("activities", [ activity_type_id: 5, name: "Rest 14 days" ])
         insert("activities", [ activity_type_id: 5, name: "Rest 4 weeks" ])
         insert("activities", [ activity_type_id: 5, name: "Electronic Telephone Diary" ])
+
+        */
     }
 
     void down() {

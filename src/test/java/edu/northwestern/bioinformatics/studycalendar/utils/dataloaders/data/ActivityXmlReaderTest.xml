@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<activities>
+    <source name="ICD-9">
+        <activity
+            name="Bone Scan"
+            description="Scan subjects bones"
+            code="BS1"
+            type="1"/>
+
+        <activity
+            name="Capecitabine"
+            description="Administer Drug Capecitabine"
+            code="C123"
+            type="2"/>
+   </source>
+</activities>
