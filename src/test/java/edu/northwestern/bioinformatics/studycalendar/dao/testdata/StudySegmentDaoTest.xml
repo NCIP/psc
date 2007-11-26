@@ -1,5 +1,5 @@
 <dataset>
-    <STUDIES id="-1" version="0" name="Study"/>
+    <STUDIES id="-1" version="0" name="Study" long_title="Study"/>
     <PLANNED_CALENDARS id="-1" version="0" study_id="-1"/>
     <EPOCHS id="-1" version="0" planned_calendar_id="-1" name="Epoch"/>
 
