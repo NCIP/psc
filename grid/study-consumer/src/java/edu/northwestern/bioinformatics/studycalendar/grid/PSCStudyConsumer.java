@@ -32,6 +32,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -52,9 +53,9 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
 	private SiteDao siteDao;
 
-	private StudyDao studyDao;
-
 	private StudyService studyService;
+
+	private StudyDao studyDao;
 
 	public PSCStudyConsumer() {
 		ctx = new ClassPathXmlApplicationContext(new String[] {
@@ -64,8 +65,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
 				"classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
 				"classpath:applicationContext-spring.xml" });
 		siteDao = getSiteDao();
-		studyDao = getStudyDao();
 		studyService = getStudyService();
+		studyDao = getStudyDao();
 	}
 
 	public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -103,29 +104,17 @@ public class PSCStudyConsumer implements StudyConsumerI {
 			throw new InvalidStudyException();
 		}
 		logger.info("commit called for study:long titlte-" + studyDto.getLongTitleText());
-		Study study = null;
 		String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
-		logger.info("cc identifier:" + ccIdentifier + " found for study:long titlte-" + studyDto.getLongTitleText());
 
 		try {
-			study = fetchStudy(ccIdentifier);
-			if (study == null) {
-				logger.error("No study exist with grid id :" + studyDto.getGridId());
-				throw new InvalidStudyException();
-			}
-			// update load status of the study
-			study.setLoadStatus(LoadStatus.COMPLETE);
-
-			studyDao.save(study);
-			logger.info("commited study:id:" + study.getId());
-
+			studyDao.commitInProgressStudy(ccIdentifier);
 		}
-		catch (InvalidStudyException rethrow) {
-			throw rethrow;
-		}
+
 		catch (Exception exp) {
 			logger.error("Exception while trying to commit the study", exp);
-			throw new RemoteException("Error while commit study", exp);
+			InvalidStudyException e = new InvalidStudyException();
+			e.setFaultReason("Exception while comitting study," + exp.getMessage());
+			e.setFaultString("Exception while comitting study," + exp.getMessage());
 		}
 	}
 
@@ -133,29 +122,18 @@ public class PSCStudyConsumer implements StudyConsumerI {
 		if (studyDto == null) {
 			throw new InvalidStudyException();
 		}
-
-		Study study = null;
+		logger.info("rollback called for study:long titlte-" + studyDto.getLongTitleText());
 		String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
 
-		study = fetchStudy(ccIdentifier);
-		if (study == null) {
-			logger.error("No study exist with grid id :" + studyDto.getGridId());
-			throw new InvalidStudyException();
+		try {
+			studyDao.deleteInprogressStudy(ccIdentifier);
 		}
-
-		if (!study.getLoadStatus().equals(LoadStatus.INPROGRESS)) {
-			throw new RemoteException(
-					"Only studies that are in INPROGRESS(0) status can be deleted. The current status of the study in caAERS is "
-							+ study.getLoadStatus());
+		catch (Exception exp) {
+			logger.error("Exception while trying to rollback the study", exp);
+			InvalidStudyException e = new InvalidStudyException();
+			e.setFaultReason("Exception while rollback study," + exp.getMessage());
+			e.setFaultString("Exception while rollback study," + exp.getMessage());
 		}
-
-		// delete the study
-		// studyDao.deleteInprogressStudy(study);
-
-		// catch (Exception exp) {
-		// logger.error("Exception while trying to delete the study", exp);
-		// throw new RemoteException("Error while deleting study", exp);
-		// }
 	}
 
 	private void populateEpochsAndArms(final gov.nih.nci.ccts.grid.Study studyDto, final Study study) {
@@ -279,7 +257,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
 	private Study fetchStudy(final String ccIdentifier) {
 
-		Study study = studyDao.getByAssignedIdentifier(ccIdentifier);
+		Study study = studyService.getStudyNyAssignedIdentifier(ccIdentifier);
 
 		return study;
 	}
@@ -288,12 +266,16 @@ public class PSCStudyConsumer implements StudyConsumerI {
 		return (SiteDao) ctx.getBean("siteDao");
 	}
 
-	public StudyDao getStudyDao() {
-		return (StudyDao) ctx.getBean("studyDao");
-	}
-
 	public StudyService getStudyService() {
 		return (StudyService) ctx.getBean("studyService");
 	}
 
+	public StudyDao getStudyDao() {
+		return (StudyDao) ctx.getBean("studyDao");
+	}
+
+	@Required
+	public void setStudyDao(final StudyDao studyDao) {
+		this.studyDao = studyDao;
+	}
 }

@@ -106,6 +106,20 @@ public class PSCStudyConsumerTest extends DBTestCase {
 
 	}
 
+	public void testRollbackStudyLocal() {
+		try {
+			PSCStudyConsumer studyClient = new PSCStudyConsumer();
+			Study study = populateStudyDTO();
+			studyClient.createStudy(study);
+			studyClient.rollback(study);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+
+		}
+
+	}
+
 	public static void main(final String[] args) {
 		junit.textui.TestRunner.run(suite());
 	}
@@ -170,6 +184,9 @@ public class PSCStudyConsumerTest extends DBTestCase {
 		 */
 		// suite.addTest(new PSCStudyConsumerTest("testCreateNotificationRemote"));
 		suite.addTest(new PSCStudyConsumerTest("testCommitStudyLocal"));
+		// suite.addTest(new PSCStudyConsumerTest("testRollbackStudyLocal"));
+
+		// suite.addTest(new PSCStudyConsumerTest("testCreateStudyLocal"));
 		return suite;
 	}
 
