@@ -7,8 +7,6 @@ import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,11 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Map;
@@ -32,7 +28,7 @@ import java.util.Map;
 public class EditController extends PscAbstractCommandController<EditCommand> {
     private StudyDao studyDao;
     private EpochDao epochDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     private String commandBeanName;
 
@@ -49,7 +45,7 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
         getControllerTools().registerDomainObjectEditor(binder, "epoch", epochDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "activity", activityDao);
@@ -99,8 +95,8 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 
     @Required

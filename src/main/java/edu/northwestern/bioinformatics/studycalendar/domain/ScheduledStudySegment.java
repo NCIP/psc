@@ -22,43 +22,43 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_arms_id")
+        @Parameter(name="sequence", value="seq_scheduled_study_segments_id")
     }
 )
-public class ScheduledArm extends AbstractMutableDomainObject {
+public class ScheduledStudySegment extends AbstractMutableDomainObject {
     private ScheduledCalendar scheduledCalendar;
     private List<ScheduledActivity> events = new LinkedList<ScheduledActivity>();
     private Integer startDay;
     private Date startDate;
 
-    private Arm arm;
+    private StudySegment studySegment;
 
     ////// LOGIC
 
     public void addEvent(ScheduledActivity event) {
         getEvents().add(event);
-        event.setScheduledArm(this);
+        event.setScheduledStudySegment(this);
     }
 
     @Transient
     public String getName() {
-        Epoch epoch = getArm().getEpoch();
+        Epoch epoch = getStudySegment().getEpoch();
         StringBuilder name = new StringBuilder(epoch.getName());
-        if (epoch.getArms().size() > 1) {
-            name.append(": ").append(getArm().getName());
+        if (epoch.getStudySegments().size() > 1) {
+            name.append(": ").append(getStudySegment().getName());
         }
 
         int selfIndex = -1;
-        List<Integer> armRepeats = new LinkedList<Integer>();
-        for (int i = 0; i < getScheduledCalendar().getScheduledArms().size(); i++) {
-            ScheduledArm sibling = getScheduledCalendar().getScheduledArms().get(i);
-            if (sibling.getArm().equals(this.getArm())) armRepeats.add(i);
+        List<Integer> studySegmentRepeats = new LinkedList<Integer>();
+        for (int i = 0; i < getScheduledCalendar().getScheduledStudySegments().size(); i++) {
+            ScheduledStudySegment sibling = getScheduledCalendar().getScheduledStudySegments().get(i);
+            if (sibling.getStudySegment().equals(this.getStudySegment())) studySegmentRepeats.add(i);
             if (sibling == this) selfIndex = i;
         }
-        if (selfIndex == -1) throw new StudyCalendarSystemException("This scheduled arm is not a child of its parent");
+        if (selfIndex == -1) throw new StudyCalendarSystemException("This scheduled studySegment is not a child of its parent");
 
-        if (armRepeats.size() > 1) {
-            name.append(" (").append(armRepeats.indexOf(selfIndex) + 1).append(')');
+        if (studySegmentRepeats.size() > 1) {
+            name.append(" (").append(studySegmentRepeats.indexOf(selfIndex) + 1).append(')');
         }
 
         return name.toString();
@@ -78,12 +78,12 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public Date getNextArmPerProtocolStartDate() {
+    public Date getNextStudySegmentPerProtocolStartDate() {
         Date origin = getStartDate();
         if (origin != null) {
             Calendar defaultState = Calendar.getInstance();
             defaultState.setTime(origin);
-            defaultState.add(Calendar.DATE, getArm().getLengthInDays());
+            defaultState.add(Calendar.DATE, getStudySegment().getLengthInDays());
             return defaultState.getTime();
         } else {
             return null;
@@ -106,7 +106,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
 
     ////// BEAN PROPERTIES
 
-    @OneToMany(mappedBy = "scheduledArm")
+    @OneToMany(mappedBy = "scheduledStudySegment")
     @OrderBy(clause="ideal_date")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<ScheduledActivity> getEvents() {
@@ -130,12 +130,12 @@ public class ScheduledArm extends AbstractMutableDomainObject {
     }
 
     @ManyToOne
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        this.studySegment = studySegment;
     }
 
     public Integer getStartDay() {
@@ -161,7 +161,7 @@ public class ScheduledArm extends AbstractMutableDomainObject {
         StringBuilder sb = new StringBuilder();
         sb.append(getClass().getSimpleName()).append('[')
             .append("name=");
-        if (getArm() != null) {
+        if (getStudySegment() != null) {
             sb.append(getName());
         }
         return sb.append("; events=").append(getEvents())

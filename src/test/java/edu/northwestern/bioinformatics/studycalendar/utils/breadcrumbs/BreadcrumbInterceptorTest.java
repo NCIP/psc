@@ -45,7 +45,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
         controllerTools.addHierarchyToModel(epoch, model);
         BreadcrumbContext context = interceptor.createContext(model);
         assertSame(epoch, context.getEpoch());
-        assertNull(context.getArm());
+        assertNull(context.getStudySegment());
     }
 
     public void testIntercept() throws Exception {

@@ -32,7 +32,7 @@ import java.util.Date;
 										@FieldResult( name = "currentState", column = "state_name"),
 										@FieldResult( name = "date", column = "date"),
 										@FieldResult( name = "idealDate", column = "ideal_date"),
-										@FieldResult( name = "armName", column = "arm_name"),
+										@FieldResult( name = "studySegmentName", column = "study_segment_name"),
 										@FieldResult( name = "epochName", column = "epoch_name"),
 										@FieldResult( name = "subjectFirstName", column = "p_first_name"),
 										@FieldResult( name = "subjectLastName", column = "p_last_name"),
@@ -52,7 +52,7 @@ public class ReportRow extends HibernateDaoSupport {
 	private String subjectLastName;
 	private String eventName;
 	private String epochName;
-	private String armName;
+	private String studySegmentName;
 	private String currentState;
 	private Integer eventId;
 	
@@ -165,12 +165,12 @@ public class ReportRow extends HibernateDaoSupport {
 	return this.epochName;
 	}
 	
-	public void setArmName(String armname) {
-	this.armName = armname;
+	public void setStudySegmentName(String studySegmentName) {
+	this.studySegmentName = studySegmentName;
 	}
 	
-	public String getArmName() {
-	return this.armName;
+	public String getStudySegmentName() {
+	return this.studySegmentName;
 	}
 
 }

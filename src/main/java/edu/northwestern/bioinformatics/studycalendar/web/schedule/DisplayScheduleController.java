@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledStudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
@@ -31,7 +31,7 @@ import java.util.Map;
 public class DisplayScheduleController extends PscAbstractCommandController<DisplayScheduleCommand> {
     private StudySubjectAssignmentDao assignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledArmDao scheduledArmDao;
+    private ScheduledStudySegmentDao scheduledStudySegmentDao;
     private StudyDao studyDao;
 
     public DisplayScheduleController() {
@@ -41,7 +41,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-        getControllerTools().registerDomainObjectEditor(binder, "arm", scheduledArmDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", scheduledStudySegmentDao);
         getControllerTools().registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
         binder.registerCustomEditor(StudySubjectAssignment.class, "assignment",
             new GridIdentifiableDaoBasedEditor(assignmentDao));
@@ -57,7 +57,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         model.addObject("assignment", assignment);
         model.addObject("calendar", assignment.getScheduledCalendar());
         model.addObject("dates", createDates(assignment.getScheduledCalendar()));
-        model.addObject("arm", command.getArm());
+        model.addObject("studySegment", command.getStudySegment());
 
         Study study = assignment.getStudySite().getStudy();
         if (study != null) {
@@ -82,14 +82,14 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
         Map<String, Date> dates = new HashMap<String, Date>();
 
         Date perProtocolDate = null;
-        List<ScheduledArm> existingArms = scheduledCalendar.getScheduledArms();
-        if (existingArms.size() > 0) {
-            ScheduledArm lastArm = existingArms.get(existingArms.size() - 1);
-            log.debug("Building PER_PROTOCOL start date from " + lastArm);
-            perProtocolDate = lastArm.getNextArmPerProtocolStartDate();
+        List<ScheduledStudySegment> existingStudySegments = scheduledCalendar.getScheduledStudySegments();
+        if (existingStudySegments.size() > 0) {
+            ScheduledStudySegment lastStudySegment = existingStudySegments.get(existingStudySegments.size() - 1);
+            log.debug("Building PER_PROTOCOL start date from " + lastStudySegment);
+            perProtocolDate = lastStudySegment.getNextStudySegmentPerProtocolStartDate();
         }
-        dates.put(NextArmMode.PER_PROTOCOL.name(), perProtocolDate);
-        dates.put(NextArmMode.IMMEDIATE.name(), new Date());
+        dates.put(NextStudySegmentMode.PER_PROTOCOL.name(), perProtocolDate);
+        dates.put(NextStudySegmentMode.IMMEDIATE.name(), new Date());
 
         return dates;
     }
@@ -107,8 +107,8 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     }
 
     @Required
-    public void setScheduledArmDao(ScheduledArmDao scheduledArmDao) {
-        this.scheduledArmDao = scheduledArmDao;
+    public void setScheduledStudySegmentDao(ScheduledStudySegmentDao scheduledStudySegmentDao) {
+        this.scheduledStudySegmentDao = scheduledStudySegmentDao;
     }
 
     @Required
@@ -129,8 +129,8 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
             Map<String, String> params = createParameters(
                 "calendar", context.getScheduledCalendar().getId().toString()
             );
-            if (context.getScheduledArm() != null) {
-                params.put("arm", context.getScheduledArm().getId().toString());
+            if (context.getScheduledStudySegment() != null) {
+                params.put("studySegment", context.getScheduledStudySegment().getId().toString());
             }
             return params;
         }

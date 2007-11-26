@@ -18,13 +18,13 @@ public interface ScheduledCalendarService {
      * @param study The study to which the subject will be assigned.  PSC must already know about it.
      * @param subject  If the subject is unknown, it will be automatically registered.
      * @param site The site from which the subject is being assigned.  The PSC must already know about it and its association with the study.
-     * @param firstArm The arm of the template to which the subject should be initially assigned.  If null, the first arm of the first epoch will be used.
+     * @param firstStudySegment The studySegment of the template to which the subject should be initially assigned.  If null, the first studySegment of the first epoch will be used.
      * @param startDate
      * @return the newly created schedule
      *
      * @see PlannedCalendarService#registerStudy(Study)
      */
-    ScheduledCalendar assignSubject(Study study, Subject subject, Site site, Arm firstArm, Date startDate, String registrationGridId);
+    ScheduledCalendar assignSubject(Study study, Subject subject, Site site, StudySegment firstStudySegment, Date startDate, String registrationGridId);
 
     /**
      * Retrieve the full schedule for a subject on a study at a site.  Implementations may
@@ -33,9 +33,9 @@ public interface ScheduledCalendarService {
      * @param study
      * @param subject
      * @param site
-     * @return The full schedule, with all scheduled arms and scheduled events, as it currently exists.
+     * @return The full schedule, with all scheduled studySegments and scheduled events, as it currently exists.
      * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment
      * @see edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity
      */
     ScheduledCalendar getScheduledCalendar(Study study, Subject subject, Site site);
@@ -68,19 +68,19 @@ public interface ScheduledCalendarService {
     ScheduledActivity changeEventState(ScheduledActivity event, ScheduledActivityState newState);
 
     /**
-     * Indicate the next arm for the subject's schedule.
+     * Indicate the next studySegment for the subject's schedule.
      *
      * @param study
      * @param subject
      * @param site
-     * @param nextArm
+     * @param nextStudySegment
      * @param mode
      * @param startDate
-     * @see NextArmMode
+     * @see NextStudySegmentMode
      * 
      */
-    void scheduleNextArm(
-        Study study, Subject subject, Site site, Arm nextArm, NextArmMode mode, Date startDate);
+    void scheduleNextStudySegment(
+        Study study, Subject subject, Site site, StudySegment nextStudySegment, NextStudySegmentMode mode, Date startDate);
 
     /**
      * Notify the PSC about an adverse event for a subject.

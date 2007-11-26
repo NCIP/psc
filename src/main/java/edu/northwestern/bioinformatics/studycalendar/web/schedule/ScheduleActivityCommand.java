@@ -39,7 +39,7 @@ public class ScheduleActivityCommand {
             event.changeState(createState());
         }
         event.setNotes(getNewNotes());
-        scheduledCalendarDao.save(event.getScheduledArm().getScheduledCalendar());
+        scheduledCalendarDao.save(event.getScheduledStudySegment().getScheduledCalendar());
     }
 
     private boolean hasStateChange() {

@@ -1,7 +1,7 @@
 <dataset>
     <PERIODS
         id="-100"
-        arm_id="-200"
+        study_segment_id="-200"
         version="0"
         start_day="8"
         name="Treatment"

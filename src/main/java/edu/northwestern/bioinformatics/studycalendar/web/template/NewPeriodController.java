@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
@@ -22,7 +21,7 @@ import java.util.Collections;
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class NewPeriodController extends AbstractPeriodController<NewPeriodCommand> {
     private AmendmentService amendmentService;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     public NewPeriodController() {
         super(NewPeriodCommand.class);
@@ -37,19 +36,19 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
     }
 
     protected Map referenceData(HttpServletRequest request, Object command, Errors errors) throws Exception {
         Map<String, Object> refdata = super.referenceData(request, command, errors);
         refdata.put("verb", "add");
-        getControllerTools().addHierarchyToModel(((PeriodCommand) command).getArm(), refdata);
+        getControllerTools().addHierarchyToModel(((PeriodCommand) command).getStudySegment(), refdata);
         return refdata;
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 
     @Required
@@ -63,7 +62,7 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
         }
 
         public Map<String, String> getParameters(BreadcrumbContext context) {
-            return Collections.singletonMap("arm", context.getArm().getId().toString());
+            return Collections.singletonMap("studySegment", context.getStudySegment().getId().toString());
         }
     }
 }

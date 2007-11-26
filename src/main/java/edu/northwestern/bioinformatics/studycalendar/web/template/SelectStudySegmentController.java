@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import org.springframework.web.servlet.ModelAndView;
@@ -21,25 +19,25 @@ import java.util.HashMap;
 /**
  * @author Rhett Sutphin
  */
-public class SelectArmController implements Controller {
+public class SelectStudySegmentController implements Controller {
     private TemplateService templateService;
     private DeltaService deltaService;
     private ControllerTools controllerTools;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     @SuppressWarnings({ "unchecked" })
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int id = ServletRequestUtils.getRequiredIntParameter(request, "arm");
-        Arm arm = armDao.getById(id);
+        int id = ServletRequestUtils.getRequiredIntParameter(request, "studySegment");
+        StudySegment studySegment = studySegmentDao.getById(id);
         Map<String, Object> model = new HashMap<String, Object>();
-        Study study = templateService.findStudy(arm);
+        Study study = templateService.findStudy(studySegment);
         if (study.getDevelopmentAmendment() != null) {
-            arm = deltaService.revise(arm);
+            studySegment = deltaService.revise(studySegment);
             model.put("developmentRevision", study.getDevelopmentAmendment());
         }
-        controllerTools.addHierarchyToModel(arm, model);
-        model.put("arm", new ArmTemplate(arm));
-        return new ModelAndView("template/ajax/selectArm", model);
+        controllerTools.addHierarchyToModel(studySegment, model);
+        model.put("studySegment", new StudySegmentTemplate(studySegment));
+        return new ModelAndView("template/ajax/selectStudySegment", model);
     }
 
     @Required
@@ -58,7 +56,7 @@ public class SelectArmController implements Controller {
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 }

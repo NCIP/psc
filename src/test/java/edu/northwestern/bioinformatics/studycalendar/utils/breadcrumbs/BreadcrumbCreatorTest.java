@@ -21,7 +21,7 @@ import org.easymock.classextension.EasyMock;
 public class BreadcrumbCreatorTest extends StudyCalendarTestCase {
     private static final TestCrumb C1 = new TestCrumb("C1", null, null);
     private static final TestCrumb C2 = new TestCrumb("C2", null, C1);
-    private static final TestCrumb C3 = new TestCrumb("C3", Collections.singletonMap("arm", "1"), C1);
+    private static final TestCrumb C3 = new TestCrumb("C3", Collections.singletonMap("studySegment", "1"), C1);
     private static final TestCrumb C4 = new TestCrumb("C4", null, C2);
     private static TestCrumb C5;
     static {
@@ -79,7 +79,7 @@ public class BreadcrumbCreatorTest extends StudyCalendarTestCase {
         List<Anchor> actual = doGetAnchors(C5);
         assertEquals(3, actual.size());
         assertAnchorForCrumb(C1, actual.get(0));
-        assertAnchorForCrumb(C3, "?arm=1", actual.get(1));
+        assertAnchorForCrumb(C3, "?studySegment=1", actual.get(1));
         assertAnchorForCrumb(C5, "?cal=54&zed=45", actual.get(2));
     }
 

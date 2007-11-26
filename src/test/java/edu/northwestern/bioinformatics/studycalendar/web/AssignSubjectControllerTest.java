@@ -23,7 +23,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private SiteService siteService;
     private StudyDao studyDao;
     private SiteDao siteDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     private UserDao userDao;
     private AssignSubjectController controller;
@@ -39,7 +39,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         subjectDao = registerDaoMockFor(SubjectDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         siteService = registerMockFor(SiteService.class);
-        armDao = registerDaoMockFor(ArmDao.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
 
@@ -49,7 +49,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setSiteDao(siteDao);
         controller.setUserDao(userDao);
-        controller.setArmDao(armDao);
+        controller.setStudySegmentDao(studySegmentDao);
         controller.setControllerTools(controllerTools);
 
 
@@ -105,12 +105,12 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertDayOfDate(1996, Calendar.SEPTEMBER, 20, command.getStartDate());
     }
 
-    public void testBindArm() throws Exception {
-        request.setParameter("arm", "145");
-        Arm expectedArm = setId(145, createNamedInstance("B", Arm.class));
-        expect(armDao.getById(145)).andReturn(expectedArm);
-        AssignSubjectCommand command = getAndReturnCommand("arm");
-        assertEquals(expectedArm, command.getArm());
+    public void testBindStudySegment() throws Exception {
+        request.setParameter("studySegment", "145");
+        StudySegment expectedStudySegment = setId(145, createNamedInstance("B", StudySegment.class));
+        expect(studySegmentDao.getById(145)).andReturn(expectedStudySegment);
+        AssignSubjectCommand command = getAndReturnCommand("studySegment");
+        assertEquals(expectedStudySegment, command.getStudySegment());
     }
 
     public void testBindStudy() throws Exception {
@@ -171,15 +171,15 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertSame(study.getPlannedCalendar().getEpochs().get(0), getRefdata().get("epoch"));
     }
 
-    public void testRefdataIncludesArms() throws Exception {
-        assertEquals(study.getPlannedCalendar().getEpochs().get(0).getArms(), getRefdata().get("arms"));
+    public void testRefdataIncludesStudySegments() throws Exception {
+        assertEquals(study.getPlannedCalendar().getEpochs().get(0).getStudySegments(), getRefdata().get("studySegments"));
     }
 
-    public void testRefdataIncludesNoArmsWhenFirstEpochHasNoArms() throws Exception {
+    public void testRefdataIncludesNoStudySegmentsWhenFirstEpochHasNoStudySegments() throws Exception {
         study.getPlannedCalendar().setEpochs(new LinkedList<Epoch>());
         study.getPlannedCalendar().addEpoch(Epoch.create("Screening"));
-        List<Arm> actualArms = (List<Arm>) getRefdata().get("arms");
-        assertEquals(0, actualArms.size());
+        List<StudySegment> actualStudySegments = (List<StudySegment>) getRefdata().get("studySegments");
+        assertEquals(0, actualStudySegments.size());
     }
 
     private Map<String, Object> getRefdata() throws Exception {
@@ -195,7 +195,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
         public MockableCommandController(AssignSubjectCommand command) {
             this.command = command;
-            setArmDao(armDao);
+            setStudySegmentDao(studySegmentDao);
         }
 
         protected Object formBackingObject(HttpServletRequest request) throws Exception {

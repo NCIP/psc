@@ -2,11 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
@@ -14,10 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 
 import java.util.Map;
-import java.util.Date;
 import java.beans.PropertyEditor;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
 import java.io.IOException;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -50,15 +47,15 @@ public class ControllerTools {
         model.put("scheduledActivity", event);
         if (event != null) {
             addHierarchyToModel(event.getPlannedActivity(), model);
-            addHierarchyToModel(event.getScheduledArm(), model);
+            addHierarchyToModel(event.getScheduledStudySegment(), model);
         }
     }
 
-    public void addHierarchyToModel(ScheduledArm arm, Map<String, Object> model) {
-        model.put("scheduledArm", arm);
-        if (arm != null) {
-            addHierarchyToModel(arm.getArm(), model);
-            addHierarchyToModel(arm.getScheduledCalendar(), model);
+    public void addHierarchyToModel(ScheduledStudySegment studySegment, Map<String, Object> model) {
+        model.put("scheduledStudySegment", studySegment);
+        if (studySegment != null) {
+            addHierarchyToModel(studySegment.getStudySegment(), model);
+            addHierarchyToModel(studySegment.getScheduledCalendar(), model);
         }
     }
 
@@ -88,9 +85,9 @@ public class ControllerTools {
         if (period != null) addHierarchyToModel(templateService.findParent(period), model);
     }
 
-    public void addHierarchyToModel(Arm arm, Map<String, Object> model) {
-        model.put("arm", arm);
-        if (arm != null) addHierarchyToModel(templateService.findParent(arm), model);
+    public void addHierarchyToModel(StudySegment studySegment, Map<String, Object> model) {
+        model.put("studySegment", studySegment);
+        if (studySegment != null) addHierarchyToModel(templateService.findParent(studySegment), model);
     }
 
     public void addHierarchyToModel(Epoch epoch, Map<String, Object> model) {
@@ -113,14 +110,14 @@ public class ControllerTools {
     }
 
     @SuppressWarnings({ "unchecked" })
-    public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId) {
-        return redirectToCalendarTemplate(studyId, selectedArmId, null);
+    public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedStudySegmentId) {
+        return redirectToCalendarTemplate(studyId, selectedStudySegmentId, null);
     }
 
     @SuppressWarnings({ "unchecked" })
-    public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedArmId, Integer selectedAmendmentId) {
+    public ModelAndView redirectToCalendarTemplate(int studyId, Integer selectedStudySegmentId, Integer selectedAmendmentId) {
         ModelMap model = new ModelMap("study", studyId);
-        if (selectedArmId != null) model.put("arm", selectedArmId);
+        if (selectedStudySegmentId != null) model.put("studySegment", selectedStudySegmentId);
         if (selectedAmendmentId != null) model.put("amendment", selectedAmendmentId);
         return new ModelAndView("redirectToCalendarTemplate", model);
     }

@@ -41,8 +41,8 @@
 		<epoch gridId="715c0242-f2d6-4bf4-9d21-7beec48b3310" xsi:type="TreatmentEpochType">
 			<name>epoch1</name>
 		</epoch>
-		<scheduledArm>
-		</scheduledArm>
+		<scheduledStudySegment>
+		</scheduledStudySegment>
 	</scheduledEpoch>
 	<stratumGroup>0:lets find out1</stratumGroup>
 </registration>

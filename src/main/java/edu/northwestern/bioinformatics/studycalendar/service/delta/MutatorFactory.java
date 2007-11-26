@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -47,7 +47,7 @@ public class MutatorFactory {
 
     private <T extends PlanTreeNode<?>> Mutator createAddMutator(T target, Add add) {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
-        if (target instanceof Arm) {
+        if (target instanceof StudySegment) {
             return new AddPeriodMutator(add, (PeriodDao) dao, subjectService);
         } else if (target instanceof Period) {
             return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
@@ -61,7 +61,7 @@ public class MutatorFactory {
 
     private <T extends PlanTreeNode<?>> Mutator createRemoveMutator(T target, Remove remove) {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
-        if (target instanceof Arm) {
+        if (target instanceof StudySegment) {
             return new RemovePeriodMutator(remove, (PeriodDao) dao, templateService);
         } else if (target instanceof Period) {
             return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);

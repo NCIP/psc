@@ -10,10 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import java.util.Date;
@@ -23,35 +23,35 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
-public class ScheduleNextArmController extends PscAbstractCommandController<ScheduleNextArmCommand> {
+public class ScheduleNextStudySegmentController extends PscAbstractCommandController<ScheduleNextStudySegmentCommand> {
     private SubjectService subjectService;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
-    public ScheduleNextArmController() {
-        setCommandClass(ScheduleNextArmCommand.class);
+    public ScheduleNextStudySegmentController() {
+        setCommandClass(ScheduleNextStudySegmentCommand.class);
     }
 
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
-        return new ScheduleNextArmCommand(subjectService);
+        return new ScheduleNextStudySegmentCommand(subjectService);
     }
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
-        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
         getControllerTools().registerDomainObjectEditor(binder, "calendar", scheduledCalendarDao);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
     }
 
     @Override
-    protected ModelAndView handle(ScheduleNextArmCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handle(ScheduleNextStudySegmentCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = errors.getModel();
-        ScheduledArm newArm = command.schedule();
-        model.put("scheduledArm", newArm);
-        model.put("nextPerProtocolDate", newArm.getNextArmPerProtocolStartDate());
-        return new ModelAndView("schedule/ajax/scheduleNextArm", model);
+        ScheduledStudySegment newStudySegment = command.schedule();
+        model.put("scheduledStudySegment", newStudySegment);
+        model.put("nextPerProtocolDate", newStudySegment.getNextStudySegmentPerProtocolStartDate());
+        return new ModelAndView("schedule/ajax/scheduleNextStudySegment", model);
     }
 
     /////// CONFIGURATION
@@ -67,7 +67,7 @@ public class ScheduleNextArmController extends PscAbstractCommandController<Sche
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 }

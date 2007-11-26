@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Date;
 
@@ -12,7 +11,7 @@ import java.util.Date;
  */
 public class AssignSubjectCommand {
     private Subject subject;
-    private Arm arm;
+    private StudySegment studySegment;
     private Date startDate;
     private Site site;
     private Study study;
@@ -22,15 +21,15 @@ public class AssignSubjectCommand {
 
     public StudySubjectAssignment assignSubject() {
         return subjectService.assignSubject(
-            getSubject(), getStudySite(), getEffectiveArm(), getStartDate(), getSubjectCoordinator());
+            getSubject(), getStudySite(), getEffectiveStudySegment(), getStartDate(), getSubjectCoordinator());
     }
 
-    private Arm getEffectiveArm() {
-        Arm effectiveArm = getArm();
-        if (effectiveArm == null) {
-            effectiveArm = getStudySite().getStudy().getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+    private StudySegment getEffectiveStudySegment() {
+        StudySegment effectiveStudySegment = getStudySegment();
+        if (effectiveStudySegment == null) {
+            effectiveStudySegment = getStudySite().getStudy().getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
         }
-        return effectiveArm;
+        return effectiveStudySegment;
     }
 
     private StudySite getStudySite() {
@@ -61,12 +60,12 @@ public class AssignSubjectCommand {
         this.subject = subject;
     }
 
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        this.studySegment = studySegment;
     }
 
     public User getSubjectCoordinator() {

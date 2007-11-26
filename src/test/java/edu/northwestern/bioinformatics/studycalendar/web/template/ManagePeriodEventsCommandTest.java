@@ -44,7 +44,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         amendmentService = registerMockFor(AmendmentService.class);
 
         study = Fixtures.createBasicTemplate();
-        study.getPlannedCalendar().getEpochs().get(1).getArms().get(0).addPeriod(period);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(period);
         study.setDevelopmentAmendment(new Amendment("Dev"));
         initCommand();
         activities = new ArrayList<Activity>();

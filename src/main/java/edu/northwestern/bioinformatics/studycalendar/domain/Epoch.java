@@ -25,51 +25,51 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_epochs_id")
     }
 )
-public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implements Named {
+public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegment> implements Named {
     private String name;
 
     ////// FACTORY
 
-    public static Epoch create(String epochName, String... armNames) {
+    public static Epoch create(String epochName, String... studySegmentNames) {
         Epoch epoch = new Epoch();
         epoch.setName(epochName);
-        if (armNames.length == 0) {
-            epoch.addNewArm(epochName);
+        if (studySegmentNames.length == 0) {
+            epoch.addNewStudySegment(epochName);
         } else {
-            for (String armName : armNames) {
-                epoch.addNewArm(armName);
+            for (String studySegmentName : studySegmentNames) {
+                epoch.addNewStudySegment(studySegmentName);
             }
         }
         return epoch;
     }
 
-    private void addNewArm(String armName) {
-        Arm arm = new Arm();
-        arm.setName(armName);
-        addArm(arm);
+    private void addNewStudySegment(String studySegmentName) {
+        StudySegment studySegment = new StudySegment();
+        studySegment.setName(studySegmentName);
+        addStudySegment(studySegment);
     }
 
     ////// LOGIC
 
     @Override public Class<PlannedCalendar> parentClass() { return PlannedCalendar.class; }
-    @Override public Class<Arm> childClass() { return Arm.class; }
+    @Override public Class<StudySegment> childClass() { return StudySegment.class; }
 
-    public void addArm(Arm arm) {
-        addChild(arm);
+    public void addStudySegment(StudySegment studySegment) {
+        addChild(studySegment);
     }
 
     @Transient
     public int getLengthInDays() {
         int len = 0;
-        for (Arm arm : getArms()) {
-            len = Math.max(len, arm.getLengthInDays());
+        for (StudySegment studySegment : getStudySegments()) {
+            len = Math.max(len, studySegment.getLengthInDays());
         }
         return len;
     }
 
     @Transient
-    public boolean isMultipleArms() {
-        return getArms().size() > 1;
+    public boolean isMultipleStudySegments() {
+        return getStudySegments().size() > 1;
     }
 
     ////// BEAN PROPERTIES
@@ -80,12 +80,12 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, Arm> implem
     @JoinColumn(name="epoch_id")
     @IndexColumn(name="list_index")
     @Cascade(value = { CascadeType.ALL })
-    public List<Arm> getArms() {
+    public List<StudySegment> getStudySegments() {
         return getChildren();
     }
 
-    public void setArms(List<Arm> arms) {
-        setChildren(arms);
+    public void setStudySegments(List<StudySegment> studySegments) {
+        setChildren(studySegments);
     }
 
     // This is annotated this way so that the IndexColumn in the parent

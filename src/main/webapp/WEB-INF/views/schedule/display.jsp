@@ -16,11 +16,11 @@
     <style type="text/css">
         h1 { float: left };
         
-        .epochs-and-arms, #next-arm-form {
+        .epochs-and-studySegments, #next-studySegment-form {
             margin: 1em;
         }
 
-        .epochs-and-arms {
+        .epochs-and-studySegments {
             margin-top: 0;
             width: 75%;
         }
@@ -37,7 +37,7 @@
             cursor: pointer;
         }
 
-        #next-arm-form {
+        #next-studySegment-form {
             margin-top: 0;
             float: right;
             width: 20%;
@@ -45,12 +45,12 @@
             border: 1px solid #666;
         }
 
-        #next-arm-form .row .label {
+        #next-studySegment-form .row .label {
             width: 35%;
             color: #666;
         }
 
-        #next-arm-form .row .value {
+        #next-studySegment-form .row .value {
             margin-left: 40%;
         }
 
@@ -63,13 +63,13 @@
             margin: 1em;
         }
 
-        #scheduled-arms ul {
+        #scheduled-studySegments ul {
             white-space: nowrap;
             padding: 0;
             margin: 0.5em 0;
         }
 
-        #scheduled-arms ul li {
+        #scheduled-studySegments ul li {
             display: inline;
             padding: 0.2em 0.5em;
             margin: 0 0.3em;
@@ -77,41 +77,41 @@
             white-space: nowrap;
         }
 
-        #scheduled-arms #scheduled-arms-indicator-item {
+        #scheduled-studySegments #scheduled-studySegments-indicator-item {
             border-color: white;
         }
 
-        #scheduled-arms a {
+        #scheduled-studySegments a {
             text-decoration: none;
             color: black;
         }
 
-        #scheduled-arms ul li.selected {
+        #scheduled-studySegments ul li.selected {
             background-color: #999 !important;
         }
 
-        #scheduled-arms ul li.selected a {
+        #scheduled-studySegments ul li.selected a {
             color: white;
         }
 
-        #scheduled-arms ul li:hover {
+        #scheduled-studySegments ul li:hover {
             background-color: #ccc;
         }
 
-        #selected-arm .content {
+        #selected-studySegment .content {
             position: relative;
         }
 
         /* For IE */
-        * html #selected-arm .content {
+        * html #selected-studySegment .content {
             height: 0;
         }
 
-        /*#selected-arm h3 {*/
+        /*#selected-studySegment h3 {*/
             /*margin: 0 1em;*/
         /*}*/
 
-        #selected-arm .legend {
+        #selected-studySegment .legend {
             position: absolute;
             right: 1em;
             top: 1em;
@@ -124,7 +124,7 @@
             margin: 0;
         }
 
-        #selected-arm .legend h3 {
+        #selected-studySegment .legend h3 {
             background-color: #444;
             color: #fff;
             padding: 4px;
@@ -133,7 +133,7 @@
             font-family: inherit;
         }
 
-        #selected-arm .legend ul {
+        #selected-studySegment .legend ul {
             margin: 0; padding: 0;
         }
 
@@ -219,55 +219,55 @@
             PER_PROTOCOL: '<tags:formatDate value="${dates['PER_PROTOCOL']}"/>'
         }
 
-        function registerSelectArmHandlers() {
-            $$('#scheduled-arms a').each(registerSelectArmHandler)
+        function registerSelectStudySegmentHandlers() {
+            $$('#scheduled-studySegments a').each(registerSelectStudySegmentHandler)
         }
 
-        function registerSelectArmHandler(a) {
+        function registerSelectStudySegmentHandler(a) {
             var aElement = $(a)
             Event.observe(aElement, "click", function(e) {
                 Event.stop(e)
-                selectArm(aElement.href)
+                selectStudySegment(aElement.href)
             })
         }
 
-        function selectArm(href) {
-            $("scheduled-arms-indicator").reveal();
-            SC.slideAndHide('selected-arm-content', { afterFinish: function() {
+        function selectStudySegment(href) {
+            $("scheduled-studySegments-indicator").reveal();
+            SC.slideAndHide('selected-studySegment-content', { afterFinish: function() {
                 // deselect current
-                var sel = $$("#scheduled-arms li.selected")
+                var sel = $$("#scheduled-studySegments li.selected")
                 if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
 
                 new Ajax.Request(href, { asynchronous: true,
                     onComplete: function() {
-                        $("scheduled-arms-indicator").conceal()
+                        $("scheduled-studySegments-indicator").conceal()
                     },
                     onFailure: function() {
-                        Element.update('selected-arm-content', "Loading failed")
-                        Element.update('selected-arm-header', "Error")
-                        SC.slideAndShow('selected-arm-content')
+                        Element.update('selected-studySegment-content', "Loading failed")
+                        Element.update('selected-studySegment-header', "Error")
+                        SC.slideAndShow('selected-studySegment-content')
                     }
                 });
             } });
         }
 
-        function registerSelectNextArmHandlers() {
-            $$(".epochs-and-arms a.arm").each(function(a) {
+        function registerSelectNextStudySegmentHandlers() {
+            $$(".epochs-and-studySegments a.studySegment").each(function(a) {
                 Event.observe(a, "click", function(e) {
                     Event.stop(e)
-                    $('next-arm-id').value = a.id.substring(4)
-                    Element.update('next-arm-name', a.title)
-                    SC.highlight('next-arm-name', { restorecolor: "#ffffff" })
-                    $('next-arm-button').disabled = false
+                    $('next-studySegment-id').value = a.id.substring('studySegment'.length +1)
+                    Element.update('next-studySegment-name', a.title)
+                    SC.highlight('next-studySegment-name', { restorecolor: "#ffffff" })
+                    $('next-studySegment-button').disabled = false
                 })
             })
 
-            Event.observe('next-arm-form', "submit", function(e) {
-                $('next-arm-indicator').reveal()
+            Event.observe('next-studySegment-form', "submit", function(e) {
+                $('next-studySegment-indicator').reveal()
                 Event.stop(e)
-                SC.asyncSubmit('next-arm-form', {
+                SC.asyncSubmit('next-studySegment-form', {
                     onComplete: function() {
-                        $('next-arm-indicator').conceal()
+                        $('next-studySegment-indicator').conceal()
                     }
                 })
             })
@@ -320,8 +320,8 @@
             })
         }
 
-        Event.observe(window, "load", registerSelectArmHandlers);
-        Event.observe(window, "load", registerSelectNextArmHandlers);
+        Event.observe(window, "load", registerSelectStudySegmentHandlers);
+        Event.observe(window, "load", registerSelectNextStudySegmentHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
         Event.observe(window, "load", registerHeaderCollapse);
         Event.observe(window, "load", registerDismissControl);
@@ -397,17 +397,17 @@
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box>
         <laf:division>
-        <div id="schedule-next-arm" class="section autoclear collapsible">
+        <div id="schedule-next-studySegment" class="section autoclear collapsible">
 
-        <h2 id="schedule-next-arm-header">Schedule next arm</h2>
+        <h2 id="schedule-next-studySegment-header">Schedule next study segment</h2>
         <div class="content" style="display: none">
-            <p class="tip">Select an arm from the calendar to run next.  Then select a start date.</p>
-            <form id="next-arm-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextArm"/>">
+            <p class="tip">Select an study segment from the calendar to run next.  Then select a start date.</p>
+            <form id="next-studySegment-form" class="autoclear" action="<c:url value="/pages/cal/schedule/nextStudySegment"/>">
                 <div class="row">
-                    <div class="label">Next arm</div>
-                    <div class="value"><span id="next-arm-name"><em>Select at left</em></span></div>
+                    <div class="label">Next study segment</div>
+                    <div class="value"><span id="next-studySegment-name"><em>Select at left</em></span></div>
                 </div>
-                <input type="hidden" name="arm" value="-1" id="next-arm-id"/>
+                <input type="hidden" name="studySegment" value="-1" id="next-studySegment-id"/>
                 <input type="hidden" name="calendar" value="${calendar.id}"/>
                 <div class="row" id="mode-row">
                     <div class="label">When?</div>
@@ -423,11 +423,11 @@
                         <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
                     </div>
                     <div class="row">
-                        <div class="value"><tags:activityIndicator id="next-arm-indicator"/><input type="submit" value="Schedule next arm" disabled="disabled" id="next-arm-button"/></div>
+                        <div class="value"><tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/></div>
                     </div>
                 </div>
                 </form>
-                <tags:epochsAndArms plannedCalendar="${plannedCalendar}"/>
+                <tags:epochsAndStudySegments plannedCalendar="${plannedCalendar}"/>
             </div>
 
         </div>
@@ -435,15 +435,15 @@
     </laf:box>
 </c:if>
 
-<div id="scheduled-arms" class="section">
-    <laf:box title="Arms scheduled">
+<div id="scheduled-studySegments" class="section">
+    <laf:box title="Study segments scheduled">
         <laf:division>
-        <!--<h2>Arms scheduled</h2>-->
-        <p class="tip">Select an arm to show its detailed schedule below.</p>
-        <ul id="scheduled-arms-list">
-            <li id="scheduled-arms-indicator-item"><tags:activityIndicator id="scheduled-arms-indicator"/></li>
-            <c:forEach items="${calendar.scheduledArms}" var="scheduledArm">
-                <sched:scheduledArmsListItem currentArm="${arm}" scheduledArm="${scheduledArm}"/>
+        <!--<h2>Study segments scheduled</h2>-->
+        <p class="tip">Select an study segment to show its detailed schedule below.</p>
+        <ul id="scheduled-studySegments-list">
+            <li id="scheduled-studySegments-indicator-item"><tags:activityIndicator id="scheduled-studySegments-indicator"/></li>
+            <c:forEach items="${calendar.scheduledStudySegments}" var="scheduledStudySegment">
+                <sched:scheduledStudySegmentsListItem currentStudySegment="${studySegment}" scheduledStudySegment="${scheduledStudySegment}"/>
             </c:forEach>
         </ul>
         </laf:division>
@@ -451,8 +451,8 @@
 </div>
 
 
-<div id="selected-arm" class="section">
-    <sched:scheduledArm arm="${arm}" visible="true"/>
+<div id="selected-studySegment" class="section">
+    <sched:scheduledStudySegment studySegment="${studySegment}" visible="true"/>
 </div>
 </body>
 </html>

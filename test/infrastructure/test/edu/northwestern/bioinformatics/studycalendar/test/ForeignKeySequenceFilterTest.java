@@ -56,16 +56,16 @@ public class ForeignKeySequenceFilterTest extends StudyCalendarTestCase {
     public void testBasicReordering() throws Exception {
         metadata.link("studies", "planned_calendars");
         metadata.link("planned_calendars", "epochs", "scheduled_calendars");
-        metadata.link("epochs", "arms");
+        metadata.link("epochs", "study_segments");
 
         String[] actualOrder = doReorder(
-            "epochs", "arms", "scheduled_calendars", "studies", "planned_calendars"
+            "epochs", "study_segments", "scheduled_calendars", "studies", "planned_calendars"
         );
 
-        assertPartialOrder(actualOrder, "studies", "planned_calendars", "scheduled_calendars", "epochs", "arms");
-        assertPartialOrder(actualOrder, "planned_calendars", "scheduled_calendars", "epochs", "arms");
-        assertPartialOrder(actualOrder, "scheduled_calendars", "arms");
-        assertPartialOrder(actualOrder, "epochs", "arms");
+        assertPartialOrder(actualOrder, "studies", "planned_calendars", "scheduled_calendars", "epochs", "study_segments");
+        assertPartialOrder(actualOrder, "planned_calendars", "scheduled_calendars", "epochs", "study_segments");
+        assertPartialOrder(actualOrder, "scheduled_calendars", "study_segments");
+        assertPartialOrder(actualOrder, "epochs", "study_segments");
     }
 
     public void testReorderingRetainsLoneTables() throws Exception {

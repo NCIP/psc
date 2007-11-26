@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
@@ -27,7 +27,7 @@ public class RenameCommand extends EditTemplateCommand {
 
     @Override protected Mode studyMode() { return new RenameStudy(); }
     @Override protected Mode epochMode() { return new RenameEpoch(); }
-    @Override protected Mode armMode()   { return new RenameArm(); }
+    @Override protected Mode studySegmentMode()   { return new RenameStudySegment(); }
 
     private abstract class RenameMode implements Mode {
         public Map<String, Object> getModel() {
@@ -55,19 +55,19 @@ public class RenameCommand extends EditTemplateCommand {
     private class RenameEpoch extends RenameMode {
         public void performEdit() {
             rename(getEpoch());
-            if (!getEpoch().isMultipleArms()) {
-                Arm soleArm = getEpoch().getArms().get(0);
-                rename(soleArm);
-                setArm(soleArm);
+            if (!getEpoch().isMultipleStudySegments()) {
+                StudySegment soleStudySegment = getEpoch().getStudySegments().get(0);
+                rename(soleStudySegment);
+                setStudySegment(soleStudySegment);
             }
         }
     }
 
-    private class RenameArm extends RenameMode {
+    private class RenameStudySegment extends RenameMode {
         public void performEdit() {
-            rename(getArm());
-            if (getArm().getEpoch() != null && !getArm().getEpoch().isMultipleArms()) {
-                rename(getArm().getEpoch());
+            rename(getStudySegment());
+            if (getStudySegment().getEpoch() != null && !getStudySegment().getEpoch().isMultipleStudySegments()) {
+                rename(getStudySegment().getEpoch());
             }
         }
     }

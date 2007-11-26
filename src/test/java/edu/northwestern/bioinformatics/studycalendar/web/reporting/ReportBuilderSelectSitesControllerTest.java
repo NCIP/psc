@@ -54,11 +54,11 @@ public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 		
 		List<Study> studies = new ArrayList<Study>();
 		List<Study> studiesBySites = new ArrayList<Study>();
-		String[] armNames = {"Arm1", "Arm2"};
-		studies.add(Fixtures.createSingleEpochStudy("Frank", "Treatment", armNames));
-		studies.add(Fixtures.createSingleEpochStudy("Norbert", "Treatment", armNames));
-		studies.add(Fixtures.createSingleEpochStudy("Lucy", "Treatment", armNames));
-		studies.add(Fixtures.createSingleEpochStudy("Tom", "Treatment", armNames));
+		String[] studySegmentNames = {"StudySegment1", "Arm2"};
+		studies.add(Fixtures.createSingleEpochStudy("Frank", "Treatment", studySegmentNames));
+		studies.add(Fixtures.createSingleEpochStudy("Norbert", "Treatment", studySegmentNames));
+		studies.add(Fixtures.createSingleEpochStudy("Lucy", "Treatment", studySegmentNames));
+		studies.add(Fixtures.createSingleEpochStudy("Tom", "Treatment", studySegmentNames));
 		studiesBySites.add(studies.get(1));
 		studiesBySites.add(studies.get(3));
 		studiesBySites.add(studies.get(0));

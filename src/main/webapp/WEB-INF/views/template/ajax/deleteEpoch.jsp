@@ -9,12 +9,12 @@ var epochDivs = $$('div.epoch');
 epochDivs.each( function(elt) { elt.style.width = '<tags:epochWidth epoch="${command.epoch}"/>'; Element.removeClassName(elt, "last") } )
 Element.addClassName(epochDivs.last(), "last")
 
-//changing the selected arm to the very first one on the first epoch
-<jsgen:replaceHtml targetElement="selected-arm">
-    <templ:arm arm="${template}" developmentRevision="${developmentRevision}"/>
+//changing the selected studySegment to the very first one on the first epoch
+<jsgen:replaceHtml targetElement="selected-studySegment">
+    <templ:studySegment studySegment="${template}" developmentRevision="${developmentRevision}"/>
 </jsgen:replaceHtml>
 
-Element.addClassName("arm-${arm.id}-item", "selected")
-SC.slideAndShow('selected-arm-content')
+Element.addClassName("studySegment-${studySegment.id}-item", "selected")
+SC.slideAndShow('selected-studySegment-content')
 
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />

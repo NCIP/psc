@@ -46,20 +46,20 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     public void testScheduleReconsentAfterScheduledActivityOnOccurredEvent() throws Exception{
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.JULY, 2));
 
-        ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
-        arm0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
+        ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
+        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 2,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 3))));
-        arm0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
-        arm0.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
-        calendar.addArm(arm0);
+        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 4));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.JULY, 8));
+        calendar.addStudySegment(studySegment0);
 
-        ScheduledArm arm1 = new ScheduledArm();
-        arm1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
+        ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
+        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        arm1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
-        arm1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
-        calendar.addArm(arm1);
+        studySegment1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivity("GGG", 2005, Calendar.AUGUST, 8));
+        calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
@@ -72,7 +72,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
 
-        List<ScheduledActivity> list = arm0.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
+        List<ScheduledActivity> list = studySegment0.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
         
         assertEquals("Wrong number of events on July 4th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
@@ -82,19 +82,19 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     public void testScheduleReconsentForSecondArmOnSameDayAsScheduledActivity() throws Exception{
         staticNowFactory.setNowTimestamp(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
-        ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
+        ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
+        studySegment0.addEvent(Fixtures.createScheduledActivity("AAA", 2005, Calendar.JULY, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.JULY, 2))));
-        arm0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
-        arm0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
-        calendar.addArm(arm0);
+        studySegment0.addEvent(Fixtures.createScheduledActivity("BBB", 2005, Calendar.JULY, 3));
+        studySegment0.addEvent(Fixtures.createScheduledActivity("CCC", 2005, Calendar.JULY, 8));
+        calendar.addStudySegment(studySegment0);
 
-        ScheduledArm arm1 = new ScheduledArm();
-        arm1.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
+        ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
+        studySegment1.addEvent(Fixtures.createScheduledActivity("DDD", 2005, Calendar.AUGUST, 1,
                 new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 2))));
-        arm1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
-        arm1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
-        calendar.addArm(arm1);
+        studySegment1.addEvent(Fixtures.createScheduledActivity("EEE", 2005, Calendar.AUGUST, 3));
+        studySegment1.addEvent(Fixtures.createScheduledActivity("FFF", 2005, Calendar.AUGUST, 8));
+        calendar.addStudySegment(studySegment1);
 
         List<StudySubjectAssignment> assignments = Collections.singletonList(subjectAssignment);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(assignments);
@@ -107,7 +107,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
 
-        List<ScheduledActivity> list = arm1.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
+        List<ScheduledActivity> list = studySegment1.getEventsByDate().get(DateTools.createTimestamp(2005, Calendar.AUGUST, 3));
 
         assertEquals("Wrong number of events on August 8th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());

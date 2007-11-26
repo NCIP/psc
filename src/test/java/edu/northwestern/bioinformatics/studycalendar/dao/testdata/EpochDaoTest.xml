@@ -6,19 +6,19 @@
         planned_calendar_id="-2"
         name="Treatment"
         />
-    <ARMS
+    <STUDY_SEGMENTS
         id="-10"
         epoch_id="-1"
         list_index="1"
         name="B"
         />
-    <ARMS
+    <STUDY_SEGMENTS
         id="-11"
         epoch_id="-1"
         list_index="0"
         name="A"
         />
-    <ARMS
+    <STUDY_SEGMENTS
         id="-12"
         epoch_id="-1"
         list_index="2"

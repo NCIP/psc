@@ -25,13 +25,13 @@ import edu.northwestern.bioinformatics.studycalendar.utils.EmptyDayRange;
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "arms")
+@Table (name = "study_segments")
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_arms_id")
+        @Parameter(name="sequence", value="seq_study_segments_id")
     }
 )
-public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
+public class StudySegment extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> implements Named {
     private String name;
 
     ////// LOGIC
@@ -49,7 +49,7 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
     public String getQualifiedName() {
         StringBuilder sb = new StringBuilder();
         sb.append(getEpoch() == null ? getName() : getEpoch().getName());
-        if (getEpoch() != null && getEpoch().isMultipleArms()) {
+        if (getEpoch() != null && getEpoch().isMultipleStudySegments()) {
             sb.append(": ").append(getName());
         }
         return sb.toString();
@@ -95,7 +95,7 @@ public class Arm extends PlanTreeInnerNode<Epoch, Period, SortedSet<Period>> imp
         setParent(epoch);
     }
 
-    @OneToMany (mappedBy = "arm")
+    @OneToMany (mappedBy = "studySegment")
     @Cascade (value = { CascadeType.ALL })
     @Sort (type = SortType.NATURAL)
     public SortedSet<Period> getPeriods() {

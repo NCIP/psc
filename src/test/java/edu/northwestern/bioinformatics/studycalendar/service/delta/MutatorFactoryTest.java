@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
@@ -14,7 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
 /**
@@ -23,7 +23,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 public class MutatorFactoryTest extends StudyCalendarTestCase {
     private MutatorFactory factory;
     private EpochDao epochDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
 
@@ -34,7 +34,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
 
         DaoFinder finder = new StaticDaoFinder(
             epochDao = registerDaoMockFor(EpochDao.class),
-            armDao = registerDaoMockFor(ArmDao.class),
+            studySegmentDao = registerDaoMockFor(StudySegmentDao.class),
             periodDao = registerDaoMockFor(PeriodDao.class),
             plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class)
         );
@@ -49,7 +49,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         Mutator actual = factory.createMutator(new Epoch(), add);
         assertNotNull(actual);
         assertEquals(ListAddMutator.class, actual.getClass());
-        assertEquals("Dao does not match child class", armDao, ((CollectionAddMutator) actual).getDao());
+        assertEquals("Dao does not match child class", studySegmentDao, ((CollectionAddMutator) actual).getDao());
     }
     
     public void testCreateAdderWithoutIndex() throws Exception {
@@ -65,7 +65,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     public void testCreatePeriodAdder() throws Exception {
         Add add = new Add();
         add.setChildId(5);
-        Mutator actual = factory.createMutator(new Arm(), add);
+        Mutator actual = factory.createMutator(new StudySegment(), add);
         assertNotNull(actual);
         assertEquals(AddPeriodMutator.class,  actual.getClass());
     }
@@ -80,7 +80,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     }
 
     public void testCreatePropertyMutator() throws Exception {
-        Mutator actual = factory.createMutator(new Arm(), new PropertyChange());
+        Mutator actual = factory.createMutator(new StudySegment(), new PropertyChange());
         assertNotNull(actual);
         assertEquals(SimplePropertyChangeMutator.class, actual.getClass());
     }
@@ -139,13 +139,13 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
         Mutator actual = factory.createMutator(new Epoch(), new Remove());
         assertNotNull(actual);
         assertEquals(RemoveMutator.class, actual.getClass());
-        assertEquals("Dao does not match child class", armDao, ((RemoveMutator) actual).getDao());
+        assertEquals("Dao does not match child class", studySegmentDao, ((RemoveMutator) actual).getDao());
     }
 
     public void testCreateRemovePeriodMutator() throws Exception {
         Remove remove = new Remove();
         remove.setChildId(5);
-        Mutator actual = factory.createMutator(new Arm(), remove);
+        Mutator actual = factory.createMutator(new StudySegment(), remove);
         assertNotNull(actual);
         assertEquals(RemovePeriodMutator.class,  actual.getClass());
     }

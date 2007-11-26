@@ -23,42 +23,42 @@ public class ReorderMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyMoveDown() throws Exception {
-        reorder.setChild(epoch.getArms().get(0));
+        reorder.setChild(epoch.getStudySegments().get(0));
         reorder.setNewIndex(1);
         reorderer.apply(epoch);
 
-        assertEquals("Not reordered", "B", epoch.getArms().get(0).getName());
-        assertEquals("Not reordered", "A", epoch.getArms().get(1).getName());
-        assertEquals("Not reordered", "C", epoch.getArms().get(2).getName());
+        assertEquals("Not reordered", "B", epoch.getStudySegments().get(0).getName());
+        assertEquals("Not reordered", "A", epoch.getStudySegments().get(1).getName());
+        assertEquals("Not reordered", "C", epoch.getStudySegments().get(2).getName());
     }
 
     public void testApplyMoveUp() throws Exception {
-        reorder.setChild(epoch.getArms().get(2));
+        reorder.setChild(epoch.getStudySegments().get(2));
         reorder.setNewIndex(0);
         reorderer.apply(epoch);
 
-        assertEquals("Not reordered", "C", epoch.getArms().get(0).getName());
-        assertEquals("Not reordered", "A", epoch.getArms().get(1).getName());
-        assertEquals("Not reordered", "B", epoch.getArms().get(2).getName());
+        assertEquals("Not reordered", "C", epoch.getStudySegments().get(0).getName());
+        assertEquals("Not reordered", "A", epoch.getStudySegments().get(1).getName());
+        assertEquals("Not reordered", "B", epoch.getStudySegments().get(2).getName());
     }
 
     public void testRevertMoveDown() throws Exception {
-        reorder.setChild(epoch.getArms().get(0));
+        reorder.setChild(epoch.getStudySegments().get(0));
         reorder.setOldIndex(1);
         reorderer.revert(epoch);
 
-        assertEquals("Not reordered", "B", epoch.getArms().get(0).getName());
-        assertEquals("Not reordered", "A", epoch.getArms().get(1).getName());
-        assertEquals("Not reordered", "C", epoch.getArms().get(2).getName());
+        assertEquals("Not reordered", "B", epoch.getStudySegments().get(0).getName());
+        assertEquals("Not reordered", "A", epoch.getStudySegments().get(1).getName());
+        assertEquals("Not reordered", "C", epoch.getStudySegments().get(2).getName());
     }
 
     public void testRevertMoveUp() throws Exception {
-        reorder.setChild(epoch.getArms().get(2));
+        reorder.setChild(epoch.getStudySegments().get(2));
         reorder.setOldIndex(0);
         reorderer.revert(epoch);
 
-        assertEquals("Not reordered", "C", epoch.getArms().get(0).getName());
-        assertEquals("Not reordered", "A", epoch.getArms().get(1).getName());
-        assertEquals("Not reordered", "B", epoch.getArms().get(2).getName());
+        assertEquals("Not reordered", "C", epoch.getStudySegments().get(0).getName());
+        assertEquals("Not reordered", "A", epoch.getStudySegments().get(1).getName());
+        assertEquals("Not reordered", "B", epoch.getStudySegments().get(2).getName());
     }
 }

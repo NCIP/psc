@@ -4,7 +4,7 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -79,17 +79,17 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 		if (startDate == null) {
 			startDate = new Date();
 		}
-		// retrieve Arm
-		Arm arm = null;
+		// retrieve StudySegment
+		StudySegment studySegment = null;
 		if (registration.getScheduledEpoch() != null
 				&& registration.getScheduledEpoch() instanceof ScheduledTreatmentEpochType
-				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm() != null
-				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm() != null) {
-			arm = new Arm();
-			arm.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm()
+				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledStudySegment() != null
+				&& ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledStudySegment().getStudySegment() != null) {
+			studySegment = new StudySegment();
+			studySegment.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledStudySegment().getStudySegment()
 					.getGridId());
 		}
-		ScheduledCalendar scheduledCalendar = svc.assignSubject(study, subject, site, arm, startDate,
+		ScheduledCalendar scheduledCalendar = svc.assignSubject(study, subject, site, studySegment, startDate,
 				registrationGridId);
 		logger.debug("Created assignment " + scheduledCalendar.getId());
 		return registration;

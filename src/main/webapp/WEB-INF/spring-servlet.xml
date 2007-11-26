@@ -79,8 +79,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
         <property name="crumb.parent"><ref local="studyListController"/></property>
     </bean>
-    <bean name="/cal/template/select" id="selectArmController" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectArmController"/>
+    <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudySegmentController"/>
 
     <bean name="/cal/template/rename" id="renameController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
@@ -255,14 +255,14 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
-    <bean name="/cal/schedule/select" id="selectScheduledArmController" autowire="byName"
+    <bean name="/cal/schedule/select" id="selectScheduledStudySegmentController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
-        <property name="parameterName"><value>arm</value></property>
-        <property name="viewName"><value>schedule/ajax/selectScheduledArm</value></property>
-        <property name="dao"><ref bean="scheduledArmDao"/></property>
+        <property name="parameterName"><value>studySegment</value></property>
+        <property name="viewName"><value>schedule/ajax/selectScheduledStudySegment</value></property>
+        <property name="dao"><ref bean="scheduledStudySegmentDao"/></property>
     </bean>
-    <bean name="/cal/schedule/nextArm" id="scheduleNextArmController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextArmController"/>
+    <bean name="/cal/schedule/nextStudySegment" id="scheduleNextStudySegmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextStudySegmentController"/>
     <bean name="/cal/schedule/batch" id="batchRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchRescheduleController"/>
     <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"

@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -112,8 +112,8 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
 
     public void testChangeStateOnSubmit() throws Exception {
         command.setEvent(new ScheduledActivity());
-        command.getEvent().setScheduledArm(new ScheduledArm());
-        command.getEvent().getScheduledArm().setScheduledCalendar(new ScheduledCalendar());
+        command.getEvent().setScheduledStudySegment(new ScheduledStudySegment());
+        command.getEvent().getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
         request.setMethod("POST");
         command.apply();
 

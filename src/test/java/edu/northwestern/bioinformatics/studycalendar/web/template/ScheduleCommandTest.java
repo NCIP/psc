@@ -85,8 +85,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledActivity e1, e2, e3;
 
         calendar = setId(6, new ScheduledCalendar());
-        calendar.addArm(new ScheduledArm());
-        calendar.addArm(new ScheduledArm());
+        calendar.addStudySegment(new ScheduledStudySegment());
+        calendar.addStudySegment(new ScheduledStudySegment());
 
         Calendar c = Calendar.getInstance();
         int day = c.get(Calendar.DAY_OF_MONTH);
@@ -97,7 +97,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         e2 =  createScheduledActivity("O", year, month, day+1);
         e3 =  createScheduledActivity("S", year, month, day+2);
 
-        addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
+        addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
 
         assignment.setSubject(subject);
         assignment.setStudySite(studySite);
@@ -160,8 +160,8 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         ScheduledActivity e1, e2, e3;
 
         calendar = setId(6, new ScheduledCalendar());
-        calendar.addArm(new ScheduledArm());
-        calendar.addArm(new ScheduledArm());
+        calendar.addStudySegment(new ScheduledStudySegment());
+        calendar.addStudySegment(new ScheduledStudySegment());
 
         Calendar c = Calendar.getInstance();
         int day = c.get(Calendar.DAY_OF_MONTH);
@@ -175,7 +175,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         e3 =  createScheduledActivity("S", year, month, day+2);
         e3.getActivity().setType(ActivityType.INTERVENTION);
 
-        addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
+        addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
 
         assignment.setSubject(subject);
         assignment.setStudySite(studySite);
@@ -253,10 +253,10 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         activities.put(ActivityType.LAB_TEST, true);
 
         calendar = setId(6, new ScheduledCalendar());
-        calendar.addArm(new ScheduledArm());
+        calendar.addStudySegment(new ScheduledStudySegment());
 
         calendarTwo = setId(7, new ScheduledCalendar());
-        calendarTwo.addArm(new ScheduledArm());
+        calendarTwo.addStudySegment(new ScheduledStudySegment());
 
 
         Calendar c = Calendar.getInstance();
@@ -268,14 +268,14 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         e2 =  createScheduledActivity("O", year, month, day+1);
         e3 =  createScheduledActivity("S", year, month, day+2);
 
-        addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
+        addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
 
 
         e5 = createScheduledActivity("C", year, month, day +1, new Canceled());
         e6 = createScheduledActivity("O", year, month, day +2, new Occurred());
         e7 = createScheduledActivity("S", year, month, day +3);
 
-        addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);
+        addEvents(calendarTwo.getScheduledStudySegments().get(0), e5, e6, e7);
 
         assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);
@@ -391,10 +391,10 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         activities.put(ActivityType.PROCEDURE, true);
 
         calendar = setId(6, new ScheduledCalendar());
-        calendar.addArm(new ScheduledArm());
+        calendar.addStudySegment(new ScheduledStudySegment());
 
         calendarTwo = setId(7, new ScheduledCalendar());
-        calendarTwo.addArm(new ScheduledArm());
+        calendarTwo.addStudySegment(new ScheduledStudySegment());
 
 
         Calendar c = Calendar.getInstance();
@@ -408,7 +408,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         e2.getActivity().setType(ActivityType.INTERVENTION);
         e3 =  createScheduledActivity("S", year, month, day+2);
 
-        addEvents(calendar.getScheduledArms().get(0), e1, e2, e3);
+        addEvents(calendar.getScheduledStudySegments().get(0), e1, e2, e3);
 
 
         e5 = createScheduledActivity("C", year, month, day +1);
@@ -417,7 +417,7 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
         e7 = createScheduledActivity("S", year, month, day +3);
 
 
-        addEvents(calendarTwo.getScheduledArms().get(0), e5, e6, e7);
+        addEvents(calendarTwo.getScheduledStudySegments().get(0), e5, e6, e7);
 
         assignment.setSubject(subjectOne);
         assignment.setStudySite(studySite);

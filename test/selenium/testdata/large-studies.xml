@@ -21,14 +21,14 @@
         planned_calendar_id="-1"
         name="ECT Level 1"
         />
-    <arms
+    <study_segments
         id="-1"
         epoch_id="-21"
         name="P53 Mutation A"
         />
     <periods
         id="-11"
-        arm_id="-1"
+        study_segment_id="-1"
         name="Stage 1"
         start_day="1"
         duration_quantity="2"
@@ -36,7 +36,7 @@
         />
     <periods
         id="-12"
-        arm_id="-1"
+        study_segment_id="-1"
         name="Stage 2"
         start_day="1"
         duration_quantity="10"
@@ -44,42 +44,42 @@
         repetitions="2"
         />
         
-    <arms
+    <study_segments
         id="-2"
         epoch_id="-21"
         name="P53 Mutation B"
         />
     <periods
         id="-13"
-        arm_id="-2"
+        study_segment_id="-2"
         name="Stage 1"
         start_day="1"
         duration_quantity="3"
         duration_unit="week"
         />
     
-    <arms
+    <study_segments
         id="-3"
         epoch_id="-21"
         name="P53 Mutation C"
         />
     <periods
         id="-14"
-        arm_id="-3"
+        study_segment_id="-3"
         name="Stage 1"
         start_day="1"
         duration_quantity="40"
         duration_unit="day"
         />
        
-    <arms
+    <study_segments
         id="-4"
         epoch_id="-21"
         name="P53 Normal A"
         />
     <periods
         id="-15"
-        arm_id="-4"
+        study_segment_id="-4"
         name="Stage 1"
         start_day="1"
         duration_quantity="2"
@@ -87,7 +87,7 @@
         />
     <periods
         id="-16"
-        arm_id="-4"
+        study_segment_id="-4"
         name="Stage 2"
         start_day="1"
         duration_quantity="10"
@@ -95,14 +95,14 @@
         repetitions="2"
         /> 
         
-    <arms
+    <study_segments
         id="-5"
         epoch_id="-21"
         name="P53 Normal B"
         />
     <periods
         id="-17"
-        arm_id="-5"
+        study_segment_id="-5"
         name="Stage 1"
         start_day="1"
         duration_quantity="3"
@@ -110,14 +110,14 @@
         />
         
         
-    <arms
+    <study_segments
         id="-6"
         epoch_id="-21"
         name="P53 Normal C"
         />
     <periods
         id="-18"
-        arm_id="-6"
+        study_segment_id="-6"
         name="Stage 1"
         start_day="3"
         duration_quantity="40"
@@ -188,14 +188,14 @@
         planned_calendar_id="-1"
         name="ECT Level 1, AC Drug"
         />
-    <arms
+    <study_segments
         id="-7"
         epoch_id="-22"
         name="High DCP"
         />
     <periods
         id="-21"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P21"
         start_day="1"
         duration_quantity="2"
@@ -203,7 +203,7 @@
         />
      <periods
         id="-22"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P22"
         start_day="2"
         duration_quantity="2"
@@ -211,7 +211,7 @@
         />
      <periods
         id="-23"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P23"
         start_day="3"
         duration_quantity="2"
@@ -219,7 +219,7 @@
         />
     <periods
         id="-24"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P24"
         start_day="1"
         duration_quantity="10"
@@ -228,7 +228,7 @@
         />
     <periods
         id="-25"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P25"
         start_day="2"
         duration_quantity="10"
@@ -237,7 +237,7 @@
         />
    <periods
         id="-26"
-        arm_id="-7"
+        study_segment_id="-7"
         name="P26"
         start_day="3"
         duration_quantity="10"
@@ -246,14 +246,14 @@
         />
         
         
-    <arms
+    <study_segments
         id="-8"
         epoch_id="-22"
         name="Low DCP"
         />
    <periods
         id="-31"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P31"
         start_day="1"
         duration_quantity="2"
@@ -261,7 +261,7 @@
         />
      <periods
         id="-32"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P32"
         start_day="2"
         duration_quantity="2"
@@ -269,7 +269,7 @@
         />
      <periods
         id="-33"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P33"
         start_day="3"
         duration_quantity="2"
@@ -277,7 +277,7 @@
         />
     <periods
         id="-34"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P34"
         start_day="1"
         duration_quantity="10"
@@ -286,7 +286,7 @@
         />
     <periods
         id="-35"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P35"
         start_day="2"
         duration_quantity="10"
@@ -295,7 +295,7 @@
         />
    <periods
         id="-36"
-        arm_id="-8"
+        study_segment_id="-8"
         name="P36"
         start_day="3"
         duration_quantity="10"
@@ -303,14 +303,14 @@
         repetitions="2"
         />
         
-   <arms
+   <study_segments
         id="-9"
         epoch_id="-22"
         name="Low DCP, P53 Mutation"
         />
    <periods
         id="-41"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P41"
         start_day="1"
         duration_quantity="2"
@@ -318,7 +318,7 @@
         />
      <periods
         id="-42"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P42"
         start_day="2"
         duration_quantity="2"
@@ -326,7 +326,7 @@
         />
      <periods
         id="-43"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P43"
         start_day="3"
         duration_quantity="2"
@@ -334,7 +334,7 @@
         />
     <periods
         id="-44"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P44"
         start_day="1"
         duration_quantity="10"
@@ -343,7 +343,7 @@
         />
     <periods
         id="-45"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P45"
         start_day="2"
         duration_quantity="10"
@@ -352,7 +352,7 @@
         />
    <periods
         id="-46"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P46"
         start_day="3"
         duration_quantity="10"
@@ -361,7 +361,7 @@
         />
    <periods
         id="-47"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P47"
         start_day="4"
         duration_quantity="2"
@@ -369,7 +369,7 @@
         />
      <periods
         id="-48"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P48"
         start_day="1"
         duration_quantity="2"
@@ -377,7 +377,7 @@
         />
    <periods
         id="-49"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P49"
         start_day="2"
         duration_quantity="10"
@@ -386,7 +386,7 @@
         />
    <periods
         id="-50"
-        arm_id="-9"
+        study_segment_id="-9"
         name="P50"
         start_day="3"
         duration_quantity="10"
@@ -439,14 +439,14 @@
         planned_calendar_id="-2"
         name="Detection 1"
         />
-    <arms
+    <study_segments
         id="-10"
         epoch_id="-30"
         name="Random"
         />
     <periods
         id="-100"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P100"
         start_day="1"
         duration_quantity="1"
@@ -454,7 +454,7 @@
         />
     <periods
         id="-101"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P101"
         start_day="1"
         duration_quantity="1"
@@ -462,7 +462,7 @@
         />
      <periods
         id="-102"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P102"
         start_day="1"
         duration_quantity="1"
@@ -470,7 +470,7 @@
         />
     <periods
         id="-103"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P103"
         start_day="1"
         duration_quantity="1"
@@ -478,7 +478,7 @@
         />
     <periods
         id="-104"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P104"
         start_day="1"
         duration_quantity="1"
@@ -486,7 +486,7 @@
         />
     <periods
         id="-105"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P105"
         start_day="3"
         duration_quantity="5"
@@ -495,7 +495,7 @@
         />
    <periods
         id="-106"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P106"
         start_day="3"
         duration_quantity="5"
@@ -504,7 +504,7 @@
         />
    <periods
         id="-107"
-        arm_id="-10"
+        study_segment_id="-10"
         name="P107"
         start_day="3"
         duration_quantity="5"
@@ -541,14 +541,14 @@
         planned_calendar_id="-2"
         name="Detection 1"
         />
-    <arms
+    <study_segments
         id="-11"
         epoch_id="-31"
         name="High Risk 1"
         />
    <periods
         id="-108"
-        arm_id="-11"
+        study_segment_id="-11"
         name="Period108"
         start_day="1"
         duration_quantity="5"
@@ -557,7 +557,7 @@
         />
    <periods
         id="-109"
-        arm_id="-11"
+        study_segment_id="-11"
         name="Period109"
         start_day="2"
         duration_quantity="5"
@@ -566,21 +566,21 @@
         />
    <periods
         id="-110"
-        arm_id="-11"
+        study_segment_id="-11"
         name="Period110"
         start_day="3"
         duration_quantity="5"
         duration_unit="day"
         repetitions="2"
         />
-   <arms
+   <study_segments
         id="-12"
         epoch_id="-31"
         name="High Risk 2"
         />
    <periods
         id="-111"
-        arm_id="-12"
+        study_segment_id="-12"
         name="Period111"
         start_day="1"
         duration_quantity="5"
@@ -588,7 +588,7 @@
         />
    <periods
         id="-112"
-        arm_id="-12"
+        study_segment_id="-12"
         name="Period112"
         start_day="2"
         duration_quantity="5"
@@ -596,20 +596,20 @@
         />
    <periods
         id="-113"
-        arm_id="-12"
+        study_segment_id="-12"
         name="Period113"
         start_day="3"
         duration_quantity="5"
         duration_unit="day"
         />
-   <arms
+   <study_segments
         id="-13"
         epoch_id="-31"
         name="High Risk 3"
         />
    <periods
         id="-114"
-        arm_id="-13"
+        study_segment_id="-13"
         name="Period114"
         start_day="1"
         duration_quantity="5"
@@ -617,14 +617,14 @@
         repetitions="3"
         />
         
-    <arms
+    <study_segments
         id="-14"
         epoch_id="-31"
         name="Low Risk 1"
         />
    <periods
         id="-115"
-        arm_id="-13"
+        study_segment_id="-13"
         name="Period115"
         start_day="1"
         duration_quantity="5"
@@ -633,7 +633,7 @@
         />
    <periods
         id="-116"
-        arm_id="-13"
+        study_segment_id="-13"
         name="Period116"
         start_day="2"
         duration_quantity="5"
@@ -642,7 +642,7 @@
         />
    <periods
         id="-117"
-        arm_id="-13"
+        study_segment_id="-13"
         name="Period117"
         start_day="3"
         duration_quantity="5"
@@ -650,14 +650,14 @@
         repetitions="2"
         />
         
-   <arms
+   <study_segments
         id="-15"
         epoch_id="-31"
         name="Low Risk 2"
         />
    <periods
         id="-118"
-        arm_id="-15"
+        study_segment_id="-15"
         name="Period118"
         start_day="1"
         duration_quantity="5"
@@ -665,7 +665,7 @@
         />
    <periods
         id="-119"
-        arm_id="-15"
+        study_segment_id="-15"
         name="Period119"
         start_day="2"
         duration_quantity="5"
@@ -673,21 +673,21 @@
         />
    <periods
         id="-120"
-        arm_id="-15"
+        study_segment_id="-15"
         name="Period120"
         start_day="3"
         duration_quantity="5"
         duration_unit="day"
         />
    
-   <arms
+   <study_segments
         id="-16"
         epoch_id="-31"
         name="Low Risk 3"
         />
    <periods
         id="-121"
-        arm_id="-16"
+        study_segment_id="-16"
         name="Period121"
         start_day="1"
         duration_quantity="5"

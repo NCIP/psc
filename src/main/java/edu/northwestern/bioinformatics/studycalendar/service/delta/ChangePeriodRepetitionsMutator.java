@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -31,15 +31,15 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
 
     @Override
     public void apply(ScheduledCalendar calendar) {
-        Collection<ScheduledArm> arms = getScheduledArmsToMutate(calendar);
+        Collection<ScheduledStudySegment> studySegments = getScheduledStudySegmentsToMutate(calendar);
 
-        if (newRepetitionCount < oldRepetitionCount) decrease(arms);
-        else increase(arms);
+        if (newRepetitionCount < oldRepetitionCount) decrease(studySegments);
+        else increase(studySegments);
     }
 
-    private void decrease(Collection<ScheduledArm> arms) {
-        for (ScheduledArm scheduledArm : arms) {
-            for (ScheduledActivity event : scheduledArm.getEvents()) {
+    private void decrease(Collection<ScheduledStudySegment> studySegments) {
+        for (ScheduledStudySegment scheduledStudySegment : studySegments) {
+            for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
                 if (event.getRepetitionNumber() >= newRepetitionCount && getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     log.debug("Possibly canceling event from rep {}", event.getRepetitionNumber());
                     event.unscheduleIfOutstanding(createDecreaseMessage(event));
@@ -56,12 +56,12 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
             .toString();
     }
 
-    private void increase(Collection<ScheduledArm> arms) {
+    private void increase(Collection<ScheduledStudySegment> studySegments) {
         for (int r = oldRepetitionCount ; r < newRepetitionCount ; r++) {
-            for (ScheduledArm scheduledArm : arms) {
+            for (ScheduledStudySegment scheduledStudySegment : studySegments) {
                 subjectService.schedulePeriod(getChangedPeriod(),
                     // TODO: eliminate this cast
-                    (Amendment) change.getDelta().getRevision(), scheduledArm, r);
+                    (Amendment) change.getDelta().getRevision(), scheduledStudySegment, r);
             }
         }
     }

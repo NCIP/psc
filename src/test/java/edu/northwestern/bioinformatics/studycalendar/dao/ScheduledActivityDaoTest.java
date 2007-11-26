@@ -37,7 +37,7 @@ public class ScheduledActivityDaoTest extends ContextDaoTestCase<ScheduledActivi
         ScheduledActivity loaded = getDao().getById(-10);
 
         assertEquals("Wrong planned event", -6, (int) loaded.getPlannedActivity().getId());
-        assertEquals("Wrong scheduled arm", -22, (int) loaded.getScheduledArm().getId());
+        assertEquals("Wrong scheduled studySegment", -22, (int) loaded.getScheduledStudySegment().getId());
         assertEquals("Wrong activity id", -100, (int) loaded.getActivity().getId());
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, loaded.getIdealDate());
         assertEquals("Wrong notes", "Boo!", loaded.getNotes());

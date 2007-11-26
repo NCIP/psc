@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -16,7 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
  * @author Rhett Sutphin
  */
 public class AddPeriodMutatorTest extends StudyCalendarTestCase {
-    private static final int ARM_ID = 11;
+    private static final int STUDY_SEGMENT_ID = 11;
     private static final int PERIOD_ID = 83;
 
     private AddPeriodMutator mutator;
@@ -24,7 +24,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
     private Amendment amendment;
     private Add add;
 
-    private Arm arm;
+    private StudySegment studySegment;
     private Period period;
     private ScheduledCalendar scheduledCalendar;
 
@@ -34,12 +34,12 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        arm = setId(ARM_ID, createNamedInstance("A1", Arm.class));
+        studySegment = setId(STUDY_SEGMENT_ID, createNamedInstance("A1", StudySegment.class));
         period = setId(PERIOD_ID, createPeriod("P1", 4, 17, 8));
         add = Add.create(period);
 
         amendment = Fixtures.createAmendments("Oops");
-        amendment.addDelta(Delta.createDeltaFor(arm, add));
+        amendment.addDelta(Delta.createDeltaFor(studySegment, add));
 
         scheduledCalendar = new ScheduledCalendar();
 
@@ -53,8 +53,8 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         assertTrue(mutator.appliesToExistingSchedules());
     }
 
-    public void testApplyWhenNoRelevantScheduledArms() throws Exception {
-        scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
+    public void testApplyWhenNoRelevantScheduledStudySegments() throws Exception {
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
 
         // expect nothing to happen
 
@@ -63,24 +63,24 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         verifyMocks();
     }
     
-    public void testApplyToOneRelevantScheduledArm() throws Exception {
-        scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
-        scheduledCalendar.addArm(createScheduledArm(arm));
+    public void testApplyToOneRelevantScheduledStudySegment() throws Exception {
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(1));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(1));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
         verifyMocks();
     }
 
-    public void testApplyToMultipleRelevantScheduledArms() throws Exception {
-        scheduledCalendar.addArm(createScheduledArm(arm));
-        scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
-        scheduledCalendar.addArm(createScheduledArm(arm));
+    public void testApplyToMultipleRelevantScheduledStudySegments() throws Exception {
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(0));
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledArms().get(2));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(0));
+        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(2));
 
         replayMocks();
         mutator.apply(scheduledCalendar);

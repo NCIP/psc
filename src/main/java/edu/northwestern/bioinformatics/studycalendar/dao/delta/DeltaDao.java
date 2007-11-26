@@ -36,6 +36,7 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
             ),
             node.getId()
         );
+
         log.debug("Found {}", deltas);
         return CollectionUtils.firstElement(deltas);
     }

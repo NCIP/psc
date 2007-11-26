@@ -45,7 +45,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         parent = createNamedInstance("Root", Study.class);
         parent.setPlannedCalendar(new PlannedCalendar());
         parent.getPlannedCalendar().addEpoch(Epoch.create("Holocene", "Middle"));
-        parent.getPlannedCalendar().getEpochs().get(0).getArms().get(0).addPeriod(period);
+        parent.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0).addPeriod(period);
         parent.setDevelopmentAmendment(new Amendment("dev"));
         Fixtures.assignIds(parent);
 
@@ -162,7 +162,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         assertEquals(revisedPeriod, model.get("period"));
         assertEquals(activities, model.get("activities"));
         assertNotNull(model.get("activitiesById"));
-        assertEquals(period.getArm().getEpoch().getPlannedCalendar().getStudy(), model.get("study"));
+        assertEquals(period.getStudySegment().getEpoch().getPlannedCalendar().getStudy(), model.get("study"));
     }
 
     public void testReferenceDataIncludesNewActivityIfParamPresent() throws Exception {

@@ -23,7 +23,7 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
 
     private PlannedActivity pe0, pe1, pe2;
     ScheduledCalendar scheduledCalendar;
-    ScheduledArm scheduledArm;
+    ScheduledStudySegment scheduledStudySegment;
 
     private PlannedActivityDao plannedActivityDao;
     private ScheduledActivity pe0se0, pe1se0, pe1se1, pe2se0, pe0se1;
@@ -42,12 +42,12 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
         amendment.addDelta(delta);
 
         scheduledCalendar = new ScheduledCalendar();
-        scheduledArm = new ScheduledArm();
-        scheduledArm.addEvent(pe0se0 = createUnschedulableMockEvent(pe0));
-        scheduledArm.addEvent(pe1se0 = createUnschedulableMockEvent(pe1));
-        scheduledArm.addEvent(pe1se1 = createUnschedulableMockEvent(pe1));
-        scheduledArm.addEvent(pe2se0 = createUnschedulableMockEvent(pe2));
-        scheduledArm.addEvent(pe0se1 = createUnschedulableMockEvent(pe0));
+        scheduledStudySegment = new ScheduledStudySegment();
+        scheduledStudySegment.addEvent(pe0se0 = createUnschedulableMockEvent(pe0));
+        scheduledStudySegment.addEvent(pe1se0 = createUnschedulableMockEvent(pe1));
+        scheduledStudySegment.addEvent(pe1se1 = createUnschedulableMockEvent(pe1));
+        scheduledStudySegment.addEvent(pe2se0 = createUnschedulableMockEvent(pe2));
+        scheduledStudySegment.addEvent(pe0se1 = createUnschedulableMockEvent(pe0));
 
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         mutator = new RemovePlannedActivityMutator(remove, plannedActivityDao);
@@ -58,7 +58,7 @@ public class RemovePlannedActivityMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testOnlyApplicableScheduledActivitiesUnscheduled() throws Exception {
-        scheduledCalendar.addArm(scheduledArm);
+        scheduledCalendar.addStudySegment(scheduledStudySegment);
 
         String expectedMessage = "Removed in revision 09/01/1922 (Oops)";
         pe1se0.unscheduleIfOutstanding(expectedMessage);

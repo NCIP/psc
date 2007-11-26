@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DeltaDaoTest extends DaoTestCase {
     private DeltaDao deltaDao = (DeltaDao) getApplicationContext().getBean("deltaDao");
-    private ArmDao armDao = (ArmDao) getApplicationContext().getBean("armDao");
+    private StudySegmentDao studySegmentDao = (StudySegmentDao) getApplicationContext().getBean("studySegmentDao");
     private PeriodDao periodDao = (PeriodDao) getApplicationContext().getBean("periodDao");
 
     public void testLoadAddChanges() throws Exception {
@@ -95,26 +95,26 @@ public class DeltaDaoTest extends DaoTestCase {
             PlannedActivity.class.isAssignableFrom(actual.getNode().getClass()));
     }
 
-    public void testFindOriginalAddDeltaForArm() throws Exception {
-        Arm arm = armDao.getById(-3);
-        assertNotNull("Test setup failure", arm);
-        Delta<Epoch> found = deltaDao.findDeltaWhereAdded(arm);
+    public void testFindOriginalAddDeltaForStudySegment() throws Exception {
+        StudySegment studySegment = studySegmentDao.getById(-3);
+        assertNotNull("Test setup failure", studySegment);
+        Delta<Epoch> found = deltaDao.findDeltaWhereAdded(studySegment);
         assertNotNull("Delta not found", found);
         assertEquals("Wrong delta found", -100, (int) found.getId());
     }
 
-    public void testFindOriginalAddDeltaForPeriodWithSameIdAsArm() throws Exception {
+    public void testFindOriginalAddDeltaForPeriodWithSameIdAsStudySegment() throws Exception {
         Period period = periodDao.getById(-3);
         assertNotNull("Test setup failure", period);
-        Delta<Arm> found = deltaDao.findDeltaWhereAdded(period);
+        Delta<StudySegment> found = deltaDao.findDeltaWhereAdded(period);
         assertNotNull("Delta not found", found);
         assertEquals("Wrong delta found", -220, (int) found.getId());
     }
 
-    public void testFindMostRecentRemoveDeltaForArm() throws Exception {
-        Arm arm = armDao.getById(-3);
-        assertNotNull("Test setup failure", arm);
-        Delta<Epoch> found = deltaDao.findDeltaWhereRemoved(arm);
+    public void testFindMostRecentRemoveDeltaForStudySegment() throws Exception {
+        StudySegment studySegment = studySegmentDao.getById(-3);
+        assertNotNull("Test setup failure", studySegment);
+        Delta<Epoch> found = deltaDao.findDeltaWhereRemoved(studySegment);
         assertNotNull("Delta not found", found);
         assertEquals("Wrong delta found", -103, (int) found.getId());
     }

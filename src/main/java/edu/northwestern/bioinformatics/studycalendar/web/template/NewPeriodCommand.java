@@ -1,17 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
 /**
  * @author Moses Hohman
  */
 public class NewPeriodCommand implements PeriodCommand {
-    private Arm arm;
+    private StudySegment studySegment;
     private Period period;
     private AmendmentService amendmentService;
 
@@ -23,18 +21,18 @@ public class NewPeriodCommand implements PeriodCommand {
     // TODO: this is going to have to be an arbitrary revision at some point
     // (i.e. for Customizations)
     public void apply() {
-        amendmentService.updateDevelopmentAmendment(getArm(), Add.create(getPeriod()));
+        amendmentService.updateDevelopmentAmendment(getStudySegment(), Add.create(getPeriod()));
     }
 
     public Period getPeriod() {
         return period;
     }
 
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        this.studySegment = studySegment;
     }
 }

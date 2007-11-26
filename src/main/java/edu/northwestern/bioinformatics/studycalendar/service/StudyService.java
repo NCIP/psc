@@ -31,7 +31,7 @@ public class StudyService {
                     reconsentEvent.setDetails(details);
                     reconsentEvent.setActivity(reconsent);
                     reconsentEvent.setSourceAmendment(study.getAmendment());
-                    upcomingScheduledActivity.getScheduledArm().addEvent(reconsentEvent);
+                    upcomingScheduledActivity.getScheduledStudySegment().addEvent(reconsentEvent);
                 }
             }
         }
@@ -39,9 +39,9 @@ public class StudyService {
     }
 
     private ScheduledActivity getNextScheduledActivity(ScheduledCalendar calendar, Date startDate) {
-        for (ScheduledArm arm : calendar.getScheduledArms()) {
-            if (!arm.isComplete()) {
-                Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();
+        for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
+            if (!studySegment.isComplete()) {
+                Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
                 for(Date date: eventsByDate.keySet()) {
                     List<ScheduledActivity> events = eventsByDate.get(date);
                     for(ScheduledActivity event : events) {

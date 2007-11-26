@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
@@ -21,24 +21,24 @@ public class AddToCommand extends EditTemplateCommand {
 
     @Override
     protected Mode epochMode() {
-        return new AddArm();
+        return new AddStudySegment();
     }
 
-    private class AddArm implements Mode {
+    private class AddStudySegment implements Mode {
         public String getRelativeViewName() {
-            return "addArm";
+            return "addStudySegment";
         }
 
         public void performEdit() {
-            Arm arm = new Arm();
-            arm.setName("[Unnamed arm]");
-            updateRevision(getEpoch(), Add.create(arm, getEpoch().getArms().size()));
+            StudySegment studySegment = new StudySegment();
+            studySegment.setName("[Unnamed study segment]");
+            updateRevision(getEpoch(), Add.create(studySegment, getEpoch().getStudySegments().size()));
         }
 
         @SuppressWarnings({ "unchecked" })
         public Map<String, Object> getModel() {
-            List<Arm> arms = getRevisedEpoch().getArms();
-            return new ModelMap("arm", arms.get(arms.size() - 1));
+            List<StudySegment> studySegments = getRevisedEpoch().getStudySegments();
+            return new ModelMap("studySegment", studySegments.get(studySegments.size() - 1));
         }
     }
 

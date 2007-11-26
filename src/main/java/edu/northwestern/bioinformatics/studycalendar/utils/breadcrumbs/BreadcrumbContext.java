@@ -17,14 +17,14 @@ public class BreadcrumbContext {
     private Study study;
     private PlannedCalendar plannedCalendar;
     private Epoch epoch;
-    private Arm arm;
+    private StudySegment studySegment;
     private Period period;
     private PlannedActivity plannedActivity;
 
     private Subject subject;
     private StudySubjectAssignment studySubjectAssignment;
     private ScheduledCalendar scheduledCalendar;
-    private ScheduledArm scheduledArm;
+    private ScheduledStudySegment scheduledStudySegment;
     private ScheduledActivity scheduledActivity;
 
     private Site site;
@@ -84,15 +84,15 @@ public class BreadcrumbContext {
         this.epoch = epoch;
     }
 
-    public void setArm(Arm arm) {
-        if (arm == null) return;
-        setEpoch(templateService.findParent(arm));
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        if (studySegment == null) return;
+        setEpoch(templateService.findParent(studySegment));
+        this.studySegment = studySegment;
     }
 
     public void setPeriod(Period period) {
         if (period == null) return;
-        setArm(templateService.findParent(period));
+        setStudySegment(templateService.findParent(period));
         this.period = period;
     }
 
@@ -120,16 +120,16 @@ public class BreadcrumbContext {
         this.scheduledCalendar = scheduledCalendar;
     }
 
-    public void setScheduledArm(ScheduledArm scheduledArm) {
-        if (scheduledArm == null) return;
-        setScheduledCalendar(scheduledArm.getScheduledCalendar());
-        setArm(scheduledArm.getArm());
-        this.scheduledArm = scheduledArm;
+    public void setScheduledStudySegment(ScheduledStudySegment scheduledStudySegment) {
+        if (scheduledStudySegment == null) return;
+        setScheduledCalendar(scheduledStudySegment.getScheduledCalendar());
+        setStudySegment(scheduledStudySegment.getStudySegment());
+        this.scheduledStudySegment = scheduledStudySegment;
     }
 
     public void setScheduledActivity(ScheduledActivity scheduledActivity) {
         if (scheduledActivity == null) return;
-        setScheduledArm(scheduledActivity.getScheduledArm());
+        setScheduledStudySegment(scheduledActivity.getScheduledStudySegment());
         setPlannedActivity(scheduledActivity.getPlannedActivity());
         this.scheduledActivity = scheduledActivity;
     }
@@ -170,8 +170,8 @@ public class BreadcrumbContext {
         return epoch;
     }
 
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
     public Period getPeriod() {
@@ -194,8 +194,8 @@ public class BreadcrumbContext {
         return scheduledCalendar;
     }
 
-    public ScheduledArm getScheduledArm() {
-        return scheduledArm;
+    public ScheduledStudySegment getScheduledStudySegment() {
+        return scheduledStudySegment;
     }
 
     public ScheduledActivity getScheduledActivity() {

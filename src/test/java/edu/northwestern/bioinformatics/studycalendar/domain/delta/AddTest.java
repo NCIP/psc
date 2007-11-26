@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -40,13 +40,13 @@ public class AddTest extends StudyCalendarTestCase {
     }
 
     public void testSetNewChildIdClearsNewChildIfIdsDoNotMatch() throws Exception {
-        add.setChild(setId(3, new Arm()));
+        add.setChild(setId(3, new StudySegment()));
         add.setChildId(15);
         assertNull("New child not cleared", add.getChild());
     }
 
     public void testSetNewChildIdKeepsNewChildIfIdsMatch() throws Exception {
-        Arm expectedChild = setId(15, new Arm());
+        StudySegment expectedChild = setId(15, new StudySegment());
         add.setChild(expectedChild);
         add.setChildId(expectedChild.getId());
         assertSame("New child incorrectly cleared", expectedChild, add.getChild());
@@ -213,14 +213,14 @@ public class AddTest extends StudyCalendarTestCase {
     }
     
     public void testDeleteRemoveSibWhenNodeChildrenUnordered() throws Exception {
-        Arm arm = new Arm();
+        StudySegment studySegment = new StudySegment();
         Period existingPeriod = new Period();
-        arm.addPeriod(existingPeriod);
+        studySegment.addPeriod(existingPeriod);
         Remove toDel = Remove.create(existingPeriod);
         Add after = Add.create(createNamedInstance("New", Period.class), 1);
-        Delta<?> armDelta = Delta.createDeltaFor(arm, toDel, after);
+        Delta<?> studySegmentDelta = Delta.createDeltaFor(studySegment, toDel, after);
 
-        after.siblingDeleted(armDelta, toDel, 0, 1);
+        after.siblingDeleted(studySegmentDelta, toDel, 0, 1);
         assertEquals(1, (int) after.getIndex());
     }
 

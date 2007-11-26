@@ -27,7 +27,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     private SubjectService subjectService;
     private SiteService siteService;
     private StudyDao studyDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
     private UserDao userDao;
     private SiteDao siteDao;
 
@@ -42,7 +42,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
-        getControllerTools().registerDomainObjectEditor(binder, "arm", armDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
         getControllerTools().registerDomainObjectEditor(binder, "site", siteDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "subject", subjectDao);
@@ -58,11 +58,11 @@ public class AssignSubjectController extends PscSimpleFormController {
         refdata.put("subjects", subjects);
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         getControllerTools().addHierarchyToModel(epoch, refdata);
-        List<Arm> arms = epoch.getArms();
-        if (arms.size() > 1) {
-            refdata.put("arms", arms);
+        List<StudySegment> studySegments = epoch.getStudySegments();
+        if (studySegments.size() > 1) {
+            refdata.put("studySegments", studySegments);
         } else {
-            refdata.put("arms", Collections.emptyList());
+            refdata.put("studySegments", Collections.emptyList());
         }
         return refdata;
     }
@@ -114,8 +114,8 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 
     @Required

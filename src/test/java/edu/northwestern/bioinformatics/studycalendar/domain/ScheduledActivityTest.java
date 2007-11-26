@@ -99,8 +99,8 @@ public class ScheduledActivityTest extends StudyCalendarTestCase {
         ScheduledCalendar calendar = new ScheduledCalendar();
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         calendar.setAssignment(assignment);
-        calendar.addArm(new ScheduledArm());
-        calendar.getScheduledArms().get(0).addEvent(scheduledActivity);
+        calendar.addStudySegment(new ScheduledStudySegment());
+        calendar.getScheduledStudySegments().get(0).addEvent(scheduledActivity);
         scheduledActivity.changeState(new Canceled());
         assignment.setEndDateEpoch(DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
         

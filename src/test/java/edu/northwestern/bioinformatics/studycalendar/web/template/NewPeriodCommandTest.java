@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
@@ -19,10 +19,10 @@ public class NewPeriodCommandTest extends StudyCalendarTestCase {
     }
     
     public void testApply() throws Exception {
-        Arm arm = new Arm();
-        command.setArm(arm);
+        StudySegment studySegment = new StudySegment();
+        command.setStudySegment(studySegment);
 
-        amendmentService.updateDevelopmentAmendment(arm, Add.create(command.getPeriod()));
+        amendmentService.updateDevelopmentAmendment(studySegment, Add.create(command.getPeriod()));
         replayMocks();
         command.apply();
         verifyMocks();

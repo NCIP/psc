@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -36,7 +36,7 @@ public class RenameCommandTest extends EditCommandTestCase {
         assertRenamed("Study", study);
     }
 
-    public void testRenameMultiArmEpoch() throws Exception {
+    public void testRenameMultiStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1", "A", "B");
         command.setEpoch(epoch);
 
@@ -46,7 +46,7 @@ public class RenameCommandTest extends EditCommandTestCase {
         assertPropertyChange("Epoch not renamed", "name", "E1", NEW_NAME, lastChange());
     }
 
-    public void testRenameNoArmEpoch() throws Exception {
+    public void testRenameNoStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1");
         command.setEpoch(epoch);
 
@@ -54,35 +54,35 @@ public class RenameCommandTest extends EditCommandTestCase {
         assertEquals("Wrong number of deltas", 2, study.getDevelopmentAmendment().getDeltas().size());
         assertPropertyChange("Epoch not renamed", "name", "E1", NEW_NAME,
             study.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0));
-        assertPropertyChange("Sole arm not renamed", "name", "E1", NEW_NAME, lastChange());
+        assertPropertyChange("Sole studySegment not renamed", "name", "E1", NEW_NAME, lastChange());
     }
 
-    public void testRenameArmFromMultiArmEpoch() throws Exception {
+    public void testRenameStudySegmentFromMultiStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1", "A", "B");
-        command.setArm(epoch.getArms().get(0));
+        command.setStudySegment(epoch.getStudySegments().get(0));
 
         doApply();
         assertEquals("Wrong number of deltas", 1,
             study.getDevelopmentAmendment().getDeltas().size());
-        assertEquals("Wrong affected node", epoch.getArms().get(0), lastDelta().getNode());
-        assertPropertyChange("Arm not renamed", "name", "A", NEW_NAME, lastChange());
+        assertEquals("Wrong affected node", epoch.getStudySegments().get(0), lastDelta().getNode());
+        assertPropertyChange("StudySegment not renamed", "name", "A", NEW_NAME, lastChange());
     }
 
-    public void testRenameArmOfNoArmEpoch() throws Exception {
+    public void testRenameStudySegmentOfNoStudySegmentEpoch() throws Exception {
         Epoch epoch = createAndAddEpoch("E1");
-        command.setArm(epoch.getArms().get(0));
+        command.setStudySegment(epoch.getStudySegments().get(0));
 
         doApply();
         assertEquals("Wrong number of deltas", 2, study.getDevelopmentAmendment().getDeltas().size());
-        assertPropertyChange("Sole arm not renamed", "name", "E1", NEW_NAME,
+        assertPropertyChange("Sole studySegment not renamed", "name", "E1", NEW_NAME,
             study.getDevelopmentAmendment().getDeltas().get(0).getChanges().get(0));
         assertPropertyChange("Epoch not renamed", "name", "E1", NEW_NAME, lastChange());
     }
     
-    private Epoch createAndAddEpoch(String epochName, String... armNames) {
-        Epoch epoch = setId(20, Epoch.create(epochName, armNames));
-        int armId = 200;
-        for (Arm arm : epoch.getArms()) arm.setId(++armId);
+    private Epoch createAndAddEpoch(String epochName, String... studySegmentNames) {
+        Epoch epoch = setId(20, Epoch.create(epochName, studySegmentNames));
+        int studySegmentId = 200;
+        for (StudySegment studySegment : epoch.getStudySegments()) studySegment.setId(++studySegmentId);
         study.getPlannedCalendar().addEpoch(epoch);
         return epoch;
     }

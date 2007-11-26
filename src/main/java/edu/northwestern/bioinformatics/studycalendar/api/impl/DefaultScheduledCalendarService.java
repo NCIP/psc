@@ -23,16 +23,16 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private SubjectService subjectService;
     private StudyDao studyDao;
     private SiteDao siteDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private UserDao userDao;
 
     public ScheduledCalendar assignSubject(
-        Study study, Subject subject, Site site, Arm firstArm, Date startDate,String assignmentGridId
+        Study study, Subject subject, Site site, StudySegment firstStudySegment, Date startDate,String assignmentGridId
     ) {
-        ParameterLoader loader = new ParameterLoader(study, site, firstArm);
+        ParameterLoader loader = new ParameterLoader(study, site, firstStudySegment);
 
         Subject loadedSubject = load(subject, subjectDao, false);
         if (loadedSubject == null) {
@@ -44,17 +44,17 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             if (assignment != null) {
                 throw new IllegalArgumentException(
                     "Subject already assigned to this study.  " +
-                    "Use scheduleNextArm to change to the next arm.");
+                    "Use scheduleNextStudySegment to change to the next studySegment.");
             }
         }
 
         StudySite join = loader.validateSiteInStudy();
-        loader.validateArmInStudy();
+        loader.validateStudySegmentInStudy();
 
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
         StudySubjectAssignment newAssignment = subjectService.assignSubject(
-            loadedSubject, join, loader.getArm(), startDate, assignmentGridId, user);
+            loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user);
         return newAssignment.getScheduledCalendar();
     }
 
@@ -87,11 +87,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         return loader.getScheduledActivity();
     }
 
-    public void scheduleNextArm(
-        Study study, Subject subject, Site site, Arm nextArm, NextArmMode mode, Date startDate
+    public void scheduleNextStudySegment(
+        Study study, Subject subject, Site site, StudySegment nextStudySegment, NextStudySegmentMode mode, Date startDate
     ) {
-        ParameterLoader loader = new ParameterLoader(study, subject, site, nextArm);
-        subjectService.scheduleArm(loader.findAssignment(), loader.getArm(), startDate, mode);
+        ParameterLoader loader = new ParameterLoader(study, subject, site, nextStudySegment);
+        subjectService.scheduleStudySegment(loader.findAssignment(), loader.getStudySegment(), startDate, mode);
     }
 
     public void registerSevereAdverseEvent(Study study, Subject subject, Site site, AdverseEvent adverseEvent) {
@@ -139,8 +139,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     @Required
-    public void setArmDao(ArmDao armDao) {
-        this.armDao = armDao;
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 
     @Required
@@ -190,7 +190,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         private Study study;
         private Subject subject;
         private Site site;
-        private Arm arm;
+        private StudySegment studySegment;
         private ScheduledActivity scheduledActivity;
 
         public ParameterLoader(Study study, Subject subject, Site site) {
@@ -199,17 +199,17 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             loadSite(site);
         }
 
-        public ParameterLoader(Study study, Subject subject, Site site, Arm arm) {
+        public ParameterLoader(Study study, Subject subject, Site site, StudySegment studySegment) {
             loadStudy(study);
             loadSubject(subject);
             loadSite(site);
-            loadArm(arm);
+            loadStudySegment(studySegment);
         }
 
-        public ParameterLoader(Study study, Site site, Arm arm) {
+        public ParameterLoader(Study study, Site site, StudySegment studySegment) {
             loadStudy(study);
             loadSite(site);
-            loadArm(arm);
+            loadStudySegment(studySegment);
         }
 
         public ParameterLoader(ScheduledActivity scheduledActivity) {
@@ -230,8 +230,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             this.subject = load(parameterSubject, subjectDao);
         }
 
-        private void loadArm(Arm parameterArm) {
-            this.arm = parameterArm == null ? null : load(parameterArm, armDao);
+        private void loadStudySegment(StudySegment parameterStudySegment) {
+            this.studySegment = parameterStudySegment == null ? null : load(parameterStudySegment, studySegmentDao);
         }
 
         private void loadEvent(ScheduledActivity parameterEvent) {
@@ -250,13 +250,13 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                 + " not associated with study " + this.getStudy().getGridId());
         }
 
-        public void validateArmInStudy() {
+        public void validateStudySegmentInStudy() {
             for (Epoch epoch : getStudy().getPlannedCalendar().getEpochs()) {
-                if (epoch.getArms().contains(getArm())) {
+                if (epoch.getStudySegments().contains(getStudySegment())) {
                     return;
                 }
             }
-            throw new IllegalArgumentException("Arm " + getArm().getGridId()
+            throw new IllegalArgumentException("StudySegment " + getStudySegment().getGridId()
                 + " not part of template for study " + getStudy().getGridId());
         }
 
@@ -278,11 +278,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             return site;
         }
 
-        public Arm getArm() {
-            if (arm == null) {
-                return getStudy().getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+        public StudySegment getStudySegment() {
+            if (studySegment == null) {
+                return getStudy().getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
             } else {
-                return arm;
+                return studySegment;
             }
         }
 

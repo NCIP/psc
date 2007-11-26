@@ -56,7 +56,7 @@
         list_index="0"
         />
 
-    <arms
+    <study_segments
         id="-30"
         epoch_id="-20"
         list_index="0"
@@ -64,7 +64,7 @@
         />
     <periods
         id="-40"
-        arm_id="-30"
+        study_segment_id="-30"
         duration_quantity="7"
         repetitions="4"
         />
@@ -75,7 +75,7 @@
         day="3"
         />
 
-    <arms
+    <study_segments
         id="-31"
         epoch_id="-20"
         list_index="1"
@@ -83,7 +83,7 @@
         />
     <periods
         id="-41"
-        arm_id="-31"
+        study_segment_id="-31"
         duration_quantity="14"
         repetitions="4"
         />
@@ -108,7 +108,7 @@
         list_index="1"
         />
 
-    <arms
+    <study_segments
         id="-35"
         epoch_id="-21"
         list_index="0"
@@ -116,7 +116,7 @@
         />
     <periods
         id="-42"
-        arm_id="-35"
+        study_segment_id="-35"
         duration_quantity="10"
         repetitions="1"
         />

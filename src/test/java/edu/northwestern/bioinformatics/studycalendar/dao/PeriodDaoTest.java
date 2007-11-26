@@ -19,7 +19,7 @@ public class PeriodDaoTest extends ContextDaoTestCase<PeriodDao> {
 
         assertNotNull("Test period not found", loaded);
         assertEquals("Wrong id", new Integer(-100), loaded.getId());
-        assertEquals("Wrong arm", new Integer(-200), loaded.getArm().getId());
+        assertEquals("Wrong studySegment", new Integer(-200), loaded.getStudySegment().getId());
         assertEquals("Wrong start day", new Integer(8), loaded.getStartDay());
         assertEquals("Wrong name", "Treatment", loaded.getName());
         assertEquals("Wrong duration quantity", new Integer(6), loaded.getDuration().getQuantity());

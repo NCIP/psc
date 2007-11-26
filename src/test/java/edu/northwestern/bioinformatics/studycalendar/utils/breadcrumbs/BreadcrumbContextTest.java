@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -24,12 +24,12 @@ public class BreadcrumbContextTest extends StudyCalendarTestCase {
     public void testSetPlannedElementsUsesTemplateServiceToResolveAncestors() throws Exception {
         PlannedCalendar plannedCalendar = new PlannedCalendar();
         Epoch epoch = new Epoch();
-        Arm arm = new Arm();
+        StudySegment studySegment = new StudySegment();
         Period period = new Period();
         PlannedActivity plannedActivity = new PlannedActivity();
         expect(templateService.findParent(plannedActivity)).andReturn(period);
-        expect(templateService.findParent(period)).andReturn(arm);
-        expect(templateService.findParent(arm)).andReturn(epoch);
+        expect(templateService.findParent(period)).andReturn(studySegment);
+        expect(templateService.findParent(studySegment)).andReturn(epoch);
         expect(templateService.findParent(epoch)).andReturn(plannedCalendar);
 
         replayMocks();
@@ -38,7 +38,7 @@ public class BreadcrumbContextTest extends StudyCalendarTestCase {
 
         assertSame(plannedActivity, context.getPlannedActivity());
         assertSame(period, context.getPeriod());
-        assertSame(arm, context.getArm());
+        assertSame(studySegment, context.getStudySegment());
         assertSame(epoch, context.getEpoch());
         assertSame(plannedCalendar, context.getPlannedCalendar());
     }

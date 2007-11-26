@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
@@ -65,9 +65,9 @@ public class ScheduleActivityController extends PscSimpleFormController {
         ScheduleActivityCommand command = (ScheduleActivityCommand) oCommand;
         command.apply();
         Map<String, Object> model = new HashMap<String, Object>();
-        ScheduledArm arm = command.getEvent().getScheduledArm();
-        model.put("arm", arm.getId());
-        model.put("calendar", arm.getScheduledCalendar().getId());
+        ScheduledStudySegment studySegment = command.getEvent().getScheduledStudySegment();
+        model.put("studySegment", studySegment.getId());
+        model.put("calendar", studySegment.getScheduledCalendar().getId());
         return new ModelAndView("redirectToSchedule", model);
     }
 

@@ -39,7 +39,7 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"sem.name as state_name, " +
 				"se.current_state_date as date," +
 				"se.ideal_date as ideal_date," +
-				"a.name as arm_name," +
+				"a.name as study_segment_name," +
 				"e.name as epoch_name, " +
 				"p.first_name as p_first_name, " +
 				"p.last_name as p_last_name, " + 
@@ -51,12 +51,12 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"inner join subject_assignments sas on ss.id=pa.study_site_id " +
 				"inner join subjects s on sas.subject_id=p.id " +
 				"inner join scheduled_calendars sc on sas.id=sc.assignment_id " +
-				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_activities sac on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_study_segments sa on sc.id=sa.scheduled_calendar_id " +
+				"inner join scheduled_activities sac on sa.id=se.scheduled_study_segment_id " +
 				"inner join scheduled_activity_modes sam on sac.current_state_mode_id=sem.id " +
 				"inner join planned_activities pa on sac.planned_activity_id=pe.id " +
 				"inner join activities act on pa.activity_id=act.id " +
-				"inner join arms a on sa.arm_id=a.id " +
+				"inner join study_segments a on sa.study_segment_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
 			"order by se.id";
 				
@@ -103,7 +103,7 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"sem.name as state_name, " +
 				"se.current_state_date as date," +
 				"se.ideal_date as ideal_date," +
-				"a.name as arm_name," +
+				"a.name as study_segment_name," +
 				"e.name as epoch_name, " +
 				"p.first_name as p_first_name, " +
 				"p.last_name as p_last_name, " + 
@@ -115,12 +115,12 @@ public class ReportRowDao extends HibernateDaoSupport {
 				"inner join subject_assignments sas on ss.id=pa.study_site_id " +
 				"inner join subjects s on sas.subject_id=p.id " +
 				"inner join scheduled_calendars sc on sas.id=sc.assignment_id " +
-				"inner join scheduled_arms sa on sc.id=sa.scheduled_calendar_id " +
-				"inner join scheduled_activities sac on sa.id=se.scheduled_arm_id " +
+				"inner join scheduled_study_segments sa on sc.id=sa.scheduled_calendar_id " +
+				"inner join scheduled_activities sac on sa.id=se.scheduled_study_segment_id " +
 				"inner join scheduled_activity_modes sam on sac.current_state_mode_id=sem.id " +
 				"inner join planned_activities pa on sac.planned_activity_id=pe.id " +
 				"inner join activities act on pa.activity_id=act.id " +
-				"inner join arms a on sa.arm_id=a.id " +
+				"inner join study_segments a on sa.study_segment_id=a.id " +
 				"inner join epochs e on a.epoch_id=e.id " +
 				getWhere(sitesFinal, studiesFinal, subjectsFinal, startDateFinal, endDateFinal) +
 			" order by se.id";

@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
@@ -32,7 +32,7 @@ public class AddToCommandTest extends EditCommandTestCase {
         assertEquals("Added with wrong index", 0, (int) actualAdd.getIndex());
         Epoch actualEpoch = (Epoch) (PlanTreeNode) actualAdd.getChild(); // double cast for javac bug
         assertEquals("Wrong name on new epoch", "[Unnamed epoch]", actualEpoch.getName());
-        assertEquals("Epoch missing single arm", 1, actualEpoch.getArms().size());
+        assertEquals("Epoch missing single studySegment", 1, actualEpoch.getStudySegments().size());
     }
 
     public void testStudyModeModel() throws Exception {
@@ -57,31 +57,31 @@ public class AddToCommandTest extends EditCommandTestCase {
         command.setEpoch(epoch);
         command.setStudy(study);
 
-        assertEquals("Test setup failure", 2, epoch.getArms().size());
+        assertEquals("Test setup failure", 2, epoch.getStudySegments().size());
 
         command.performEdit();
 
         assertEquals("Epoch directly modified: " + study.getAmendment(),
-            2, epoch.getArms().size());
+            2, epoch.getStudySegments().size());
 
         Add actualAdd = DeltaAssertions.assertChangeIsAdd("Bad change", lastChange());
         assertEquals("Added with wrong index", 2, (int) actualAdd.getIndex());
-        Arm addedArm = (Arm) (PlanTreeNode) actualAdd.getChild(); // double cast for javac bug
-        assertEquals("Wrong name for new arm", "[Unnamed arm]", addedArm.getName());
+        StudySegment addedStudySegment = (StudySegment) (PlanTreeNode) actualAdd.getChild(); // double cast for javac bug
+        assertEquals("Wrong name for new study segment", "[Unnamed study segment]", addedStudySegment.getName());
     }
     
     public void testEpochModeModel() throws Exception {
         Epoch epoch = Epoch.create("E1", "A", "B");
         study.getPlannedCalendar().addEpoch(epoch);
-        Arm newArm = epoch.getArms().remove(1);
+        StudySegment newStudySegment = epoch.getStudySegments().remove(1);
         study.getDevelopmentAmendment().addDelta(
-            Delta.createDeltaFor(epoch, Add.create(newArm, 1)));
+            Delta.createDeltaFor(epoch, Add.create(newStudySegment, 1)));
         Fixtures.assignIds(study);
 
         command.setEpoch(epoch);
         command.setStudy(study);
 
         Map<String, Object> model = command.getModel();
-        assertEquals("Wrong arm", newArm.getName(), ((Arm) model.get("arm")).getName());
+        assertEquals("Wrong studySegment", newStudySegment.getName(), ((StudySegment) model.get("studySegment")).getName());
     }
 }

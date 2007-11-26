@@ -605,15 +605,15 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertSame(study.getPlannedCalendar(),
             service.findParent(study.getPlannedCalendar().getEpochs().get(1)));
         assertSame(study.getPlannedCalendar().getEpochs().get(1),
-            service.findParent(study.getPlannedCalendar().getEpochs().get(1).getArms().get(0)));
+            service.findParent(study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0)));
     }
     
     public void testFindParentWhenNotImmediatelyAvailable() throws Exception {
         Study study = Fixtures.createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
-        Arm e1a0 = e1.getArms().get(0);
+        StudySegment e1a0 = e1.getStudySegments().get(0);
         e1a0.setParent(null);
-        e1.getArms().remove(e1a0);
+        e1.getStudySegments().remove(e1a0);
 
         expect(deltaDao.findDeltaWhereAdded(e1a0)).andReturn(Delta.createDeltaFor(e1));
         replayMocks();
@@ -630,7 +630,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study study = Fixtures.createBasicTemplate();
         Period p = Fixtures.createPeriod("P0", 3, 17, 1);
         PlannedActivity p0e0 = Fixtures.createPlannedActivity("P0E0", 4);
-        study.getPlannedCalendar().getEpochs().get(1).getArms().get(1).addPeriod(p);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1).addPeriod(p);
 
         expect(deltaDao.findDeltaWhereAdded(p0e0)).andReturn(null);
         expect(deltaDao.findDeltaWhereRemoved(p0e0)).andReturn(Delta.createDeltaFor(p, Remove.create(p0e0)));
@@ -643,7 +643,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     public void testFindAncestorWhenPossible() throws Exception {
         Study study = Fixtures.createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
-        Arm e1a0 = e1.getArms().get(0);
+        StudySegment e1a0 = e1.getStudySegments().get(0);
 
         assertEquals(e1, service.findAncestor(e1a0, Epoch.class));
         assertEquals(study.getPlannedCalendar(), service.findAncestor(e1a0, PlannedCalendar.class));
@@ -679,6 +679,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study study = Fixtures.createBasicTemplate();
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         assertSame(study, service.findStudy(epoch));
-        assertSame(study, service.findStudy(epoch.getArms().get(0)));
+        assertSame(study, service.findStudy(epoch.getStudySegments().get(0)));
     }
 }

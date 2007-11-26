@@ -11,11 +11,11 @@ public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
 
     public void initialize(Epoch epoch) {
         Hibernate.initialize(epoch);
-        Hibernate.initialize(epoch.getArms());
-        for (Arm arm : epoch.getArms()) {
-            Hibernate.initialize(arm);
-            Hibernate.initialize(arm.getPeriods());
-            for (Period period : arm.getPeriods()) {
+        Hibernate.initialize(epoch.getStudySegments());
+        for (StudySegment studySegment : epoch.getStudySegments()) {
+            Hibernate.initialize(studySegment);
+            Hibernate.initialize(studySegment.getPeriods());
+            for (Period period : studySegment.getPeriods()) {
                 Hibernate.initialize(period);
                 Hibernate.initialize(period.getPlannedActivities());
                 for (PlannedActivity event : period.getPlannedActivities()) {

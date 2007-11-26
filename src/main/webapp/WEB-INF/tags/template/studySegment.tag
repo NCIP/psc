@@ -1,35 +1,35 @@
 <%@tag%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@attribute name="arm" type="edu.northwestern.bioinformatics.studycalendar.web.template.ArmTemplate"%>
+<%@attribute name="studySegment" type="edu.northwestern.bioinformatics.studycalendar.web.template.StudySegmentTemplate"%>
 <%@attribute name="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <c:set var="editable" value="${not empty developmentRevision}"/>
 
-<div id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
-<laf:box title="${arm.base.qualifiedName}">
+<div id="selected-studySegment-content"<c:if test="${not visible}"> style="display: none"</c:if>>
+<laf:box title="${studySegment.base.qualifiedName}">
 <laf:division>
     <p class="controls">
         <c:if test="${editable}">
-            <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">Add period</a>
+            <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">Add period</a>
         </c:if>
-        <c:if test="${not empty arm.months}">
+        <c:if test="${not empty studySegment.months}">
             <a id="show_button" href="#" class = "control">Show All</a>
             <a id="hide_button" href="#" class = "control" style="visibility: hidden;">Hide All</a>
         </c:if>
     </p>
-    <c:if test="${editable and empty arm.months}">
+    <c:if test="${editable and empty studySegment.months}">
         <p class="tip">
             To begin placing activities in this part of the protocol template, click
-            <a href="<c:url value="/pages/cal/newPeriod?arm=${arm.base.id}"/>" class="control">add period</a>.
+            <a href="<c:url value="/pages/cal/newPeriod?studySegment=${studySegment.base.id}"/>" class="control">add period</a>.
             This will allow you to add a <em>period</em>, which is a (possibly repeating) series of
             days.  You will then have the opportunity to associate activities with days in your new
             period.
         </p>
     </c:if>
 
-    <c:forEach items="${arm.months}" var="month" varStatus="monthStatus">
+    <c:forEach items="${studySegment.months}" var="month" varStatus="monthStatus">
 
         <table class="periods" cellspacing="0">
             <tr>
@@ -109,7 +109,7 @@
             </c:forEach>
         </div>
 
-        <c:if test="${editable and not empty arm.months and not arm.hasEvents and monthStatus.index == 0}">
+        <c:if test="${editable and not empty studySegment.months and not studySegment.hasEvents and monthStatus.index == 0}">
             <p class="tip">
                 Now that you have a period, you can add activities to it.  Click in any shaded
                 part of the grid above to begin.

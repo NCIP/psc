@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingMap;
@@ -17,15 +17,15 @@ import java.util.TreeMap;
 /**
  * @author Rhett Sutphin
  */
-public class ArmTemplate {
+public class StudySegmentTemplate {
     private static final int MONTH_LENGTH = 28;
 
-    private Arm arm;
+    private StudySegment studySegment;
     private List<Month> months;
 
-    public ArmTemplate(Arm arm) {
-        this.arm = arm;
-        DayRange range = arm.getDayRange();
+    public StudySegmentTemplate(StudySegment studySegment) {
+        this.studySegment = studySegment;
+        DayRange range = studySegment.getDayRange();
         int monthCount = (int) Math.ceil(((double) range.getDayCount()) / MONTH_LENGTH);
         months = new ArrayList<Month>(monthCount);
         while (months.size() < monthCount) {
@@ -37,12 +37,12 @@ public class ArmTemplate {
         return months;
     }
 
-    public Arm getBase() {
-        return arm;
+    public StudySegment getBase() {
+        return studySegment;
     }
 
     public boolean getHasEvents() {
-        for (Period period : arm.getPeriods()) {
+        for (Period period : studySegment.getPeriods()) {
             if (period.getPlannedActivities().size() > 0) {
                 return true;
             }
@@ -52,7 +52,7 @@ public class ArmTemplate {
 
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
-            .append("[arm=").append(getBase().getQualifiedName())
+            .append("[studySegment=").append(getBase().getQualifiedName())
             .append("; months=").append(getMonths()).append(']').toString();
     }
 
@@ -62,7 +62,7 @@ public class ArmTemplate {
 
         public Month(int firstDay) {
             days = new TreeMap<Integer, Day>();
-            int monthLength = Math.min(MONTH_LENGTH, arm.getDayRange().getEndDay() - firstDay + 1);
+            int monthLength = Math.min(MONTH_LENGTH, studySegment.getDayRange().getEndDay() - firstDay + 1);
             while (days.size() < monthLength) {
                 int dayN = firstDay + days.size();
                 days.put(dayN, new Day(dayN));
@@ -144,7 +144,7 @@ public class ArmTemplate {
         public Day(int number) {
             this.number = number;
             periods = new ArrayList<DayOfPeriod>();
-            for (Period period : arm.getPeriods()) {
+            for (Period period : studySegment.getPeriods()) {
                 periods.add(new DayOfPeriod(this, period));
             }
         }
@@ -177,7 +177,7 @@ public class ArmTemplate {
             this.events = new LinkedList<PlannedActivity>();
 
             for (PlannedActivity pe : period.getPlannedActivities()) {
-                if (pe.getDaysInArm().contains(day.getNumber())) {
+                if (pe.getDaysInStudySegment().contains(day.getNumber())) {
                     events.add(pe);
                 }
             }

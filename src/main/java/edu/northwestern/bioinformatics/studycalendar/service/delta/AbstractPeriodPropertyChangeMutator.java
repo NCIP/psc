@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
 import java.util.Collection;
@@ -35,8 +35,8 @@ abstract class AbstractPeriodPropertyChangeMutator extends SimplePropertyChangeM
         return (Period) (PlanTreeNode) change.getDelta().getNode();
     }
 
-    protected Collection<ScheduledArm> getScheduledArmsToMutate(ScheduledCalendar calendar) {
-        return calendar.getScheduledArmsFor(
+    protected Collection<ScheduledStudySegment> getScheduledStudySegmentsToMutate(ScheduledCalendar calendar) {
+        return calendar.getScheduledStudySegmentsFor(
             templateService.findParent(getChangedPeriod()));
     }
 }

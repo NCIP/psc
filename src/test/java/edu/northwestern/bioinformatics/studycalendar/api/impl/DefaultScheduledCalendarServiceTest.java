@@ -21,7 +21,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private static final String STUDY_BIG_ID = "STUDY-GUID";
     private static final String SITE_BIG_ID = "SITE-GUID";
     private static final String PARTICIPANT_BIG_ID = "PARTICPANT-GUID";
-    private static final String ARM_BIG_ID = "ARM-GUID";
+    private static final String STUDY_SEGMENT_BIG_ID = "STUDY-SEGMENT-GUID";
     private static final String SCHEDULED_ACTIVITY_BIG_ID = "EVENT-GUID";
     private static final String ASSIGNMENT_BIG_ID = "ASSIGNMENT-GUID";
     private static final Date START_DATE = new Date();
@@ -31,7 +31,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private SubjectDao subjectDao;
     private SubjectService subjectService;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao assignmentDao;
@@ -40,21 +40,21 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private Study parameterStudy;
     private Site parameterSite;
     private Subject parameterSubject;
-    private Arm parameterArm;
+    private StudySegment parameterStudySegment;
     private ScheduledActivity parameterEvent;
     private StudySubjectAssignment parameterAssignment;
 
     private Study loadedStudy;
     private Site loadedSite;
     private Subject loadedSubject;
-    private Arm loadedArm;
+    private StudySegment loadedStudySegment;
     private ScheduledActivity loadedEvent;
     private User user;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        armDao = registerDaoMockFor(ArmDao.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         subjectDao = registerDaoMockFor(SubjectDao.class);
@@ -69,7 +69,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setSubjectService(subjectService);
         service.setStudyDao(studyDao);
         service.setSiteDao(siteDao);
-        service.setArmDao(armDao);
+        service.setStudySegmentDao(studySegmentDao);
         service.setScheduledCalendarDao(scheduledCalendarDao);
         service.setScheduledActivityDao(scheduledActivityDao);
         service.setStudySubjectAssignmentDao (assignmentDao);
@@ -78,14 +78,14 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         parameterStudy = setGridId(STUDY_BIG_ID, new Study());
         parameterSite = setGridId(SITE_BIG_ID, new Site());
         parameterSubject = setGridId(PARTICIPANT_BIG_ID, new Subject());
-        parameterArm = setGridId(ARM_BIG_ID, new Arm());
+        parameterStudySegment = setGridId(STUDY_SEGMENT_BIG_ID, new StudySegment());
         parameterEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID, new ScheduledActivity());
         parameterAssignment = setGridId(ASSIGNMENT_BIG_ID, new StudySubjectAssignment());
 
         loadedStudy = setGridId(STUDY_BIG_ID, Fixtures.createBasicTemplate());
         loadedSite = setGridId(SITE_BIG_ID, createNamedInstance("NU", Site.class));
         loadedStudy.addSite(loadedSite);
-        loadedArm = setGridId(ARM_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
+        loadedStudySegment = setGridId(STUDY_SEGMENT_BIG_ID, loadedStudy.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0));
         loadedEvent = setGridId(SCHEDULED_ACTIVITY_BIG_ID,
             Fixtures.createScheduledActivity("Zeppo", 2003, 12, 1, new Scheduled("Now", DateUtils.createDate(2003, 12, 4))));
 
@@ -102,7 +102,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(studyDao.getByGridId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
         expect(siteDao.getByGridId(parameterSite)).andReturn(loadedSite).times(0, 1);
         expect(subjectDao.getByGridId(parameterSubject)).andReturn(loadedSubject).times(0, 1);
-        expect(armDao.getByGridId(parameterArm)).andReturn(loadedArm).times(0, 1);
+        expect(studySegmentDao.getByGridId(parameterStudySegment)).andReturn(loadedStudySegment).times(0, 1);
     }
 
     private void setAssigned() {
@@ -230,11 +230,11 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+            loadedSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
-            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
+            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID));
         verifyMocks();
     }
 
@@ -247,12 +247,12 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         subjectDao.save(parameterSubject);
         expect(subjectService.assignSubject(
-            parameterSubject, loadedStudy.getStudySites().get(0), loadedArm, START_DATE, ASSIGNMENT_BIG_ID, user)
+            parameterSubject, loadedStudy.getStudySites().get(0), loadedStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)
             ).andReturn(newAssignment);
         expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
         assertSame(newAssignment.getScheduledCalendar(),
-            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID));
+            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID));
         verifyMocks();
     }
 
@@ -265,10 +265,10 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID);
+            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Subject already assigned to this study.  Use scheduleNextArm to change to the next arm.", iae.getMessage());
+            assertEquals("Subject already assigned to this study.  Use scheduleNextStudySegment to change to the next studySegment.", iae.getMessage());
         }
         verifyMocks();
     }
@@ -281,7 +281,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         try {
-            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterArm, START_DATE, ASSIGNMENT_BIG_ID);
+            service.assignSubject(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
             assertEquals("Site " + loadedSite.getGridId() + " not associated with study " + loadedStudy.getGridId(),
@@ -290,36 +290,36 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testAssignFromArmNotInStudy() throws Exception {
-        Arm badParameterArm = setGridId("BAD-NEWS", new Arm());
-        Arm badLoadedArm = setGridId("BAD-NEWS", new Arm());
+    public void testAssignFromStudySegmentNotInStudy() throws Exception {
+        StudySegment badParameterStudySegment = setGridId("BAD-NEWS", new StudySegment());
+        StudySegment badLoadedStudySegment = setGridId("BAD-NEWS", new StudySegment());
 
-        reset(armDao);
-        expect(armDao.getByGridId(badParameterArm)).andReturn(badLoadedArm);
+        reset(studySegmentDao);
+        expect(studySegmentDao.getByGridId(badParameterStudySegment)).andReturn(badLoadedStudySegment);
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
 
         replayMocks();
         try {
-            service.assignSubject(parameterStudy, parameterSubject, parameterSite, badParameterArm, START_DATE, ASSIGNMENT_BIG_ID);
+            service.assignSubject(parameterStudy, parameterSubject, parameterSite, badParameterStudySegment, START_DATE, ASSIGNMENT_BIG_ID);
             fail("Exception not thrown");
         } catch (IllegalArgumentException iae) {
-            assertEquals("Arm BAD-NEWS not part of template for study " + STUDY_BIG_ID, iae.getMessage());
+            assertEquals("StudySegment BAD-NEWS not part of template for study " + STUDY_BIG_ID, iae.getMessage());
         }
         verifyMocks();
     }
 
-    public void testAssignNullArm() throws Exception {
+    public void testAssignNullStudySegment() throws Exception {
         StudySubjectAssignment newAssignment = new StudySubjectAssignment();
         newAssignment.setScheduledCalendar(new ScheduledCalendar());
 
-        Arm defaultArm = loadedStudy.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+        StudySegment defaultStudySegment = loadedStudy.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
 
-        reset(armDao);
+        reset(studySegmentDao);
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite)).andReturn(null);
         expect(subjectService.assignSubject(
-            loadedSubject, loadedStudy.getStudySites().get(0), defaultArm, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
+            loadedSubject, loadedStudy.getStudySites().get(0), defaultStudySegment, START_DATE, ASSIGNMENT_BIG_ID, user)).andReturn(newAssignment);
         expect(userDao.getByName(null)).andReturn(user).anyTimes();
         replayMocks();
         service.assignSubject(parameterStudy, parameterSubject, parameterSite, null, START_DATE, ASSIGNMENT_BIG_ID);
@@ -362,22 +362,22 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             loadedEvent.getCurrentState().getMode());
     }
 
-    ////// TESTS FOR scheduleNextArm
+    ////// TESTS FOR scheduleNextStudySegment
 
     public void testScheduleNext() throws Exception {
-        NextArmMode expectedMode = NextArmMode.IMMEDIATE;
+        NextStudySegmentMode expectedMode = NextStudySegmentMode.IMMEDIATE;
         setAssigned();
         StudySubjectAssignment expectedAssignment
             = loadedStudy.getStudySites().get(0).getStudySubjectAssignments().get(0);
-        ScheduledArm expectedScheduledArm = new ScheduledArm();
+        ScheduledStudySegment expectedScheduledStudySegment = new ScheduledStudySegment();
 
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite))
             .andReturn(expectedAssignment);
-        expect(subjectService.scheduleArm(expectedAssignment, loadedArm, START_DATE, expectedMode))
-            .andReturn(expectedScheduledArm);
+        expect(subjectService.scheduleStudySegment(expectedAssignment, loadedStudySegment, START_DATE, expectedMode))
+            .andReturn(expectedScheduledStudySegment);
 
         replayMocks();
-        service.scheduleNextArm(parameterStudy, parameterSubject, parameterSite, parameterArm, expectedMode, START_DATE);
+        service.scheduleNextStudySegment(parameterStudy, parameterSubject, parameterSite, parameterStudySegment, expectedMode, START_DATE);
         verifyMocks();
     }
 

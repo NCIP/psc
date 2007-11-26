@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -50,10 +50,10 @@ public class TemplateSkeletonCreatorTest extends StudyCalendarTestCase {
 
         PlannedCalendar calendar = actual.getPlannedCalendar();
 
-        List<Arm> treatmentArms = actualTreatment.getArms();
-        assertEquals("Wrong name for treatment arm 0", "A", treatmentArms.get(0).getName());
-        assertEquals("Wrong name for treatment arm 1", "B", treatmentArms.get(1).getName());
-        assertEquals("Wrong name for treatment arm 2", "C", treatmentArms.get(2).getName());
+        List<StudySegment> treatmentStudySegments = actualTreatment.getStudySegments();
+        assertEquals("Wrong name for treatment study segment 0", "A", treatmentStudySegments.get(0).getName());
+        assertEquals("Wrong name for treatment study segment 1", "B", treatmentStudySegments.get(1).getName());
+        assertEquals("Wrong name for treatment study segment 2", "C", treatmentStudySegments.get(2).getName());
 
         assertEquals("Development amendment already applied", 0, calendar.getEpochs().size());
     }

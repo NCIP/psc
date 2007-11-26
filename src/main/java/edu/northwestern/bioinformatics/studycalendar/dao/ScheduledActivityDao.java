@@ -17,7 +17,7 @@ public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<Sc
 
     @SuppressWarnings({ "unchecked" })
     public Collection<ScheduledActivity> getEventsByDate(ScheduledCalendar calendar, Date start, Date end) {
-        StringBuilder builder = new StringBuilder("from ScheduledActivity e where e.scheduledArm.scheduledCalendar = ?");
+        StringBuilder builder = new StringBuilder("from ScheduledActivity e where e.scheduledStudySegment.scheduledCalendar = ?");
         List<Object> params = new ArrayList<Object>(3);
         params.add(calendar);
         if (start != null) {
@@ -36,7 +36,7 @@ public class ScheduledActivityDao extends StudyCalendarMutableDomainObjectDao<Sc
         PlannedActivity source, ScheduledCalendar calendar
     ) {
         return getHibernateTemplate().find(
-            "from ScheduledActivity e where e.plannedActivity = ? and e.scheduledArm.scheduledCalendar = ?",
+            "from ScheduledActivity e where e.plannedActivity = ? and e.scheduledStudySegment.scheduledCalendar = ?",
             new Object[] { source, calendar });
     }
 }

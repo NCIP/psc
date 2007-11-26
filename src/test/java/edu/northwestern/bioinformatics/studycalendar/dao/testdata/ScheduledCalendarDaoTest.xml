@@ -20,9 +20,9 @@
         id="-1" study_id="-1"
         />
     <EPOCHS id="-2" planned_calendar_id="-1" name="Treatment"/>
-    <ARMS id="-3" epoch_id="-2" name="A"/>
-    <ARMS id="-4" epoch_id="-2" name="B"/>
-    <PERIODS id="-5" arm_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
+    <STUDY_SEGMENTS id="-3" epoch_id="-2" name="A"/>
+    <STUDY_SEGMENTS id="-4" epoch_id="-2" name="B"/>
+    <PERIODS id="-5" study_segment_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
     <PLANNED_ACTIVITIES id="-6" period_id="-5" day="2" activity_id="-100" details="Nice Details!!"/>
     <PLANNED_ACTIVITIES id="-7" period_id="-5" day="4" activity_id="-100"/>
 
@@ -31,17 +31,17 @@
         assignment_id="-1"
         />
 
-    <SCHEDULED_ARMS
+    <SCHEDULED_STUDY_SEGMENTS
         id="-21"
-        arm_id="-3"
+        study_segment_id="-3"
         scheduled_calendar_id="-20"
         start_date="2006-11-04"
         start_day="1"
         list_index="1"
         />
-    <SCHEDULED_ARMS
+    <SCHEDULED_STUDY_SEGMENTS
         id="-22"
-        arm_id="-4"
+        study_segment_id="-4"
         scheduled_calendar_id="-20"
         start_date="2006-10-27"
         start_day="2"
@@ -54,7 +54,7 @@
 
     <SCHEDULED_ACTIVITIES
         id="-10"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="2"
         current_state_date="2006-10-25"
@@ -91,7 +91,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-15"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="1"
         current_state_date="2006-10-29"
@@ -102,7 +102,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-16"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="1"
         current_state_date="2006-10-30"
@@ -113,7 +113,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-17"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="3"
         ideal_date="2006-11-01"
@@ -123,7 +123,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-18"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="3"
         current_state_date="2006-11-07"
@@ -137,9 +137,9 @@
         id="-21"
         assignment_id="-3"
         />
-    <SCHEDULED_ARMS
+    <SCHEDULED_STUDY_SEGMENTS
         id="-23"
-        arm_id="-4"
+        study_segment_id="-4"
         scheduled_calendar_id="-21"
         start_date="2006-10-27"
         start_day="2"
@@ -147,7 +147,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-30"
-        scheduled_arm_id="-23"
+        scheduled_study_segment_id="-23"
         planned_activity_id="-6"
         current_state_mode_id="3"
         ideal_date="2006-11-01"
@@ -156,7 +156,7 @@
         />
     <SCHEDULED_ACTIVITIES
         id="-31"
-        scheduled_arm_id="-23"
+        scheduled_study_segment_id="-23"
         planned_activity_id="-6"
         current_state_mode_id="3"
         ideal_date="2006-11-01"

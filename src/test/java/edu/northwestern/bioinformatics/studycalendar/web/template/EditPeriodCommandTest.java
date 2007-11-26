@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.TransientCloneable;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -32,7 +30,7 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
 
     private EditPeriodCommand command;
     private Period period;
-    private Arm arm;
+    private StudySegment studySegment;
     private Study study;
     private AmendmentService amendmentService;
     private TemplateService templateService;
@@ -48,8 +46,8 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         period.setId(88);
 
         study = Fixtures.createBasicTemplate();
-        arm = study.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
-        arm.addPeriod(period);
+        studySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        studySegment.addPeriod(period);
         
         amendmentService = registerMockFor(AmendmentService.class);
         templateService = registerMockFor(TemplateService.class);
@@ -128,17 +126,17 @@ public class EditPeriodCommandTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testGetArmForNewlyAddedPeriod() throws Exception {
-        period.setArm(null);
+    public void testGetStudySegmentForNewlyAddedPeriod() throws Exception {
+        period.setStudySegment(null);
         study.setDevelopmentAmendment(new Amendment("dev"));
-        study.getDevelopmentAmendment().addDelta(Delta.createDeltaFor(arm, Add.create(period)));
+        study.getDevelopmentAmendment().addDelta(Delta.createDeltaFor(studySegment, Add.create(period)));
         initCommand();
 
-        expect(templateService.findParent(eqByClassAndId(period))).andReturn(arm).atLeastOnce();
+        expect(templateService.findParent(eqByClassAndId(period))).andReturn(studySegment).atLeastOnce();
 
         replayMocks();
-        assertSame(arm, command.getArm());
-        assertNotNull(command.getArm());
+        assertSame(studySegment, command.getStudySegment());
+        assertNotNull(command.getStudySegment());
         verifyMocks();
     }
 

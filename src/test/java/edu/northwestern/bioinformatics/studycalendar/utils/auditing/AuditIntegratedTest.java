@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.jdbc.core.ColumnMapRowMapper;
 import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
@@ -30,7 +30,7 @@ public class AuditIntegratedTest extends DaoTestCase {
 
 	private StudyDao studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
 
-	private ArmDao armDao = (ArmDao) getApplicationContext().getBean("armDao");
+	private StudySegmentDao studySegmentDao = (StudySegmentDao) getApplicationContext().getBean("studySegmentDao");
 
 	private PeriodDao periodDao = (PeriodDao) getApplicationContext().getBean("periodDao");
 
@@ -56,24 +56,24 @@ public class AuditIntegratedTest extends DaoTestCase {
 	// assertDataLogged(created.getPlannedCalendar(), Operation.CREATE);
 	// for (Epoch epoch : created.getPlannedCalendar().getEpochs()) {
 	// assertDataLogged(epoch, Operation.CREATE);
-	// for (Arm arm : epoch.getArms()) {
-	// assertDataLogged(arm, Operation.CREATE);
+	// for (StudySegment studySegment : epoch.getStudySegments()) {
+	// assertDataLogged(studySegment, Operation.CREATE);
 	// }
 	// }
 	// }
 	//
 	// public void testSimpleRename() throws Exception {
-	// // rename an arm
-	// Arm arm2 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(2);
+	// // rename an studySegment
+	// StudySegment studySegment2 = created.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2);
 	// {
-	// Arm reloaded = armDao.getById(arm2.getId());
+	// StudySegment reloaded = studySegmentDao.getById(studySegment2.getId());
 	// reloaded.setName("Carl");
-	// armDao.save(reloaded);
+	// studySegmentDao.save(reloaded);
 	// }
 	// interruptSession();
 	//
-	// int arm2RenameEventId = assertDataLogged(arm2, Operation.UPDATE);
-	// assertAuditValue(arm2RenameEventId, "name", "C", "Carl");
+	// int studySegment2RenameEventId = assertDataLogged(studySegment2, Operation.UPDATE);
+	// assertAuditValue(studySegment2RenameEventId, "name", "C", "Carl");
 	// }
 	//
 	// // * public void testReorderList() throws Exception { // reorder epochs Epoch epoch1 =
@@ -85,27 +85,27 @@ public class AuditIntegratedTest extends DaoTestCase {
 	// // * dumpResults("SELECT * FROM audit_event_values"); assertDataLogged(created.getPlannedCalendar(), Operation.UPDATE); }
 	//
 	// public void testDelete() throws Exception {
-	// // delete an arm
-	// Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
+	// // delete an studySegment
+	// StudySegment studySegment1 = created.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1);
 	// {
 	// Study reloaded = studyDao.getById(created.getId());
-	// reloaded.getPlannedCalendar().getEpochs().get(1).getArms().remove(1);
+	// reloaded.getPlannedCalendar().getEpochs().get(1).getStudySegments().remove(1);
 	// studyDao.save(reloaded);
 	// }
 	// interruptSession();
 	//
-	// int deleteId = assertDataLogged(arm1, Operation.DELETE);
+	// int deleteId = assertDataLogged(studySegment1, Operation.DELETE);
 	// assertAuditValue(deleteId, "name", "B", null);
 	// }
 
 	// public void testUpdateComponentHasSubpropertyValues() throws Exception {
 	// // Period#duration is a component
-	// Arm arm1 = created.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
+	// StudySegment stiduSegment1 = created.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1);
 	// Period p1 = Fixtures.createPeriod("Neptune", 45, Duration.Unit.week, 7, 3);
 	// {
-	// Arm targetArm = armDao.getById(arm1.getId());
-	// targetArm.addPeriod(p1);
-	// armDao.save(targetArm);
+	// StudySegment targetStudySegment = studySegmentDao.getById(studySegment1.getId());
+	// targetStudySegment.addPeriod(p1);
+	// studySegmentDao.save(targetStudySegment);
 	// }
 	// interruptSession();
 	//

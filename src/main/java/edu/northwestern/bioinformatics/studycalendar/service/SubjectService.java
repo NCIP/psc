@@ -37,11 +37,11 @@ public class SubjectService {
     private SubjectDao subjectDao;
     private SiteService siteService;
 
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, Arm armOfFirstEpoch, Date startDate, User subjectCoordinator) {
-        return this.assignSubject(subject, study, armOfFirstEpoch, startDate, null, subjectCoordinator);
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, User subjectCoordinator) {
+        return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, subjectCoordinator);
     }
 
-    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, Arm armOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User subjectCoordinator) {
+    public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User subjectCoordinator) {
         StudySubjectAssignment spa = new StudySubjectAssignment();
         spa.setSubject(subject);
         spa.setStudySite(studySite);
@@ -50,7 +50,7 @@ public class SubjectService {
         spa.setSubjectCoordinator(subjectCoordinator);
         spa.setCurrentAmendment(studySite.getStudy().getAmendment());
         subject.addAssignment(spa);
-        scheduleArm(spa, armOfFirstEpoch, startDate, NextArmMode.PER_PROTOCOL);
+        scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
         return spa;
     }
@@ -69,8 +69,8 @@ public class SubjectService {
 
     // TODO: should take SPA#currentAmendment into account when scheduling.
     // That's out of scope for construction 2, though.  RMS20071023.
-    public ScheduledArm scheduleArm(
-        StudySubjectAssignment assignment, Arm arm, Date startDate, NextArmMode mode
+    public ScheduledStudySegment scheduleStudySegment(
+        StudySubjectAssignment assignment, StudySegment studySegment, Date startDate, NextStudySegmentMode mode
     ) {
         if (assignment.getEndDateEpoch() != null) return null;
         ScheduledCalendar calendar = assignment.getScheduledCalendar();
@@ -79,94 +79,94 @@ public class SubjectService {
             assignment.setScheduledCalendar(calendar);
         }
 
-        if (mode == NextArmMode.IMMEDIATE) {
-            String cancellationReason = "Immediate transition to " + arm.getQualifiedName();
-            for (ScheduledArm existingArm : calendar.getScheduledArms()) {
-                existingArm.unscheduleOutstandingEvents(cancellationReason);
+        if (mode == NextStudySegmentMode.IMMEDIATE) {
+            String cancellationReason = "Immediate transition to " + studySegment.getQualifiedName();
+            for (ScheduledStudySegment existingStudySegment : calendar.getScheduledStudySegments()) {
+                existingStudySegment.unscheduleOutstandingEvents(cancellationReason);
             }
         }
 
         Amendment sourceAmendment = assignment.getCurrentAmendment();
-        Integer armStartDay = arm.getDayRange().getStartDay();
+        Integer studySegmentStartDay = studySegment.getDayRange().getStartDay();
 
-        ScheduledArm scheduledArm = new ScheduledArm();
-        scheduledArm.setArm(arm);
-        scheduledArm.setStartDate(startDate);
-        scheduledArm.setStartDay(armStartDay);
-        calendar.addArm(scheduledArm);
+        ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
+        scheduledStudySegment.setStudySegment(studySegment);
+        scheduledStudySegment.setStartDate(startDate);
+        scheduledStudySegment.setStartDay(studySegmentStartDay);
+        calendar.addStudySegment(scheduledStudySegment);
 
-        for (Period period : arm.getPeriods()) {
-            schedulePeriod(period, sourceAmendment, scheduledArm);
+        for (Period period : studySegment.getPeriods()) {
+            schedulePeriod(period, sourceAmendment, scheduledStudySegment);
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
-        Collections.sort(scheduledArm.getEvents(), DatabaseEventOrderComparator.INSTANCE);
+        Collections.sort(scheduledStudySegment.getEvents(), DatabaseEventOrderComparator.INSTANCE);
 
         Site site = calendar.getAssignment().getStudySite().getSite();
-        avoidBlackoutDates(scheduledArm, site);
+        avoidBlackoutDates(scheduledStudySegment, site);
         subjectDao.save(assignment.getSubject());
 
-        return scheduledArm;
+        return scheduledStudySegment;
     }
 
     /**
-     * Derives scheduled events from the given period and applies them to the given scheduled arm.
+     * Derives scheduled events from the given period and applies them to the given scheduled studySegment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledArm targetArm) {
+    public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment) {
         log.debug("Adding events from period {}", period);
         for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment);
         }
     }
 
     /**
      * Derives one repetition's worth of scheduled events from the given period and applies them to
-     * the given scheduled arm.
+     * the given scheduled studySegment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(
-        Period period, Amendment sourceAmendment, ScheduledArm targetArm, int repetitionNumber
+        Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment, int repetitionNumber
     ) {
         log.debug("Adding events for rep {} from period {}", repetitionNumber, period);
         for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm, repetitionNumber);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment, repetitionNumber);
         }
     }
 
     /**
-     * Derives scheduled events from the given planned event and applies them to the given scheduled arm.
+     * Derives scheduled events from the given planned event and applies them to the given scheduled studySegment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedActivity(
-        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledArm targetArm
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment
     ) {
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetArm, r);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment, r);
         }
     }
 
     /**
-     * Derives a single scheduled event from the given planned event and applies it to the given scheduled arm.
+     * Derives a single scheduled event from the given planned event and applies it to the given scheduled studySegment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedActivity(
-        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledArm targetArm,
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment,
         int repetitionNumber
     ) {
         log.debug("Adding event {} from planned activity {}", repetitionNumber, plannedActivity);
 
         // amount needed to shift the relative days in the period such that
-        // the relative day 0 falls on armStateDate.  E.g., if the arm starts on
+        // the relative day 0 falls on studySegmentStateDate.  E.g., if the studySegment starts on
         // day 1, the normalizationFactor needs to shift everything down 1.
         // if it starts on -7, it needs to shift everything up 7.
-        int normalizationFactor = targetArm.getStartDay() * -1;
+        int normalizationFactor = targetStudySegment.getStartDay() * -1;
 
         int repOffset = normalizationFactor + period.getStartDay() + period.getDuration().getDays() * repetitionNumber;
         log.debug(" - rep {}; offset: {}", repetitionNumber, repOffset);
         ScheduledActivity event = createEmptyScheduledActivityFor(plannedActivity);
         event.setRepetitionNumber(repetitionNumber);
-        event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetArm.getStartDate()));
+        event.setIdealDate(idealDate(repOffset + plannedActivity.getDay(), targetStudySegment.getStartDate()));
 
         DatedScheduledActivityState initialState
             = (DatedScheduledActivityState) plannedActivity.getInitialScheduledMode().createStateInstance();
@@ -178,7 +178,7 @@ public class SubjectService {
         event.setActivity(plannedActivity.getActivity());
         event.setSourceAmendment(sourceAmendment);
 
-        targetArm.addEvent(event);
+        targetStudySegment.addEvent(event);
     }
 
     // factored out to allow tests to use the logic in the schedule* methods on semimock instances
@@ -188,15 +188,15 @@ public class SubjectService {
         return event;
     }
 
-    private void avoidBlackoutDates(ScheduledArm arm, Site site) {
-       List<ScheduledActivity> listOfEvents = arm.getEvents();
+    private void avoidBlackoutDates(ScheduledStudySegment studySegment, Site site) {
+       List<ScheduledActivity> listOfEvents = studySegment.getEvents();
         for (ScheduledActivity event : listOfEvents) {
             avoidBlackoutDates(event, site);
         }
     }
 
     public void avoidBlackoutDates(ScheduledActivity event) {
-        avoidBlackoutDates(event, event.getScheduledArm().getScheduledCalendar().getAssignment().getStudySite().getSite());
+        avoidBlackoutDates(event, event.getScheduledStudySegment().getScheduledCalendar().getAssignment().getStudySite().getSite());
     }
 
     private void avoidBlackoutDates(ScheduledActivity event, Site site) {
@@ -297,11 +297,11 @@ public class SubjectService {
         return d1;
     }
 
-    private Date idealDate(int armDay, Date startDate) {
+    private Date idealDate(int studySegmentDay, Date startDate) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(startDate);
 
-        cal.add(Calendar.DAY_OF_YEAR, armDay - 1);
+        cal.add(Calendar.DAY_OF_YEAR, studySegmentDay - 1);
         return cal.getTime();
     }
 
@@ -325,9 +325,9 @@ public class SubjectService {
 
     private List<ScheduledActivity> getPotentialUpcomingEvents(ScheduledCalendar calendar, Date offStudyDate) {
         List<ScheduledActivity> upcomingScheduledActivities = new ArrayList<ScheduledActivity>();
-        for (ScheduledArm arm : calendar.getScheduledArms()) {
-            if (!arm.isComplete()) {
-                Map<Date, List<ScheduledActivity>> eventsByDate = arm.getEventsByDate();
+        for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
+            if (!studySegment.isComplete()) {
+                Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
                 for(Date date: eventsByDate.keySet()) {
                     List<ScheduledActivity> events = eventsByDate.get(date);
                     for(ScheduledActivity event : events) {

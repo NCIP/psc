@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-public class ArmTemplateTest extends StudyCalendarTestCase {
-    private Arm arm;
-    private ArmTemplate template;
+public class StudySegmentTemplateTest extends StudyCalendarTestCase {
+    private StudySegment studySegment;
+    private StudySegmentTemplate template;
 
     protected void setUp() throws Exception {
         super.setUp();
-        arm = new Arm();
+        studySegment = new StudySegment();
         Period pA = setId(1, createPeriod("A", 1, 7, 7));
         pA.addPlannedActivity(createPlannedActivity("Sailing", 1));
         Period pB = setId(2, createPeriod("B", 3, 5, 8));
@@ -27,12 +27,12 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
         Period pD = setId(4, createPeriod("D", -13, 7, 1));
         pD.addPlannedActivity(createPlannedActivity("Surfing", 1));
 
-        arm.addPeriod(pA);
-        arm.addPeriod(pB);
-        arm.addPeriod(pC);
-        arm.addPeriod(pD);
+        studySegment.addPeriod(pA);
+        studySegment.addPeriod(pB);
+        studySegment.addPeriod(pC);
+        studySegment.addPeriod(pD);
 
-        template = new ArmTemplate(arm);
+        template = new StudySegmentTemplate(studySegment);
     }
 
     public void testMonthCount() throws Exception {
@@ -40,7 +40,7 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
     }
 
     public void testPeriodCount() throws Exception {
-        ArmTemplate.Month firstMonth = template.getMonths().get(0);
+        StudySegmentTemplate.Month firstMonth = template.getMonths().get(0);
         assertEquals("Wrong number of periods in month", 4, firstMonth.getPeriods().size());
         assertEquals("Wrong number of periods in day",
             4, firstMonth.getDays().get(1).getPeriods().size());
@@ -66,8 +66,8 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
 
     public void testDaysEmptiness() throws Exception {
         // index 15 is day 2
-        ArmTemplate.DayOfPeriod pAd2 = template.getMonths().get(0).getPeriods().get(0).getDays().get(15);
-        ArmTemplate.DayOfPeriod pCd2 = template.getMonths().get(0).getPeriods().get(2).getDays().get(15);
+        StudySegmentTemplate.DayOfPeriod pAd2 = template.getMonths().get(0).getPeriods().get(0).getDays().get(15);
+        StudySegmentTemplate.DayOfPeriod pCd2 = template.getMonths().get(0).getPeriods().get(2).getDays().get(15);
         assertEquals("Malformed test", 2, pAd2.getDay().getNumber());
         assertTrue("Expected day 2 of pA empty", pAd2.isEmpty());
         assertFalse("Expected day 2 of pC not empty", pCd2.isEmpty());
@@ -88,23 +88,23 @@ public class ArmTemplateTest extends StudyCalendarTestCase {
 
     public void testIsResume() throws Exception {
         // none in first month:
-        for (ArmTemplate.MonthOfPeriod period : template.getMonths().get(0).getPeriods()) {
+        for (StudySegmentTemplate.MonthOfPeriod period : template.getMonths().get(0).getPeriods()) {
             assertFalse("Period " + period.getName() + " in first month incorrectly flagged", period.isResume());
         }
         // only period B in second month
-        ArmTemplate.Month secondMonth = template.getMonths().get(1);
+        StudySegmentTemplate.Month secondMonth = template.getMonths().get(1);
         assertFalse("Expected pA not resume", secondMonth.getPeriods().get(0).isResume());
         assertTrue("Expected pB resume", secondMonth.getPeriods().get(1).isResume());
         assertFalse("Expected pC not resume", secondMonth.getPeriods().get(2).isResume());
         assertFalse("Expected pD not resume", secondMonth.getPeriods().get(3).isResume());
         // none in third month:
-        for (ArmTemplate.MonthOfPeriod period : template.getMonths().get(2).getPeriods()) {
+        for (StudySegmentTemplate.MonthOfPeriod period : template.getMonths().get(2).getPeriods()) {
             assertFalse("Period " + period.getName() + " in third month incorrectly flagged", period.isResume());
         }
     }
     
     public void testHasEvents() throws Exception {
         assertTrue(template.getHasEvents());
-        assertFalse(new ArmTemplate(new Arm()).getHasEvents());
+        assertFalse(new StudySegmentTemplate(new StudySegment()).getHasEvents());
     }
 }

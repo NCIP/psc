@@ -59,14 +59,14 @@
                     </div>
                 </div>
 
-            <c:if test="${not empty arms}">
+            <c:if test="${not empty studySegments}">
                 <div class="row">
                     <div class="label">
-                        <form:label path="arm">Select arm for first epoch</form:label>
+                        <form:label path="studySegment">Select studySegment for first epoch</form:label>
                     </div>
                     <div class="value">
-                        <form:select path="arm">
-                            <form:options items="${arms}" itemLabel="name" itemValue="id"/>
+                        <form:select path="studySegment">
+                            <form:options items="${studySegments}" itemLabel="name" itemValue="id"/>
                         </form:select>
                     </div>
                 </div>

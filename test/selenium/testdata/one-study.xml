@@ -17,14 +17,14 @@
         planned_calendar_id="-1"
         name="Remission Induction Chemotherapy"
         />
-    <arms
+    <study_segments
         id="-20"
         epoch_id="-10"
         name="Remission Induction Chemotherapy"
         />
     <periods
         id="-30"
-        arm_id="-20"
+        study_segment_id="-20"
         name="Pre-Tx"
         start_day="1"
         duration_quantity="1"
@@ -32,7 +32,7 @@
         />
     <periods
         id="-31"
-        arm_id="-20"
+        study_segment_id="-20"
         name="Course"
         start_day="8"
         duration_quantity="37"
@@ -52,12 +52,12 @@
         planned_calendar_id="-1"
         name="Complete Remission, Induction Failure, Relapse, and Early Termination"
         />
-    <arms
+    <study_segments
         id="-21"
         epoch_id="-11"
         name="Complete Remission"
         />
-    <arms
+    <study_segments
         id="-22"
         epoch_id="-11"
         name="Induction Failure, Relapse, or Early Termination"

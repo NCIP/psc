@@ -39,10 +39,10 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         assertNegative(e1.compareTo(e0));
     }
 
-    public void testDaysInArmSimple() throws Exception {
+    public void testDaysInStudySegmentSimple() throws Exception {
         changePeriod(1, 7, 1);
-        assertDaysInArm(e0, 1);
-        assertDaysInArm(e1, 2);
+        assertDaysInStudySegment(e0, 1);
+        assertDaysInStudySegment(e1, 2);
     }
 
     private void changePeriod(int startDay, int dayCount, int repetitions) {
@@ -51,29 +51,29 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
         p0.addPlannedActivity(e1);
     }
 
-    public void testDaysInArmOffset() throws Exception {
+    public void testDaysInStudySegmentOffset() throws Exception {
         changePeriod(17, 7, 1);
-        assertDaysInArm(e0, 17);
-        assertDaysInArm(e1, 18);
+        assertDaysInStudySegment(e0, 17);
+        assertDaysInStudySegment(e1, 18);
     }
 
-    public void testDaysInArmWithRepetitions() throws Exception {
+    public void testDaysInStudySegmentWithRepetitions() throws Exception {
         changePeriod(8, 4, 3);
-        assertDaysInArm(e0, 8, 12, 16);
-        assertDaysInArm(e1, 9, 13, 17);
+        assertDaysInStudySegment(e0, 8, 12, 16);
+        assertDaysInStudySegment(e1, 9, 13, 17);
     }
 
-    public void testDayInArmNegative() throws Exception {
+    public void testDayInStudySegmentNegative() throws Exception {
         changePeriod(-21, 7, 2);
-        assertDaysInArm(e0, -21, -14);
-        assertDaysInArm(e1, -20, -13);
+        assertDaysInStudySegment(e0, -21, -14);
+        assertDaysInStudySegment(e1, -20, -13);
     }
 
-    private void assertDaysInArm(PlannedActivity e, int... expectedDays) {
-        assertEquals("Wrong number of days in arm", expectedDays.length, e.getDaysInArm().size());
+    private void assertDaysInStudySegment(PlannedActivity e, int... expectedDays) {
+        assertEquals("Wrong number of days in study segment", expectedDays.length, e.getDaysInStudySegment().size());
         for (int i = 0; i < expectedDays.length; i++) {
             int expectedDay = expectedDays[i];
-            int actualDay = e.getDaysInArm().get(i);
+            int actualDay = e.getDaysInStudySegment().get(i);
             assertEquals("Days mismatched at index " + i, expectedDay, actualDay);
         }
     }

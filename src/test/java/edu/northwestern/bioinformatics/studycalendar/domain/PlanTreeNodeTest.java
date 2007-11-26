@@ -17,7 +17,7 @@ public class PlanTreeNodeTest extends StudyCalendarTestCase {
     public void testIsDetachedWhenNotDetached() throws Exception {
         assertFalse(study.getPlannedCalendar().isDetached());
         assertFalse(study.getPlannedCalendar().getEpochs().get(0).isDetached());
-        assertFalse(study.getPlannedCalendar().getEpochs().get(1).getArms().get(2).isDetached());
+        assertFalse(study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(2).isDetached());
     }
 
     public void testIsDetachedWhenNoParent() throws Exception {
@@ -29,6 +29,6 @@ public class PlanTreeNodeTest extends StudyCalendarTestCase {
     public void testIsDetachedWhenAncestorDetached() throws Exception {
         Epoch treatment = study.getPlannedCalendar().getEpochs().get(1);
         treatment.setPlannedCalendar(null);
-        assertTrue(treatment.getArms().get(1).isDetached());
+        assertTrue(treatment.getStudySegments().get(1).isDetached());
     }
 }

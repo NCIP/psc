@@ -3,12 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledStudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -33,7 +33,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
     private DisplayScheduleController controller;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledCalendarDao scheduledCalendarDao;
-    private ScheduledArmDao scheduledArmDao;
+    private ScheduledStudySegmentDao scheduledStudySegmentDao;
     private StudyDao studyDao;
     private StudySubjectAssignment assignment;
     private static final int ASSIGNMENT_ID = 17;
@@ -43,13 +43,13 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         super.setUp();
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
-        scheduledArmDao = registerDaoMockFor(ScheduledArmDao.class);
+        scheduledStudySegmentDao = registerDaoMockFor(ScheduledStudySegmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
 
         controller = new DisplayScheduleController();
         controller.setStudySubjectAssignmentDao (studySubjectAssignmentDao);
         controller.setScheduledCalendarDao(scheduledCalendarDao);
-        controller.setScheduledArmDao(scheduledArmDao);
+        controller.setScheduledStudySegmentDao(scheduledStudySegmentDao);
         controller.setStudyDao(studyDao);
         controller.setControllerTools(controllerTools);
           
@@ -60,8 +60,8 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
             Study study = setId(STUDY_ID, createNamedInstance("A", Study.class));
             StudySite studySite = createStudySite(study, createNamedInstance("NU", Site.class));
             expectedPlannedCalendar.setStudy(studySite.getStudy());
-            expectedCalendar.addArm(new ScheduledArm());
-            expectedCalendar.addArm(new ScheduledArm());
+            expectedCalendar.addStudySegment(new ScheduledStudySegment());
+            expectedCalendar.addStudySegment(new ScheduledStudySegment());
 
             assignment.setSubject(createSubject("Preston", "Sturges"));
             assignment.setScheduledCalendar(expectedCalendar);
@@ -82,7 +82,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertSame(assignment.getStudySite().getStudy().getPlannedCalendar(), actualModel.get("plannedCalendar"));
         assertSame(assignment.getScheduledCalendar(), actualModel.get("calendar"));
         assertSame(assignment.getSubject(), actualModel.get("subject"));
-        assertSame(assignment.getScheduledCalendar().getCurrentArm(), actualModel.get("arm"));
+        assertSame(assignment.getScheduledCalendar().getCurrentStudySegment(), actualModel.get("studySegment"));
         assertSame(assignment, actualModel.get("assignment"));
     }
 
@@ -104,7 +104,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertSame(assignment.getStudySite().getStudy().getPlannedCalendar(), actualModel.get("plannedCalendar"));
         assertSame(assignment.getScheduledCalendar(), actualModel.get("calendar"));
         assertSame(assignment.getSubject(), actualModel.get("subject"));
-        assertSame(assignment.getScheduledCalendar().getCurrentArm(), actualModel.get("arm"));
+        assertSame(assignment.getScheduledCalendar().getCurrentStudySegment(), actualModel.get("studySegment"));
         assertSame(assignment, actualModel.get("assignment"));
     }
 
@@ -132,7 +132,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertSame(assignment.getStudySite().getStudy().getPlannedCalendar(), actualModel.get("plannedCalendar"));
         assertSame(assignment.getScheduledCalendar(), actualModel.get("calendar"));
         assertSame(assignment.getSubject(), actualModel.get("subject"));
-        assertSame(assignment.getScheduledCalendar().getCurrentArm(), actualModel.get("arm"));
+        assertSame(assignment.getScheduledCalendar().getCurrentStudySegment(), actualModel.get("studySegment"));
         assertSame(assignment, actualModel.get("assignment"));
     }
     
@@ -141,14 +141,14 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         request.setParameter("assignment", assignment.getId().toString());
         expectRefData();
 
-        ScheduledArm scheduledArm = registerMockFor(ScheduledArm.class);
-        expect(scheduledArm.getNextArmPerProtocolStartDate())
+        ScheduledStudySegment scheduledStudySegment = registerMockFor(ScheduledStudySegment.class);
+        expect(scheduledStudySegment.getNextStudySegmentPerProtocolStartDate())
             .andReturn(DateUtils.createDate(2005, Calendar.MARCH, 11));
-        scheduledArm.setScheduledCalendar(assignment.getScheduledCalendar());
-        expect(scheduledArm.isComplete()).andReturn(false);
+        scheduledStudySegment.setScheduledCalendar(assignment.getScheduledCalendar());
+        expect(scheduledStudySegment.isComplete()).andReturn(false);
 
         replayMocks();
-        assignment.getScheduledCalendar().addArm(scheduledArm);
+        assignment.getScheduledCalendar().addStudySegment(scheduledStudySegment);
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
 
@@ -160,17 +160,17 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
         assertDatesClose(new Date(), actualDates.get("IMMEDIATE"), 1000);
     }
 
-    public void testArmWhenArmIdSpecified() throws Exception {
+    public void testStudySegmentWhenStudySegmentIdSpecified() throws Exception {
         expect(studySubjectAssignmentDao.getById(ASSIGNMENT_ID)).andReturn(assignment);
         request.setParameter("assignment", assignment.getId().toString());
 
-        ScheduledArm arm = new ScheduledArm();
-        arm.setId(14);
-        request.addParameter("arm", "14");
-        expect(scheduledArmDao.getById(14)).andReturn(arm);
+        ScheduledStudySegment studySegment = new ScheduledStudySegment();
+        studySegment.setId(14);
+        request.addParameter("studySegment", "14");
+        expect(scheduledStudySegmentDao.getById(14)).andReturn(studySegment);
 
         ModelAndView mv = doHandle();
 
-        assertSame(arm, mv.getModel().get("arm"));
+        assertSame(studySegment, mv.getModel().get("studySegment"));
     }
 }

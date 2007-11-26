@@ -2,13 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 
-import org.springframework.ui.ModelMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,8 +25,8 @@ public class DeleteCommand extends EditTemplateCommand {
     }
 
     @Override
-    protected Mode armMode() {
-        return new DeleteArm();
+    protected Mode studySegmentMode() {
+        return new DeleteStudySegment();
     }
 
     private abstract class DeleteMode<T extends PlanTreeNode<? extends PlanTreeInnerNode>> implements Mode {
@@ -40,21 +38,21 @@ public class DeleteCommand extends EditTemplateCommand {
         public Map<String, Object> getModel() {
             Map<String, Object> map = new HashMap<String, Object>();
             Epoch epoch = null;
-            Arm arm = null;
+            StudySegment studySegment = null;
             if (getObjectParent() instanceof Epoch) {
                 epoch = (Epoch)getObjectParent();
-                List<Arm> arms = epoch.getArms();
-                arms.remove(getRevisedArm());
-                arm =  arms.get(arms.size() - 1);
+                List<StudySegment> studySegments = epoch.getStudySegments();
+                studySegments.remove(getRevisedStudySegment());
+                studySegment =  studySegments.get(studySegments.size() - 1);
             } else if (getObjectParent() instanceof PlannedCalendar) {
                 PlannedCalendar calendar = (PlannedCalendar)getObjectParent();
                 epoch = calendar.getEpochs().get(0);
-                arm = epoch.getArms().get(0);
+                studySegment = epoch.getStudySegments().get(0);
             }
             map.put("epoch", epoch);
-            map.put("arm", arm);
-            ArmTemplate armTemplate = new ArmTemplate(arm);
-            map.put("template", armTemplate);
+            map.put("studySegment", studySegment);
+            StudySegmentTemplate studySegmentTemplate = new StudySegmentTemplate(studySegment);
+            map.put("template", studySegmentTemplate);
             return map;
         }
 
@@ -79,19 +77,19 @@ public class DeleteCommand extends EditTemplateCommand {
         }
     }
 
-    private class DeleteArm extends DeleteMode<Arm> {
+    private class DeleteStudySegment extends DeleteMode<StudySegment> {
         public String getRelativeViewName() {
-            return "deleteArm";
+            return "deleteStudySegment";
         }
 
         @Override
-        protected Arm getObject() {
-            return getArm();
+        protected StudySegment getObject() {
+            return getStudySegment();
         }
 
         @Override
         protected PlanTreeInnerNode getObjectParent() {
-            return getSafeArmParent();
+            return getSafeStudySegmentParent();
         }
     }
 }

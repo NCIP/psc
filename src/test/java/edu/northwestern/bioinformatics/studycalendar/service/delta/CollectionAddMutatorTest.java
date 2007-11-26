@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -15,7 +15,7 @@ public class CollectionAddMutatorTest extends StudyCalendarTestCase {
     private static final int PERIOD_ID = 7;
 
     private PeriodDao periodDao;
-    private Arm arm;
+    private StudySegment studySegment;
     private Period period;
     private Add add;
     private CollectionAddMutator adder;
@@ -23,7 +23,7 @@ public class CollectionAddMutatorTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        arm = setId(1, createNamedInstance("A1", Arm.class));
+        studySegment = setId(1, createNamedInstance("A1", StudySegment.class));
         period = setId(PERIOD_ID, createPeriod("P1", 3, PERIOD_ID, 1));
         periodDao = registerMockFor(PeriodDao.class);
 
@@ -36,56 +36,56 @@ public class CollectionAddMutatorTest extends StudyCalendarTestCase {
     }
 
     public void testApplyFromDao() throws Exception {
-        assertEquals("Test setup failure", 0, arm.getPeriods().size());
+        assertEquals("Test setup failure", 0, studySegment.getPeriods().size());
         replayMocks();
-        adder.apply(arm);
+        adder.apply(studySegment);
         verifyMocks();
-        assertEquals("child not added", 1, arm.getPeriods().size());
-        assertSame("Wrong child added", period, arm.getPeriods().iterator().next());
+        assertEquals("child not added", 1, studySegment.getPeriods().size());
+        assertSame("Wrong child added", period, studySegment.getPeriods().iterator().next());
     }
     
     public void testApplyFromEmbeddedNewChild() throws Exception {
-        assertEquals("Test setup failure", 0, arm.getPeriods().size());
+        assertEquals("Test setup failure", 0, studySegment.getPeriods().size());
         add.setChild(setId(null, period));
 
         resetMocks(); // no DAO call expected
         replayMocks();
-        adder.apply(arm);
+        adder.apply(studySegment);
         verifyMocks();
 
-        assertEquals("child not added", 1, arm.getPeriods().size());
-        assertSame("Wrong child added", period, arm.getPeriods().iterator().next());
+        assertEquals("child not added", 1, studySegment.getPeriods().size());
+        assertSame("Wrong child added", period, studySegment.getPeriods().iterator().next());
     }
 
     public void testRevert() throws Exception {
-        arm.getPeriods().add(period);
+        studySegment.getPeriods().add(period);
 
         replayMocks();
-        adder.revert(arm);
+        adder.revert(studySegment);
         verifyMocks();
-        assertEquals("child not removed", 0, arm.getPeriods().size());
+        assertEquals("child not removed", 0, studySegment.getPeriods().size());
     }
     
     public void testRevertBeforeSaved() throws Exception {
         period.setId(null);
-        arm.getPeriods().add(period);
+        studySegment.getPeriods().add(period);
         add.setChild(period);
 
         replayMocks();
-        adder.revert(arm);
+        adder.revert(studySegment);
         verifyMocks();
-        assertEquals("child not removed", 0, arm.getPeriods().size());
+        assertEquals("child not removed", 0, studySegment.getPeriods().size());
     }
 
     public void testAddToTransientParentAddsTransientCopy() throws Exception {
-        assertEquals("Test setup failure", 0, arm.getPeriods().size());
-        arm.setMemoryOnly(true);
+        assertEquals("Test setup failure", 0, studySegment.getPeriods().size());
+        studySegment.setMemoryOnly(true);
 
         replayMocks();
-        adder.apply(arm);
+        adder.apply(studySegment);
         verifyMocks();
-        assertEquals("child not added", 1, arm.getPeriods().size());
-        Period actualAdded = arm.getPeriods().iterator().next();
+        assertEquals("child not added", 1, studySegment.getPeriods().size());
+        Period actualAdded = studySegment.getPeriods().iterator().next();
         assertNotSame("Child added directly from DAO", period, actualAdded);
         assertEquals("Wrong child added", PERIOD_ID, (int) actualAdded.getId());
         assertTrue("New child is not marked transient", actualAdded.isMemoryOnly());

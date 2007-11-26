@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
@@ -34,12 +34,12 @@ public class RemovePeriodMutatorTest extends PeriodMutatorTestCase<Remove> {
 
     @Override
     protected Delta<?> createDelta() {
-        return Delta.createDeltaFor(arm, change);
+        return Delta.createDeltaFor(studySegment, change);
     }
 
-    public void testDoesNothingWhenArmNotUsed() throws Exception {
-        scheduledCalendar.getScheduledArms().clear();
-        scheduledCalendar.addArm(createScheduledArm(createNamedInstance("Some other arm", Arm.class)));
+    public void testDoesNothingWhenStudySegmentNotUsed() throws Exception {
+        scheduledCalendar.getScheduledStudySegments().clear();
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

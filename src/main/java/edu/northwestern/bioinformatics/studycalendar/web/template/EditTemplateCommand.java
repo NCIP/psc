@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -32,12 +32,12 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
     // directly bound
     private Study study;
     private Epoch epoch;
-    private Arm arm;
+    private StudySegment studySegment;
 
     // revised
     private Study revisedStudy;
     private Epoch revisedEpoch;
-    private Arm revisedArm;
+    private StudySegment revisedStudySegment;
 
     public PlannedCalendar apply() {
         Study target = getStudy();
@@ -91,12 +91,12 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
 
     protected Mode studyMode() { throw new UnsupportedOperationException("No study mode for " + getClass().getSimpleName()); }
     protected Mode epochMode() { throw new UnsupportedOperationException("No epoch mode for " + getClass().getSimpleName()); }
-    protected Mode armMode() { throw new UnsupportedOperationException("No arm mode for " + getClass().getSimpleName()); }
+    protected Mode studySegmentMode() { throw new UnsupportedOperationException("No studySegment mode for " + getClass().getSimpleName()); }
 
     protected Mode selectMode() {
         Mode newMode;
-        if (getArm() != null) {
-            newMode = armMode();
+        if (getStudySegment() != null) {
+            newMode = studySegmentMode();
         } else if (getEpoch() != null) {
             newMode = epochMode();
         } else {
@@ -122,14 +122,14 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
         if (getStudy() != null && revisedStudy == null) {
             revisedStudy = deltaService.revise(getStudy(), getStudy().getDevelopmentAmendment());
         }
-        if (revisedStudy != null  && (getEpoch() != null || getArm() != null)) {
+        if (revisedStudy != null  && (getEpoch() != null || getStudySegment() != null)) {
             for (Epoch e : revisedStudy.getPlannedCalendar().getEpochs()) {
                 if (getEpoch() != null && e.getId().equals(getEpoch().getId())) {
                     revisedEpoch = e;
                 }
-                for (Arm a : e.getArms()) {
-                    if (getArm() != null && a.getId().equals(getArm().getId())) {
-                        revisedArm = a;
+                for (StudySegment a : e.getStudySegments()) {
+                    if (getStudySegment() != null && a.getId().equals(getStudySegment().getId())) {
+                        revisedStudySegment = a;
                     }
                 }
             }
@@ -144,20 +144,20 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
         return revisedEpoch;
     }
 
-    public Arm getRevisedArm() {
-        return revisedArm;
+    public StudySegment getRevisedStudySegment() {
+        return revisedStudySegment;
     }
 
     public PlannedCalendar getSafeEpochParent() {
         return getSafeParent(getEpoch(), getRevisedEpoch());
     }
 
-    public Epoch getSafeArmParent() {
-        return getSafeParent(getArm(), getRevisedArm());
+    public Epoch getSafeStudySegmentParent() {
+        return getSafeParent(getStudySegment(), getRevisedStudySegment());
     }
 
     private <P extends DomainObject> P getSafeParent(PlanTreeNode<P> bound, PlanTreeNode<P> revised) {
-        // these casts are safe because this method is only used with Arms or Epochs
+        // these casts are safe because this method is only used with Study Segments or Epochs
         if (bound.getParent() == null) {
             // If the thing targeted is newly added, its parent will be null
             // In order to update the parent's delta, we need to find the parent in the revised tree
@@ -190,12 +190,12 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
         updateRevised();
     }
 
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        this.studySegment = studySegment;
         updateRevised();
     }
 

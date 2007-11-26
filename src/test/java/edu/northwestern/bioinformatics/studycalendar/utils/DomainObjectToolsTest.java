@@ -103,8 +103,8 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
     public void testPlannedTypeSpecificity() {
         assertIsMoreSpecific(Study.class, PlannedCalendar.class);
         assertIsMoreSpecific(PlannedCalendar.class, Epoch.class);
-        assertIsMoreSpecific(Epoch.class, Arm.class);
-        assertIsMoreSpecific(Arm.class, Period.class);
+        assertIsMoreSpecific(Epoch.class, StudySegment.class);
+        assertIsMoreSpecific(StudySegment.class, Period.class);
         assertIsMoreSpecific(Period.class, PlannedActivity.class);
     }
 
@@ -119,8 +119,8 @@ public class DomainObjectToolsTest extends StudyCalendarTestCase {
         assertIsMoreSpecific(Study.class, Subject.class);
         assertIsMoreSpecific(Subject.class, StudySubjectAssignment.class);
         assertIsMoreSpecific(StudySubjectAssignment.class, ScheduledCalendar.class);
-        assertIsMoreSpecific(ScheduledCalendar.class, ScheduledArm.class);
-        assertIsMoreSpecific(ScheduledArm.class, ScheduledActivity.class);
+        assertIsMoreSpecific(ScheduledCalendar.class, ScheduledStudySegment.class);
+        assertIsMoreSpecific(ScheduledStudySegment.class, ScheduledActivity.class);
     }
 
     public void testPlannedLessSpecificThanScheduled() throws Exception {

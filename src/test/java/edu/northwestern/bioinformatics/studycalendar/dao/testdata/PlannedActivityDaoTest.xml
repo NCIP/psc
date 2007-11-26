@@ -1,7 +1,7 @@
 <dataset>
     <PERIODS
         id="-300"
-        arm_id="2"
+        study_segment_id="2"
         version="0"
         start_day="1"
         name="Drug administration"

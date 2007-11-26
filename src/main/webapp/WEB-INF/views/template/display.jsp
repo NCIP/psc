@@ -12,7 +12,7 @@
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
         <style type="text/css">
-            .epochs-and-arms {
+            .epochs-and-studySegments {
                 margin: 1em;
             }
 
@@ -89,7 +89,7 @@
             .days {
                 margin: 0 3em 3em 5em;
             }
-            li.arm, #epochs h4 {
+            li.studySegment, #epochs h4 {
                 position: relative;
 
             }
@@ -99,7 +99,7 @@
                 font-family: Arial, sans-serif;
                 font-size: 7.5pt;
             }
-            div.arm-controls, div.epoch-controls {
+            div.studySegment-controls, div.epoch-controls {
                 position: absolute;
                 bottom: 4px;
                 right: 2px;
@@ -131,7 +131,7 @@
                 width: 29%;
             }
 
-            #with-changes #selected-arm {
+            #with-changes #selected-studySegment {
                 width: 70%;
                 float: left;
             }
@@ -141,7 +141,7 @@
         </c:if>
         <script type="text/javascript">
             var lastRequest;
-            var selectedArmId = ${arm.base.id};
+            var selectedStudySegmentId = ${studySegment.base.id};
 			var days;
 			var day;
 			var showButton;
@@ -155,8 +155,8 @@
 			var allDaysAreHidden = true;
 			var init;
 			
-            function registerSelectArmHandlers() {
-                $$('#epochs a').each(registerSelectArmHandler)
+            function registerSelectStudySegmentHandlers() {
+                $$('#epochs a').each(registerSelectStudySegmentHandler)
             }
 			function initialize_arrows()
 			{
@@ -335,19 +335,19 @@
 					    })
 					);
 			}
-	            function registerSelectArmHandler(a) {
+	            function registerSelectStudySegmentHandler(a) {
                 var aElement = $(a)
                 Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
                     $("epochs-indicator").reveal();
-                    SC.slideAndHide('selected-arm-content', { afterFinish: function() {
+                    SC.slideAndHide('selected-studySegment-content', { afterFinish: function() {
                         // deselect current
                         var sel = $$("#epochs .selected")
                         if (sel && sel.length > 0) Element.removeClassName(sel[0], "selected")
 
-                        var armId = aElement.id.substring(4)
-                        selectedArmId = armId
-                        aElement.href = '<c:url value="/pages/cal/template/select"/>?arm=' + armId
+                        var studySegmentId = aElement.id.substring('studySegment'.length+1)
+                        selectedStudySegmentId = studySegmentId
+                        aElement.href = '<c:url value="/pages/cal/template/select"/>?studySegment=' + studySegmentId
 
                         lastRequest = new Ajax.Request(aElement.href,
                             {
@@ -355,9 +355,9 @@
                                     $("epochs-indicator").conceal()
                                 },
                                 onFailure: function() {
-                                    Element.update('selected-arm-content', "<p class='error'>Loading failed</p>")
-                                    Element.update('selected-arm-header', "Error")
-                                    SC.slideAndShow('selected-arm-content')
+                                    Element.update('selected-studySegment-content', "<p class='error'>Loading failed</p>")
+                                    Element.update('selected-studySegment-header', "Error")
+                                    SC.slideAndShow('selected-studySegment-content')
                                 }
                             }
                         );
@@ -441,9 +441,9 @@
 			}
 
             function epochsAreaSetup() {
-                registerSelectArmHandlers()
+                registerSelectStudySegmentHandlers()
                 <c:if test="${not empty developmentRevision}">
-                    createAllArmControls()
+                    createAllStudySegmentControls()
                     createAllEpochControls()
                 </c:if>
             }
@@ -459,7 +459,7 @@
 				hideMonth.each(function(num) {registerHideMonthHandler(num, counter); counter++;});
 				
 			}
-			function initializeNewArm(){
+			function initializeNewStudySegment(){
 			    if ($$(".day").length != 0){
 			    	initialize_arrows()
 					showSetup()
@@ -476,7 +476,7 @@
                 Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
-			<c:if test="${not empty arm.months}">
+			<c:if test="${not empty studySegment.months}">
 				Event.observe(window, "load", showSetup)
 				Event.observe(window, "load", hideSetup)
 				Event.observe(window, "load", arrowSetup)
@@ -528,9 +528,9 @@
             </c:if>
         </ul>
         <div id="epochs" class="section">
-            <laf:box title="Epochs and arms">
+            <laf:box title="Epochs and study segments">
                 <laf:division>
-                    <tags:epochsAndArms id="epochs-container" plannedCalendar="${plannedCalendar}" selectedArm="${arm.base}"/>
+                    <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
                 </laf:division>
             </laf:box>
         </div>
@@ -544,8 +544,8 @@
             <%-- #with-changes is closed below --%>
         </c:if>
 
-        <div id="selected-arm" class="section">
-            <templ:arm arm="${arm}" developmentRevision="${developmentRevision}" visible="true"/>
+        <div id="selected-studySegment" class="section">
+            <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}" visible="true"/>
         </div>
 
         <c:if test="${showChanges}"></div></c:if>

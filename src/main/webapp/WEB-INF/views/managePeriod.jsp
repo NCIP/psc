@@ -8,7 +8,7 @@
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <html>
 <head>
-<%--<title>Set up Period ${period.name} of ${arm.qualifiedName} in ${study.name}</title>--%>
+<%--<title>Set up Period ${period.name} of ${studySegment.qualifiedName} in ${study.name}</title>--%>
 <tags:includeScriptaculous/>
 <script type="text/javascript">
 var activitiesByType = { }
@@ -629,11 +629,11 @@ function createMarker(currentDurationIndex, activityName) {
   </c:if>
 
 <div id="period" class="section">
-<laf:box title="Set up ${period.name} (period) of ${arm.qualifiedName} in ${study.name}">
+<laf:box title="Set up ${period.name} (period) of ${studySegment.qualifiedName} in ${study.name}">
     <laf:division>
         <p>
             This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
-            It begins on day ${period.startDay} of the ${arm.qualifiedName}.
+            It begins on day ${period.startDay} of the ${studySegment.qualifiedName}.
         </p>
 
         <form:form>
@@ -651,7 +651,7 @@ function createMarker(currentDurationIndex, activityName) {
                     </c:choose>
 
 
-                    <th colspan="${tableWidth - 2}">Days of arm (${commons:pluralize(period.repetitions, "repetition")})</th>
+                    <th colspan="${tableWidth - 2}">Days of studySegment (${commons:pluralize(period.repetitions, "repetition")})</th>
                     <td></td>
                     <td class="emptyCellNoWidth"> </td>
                 </tr>
@@ -760,7 +760,7 @@ function createMarker(currentDurationIndex, activityName) {
                 <input type="button" id="add-activity-button" value="Add to period"/>
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
              </div>
-             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?arm=${arm.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
+             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
         </form:form>
     </laf:division>
 </laf:box>

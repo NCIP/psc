@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 
 /**
  * @author Rhett Sutphin
  */
 public interface PeriodCommand {
-    Arm getArm();
+    StudySegment getStudySegment();
     void apply();
 }

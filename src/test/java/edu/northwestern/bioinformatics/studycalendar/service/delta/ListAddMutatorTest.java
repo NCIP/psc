@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import org.easymock.EasyMock;
@@ -12,11 +12,11 @@ import org.easymock.EasyMock;
  * @author Rhett Sutphin
  */
 public class ListAddMutatorTest extends StudyCalendarTestCase {
-    private static final int ARM_ID = 17;
+    private static final int STUDY_SEGMENT_ID = 17;
 
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
     private Epoch epoch;
-    private Arm arm;
+    private StudySegment studySegment;
     private Add add;
     private ListAddMutator adder;
 
@@ -24,76 +24,76 @@ public class ListAddMutatorTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         epoch = setId(1, createNamedInstance("E1", Epoch.class));
-        epoch.addArm(setId(1, createNamedInstance("A1", Arm.class)));
-        epoch.addArm(setId(2, createNamedInstance("A2", Arm.class)));
-        arm = setId(ARM_ID, createNamedInstance("A1.5", Arm.class));
-        armDao = registerMockFor(ArmDao.class);
+        epoch.addStudySegment(setId(1, createNamedInstance("A1", StudySegment.class)));
+        epoch.addStudySegment(setId(2, createNamedInstance("A2", StudySegment.class)));
+        studySegment = setId(STUDY_SEGMENT_ID, createNamedInstance("A1.5", StudySegment.class));
+        studySegmentDao = registerMockFor(StudySegmentDao.class);
 
         add = new Add();
-        add.setChildId(arm.getId());
+        add.setChildId(studySegment.getId());
         add.setIndex(1);
 
-        EasyMock.expect(armDao.getById(ARM_ID)).andReturn(arm).anyTimes();
-        adder = new ListAddMutator(add, armDao);
+        EasyMock.expect(studySegmentDao.getById(STUDY_SEGMENT_ID)).andReturn(studySegment).anyTimes();
+        adder = new ListAddMutator(add, studySegmentDao);
     }
 
     public void testApplyFromDao() throws Exception {
-        assertEquals("Test setup failure", 2, epoch.getArms().size());
+        assertEquals("Test setup failure", 2, epoch.getStudySegments().size());
         replayMocks();
         adder.apply(epoch);
         verifyMocks();
-        assertEquals("child not added", 3, epoch.getArms().size());
-        assertSame("Wrong child added (or in wrong position): " + epoch.getArms(), arm, epoch.getArms().get(1));
+        assertEquals("child not added", 3, epoch.getStudySegments().size());
+        assertSame("Wrong child added (or in wrong position): " + epoch.getStudySegments(), studySegment, epoch.getStudySegments().get(1));
     }
     
     public void testApplyFromEmbeddedNewChild() throws Exception {
-        assertEquals("Test setup failure", 2, epoch.getArms().size());
-        arm.setId(null);
-        add.setChild(arm);
+        assertEquals("Test setup failure", 2, epoch.getStudySegments().size());
+        studySegment.setId(null);
+        add.setChild(studySegment);
 
         resetMocks();
         replayMocks();
         adder.apply(epoch);
         verifyMocks();
-        assertEquals("child not added", 3, epoch.getArms().size());
-        assertSame("Wrong child added (or in wrong position): " + epoch.getArms(), arm, epoch.getArms().get(1));
+        assertEquals("child not added", 3, epoch.getStudySegments().size());
+        assertSame("Wrong child added (or in wrong position): " + epoch.getStudySegments(), studySegment, epoch.getStudySegments().get(1));
     }
 
     public void testRevert() throws Exception {
-        epoch.addChild(arm, 1);
+        epoch.addChild(studySegment, 1);
 
         replayMocks();
         adder.revert(epoch);
         verifyMocks();
-        assertEquals("child not removed", 2, epoch.getArms().size());
-        assertEquals("Wrong child removed", "A1", epoch.getArms().get(0).getName());
-        assertEquals("Wrong child removed", "A2", epoch.getArms().get(1).getName());
+        assertEquals("child not removed", 2, epoch.getStudySegments().size());
+        assertEquals("Wrong child removed", "A1", epoch.getStudySegments().get(0).getName());
+        assertEquals("Wrong child removed", "A2", epoch.getStudySegments().get(1).getName());
     }
     
     public void testRevertBeforeSaved() throws Exception {
-        epoch.addChild(arm, 1);
-        arm.setId(null);
-        add.setChild(arm);
+        epoch.addChild(studySegment, 1);
+        studySegment.setId(null);
+        add.setChild(studySegment);
 
         replayMocks();
         adder.revert(epoch);
         verifyMocks();
-        assertEquals("child not removed", 2, epoch.getArms().size());
-        assertEquals("Wrong child removed", "A1", epoch.getArms().get(0).getName());
-        assertEquals("Wrong child removed", "A2", epoch.getArms().get(1).getName());
+        assertEquals("child not removed", 2, epoch.getStudySegments().size());
+        assertEquals("Wrong child removed", "A1", epoch.getStudySegments().get(0).getName());
+        assertEquals("Wrong child removed", "A2", epoch.getStudySegments().get(1).getName());
     }
 
     public void testApplyToTransientAddsTransientCopy() throws Exception {
-        assertEquals("Test setup failure", 2, epoch.getArms().size());
+        assertEquals("Test setup failure", 2, epoch.getStudySegments().size());
 
         epoch.setMemoryOnly(true);
         replayMocks();
         adder.apply(epoch);
         verifyMocks();
-        assertEquals("child not added", 3, epoch.getArms().size());
-        assertEquals("Wrong child added (or in wrong position)", ARM_ID, (int) epoch.getArms().get(1).getId());
-        assertNotSame("Child is direct from DAO", arm, epoch.getArms().get(1));
-        assertTrue("Child is not transient", epoch.getArms().get(1).isMemoryOnly());
+        assertEquals("child not added", 3, epoch.getStudySegments().size());
+        assertEquals("Wrong child added (or in wrong position)", STUDY_SEGMENT_ID, (int) epoch.getStudySegments().get(1).getId());
+        assertNotSame("Child is direct from DAO", studySegment, epoch.getStudySegments().get(1));
+        assertTrue("Child is not transient", epoch.getStudySegments().get(1).isMemoryOnly());
     }
 
 }

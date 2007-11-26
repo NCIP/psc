@@ -74,12 +74,12 @@ public class ICalToolsTest extends junit.framework.TestCase {
 
 		ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
 
-		ScheduledArm scheduledArm1 = createScheduleArmWithSomeEvents("arm1", 3, ScheduledActivityMode.SCHEDULED);
-		ScheduledArm scheduledArm2 = createScheduleArmWithSomeEvents("arm2", 5, ScheduledActivityMode.SCHEDULED);
-		ScheduledArm scheduledArm3 = createScheduleArmWithSomeEvents("arm3", 6, ScheduledActivityMode.CANCELED);
-		scheduledCalendar.addArm(scheduledArm1);
-		scheduledCalendar.addArm(scheduledArm2);
-		scheduledCalendar.addArm(scheduledArm3);
+		ScheduledStudySegment scheduledStudySegment1 = createScheduleStudySegmentWithSomeEvents("studySegment1", 3, ScheduledActivityMode.SCHEDULED);
+		ScheduledStudySegment scheduledStudySegment2 = createScheduleStudySegmentWithSomeEvents("studySegment2", 5, ScheduledActivityMode.SCHEDULED);
+		ScheduledStudySegment scheduledStudySegment3 = createScheduleStudySegmentWithSomeEvents("studySegment3", 6, ScheduledActivityMode.CANCELED);
+		scheduledCalendar.addStudySegment(scheduledStudySegment1);
+		scheduledCalendar.addStudySegment(scheduledStudySegment2);
+		scheduledCalendar.addStudySegment(scheduledStudySegment3);
 
 		studySubjectAssignment.setScheduledCalendar(scheduledCalendar);
 
@@ -98,8 +98,8 @@ public class ICalToolsTest extends junit.framework.TestCase {
 			Summary summary = (Summary) vEvent.getProperties("SUMMARY").get(0);
 			assertNotNull(summary);
 			assertEquals("there should not be any parameter in summary", 0, summary.getParameters().size());
-			assertEquals("the summary value should have 'activity name:event:arm' string", 0, summary.getValue()
-					.indexOf("activity name:event:arm"));
+			assertEquals("the summary value should have 'activity name:event:studySegment' string", 0, summary.getValue()
+					.indexOf("activity name:event:studySegment"));
 
 			assertEquals("vEvent should have only 1 DESCRIPTION property ..", 1, vEvent.getProperties(
 					Property.DESCRIPTION).size());
@@ -119,13 +119,13 @@ public class ICalToolsTest extends junit.framework.TestCase {
 
 	}
 
-	private ScheduledArm createScheduleArmWithSomeEvents(final String name, final int count,
+	private ScheduledStudySegment createScheduleStudySegmentWithSomeEvents(final String name, final int count,
 			final ScheduledActivityMode eventMode) {
-		ScheduledArm scheduledArm = new ScheduledArm();
+		ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
 
 		// add few schedule events
-		scheduledArm.setEvents(createScheduleActivities("event:" + name, count, eventMode));
-		return scheduledArm;
+		scheduledStudySegment.setEvents(createScheduleActivities("event:" + name, count, eventMode));
+		return scheduledStudySegment;
 	}
 
 	private List<ScheduledActivity> createScheduleActivities(final String name, final int count,

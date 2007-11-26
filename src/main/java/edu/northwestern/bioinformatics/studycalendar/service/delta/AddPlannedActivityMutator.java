@@ -33,10 +33,10 @@ public class AddPlannedActivityMutator extends CollectionAddMutator {
         PlannedActivity event = (PlannedActivity) findChild();
         // Second cast works around a dumb javac bug
         Period period = (Period) (PlanTreeNode) change.getDelta().getNode();
-        Arm arm = templateService.findParent(period);
+        StudySegment studySegment = templateService.findParent(period);
 
-        for (ScheduledArm scheduledArm : calendar.getScheduledArmsFor(arm)) {
-            subjectService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledArm);
+        for (ScheduledStudySegment scheduledStudySegment : calendar.getScheduledStudySegmentsFor(studySegment)) {
+            subjectService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledStudySegment);
         }
     }
 }

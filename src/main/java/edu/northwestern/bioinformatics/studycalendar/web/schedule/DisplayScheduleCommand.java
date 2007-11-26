@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 
 /**
  * @author Rhett Sutphin
@@ -10,7 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
 public class DisplayScheduleCommand {
     private StudySubjectAssignment assignment;
     private ScheduledCalendar calendar;
-    private ScheduledArm arm;
+    private ScheduledStudySegment studySegment;
 
     /*
        Different combinations of parameters are allowed.  Hence the separation between
@@ -27,11 +27,11 @@ public class DisplayScheduleCommand {
         }
     }
 
-    public ScheduledArm getArm() {
-        if (arm != null) {
-            return arm;
+    public ScheduledStudySegment getStudySegment() {
+        if (studySegment != null) {
+            return studySegment;
         } else {
-            return getAssignment().getScheduledCalendar().getCurrentArm();
+            return getAssignment().getScheduledCalendar().getCurrentStudySegment();
         }
     }
 
@@ -45,7 +45,7 @@ public class DisplayScheduleCommand {
         this.calendar = calendar;
     }
 
-    public void setArm(ScheduledArm arm) {
-        this.arm = arm;
+    public void setStudySegment(ScheduledStudySegment studySegment) {
+        this.studySegment = studySegment;
     }
 }

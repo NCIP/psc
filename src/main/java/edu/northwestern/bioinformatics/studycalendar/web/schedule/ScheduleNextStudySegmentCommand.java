@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Date;
@@ -11,23 +11,23 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleNextArmCommand {
+public class ScheduleNextStudySegmentCommand {
     private ScheduledCalendar calendar;
-    private Arm arm;
+    private StudySegment studySegment;
     private Date startDate;
-    private NextArmMode mode;
+    private NextStudySegmentMode mode;
 
     private SubjectService subjectService;
 
-    public ScheduleNextArmCommand(SubjectService subjectService) {
+    public ScheduleNextStudySegmentCommand(SubjectService subjectService) {
         this.subjectService = subjectService;
     }
 
     ////// LOGIC
 
-    public ScheduledArm schedule() {
-        return subjectService.scheduleArm(
-            getCalendar().getAssignment(), getArm(), getStartDate(), getMode());
+    public ScheduledStudySegment schedule() {
+        return subjectService.scheduleStudySegment(
+            getCalendar().getAssignment(), getStudySegment(), getStartDate(), getMode());
     }
 
     ////// BOUND PROPERTIES
@@ -40,12 +40,12 @@ public class ScheduleNextArmCommand {
         this.calendar = calendar;
     }
 
-    public Arm getArm() {
-        return arm;
+    public StudySegment getStudySegment() {
+        return studySegment;
     }
 
-    public void setArm(Arm arm) {
-        this.arm = arm;
+    public void setStudySegment(StudySegment studySegment) {
+        this.studySegment = studySegment;
     }
 
     public Date getStartDate() {
@@ -56,11 +56,11 @@ public class ScheduleNextArmCommand {
         this.startDate = startDate;
     }
 
-    public NextArmMode getMode() {
+    public NextStudySegmentMode getMode() {
         return mode;
     }
 
-    public void setMode(NextArmMode mode) {
+    public void setMode(NextStudySegmentMode mode) {
         this.mode = mode;
     }
 }

@@ -69,7 +69,7 @@ public class GenerateReportController extends SimpleFormController {
 		private String subjectId;
 		private String eventId;
 		private String epochId;
-		private String armId;
+		private String studySegmentId;
 		
 		private String currentState;
 		
@@ -78,11 +78,11 @@ public class GenerateReportController extends SimpleFormController {
 		private String subjectName;
 		private String eventName;
 		private String epochName;
-		private String armName;
+		private String studySegmentName;
 		
 		public ReportBuilderRow(String datestr, String studyid, String siteid, String pid, String eventid, String epochid, 
-				String armid, String currentState, String studyname, String sitename, String pname, 
-				String eventname, String epochname, String armname){
+				String studySegmentId, String currentState, String studyname, String sitename, String pname,
+				String eventname, String epochname, String studySegmentName){
 			this.dateStr = datestr;
 			this.studyId = studyid;
 			this.studyName = studyname;
@@ -94,8 +94,8 @@ public class GenerateReportController extends SimpleFormController {
 			this.eventName = eventname;
 			this.epochId = epochid;
 			this.epochName = epochname;
-			this.armId = armid;
-			this.armName = armname;
+			this.studySegmentId = studySegmentId;
+			this.studySegmentName = studySegmentName;
 			this.currentState = currentState;
 		}
 		
@@ -195,20 +195,20 @@ public class GenerateReportController extends SimpleFormController {
 			return this.epochName;
 		}
 
-		public void setArmId(String armid){
-			this.armId = armid;
+		public void setStudySegmentId(String studySegmentId){
+			this.studySegmentId = studySegmentId;
 		}
 		
-		public String getArmId(){
-			return this.armId;
+		public String getStudySegmentId(){
+			return this.studySegmentId;
 		}
 		
-		public void setArmName(String armname) {
-			this.armName = armname;
+		public void setStudySegmentName(String studySegmentName) {
+			this.studySegmentName = studySegmentName;
 		}
 		
-		public String getArmName() {
-			return this.armName;
+		public String getStudySegmentName() {
+			return this.studySegmentName;
 		}
 	}
 

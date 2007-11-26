@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
@@ -12,7 +12,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -66,8 +65,8 @@ public abstract class Delta<T extends PlanTreeNode<?>> extends AbstractMutableDo
             delta = new PlannedCalendarDelta((PlannedCalendar) node);
         } else if (node instanceof Epoch) {
             delta = new EpochDelta((Epoch) node);
-        } else if (node instanceof Arm) {
-            delta = new ArmDelta((Arm) node);
+        } else if (node instanceof StudySegment) {
+            delta = new StudySegmentDelta((StudySegment) node);
         } else if (node instanceof Period) {
             delta = new PeriodDelta((Period) node);
         } else if (node instanceof PlannedActivity) {

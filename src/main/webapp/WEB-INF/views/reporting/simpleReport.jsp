@@ -13,7 +13,7 @@
 	</div>
 	<div>
 		--<c:out value="${event.date}"/>
-		--<c:out value="${event.armName}"/>
+		--<c:out value="${event.studySegmentName}"/>
 		--<c:out value="${event.epochName}"/>
 	</div>
 	<div>

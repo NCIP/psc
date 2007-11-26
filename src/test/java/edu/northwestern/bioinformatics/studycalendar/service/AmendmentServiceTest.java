@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -18,7 +18,6 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import java.util.List;
 import java.util.Collections;
 
-import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
@@ -43,8 +42,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
         Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
         Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
-        Arm e1a0 = setGridId("E1A0-GRID",
-            setId(10, calendar.getEpochs().get(1).getArms().get(0)));
+        StudySegment e1a0 = setGridId("E1A0-GRID",
+            setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
 
         Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
         Amendment a2 = a3.getPreviousAmendment();
@@ -121,14 +120,14 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
             amended.getAmendment().getName());
 
         List<Epoch> actualEpochs = amended.getPlannedCalendar().getEpochs();
-        List<Arm> actualE1Arms = actualEpochs.get(1).getArms();
-        assertEquals("Arm add not reverted: " + actualE1Arms, 2, actualE1Arms.size());
+        List<StudySegment> actualE1StudySegments = actualEpochs.get(1).getStudySegments();
+        assertEquals("StudySegment add not reverted: " + actualE1StudySegments, 2, actualE1StudySegments.size());
         assertEquals("Epoch add incorrectly reverted: " + actualEpochs, 3, actualEpochs.size());
     }
 
     public void testGetAmendedTwoRevsBack() throws Exception {
         assertEquals("Test setup failure", 3, calendar.getEpochs().size());
-        assertEquals("Test setup failure", 3, calendar.getEpochs().get(1).getArms().size());
+        assertEquals("Test setup failure", 3, calendar.getEpochs().get(1).getStudySegments().size());
 
         replayMocks();
         Study amended
@@ -138,8 +137,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         assertNotNull(amended);
         assertNotSame(calendar, amended);
 
-        List<Arm> actualE1Arms = amended.getPlannedCalendar().getEpochs().get(1).getArms();
-        assertEquals("Arm add in A3 not reverted: " + actualE1Arms, 2, actualE1Arms.size());
+        List<StudySegment> actualE1StudySegments = amended.getPlannedCalendar().getEpochs().get(1).getStudySegments();
+        assertEquals("StudySegment add in A3 not reverted: " + actualE1StudySegments, 2, actualE1StudySegments.size());
         assertEquals("Epoch add in A2 not reverted: " + amended.getPlannedCalendar().getEpochs(), 2,
             amended.getPlannedCalendar().getEpochs().size());
         assertEquals("Amended calendar reflects incorrect level", "A1",
@@ -152,7 +151,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         Amendment expectedDevAmendment = new Amendment();
         study.setDevelopmentAmendment(expectedDevAmendment);
         Epoch epoch = calendar.getEpochs().get(1);
-        Remove expectedChange = Remove.create(epoch.getArms().get(0));
+        Remove expectedChange = Remove.create(epoch.getStudySegments().get(0));
 
         mockDeltaService.updateRevision(expectedDevAmendment, epoch, expectedChange);
         replayMocks();

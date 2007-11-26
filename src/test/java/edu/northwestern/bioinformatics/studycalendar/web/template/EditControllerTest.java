@@ -1,12 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static org.easymock.classextension.EasyMock.expect;
@@ -24,7 +22,7 @@ public class EditControllerTest extends ControllerTestCase {
 
     private StudyDao studyDao;
     private EpochDao epochDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     private EditTemplateCommand command;
     private ApplicationContext applicationContext;
@@ -35,13 +33,13 @@ public class EditControllerTest extends ControllerTestCase {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
         epochDao = registerDaoMockFor(EpochDao.class);
-        armDao = registerDaoMockFor(ArmDao.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         applicationContext = registerMockFor(ApplicationContext.class);
         activityDao = registerMockFor(ActivityDao.class);
         command = registerMockFor(EditTemplateCommand.class);
 
         controller = new EditController();
-        controller.setArmDao(armDao);
+        controller.setStudySegmentDao(studySegmentDao);
         controller.setEpochDao(epochDao);
         controller.setStudyDao(studyDao);
         controller.setApplicationContext(applicationContext);

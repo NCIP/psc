@@ -26,8 +26,8 @@ import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
 public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalendarDao> {
     private SubjectDao subjectDao
             = (SubjectDao) getApplicationContext().getBean("subjectDao");
-    private ArmDao armDao
-        = (ArmDao) getApplicationContext().getBean("armDao");
+    private StudySegmentDao studySegmentDao
+            = (StudySegmentDao) getApplicationContext().getBean("studySegmentDao");
     private AmendmentDao amendmentDao
         = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
     private StudyDao studyDao
@@ -43,14 +43,14 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
     private void assertScheduledCalendar20(ScheduledCalendar cal) {
         assertEquals("Wrong assignment", -1, (int) cal.getAssignment().getId());
 
-        assertEquals("Wrong number of arms", 2, cal.getScheduledArms().size());
-        assertEquals("Wrong arm 0", -22, (int) cal.getScheduledArms().get(0).getId());
-        assertEquals("Wrong arm 1", -21, (int) cal.getScheduledArms().get(1).getId());
+        assertEquals("Wrong number of study segments", 2, cal.getScheduledStudySegments().size());
+        assertEquals("Wrong studySegment 0", -22, (int) cal.getScheduledStudySegments().get(0).getId());
+        assertEquals("Wrong studySegment 1", -21, (int) cal.getScheduledStudySegments().get(1).getId());
 
-        assertEquals("Wrong number of events in arm 0", 5, cal.getScheduledArms().get(0).getEvents().size());
-        assertEquals("Wrong number of events in arm 1", 0, cal.getScheduledArms().get(1).getEvents().size());
+        assertEquals("Wrong number of events in studySegment 0", 5, cal.getScheduledStudySegments().get(0).getEvents().size());
+        assertEquals("Wrong number of events in studySegment 1", 0, cal.getScheduledStudySegments().get(1).getEvents().size());
 
-        ScheduledActivity event = cal.getScheduledArms().get(0).getEvents().get(0);
+        ScheduledActivity event = cal.getScheduledStudySegments().get(0).getEvents().get(0);
         assertEquals("Wrong event", -10, (int) event.getId());
         assertEquals("Wrong base event for event", -6, (int) event.getPlannedActivity().getId());
         assertDayOfDate("Wrong ideal date", 2006, Calendar.OCTOBER, 31, event.getIdealDate());
@@ -64,7 +64,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong current state mode", ScheduledActivityMode.OCCURRED, currentState.getMode());
         assertEquals("Wrong current state reason", "Success", currentState.getReason());
 
-        List<ScheduledActivityState> states = cal.getScheduledArms().get(0).getEvents().get(0).getAllStates();
+        List<ScheduledActivityState> states = cal.getScheduledStudySegments().get(0).getEvents().get(0).getAllStates();
         assertEquals("Wrong number of states", 4, states.size());
         assertEventState(-11, ScheduledActivityMode.SCHEDULED, "Initial input", DateUtils.createDate(2006, Calendar.OCTOBER, 22), states.get(0));
         assertEventState(-12, ScheduledActivityMode.CANCELED,  "Called to cancel", null, states.get(1));
@@ -75,7 +75,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
     public void testChangeStateAndSave() throws Exception {
         {
             ScheduledCalendar cal = getDao().getById(-20);
-            cal.getScheduledArms().get(0).getEvents().get(0).changeState(new Canceled("For great victory"));
+            cal.getScheduledStudySegments().get(0).getEvents().get(0).changeState(new Canceled("For great victory"));
             getDao().save(cal);
         }
 
@@ -83,7 +83,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
         {
             ScheduledCalendar loaded = getDao().getById(-20);
-            List<ScheduledActivityState> states = loaded.getScheduledArms().get(0).getEvents().get(0).getAllStates();
+            List<ScheduledActivityState> states = loaded.getScheduledStudySegments().get(0).getEvents().get(0).getAllStates();
             assertEquals("Wrong number of states", 5, states.size());
             // second to last should now have an ID
             assertNotNull(states.get(3).getId());
@@ -120,20 +120,20 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             ScheduledCalendar calendar = new ScheduledCalendar();
             calendar.setAssignment(subject.getAssignments().get(0));
             assertEquals(-2, (int) calendar.getAssignment().getId());
-            Arm arm4 = armDao.getById(-4);
-            Arm arm3 = armDao.getById(-3);
-            calendar.addArm(Fixtures.createScheduledArm(arm4));
-            calendar.addArm(Fixtures.createScheduledArm(arm3));
-            ScheduledArm lastScheduledArm = Fixtures.createScheduledArm(arm4);
-            calendar.addArm(lastScheduledArm);
+            StudySegment studySegment4 = studySegmentDao.getById(-4);
+            StudySegment studySegment3 = studySegmentDao.getById(-3);
+            calendar.addStudySegment(Fixtures.createScheduledStudySegment(studySegment4));
+            calendar.addStudySegment(Fixtures.createScheduledStudySegment(studySegment3));
+            ScheduledStudySegment lastScheduledStudySegment = Fixtures.createScheduledStudySegment(studySegment4);
+            calendar.addStudySegment(lastScheduledStudySegment);
 
             ScheduledActivity event = new ScheduledActivity();
             event.setIdealDate(expectedIdealDate);
-            event.setPlannedActivity(arm3.getPeriods().iterator().next().getPlannedActivities().get(0));
+            event.setPlannedActivity(studySegment3.getPeriods().iterator().next().getPlannedActivities().get(0));
             event.changeState(new Occurred(expectedReason, expectedActualDate));
             event.setActivity(expectedActivity);
             event.setSourceAmendment(expectedAmendment);
-            lastScheduledArm.addEvent(event);
+            lastScheduledStudySegment.addEvent(event);
 
             assertNull(calendar.getId());
             getDao().save(calendar);
@@ -145,13 +145,13 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
 
         ScheduledCalendar reloaded = getDao().getById(savedId);
         assertEquals("Wrong assignment", -2, (int) reloaded.getAssignment().getId());
-        assertEquals("Wrong number of arms: " + reloaded.getScheduledArms(), 3, reloaded.getScheduledArms().size());
-        assertEquals("Wrong arm 0", -4, (int) reloaded.getScheduledArms().get(0).getArm().getId());
-        assertEquals("Wrong arm 1", -3, (int) reloaded.getScheduledArms().get(1).getArm().getId());
-        assertEquals("Wrong arm 2", -4, (int) reloaded.getScheduledArms().get(2).getArm().getId());
+        assertEquals("Wrong number of study segments: " + reloaded.getScheduledStudySegments(), 3, reloaded.getScheduledStudySegments().size());
+        assertEquals("Wrong study segment 0", -4, (int) reloaded.getScheduledStudySegments().get(0).getStudySegment().getId());
+        assertEquals("Wrong study segment 1", -3, (int) reloaded.getScheduledStudySegments().get(1).getStudySegment().getId());
+        assertEquals("Wrong study segment 2", -4, (int) reloaded.getScheduledStudySegments().get(2).getStudySegment().getId());
 
-        assertEquals("Wrong number of events for last arm", 1, reloaded.getScheduledArms().get(2).getEvents().size());
-        ScheduledActivity loadedEvent = reloaded.getScheduledArms().get(2).getEvents().get(0);
+        assertEquals("Wrong number of events for last studySegment", 1, reloaded.getScheduledStudySegments().get(2).getEvents().size());
+        ScheduledActivity loadedEvent = reloaded.getScheduledStudySegments().get(2).getEvents().get(0);
         assertSameDay("Wrong ideal date", expectedIdealDate, loadedEvent.getIdealDate());
         assertEquals("Wrong planned event", -7, (int) loadedEvent.getPlannedActivity().getId());
 
@@ -161,7 +161,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
         assertEquals("Wrong current state mode", expectedMode, currentState.getMode());
         assertEquals("Wrong current state reason", expectedReason, currentState.getReason());
 
-        Activity currentActivity = reloaded.getScheduledArms().get(2).getEvents().get(0).getActivity();
+        Activity currentActivity = reloaded.getScheduledStudySegments().get(2).getEvents().get(0).getActivity();
         assertNotNull("Activity null", currentActivity);
         assertEquals("Wrong Activity", expectedActivity.getName(), currentActivity.getName());
     }

@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ArmDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -29,7 +29,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
     private DeltaService service;
 
     private EpochDao epochDao;
-    private ArmDao armDao;
+    private StudySegmentDao studySegmentDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -39,8 +39,8 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
         Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
         Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
-        Arm e1a0 = setGridId("E1A0-GRID",
-            setId(10, calendar.getEpochs().get(1).getArms().get(0)));
+        StudySegment e1a0 = setGridId("E1A0-GRID",
+            setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
 
         Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
         Amendment a2 = a3.getPreviousAmendment();
@@ -50,12 +50,12 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         a3.addDelta(Delta.createDeltaFor(e1, createAddChange(10, 0)));
 
         epochDao = registerDaoMockFor(EpochDao.class);
-        armDao = registerDaoMockFor(ArmDao.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         expect(epochDao.getById(2)).andReturn(e2).anyTimes();
-        expect(armDao.getById(10)).andReturn(e1a0).anyTimes();
+        expect(studySegmentDao.getById(10)).andReturn(e1a0).anyTimes();
 
         MutatorFactory mutatorFactory = new MutatorFactory();
-        mutatorFactory.setDaoFinder(new StaticDaoFinder(epochDao, armDao));
+        mutatorFactory.setDaoFinder(new StaticDaoFinder(epochDao, studySegmentDao));
 
         service = new DeltaService();
         service.setMutatorFactory(mutatorFactory);
@@ -107,13 +107,13 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         Delta<?> pcDelta = Delta.createDeltaFor(study.getPlannedCalendar(),
             Add.create(epoch, 3));
         rev.addDelta(pcDelta);
-        Arm arm = createNamedInstance("N", Arm.class);
+        StudySegment studySegment = createNamedInstance("N", StudySegment.class);
 
-        assertEquals("Wrong number of arms initially", 1, epoch.getArms().size());
+        assertEquals("Wrong number of study segments initially", 1, epoch.getStudySegments().size());
 
-        service.updateRevision(rev, epoch, Add.create(arm));
+        service.updateRevision(rev, epoch, Add.create(studySegment));
 
-        assertEquals("Arm not directly applied", 2, epoch.getArms().size());
+        assertEquals("Study segment not directly applied", 2, epoch.getStudySegments().size());
     }
 
     public void testUpdateRevisionWhenThereIsAlreadyAnApplicableDelta() throws Exception {
@@ -141,7 +141,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of deltas initially", 1, rev.getDeltas().size());
 
         Epoch expectedTarget = study.getPlannedCalendar().getEpochs().get(1);
-        PlanTreeNode<?> newChild = new Arm();
+        PlanTreeNode<?> newChild = new StudySegment();
         Add expectedChange = Add.create(newChild, 2);
         service.updateRevision(rev, expectedTarget, expectedChange);
 

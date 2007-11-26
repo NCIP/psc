@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
@@ -33,8 +33,8 @@ public class MoveCommand extends EditTemplateCommand {
     }
 
     @Override
-    protected Mode armMode() {
-        return new MoveArm();
+    protected Mode studySegmentMode() {
+        return new MoveStudySegment();
     }
 
     private abstract class MoveMode<T extends PlanTreeNode<?>> implements Mode {
@@ -85,34 +85,34 @@ public class MoveCommand extends EditTemplateCommand {
         protected abstract PlanTreeNode<?> toMoveParent();
     }
 
-    private class MoveArm extends MoveMode<Arm> {
+    private class MoveStudySegment extends MoveMode<StudySegment> {
         @Override
-        protected List<Arm> toMutate() {
-            return getArm().getEpoch().getArms();
+        protected List<StudySegment> toMutate() {
+            return getStudySegment().getEpoch().getStudySegments();
         }
 
         @Override
-        protected Arm toMove() {
-            return getArm();
+        protected StudySegment toMove() {
+            return getStudySegment();
         }
 
         @Override
-        protected List<Arm> toMutateRevised() {
-            return getRevisedArm().getEpoch().getArms();
+        protected List<StudySegment> toMutateRevised() {
+            return getRevisedStudySegment().getEpoch().getStudySegments();
         }
 
         @Override
-        protected Arm toMoveRevised() {
-            return getRevisedArm();
+        protected StudySegment toMoveRevised() {
+            return getRevisedStudySegment();
         }
 
         public String getRelativeViewName() {
-            return "moveArm";
+            return "moveStudySegment";
         }
 
         @Override
         protected PlanTreeNode<?> toMoveParent() {
-            return getSafeArmParent();
+            return getSafeStudySegmentParent();
         }
     }
 

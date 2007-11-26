@@ -27,7 +27,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
     private User user;
 
-    private Arm arm;
+    private StudySegment studySegment;
 
     @Override
     protected void setUp() throws Exception {
@@ -38,13 +38,13 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         service.setSubjectDao(subjectDao);
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
-        arm = epoch.getArms().get(0);
+        studySegment = epoch.getStudySegments().get(0);
         Period p1 = createPeriod("P1", 1, 7, 3);
         Period p2 = createPeriod("P2", 3, 1, 1);
         Period p3 = createPeriod("P3", 8, 28, 2);
-        arm.addPeriod(p1);
-        arm.addPeriod(p2);
-        arm.addPeriod(p3);
+        studySegment.addPeriod(p1);
+        studySegment.addPeriod(p2);
+        studySegment.addPeriod(p3);
 
         Activity a1 = new Activity();
         a1.setId(1);
@@ -72,9 +72,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySite studySite = createStudySite(study, site);
         Subject subjectIn = createSubject("Alice", "Childress");
         Date startDate = DateUtils.createDate(2006, Calendar.OCTOBER, 31);
-        Arm expectedArm = Epoch.create("Treatment", "A", "B", "C").getArms().get(1);
-        expectedArm.addPeriod(createPeriod("DC", 1, 7, 1));
-        expectedArm.getPeriods().iterator().next().addPlannedActivity(createPlannedActivity("Any", 4));
+        StudySegment expectedStudySegment = Epoch.create("Treatment", "A", "B", "C").getStudySegments().get(1);
+        expectedStudySegment.addPeriod(createPeriod("DC", 1, 7, 1));
+        expectedStudySegment.getPeriods().iterator().next().addPlannedActivity(createPlannedActivity("Any", 4));
 
         Subject subjectExpectedSave = createSubject("Alice", "Childress");
 
@@ -90,7 +90,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         expectLastCall().times(2);
         replayMocks();
 
-        StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedArm, startDate, user);
+        StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedStudySegment, startDate, user);
         verifyMocks();
 
         assertNotNull("Assignment not returned", actualAssignment);
@@ -98,13 +98,13 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertEquals("Assignment not added to subject", actualAssignment, subjectIn.getAssignments().get(0));
 
         assertNotNull(actualAssignment.getScheduledCalendar());
-        assertEquals(1, actualAssignment.getScheduledCalendar().getScheduledArms().size());
-        ScheduledArm scheduledArm = actualAssignment.getScheduledCalendar().getScheduledArms().get(0);
-        assertEquals(expectedArm, scheduledArm.getArm());
-        assertPositive("No scheduled events", scheduledArm.getEvents().size());
+        assertEquals(1, actualAssignment.getScheduledCalendar().getScheduledStudySegments().size());
+        ScheduledStudySegment scheduledStudySegment = actualAssignment.getScheduledCalendar().getScheduledStudySegments().get(0);
+        assertEquals(expectedStudySegment, scheduledStudySegment.getStudySegment());
+        assertPositive("No scheduled events", scheduledStudySegment.getEvents().size());
     }
 
-    public void testScheduleFirstArm() throws Exception {
+    public void testScheduleFirstStudySegment() throws Exception {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setSubject(createSubject("Alice", "Childress"));
         subjectDao.save(assignment.getSubject());
@@ -118,19 +118,19 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        ScheduledArm returnedArm = service.scheduleArm(
-                assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1),
-                NextArmMode.PER_PROTOCOL);
+        ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
+                assignment, studySegment, DateUtils.createDate(2006, Calendar.APRIL, 1),
+                NextStudySegmentMode.PER_PROTOCOL);
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
         assertNotNull("Scheduled calendar not created", scheduledCalendar);
-        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
-        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
-        assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
-        assertEquals("Wrong start day for scheduled arm", 1, (int) returnedArm.getStartDay());
-        assertDayOfDate("Wrong start date for scheduled arm", 2006, Calendar.APRIL, 1, returnedArm.getStartDate());
-        List<ScheduledActivity> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
+        assertEquals("Study segment not added to scheduled study segments", 1, scheduledCalendar.getScheduledStudySegments().size());
+        assertSame("Study segment not added to scheduled arms", returnedStudySegment, scheduledCalendar.getScheduledStudySegments().get(0));
+        assertSame("Wrong study segment scheduled", studySegment, scheduledCalendar.getScheduledStudySegments().get(0).getStudySegment());
+        assertEquals("Wrong start day for scheduled study segment", 1, (int) returnedStudySegment.getStartDay());
+        assertDayOfDate("Wrong start date for scheduled study segment", 2006, Calendar.APRIL, 1, returnedStudySegment.getStartDate());
+        List<ScheduledActivity> events = scheduledCalendar.getScheduledStudySegments().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
 
         Activity a1 = createNamedInstance("CBC", Activity.class);
@@ -153,8 +153,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertSame("Source amendment not set on SEs", expectedAmendment, events.get(7).getSourceAmendment());
     }
     
-    public void testScheduleFirstArmWithNegativeDays() throws Exception {
-        arm.getPeriods().first().setStartDay(-7);
+    public void testScheduleFirstStudySegmentWithNegativeDays() throws Exception {
+        studySegment.getPeriods().first().setStartDay(-7);
         // this will shift the days for events in the first period:
         // event 1: -7, 0, 7
         // event 2: -5, 2, 9
@@ -170,19 +170,19 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         replayMocks();
 
 
-        ScheduledArm returnedArm = service.scheduleArm(
-            assignment, arm, DateUtils.createDate(2006, Calendar.MARCH, 24), NextArmMode.PER_PROTOCOL);
+        ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
+            assignment, studySegment, DateUtils.createDate(2006, Calendar.MARCH, 24), NextStudySegmentMode.PER_PROTOCOL);
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
         assertNotNull("Scheduled calendar not created", scheduledCalendar);
-        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
-        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
-        assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(0).getArm());
-        List<ScheduledActivity> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
+        assertEquals("Study segment not added to scheduled study segments", 1, scheduledCalendar.getScheduledStudySegments().size());
+        assertSame("Study segment not added to scheduled study segments", returnedStudySegment, scheduledCalendar.getScheduledStudySegments().get(0));
+        assertSame("Wrong study segment scheduled", studySegment, scheduledCalendar.getScheduledStudySegments().get(0).getStudySegment());
+        List<ScheduledActivity> events = scheduledCalendar.getScheduledStudySegments().get(0).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
-        assertEquals("Wrong start day for arm", -7, (int) returnedArm.getStartDay());
-        assertDayOfDate("Wrong start date for arm", 2006, Calendar.MARCH, 24, returnedArm.getStartDate());
+        assertEquals("Wrong start day for study segment", -7, (int) returnedStudySegment.getStartDay());
+        assertDayOfDate("Wrong start date for study segment", 2006, Calendar.MARCH, 24, returnedStudySegment.getStartDate());
 
         assertNewlyScheduledActivity(2006, Calendar.MARCH, 24, 1, events.get(0));
         assertNewlyScheduledActivity(2006, Calendar.MARCH, 26, 2, events.get(1));
@@ -197,20 +197,20 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledActivity(2006, Calendar.MAY,   23, 5, events.get(10));
     }
 
-    public void testScheduleImmediateNextArm() throws Exception {
+    public void testScheduleImmediateNextStudySegment() throws Exception {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar calendar = new ScheduledCalendar();
         assignment.setScheduledCalendar(calendar);
         assignment.setSubject(createSubject("Alice", "Childress"));
 
-        ScheduledArm existingArm = new ScheduledArm();
-        existingArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
-        existingArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 2,
+        ScheduledStudySegment existingStudySegment = new ScheduledStudySegment();
+        existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
+        existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 2,
             new Occurred(null, DateUtils.createDate(2005, Calendar.AUGUST, 4))));
-        existingArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 3,
+        existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 3,
             new Canceled(null)));
 
-        calendar.addArm(existingArm);
+        calendar.addStudySegment(existingStudySegment);
 
         subjectDao.save(assignment.getSubject());
 
@@ -219,16 +219,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assignment.setStudySite(studySite);        
 
         replayMocks();
-        ScheduledArm returnedArm = service.scheduleArm(
-            assignment, arm, DateUtils.createDate(2005, Calendar.SEPTEMBER, 1), NextArmMode.IMMEDIATE);
+        ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
+            assignment, studySegment, DateUtils.createDate(2005, Calendar.SEPTEMBER, 1), NextStudySegmentMode.IMMEDIATE);
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
-        assertEquals("Arm not added to scheduled arms", 2, scheduledCalendar.getScheduledArms().size());
-        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(1));
-        assertSame("Wrong arm scheduled", arm, scheduledCalendar.getScheduledArms().get(1).getArm());
+        assertEquals("Study segment not added to scheduled arms", 2, scheduledCalendar.getScheduledStudySegments().size());
+        assertSame("Study segment not added to scheduled arms", returnedStudySegment, scheduledCalendar.getScheduledStudySegments().get(1));
+        assertSame("Wrong study segment scheduled", studySegment, scheduledCalendar.getScheduledStudySegments().get(1).getStudySegment());
 
-        List<ScheduledActivity> events = scheduledCalendar.getScheduledArms().get(1).getEvents();
+        List<ScheduledActivity> events = scheduledCalendar.getScheduledStudySegments().get(1).getEvents();
         assertEquals("Wrong number of events added", 11, events.size());
         assertNewlyScheduledActivity(2005, Calendar.SEPTEMBER,  1, 1, events.get(0));
         assertNewlyScheduledActivity(2005, Calendar.SEPTEMBER,  3, 2, events.get(1));
@@ -242,16 +242,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assertNewlyScheduledActivity(2005, Calendar.OCTOBER,    6, 4, events.get(9));
         assertNewlyScheduledActivity(2005, Calendar.OCTOBER,   23, 5, events.get(10));
 
-        ScheduledActivity wasScheduledActivity = existingArm.getEvents().get(0);
+        ScheduledActivity wasScheduledActivity = existingStudySegment.getEvents().get(0);
         assertEquals("No new state in scheduled", 2, wasScheduledActivity.getAllStates().size());
         assertEquals("Scheduled event not canceled", Canceled.class, wasScheduledActivity.getCurrentState().getClass());
         assertEquals("Wrong reason for cancelation", "Immediate transition to Epoch: A", wasScheduledActivity.getCurrentState().getReason());
 
-        ScheduledActivity wasOccurredEvent = existingArm.getEvents().get(1);
+        ScheduledActivity wasOccurredEvent = existingStudySegment.getEvents().get(1);
         assertEquals("Occurred event changed", 2, wasOccurredEvent.getAllStates().size());
         assertEquals("Occurred event changed", Occurred.class, wasOccurredEvent.getCurrentState().getClass());
 
-        ScheduledActivity wasCanceledEvent = existingArm.getEvents().get(2);
+        ScheduledActivity wasCanceledEvent = existingStudySegment.getEvents().get(2);
         assertEquals("Canceled event changed", 2, wasCanceledEvent.getAllStates().size());
         assertEquals("Canceled event changed", Canceled.class, wasCanceledEvent.getCurrentState().getClass());
     }
@@ -307,14 +307,14 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar scheduledCalendar = new ScheduledCalendar();
         assignment.setScheduledCalendar(scheduledCalendar);
-        ScheduledArm existingArm = new ScheduledArm();
-        existingArm.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
-        scheduledCalendar.addArm(existingArm);
+        ScheduledStudySegment existingStudySegment = new ScheduledStudySegment();
+        existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
+        scheduledCalendar.addStudySegment(existingStudySegment);
 
         StudySite studySite = new StudySite();
         studySite.setSite(new Site());
         assignment.setStudySite(studySite);
-        List<ScheduledActivity> events = scheduledCalendar.getScheduledArms().get(0).getEvents();
+        List<ScheduledActivity> events = scheduledCalendar.getScheduledStudySegments().get(0).getEvents();
         ScheduledActivity event = events.get(0);
         Calendar holiday = Calendar.getInstance();
         holiday.set(2005, Calendar.AUGUST, 1);
@@ -344,9 +344,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         assignment.setScheduledCalendar(scheduledCalendar);
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
-        Arm scheduledArm = epoch.getArms().get(0);
+        StudySegment scheduledStudySegment = epoch.getStudySegments().get(0);
         Period p1 = createPeriod("P1", 1, 7, 3);
-        scheduledArm.addPeriod(p1);
+        scheduledStudySegment.addPeriod(p1);
         p1.addPlannedActivity(setId(1, createPlannedActivity("CBC", 1)));
         
         StudySite studySite = new StudySite();
@@ -379,16 +379,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        ScheduledArm returnedArm = service.scheduleArm(
-                assignment, scheduledArm, DateUtils.createDate(2005, Calendar.AUGUST , 1),
-                NextArmMode.PER_PROTOCOL);
+        ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
+                assignment, scheduledStudySegment, DateUtils.createDate(2005, Calendar.AUGUST , 1),
+                NextStudySegmentMode.PER_PROTOCOL);
         verifyMocks();
 
-        List<ScheduledActivity> events = returnedArm.getEvents();
+        List<ScheduledActivity> events = returnedStudySegment.getEvents();
 
         assertNotNull("Scheduled calendar not created", scheduledCalendar);
-        assertEquals("Arm not added to scheduled arms", 1, scheduledCalendar.getScheduledArms().size());
-        assertSame("Arm not added to scheduled arms", returnedArm, scheduledCalendar.getScheduledArms().get(0));
+        assertEquals("Study segment not added to scheduled study segments", 1, scheduledCalendar.getScheduledStudySegments().size());
+        assertSame("Study segment not added to scheduled study segments", returnedStudySegment, scheduledCalendar.getScheduledStudySegments().get(0));
         assertEquals("Wrong number of events added", 3, events.size());
 
         Calendar calendar = Calendar.getInstance();
@@ -410,23 +410,23 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySubjectAssignment expectedAssignment = setId(1, new StudySubjectAssignment());
         expectedAssignment.setStartDateEpoch(startDate);
 
-        ScheduledArm arm0 = new ScheduledArm();
-        arm0.addEvent(createScheduledActivity("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));
-        arm0.addEvent(createScheduledActivity("DEF", 2007, Calendar.SEPTEMBER, 4, new Canceled()));
-        arm0.addEvent(createScheduledActivity("GHI", 2007, Calendar.SEPTEMBER, 6, new Occurred()));
-        arm0.addEvent(createScheduledActivity("JKL", 2007, Calendar.SEPTEMBER, 8, new Scheduled()));
+        ScheduledStudySegment studySegment0 = new ScheduledStudySegment();
+        studySegment0.addEvent(createScheduledActivity("ABC", 2007, Calendar.SEPTEMBER, 2, new Occurred()));
+        studySegment0.addEvent(createScheduledActivity("DEF", 2007, Calendar.SEPTEMBER, 4, new Canceled()));
+        studySegment0.addEvent(createScheduledActivity("GHI", 2007, Calendar.SEPTEMBER, 6, new Occurred()));
+        studySegment0.addEvent(createScheduledActivity("JKL", 2007, Calendar.SEPTEMBER, 8, new Scheduled()));
 
-        ScheduledArm arm1 = new ScheduledArm();
-        arm1.addEvent(createScheduledActivity("MNO", 2007, Calendar.OCTOBER, 2, new Occurred()));
-        arm1.addEvent(createScheduledActivity("PQR", 2007, Calendar.OCTOBER, 4, new Scheduled()));
-        arm1.addEvent(createScheduledActivity("STU", 2007, Calendar.OCTOBER, 6, new Scheduled()));
-        arm1.addEvent(createScheduledActivity("VWX", 2007, Calendar.OCTOBER, 8, new Scheduled()));
-        arm1.addEvent(createConditionalEvent("YZA", 2007, Calendar.OCTOBER, 10));
+        ScheduledStudySegment studySegment1 = new ScheduledStudySegment();
+        studySegment1.addEvent(createScheduledActivity("MNO", 2007, Calendar.OCTOBER, 2, new Occurred()));
+        studySegment1.addEvent(createScheduledActivity("PQR", 2007, Calendar.OCTOBER, 4, new Scheduled()));
+        studySegment1.addEvent(createScheduledActivity("STU", 2007, Calendar.OCTOBER, 6, new Scheduled()));
+        studySegment1.addEvent(createScheduledActivity("VWX", 2007, Calendar.OCTOBER, 8, new Scheduled()));
+        studySegment1.addEvent(createConditionalEvent("YZA", 2007, Calendar.OCTOBER, 10));
 
         ScheduledCalendar calendar = new ScheduledCalendar();
         calendar.setAssignment(expectedAssignment);
-        calendar.addArm(arm0);
-        calendar.addArm(arm1);
+        calendar.addStudySegment(studySegment0);
+        calendar.addStudySegment(studySegment1);
         expectedAssignment.setScheduledCalendar(calendar);
 
         subjectDao.save(expectedAssignment.getSubject());
@@ -437,16 +437,16 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         CoreTestCase.assertDayOfDate("Wrong off study day", 2007, Calendar.SEPTEMBER, 4, actualAssignment.getEndDateEpoch());
 
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, arm0.getEvents().get(2).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm0.getEvents().get(3).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, arm1.getEvents().get(0).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(1).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(2).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, arm1.getEvents().get(3).getCurrentState().getMode());
-        assertEquals("Wrong Event Mode", ScheduledActivityMode.NOT_APPLICABLE, arm1.getEvents().get(4).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, studySegment0.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, studySegment0.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.OCCURRED, studySegment1.getEvents().get(0).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, studySegment1.getEvents().get(1).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, studySegment1.getEvents().get(2).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.CANCELED, studySegment1.getEvents().get(3).getCurrentState().getMode());
+        assertEquals("Wrong Event Mode", ScheduledActivityMode.NOT_APPLICABLE, studySegment1.getEvents().get(4).getCurrentState().getMode());
     }
 
-    public void testScheduleArmWithOffStudySubject() {
+    public void testScheduleStudySegmentWithOffStudySubject() {
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setSubject(createSubject("Alice", "Childress"));
         assignment.setEndDateEpoch(DateUtils.createDate(2006, Calendar.APRIL, 1));
@@ -457,13 +457,13 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
 
-        ScheduledArm returnedArm = service.scheduleArm(
-                assignment, arm, DateUtils.createDate(2006, Calendar.APRIL, 1),
-                NextArmMode.PER_PROTOCOL);
+        ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
+                assignment, studySegment, DateUtils.createDate(2006, Calendar.APRIL, 1),
+                NextStudySegmentMode.PER_PROTOCOL);
         verifyMocks();
 
         ScheduledCalendar scheduledCalendar = assignment.getScheduledCalendar();
         assertNull("Scheduled calendar not created", scheduledCalendar);
-        assertSame("Arm not added to scheduled arms", null, returnedArm);
+        assertSame("Study segment not added to scheduled study segments", null, returnedStudySegment);
     }
 }

@@ -35,9 +35,9 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setStartDate(new Date());
         command.setStudy(study);
         command.setSite(site);
-        command.setArm(setId(17, Fixtures.createNamedInstance("Worcestershire", Arm.class)));
+        command.setStudySegment(setId(17, Fixtures.createNamedInstance("Worcestershire", StudySegment.class)));
 
-        expect(subjectService.assignSubject(subject, studySite, command.getArm(), command.getStartDate(), null)).andReturn(assignment);
+        expect(subjectService.assignSubject(subject, studySite, command.getStudySegment(), command.getStartDate(), null)).andReturn(assignment);
         replayMocks();
 
         assertSame(assignment, command.assignSubject());

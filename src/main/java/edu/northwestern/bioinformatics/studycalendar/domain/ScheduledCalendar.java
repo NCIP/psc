@@ -29,28 +29,28 @@ import java.util.ArrayList;
 )
 public class ScheduledCalendar extends AbstractMutableDomainObject {
     private StudySubjectAssignment assignment;
-    private List<ScheduledArm> scheduledArms = new LinkedList<ScheduledArm>();
+    private List<ScheduledStudySegment> scheduledStudySegments = new LinkedList<ScheduledStudySegment>();
 
     ////// LOGIC
 
-    public void addArm(ScheduledArm arm) {
-        scheduledArms.add(arm);
-        arm.setScheduledCalendar(this);
+    public void addStudySegment(ScheduledStudySegment studySegment) {
+        scheduledStudySegments.add(studySegment);
+        studySegment.setScheduledCalendar(this);
     }
 
     @Transient
-    public ScheduledArm getCurrentArm() {
-        for (ScheduledArm arm : getScheduledArms()) {
-            if (!arm.isComplete()) return arm;
+    public ScheduledStudySegment getCurrentStudySegment() {
+        for (ScheduledStudySegment studySegment : getScheduledStudySegments()) {
+            if (!studySegment.isComplete()) return studySegment;
         }
-        return getScheduledArms().get(getScheduledArms().size() - 1);
+        return getScheduledStudySegments().get(getScheduledStudySegments().size() - 1);
     }
 
     @Transient
-    public List<ScheduledArm> getScheduledArmsFor(Arm source) {
-        List<ScheduledArm> matches = new ArrayList<ScheduledArm>(getScheduledArms().size());
-        for (ScheduledArm scheduledArm : getScheduledArms()) {
-            if (scheduledArm.getArm().equals(source)) matches.add(scheduledArm);
+    public List<ScheduledStudySegment> getScheduledStudySegmentsFor(StudySegment source) {
+        List<ScheduledStudySegment> matches = new ArrayList<ScheduledStudySegment>(getScheduledStudySegments().size());
+        for (ScheduledStudySegment scheduledStudySegment : getScheduledStudySegments()) {
+            if (scheduledStudySegment.getStudySegment().equals(source)) matches.add(scheduledStudySegment);
         }
         return matches;
     }
@@ -73,11 +73,11 @@ public class ScheduledCalendar extends AbstractMutableDomainObject {
     @JoinColumn(name="scheduled_calendar_id", nullable=false)
     @IndexColumn(name="list_index")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<ScheduledArm> getScheduledArms() {
-        return scheduledArms;
+    public List<ScheduledStudySegment> getScheduledStudySegments() {
+        return scheduledStudySegments;
     }
 
-    public void setScheduledArms(List<ScheduledArm> arms) {
-        this.scheduledArms = arms;
+    public void setScheduledStudySegments(List<ScheduledStudySegment> studySegments) {
+        this.scheduledStudySegments = studySegments;
     }
 }

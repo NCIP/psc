@@ -39,7 +39,7 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
         data.put("durationUnits", Duration.Unit.values());
         // for breadcrumbs
         data.put("amendment",
-            templateService.findStudy(((PeriodCommand) command).getArm()).getDevelopmentAmendment());
+            templateService.findStudy(((PeriodCommand) command).getStudySegment()).getDevelopmentAmendment());
         return data;
     }
 
@@ -47,8 +47,8 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         C command = (C) oCommand;
         command.apply();
-        Study study = studyService.saveStudyFor(command.getArm());
-        return getControllerTools().redirectToCalendarTemplate(study.getId(), command.getArm().getId(), study.getDevelopmentAmendment().getId());
+        Study study = studyService.saveStudyFor(command.getStudySegment());
+        return getControllerTools().redirectToCalendarTemplate(study.getId(), command.getStudySegment().getId(), study.getDevelopmentAmendment().getId());
     }
 
     ////// CONFIGURATION

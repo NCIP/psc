@@ -38,7 +38,7 @@ import java.util.List;
     }
 )
 public class ScheduledActivity extends AbstractMutableDomainObject {
-    private ScheduledArm scheduledArm;
+    private ScheduledStudySegment scheduledStudySegment;
     private PlannedActivity plannedActivity;
     private Date idealDate;
     private String notes;
@@ -63,11 +63,11 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     @Transient
     private boolean isChangeable() {
         Date endDate;
-        if (scheduledArm != null
-                && scheduledArm.getScheduledCalendar() != null
-                && scheduledArm.getScheduledCalendar().getAssignment() != null
-                && scheduledArm.getScheduledCalendar().getAssignment().getEndDateEpoch() != null) {
-            endDate = scheduledArm.getScheduledCalendar().getAssignment().getEndDateEpoch();
+        if (scheduledStudySegment != null
+                && scheduledStudySegment.getScheduledCalendar() != null
+                && scheduledStudySegment.getScheduledCalendar().getAssignment() != null
+                && scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDateEpoch() != null) {
+            endDate = scheduledStudySegment.getScheduledCalendar().getAssignment().getEndDateEpoch();
             return getActualDate().before(endDate);
         }
         return true;
@@ -128,12 +128,12 @@ public class ScheduledActivity extends AbstractMutableDomainObject {
     ////// BEAN PROPERTIES
 
     @ManyToOne
-    public ScheduledArm getScheduledArm() {
-        return scheduledArm;
+    public ScheduledStudySegment getScheduledStudySegment() {
+        return scheduledStudySegment;
     }
 
-    public void setScheduledArm(ScheduledArm scheduledArm) {
-        this.scheduledArm = scheduledArm;
+    public void setScheduledStudySegment(ScheduledStudySegment scheduledStudySegment) {
+        this.scheduledStudySegment = scheduledStudySegment;
     }
 
     @ManyToOne

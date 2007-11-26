@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreator;
 import static org.easymock.classextension.EasyMock.*;
 
 /**
@@ -61,12 +60,12 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         assertEquals("Protocol", calendar.getName());
     }
 
-    public void testMaxArmCount() throws Exception {
+    public void testMaxStudySegmentCount() throws Exception {
         calendar.addEpoch(Epoch.create("E1"));
         calendar.addEpoch(Epoch.create("E2", "A", "B", "C"));
         calendar.addEpoch(Epoch.create("E3", "A", "B"));
 
-        assertEquals(3, calendar.getMaxArmCount());
+        assertEquals(3, calendar.getMaxStudySegmentCount());
     }
 
     public void testTransientClone() throws Exception {
@@ -75,8 +74,8 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
         cal.setId(id++);
         for (Epoch epoch : cal.getEpochs()) {
             epoch.setId(id++);
-            for (Arm arm : epoch.getArms()) {
-                arm.setId(id);
+            for (StudySegment studySegment : epoch.getStudySegments()) {
+                studySegment.setId(id);
             }
         }
         assertNotNull("Test setup failure", cal.getParent());
@@ -93,14 +92,14 @@ public class PlannedCalendarTest extends StudyCalendarTestCase {
             assertTrue("Epoch " + i + " is not marked mem-only", cloneEpoch.isMemoryOnly());
             assertEquals("Epoch " + i + " has a different name", calEpoch.getName(), cloneEpoch.getName());
             assertSame("Epoch " + i + " does not reference its cloned parent", clone, cloneEpoch.getParent());
-            assertEquals("Epoch " + i + " has a different number of arms", calEpoch.getArms().size(), cloneEpoch.getArms().size());
-            for (int j = 0; j < cloneEpoch.getArms().size(); j++) {
-                Arm cloneArm = cloneEpoch.getArms().get(j);
-                Arm calArm = calEpoch.getArms().get(j);
-                assertNotSame("Arm " + i + " is not a different object", calArm, cloneArm);
-                assertTrue("Arm " + i + " is not marked mem-only", cloneArm.isMemoryOnly());
-                assertEquals("Arm " + i + " has a different name", calArm.getName(), cloneArm.getName());
-                assertSame("Arm " + i + " does not reference its cloned parent", cloneEpoch, cloneArm.getParent());
+            assertEquals("Epoch " + i + " has a different number of study segments", calEpoch.getStudySegments().size(), cloneEpoch.getStudySegments().size());
+            for (int j = 0; j < cloneEpoch.getStudySegments().size(); j++) {
+                StudySegment cloneStudySegment = cloneEpoch.getStudySegments().get(j);
+                StudySegment calStudySegment = calEpoch.getStudySegments().get(j);
+                assertNotSame("Study segment " + i + " is not a different object", calStudySegment, cloneStudySegment);
+                assertTrue("Study segment " + i + " is not marked mem-only", cloneStudySegment.isMemoryOnly());
+                assertEquals("Study segment " + i + " has a different name", calStudySegment.getName(), cloneStudySegment.getName());
+                assertSame("Study segment " + i + " does not reference its cloned parent", cloneEpoch, cloneStudySegment.getParent());
             }
         }
     }

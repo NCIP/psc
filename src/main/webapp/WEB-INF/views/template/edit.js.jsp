@@ -1,39 +1,39 @@
 <%@page contentType="text/javascript" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-function createAllArmControls() {
-    $$('#epochs li.arm').each(function(li) {
-        createArmControls(li)
+function createAllStudySegmentControls() {
+    $$('#epochs li.studySegment').each(function(li) {
+        createStudySegmentControls(li)
     })
     $$('#epochs ul').each(function(ul) {
-        _updateAllArmsControlVisibility(ul.id)
+        _updateAllStudySegmentsControlVisibility(ul.id)
     })
 }
 
-function createArmControls(armItem) {
-    var armA = armItem.getElementsByTagName("A")[0];
-    var armId = armA.id.substring(4)
-    var controlBox = Builder.node("div", {className: 'arm-controls controls'});
-    armItem.appendChild(controlBox)
+function createStudySegmentControls(studySegmentItem) {
+    var studySegmentA = studySegmentItem.getElementsByTagName("A")[0];
+    var studySegmentId = studySegmentA.id.substring('studySegment'.length+1)
+    var controlBox = Builder.node("div", {className: 'studySegment-controls controls'});
+    studySegmentItem.appendChild(controlBox)
 
-    var renameControl = createRenameControl('arm', armId)
-    SC.inPlaceEdit(armA, renameControl.href, {
+    var renameControl = createRenameControl('studySegment', studySegmentId)
+    SC.inPlaceEdit(studySegmentA, renameControl.href, {
         externalControl: renameControl,
         externalControlOnly: true,
         highlight: false,
-        clickToEditText: armA.title
+        clickToEditText: studySegmentA.title
     })
 
-    var deleteControl = createDeleteControl('arm', armId)
+    var deleteControl = createDeleteControl('studySegment', studySegmentId)
     Event.observe(deleteControl, "click", deleteHandler(function() {
-            return "Are you sure you want to delete the arm '" + armA.innerHTML +
+            return "Are you sure you want to delete the study segment '" + studySegmentA.innerHTML +
                 "'?  This will permanently remove it, all its periods, and its events.  " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
     ))
 
-    var moveUpControl   = createMoveControl(-1, '&#9650;', 'arm', armId)
+    var moveUpControl   = createMoveControl(-1, '&#9650;', 'studySegment', studySegmentId)
     SC.asyncLink(moveUpControl, {}, "epochs-indicator")
-    var moveDownControl = createMoveControl( 1, '&#9660;', 'arm', armId)
+    var moveDownControl = createMoveControl( 1, '&#9660;', 'studySegment', studySegmentId)
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
@@ -41,28 +41,28 @@ function createArmControls(armItem) {
     controlBox.appendChild(deleteControl)
     controlBox.appendChild(moveDownControl)
 
-    updateArmControlVisibility('arm-' + armId + '-item')
+    updateStudySegmentControlVisibility('studySegment-' + studySegmentId + '-item')
 }
 
-function updateArmControlVisibility(armItem) {
-    var thisArm = $(armItem)
-    var siblings = $A(thisArm.parentNode.getElementsByTagName("LI"))
+function updateStudySegmentControlVisibility(studySegmentItem) {
+    var thisStudySegment = $(studySegmentItem)
+    var siblings = $A(thisStudySegment.parentNode.getElementsByTagName("LI"))
 
-    updateMoveControlVisibility('arm', thisArm.id.split('-')[1], thisArm, siblings)
+    updateMoveControlVisibility('studySegment', thisStudySegment.id.split('-')[1], thisStudySegment, siblings)
 }
 
-function updateAllArmsControlVisibility(epochId) {
-    _updateAllArmsControlVisibility('epoch-' + epochId + '-arms')
+function updateAllStudySegmentsControlVisibility(epochId) {
+    _updateAllStudySegmentsControlVisibility('epoch-' + epochId + '-studySegments')
 }
 
-function _updateAllArmsControlVisibility(eltId) {
-    var armItems = $$('#' + eltId + ' li');
-    armItems.each(updateArmControlVisibility)
-    updateDeleteControlVisibility('arm', armItems, eltId);
-    if (armItems.length <= 1) {
-        $$('#' + eltId + ' li .arm-rename-control').each(function(e) { e.hide() })
+function _updateAllStudySegmentsControlVisibility(eltId) {
+    var studySegmentItems = $$('#' + eltId + ' li');
+    studySegmentItems.each(updateStudySegmentControlVisibility)
+    updateDeleteControlVisibility('studySegment', studySegmentItems, eltId);
+    if (studySegmentItems.length <= 1) {
+        $$('#' + eltId + ' li .studySegment-rename-control').each(function(e) { e.hide() })
     } else {
-        $$('#' + eltId + ' li .arm-rename-control').each(function(e) { e.show() })
+        $$('#' + eltId + ' li .studySegment-rename-control').each(function(e) { e.show() })
     }
 }
 
@@ -101,8 +101,8 @@ function createEpochControls(epochH4) {
     var epochId = epochH4.id.split('-')[1]
     var epochName = $('epoch-' + epochId + '-name')
 
-    var addArmControl = createAddControl("Add arm", 'epoch', epochId)
-    SC.asyncLink(addArmControl, {}, "epochs-indicator")
+    var addStudySegmentControl = createAddControl("Add study segment", 'epoch', epochId)
+    SC.asyncLink(addStudySegmentControl, {}, "epochs-indicator")
 
     var renameControl = createRenameControl('epoch', epochId)
     SC.inPlaceEdit(epochName, renameControl.href, {
@@ -113,7 +113,7 @@ function createEpochControls(epochH4) {
     var deleteControl = createDeleteControl('epoch', epochId)
     Event.observe(deleteControl, "click", deleteHandler(function() {
             return "Are you sure you want to delete the epoch '" + epochName.innerHTML +
-                "'?  This will permanently remove it, all its arms, its periods, and its events. " +
+                "'?  This will permanently remove it, all its study segments, its periods, and its events. " +
                 "\n\nThis action cannot be undone."
         }, deleteControl.href
     ));
@@ -124,7 +124,7 @@ function createEpochControls(epochH4) {
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
-    controlBox.appendChild(addArmControl)
+    controlBox.appendChild(addStudySegmentControl)
     controlBox.appendChild(renameControl)
     controlBox.appendChild(deleteControl)
     controlBox.appendChild(moveDownControl)

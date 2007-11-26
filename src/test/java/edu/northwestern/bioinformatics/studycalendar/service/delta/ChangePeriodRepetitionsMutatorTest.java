@@ -30,9 +30,9 @@ public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<Pr
     }
 
     public void testIncreaseReps() throws Exception {
-        expect(templateService.findParent(period0)).andReturn(arm);
-        subjectService.schedulePeriod(period0, amendment, scheduledArm, 3);
-        subjectService.schedulePeriod(period0, amendment, scheduledArm, 4);
+        expect(templateService.findParent(period0)).andReturn(studySegment);
+        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment, 3);
+        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment, 4);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);
@@ -42,7 +42,7 @@ public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<Pr
     public void testDecreaseReps() throws Exception {
         change.setNewValue("1");
 
-        expect(templateService.findParent(period0)).andReturn(arm);
+        expect(templateService.findParent(period0)).andReturn(studySegment);
         expect(templateService.findParent(p0e0)).andReturn(period0).times(PERIOD_0_REPS - 1);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(PERIOD_0_REPS - 1);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(PERIOD_1_REPS - 1);

@@ -36,7 +36,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
         @Parameter(name="sequence", value="seq_periods_id")
     }
 )
-public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
+public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivity>
     implements Named, Comparable<Period>
 {
     private static final int DEFAULT_REPETITIONS = 1;
@@ -58,7 +58,7 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
 
     ////// LOGIC
 
-    @Override public Class<Arm> parentClass() { return Arm.class; }
+    @Override public Class<StudySegment> parentClass() { return StudySegment.class; }
     @Override public Class<PlannedActivity> childClass() { return PlannedActivity.class; }
 
     public void addPlannedActivity(PlannedActivity event) {
@@ -129,13 +129,13 @@ public class Period extends PlanTreeOrderedInnerNode<Arm, PlannedActivity>
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "arm_id")
-    public Arm getArm() {
+    @JoinColumn(name = "study_segment_id")
+    public StudySegment getStudySegment() {
         return getParent();
     }
 
-    public void setArm(Arm arm) {
-        setParent(arm);
+    public void setStudySegment(StudySegment studySegment) {
+        setParent(studySegment);
     }
 
     @Column(name = "start_day")

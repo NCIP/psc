@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
@@ -31,15 +31,16 @@ public class AddPeriodMutator extends CollectionAddMutator {
     @Override
     public void apply(ScheduledCalendar calendar) {
         Period newPeriod = (Period) findChild();
-        for (ScheduledArm scheduledArm : findMatchingArms(calendar)) {
+        for (ScheduledStudySegment scheduledStudySegment : findMatchingStudySegments(calendar)) {
             subjectService.schedulePeriod(newPeriod,
                 // TODO: make this cast unnecessary
-                (Amendment) change.getDelta().getRevision(), scheduledArm);
+                (Amendment) change.getDelta().getRevision(), scheduledStudySegment);
         }
     }
 
-    private Collection<ScheduledArm> findMatchingArms(ScheduledCalendar cal) {
+    private Collection<ScheduledStudySegment> findMatchingStudySegments(ScheduledCalendar cal) {
         // Second cast works around a dumb javac bug
-        return cal.getScheduledArmsFor((Arm) (PlanTreeNode) change.getDelta().getNode());
+        return cal.getScheduledStudySegmentsFor((StudySegment) (PlanTreeNode) change.getDelta().getNode());
     }
 }
+      

@@ -20,57 +20,57 @@ public class ScheduledCalendarTest extends StudyCalendarTestCase {
         scheduledCalendar = new ScheduledCalendar();
     }
 
-    public void testGetCurrentArm() throws Exception {
-        List<ScheduledArm> arms = Arrays.asList(
-            registerMockFor(ScheduledArm.class),
-            registerMockFor(ScheduledArm.class),
-            registerMockFor(ScheduledArm.class)
+    public void testGetCurrentStudySegment() throws Exception {
+        List<ScheduledStudySegment> studySegments = Arrays.asList(
+            registerMockFor(ScheduledStudySegment.class),
+            registerMockFor(ScheduledStudySegment.class),
+            registerMockFor(ScheduledStudySegment.class)
         );
-        scheduledCalendar.setScheduledArms(arms);
+        scheduledCalendar.setScheduledStudySegments(studySegments);
 
-        EasyMock.expect(arms.get(0).isComplete()).andReturn(true);
-        EasyMock.expect(arms.get(1).isComplete()).andReturn(false);
+        EasyMock.expect(studySegments.get(0).isComplete()).andReturn(true);
+        EasyMock.expect(studySegments.get(1).isComplete()).andReturn(false);
 
         replayMocks();
-        assertSame(arms.get(1), scheduledCalendar.getCurrentArm());
+        assertSame(studySegments.get(1), scheduledCalendar.getCurrentStudySegment());
         verifyMocks();
     }
     
-    public void testGetCurrentArmWhenAllComplete() throws Exception {
-        List<ScheduledArm> arms = Arrays.asList(
-            registerMockFor(ScheduledArm.class),
-            registerMockFor(ScheduledArm.class),
-            registerMockFor(ScheduledArm.class)
+    public void testGetCurrentStudySegmentWhenAllComplete() throws Exception {
+        List<ScheduledStudySegment> studySegments = Arrays.asList(
+            registerMockFor(ScheduledStudySegment.class),
+            registerMockFor(ScheduledStudySegment.class),
+            registerMockFor(ScheduledStudySegment.class)
         );
-        scheduledCalendar.setScheduledArms(arms);
+        scheduledCalendar.setScheduledStudySegments(studySegments);
 
-        EasyMock.expect(arms.get(0).isComplete()).andReturn(true);
-        EasyMock.expect(arms.get(1).isComplete()).andReturn(true);
-        EasyMock.expect(arms.get(2).isComplete()).andReturn(true);
+        EasyMock.expect(studySegments.get(0).isComplete()).andReturn(true);
+        EasyMock.expect(studySegments.get(1).isComplete()).andReturn(true);
+        EasyMock.expect(studySegments.get(2).isComplete()).andReturn(true);
 
         replayMocks();
-        assertSame(arms.get(2), scheduledCalendar.getCurrentArm());
+        assertSame(studySegments.get(2), scheduledCalendar.getCurrentStudySegment());
         verifyMocks();
     }
 
-    public void testGetScheduledArmsFor() throws Exception {
-        Arm a1 = setId(4, createNamedInstance("A1", Arm.class));
-        Arm a2 = setId(9, createNamedInstance("A2", Arm.class));
-        Arm unused = setId(262, createNamedInstance("Unused", Arm.class));
-        scheduledCalendar.addArm(createScheduledArm(a1));
-        scheduledCalendar.addArm(createScheduledArm(a2));
-        scheduledCalendar.addArm(createScheduledArm(a1));
+    public void testGetScheduledStudySegmentsFor() throws Exception {
+        StudySegment a1 = setId(4, createNamedInstance("A1", StudySegment.class));
+        StudySegment a2 = setId(9, createNamedInstance("A2", StudySegment.class));
+        StudySegment unused = setId(262, createNamedInstance("Unused", StudySegment.class));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(a1));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(a2));
+        scheduledCalendar.addStudySegment(createScheduledStudySegment(a1));
 
-        List<ScheduledArm> forA1 = scheduledCalendar.getScheduledArmsFor(a1);
+        List<ScheduledStudySegment> forA1 = scheduledCalendar.getScheduledStudySegmentsFor(a1);
         assertEquals("Wrong number for A1", 2, forA1.size());
-        assertSame("Wrong 0th for A1", scheduledCalendar.getScheduledArms().get(0), forA1.get(0));
-        assertSame("Wrong 1st for A1", scheduledCalendar.getScheduledArms().get(2), forA1.get(1));
+        assertSame("Wrong 0th for A1", scheduledCalendar.getScheduledStudySegments().get(0), forA1.get(0));
+        assertSame("Wrong 1st for A1", scheduledCalendar.getScheduledStudySegments().get(2), forA1.get(1));
 
-        List<ScheduledArm> forA2 = scheduledCalendar.getScheduledArmsFor(a2);
+        List<ScheduledStudySegment> forA2 = scheduledCalendar.getScheduledStudySegmentsFor(a2);
         assertEquals("Wrong number for A2", 1, forA2.size());
-        assertSame("Wrong 0th for A2", scheduledCalendar.getScheduledArms().get(1), forA2.get(0));
+        assertSame("Wrong 0th for A2", scheduledCalendar.getScheduledStudySegments().get(1), forA2.get(0));
 
-        List<ScheduledArm> forUnused = scheduledCalendar.getScheduledArmsFor(unused);
+        List<ScheduledStudySegment> forUnused = scheduledCalendar.getScheduledStudySegmentsFor(unused);
         assertEquals("Wrong number for unused", 0, forUnused.size());
     }
 }

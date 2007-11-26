@@ -15,7 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import gov.nih.nci.cabig.ctms.lang.StringTools;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,7 +112,7 @@ public class RevisionChanges {
     private static String nodeTypeName(PlanTreeNode node) {
         if (node instanceof PlannedCalendar) return "calendar";
         if (node instanceof Epoch) return "epoch";
-        if (node instanceof Arm) return "arm";  // segment?
+        if (node instanceof StudySegment) return "studySegment";  // segment?
         if (node instanceof Period) return "period";
         if (node instanceof PlannedActivity) return "planned activity";
         // note that this default is not generally suitable because the actual

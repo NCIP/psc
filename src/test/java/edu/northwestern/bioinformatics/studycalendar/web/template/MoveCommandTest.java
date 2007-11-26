@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -76,42 +76,42 @@ public class MoveCommandTest extends EditCommandTestCase {
         assertEquals("Should be no changes", 0, dev.getDeltas().size());
     }
 
-    public void testMoveArmUp() throws Exception {
+    public void testMoveStudySegmentUp() throws Exception {
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(1);
-        List<Arm> arms = epoch.getArms();
+        List<StudySegment> studySegments = epoch.getStudySegments();
         command.setOffset(-1);
-        command.setArm(arms.get(2));
+        command.setStudySegment(studySegments.get(2));
 
         doEdit();
 
-        DeltaAssertions.assertReorder("Change not registered", arms.get(2), 2, 1, lastChange());
+        DeltaAssertions.assertReorder("Change not registered", studySegments.get(2), 2, 1, lastChange());
     }
 
-    public void testMoveFirstArmUp() throws Exception {
-        List<Arm> arms = study.getPlannedCalendar().getEpochs().get(1).getArms();
+    public void testMoveFirstStudySegmentUp() throws Exception {
+        List<StudySegment> studySegments = study.getPlannedCalendar().getEpochs().get(1).getStudySegments();
         command.setOffset(-1);
-        command.setArm(arms.get(0));
+        command.setStudySegment(studySegments.get(0));
 
         doEdit();
 
         assertEquals("Should be no changes", 0, dev.getDeltas().size());
     }
 
-    public void testMoveArmDown() throws Exception {
+    public void testMoveStudySegmentDown() throws Exception {
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(1);
-        List<Arm> arms = epoch.getArms();
+        List<StudySegment> studySegments = epoch.getStudySegments();
         command.setOffset(1);
-        command.setArm(arms.get(0));
+        command.setStudySegment(studySegments.get(0));
 
         doEdit();
 
-        DeltaAssertions.assertReorder("Change not registered", arms.get(0), 0, 1, lastChange());
+        DeltaAssertions.assertReorder("Change not registered", studySegments.get(0), 0, 1, lastChange());
     }
 
-    public void testMoveLastArmDown() throws Exception {
-        List<Arm> arms = study.getPlannedCalendar().getEpochs().get(1).getArms();
+    public void testMoveLastStudySegmentDown() throws Exception {
+        List<StudySegment> studySegments = study.getPlannedCalendar().getEpochs().get(1).getStudySegments();
         command.setOffset(1);
-        command.setArm(arms.get(3));
+        command.setStudySegment(studySegments.get(3));
 
         doEdit();
 

@@ -42,16 +42,16 @@ public class ICalTools {
 		if (studySubjectAssignment != null) {
 
 			ScheduledCalendar scheduleCalendar = studySubjectAssignment.getScheduledCalendar();
-			List<ScheduledArm> scheduledArms = null;
+			List<ScheduledStudySegment> scheduledStudySegments = null;
 
 			if (scheduleCalendar != null) {
 				// first generate the calendar skeleton
 				icsCalendar = generateCalendarSkeleton();
-				scheduledArms = studySubjectAssignment.getScheduledCalendar().getScheduledArms();
+				scheduledStudySegments = studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments();
 
 				// now add the events in calendar.
-				for (ScheduledArm scheduledArm : scheduledArms) {
-					SortedMap<Date, List<ScheduledActivity>> events = scheduledArm.getEventsByDate();
+				for (ScheduledStudySegment scheduledStudySegment : scheduledStudySegments) {
+					SortedMap<Date, List<ScheduledActivity>> events = scheduledStudySegment.getEventsByDate();
 					for (Date date : events.keySet()) {
 						List<ScheduledActivity> event = events.get(date);
 						for (final ScheduledActivity scheduleActivity : event) {

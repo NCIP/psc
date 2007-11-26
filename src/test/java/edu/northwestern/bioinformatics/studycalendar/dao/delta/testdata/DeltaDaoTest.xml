@@ -27,7 +27,7 @@
         />
     <DELTAS
          id="-220"
-         node_type="arm"
+         node_type="studysegment"
          node_id="-3"
          amendment_id="-1"
         />
@@ -86,13 +86,13 @@
         planned_calendar_id="-2"
         name="Treatment"
         />    
-    <ARMS
+    <STUDY_SEGMENTS
         id="-2"
         epoch_id="-1"
         list_index="0"
         name="A"
         />
-    <ARMS
+    <STUDY_SEGMENTS
         id="-3"
         epoch_id="-1"
         list_index="1"
@@ -100,7 +100,7 @@
         />
     <PERIODS
         id="-3"
-        arm_id="-2"
+        study_segment_id="-2"
         duration_quantity="14"
         />
     <ACTIVITIES id="12" name="Twelve" activity_type_id="1"/>

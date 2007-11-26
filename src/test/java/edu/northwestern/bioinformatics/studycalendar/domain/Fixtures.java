@@ -39,12 +39,12 @@ public class Fixtures {
 
     public static void assignIds(Study study) {
         study.getPlannedCalendar().setId(1);
-        int epochId = 10, armId = 100, periodId = 1000, plannedActivityId = 10000;
+        int epochId = 10, studySegmentId = 100, periodId = 1000, plannedActivityId = 10000;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(++epochId);
-            for (Arm arm : epoch.getArms()) {
-                arm.setId(++armId);
-                for (Period period : arm.getPeriods()) {
+            for (StudySegment studySegment : epoch.getStudySegments()) {
+                studySegment.setId(++studySegmentId);
+                for (Period period : studySegment.getPeriods()) {
                     period.setId(++periodId);
                     for (PlannedActivity event : period.getPlannedActivities()) {
                         event.setId(++plannedActivityId);
@@ -88,10 +88,10 @@ public class Fixtures {
         return event;
     }
 
-    public static Study createSingleEpochStudy(String studyName, String epochName, String... armNames) {
+    public static Study createSingleEpochStudy(String studyName, String epochName, String... studySegmentNames) {
         Study study = createNamedInstance(studyName, Study.class);
         study.setPlannedCalendar(new PlannedCalendar());
-        study.getPlannedCalendar().addEpoch(Epoch.create(epochName, armNames));
+        study.getPlannedCalendar().addEpoch(Epoch.create(epochName, studySegmentNames));
         return study;
     }
 
@@ -145,12 +145,12 @@ public class Fixtures {
         return assignment;
     }
 
-    public static ScheduledArm createScheduledArm(Arm arm) {
-        ScheduledArm scheduledArm = new ScheduledArm();
-        scheduledArm.setArm(arm);
-        scheduledArm.setStartDay(1);
-        scheduledArm.setStartDate(DateTools.createDate(1997, Calendar.JANUARY, 12));
-        return scheduledArm;
+    public static ScheduledStudySegment createScheduledStudySegment(StudySegment studySegment) {
+        ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
+        scheduledStudySegment.setStudySegment(studySegment);
+        scheduledStudySegment.setStartDay(1);
+        scheduledStudySegment.setStartDate(DateTools.createDate(1997, Calendar.JANUARY, 12));
+        return scheduledStudySegment;
     }
 
     public static ScheduledActivity createScheduledActivity(
@@ -189,9 +189,9 @@ public class Fixtures {
     }
 
 
-    public static void addEvents(ScheduledArm scheduledArm, ScheduledActivity... events) {
+    public static void addEvents(ScheduledStudySegment scheduledStudySegment, ScheduledActivity... events) {
         for (ScheduledActivity event : events) {
-            scheduledArm.addEvent(event);
+            scheduledStudySegment.addEvent(event);
         }
     }
 

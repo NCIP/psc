@@ -52,10 +52,10 @@ public class PlannedCalendar extends PlanTreeOrderedInnerNode<Study, Epoch> {
     }
 
     @Transient
-    public int getMaxArmCount() {
+    public int getMaxStudySegmentCount() {
         int max = 0;
         for (Epoch epoch : getEpochs()) {
-            max = Math.max(max, epoch.getArms().size());
+            max = Math.max(max, epoch.getStudySegments().size());
         }
         return max;
     }

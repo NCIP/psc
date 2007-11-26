@@ -31,7 +31,7 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
     }
 
     public void testIncreaseDays() throws Exception {
-        expect(templateService.findParent(period0)).andReturn(arm);
+        expect(templateService.findParent(period0)).andReturn(studySegment);
         expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
@@ -52,7 +52,7 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
     public void testDecreaseDays() throws Exception {
         change.setNewValue("8");
 
-        expect(templateService.findParent(period0)).andReturn(arm);
+        expect(templateService.findParent(period0)).andReturn(studySegment);
         expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
@@ -77,7 +77,7 @@ public class ChangePeriodDurationQuantityMutatorTest extends PeriodMutatorTestCa
         change.setOldValue("3"); change.setNewValue("7");
         // increased by 28 days
 
-        expect(templateService.findParent(period0)).andReturn(arm);
+        expect(templateService.findParent(period0)).andReturn(studySegment);
         expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);

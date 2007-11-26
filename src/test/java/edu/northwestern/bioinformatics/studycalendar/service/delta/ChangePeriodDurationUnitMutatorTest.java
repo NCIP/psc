@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import org.easymock.EasyMock;
@@ -31,7 +30,7 @@ public class ChangePeriodDurationUnitMutatorTest extends PeriodMutatorTestCase<P
     }
 
     public void testChangeFromDaysToWeeks() throws Exception {
-        EasyMock.expect(templateService.findParent(period0)).andReturn(arm);
+        EasyMock.expect(templateService.findParent(period0)).andReturn(studySegment);
         EasyMock.expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         EasyMock.expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         EasyMock.expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);
@@ -54,7 +53,7 @@ public class ChangePeriodDurationUnitMutatorTest extends PeriodMutatorTestCase<P
         change.setOldValue("week");
         change.setNewValue("day");
 
-        EasyMock.expect(templateService.findParent(period0)).andReturn(arm);
+        EasyMock.expect(templateService.findParent(period0)).andReturn(studySegment);
         EasyMock.expect(templateService.findParent(p0e0)).andReturn(period0).times(1, PERIOD_0_REPS);
         EasyMock.expect(templateService.findParent(p0e1)).andReturn(period0).times(1, PERIOD_0_REPS);
         EasyMock.expect(templateService.findParent(p1e0)).andReturn(period1).times(1, PERIOD_1_REPS);

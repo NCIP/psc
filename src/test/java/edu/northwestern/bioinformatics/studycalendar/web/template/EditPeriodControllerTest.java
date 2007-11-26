@@ -64,18 +64,18 @@ public class EditPeriodControllerTest extends ControllerTestCase {
         period.setStartDay(8);
         period.setName("Unethical");
 
-        int armId = 45;
+        int studySegmentId = 45;
         int studyId = 87;
         int amendmentId = 55;
         Study study = setId(studyId, Fixtures.createSingleEpochStudy("S", "E"));
         study.setDevelopmentAmendment(setId(amendmentId, new Amendment("dev")));
-        setId(armId, study
-            .getPlannedCalendar().getEpochs().get(0).getArms().get(0)).addPeriod(period);
+        setId(studySegmentId, study
+            .getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0)).addPeriod(period);
 
         command = registerMockFor(EditPeriodCommand.class);
         expect(command.getPeriod()).andReturn(period).anyTimes();
-        expect(command.getArm()).andReturn(period.getArm()).anyTimes();
-        expect(studyService.saveStudyFor(period.getArm())).andReturn(study);
+        expect(command.getStudySegment()).andReturn(period.getStudySegment()).anyTimes();
+        expect(studyService.saveStudyFor(period.getStudySegment())).andReturn(study);
         command.apply();
 
         replayMocks();
@@ -84,7 +84,7 @@ public class EditPeriodControllerTest extends ControllerTestCase {
 
         assertEquals("Wrong view", "redirectToCalendarTemplate", mv.getViewName());
         assertEquals("Study ID missing from model", studyId, mv.getModel().get("study"));
-        assertEquals("Arm ID missing from model", armId, mv.getModel().get("arm"));
+        assertEquals("StudySegment ID missing from model", studySegmentId, mv.getModel().get("studySegment"));
         assertEquals("Amendment ID missing from model", amendmentId, mv.getModel().get("amendment"));
 
         assertEquals("Duration quantity not updated", expectedQuantity, period.getDuration().getQuantity());

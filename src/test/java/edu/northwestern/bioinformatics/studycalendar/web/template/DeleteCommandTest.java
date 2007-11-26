@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -49,25 +49,25 @@ public class DeleteCommandTest extends EditCommandTestCase {
         assertEquals("Should be no deltas", 0, dev.getDeltas().size());
     }
     
-    public void testDeleteArm() throws Exception {
-        List<Arm> arms = study.getPlannedCalendar().getEpochs().get(0).getArms();
-        assertEquals(3, arms.size());
-        assertEquals("A", arms.get(0).getName());
-        assertEquals("B", arms.get(1).getName());
-        assertEquals("C", arms.get(2).getName());
+    public void testDeleteStudySegment() throws Exception {
+        List<StudySegment> studySegments = study.getPlannedCalendar().getEpochs().get(0).getStudySegments();
+        assertEquals(3, studySegments.size());
+        assertEquals("A", studySegments.get(0).getName());
+        assertEquals("B", studySegments.get(1).getName());
+        assertEquals("C", studySegments.get(2).getName());
 
-        command.setArm(arms.get(1));
+        command.setStudySegment(studySegments.get(1));
         command.performEdit();
 
-        DeltaAssertions.assertRemove("Wrong change", arms.get(1), lastChange());
+        DeltaAssertions.assertRemove("Wrong change", studySegments.get(1), lastChange());
     }
 
-    public void testDeleteLastArmIsNoop() throws Exception {
-        List<Arm> arms = study.getPlannedCalendar().getEpochs().get(1).getArms();
-        assertEquals(1, arms.size());
-        assertEquals("E2", arms.get(0).getName());
+    public void testDeleteLastStudySegmentIsNoop() throws Exception {
+        List<StudySegment> studySegments = study.getPlannedCalendar().getEpochs().get(1).getStudySegments();
+        assertEquals(1, studySegments.size());
+        assertEquals("E2", studySegments.get(0).getName());
 
-        command.setArm(arms.get(0));
+        command.setStudySegment(studySegments.get(0));
         command.performEdit();
 
         assertEquals("Should be no deltas", 0, dev.getDeltas().size());
@@ -78,9 +78,9 @@ public class DeleteCommandTest extends EditCommandTestCase {
         assertEquals("deleteEpoch", command.getRelativeViewName());
     }
 
-    public void testArmView() throws Exception {
-        command.setArm(study.getPlannedCalendar().getEpochs().get(1).getArms().get(0));
-        assertEquals("deleteArm", command.getRelativeViewName());
+    public void testStudySegmentView() throws Exception {
+        command.setStudySegment(study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0));
+        assertEquals("deleteStudySegment", command.getRelativeViewName());
     }
 
     public void testDeleteNewlyAddedEpoch() throws Exception {

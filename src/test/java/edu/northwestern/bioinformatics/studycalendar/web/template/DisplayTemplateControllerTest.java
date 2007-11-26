@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -34,7 +34,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     private AmendmentService amendmentService;
 
     private Study study;
-    private Arm e1, e2a, e2b;
+    private StudySegment e1, e2a, e2b;
     private Amendment a0, a1, a2;
 
     @Override
@@ -46,13 +46,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         study = setId(100, Fixtures.createBasicTemplate());
         study.setName(STUDY_NAME);
-        e1 =  study.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
-        e2a = study.getPlannedCalendar().getEpochs().get(1).getArms().get(0);
-        e2b = study.getPlannedCalendar().getEpochs().get(1).getArms().get(1);
+        e1 =  study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        e2a = study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0);
+        e2b = study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1);
         int id = 50;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(id++);
-            for (Arm arm : epoch.getArms()) { arm.setId(id++); }
+            for (StudySegment studySegment : epoch.getStudySegments()) { studySegment.setId(id++); }
         }
 
         a2 = setId(2, createAmendments("A0", "A1", "A2"));
@@ -79,7 +79,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         verifyMocks();
     }
     
-    public void testNonArmModel() throws Exception {
+    public void testNonStudySegmentModel() throws Exception {
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(study, actualModel.get("study"));
         assertSame(study.getPlannedCalendar(), actualModel.get("plannedCalendar"));
@@ -87,21 +87,21 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         assertFalse(actualModel.containsKey("calendar"));
     }
 
-    public void testArmIsFirstArmByDefault() throws Exception {
+    public void testStudySegmentIsFirstStudySegmentByDefault() throws Exception {
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e1, ((ArmTemplate) actualModel.get("arm")).getBase());
+        assertSame(e1, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
-    public void testArmRespectsSelectedArmParameter() throws Exception {
-        request.addParameter("arm", e2b.getId().toString());
+    public void testStudySegmentRespectsSelectedStudySegmentParameter() throws Exception {
+        request.addParameter("studySegment", e2b.getId().toString());
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e2b, ((ArmTemplate) actualModel.get("arm")).getBase());
+        assertSame(e2b, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
-    public void testArmIgnoresSelectedArmParameterIfNotInStudy() throws Exception {
-        request.addParameter("arm", "234");
+    public void testStudySegmentIgnoresSelectedStudySegmentParameterIfNotInStudy() throws Exception {
+        request.addParameter("studySegment", "234");
         Map<String, Object> actualModel = getAndReturnModel();
-        assertSame(e1, ((ArmTemplate) actualModel.get("arm")).getBase());
+        assertSame(e1, ((StudySegmentTemplate) actualModel.get("studySegment")).getBase());
     }
 
     public void testAssignmentsIncludedWhenComplete() throws Exception {

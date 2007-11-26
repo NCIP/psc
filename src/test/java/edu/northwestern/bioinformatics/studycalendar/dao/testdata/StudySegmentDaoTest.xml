@@ -3,7 +3,7 @@
     <PLANNED_CALENDARS id="-1" version="0" study_id="-1"/>
     <EPOCHS id="-1" version="0" planned_calendar_id="-1" name="Epoch"/>
 
-    <ARMS
+    <STUDY_SEGMENTS
         id="-2"
         version="0"
         name="Treatment"
@@ -11,7 +11,7 @@
 
     <PERIODS
         id="-1"
-        arm_id="-2"
+        study_segment_id="-2"
         version="0"
         start_day="1"
         name="Pre-screening"
@@ -21,7 +21,7 @@
 
     <PERIODS
         id="-2"
-        arm_id="-2"
+        study_segment_id="-2"
         version="0"
         start_day="8"
         name="Treatment"

@@ -3,17 +3,17 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@attribute name="arm" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm" %>
+<%@attribute name="studySegment" required="true" type="edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment" %>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@attribute name="modes" type="java.util.Collection" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 
-<laf:box title="${arm.name}">
+<laf:box title="${studySegment.name}">
     <laf:division>
         <form id="batch-form" action="<c:url value="/pages/cal/schedule/batch"/>">
-            <input type="hidden" name="scheduledCalendar" value="${arm.scheduledCalendar.id}"/>
-                <%--<h2 id="selected-arm-header">${arm.name}</h2>--%>
+            <input type="hidden" name="scheduledCalendar" value="${studySegment.scheduledCalendar.id}"/>
+                <%--<h2 id="selected-studySegment-header">${studySegment.name}</h2>--%>
             <div id="batch-reschedule" class="subsection subcollapsible">
                 <h3>Batch reschedule</h3>
                 <div class="content" style="display: none">
@@ -44,7 +44,7 @@
             </div>
 
 
-            <div class="content" id="selected-arm-content"<c:if test="${not visible}"> style="display: none"</c:if>>
+            <div class="content" id="selected-studySegment-content"<c:if test="${not visible}"> style="display: none"</c:if>>
                 <div class="legend">
                     <h3>Legend</h3>
                     <ul>
@@ -55,7 +55,7 @@
                         <li class="even"><img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/><a>  NA</a></li>
                     </ul>
                 </div>
-                <c:forEach items="${arm.eventsByDate}" var="entry" varStatus="status">
+                <c:forEach items="${studySegment.eventsByDate}" var="entry" varStatus="status">
                     <div class="day autoclear ${commons:parity(status.index)}">
                         <h3 class="day"><tags:formatDate value="${entry.key}"/></h3>
 

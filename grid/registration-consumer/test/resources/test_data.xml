@@ -15,12 +15,12 @@
         id="-1" study_id="-1"
         />
     <EPOCHS id="-2" planned_calendar_id="-1" name="Treatment"/>
-    <ARMS id="-3" epoch_id="-2" name="A" />
+    <STUDY_SEGMENTS id="-3" epoch_id="-2" name="A" />
 
-    <ARMS id="-4" epoch_id="-2" name="B" />
+    <STUDY_SEGMENTS id="-4" epoch_id="-2" name="B" />
     
 
-    <PERIODS id="-5" arm_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
+    <PERIODS id="-5" study_segment_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
     <PLANNED_EVENTS id="-6" period_id="-5" day="2" activity_id="-100"/>
     <PLANNED_EVENTS id="-7" period_id="-5" day="4" activity_id="-100"/>
 
@@ -31,15 +31,15 @@
         />
 
 
-    <SCHEDULED_ARMS
+    <SCHEDULED_STUDY_SEGMENTS
         id="-21"
-        arm_id="-3"
+        study_segment_id="-3"
         scheduled_calendar_id="-20"
         list_index="1"
         />
-    <SCHEDULED_ARMS
+    <SCHEDULED_STUDY_SEGMENTS
         id="-22"
-        arm_id="-4"
+        study_segment_id="-4"
         scheduled_calendar_id="-20"
         list_index="0"
         />

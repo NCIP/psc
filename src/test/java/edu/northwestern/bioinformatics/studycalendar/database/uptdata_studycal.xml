@@ -121,7 +121,7 @@
     <CSM_PROTECTION_GROUP
         protection_group_id="10"
         protection_group_name="CreateStudyAccess"
-        protection_group_description="access to create study, epochs, arms and associate periods to arms"
+        protection_group_description="access to create study, epochs, study segments and associate periods to study segments"
         application_id="2"
         large_element_count_flag="0"
         update_date="2006-09-14"

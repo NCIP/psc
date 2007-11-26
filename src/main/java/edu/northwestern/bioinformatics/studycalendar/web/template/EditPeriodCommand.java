@@ -1,20 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 
-import java.util.Iterator;
 import java.util.Collection;
 import java.util.Arrays;
-import java.beans.PropertyDescriptor;
 
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
@@ -47,7 +44,7 @@ public class EditPeriodCommand implements PeriodCommand {
         return period;
     }
 
-    public Arm getArm() {
+    public StudySegment getStudySegment() {
         return templateService.findParent(getPeriod());
     }
 

@@ -37,9 +37,9 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
         assertEquals("Epoch", command.getRelativeViewName());
     }
 
-    public void testSelectArmMode() throws Exception {
-        command.setArm(study.getPlannedCalendar().getEpochs().get(0).getArms().get(0));
-        assertEquals("Arm", command.getRelativeViewName());
+    public void testSelectStudySegmentMode() throws Exception {
+        command.setStudySegment(study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0));
+        assertEquals("StudySegment", command.getRelativeViewName());
     }
 
     public void testPerformEditForwarded() throws Exception {
@@ -76,7 +76,7 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
 
         @Override protected Mode studyMode() { return new TestMode("Study"); }
         @Override protected Mode epochMode() { return new TestMode("Epoch"); }
-        @Override protected Mode armMode()   { return new TestMode("Arm");   }
+        @Override protected Mode studySegmentMode()   { return new TestMode("StudySegment");   }
     }
 
     private static class TestMode implements EditTemplateCommand.Mode {

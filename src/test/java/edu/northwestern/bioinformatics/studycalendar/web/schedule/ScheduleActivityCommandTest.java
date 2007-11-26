@@ -4,7 +4,7 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
@@ -37,8 +37,8 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
         command = new ScheduleActivityCommand(scheduledCalendarDao);
 
         event = Fixtures.createScheduledActivity("ABC", 2003, Calendar.MARCH, 13);
-        event.setScheduledArm(new ScheduledArm());
-        event.getScheduledArm().setScheduledCalendar(new ScheduledCalendar());
+        event.setScheduledStudySegment(new ScheduledStudySegment());
+        event.getScheduledStudySegment().setScheduledCalendar(new ScheduledCalendar());
 
         command.setEvent(event);
         command.setNewReason(NEW_REASON);
@@ -80,7 +80,7 @@ public class ScheduleActivityCommandTest extends StudyCalendarTestCase {
 
         command.setNewMode(ScheduledActivityMode.OCCURRED);
         command.setNewNotes("Change-o");
-        scheduledCalendarDao.save(event.getScheduledArm().getScheduledCalendar());
+        scheduledCalendarDao.save(event.getScheduledStudySegment().getScheduledCalendar());
 
         replayMocks();
         command.apply();

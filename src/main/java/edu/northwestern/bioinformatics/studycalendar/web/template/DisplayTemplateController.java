@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
@@ -40,7 +40,7 @@ public class DisplayTemplateController extends PscAbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
-        Integer selectedArmId = ServletRequestUtils.getIntParameter(request, "arm");
+        Integer selectedStudySegmentId = ServletRequestUtils.getIntParameter(request, "studySegment");
         Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
         Map<String, Object> model = new HashMap<String, Object>();
 
@@ -48,10 +48,10 @@ public class DisplayTemplateController extends PscAbstractController {
 
         Study study = selectAmendmentAndReviseStudy(loaded, selectedAmendmentId, model);
 
-        Arm arm = selectArm(study, selectedArmId);
+        StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
 
-        getControllerTools().addHierarchyToModel(arm.getEpoch(), model);
-        model.put("arm", new ArmTemplate(arm));
+        getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
+        model.put("studySegment", new StudySegmentTemplate(studySegment));
 
         if (study.isAvailableForAssignment()) {
             List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
@@ -107,18 +107,18 @@ public class DisplayTemplateController extends PscAbstractController {
         return study;
     }
 
-    private Arm selectArm(Study study, Integer selectedArmId) {
-        if (selectedArmId == null) return defaultArm(study);
+    private StudySegment selectStudySegment(Study study, Integer selectedStudySegmentId) {
+        if (selectedStudySegmentId == null) return defaultStudySegment(study);
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
-            for (Arm arm : epoch.getArms()) {
-                if (arm.getId().equals(selectedArmId)) return arm;
+            for (StudySegment studySegment : epoch.getStudySegments()) {
+                if (studySegment.getId().equals(selectedStudySegmentId)) return studySegment;
             }
         }
-        return defaultArm(study);
+        return defaultStudySegment(study);
     }
 
-    private Arm defaultArm(Study study) {
-        return study.getPlannedCalendar().getEpochs().get(0).getArms().get(0);
+    private StudySegment defaultStudySegment(Study study) {
+        return study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
     }
 
     ////// CONFIGURATION
@@ -143,8 +143,8 @@ public class DisplayTemplateController extends PscAbstractController {
         @Override
         public String getName(BreadcrumbContext context) {
             StringBuilder sb = new StringBuilder(context.getStudy().getName());
-            if (context.getArm() != null) {
-                sb.append(" (").append(context.getArm().getQualifiedName()).append(')');
+            if (context.getStudySegment() != null) {
+                sb.append(" (").append(context.getStudySegment().getQualifiedName()).append(')');
             }
             return sb.toString();
         }
@@ -153,8 +153,8 @@ public class DisplayTemplateController extends PscAbstractController {
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = new HashMap<String, String>();
             params.put("study", context.getStudy().getId().toString());
-            if (context.getArm() != null) {
-                params.put("arm", context.getArm().getId().toString());
+            if (context.getStudySegment() != null) {
+                params.put("studySegment", context.getStudySegment().getId().toString());
             }
             if (context.getAmendment() != null) {
                 params.put("amendment", context.getAmendment().getId().toString());

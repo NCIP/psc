@@ -2,11 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.NextArmMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
@@ -17,33 +17,33 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class ScheduleNextArmCommandTest extends StudyCalendarTestCase {
-    private ScheduleNextArmCommand command;
+public class ScheduleNextStudySegmentCommandTest extends StudyCalendarTestCase {
+    private ScheduleNextStudySegmentCommand command;
     private SubjectService subjectService;
 
     protected void setUp() throws Exception {
         super.setUp();
         subjectService = registerMockFor(SubjectService.class);
-        command = new ScheduleNextArmCommand(subjectService);
+        command = new ScheduleNextStudySegmentCommand(subjectService);
     }
 
     public void testSchedule() throws Exception {
-        ScheduledArm expectedScheduledArm = new ScheduledArm();
+        ScheduledStudySegment expectedScheduledStudySegment = new ScheduledStudySegment();
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         ScheduledCalendar cal = new ScheduledCalendar();
         assignment.setScheduledCalendar(cal);
-        Arm arm = new Arm();
+        StudySegment studySegment = new StudySegment();
         Date start = DateUtils.createDate(2005, Calendar.APRIL, 9);
         command.setCalendar(cal);
-        command.setArm(arm);
+        command.setStudySegment(studySegment);
         command.setStartDate(start);
-        command.setMode(NextArmMode.IMMEDIATE);
+        command.setMode(NextStudySegmentMode.IMMEDIATE);
 
-        expect(subjectService.scheduleArm(assignment, arm, start, NextArmMode.IMMEDIATE))
-            .andReturn(expectedScheduledArm);
+        expect(subjectService.scheduleStudySegment(assignment, studySegment, start, NextStudySegmentMode.IMMEDIATE))
+            .andReturn(expectedScheduledStudySegment);
         replayMocks();
 
-        assertSame(expectedScheduledArm, command.schedule());
+        assertSame(expectedScheduledStudySegment, command.schedule());
         verifyMocks();
     }
 }

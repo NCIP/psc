@@ -25,14 +25,14 @@ public class DomainObjectTools {
         Study.class,
         PlannedCalendar.class,
         Epoch.class,
-        Arm.class,
+        StudySegment.class,
         Period.class,
         PlannedActivity.class,
 
         Subject.class,
         StudySubjectAssignment.class,
         ScheduledCalendar.class,
-        ScheduledArm.class,
+        ScheduledStudySegment.class,
         ScheduledActivity.class
     );
 

@@ -33,7 +33,7 @@ public interface PlannedCalendarService {
      * @return The full calendar template as it currently exists in the system.  
      * @see PlannedCalendar
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Epoch
-     * @see edu.northwestern.bioinformatics.studycalendar.domain.Arm
+     * @see edu.northwestern.bioinformatics.studycalendar.domain.StudySegment
      * @see edu.northwestern.bioinformatics.studycalendar.domain.Period
      * @see edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity
      */

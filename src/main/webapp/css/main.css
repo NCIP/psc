@@ -69,7 +69,7 @@
     vertical-align:middle;
 }
 
-.epochs-and-arms {
+.epochs-and-studySegments {
     position: relative;
 }
 .epoch {
@@ -87,15 +87,15 @@
     color: #666;
 }
 
-.arms {
+.studySegments {
     padding: 0;
     margin: 0;
 }
-.arms a {
+.studySegments a {
     text-decoration: none;
     color: #444;
 }
-.arms li {
+.studySegments li {
     display: block;
     border: 0 solid #ccc;
     border-width: 1px 0;
@@ -104,13 +104,13 @@
     /* for IE */
     height: 1%;
 }
-.arms li:hover {
+.studySegments li:hover {
     background-color: #ccc !important;
 }
-.arms li:hover a {
+.studySegments li:hover a {
     color: #000;
 }
-.arms li.selected {
+.studySegments li.selected {
     background-color: #ddd;
 }
 

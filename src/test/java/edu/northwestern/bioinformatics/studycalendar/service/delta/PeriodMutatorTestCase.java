@@ -1,11 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.service.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledArm;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -24,14 +24,14 @@ import java.util.Date;
 public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalendarTestCase {
     protected static final int PERIOD_0_REPS = 3;
     protected static final int PERIOD_1_REPS = 2;
-    protected static final Date ARM_START_DATE = DateTools.createDate(2010, Calendar.MARCH, 1);
+    protected static final Date STUDY_SEGMENT_START_DATE = DateTools.createDate(2010, Calendar.MARCH, 1);
     protected static final String REVISION_DISPLAY_NAME = "02/04/1909 (Oops)";
 
     protected Amendment amendment;
     private Delta<?> delta;
     protected C change;
 
-    protected Arm arm;
+    protected StudySegment studySegment;
     /** period0 is the period to which the delta applies */
     protected Period period0;
     /** period1 is the period to which the delta applies */
@@ -39,7 +39,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     protected PlannedActivity p0e0, p0e1, p1e0, p1e1;
 
     protected ScheduledCalendar scheduledCalendar;
-    protected ScheduledArm scheduledArm;
+    protected ScheduledStudySegment scheduledStudySegment;
     /** Indexes are [period][event][repetition] */
     private ScheduledActivity[][][] scheduledActivities;
 
@@ -48,7 +48,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        arm = Epoch.create("E1", "A", "B").getArms().get(0);
+        studySegment = Epoch.create("E1", "A", "B").getStudySegments().get(0);
         period0 = Fixtures.createPeriod("P0", 1, 9, PERIOD_0_REPS);
         period0.addPlannedActivity(p0e0 = Fixtures.createPlannedActivity("P0.E0", 2));
         period0.addPlannedActivity(p0e1 = Fixtures.createPlannedActivity("P0.E1", 6));
@@ -62,10 +62,10 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         amendment.setDate(DateTools.createDate(1909, Calendar.FEBRUARY, 4));
         amendment.addDelta(delta);
         scheduledCalendar = new ScheduledCalendar();
-        scheduledArm = Fixtures.createScheduledArm(arm);
-        scheduledArm.setStartDay(1);
-        scheduledArm.setStartDate(ARM_START_DATE);
-        scheduledCalendar.addArm(scheduledArm);
+        scheduledStudySegment = Fixtures.createScheduledStudySegment(studySegment);
+        scheduledStudySegment.setStartDay(1);
+        scheduledStudySegment.setStartDate(STUDY_SEGMENT_START_DATE);
+        scheduledCalendar.addStudySegment(scheduledStudySegment);
 
         SubjectService subjectService = new SubjectService() {
             @Override
@@ -73,10 +73,10 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
                 return createUnschedulableMockEvent(event);
             }
         };
-        subjectService.schedulePeriod(period0, amendment, scheduledArm);
-        subjectService.schedulePeriod(period1, amendment, scheduledArm);
+        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment);
+        subjectService.schedulePeriod(period1, amendment, scheduledStudySegment);
         scheduledActivities = new ScheduledActivity[2][2][3];
-        for (ScheduledActivity event : scheduledArm.getEvents()) {
+        for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
             int period, pe;
             if      (event.getPlannedActivity() == p0e0) { period = 0; pe = 0; }
             else if (event.getPlannedActivity() == p0e1) { period = 0; pe = 1; }

@@ -2,19 +2,19 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <c:if test="${changed}">
-    var armItem = $("arm-${command.arm.id}-item")
-    armItem.remove()
-    var sib = $("arm-${relativeTo.id}-item")
+    var studySegmentItem = $("studySegment-${command.studySegment.id}-item")
+    studySegmentItem.remove()
+    var sib = $("studySegment-${relativeTo.id}-item")
     var container = sib.parentNode
     // replace relative to sib (${position})
     <c:choose>
-        <c:when test="${position == 'before'}">container.insertBefore(armItem, sib)</c:when>
-        <c:otherwise>container.appendChild(armItem)</c:otherwise>
+        <c:when test="${position == 'before'}">container.insertBefore(studySegmentItem, sib)</c:when>
+        <c:otherwise>container.appendChild(studySegmentItem)</c:otherwise>
     </c:choose>
-    SC.highlight(armItem)
+    SC.highlight(studySegmentItem)
 </c:if>
-var items = $$("#epoch-${command.arm.epoch.id}-arms li")
+var items = $$("#epoch-${command.studySegment.epoch.id}-studySegments li")
 items.each( function(elt) { Element.removeClassName(elt, "last") } )
 Element.addClassName(items.last(), "last")
-updateAllArmsControlVisibility(${command.arm.epoch.id})
+updateAllStudySegmentsControlVisibility(${command.studySegment.epoch.id})
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />

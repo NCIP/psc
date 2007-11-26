@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Arm;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
@@ -22,8 +22,8 @@ public class DeltaTest extends StudyCalendarTestCase {
         assertDeltaFor(new Epoch(), EpochDelta.class);
     }
 
-    public void testDeltaForArm() throws Exception {
-        assertDeltaFor(new Arm(), ArmDelta.class);
+    public void testDeltaForStudySegment() throws Exception {
+        assertDeltaFor(new StudySegment(), StudySegmentDelta.class);
     }
 
     public void testDeltaForPeriod() throws Exception {
