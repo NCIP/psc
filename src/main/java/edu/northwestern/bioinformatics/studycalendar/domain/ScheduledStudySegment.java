@@ -22,7 +22,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 @Entity
 @GenericGenerator(name="id-generator", strategy = "native",
     parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_study_segments_id")
+        @Parameter(name="sequence", value="seq_scheduled_study_segment_id")
     }
 )
 public class ScheduledStudySegment extends AbstractMutableDomainObject {
