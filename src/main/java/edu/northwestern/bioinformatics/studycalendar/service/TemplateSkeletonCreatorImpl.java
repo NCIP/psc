@@ -14,7 +14,6 @@ public class TemplateSkeletonCreatorImpl {
    public static Study createBase(String name) {
        Study study = new Study();
        study.setName(name);
-       study.setLongTitle(name);
        study.setPlannedCalendar(new PlannedCalendar());
        Amendment start = new Amendment("[Original]");
        start.setDate(new Date()); // TODO: might want to use NowFactory
