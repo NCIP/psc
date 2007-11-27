@@ -7,8 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -26,6 +29,7 @@ public class StudyListController extends PscAbstractController {
     private StudyDao studyDao;
     private TemplateService templateService;
     private SiteService siteService;
+    private UserDao userDao;
 
     public StudyListController() {
         setCrumb(new DefaultCrumb("Studies"));
@@ -35,7 +39,7 @@ public class StudyListController extends PscAbstractController {
         List<Study> studies = studyDao.getAll();
         log.debug("{} studies found total", studies.size());
         String userName = ApplicationSecurityManager.getUser();
-        List<Study> ownedStudies = templateService.filterForVisibility(userName, studies);
+        List<Study> ownedStudies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
         log.debug("{} studies visible to {}", ownedStudies.size(), userName);
         log.debug("{} sites visible to {}", ownedSites.size(), userName);
@@ -78,5 +82,10 @@ public class StudyListController extends PscAbstractController {
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
+    }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

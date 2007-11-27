@@ -45,6 +45,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
     private Study study0, study1;
 
     private List<User> users;
+    private UserRole siteCoordinatorRole;
 
     @Override
     protected void setUp() throws Exception {
@@ -81,7 +82,8 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         studies = asList(study0, study1);
 
         siteCoordinator = createUser(1, "Site Coord", 1L, true);
-        siteCoordinator.addUserRole(createUserRole(siteCoordinator, Role.SITE_COORDINATOR, site0, site1));
+        siteCoordinatorRole = createUserRole(siteCoordinator, Role.SITE_COORDINATOR, site0, site1);
+        siteCoordinator.addUserRole(siteCoordinatorRole);
 
         SecurityContextHolderTestHelper.setSecurityContext(siteCoordinator.getName(), "pass");
     }
@@ -106,7 +108,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     public void testGetAssignableStudies() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.filterForVisibility(siteCoordinator.getName(), studies)).andReturn(studies);
+        expect(templateService.filterForVisibility(studies, siteCoordinatorRole)).andReturn(studies);
         replayMocks();
 
         List<Study> actualAssignableStudies = controller.getAssignableStudies(siteCoordinator);

@@ -238,22 +238,23 @@ public class TemplateService {
     }
 
     /**
-     * 
-     * @param userName
+     * Returns a copy of the given list of studies containing only those which should be
+     * visible to the given user role.
+     *
      * @param studies
      * @return
      * @throws Exception
      */
-    public List filterForVisibility(String userName, List<Study> studies) throws Exception {
-        if (userName == null) {
-            throw new IllegalArgumentException(STRING_IS_NULL);
-        }
+    public List<Study> filterForVisibility(List<Study> studies, UserRole... roles) throws Exception {
         if (studies == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
-        return authorizationManager.checkOwnership(userName, studies);
+        if (roles.length < 1) {
+            throw new IllegalArgumentException("At least one UserRole is required");
+        }
+        // TODO: This is a temporary adaptation to the old interface
+        return authorizationManager.checkOwnership(roles[0].getUser().getName(), studies);
     }
-
 
     public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
         if (studyTemplates == null) {

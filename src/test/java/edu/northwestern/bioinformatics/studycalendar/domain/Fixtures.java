@@ -196,6 +196,10 @@ public class Fixtures {
         }
     }
 
+    public static User createUser(String name, Role... roles) throws Exception {
+        return createUser(null, name, null, true, roles);
+    }
+
     public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) throws Exception {
         User user = new User();
         user.setId(id);

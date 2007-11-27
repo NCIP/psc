@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
@@ -24,6 +27,7 @@ import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
 public class StudyListControllerTest extends ControllerTestCase {
     private StudyListController controller;
     private StudyDao studyDao;
+    private UserDao userDao;
     private TemplateService templateService;
     private SiteService siteService;
 
@@ -31,9 +35,11 @@ public class StudyListControllerTest extends ControllerTestCase {
         super.setUp();
         controller = new StudyListController();
         studyDao = registerDaoMockFor(StudyDao.class);
+        userDao = registerDaoMockFor(UserDao.class);
         templateService = registerMockFor(TemplateService.class);
         siteService = registerMockFor(SiteService.class);
         controller.setStudyDao(studyDao);
+        controller.setUserDao(userDao);
         controller.setTemplateService(templateService);
         controller.setSiteService(siteService);
     }
@@ -52,7 +58,9 @@ public class StudyListControllerTest extends ControllerTestCase {
         SecurityContextHolderTestHelper.setSecurityContext("jimbo", "password");
 
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.filterForVisibility("jimbo", studies)).andReturn(studies);
+        User user = Fixtures.createUser("jimbo", Role.SUBJECT_COORDINATOR);
+        expect(userDao.getByName("jimbo")).andReturn(user);
+        expect(templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(studies);
         expect(siteService.getSitesForSiteCd("jimbo")).andReturn(sites);
         replayMocks();
 

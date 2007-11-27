@@ -48,7 +48,7 @@ public class ScheduleController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         String userName = ApplicationSecurityManager.getUser();
         List<Study> studies = studyDao.getAll();
-        List<Study> ownedStudies = templateService.filterForVisibility(userName, studies);
+        List<Study> ownedStudies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
         User user = userDao.getByName(userName);
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(user);
 
@@ -73,7 +73,7 @@ public class ScheduleController extends PscSimpleFormController {
         pcUsers.remove(userDao.getByName(userName));
         for (User user : pcUsers) {
             List<StudySite> studySiteForMap = new ArrayList<StudySite>();
-            List<Study> studiesForUser = templateService.filterForVisibility(user.getName(), ownedStudies);
+            List<Study> studiesForUser = templateService.filterForVisibility(ownedStudies, user.getUserRole(Role.SUBJECT_COORDINATOR));
             if (studiesForUser != null && studiesForUser.size()>0) {
                 for (Study study: studiesForUser) {
                     List<StudySite> studysites = study.getStudySites();

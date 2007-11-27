@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
@@ -39,8 +40,9 @@ public class ReportBuilderSelectSitesController extends AbstractController {
     private TemplateService templateService;
     
 	private static final Logger log = LoggerFactory.getLogger(ReportBuilderSelectSitesController.class.getName());
+    private UserDao userDao;
 
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		Map model = new HashMap();
 		
 		int[] siteIds = ServletRequestUtils.getIntParameters(request, "sites");
@@ -54,7 +56,10 @@ public class ReportBuilderSelectSitesController extends AbstractController {
         for(Study study : studiesSet) {
         	studies.add(study);
         }
-        model.put("studies", templateService.filterForVisibility(ApplicationSecurityManager.getUser(), (List) studies));
+
+        String userName = ApplicationSecurityManager.getUser();
+        studies = templateService.filterForVisibility(studies, userDao.getByName(userName).getUserRole(Role.SUBJECT_COORDINATOR));
+        model.put("studies", studies);
         
         return new ModelAndView("reporting/ajax/studiesBySites", model);
 	}
@@ -85,6 +90,8 @@ public class ReportBuilderSelectSitesController extends AbstractController {
 		this.templateService = templateService;
 	}
 
-
-
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 }

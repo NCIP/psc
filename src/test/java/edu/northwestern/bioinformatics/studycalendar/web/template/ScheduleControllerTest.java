@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
@@ -51,9 +52,8 @@ public class ScheduleControllerTest extends ControllerTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        user = new User();
         userName = "USER NAME";
-        user.setName(userName);
+        user = Fixtures.createUser(userName, Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(userName , "pass");
         subjectDao = registerDaoMockFor(SubjectDao.class);
         service = new SubjectService();
@@ -99,7 +99,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.filterForVisibility(userName, studies)).andReturn(ownedStudies);
+        expect(templateService.filterForVisibility(studies, user.getUserRole(Role.SUBJECT_COORDINATOR))).andReturn(ownedStudies);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 
         replayMocks();

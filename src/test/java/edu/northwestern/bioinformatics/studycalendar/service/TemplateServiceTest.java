@@ -14,9 +14,21 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -28,7 +40,6 @@ import static org.easymock.classextension.EasyMock.checkOrder;
 import java.util.*;
 
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.util.ObjectSetUtil;
 
 /**
@@ -36,6 +47,7 @@ import gov.nih.nci.security.util.ObjectSetUtil;
  */
 public class TemplateServiceTest extends StudyCalendarTestCase {
     private TemplateService service;
+
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
@@ -43,6 +55,10 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private SiteService siteService;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
+
+    private User user;
+    private UserRole siteCoordinatorRole;
+    private UserRole subjectCoordinatorRole;
 
     @Override
     protected void setUp() throws Exception {
@@ -64,6 +80,10 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
         service.setSiteService(siteService);
+
+        user = Fixtures.createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
+        siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
+        subjectCoordinatorRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
     }
 
     public void testAssignTemplateToSites() throws Exception {
@@ -427,7 +447,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         StudySite studySite1 = setId(1, createStudySite(studyTemplate1, site1));
         allTemplates.add(site1.getStudySites().get(0).getStudy());
 
-        User subjectCdUser = new User();
+        gov.nih.nci.security.authorization.domainobjects.User subjectCdUser = new gov.nih.nci.security.authorization.domainobjects.User();
         subjectCdUser.setUserId(10001L);
         expect(authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite1), subjectCdUser.getUserId().toString())).andReturn(true);
         assignedTemplates.add(studySite1.getStudy());
@@ -443,7 +463,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testGetTemplatesListsRequiresSite() throws Exception {
-        User subjectCdUser = new User();
+        gov.nih.nci.security.authorization.domainobjects.User subjectCdUser = new gov.nih.nci.security.authorization.domainobjects.User();
         try {
             service.getTemplatesLists(null, subjectCdUser);
             fail("Expected IllegalArgumentException. Null object is passed instead of site ");
@@ -488,16 +508,14 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testCheckOwnership() throws Exception {
-        String userName = "UserName" ;
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
-        studyTemplate1.setName(userName);
-        studyTemplate1.setLongTitle(userName);
         List<Study> expectedStudyTemplates = new ArrayList<Study>();
-        expect(authorizationManager.checkOwnership(userName, studyTemplates)).andReturn(expectedStudyTemplates);
+        // TODO: temporary
+        expect(authorizationManager.checkOwnership(user.getName(), studyTemplates)).andReturn(expectedStudyTemplates);
 
         replayMocks();
-        List<Study> actualStudyTemplates = service.filterForVisibility(userName, studyTemplates);
+        List<Study> actualStudyTemplates = service.filterForVisibility(studyTemplates, subjectCoordinatorRole);
         verifyMocks();
         assertEquals(expectedStudyTemplates, actualStudyTemplates);
     }
@@ -506,17 +524,17 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
         try {
-            service.filterForVisibility(null, studyTemplates);
-            fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
+            service.filterForVisibility(studyTemplates);
+            fail("Expected IllegalArgumentException");
         } catch(IllegalArgumentException ise) {
-            assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
+            assertEquals("At least one UserRole is required", ise.getMessage());
         }
     }
 
     public void testCheckOwnershipRequiresListOfStudies() throws Exception {
         try {
-            service.filterForVisibility("USER_NAME", null);
-            fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
+            service.filterForVisibility(null, subjectCoordinatorRole);
+            fail("Exception not thrown");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDIES_LIST_IS_NULL, ise.getMessage());
         }
