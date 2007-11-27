@@ -30,213 +30,208 @@ import org.hibernate.annotations.Where;
  */
 @Entity
 @Table(name = "studies")
-@GenericGenerator(name = "id-generator", strategy = "native", parameters = { @Parameter(name = "sequence", value = "seq_studies_id") })
+@GenericGenerator(name="id-generator", strategy = "native",
+    parameters = {
+        @Parameter(name="sequence", value="seq_studies_id")
+    }
+)
 @Where(clause = "load_status > 0")
 public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable {
+    @Deprecated
+    private String name;
+    private String assignedIdentifier; // change it to assignedIdentifier...may be null
+    private String longTitle;
+    private PlannedCalendar plannedCalendar;
+    private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
-	@Deprecated
-	private String name;
+    private Amendment amendment; // the current effective/approved amendment
+    private Amendment developmentAmendment; // the next amendment, currently in development and not approved
 
-	private String assignedIdentifier; // change it to assignedIdentifier...may be null
+    private List<StudySite> studySites = new ArrayList<StudySite>();
 
-	private String longTitle; // notnull..
+    private boolean memoryOnly = false;
 
-	private PlannedCalendar plannedCalendar;
+    ////// LOGIC
 
-	private Amendment amendment; // the current effective/approved amendment
+    @Transient
+    public boolean isInDevelopment() {
+        return getDevelopmentAmendment() != null;
+    }
 
-	private Amendment developmentAmendment; // the next amendment, currently in development and not approved
+    @Transient
+    public boolean isInInitialDevelopment() {
+        return getDevelopmentAmendment() != null && getAmendment() == null;
+    }
 
-	private List<StudySite> studySites = new ArrayList<StudySite>();
+    @Transient
+    public boolean isInAmendmentDevelopment() {
+        return getDevelopmentAmendment() != null && getAmendment() != null;
+    }
 
-	private boolean memoryOnly = false;
+    @Transient
+    public boolean isAvailableForAssignment() {
+        return getAmendment() != null;
+    }
 
-	private LoadStatus loadStatus = LoadStatus.COMPLETE;
+    @Transient
+    public boolean isAmended() {
+        return getAmendment().getPreviousAmendment() != null;
+    }
 
-	// //// LOGIC
+    public void addStudySite(StudySite studySite){
+        getStudySites().add(studySite);
+        studySite.setStudy(this);
+    }
 
-	@Transient
-	public boolean isInDevelopment() {
-		return getDevelopmentAmendment() != null;
-	}
+    public void addSite(Site site) {
+        if (!getSites().contains(site)) {
+            StudySite newSS = new StudySite();
+            newSS.setSite(site);
+            addStudySite(newSS);
+        }
+    }
 
-	@Transient
-	public boolean isInInitialDevelopment() {
-		return getDevelopmentAmendment() != null && getAmendment() == null;
-	}
+    public StudySite getStudySite(Site site) {
+        for (StudySite ss : getStudySites()) {
+            if (ss.getSite().equals(site)) return ss;
+        }
+        return null;
+    }
 
-	@Transient
-	public boolean isInAmendmentDevelopment() {
-		return getDevelopmentAmendment() != null && getAmendment() != null;
-	}
+    @Transient
+    public List<Site> getSites() {
+        List<Site> sites = new ArrayList<Site>(getStudySites().size());
+        for (StudySite studySite : studySites) {
+            sites.add(studySite.getSite());
+        }
+        return Collections.unmodifiableList(sites);
+    }
 
-	@Transient
-	public boolean isAvailableForAssignment() {
-		return getAmendment() != null;
-	}
+    @Transient
+    public boolean isMemoryOnly() {
+        return memoryOnly;
+    }
 
-	@Transient
-	public boolean isAmended() {
-		return getAmendment().getPreviousAmendment() != null;
-	}
+    public void setMemoryOnly(boolean memoryOnly) {
+        this.memoryOnly = memoryOnly;
+        getPlannedCalendar().setMemoryOnly(true);
+    }
 
-	public void addStudySite(final StudySite studySite) {
-		getStudySites().add(studySite);
-		studySite.setStudy(this);
-	}
+    public Study transientClone() {
+        Study clone = clone();
+        clone.setMemoryOnly(true);
+        return clone;
+    }
 
-	public void addSite(final Site site) {
-		if (!getSites().contains(site)) {
-			StudySite newSS = new StudySite();
-			newSS.setSite(site);
-			addStudySite(newSS);
-		}
-	}
+    ////// BEAN PROPERTIES
 
-	public StudySite getStudySite(final Site site) {
-		for (StudySite ss : getStudySites()) {
-			if (ss.getSite().equals(site)) {
-				return ss;
-			}
-		}
-		return null;
-	}
+    /**
+     * The name of the study, also known as the protocol short title.
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
 
-	@Transient
-	public List<Site> getSites() {
-		List<Site> sites = new ArrayList<Site>(getStudySites().size());
-		for (StudySite studySite : studySites) {
-			sites.add(studySite.getSite());
-		}
-		return Collections.unmodifiableList(sites);
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Transient
-	public boolean isMemoryOnly() {
-		return memoryOnly;
-	}
+    /**
+     * The identifier given to the study by the organization in charge of it
+     * @return
+     */
+    public String getAssignedIdentifier() {
+        return assignedIdentifier;
+    }
 
-	public void setMemoryOnly(final boolean memoryOnly) {
-		this.memoryOnly = memoryOnly;
-		getPlannedCalendar().setMemoryOnly(true);
-	}
+    public void setAssignedIdentifier(String assignedIdentifier) {
+        this.assignedIdentifier = assignedIdentifier;
+    }
 
-	public Study transientClone() {
-		Study clone = clone();
-		clone.setMemoryOnly(true);
-		return clone;
-	}
+    @OneToOne(mappedBy = "study")
+    @Cascade(value = { CascadeType.ALL })
+    public PlannedCalendar getPlannedCalendar() {
+        return plannedCalendar;
+    }
 
-	// //// BEAN PROPERTIES
+    public void setPlannedCalendar(PlannedCalendar plannedCalendar) {
+        this.plannedCalendar = plannedCalendar;
+        if (plannedCalendar != null && plannedCalendar.getStudy() != this) {
+            plannedCalendar.setStudy(this);
+        }
+    }
 
-	/**
-	 * The name of the study, also known as the protocol short title.
-	 * @return
-	 */
-	public String getName() {
-		return name;
-	}
+    public void setStudySites(List<StudySite> studySites) {
+        this.studySites = studySites;
+    }
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    @OneToMany(mappedBy = "study", fetch = FetchType.EAGER)
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
 
-	/**
-	 * The identifier given to the study by the organization in charge of it
-	 * @return
-	 */
-	public String getAssignedIdentifier() {
-		return assignedIdentifier;
-	}
+    @ManyToOne
+    public Amendment getAmendment() {
+        return amendment;
+    }
 
-	public void setAssignedIdentifier(final String assignedIdentifier) {
-		this.assignedIdentifier = assignedIdentifier;
-	}
+    public void setAmendment(Amendment amendment) {
+        this.amendment = amendment;
+    }
 
-	@OneToOne(mappedBy = "study")
-	@Cascade(value = { CascadeType.ALL })
-	public PlannedCalendar getPlannedCalendar() {
-		return plannedCalendar;
-	}
+    @ManyToOne
+    @JoinColumn(name = "dev_amendment_id")
+    public Amendment getDevelopmentAmendment() {
+        return developmentAmendment;
+    }
 
-	public void setPlannedCalendar(final PlannedCalendar plannedCalendar) {
-		this.plannedCalendar = plannedCalendar;
-		if (plannedCalendar != null && plannedCalendar.getStudy() != this) {
-			plannedCalendar.setStudy(this);
-		}
-	}
+    public void setDevelopmentAmendment(Amendment developmentAmendment) {
+        this.developmentAmendment = developmentAmendment;
+    }
 
-	public void setStudySites(final List<StudySite> studySites) {
-		this.studySites = studySites;
-	}
+    // @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.LoadStatus")
+    @Enumerated(EnumType.ORDINAL)
+    public LoadStatus getLoadStatus() {
+        return loadStatus;
+    }
 
-	@OneToMany(mappedBy = "study", fetch = FetchType.EAGER)
-	@Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-	public List<StudySite> getStudySites() {
-		return studySites;
-	}
+    public void setLoadStatus(LoadStatus loadStatus) {
+        this.loadStatus = loadStatus;
+    }
 
-	@ManyToOne
-	public Amendment getAmendment() {
-		return amendment;
-	}
+    public String getLongTitle() {
+        return longTitle;
+    }
 
-	public void setAmendment(final Amendment amendment) {
-		this.amendment = amendment;
-	}
+    public void setLongTitle(String longTitle) {
+        this.longTitle = longTitle;
+    }
 
-	@ManyToOne
-	@JoinColumn(name = "dev_amendment_id")
-	public Amendment getDevelopmentAmendment() {
-		return developmentAmendment;
-	}
+    ////// OBJECT METHODS
 
-	public void setDevelopmentAmendment(final Amendment developmentAmendment) {
-		this.developmentAmendment = developmentAmendment;
-	}
+    @Override
+    protected Study clone() {
+        try {
+            // deep-clone the template portions only, for the moment
+            Study clone = (Study) super.clone();
+            if (getPlannedCalendar() != null) {
+                clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
+            }
+            return clone;
+        }
+        catch (CloneNotSupportedException e) {
+            throw new StudyCalendarError("Clone is supported", e);
+        }
+    }
 
-	// //// OBJECT METHODS
-
-	@Override
-	protected Study clone() {
-		try {
-			// deep-clone the template portions only, for the moment
-			Study clone = (Study) super.clone();
-			if (getPlannedCalendar() != null) {
-				clone.setPlannedCalendar((PlannedCalendar) getPlannedCalendar().clone());
-			}
-			return clone;
-		}
-		catch (CloneNotSupportedException e) {
-			throw new StudyCalendarError("Clone is supported", e);
-		}
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer(getClass().getSimpleName()).append("[id=").append(getId()).append("; name=")
-				.append(getName());
-		if (isMemoryOnly()) {
-			sb.append("; transient copy");
-		}
-		return sb.append(']').toString();
-	}
-
-	// @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.LoadStatus")
-	@Enumerated(EnumType.ORDINAL)
-	public LoadStatus getLoadStatus() {
-		return loadStatus;
-	}
-
-	public void setLoadStatus(final LoadStatus loadStatus) {
-		this.loadStatus = loadStatus;
-	}
-
-	public String getLongTitle() {
-		return longTitle;
-	}
-
-	public void setLongTitle(final String longTitle) {
-		this.longTitle = longTitle;
-	}
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(getClass().getSimpleName())
+            .append("[id=").append(getId())
+            .append("; name=").append(getName());
+        if (isMemoryOnly()) sb.append("; transient copy");
+        return sb.append(']').toString();
+    }
 }
