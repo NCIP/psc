@@ -217,11 +217,6 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         return null;
     }
 
-    private static GroupSearchCriteria eqGroupSearchCriteria(GroupSearchCriteria in) {
-        EasyMock.reportMatcher(new SearchCriteriaEquals(in, GroupSearchCriteria.class));
-        return null;
-    }
-
     private static class SearchCriteriaEquals implements IArgumentMatcher {
         private SearchCriteria expected;
         private Class<? extends SearchCriteria> expectedClass;
