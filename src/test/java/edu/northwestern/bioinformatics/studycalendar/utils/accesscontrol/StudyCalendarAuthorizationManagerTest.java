@@ -13,6 +13,7 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.RoleSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
@@ -39,6 +40,7 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
     private Study studyA, studyB, studyAB;
     private Site siteA, siteB;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
@@ -210,66 +212,43 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         return ids.toArray(new String[0]);
     }
 
-    public static RoleSearchCriteria eqRoleSearchCriteria(RoleSearchCriteria in) {
-        EasyMock.reportMatcher(new RoleSearchCriteriaEquals(in));
+    private static RoleSearchCriteria eqRoleSearchCriteria(RoleSearchCriteria in) {
+        EasyMock.reportMatcher(new SearchCriteriaEquals(in, RoleSearchCriteria.class));
         return null;
     }
 
-    public static class RoleSearchCriteriaEquals implements IArgumentMatcher {
-        private RoleSearchCriteria expected;
+    private static GroupSearchCriteria eqGroupSearchCriteria(GroupSearchCriteria in) {
+        EasyMock.reportMatcher(new SearchCriteriaEquals(in, GroupSearchCriteria.class));
+        return null;
+    }
 
-        public RoleSearchCriteriaEquals(RoleSearchCriteria expected) {
+    private static class SearchCriteriaEquals implements IArgumentMatcher {
+        private SearchCriteria expected;
+        private Class<? extends SearchCriteria> expectedClass;
+
+        public SearchCriteriaEquals(SearchCriteria expected, Class<? extends SearchCriteria> expectedClass) {
             this.expected = expected;
+            this.expectedClass = expectedClass;
         }
 
         public boolean matches(Object actual) {
-            if (!(actual instanceof RoleSearchCriteria)) {
+            if (!expectedClass.isAssignableFrom(actual.getClass())) {
                 return false;
             }
 
-            return(((RoleSearchCriteria) actual).getFieldAndValues().entrySet().iterator().next()
-                    .equals((expected.getFieldAndValues().entrySet().iterator().next())));
+            Object actualFirst = ((SearchCriteria) actual).getFieldAndValues().entrySet().iterator().next();
+            Object expectedFirst = expected.getFieldAndValues().entrySet().iterator().next();
+            return(actualFirst.equals(expectedFirst));
         }
 
         public void appendTo(StringBuffer buffer) {
-            buffer.append("eqRoleSearchCriteria(");
+            buffer.append("eqSearchCriteria(");
             buffer.append(expected.getClass().getName());
             buffer.append(" with message \"");
             buffer.append(expected.getFieldAndValues().entrySet().iterator().next());
             buffer.append("\")");
         }
     }
-
-     public static GroupSearchCriteria eqGroupSearchCriteria(GroupSearchCriteria in) {
-        EasyMock.reportMatcher(new GroupSearchCriteriaEquals(in));
-        return null;
-    }
-
-    public static class GroupSearchCriteriaEquals implements IArgumentMatcher {
-        private GroupSearchCriteria expected;
-
-        public GroupSearchCriteriaEquals(GroupSearchCriteria expected) {
-            this.expected = expected;
-        }
-
-        public boolean matches(Object actual) {
-            if (!(actual instanceof GroupSearchCriteria)) {
-                return false;
-            }
-
-            return(((GroupSearchCriteria) actual).getFieldAndValues().entrySet().iterator().next()
-                    .equals((expected.getFieldAndValues().entrySet().iterator().next())));
-        }
-
-        public void appendTo(StringBuffer buffer) {
-            buffer.append("eqRoleSearchCriteria(");
-            buffer.append(expected.getClass().getName());
-            buffer.append(" with message \"");
-            buffer.append(expected.getFieldAndValues().entrySet().iterator().next());
-            buffer.append("\")");
-        }
-    }
-
 
     private Group createCsmGroup(Long id, String name) {
         Group g = new Group();
