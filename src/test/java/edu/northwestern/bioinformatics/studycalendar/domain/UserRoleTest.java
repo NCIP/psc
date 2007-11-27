@@ -3,8 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import static java.util.Arrays.asList;

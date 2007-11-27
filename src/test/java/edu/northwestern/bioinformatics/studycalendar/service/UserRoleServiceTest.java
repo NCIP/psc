@@ -80,7 +80,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong user role size", 1, user2.getUserRoles().size());
 
-        UserRole actualUserRole = UserRole.findByRole(user2.getUserRoles(), role);
+        UserRole actualUserRole = user2.getUserRole(role);
         assertNotNull("User role does not exist", actualUserRole);
     }
 
@@ -98,7 +98,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong user role size", 1, user2.getUserRoles().size());
 
-        UserRole actualUserRole = UserRole.findByRole(user2.getUserRoles(), role);
+        UserRole actualUserRole = user2.getUserRole(role);
         assertEquals("Wrong user role site size", 1, actualUserRole.getSites().size());
     }
 
@@ -115,7 +115,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong user role size", 1, user0.getUserRoles().size());
 
-        UserRole actualUserRole = UserRole.findByRole(user0.getUserRoles(), role);
+        UserRole actualUserRole = user0.getUserRole(role);
         assertEquals("Wrong user role site size", 1, actualUserRole.getSites().size());
         assertEquals("Study Sites should be empty", 0, actualUserRole.getStudySites().size());
     }
@@ -133,7 +133,7 @@ public class UserRoleServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Wrong user role size", 0, user1.getUserRoles().size());
 
-        UserRole actualUserRole = UserRole.findByRole(user1.getUserRoles(), role);
+        UserRole actualUserRole = user1.getUserRole(role);
         assertNull("User role still exists", actualUserRole);
     }
 }

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 
 import java.util.List;

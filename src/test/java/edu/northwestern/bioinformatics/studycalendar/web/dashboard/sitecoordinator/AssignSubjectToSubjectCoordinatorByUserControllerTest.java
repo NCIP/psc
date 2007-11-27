@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
@@ -197,7 +196,7 @@ public class AssignSubjectToSubjectCoordinatorByUserControllerTest extends Contr
     }
 
     private List<StudySite> getStudySitesForUser(User user) {
-        return findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR).getStudySites();
+        return user.getUserRole(Role.SUBJECT_COORDINATOR).getStudySites();
     }
 
     private StudySubjectAssignment createStudySubjectAssignment(Subject subject, StudySite studySite, User subjectCoordinator) {

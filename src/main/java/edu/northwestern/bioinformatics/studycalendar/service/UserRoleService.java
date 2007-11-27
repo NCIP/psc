@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
 

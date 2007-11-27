@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.UserRole.findByRole;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createStudySite;
 
 import static java.util.Arrays.asList;
@@ -218,7 +217,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 service.assignTemplateToSubjectCoordinator(study, site, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole actualUserRole = actualUser.getUserRole(Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
     }
 
@@ -241,7 +240,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 service.assignTemplateToSubjectCoordinator(study, site, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole actualUserRole = actualUser.getUserRole(Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site size", 1, actualUserRole.getStudySites().size());
     }
 
@@ -275,7 +274,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 = service.removeAssignedTemplateFromSubjectCoordinator(study, site0, user);
         verifyMocks();
 
-        UserRole actualUserRole = findByRole(actualUser.getUserRoles() , Role.SUBJECT_COORDINATOR);
+        UserRole actualUserRole = actualUser.getUserRole(Role.SUBJECT_COORDINATOR);
         assertEquals("Wrong study site0 size", 1, actualUserRole.getStudySites().size());
         assertEquals("Wrong study site", studySite1, actualUserRole.getStudySites().get(0));
     }
