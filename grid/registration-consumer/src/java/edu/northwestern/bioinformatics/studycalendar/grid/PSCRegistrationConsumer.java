@@ -263,6 +263,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         subject.setLastName(participantType.getLastName());
 
         subject.setPersonId(mrn);
+        subject.setLoadStatus(LoadStatus.INPROGRESS);
         return subject;
     }
 
