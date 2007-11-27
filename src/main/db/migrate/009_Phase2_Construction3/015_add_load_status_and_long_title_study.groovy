@@ -1,43 +1,21 @@
-class ModifyStudy extends edu.northwestern.bioinformatics.bering.Migration {
+class AddLoadStatusAndLongTitle extends edu.northwestern.bioinformatics.bering.Migration {
+    void up() {
+        addColumn("studies", "load_status", "integer", nullable: true, defaultValue:"1");
 
-void up() {
+        execute("UPDATE studies SET load_status = 1");
 
-             addColumn("studies", "load_status", "integer", nullable: true , defaultValue:"1");
+        setNullable("studies", "load_status", false);
 
-             execute("update studies set load_status = 1");
+        addColumn("studies", "long_title", "string", nullable: true);
 
-             setNullable("studies", "load_status", false);
+        renameColumn('studies', 'protocol_authority_id', 'assigned_identifier')
+    }
 
-              addColumn("studies", "long_title", "string", nullable: false);
+    void down() {
+        renameColumn('studies', 'assigned_identifier', 'protocol_authority_id')
 
-               execute("update studies set long_title = name");
-
-               setNullable("studies", "long_title", false);
-
-
-
-        if (databaseMatches('hsqldb')) {
-            execute('ALTER TABLE studies ALTER COLUMN protocol_authority_id RENAME TO assigned_identifier')
-        } else {
-            execute('ALTER TABLE studies RENAME COLUMN protocol_authority_id TO assigned_identifier')
-        }
-
- }
-
-void down() {
-
-
-            if (databaseMatches('hsqldb')) {
-            execute('ALTER TABLE studies ALTER COLUMN assigned_identifier  RENAME TO protocol_authority_id ')
-        } else {
-            execute('ALTER TABLE studies RENAME COLUMN assigned_identifier  TO protocol_authority_id')
-        }
-             dropColumn("studies","long_title")
-             dropColumn("studies","load_status")
-
-     }
-
-
-
- }
+        dropColumn("studies","long_title")
+        dropColumn("studies","load_status")
+    }
+}
 
