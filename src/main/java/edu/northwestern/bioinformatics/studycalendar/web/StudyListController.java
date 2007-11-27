@@ -35,9 +35,12 @@ public class StudyListController extends PscAbstractController {
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         List<Study> studies = studyDao.getAll();
+        log.debug("{} studies found total", studies.size());
         String userName = ApplicationSecurityManager.getUser();
         List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
+        log.debug("{} studies visible to {}", ownedStudies.size(), userName);
+        log.debug("{} sites visible to {}", ownedSites.size(), userName);
 
         List<Study> assignableStudies = new ArrayList<Study>();
         List<Study> inDevelopmentStudies = new ArrayList<Study>();
@@ -51,6 +54,8 @@ public class StudyListController extends PscAbstractController {
                 inDevelopmentStudies.add(ownedStudy);
             }
         }
+        log.debug("{} studies open to {} for assignment", assignableStudies.size(), userName);
+        log.debug("{} studies open for editing by {}", inDevelopmentStudies.size(), userName);
 
         Map<String, Object> model = new HashMap<String, Object>();
         model.put("assignableStudies", assignableStudies);
