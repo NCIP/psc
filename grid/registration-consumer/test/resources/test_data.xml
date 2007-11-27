@@ -23,12 +23,12 @@
         id="-1" study_id="-1"
         />
     <EPOCHS id="-2" planned_calendar_id="-1" name="Treatment"/>
-    <ARMS id="-3" epoch_id="-2" name="Arm B" />
+    <study_segments id="-3" epoch_id="-2" name="Arm B" />
 
-    <ARMS id="-4" epoch_id="-2" name="Arm A" />
+    <study_segments id="-4" epoch_id="-2" name="Arm A" />
     
 
-    <PERIODS id="-5" arm_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
+    <PERIODS id="-5"  study_segment_id="-3" duration_quantity="4" duration_unit="day" start_day="1"/>
     <planned_activities id="-6" period_id="-5" day="2" activity_id="-100"/>
     <planned_activities id="-7" period_id="-5" day="4" activity_id="-100"/>
 
@@ -39,17 +39,17 @@
         />
 
 
-    <SCHEDULED_ARMS
+    <scheduled_study_segments
         id="-21"
-        arm_id="-3"
+         study_segment_id="-3"
         scheduled_calendar_id="-20"
         list_index="1"
         start_date="2006-11-04"
         start_day="1"
         />
-    <SCHEDULED_ARMS
+    <scheduled_study_segments
         id="-22"
-        arm_id="-4"
+         study_segment_id="-4"
         scheduled_calendar_id="-20"
         list_index="0"
         start_date="2006-11-04"
@@ -62,7 +62,7 @@
 
     <scheduled_activities
         id="-10"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="2"
         current_state_date="2006-10-25"
@@ -97,7 +97,7 @@
         />
     <scheduled_activities
         id="-15"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="1"
         current_state_date="2006-10-29"
@@ -106,7 +106,7 @@
         />
     <scheduled_activities
         id="-16"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="1"
         current_state_date="2006-10-30"
@@ -115,7 +115,7 @@
         />
     <scheduled_activities
         id="-17"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="3"
         ideal_date="2006-11-01"
@@ -123,7 +123,7 @@
         />
     <scheduled_activities
         id="-18"
-        scheduled_arm_id="-22"
+        scheduled_study_segment_id="-22"
         planned_activity_id="-6"
         current_state_mode_id="3"
         current_state_date="2006-11-07"
