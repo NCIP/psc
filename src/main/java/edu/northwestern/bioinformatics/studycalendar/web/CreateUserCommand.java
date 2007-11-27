@@ -118,7 +118,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                     if (rolesGrid.get(innerSite).get(role).isSelected()) selected++;
                 }
                 if (selected == notSelected) {
-                    if(UserRole.findByRole(user.getUserRoles(), role) == null) {
+                    if (user.getUserRole(role) == null) {
                         userRoleService.assignUserRole(user, role);
                     } else {
                         userRoleService.removeUserRoleAssignment(user, role);

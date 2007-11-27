@@ -81,7 +81,7 @@ public class TemplateService {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
 
-        UserRole userRole = findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
         if (!userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.addStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
@@ -105,7 +105,7 @@ public class TemplateService {
         if (user == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
-        UserRole userRole = findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
         if (userRole.getStudySites().contains(findStudySite(study, site))) {
             userRole.removeStudySite(findStudySite(study, site));
             userRoleDao.save(userRole);
@@ -238,8 +238,15 @@ public class TemplateService {
         }
         return authorizationManager.getPGByName(siteName);
     }
-    
-    public List checkOwnership(String userName, List<Study> studies) throws Exception {
+
+    /**
+     * 
+     * @param userName
+     * @param studies
+     * @return
+     * @throws Exception
+     */
+    public List filterForVisibility(String userName, List<Study> studies) throws Exception {
         if (userName == null) {
             throw new IllegalArgumentException(STRING_IS_NULL);
         }

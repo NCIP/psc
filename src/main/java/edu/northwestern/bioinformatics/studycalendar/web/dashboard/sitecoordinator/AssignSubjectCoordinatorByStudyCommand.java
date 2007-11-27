@@ -36,12 +36,12 @@ public class AssignSubjectCoordinatorByStudyCommand extends AbstractAssignSubjec
     }
 
     protected boolean isSiteSelected(User user, Site site) {
-        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
         return userRole.getStudySites().contains(findStudySite(selected, site));
     }
 
     protected boolean isSiteAccessAllowed(User user, Site site) {
-        UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+        UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
         return userRole.getSites().contains(site);
     }
 

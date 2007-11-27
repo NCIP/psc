@@ -106,7 +106,7 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
 
     public void testGetAssignableStudies() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.checkOwnership(siteCoordinator.getName(), studies)).andReturn(studies);
+        expect(templateService.filterForVisibility(siteCoordinator.getName(), studies)).andReturn(studies);
         replayMocks();
 
         List<Study> actualAssignableStudies = controller.getAssignableStudies(siteCoordinator);

@@ -52,7 +52,8 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
         List<Study> studies      = studyDao.getAll();
-        List<Study> ownedStudies = templateService.checkOwnership(siteCoordinator.getName(), studies);
+        
+        List<Study> ownedStudies = templateService.filterForVisibility(siteCoordinator.getName(), studies);
 
         List<Study> assignableStudies = new ArrayList<Study>();
         for (Study ownedStudy : ownedStudies) {

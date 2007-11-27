@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +54,7 @@ public class ReportBuilderSelectSitesController extends AbstractController {
         for(Study study : studiesSet) {
         	studies.add(study);
         }
-        model.put("studies", templateService.checkOwnership(ApplicationSecurityManager.getUser(), (List) studies));
+        model.put("studies", templateService.filterForVisibility(ApplicationSecurityManager.getUser(), (List) studies));
         
         return new ModelAndView("reporting/ajax/studiesBySites", model);
 	}

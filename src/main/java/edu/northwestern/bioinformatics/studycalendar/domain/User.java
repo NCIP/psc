@@ -1,19 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.security.util.StringEncrypter;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.io.Serializable;
 
 @Entity
 @Table (name = "users")
@@ -29,12 +31,43 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
     private Boolean activeFlag;
     private List<StudySubjectAssignment> studySubjectAssignments;
 
-
     public User() {
         this.userRoles = new HashSet<UserRole>();
         this.studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
         this.activeFlag = true;
     }
+
+    ////// LOGIC
+
+    @Transient
+    public String getDisplayName() {
+        return name;
+    }
+
+    public UserRole getUserRole(Role role) {
+        for (UserRole userRole : getUserRoles()) {
+            if (role.equals(userRole.getRole())) return userRole;
+        }
+        return null;
+    }
+
+    public void addUserRole(UserRole userRole) {
+        userRoles.add(userRole);
+    }
+
+    public void removeUserRole(UserRole userRole) {
+        userRoles.remove(userRole);
+    }
+
+    public void clearUserRoles() {
+        userRoles.clear();
+    }
+
+    public void addAllUserRoles(Set<UserRole> userRoles) {
+        this.userRoles.addAll(userRoles);
+    }
+
+    ////// BEAN PROPERTIES
 
     public String getName() {
         return name;
@@ -70,27 +103,6 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         this.userRoles = userRoles;
     }
 
-    public void addUserRole(UserRole userRole) {
-        userRoles.add(userRole);
-    }
-
-    public void removeUserRole(UserRole userRole) {
-        userRoles.remove(userRole);
-    }
-
-    public void clearUserRoles() {
-        userRoles.clear();
-    }
-
-    public void addAllUserRoles(Set<UserRole> userRoles) {
-        this.userRoles.addAll(userRoles);
-    }
-
-    @Transient
-    public String getDisplayName() {
-        return name;
-    }
-    
     @OneToMany (mappedBy = "subjectCoordinator")
     @OrderBy // order by ID for testing consistency
     @Cascade (value = { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
@@ -102,6 +114,9 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         this.studySubjectAssignments = studySubjectAssignments;
     }
 
+    ////// OBJECT METHODS
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -112,6 +127,7 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
 
     }
 
+    @Override
     public int hashCode() {
         return (name != null ? name.hashCode() : 0);
     }

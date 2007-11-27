@@ -19,7 +19,7 @@ public class UserRoleService implements Serializable {
     private StudySiteService studySiteService;
 
     public void assignUserRole(User user, Role role, Site site) throws Exception {
-        UserRole userRole = findByRole(user.getUserRoles(), role);
+        UserRole userRole = user.getUserRole(role);
         if (userRole == null) {
             userRole = new UserRole(user, role);
             user.addUserRole(userRole);
@@ -41,7 +41,7 @@ public class UserRoleService implements Serializable {
 
 
     public void removeUserRoleAssignment(User user, Role role, Site site) throws Exception {
-        UserRole userRole = findByRole(user.getUserRoles(), role);
+        UserRole userRole = user.getUserRole(role);
         if (userRole != null) {
             userRole.removeSite(site);
 

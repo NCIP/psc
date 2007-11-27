@@ -12,19 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class UserRoleTest extends StudyCalendarTestCase {
-
-    public void testFindByRole() throws Exception {
-        User user = createNamedInstance("John", User.class);
-
-        UserRole userRole0 = createUserRole(user, Role.SUBJECT_COORDINATOR);
-        UserRole userRole1 = createUserRole(user, Role.SITE_COORDINATOR);
-
-        Set<UserRole> userRoles = new HashSet(asList(userRole0, userRole1));
-
-        UserRole actualUserRole = findByRole(userRoles, Role.SUBJECT_COORDINATOR);
-        assertTrue("Wrong User Role", userRole0 == actualUserRole);
-    }
-
     public void testRemoveStudySites() throws Exception {
         Study study0 = setId(1, createNamedInstance("Study A", Study.class));
         Study study1 = setId(2, createNamedInstance("Study B", Study.class));

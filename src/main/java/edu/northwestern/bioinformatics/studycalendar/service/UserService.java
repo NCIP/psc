@@ -73,7 +73,7 @@ public class UserService implements Serializable {
         List<User> associatedUsers = new ArrayList<User>();
         for (User user : users) {
             for (Site site : sites) {
-                UserRole userRole = UserRole.findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+                UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
                 if (userRole != null && userRole.getSites().contains(site)) {
                     associatedUsers.add(user);
                     break;
@@ -87,7 +87,7 @@ public class UserService implements Serializable {
         List<Site> sites = new ArrayList<Site>();
         List<User> assignableUsers = new ArrayList<User>();
         if (siteCoordinator != null) {
-            UserRole userRole = UserRole.findByRole(siteCoordinator.getUserRoles(), Role.SITE_COORDINATOR);
+            UserRole userRole = siteCoordinator.getUserRole(Role.SITE_COORDINATOR);
 
             sites.addAll(userRole.getSites());
 

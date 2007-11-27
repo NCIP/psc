@@ -69,7 +69,7 @@ public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 		studySites.add(Fixtures.createStudySite(studies.get(2), westCoastSite));
 		studySites.add(Fixtures.createStudySite(studies.get(3), sites.get(1)));
 
-		expect(templateService.checkOwnership((String) isNull(), (List) notNull())).andReturn(studiesBySites);
+		expect(templateService.filterForVisibility((String) isNull(), (List) notNull())).andReturn(studiesBySites);
 		
 		replayMocks();
 		String[] siteIds = {"1","2"};

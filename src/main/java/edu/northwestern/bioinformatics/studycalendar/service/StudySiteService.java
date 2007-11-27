@@ -10,7 +10,7 @@ public class StudySiteService {
     public List<StudySite> getAllStudySitesForSubjectCoordinator(User user) {
         List<StudySite> studySites = new ArrayList<StudySite>();
         if (user != null) {
-            UserRole userRole = findByRole(user.getUserRoles(), Role.SUBJECT_COORDINATOR);
+            UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
             if (userRole != null) {
                 studySites.addAll(userRole.getStudySites());
             }

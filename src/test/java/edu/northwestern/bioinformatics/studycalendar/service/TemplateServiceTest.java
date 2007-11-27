@@ -498,7 +498,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         expect(authorizationManager.checkOwnership(userName, studyTemplates)).andReturn(expectedStudyTemplates);
 
         replayMocks();
-        List<Study> actualStudyTemplates = service.checkOwnership(userName, studyTemplates);
+        List<Study> actualStudyTemplates = service.filterForVisibility(userName, studyTemplates);
         verifyMocks();
         assertEquals(expectedStudyTemplates, actualStudyTemplates);
     }
@@ -507,7 +507,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
         try {
-            service.checkOwnership(null, studyTemplates);
+            service.filterForVisibility(null, studyTemplates);
             fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STRING_IS_NULL, ise.getMessage());
@@ -516,7 +516,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
 
     public void testCheckOwnershipRequiresListOfStudies() throws Exception {
         try {
-            service.checkOwnership("USER_NAME", null);
+            service.filterForVisibility("USER_NAME", null);
             fail("Expected IllegalArgumentException. Null object is passed instead of UserName ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.STUDIES_LIST_IS_NULL, ise.getMessage());

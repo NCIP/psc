@@ -11,9 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 
 import java.util.List;
@@ -37,7 +35,7 @@ public class StudyListController extends PscAbstractController {
         List<Study> studies = studyDao.getAll();
         log.debug("{} studies found total", studies.size());
         String userName = ApplicationSecurityManager.getUser();
-        List<Study> ownedStudies = templateService.checkOwnership(userName, studies);
+        List<Study> ownedStudies = templateService.filterForVisibility(userName, studies);
         List<Site> ownedSites = siteService.getSitesForSiteCd(userName);
         log.debug("{} studies visible to {}", ownedStudies.size(), userName);
         log.debug("{} sites visible to {}", ownedSites.size(), userName);

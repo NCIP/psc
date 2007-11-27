@@ -5,13 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
@@ -102,7 +99,7 @@ public class ScheduleControllerTest extends ControllerTestCase {
 
     public void testReferenceData() throws Exception {
         expect(studyDao.getAll()).andReturn(studies);
-        expect(templateService.checkOwnership(userName, studies)).andReturn(ownedStudies);
+        expect(templateService.filterForVisibility(userName, studies)).andReturn(ownedStudies);
         expect(userDao.getAllSubjectCoordinators()).andReturn(users);
 
         replayMocks();
