@@ -21,9 +21,9 @@ import java.util.ArrayList;
     }
 )
 public class UserRole  extends AbstractMutableDomainObject {
-    User user;
-    Role role;
-    Set<Site> sites = new HashSet<Site>();
+    private User user;
+    private Role role;
+    private Set<Site> sites = new HashSet<Site>();
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
     public UserRole() { }
