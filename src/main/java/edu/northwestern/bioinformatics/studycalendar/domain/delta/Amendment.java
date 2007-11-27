@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
 
 /**

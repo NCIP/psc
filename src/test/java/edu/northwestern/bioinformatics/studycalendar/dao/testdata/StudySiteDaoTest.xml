@@ -1,8 +1,13 @@
 <dataset>
+    <AMENDMENTS
+        id="-110"
+        amendment_date="2007-01-05"
+        />
+
     <STUDIES
         id="-100"
         name="Study A"
-        long_title="Study A"    
+        amendment_id="-110"
         />
 
     <SITES
@@ -14,6 +19,13 @@
         id="-300"
         site_id="-200"
         study_id="-100"
+        />
+
+    <AMENDMENT_APPROVALS
+        id="-310"
+        study_site_id="-300"
+        amendment_id="-110"
+        approval_date="2007-02-01"
         />
 
     <USERS

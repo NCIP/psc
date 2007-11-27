@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -250,6 +251,23 @@ public class Fixtures {
             current = next;
         }
         current.setName(nameHistory[nameHistory.length - 1]);
+        return current;
+    }
+
+    /**
+     * Creates a chain of amendments with the given dates, returning the one at the end of the
+     * chain (the most recent one).
+     */
+    public static Amendment createAmendments(Date... dateHistory) {
+        Amendment current = new Amendment();
+        for (int i = 0; i < dateHistory.length - 1; i++) {
+            Date date = dateHistory[i];
+            current.setDate(date);
+            Amendment next = new Amendment();
+            next.setPreviousAmendment(current);
+            current = next;
+        }
+        current.setDate(dateHistory[dateHistory.length - 1]);
         return current;
     }
 

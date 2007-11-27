@@ -9,9 +9,13 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
+import java.util.Date;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Ram Chilukuri
@@ -29,6 +33,7 @@ public class StudySite extends AbstractMutableDomainObject {
     private Study study;
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
     private List<UserRole> userRoles;
+    private List<AmendmentApproval> amendmentApprovals = new ArrayList<AmendmentApproval>();
 
     ////// LOGIC
 
@@ -36,6 +41,53 @@ public class StudySite extends AbstractMutableDomainObject {
     @Transient
     public boolean isUsed() {
         return getStudySubjectAssignments().size() > 0;
+    }
+
+    public void approveAmendment(Amendment amendment, Date approvalDate) {
+        // verify that the amendment applies
+        Amendment test = getStudy().getAmendment();
+        while (test != null && !test.equals(amendment)) {
+            test = test.getPreviousAmendment();
+        }
+        if (test == null) {
+            throw new StudyCalendarSystemException("The designated amendment (%s) is not part of this study", amendment.getDisplayName());
+        }
+
+        AmendmentApproval approval = new AmendmentApproval();
+        approval.setStudySite(this);
+        approval.setAmendment(amendment);
+        approval.setDate(approvalDate);
+        getAmendmentApprovals().add(approval);
+    }
+
+    @Transient
+    public Amendment getCurrentApprovedAmendment() {
+        Amendment candidate = getStudy().getAmendment();
+        while (candidate != null) {
+            for (AmendmentApproval approval : getAmendmentApprovals()) {
+                if (approval.getAmendment().equals(candidate)) return candidate;
+            }
+            candidate = candidate.getPreviousAmendment();
+        }
+        return null;
+    }
+
+    public AmendmentApproval getAmendmentApproval(Amendment approved) {
+        for (AmendmentApproval approval : getAmendmentApprovals()) {
+            if (approval.getAmendment().equals(approved)) return approval;
+        }
+        return null;
+    }
+
+    @Transient
+    public static StudySite findStudySite(Study study, Site site) {
+        if (study != null && site != null) {
+            Collection<StudySite> studySite = ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites());
+            if (studySite != null && studySite.size() > 0) {
+                return (StudySite) studySite.iterator().next();
+            }
+        }
+        return null;
     }
 
     ////// BEAN PROPERTIES
@@ -79,15 +131,14 @@ public class StudySite extends AbstractMutableDomainObject {
         this.userRoles = userRoles;
     }
 
-    @Transient
-    public static StudySite findStudySite(Study study, Site site) {
-        if (study != null && site != null) {
-            Collection<StudySite> studySite = ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites());
-            if (studySite != null && studySite.size() > 0) {
-                return (StudySite) studySite.iterator().next();
-            }
-        }
-        return null;
+    @OneToMany(mappedBy = "studySite")
+    @Cascade({ CascadeType.ALL })
+    public List<AmendmentApproval> getAmendmentApprovals() {
+        return amendmentApprovals;
+    }
+
+    public void setAmendmentApprovals(List<AmendmentApproval> amendmentApprovals) {
+        this.amendmentApprovals = amendmentApprovals;
     }
 
     ////// OBJECT METHODS
