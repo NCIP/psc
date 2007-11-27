@@ -37,7 +37,6 @@ public class TemplateService {
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
     private DeltaDao deltaDao;
-    private SiteService siteService;
     private UserRoleDao userRoleDao;
 
     public static final String USER_IS_NULL = "User is null";
@@ -47,7 +46,6 @@ public class TemplateService {
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
-
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -63,7 +61,6 @@ public class TemplateService {
             studySiteDao.save(ss);
         }
     }
-
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User
             assignTemplateToSubjectCoordinator( Study study,
@@ -205,14 +202,15 @@ public class TemplateService {
         return siteLists;
     }
     
-    public Map getTemplatesLists(Site site, User subjectCdUser) throws Exception {
+    @SuppressWarnings({ "unchecked" })
+    public Map<String, List<Study>> getTemplatesLists(Site site, User subjectCdUser) throws Exception {
         if (site == null) {
             throw new IllegalArgumentException(SITE_IS_NULL);
         }
         if (subjectCdUser == null) {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
-        Map<String, List> templatesMap = new HashMap<String, List>();
+        Map<String, List<Study>> templatesMap = new HashMap<String, List<Study>>();
         List<Study> assignedTemplates = new ArrayList<Study>();
         List<Study> allTemplates = new ArrayList<Study>();
 
@@ -224,7 +222,7 @@ public class TemplateService {
             }
         }
 
-        List<Study> availableTemplates = (List) ObjectSetUtil.minus(allTemplates, assignedTemplates);
+        List<Study> availableTemplates = (List<Study>) ObjectSetUtil.minus(allTemplates, assignedTemplates);
         templatesMap.put(StudyCalendarAuthorizationManager.ASSIGNED_PES, assignedTemplates);
         templatesMap.put(StudyCalendarAuthorizationManager.AVAILABLE_PES, availableTemplates);
         return templatesMap;
@@ -245,15 +243,20 @@ public class TemplateService {
      * @return
      * @throws Exception
      */
-    public List<Study> filterForVisibility(List<Study> studies, UserRole... roles) throws Exception {
+    public List<Study> filterForVisibility(List<Study> studies, UserRole role) throws Exception {
         if (studies == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
-        if (roles.length < 1) {
-            throw new IllegalArgumentException("At least one UserRole is required");
+        if (role == null) {
+            throw new IllegalArgumentException("A UserRole is required");
         }
-        // TODO: This is a temporary adaptation to the old interface
-        return authorizationManager.checkOwnership(roles[0].getUser().getName(), studies);
+
+        List<Study> filtered = new ArrayList<Study>(studies);
+        for (Iterator<Study> it = filtered.iterator(); it.hasNext();) {
+            Study study = it.next();
+            if (!authorizationManager.isTemplateVisible(role, study)) it.remove();
+        }
+        return filtered;
     }
 
     public void removeMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
@@ -321,6 +324,7 @@ public class TemplateService {
     }
 
     // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public Study findStudy(PlanTreeNode node) {
         if (node instanceof PlannedCalendar) return ((PlannedCalendar) node).getStudy();
         else return findAncestor(node, PlannedCalendar.class).getStudy();
@@ -350,11 +354,6 @@ public class TemplateService {
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
-    }
-
-    @Required
-    public void setSiteService(SiteService siteService) {
-        this.siteService = siteService;
     }
 
     public void setUserRoleDao(UserRoleDao userRoleDao) {

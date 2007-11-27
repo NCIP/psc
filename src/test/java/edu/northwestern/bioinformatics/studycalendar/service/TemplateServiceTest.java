@@ -52,7 +52,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     private SiteDao siteDao;
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
-    private SiteService siteService;
     private DeltaDao deltaDao;
     private UserRoleDao userRoleDao;
 
@@ -69,7 +68,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         userRoleDao = registerDaoMockFor(UserRoleDao.class);
-        siteService = registerMockFor(SiteService.class);
         authorizationManager = registerMockFor(StudyCalendarAuthorizationManager.class);
 
         service = new TemplateService();
@@ -79,7 +77,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setUserRoleDao(userRoleDao);
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
-        service.setSiteService(siteService);
 
         user = Fixtures.createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
@@ -180,37 +177,6 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
             fail("Expected IllegalArgumentException. Null object is passed instead of userTest ");
         } catch(IllegalArgumentException ise) {
             assertEquals(TemplateService.USER_IS_NULL, ise.getMessage());
-        }
-    }
-
-    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
-        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
-        return null;
-    }
-
-    private static class StudySiteMatcher implements IArgumentMatcher {
-        private Study expectedStudy;
-        private Site expectedSite;
-
-        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
-            this.expectedStudy = expectedStudy;
-            this.expectedSite = expectedSite;
-        }
-
-        public boolean matches(Object object) {
-            StudySite actual = (StudySite) object;
-
-            if (expectedStudy.equals(actual.getStudy())) {
-                if (expectedSite.equals(actual.getSite())) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        public void appendTo(StringBuffer sb) {
-            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
         }
     }
 
@@ -455,7 +421,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         templatesMap.put(StudyCalendarAuthorizationManager.ASSIGNED_PES, assignedTemplates);
         templatesMap.put(StudyCalendarAuthorizationManager.AVAILABLE_PES, availableTemplates);
 
-        Map<String, List> templateListToCompare;
+        Map<String, List<Study>> templateListToCompare;
         replayMocks();
         templateListToCompare = service.getTemplatesLists(site1, subjectCdUser);
         verifyMocks();
@@ -507,31 +473,31 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         }
     }
 
-    public void testCheckOwnership() throws Exception {
-        Study studyTemplate1 = createNamedInstance("aaa", Study.class);
-        List<Study> studyTemplates = asList(studyTemplate1);
-        List<Study> expectedStudyTemplates = new ArrayList<Study>();
-        // TODO: temporary
-        expect(authorizationManager.checkOwnership(user.getName(), studyTemplates)).andReturn(expectedStudyTemplates);
+    public void testTemplateVisibility() throws Exception {
+        Study studyA = createNamedInstance("A", Study.class);
+        Study studyB = createNamedInstance("B", Study.class);
+        expect(authorizationManager.isTemplateVisible(siteCoordinatorRole, studyA)).andReturn(false);
+        expect(authorizationManager.isTemplateVisible(siteCoordinatorRole, studyB)).andReturn(true);
 
         replayMocks();
-        List<Study> actualStudyTemplates = service.filterForVisibility(studyTemplates, subjectCoordinatorRole);
+        List<Study> actualStudyTemplates = service.filterForVisibility(asList(studyA, studyB), siteCoordinatorRole);
         verifyMocks();
-        assertEquals(expectedStudyTemplates, actualStudyTemplates);
+        assertEquals("Wrong number of studies returned", 1, actualStudyTemplates.size());
+        assertSame("Wrong study returned", studyB, actualStudyTemplates.get(0));
     }
 
-    public void testCheckOwnershipRequiresUserName() throws Exception {
+    public void testFilterForVizRequiresUserRole() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
         try {
-            service.filterForVisibility(studyTemplates);
+            service.filterForVisibility(studyTemplates, null);
             fail("Expected IllegalArgumentException");
         } catch(IllegalArgumentException ise) {
-            assertEquals("At least one UserRole is required", ise.getMessage());
+            assertEquals("A UserRole is required", ise.getMessage());
         }
     }
 
-    public void testCheckOwnershipRequiresListOfStudies() throws Exception {
+    public void testFilterForVizRequiresListOfStudies() throws Exception {
         try {
             service.filterForVisibility(null, subjectCoordinatorRole);
             fail("Exception not thrown");
@@ -698,5 +664,38 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         assertSame(study, service.findStudy(epoch));
         assertSame(study, service.findStudy(epoch.getStudySegments().get(0)));
+    }
+
+    ////// CUSTOM MATCHERS
+
+    private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
+        EasyMock.reportMatcher(new StudySiteMatcher(expectedStudy, expectedSite));
+        return null;
+    }
+
+    private static class StudySiteMatcher implements IArgumentMatcher {
+        private Study expectedStudy;
+        private Site expectedSite;
+
+        public StudySiteMatcher(Study expectedStudy, Site expectedSite) {
+            this.expectedStudy = expectedStudy;
+            this.expectedSite = expectedSite;
+        }
+
+        public boolean matches(Object object) {
+            StudySite actual = (StudySite) object;
+
+            if (expectedStudy.equals(actual.getStudy())) {
+                if (expectedSite.equals(actual.getSite())) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("StudySite with study=").append(expectedStudy).append(" and site=").append(expectedSite);
+        }
     }
 }

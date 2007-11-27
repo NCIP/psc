@@ -1,15 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import static java.util.Arrays.asList;
-
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
@@ -18,20 +16,23 @@ import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroupRoleContext;
 import gov.nih.nci.security.authorization.domainobjects.Role;
 import gov.nih.nci.security.authorization.domainobjects.User;
-import gov.nih.nci.security.dao.*;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.ProtectionGroupSearchCriteria;
+import gov.nih.nci.security.dao.RoleSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.dao.UserSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
-import gov.nih.nci.security.util.ObjectSetUtil;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-
-import java.util.*;
-import java.io.Serializable;
-
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import static java.util.Arrays.asList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
@@ -56,11 +57,9 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     private UserProvisioningManager userProvisioningManager;
     private SiteDao siteDao;
 
-
     public User getUserObject(String id) throws Exception {
-    	User user = null;
-      	user = userProvisioningManager.getUserById(id);
-      	return user;
+        User user = userProvisioningManager.getUserById(id);
+        return user;
     }
 
     public void createProtectionGroup(String newProtectionGroup) throws Exception {
@@ -298,39 +297,35 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return studySitePGs;
     }
 
-    public List<Study> checkOwnership(String userName, List<Study> studies) {
-        Set<Study> assignedStudies = new LinkedHashSet<Study>();
-        User userTemplate = new User();
-        userTemplate.setLoginName(userName);
-        SearchCriteria userSearchCriteria = new UserSearchCriteria(userTemplate);
-        List<User> userList = userProvisioningManager.getObjects(userSearchCriteria);
-        if (userList.size() > 0) {
-            User user = userList.get(0);
-            Set<Group> userGroups = getGroups(user);
-            if (userGroups.size() > 0) {
-                   Group requiredGroup = userGroups.iterator().next();
-                   if (requiredGroup.getGroupName().equals(SUBJECT_COORDINATOR_GROUP)) {
-                       for (Study study : studies) {
-                           if (checkSubjectCoordinatorOwnership(user, study)) {
-                               assignedStudies.add(study);
-                           }
-                       }
-                   } else if (requiredGroup.getGroupName().equals(SITE_COORDINATOR_GROUP)) {
-                       List<ProtectionGroup> sites = getSitePGs(user);
-                       for (Study study : studies) {
-                           if (checkSiteCoordinatorOwnership(study, sites)) {
-                               assignedStudies.add(study);
-                           }
-                       }
-                   } else {
-                       assignedStudies.addAll(studies);
-                   }
-            }
+    public boolean isTemplateVisible(UserRole userRole, Study study) {
+        if (userRole.getRole() == SYSTEM_ADMINISTRATOR) {
+            return false;
+        } else if (!userRole.getRole().isSiteSpecific()) {
+            return true;
+        } else if (userRole.getRole() == SITE_COORDINATOR) {
+            return isTemplateVisibleToSiteCoordinator(userRole, study);
+        } else if (userRole.getRole() == SUBJECT_COORDINATOR || userRole.getRole() == RESEARCH_ASSOCIATE) {
+            return isTemplateVisibleToStudySpecificRole(userRole, study);
+        } else {
+            throw new UnsupportedOperationException("Unexpected role in userRole: " + userRole.getRole());
         }
-
-        return new ArrayList<Study>(assignedStudies);
     }
 
+    private boolean isTemplateVisibleToStudySpecificRole(UserRole studySpecificRole, Study study) {
+        for (StudySite studySite : study.getStudySites()) {
+            if (studySpecificRole.getStudySites().contains(studySite)) return true;
+        }
+        return false;
+    }
+
+    private boolean isTemplateVisibleToSiteCoordinator(UserRole siteCoordinator, Study study) {
+        for (Site siteOnStudy : study.getSites()) {
+            if (siteCoordinator.getSites().contains(siteOnStudy)) return true;
+        }
+        return false;
+    }
+
+    @SuppressWarnings({ "unchecked" })
     public void removeProtectionGroup(String protectionGroupName) throws Exception {
 		ProtectionGroup pg = new ProtectionGroup();
 		pg.setProtectionGroupName(protectionGroupName);
@@ -342,6 +337,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         
     }
     
+    @SuppressWarnings({ "unchecked" })
     public void createAndAssignPGToUser(List<String> userIds, String protectionGroupName, String roleName) throws Exception {
     	ProtectionGroup pg = new ProtectionGroup();
 		pg.setProtectionGroupName(protectionGroupName);
@@ -355,11 +351,11 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         Role role = new Role();
 		role.setName(roleName);
 		SearchCriteria roleSearchCriteria = new RoleSearchCriteria(role);
-		List roleList = userProvisioningManager.getObjects(roleSearchCriteria);
+		List<Role> roleList = userProvisioningManager.getObjects(roleSearchCriteria);
 		if (roleList.size() > 0) {
-			Role accessRole = (Role) roleList.get(0);
+			Role accessRole = roleList.get(0);
 			String[] roleIds = new String[] {accessRole.getId().toString()};
-            if (!((userIds.size() == 1) && (userIds.get(0).equals("")))) {
+            if (!((userIds.size() == 1) && (userIds.get(0).length() == 0))) {
             	for (String userId : userIds)
             	{
             		userProvisioningManager.assignUserRoleToProtectionGroup(userId, roleIds, getPGByName(protectionGroupName).getProtectionGroupId().toString());
@@ -368,6 +364,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
 		}
     }
 
+    @SuppressWarnings({ "unchecked" })
     public boolean isUserPGAssigned(String pgName, String userId) throws Exception {
         Set<ProtectionGroupRoleContext> pgRoleContext = userProvisioningManager.getProtectionGroupRoleContextForUser(userId);
 		   List<ProtectionGroupRoleContext> pgRoleContextList = new ArrayList<ProtectionGroupRoleContext> (pgRoleContext);
@@ -389,7 +386,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
     }
 
     private List<String> rolesToCsmGroups(Set<UserRole> userRoles) throws Exception{
-        List csmGroupsForUser = new ArrayList<String>();
+        List<String> csmGroupsForUser = new ArrayList<String>();
         if(userRoles != null) {
             List<Group> allCsmGroups = getAllCsmGroups();
 
@@ -434,35 +431,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         return sites;
     }
 
-    private boolean checkSiteCoordinatorOwnership(Study study, List<ProtectionGroup> sites) {
-        List<StudySite> studySites = study.getStudySites();
-        for (StudySite studySite : studySites) {
-            for (ProtectionGroup site : sites) {
-               if (studySite.getSite().equals(DomainObjectTools.loadFromExternalObjectId(site.getProtectionGroupName(), siteDao))) {
-                   return true;
-               }
-            }
-        }
-        return false;
-    }
-
-    private boolean checkSubjectCoordinatorOwnership(User user, Study study) {
-        String userName = user.getLoginName();
-        List<StudySite> studySites = study.getStudySites();
-        for (StudySite studySite : studySites) {
-            String protectionGroupName = DomainObjectTools.createExternalObjectId(studySite);
-            Set<ProtectionGroupRoleContext> pgRoleContext = getProtectionGroupRoleContexts(user);
-            if (pgRoleContext.size() != 0) {
-                for (ProtectionGroupRoleContext pgrc : pgRoleContext) {
-                     if (pgrc.getProtectionGroup().getProtectionGroupName().equals(protectionGroupName)) {
-                         return true;
-                     }
-                }
-            }
-        }
-        return userProvisioningManager.checkOwnership(userName, DomainObjectTools.createExternalObjectId(study));
-    }
-
+    @SuppressWarnings({ "unchecked" })
     private Set<Group> getGroups(User user) {
         try {
             return userProvisioningManager.getGroups(user.getUserId().toString());
@@ -471,6 +440,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
         }
     }
 
+    @SuppressWarnings({ "unchecked" })
     private Set<ProtectionGroupRoleContext> getProtectionGroupRoleContexts(User user) {
         try {
             return userProvisioningManager.getProtectionGroupRoleContextForUser(user.getUserId().toString());

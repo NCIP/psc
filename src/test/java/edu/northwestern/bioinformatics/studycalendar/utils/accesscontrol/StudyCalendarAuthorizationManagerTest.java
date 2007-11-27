@@ -1,34 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol;
 
-import static java.util.Arrays.asList;
-
-import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import gov.nih.nci.security.UserProvisioningManager;
-import gov.nih.nci.security.dao.RoleSearchCriteria;
-import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.authorization.domainobjects.Group;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
+import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.dao.GroupSearchCriteria;
-import gov.nih.nci.security.authorization.domainobjects.*;
-import gov.nih.nci.security.authorization.domainobjects.Role;
-import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
-
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.lang.reflect.InvocationTargetException;
-
+import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import static org.easymock.classextension.EasyMock.*;
-import org.easymock.IArgumentMatcher;
-import org.apache.commons.beanutils.PropertyUtils;
+
+import java.util.ArrayList;
+import static java.util.Arrays.asList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -41,6 +35,10 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
     private StudyCalendarAuthorizationManager manager;
     private UserProvisioningManager userProvisioningManager;
 
+    private User user;
+    private Study studyA, studyB, studyAB;
+    private Site siteA, siteB;
+
     protected void setUp() throws Exception {
         super.setUp();
         userProvisioningManager = registerMockFor(UserProvisioningManager.class);
@@ -49,6 +47,18 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
 
         manager = new StudyCalendarAuthorizationManager();
         manager.setUserProvisioningManager(userProvisioningManager);
+
+        user = Fixtures.createUser("jimbo");
+
+        studyA = Fixtures.createNamedInstance("A", Study.class);
+        studyB = Fixtures.createNamedInstance("B", Study.class);
+        studyAB = Fixtures.createNamedInstance("AB", Study.class);
+        siteA = Fixtures.createNamedInstance("a", Site.class);
+        siteB = Fixtures.createNamedInstance("b", Site.class);
+        studyA.addSite(siteA);
+        studyB.addSite(siteB);
+        studyAB.addSite(siteA);
+        studyAB.addSite(siteB);
     }
 
     public void testRegisterUrlWhenNew() throws Exception {
@@ -98,11 +108,11 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
     }
 
     public void testAssignProtectionGroupsToUsers() throws Exception {
-        Role role0 = new Role();
-        role0.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR.csmRole());
+        gov.nih.nci.security.authorization.domainobjects.Role role0 = new gov.nih.nci.security.authorization.domainobjects.Role();
+        role0.setName(Role.SITE_COORDINATOR.csmRole());
         role0.setId(7L);
-        Role role1 = new Role();
-        role1.setName(edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR.csmRole());
+        gov.nih.nci.security.authorization.domainobjects.Role role1 = new gov.nih.nci.security.authorization.domainobjects.Role();
+        role1.setName(Role.SUBJECT_COORDINATOR.csmRole());
         role1.setId(4L);
 
         String userId = "1";
@@ -123,10 +133,54 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         verifyMocks();
     }
 
+    public void testStudyVisibilityForSubjectCoordinator() throws Exception {
+        UserRole coord = Fixtures.createUserRole(user, Role.SUBJECT_COORDINATOR, siteB);
+        coord.addStudySite(studyAB.getStudySite(siteB));
+        assertFalse(manager.isTemplateVisible(coord, studyA));
+        assertFalse(manager.isTemplateVisible(coord, studyB));
+        assertTrue(manager.isTemplateVisible(coord, studyAB));
+    }
+
+    public void testStudyVisibilityForResearchAssociate() throws Exception {
+        UserRole coord = Fixtures.createUserRole(user, Role.RESEARCH_ASSOCIATE, siteA);
+        coord.addStudySite(studyA.getStudySite(siteA));
+        assertTrue(manager.isTemplateVisible(coord, studyA));
+        assertFalse(manager.isTemplateVisible(coord, studyB));
+        assertFalse(manager.isTemplateVisible(coord, studyAB));
+    }
+
+    public void testStudyVisibilityForSiteCoordinator() throws Exception {
+        UserRole coord = Fixtures.createUserRole(user, Role.SITE_COORDINATOR, siteA);
+        assertTrue(manager.isTemplateVisible(coord, studyA));
+        assertFalse(manager.isTemplateVisible(coord, studyB));
+        assertTrue(manager.isTemplateVisible(coord, studyAB));
+    }
+
+    public void testStudyVisibilityForSystemAdministrator() throws Exception {
+        UserRole admin = Fixtures.createUserRole(user, Role.SYSTEM_ADMINISTRATOR, siteA);
+        assertFalse(manager.isTemplateVisible(admin, studyA));
+        assertFalse(manager.isTemplateVisible(admin, studyB));
+        assertFalse(manager.isTemplateVisible(admin, studyAB));
+    }
+
+    public void testStudyVisibilityForStudyAdministrator() throws Exception {
+        UserRole admin = Fixtures.createUserRole(user, Role.STUDY_ADMIN);
+        assertTrue(manager.isTemplateVisible(admin, studyA));
+        assertTrue(manager.isTemplateVisible(admin, studyB));
+        assertTrue(manager.isTemplateVisible(admin, studyAB));
+    }
+
+    public void testStudyVisibilityForStudyCoordinator() throws Exception {
+        UserRole coord = Fixtures.createUserRole(user, Role.STUDY_ADMIN);
+        assertTrue(manager.isTemplateVisible(coord, studyA));
+        assertTrue(manager.isTemplateVisible(coord, studyB));
+        assertTrue(manager.isTemplateVisible(coord, studyAB));
+    }
+
     public void testIsGroupEqualToRole() {
         StudyCalendarAuthorizationManager us = new StudyCalendarAuthorizationManager();
-        assertTrue(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_COORDINATOR));
-        assertFalse(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR));
+        assertTrue(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.STUDY_COORDINATOR));
+        assertFalse(us.isGroupEqualToRole(createCsmGroup(1L, "STUDY_COORDINATOR"), Role.SITE_COORDINATOR));
     }
 
     private static ProtectionGroup createPG(long id) {
