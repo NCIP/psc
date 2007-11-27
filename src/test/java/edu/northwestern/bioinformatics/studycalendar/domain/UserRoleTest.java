@@ -5,10 +5,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setI
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
-import static java.util.Arrays.asList;
-import java.util.HashSet;
-import java.util.Set;
-
 public class UserRoleTest extends StudyCalendarTestCase {
     public void testRemoveStudySites() throws Exception {
         Study study0 = setId(1, createNamedInstance("Study A", Study.class));
