@@ -1,23 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.Cascade;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
-
-
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 
 /**
  * @author Padmaja Vedula
@@ -25,11 +18,12 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
  */
 @Entity
 @Table
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_subjects_id")
-    }
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_subjects_id")
+                }
 )
+@Where(clause = "load_status > 0")
 public class Subject extends AbstractMutableDomainObject {
     private String firstName;
     private String lastName;
@@ -37,12 +31,13 @@ public class Subject extends AbstractMutableDomainObject {
     private String gender;
     private String personId;
     private List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment>();
+    private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
     // business methods
-    
+
     // The subject identifier could be the Medical Record No based on the site
 
-    public void addAssignment(StudySubjectAssignment studySubjectAssignment){
+    public void addAssignment(StudySubjectAssignment studySubjectAssignment) {
         getAssignments().add(studySubjectAssignment);
         studySubjectAssignment.setSubject(this);
     }
@@ -74,7 +69,7 @@ public class Subject extends AbstractMutableDomainObject {
         }
         return name.toString();
     }
-    
+
     // bean methods
     @Column(name = "first_name")
     public String getFirstName() {
@@ -84,7 +79,7 @@ public class Subject extends AbstractMutableDomainObject {
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
-    
+
     @Column(name = "last_name")
     public String getLastName() {
         return lastName;
@@ -93,7 +88,7 @@ public class Subject extends AbstractMutableDomainObject {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-    
+
     @Column(name = "birth_date")
     public Date getDateOfBirth() {
         return dateOfBirth;
@@ -102,6 +97,7 @@ public class Subject extends AbstractMutableDomainObject {
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
+
     public String getGender() {
         return gender;
     }
@@ -109,7 +105,7 @@ public class Subject extends AbstractMutableDomainObject {
     public void setGender(String gender) {
         this.gender = gender;
     }
-    
+
     @Column(name = "person_id", unique = true, nullable = false)
     public String getPersonId() {
         return personId;
@@ -119,13 +115,14 @@ public class Subject extends AbstractMutableDomainObject {
         this.personId = personId;
     }
 
-    @OneToMany (mappedBy = "subject")
-    @OrderBy // order by ID for testing consistency
-    @Cascade (value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "subject")
+    @OrderBy
+    // order by ID for testing consistency
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<StudySubjectAssignment> getAssignments() {
         return assignments;
     }
-    
+
     public void setAssignments(List<StudySubjectAssignment> assignments) {
         this.assignments = assignments;
     }
@@ -159,4 +156,14 @@ public class Subject extends AbstractMutableDomainObject {
         result = 29 * result + (personId != null ? personId.hashCode() : 0);
         return result;
     }
+
+    @Enumerated(EnumType.ORDINAL)
+    public LoadStatus getLoadStatus() {
+        return loadStatus;
+    }
+
+    public void setLoadStatus(final LoadStatus loadStatus) {
+        this.loadStatus = loadStatus;
+    }
+
 }
