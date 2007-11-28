@@ -3,7 +3,7 @@
 <%@taglib prefix="dash" tagdir="/WEB-INF/tags/dashboard/subjectcoordinator" %>
 
 <%@attribute name="numberOfDays" type="java.lang.Integer" required="true" %>
-<%@attribute name="activityTypes" type="java.util.List" required="true"%>
+<%@attribute name="activityTypes" type="java.util.Collection" required="true"%>
 
 <laf:box title="Current activities">
     <form action="#" id="current-activities-form">
