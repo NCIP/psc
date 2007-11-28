@@ -78,6 +78,7 @@
             margin-left:10px;
             vertical-align:middle;
         }
+
         .day h3{
             width:10%;
         }
@@ -91,11 +92,6 @@
             vertical-align:top;
         }
 
-        ul.menu li.colorRed {
-            padding:0em;
-            margin:0em;
-            color:red;
-        }
         .day ul.noMargin {
             margin:0em;
         }

@@ -35,8 +35,6 @@
         </c:forEach>
     </c:when>
     <c:otherwise>
-        <li class="colorRed">
-        ** No scheduled or conditional events for the next ${numberOfDays} days in the selected categories.
-        </li>
+        <em>No scheduled or conditional events for the next ${numberOfDays} days in the selected categories.</em>
     </c:otherwise>
  </c:choose>

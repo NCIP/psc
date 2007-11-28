@@ -92,13 +92,6 @@
             margin: 0.5em;
             color:red;
         }
-
-        ul.menu li.colorRed {
-            padding:0em;
-            margin:0em;
-            color:red;
-        }
-
     </style>
 </head>
 <body>
