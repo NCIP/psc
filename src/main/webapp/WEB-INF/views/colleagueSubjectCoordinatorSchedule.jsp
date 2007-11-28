@@ -1,9 +1,10 @@
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="dash" tagdir="/WEB-INF/tags/dashboard/subjectcoordinator" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
 
 <html>
@@ -98,22 +99,7 @@
     <div class="main">
         <h1>Dashboard for the Colleague, ${userName.name}</h1>
     </div>
-    <c:if test="${not empty pastDueActivities}">
-        <laf:box title="Past-due activities">
-            <ul class="menu">
-                <li class="autoclear">
-                    <c:forEach items="${pastDueActivities}" var="mapOfPastDueActivities" varStatus="keyStatus">
-                        <c:forEach items="${mapOfPastDueActivities.key}" var="mapOfPastDueActivitiesKey" varStatus="keyStatus">
-                            ${mapOfPastDueActivitiesKey.key.firstName} ${mapOfPastDueActivitiesKey.key.lastName} has <a href=
-                                "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivities.value.id}"/>" > ${mapOfPastDueActivitiesKey.value} past-due activities </a>.  Earliest is
-                                from <tags:formatDate value="${mapOfPastDueActivities.value.startDateEpoch}"/>
-                            <br>
-                        </c:forEach>
-                    </c:forEach>
-                </li>
-               </ul>
-        </laf:box>
-    </c:if>
+    <dash:pastDueActivities activities="${pastDueActivities}"/>
     <laf:box title="Current activities">
             <ul class="menu">
                 <li class="autoclear">
@@ -126,7 +112,7 @@
                     </c:forEach>
                 </li>
                 <li class="autoclear" id="subject-schedule">
-                     <tags:subjectCoordinatorSchedule/>
+                     <dash:subjectCoordinatorSchedule/>
                 </li>
             </ul>
     </laf:box>
