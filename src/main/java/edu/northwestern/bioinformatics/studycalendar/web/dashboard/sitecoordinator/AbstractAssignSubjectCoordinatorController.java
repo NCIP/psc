@@ -17,10 +17,14 @@ import java.util.*;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private StudyDao studyDao;
     private UserDao userDao;
     private SiteDao siteDao;
@@ -52,9 +56,11 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
         List<Study> studies      = studyDao.getAll();
-        
+        log.debug("{} studies in system", studies.size());
+
         List<Study> ownedStudies
             = templateService.filterForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
+        log.debug("{} studies visible to {}", ownedStudies.size(), siteCoordinator.getName());
 
         List<Study> assignableStudies = new ArrayList<Study>();
         for (Study ownedStudy : ownedStudies) {
@@ -63,11 +69,13 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
             }
         }
         Collections.sort(assignableStudies, new NamedComparator());
+        log.debug("{} released studies visible to {}", assignableStudies.size(), siteCoordinator.getName());
         return assignableStudies;
     }
 
     protected List<Site> getAssignableSites(User siteCoordinator) {
-        List<Site> sites = siteService.getSitesForSiteCd(siteCoordinator.getName());
+        List<Site> sites = new ArrayList<Site>(siteCoordinator.getUserRole(Role.SITE_COORDINATOR).getSites());
+        log.debug("{} sites found for {} as site coord", sites.size(), siteCoordinator.getName());
         Collections.sort(sites, new NamedComparator());
         return sites;
     }
@@ -80,6 +88,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
                 assignableStudySites.add(site);
             }
         }
+        log.debug("{} sites found for {} and study {}", new Object[] { assignableStudySites.size(), siteCoordinator.getName(), study.getName() });
         Collections.sort(assignableStudySites, new NamedComparator());
         return assignableStudySites;
     }

@@ -204,11 +204,11 @@ public class Fixtures {
         }
     }
 
-    public static User createUser(String name, Role... roles) throws Exception {
+    public static User createUser(String name, Role... roles) {
         return createUser(null, name, null, true, roles);
     }
 
-    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) throws Exception {
+    public static User createUser(Integer id, String name, Long csmUserId, boolean activeFlag, Role... roles) {
         User user = new User();
         user.setId(id);
         user.setName(name);

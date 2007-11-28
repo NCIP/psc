@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.loadFromExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
@@ -22,6 +21,7 @@ import static java.util.Arrays.asList;
 @Transactional
 public class SiteService {
     private SiteDao siteDao;
+    private UserDao userDao;
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 
@@ -45,32 +45,42 @@ public class SiteService {
     	authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 
+    /**
+     * This method is incomplete.  It should probably be replaced with calls like
+     * {@link User}.getUserRole(desiredRole).getSites().
+     * 
+     * @param userName
+     * @return
+     */
+    @Deprecated
     public List<Site> getSitesForUser(String userName) {
+        User user = userDao.getByName(userName);
+        if (user == null) return Collections.emptyList();
+
         Set<Site> sites = new LinkedHashSet<Site>();
-        sites.addAll(getSitesForSiteCd(userName));
-        sites.addAll(getSitesForSubjectCoordinator(userName));
+        sites.addAll(getSitesForSiteCoordinator(user));
+        sites.addAll(getSitesForSubjectCoordinator(user));
 
         return new ArrayList<Site>(sites);
     }
 
-    public List<Site> getSitesForSiteCd(String userName) {
-        List<ProtectionGroup> sitePGs = authorizationManager.getSitePGsForUser(userName);
-        List<Site> sites = new ArrayList<Site>(sitePGs.size());
-        for (ProtectionGroup sitePG : sitePGs) {
-            sites.add(DomainObjectTools.loadFromExternalObjectId(sitePG.getProtectionGroupName(),siteDao));
-        }
-        return sites;
+    private List<Site> getSitesForSiteCoordinator(User user) {
+        UserRole siteCoord = user.getUserRole(Role.SITE_COORDINATOR);
+        if (siteCoord == null) return Collections.emptyList();
+        return new ArrayList<Site>(siteCoord.getSites());
     }
 
-    public Collection<Site> getSitesForSubjectCoordinator(String userName) {
-        List<ProtectionGroup> studySitePGs = authorizationManager.getStudySitePGsForUser(userName);
-        Set<Site> sites = new LinkedHashSet<Site>();
-        for (ProtectionGroup studySitePG : studySitePGs) {
-            StudySite studySite =
-                    loadFromExternalObjectId(studySitePG.getProtectionGroupName(), studySiteDao);
-            sites.add(studySite.getSite());
-        }
-        return sites;
+    public Collection<Site> getSitesForSubjectCoordinator(String username) {
+        User user = userDao.getByName(username);
+        if (user == null) return Collections.emptyList();
+
+        return getSitesForSubjectCoordinator(user);
+    }
+
+    private Collection<Site> getSitesForSubjectCoordinator(User user) {
+        UserRole coord = user.getUserRole(Role.SUBJECT_COORDINATOR);
+        if (coord == null) return Collections.emptyList();
+        return new ArrayList<Site>(coord.getSites());
     }
 
     public Collection<Site> getSitesForSubjectCoordinator(String userName, Study study) {
@@ -85,6 +95,11 @@ public class SiteService {
     }
 
     ////// CONFIGURATION
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Required
     public void setSiteDao(SiteDao siteDao) {
