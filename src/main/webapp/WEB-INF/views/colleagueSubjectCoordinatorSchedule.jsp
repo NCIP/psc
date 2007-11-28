@@ -10,29 +10,10 @@
 <html>
 <head>
     <tags:stylesheetLink name="main"/>
+    <tags:javascriptLink name="dashboards"/>
 
     <script type="text/javascript">
-
-        function ajaxform() {
-            var href = '<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${userName.id}" />'
-            // Set up data variable
-            var formdata = "";
-            var toDateTemp = 'toDate';
-            formdata = formdata + toDateTemp+ "=" + $(toDateTemp).value+"&";
-
-            var arrayOfCheckboxes = document.getElementsByName('activityTypes');
-
-            for (var i = 0; i < arrayOfCheckboxes.length; i++) {
-                formdata = formdata + 'activityTypes' + '[' +$(arrayOfCheckboxes[i]).value + ']'+  "=" + $(arrayOfCheckboxes[i]).checked + "&"
-            }
-
-            var lastRequest = new Ajax.Request(href,
-            {
-                postBody: formdata
-            });
-            return true;
-        }
-
+        SC.registerCurrentActivitiesUpdaters('<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${userName.id}"/>')
     </script>
 
     <style type="text/css">
@@ -75,7 +56,7 @@
             margin-top: 2em;
         }
 
-        input.checkboxes {
+        input.activity-type {
             margin-left:10px;
             vertical-align:middle;
         }
@@ -100,22 +81,7 @@
         <h1>Dashboard for the Colleague, ${userName.name}</h1>
     </div>
     <dash:pastDueActivities activities="${pastDueActivities}"/>
-    <laf:box title="Current activities">
-            <ul class="menu">
-                <li class="autoclear">
-                     Activities for the next <input value="7" path="toDate" id="toDate" size="5" onchange="ajaxform();" /> days
-                </li>
-                <li>
-                    Filter by Activity Type:
-                    <c:forEach items="${activityTypes}" var="activityType">
-                        <input TYPE=checkbox class="checkboxes" value="${activityType.id}" id="checkboxId" name="activityTypes" checked="true" onchange="ajaxform();"> ${activityType.name} </input>
-                    </c:forEach>
-                </li>
-                <li class="autoclear" id="subject-schedule">
-                     <dash:subjectCoordinatorSchedule/>
-                </li>
-            </ul>
-    </laf:box>
+    <dash:currentActivities activityTypes="${activityTypes}" numberOfDays="7"/>
     <ul class="menu">
             <li class="colorAndPadding">
                 ${extraSites}
