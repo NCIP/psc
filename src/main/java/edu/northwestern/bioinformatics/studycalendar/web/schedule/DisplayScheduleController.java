@@ -37,6 +37,7 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
     public DisplayScheduleController() {
         setCrumb(new Crumb());
         setCommandClass(DisplayScheduleCommand.class);
+        setCacheSeconds(0);
     }
 
     @Override

@@ -14,10 +14,17 @@
         <form id="batch-form" action="<c:url value="/pages/cal/schedule/batch"/>">
             <input type="hidden" name="scheduledCalendar" value="${studySegment.scheduledCalendar.id}"/>
                 <%--<h2 id="selected-studySegment-header">${studySegment.name}</h2>--%>
-            <div id="batch-reschedule" class="subsection subcollapsible">
-                <h3>Batch reschedule</h3>
-                <div class="content" style="display: none">
+             <div id="batch-reschedule" class="subsection" >
+                <h3>Modify selected activities</h3>
+                <div class="content">
                     <laf:division>
+                        <div class="links-row">
+                            Check Activities:
+                            <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
+                            <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
+                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
+                        </div>
+                        <br>
                         <label id="new-mode-selector-group">
                             <select name="newMode" id="new-mode-selector">
                                 <option value="">Select an action...</option>
@@ -32,13 +39,6 @@
                         </label>
                         <tags:activityIndicator id="batch-indicator"/>
                         <input type="submit" value="Submit" id="new-mode-submit"/>
-
-                        <div class="links-row">
-                            Check Events:
-                            <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
-                            <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
-                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
-                        </div>
                     </laf:division>
                 </div>
             </div>
@@ -57,7 +57,7 @@
                 </div>
                 <c:forEach items="${studySegment.eventsByDate}" var="entry" varStatus="status">
                     <div class="day autoclear ${commons:parity(status.index)}">
-                        <h3 class="day"><tags:formatDate value="${entry.key}"/></h3>
+                        <h3><tags:formatDate value="${entry.key}"/></h3>
 
                         <ul>
                             <c:forEach items="${entry.value}" var="event">

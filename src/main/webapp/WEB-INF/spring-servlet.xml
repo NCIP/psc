@@ -280,6 +280,10 @@
     <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
 
+    <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">
+    </bean>
+
     <bean name="/cal/schedule/display/*.ics" id="displayICSCalendarController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayICSCalendarController"/>
 

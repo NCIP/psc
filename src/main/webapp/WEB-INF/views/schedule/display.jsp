@@ -186,6 +186,11 @@
             padding: 5px 1em;
         }
 
+        .topBordered {
+            border-top:1px solid #000000;
+            padding-top:40px;
+        }
+
         #external-apps {
             color: #666;
             padding: 8px;
@@ -212,6 +217,7 @@
         .box {
             clear: both;
         }
+
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -320,6 +326,21 @@
             })
         }
 
+        function ajaxform() {
+            var href = '<c:url value="/pages/cal/schedule/rescheduleArms"/>'
+            // Set up data variable
+            var formdata = "";
+            formdata = formdata + 'toDate' + "=" + $('toDate').value+"&";
+            formdata = formdata + 'reason' + "=" + $(document.getElementById('reason')).value + "&";
+            formdata = formdata + 'scheduledCalendar' + "=" + ${studySegment.scheduledCalendar.id} + "&";
+            formdata = formdata + 'currentDate' + "=" + $(document.getElementById('currentDate')).value + "&";
+            var lastRequest = new Ajax.Request(href,
+            {
+                postBody: formdata
+            });
+            return true;
+        }
+
         Event.observe(window, "load", registerSelectStudySegmentHandlers);
         Event.observe(window, "load", registerSelectNextStudySegmentHandlers);
         Event.observe(window, "load", registerDefaultDateSetterHandlers);
@@ -395,7 +416,7 @@
 </c:if>
 
 <c:if test="${assignment.endDateEpoch == null}">
-    <laf:box>
+    <laf:box title="Modify entire schedule">
         <laf:division>
         <div id="schedule-next-studySegment" class="section autoclear collapsible">
 
@@ -428,6 +449,20 @@
                 </div>
                 </form>
                 <tags:epochsAndStudySegments plannedCalendar="${plannedCalendar}"/>
+        </div>
+        <br>
+        <br>
+        <br>
+            <div class="section autoclear collapsible">
+                <h2 class="topBordered">Delay or advance</h2>
+                <div class="content" style="display: none">
+                    <laf:division>
+                            Shift the scheduled or conditional activities by
+                                <input id="toDate" size="5" path="toDate" value="7"/>
+                            day(s) as of date: <input id="currentDate" path="currentDate" size="15" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>"/>. Reason: <input type="text" id="reason" name="reason" value="" size="50"/>
+                        <input type="submit" value="Submit" onclick="ajaxform();" />
+                    </laf:division>
+                </div>
             </div>
 
         </div>
@@ -439,7 +474,7 @@
     <laf:box title="Study segments scheduled">
         <laf:division>
         <!--<h2>Study segments scheduled</h2>-->
-        <p class="tip">Select an study segment to show its detailed schedule below.</p>
+        <p class="tip">Select a study segment to show its detailed schedule below.</p>
         <ul id="scheduled-studySegments-list">
             <li id="scheduled-studySegments-indicator-item"><tags:activityIndicator id="scheduled-studySegments-indicator"/></li>
             <c:forEach items="${calendar.scheduledStudySegments}" var="scheduledStudySegment">
