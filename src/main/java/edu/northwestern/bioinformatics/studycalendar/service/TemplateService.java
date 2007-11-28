@@ -248,7 +248,7 @@ public class TemplateService {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
         }
         if (role == null) {
-            throw new IllegalArgumentException("A UserRole is required");
+            return Collections.emptyList();
         }
 
         List<Study> filtered = new ArrayList<Study>(studies);

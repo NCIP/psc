@@ -486,15 +486,15 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertSame("Wrong study returned", studyB, actualStudyTemplates.get(0));
     }
 
-    public void testFilterForVizRequiresUserRole() throws Exception {
+    public void testFilterForVizReturnsNothingWithNullRole() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         List<Study> studyTemplates = asList(studyTemplate1);
-        try {
-            service.filterForVisibility(studyTemplates, null);
-            fail("Expected IllegalArgumentException");
-        } catch(IllegalArgumentException ise) {
-            assertEquals("A UserRole is required", ise.getMessage());
-        }
+
+        replayMocks();
+        List<Study> actual = service.filterForVisibility(studyTemplates, null);
+        verifyMocks();
+
+        assertEquals(0, actual.size());
     }
 
     public void testFilterForVizRequiresListOfStudies() throws Exception {
