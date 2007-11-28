@@ -15,11 +15,6 @@ import org.hibernate.annotations.Parameter;
  * @author Rhett Sutphin
  */
 @Entity
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_scheduled_activity_stat_id")
-    }
-)
 @DiscriminatorValue(value = "1")
 public class Scheduled extends DatedScheduledActivityState {
     public Scheduled() { }
