@@ -53,7 +53,7 @@ public class DisplayTemplateController extends PscAbstractController {
         getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
         model.put("studySegment", new StudySegmentTemplate(studySegment));
 
-        if (study.isAvailableForAssignment()) {
+        if (study.isReleased()) {
             List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);

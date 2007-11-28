@@ -58,7 +58,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
         List<Study> assignableStudies = new ArrayList<Study>();
         for (Study ownedStudy : ownedStudies) {
-            if (ownedStudy.isAvailableForAssignment()) {
+            if (ownedStudy.isReleased()) {
                 assignableStudies.add(ownedStudy);
             }
         }

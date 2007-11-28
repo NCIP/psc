@@ -69,7 +69,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     }
 
     @Transient
-    public boolean isAvailableForAssignment() {
+    public boolean isReleased() {
         return getAmendment() != null;
     }
 

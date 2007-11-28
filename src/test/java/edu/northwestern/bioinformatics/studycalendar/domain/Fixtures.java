@@ -196,6 +196,14 @@ public class Fixtures {
         }
     }
 
+    public static void setUserRoles(User user, Role... roles) {
+        user.clearUserRoles();
+        for (Role role : roles) {
+            UserRole userRole = new UserRole(user, role);
+            user.getUserRoles().add(userRole);
+        }
+    }
+
     public static User createUser(String name, Role... roles) throws Exception {
         return createUser(null, name, null, true, roles);
     }
@@ -206,13 +214,7 @@ public class Fixtures {
         user.setName(name);
         user.setCsmUserId(csmUserId);
         user.setActiveFlag(activeFlag);
-        if (roles != null) {
-            user.setUserRoles(new HashSet<UserRole>());
-            for(Role role : roles) {
-                UserRole userRole = new UserRole(user, role);
-                user.getUserRoles().add(userRole);
-            }
-        }
+        setUserRoles(user, roles);
         return user;
     }
 
