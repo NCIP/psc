@@ -132,6 +132,7 @@
         <copy todir="${build-dir.main}">
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
+                <include name="**/*.xsd"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.ftl"/>
             </fileset>

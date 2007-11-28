@@ -26,6 +26,11 @@ public class ActivityXmlReaderTest extends StudyCalendarTestCase {
 
         List<Source> actual = reader.read(input);
 
+        assertEquals("Wrong number of sources", 2, actual.size());
+
+        assertEquals("Wrong number of activities", 2, actual.get(0).getActivities().size());
+        assertEquals("Wrong number of activities", 1, actual.get(1).getActivities().size());
+
         Activity activity0 = actual.get(0).getActivities().get(0);
         assertEquals("Wrong code", "BS1", activity0.getCode());
         assertEquals("Wrong name", "Bone Scan", activity0.getName());
@@ -39,5 +44,12 @@ public class ActivityXmlReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong source", "ICD-9", activity1.getSource().getName());
         assertEquals("Wrong type", ActivityType.INTERVENTION, activity1.getType());
         assertEquals("Wrong description", "Administer Drug Capecitabine", activity1.getDescription());
+
+        Activity activity2 = actual.get(1).getActivities().get(0);
+        assertEquals("Wrong code", "CTC1", activity2.getCode());
+        assertEquals("Wrong name", "CTC Scan", activity2.getName());
+        assertEquals("Wrong source", "LOINK", activity2.getSource().getName());
+        assertEquals("Wrong type", ActivityType.DISEASE_MEASURE, activity2.getType());
+        assertEquals("Wrong description", "CTC Scan", activity2.getDescription());
     }
 }

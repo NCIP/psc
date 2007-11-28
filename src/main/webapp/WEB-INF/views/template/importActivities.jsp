@@ -6,15 +6,46 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 
 <html>
-<head><title>Import Activities</title></head>
+<head>
+    <title>Import Activities</title>
+
+    <style type="text/css">
+        div.label {
+            width: 35%;
+        }
+        div.submit {
+            text-align: right;
+        }
+        form {
+            width: 25em;
+        }
+        #submit-button {
+            margin-top:1em       
+        }
+    </style>
+</head>
 <body>
-<laf:box>
+<laf:box title="Import Activities">
     <laf:division>
         <form:form method="post" enctype="multipart/form-data">
             <form:errors path="*"/>
-            
-            Activities Xml File: <input type="file" name="activitiesFile"/><br/>
-            <input type="submit" value="Submit"/>
+
+            <div class="row">
+                <div class="label">
+                    <form:label path="activitiesFile">Activities File (xml):</form:label>
+                </div>
+                <div class="value">
+                    <input type="file" name="activitiesFile"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="label">&nbsp;</div>
+                <div class="submit" style="text-align:left">
+                    <input type="submit" id="submit-button" value="Import"/>
+                </div>
+            </div>
+            <form:hidden path="returnToPeriodId"/>
         </form:form>
     </laf:division>
 </laf:box>

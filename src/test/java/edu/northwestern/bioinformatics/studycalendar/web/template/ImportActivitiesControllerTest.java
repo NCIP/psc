@@ -24,6 +24,10 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
                 return command;
             }
         };
+
+        // Stop controller from calling validation
+        controller.setValidators(null);
+
     }
 
     public void testSubmit() throws Exception {
@@ -36,16 +40,29 @@ public class ImportActivitiesControllerTest extends ControllerTestCase {
         verifyMocks();
 
         assertNotNull("View is null", mv.getViewName());
+        assertEquals("Wrong view", "redirectToStudyList", mv.getViewName());
     }
 
-    private ImportActivitiesCommand getAndReturnCommand(String expectNoErrorsForField) throws Exception {
-        request.setMethod("GET");
+    public void testSubmitWithReturnToPeriodId() throws Exception {
+        request.setMethod("POST");
+        request.setParameter("returnToPeriodId", "1");
+
+        command.apply();
         replayMocks();
-        Map<String, Object> model = controller.handleRequest(request, response).getModel();
-        ControllerTestCase.assertNoBindingErrorsFor(expectNoErrorsForField, model);
-        ImportActivitiesCommand command = (ImportActivitiesCommand) model.get("command");
+
+        ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
-        resetMocks();
-        return command;
+
+        assertNotNull("View is null", mv.getViewName());
+        assertEquals("Wrong view", "redirectToManagePeriod", mv.getViewName());
+        assertNotNull("Period Id is null", mv.getModel().get("id"));
+    }
+
+    public void testGet() throws Exception {
+        request.setMethod("GET");
+
+        ModelAndView mv = controller.handleRequest(request, response);
+
+        assertNotNull("View is null", mv.getViewName());
     }
 }

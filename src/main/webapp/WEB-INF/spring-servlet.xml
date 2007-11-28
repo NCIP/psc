@@ -422,7 +422,12 @@
 
     <bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"
            class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
-         <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Import Activities</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
     </bean>
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"

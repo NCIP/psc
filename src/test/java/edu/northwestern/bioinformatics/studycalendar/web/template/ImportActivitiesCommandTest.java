@@ -2,13 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.MultipartFileActivityLoader;
-import edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.ActivityXmlReader;
-
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.File;
 
 public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
     private MultipartFileActivityLoader loader;
@@ -19,7 +13,7 @@ public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
         super.setUp();
 
         loader = registerMockFor(MultipartFileActivityLoader.class);
-        file = null; 
+        file   = null;
 
         command = new ImportActivitiesCommand();
         command.setActivityLoader(loader);

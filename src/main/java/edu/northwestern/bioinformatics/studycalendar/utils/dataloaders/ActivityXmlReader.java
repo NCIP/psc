@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class ActivityXmlReader extends DefaultHandler {
     private List<Source> sources = new ArrayList<Source>();
-    private Source tempSource;
+    private Source currentSource;
 
     public List<Source> read(InputStream dataFile) {
         SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -41,9 +41,9 @@ public class ActivityXmlReader extends DefaultHandler {
 
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if(qName.equalsIgnoreCase("Source")) {
-            tempSource = new Source();
-            tempSource.setName(attributes.getValue("name"));
-            sources.add(tempSource);
+            currentSource = new Source();
+            currentSource.setName(attributes.getValue("name"));
+            sources.add(currentSource);
 
         } else if (qName.equalsIgnoreCase("Activity")) {
             Activity activity = new Activity();
@@ -52,8 +52,8 @@ public class ActivityXmlReader extends DefaultHandler {
             activity.setDescription(attributes.getValue("description"));
             activity.setType(ActivityType.getById(Integer.parseInt(attributes.getValue("type"))));
 
-            activity.setSource(tempSource);
-            tempSource.getActivities().add(activity);
+            activity.setSource(currentSource);
+            currentSource.getActivities().add(activity);
         }
     }
     }
