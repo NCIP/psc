@@ -41,8 +41,7 @@ public class AmendmentService {
             throw new StudyCalendarSystemException("%s has no development amendment", source);
         }
         deltaService.apply(source, dev);
-        dev.setPreviousAmendment(source.getAmendment());
-        source.setAmendment(dev);
+        source.pushAmendment(dev);
         source.setDevelopmentAmendment(null);
         studyService.save(source);
 

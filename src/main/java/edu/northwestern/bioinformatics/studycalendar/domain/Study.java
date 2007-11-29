@@ -123,6 +123,11 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         return clone;
     }
 
+    public void pushAmendment(Amendment newAmendment) {
+        newAmendment.setPreviousAmendment(getAmendment());
+        setAmendment(newAmendment);
+    }
+
     ////// BEAN PROPERTIES
 
     /**

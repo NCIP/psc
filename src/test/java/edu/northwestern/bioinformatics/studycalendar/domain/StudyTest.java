@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
 import java.util.List;
 import java.util.Arrays;
@@ -26,6 +27,17 @@ public class StudyTest extends StudyCalendarTestCase {
         for (Site site : expectedSites) {
             assertContains(actualSites, site);
         }
+    }
+
+    public void testPushAmendment() throws Exception {
+        assertNull(study.getAmendment());
+        Amendment a = new Amendment();
+        study.pushAmendment(a);
+        assertSame(a, study.getAmendment());
+        Amendment b = new Amendment();
+        study.pushAmendment(b);
+        assertSame(b, study.getAmendment());
+        assertSame(a, b.getPreviousAmendment());
     }
     
     public void testGetSitesWithNone() throws Exception {
