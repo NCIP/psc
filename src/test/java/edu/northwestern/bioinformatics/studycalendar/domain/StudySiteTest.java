@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -17,7 +18,7 @@ public class StudySiteTest extends StudyCalendarTestCase {
     private StudySite studySite;
     private Study study;
     private Site site;
-    private Amendment a2003, a2004, a2005;
+    private Amendment aOrig, a2003, a2004, a2005;
 
     @Override
     protected void setUp() throws Exception {
@@ -31,6 +32,7 @@ public class StudySiteTest extends StudyCalendarTestCase {
         a2003 = a2004.getPreviousAmendment();
 
         study = Fixtures.createBasicTemplate();
+        aOrig = study.getAmendment();
         a2003.setPreviousAmendment(study.getAmendment());
         study.setAmendment(a2005);
         site = Fixtures.createNamedInstance("Galesburg", Site.class);
@@ -87,6 +89,15 @@ public class StudySiteTest extends StudyCalendarTestCase {
 
         assertSame(a2003, studySite.getAmendmentApproval(a2003).getAmendment());
         assertDayOfDate(2004, Calendar.DECEMBER, 2, studySite.getAmendmentApproval(a2004).getDate());
+    }
+
+    public void testGetUnapprovedAmendments() throws Exception {
+        studySite.approveAmendment(aOrig, DateTools.createDate(2003, Calendar.JANUARY, 3));
+        studySite.approveAmendment(a2004, DateTools.createDate(2004, Calendar.DECEMBER, 4));
+        List<Amendment> actualUnapproved = studySite.getUnapprovedAmendments();
+        assertEquals("Wrong amendments: " + actualUnapproved, 2, actualUnapproved.size());
+        assertContains(actualUnapproved, a2003);
+        assertContains(actualUnapproved, a2005);
     }
 
     public void testFindStudySite() throws Exception {

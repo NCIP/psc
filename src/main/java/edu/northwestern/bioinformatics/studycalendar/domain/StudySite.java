@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.cagrid.opensaml.artifact.ByteSizedSequence;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
@@ -79,12 +81,25 @@ public class StudySite extends AbstractMutableDomainObject {
         return null;
     }
 
+    public List<Amendment> getUnapprovedAmendments() {
+        List<Amendment> unapproved = new LinkedList<Amendment>();
+        Amendment candidate = getStudy().getAmendment();
+        while (candidate != null) {
+            if (getAmendmentApproval(candidate) == null) {
+                unapproved.add(0, candidate);
+            }
+            candidate = candidate.getPreviousAmendment();
+        }
+        return unapproved;
+    }
+
     @Transient
+    @SuppressWarnings({ "unchecked" })
     public static StudySite findStudySite(Study study, Site site) {
         if (study != null && site != null) {
             Collection<StudySite> studySite = ObjectSetUtil.intersect(study.getStudySites(), site.getStudySites());
             if (studySite != null && studySite.size() > 0) {
-                return (StudySite) studySite.iterator().next();
+                return studySite.iterator().next();
             }
         }
         return null;
