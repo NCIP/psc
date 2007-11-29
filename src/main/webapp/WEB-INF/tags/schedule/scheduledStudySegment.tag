@@ -27,13 +27,14 @@
                         <br>
                         <label id="new-mode-selector-group">
                             <select name="newMode" id="new-mode-selector">
-                                <option value="">Select an action...</option>
+                                <option value="-1">Select an action...</option>
+                                <option value="">Move the date</option>
                                 <option value="1">Mark/Keep as scheduled</option>
                                 <option value="2">Mark occurred</option>
                                 <option value="3">Mark canceled</option>
                             </select>
                         </label>
-                        <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="7" size="4"/> days.</label>
+                        <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="0" size="4"/> days.</label>
                         <label id="new-reason-input-group">
                             Why? <input type="text" name="newReason"/>
                         </label>

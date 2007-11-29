@@ -138,7 +138,11 @@ public class BatchRescheduleCommandTest extends StudyCalendarTestCase {
     
     public void testDoesNothingWithNoMode() throws Exception {
         command.setNewMode(null);
-        doApply(false);
+        Set events = new HashSet();
+        Collections.addAll(events, e4, e8);
+        command.setEvents(events);
+        command.setDateOffset(0);
+        doApply(true);
         ScheduledActivity prevSched0 = calendar.getScheduledStudySegments().get(0).getEvents().get(2);
         assertEquals("New state added to scheduled event in studySegment 0", 1, prevSched0.getAllStates().size());
     }

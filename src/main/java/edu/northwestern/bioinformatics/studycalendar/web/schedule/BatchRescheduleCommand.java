@@ -11,6 +11,9 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Rhett Sutphin
  */
@@ -23,15 +26,15 @@ public class BatchRescheduleCommand {
 
     private ScheduledCalendarDao scheduledCalendarDao;
 
+    private static final Logger log = LoggerFactory.getLogger(BatchRescheduleCommand.class.getName());
+
     public BatchRescheduleCommand(ScheduledCalendarDao scheduledCalendarDao) {
         this.scheduledCalendarDao = scheduledCalendarDao;
     }
 
     public void apply() {
-        if (getNewMode() == null) return;
-
         for (ScheduledActivity event : events) {
-            if (event.isValidNewState(newMode.getClazz())) {
+            if (getNewMode() == null || (event.isValidNewState(newMode.getClazz()))) {
                 changeState(event);
             }
         }
@@ -39,8 +42,14 @@ public class BatchRescheduleCommand {
     }
 
     private void changeState(ScheduledActivity event) {
-        ScheduledActivityState newState = getNewMode().createStateInstance();
+        ScheduledActivityState newState;
+        if (getNewMode() == null) {
+            newState = event.getCurrentState();
+        } else {
+            newState = getNewMode().createStateInstance();
+        }
         newState.setReason(createReason());
+
         if (newState instanceof DatedScheduledActivityState) {
             ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
         }
@@ -50,8 +59,12 @@ public class BatchRescheduleCommand {
     private Date createDate(Date baseDate) {
         Calendar c = Calendar.getInstance();
         c.setTime(baseDate);
-        if(ScheduledActivityMode.OCCURRED != getNewMode()) {
-            c.add(Calendar.DATE, getDateOffset());
+        if(getNewMode() == null || ScheduledActivityMode.OCCURRED != getNewMode()) {
+            if (getDateOffset() != null) {
+                c.add(Calendar.DATE, getDateOffset());
+            } else {
+                c.add(Calendar.DATE, 0);
+            }
         }
         return c.getTime();
     }
