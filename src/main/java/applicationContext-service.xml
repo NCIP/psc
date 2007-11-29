@@ -10,7 +10,7 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
     >
 
-    <tx:annotation-driven/>
+    <tx:annotation-driven proxy-target-class="true"/>
 
     <bean id="subjectService" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService"/>
