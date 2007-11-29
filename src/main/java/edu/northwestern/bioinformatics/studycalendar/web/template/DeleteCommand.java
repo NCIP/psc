@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 public class DeleteCommand extends EditTemplateCommand {
 
     ////// MODES
-    private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
-    
 
     @Override
     protected Mode epochMode() {
