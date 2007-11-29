@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,8 @@ import java.util.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
 
 public class ScheduleCommand {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private Integer toDate;
     private User user;
     private UserDao userDao;
@@ -19,8 +21,6 @@ public class ScheduleCommand {
     private Map<ActivityType, Boolean> activityTypes = new HashMap<ActivityType, Boolean>();
     private ActivityType activityType;
     private Boolean activityValue;
-
-    private static final Logger log = LoggerFactory.getLogger(ScheduleCommand.class.getName());
 
     public Map<String, Object> execute(SubjectCoordinatorDashboardService subjectCoordinatorDashboardService) {
         List<StudySubjectAssignment> studySubjectAssignments = getUserDao().getAssignments(getUser());

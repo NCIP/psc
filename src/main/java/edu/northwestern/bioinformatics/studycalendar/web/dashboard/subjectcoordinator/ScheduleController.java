@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
@@ -16,8 +16,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -25,14 +23,12 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorD
 
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class ScheduleController extends PscSimpleFormController {
-	private TemplateService templateService;
+    private TemplateService templateService;
 
     private ScheduledActivityDao scheduledActivityDao;
-	private StudyDao studyDao;
+    private StudyDao studyDao;
     private UserDao userDao;
     private SubjectCoordinatorDashboardService subjectCoordinatorDashboardService;
-
-    private static final Logger log = LoggerFactory.getLogger(ScheduleController.class.getName());
 
     public ScheduleController() {
         setCommandClass(ScheduleCommand.class);

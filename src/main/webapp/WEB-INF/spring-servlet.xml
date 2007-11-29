@@ -149,7 +149,7 @@
     </bean>
 
     <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.ScheduleController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                 <property name="name"><value>SC dashboard</value></property>
@@ -159,7 +159,7 @@
     </bean>
 
     <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.ColleagueSubjectCoordinatorController">
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
         <!--<property name="crumb">-->
             <!--<bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">-->
                 <!--<property name="name"><value>Colleague dashboard</value></property>-->

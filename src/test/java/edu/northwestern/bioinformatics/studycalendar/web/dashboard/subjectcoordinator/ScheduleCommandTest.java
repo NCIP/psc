@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;

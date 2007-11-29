@@ -1,6 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleCommand;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;

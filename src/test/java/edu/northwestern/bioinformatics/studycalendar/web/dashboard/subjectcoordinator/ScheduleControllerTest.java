@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService;
