@@ -62,4 +62,8 @@ public abstract class AbstractPeriodController<C extends PeriodCommand> extends 
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
     }
+
+    public TemplateService getTemplateService() {
+        return this.templateService;
+    }
 }

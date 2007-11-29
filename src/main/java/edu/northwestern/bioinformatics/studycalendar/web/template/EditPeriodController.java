@@ -26,7 +26,6 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
     private PeriodDao periodDao;
     private AmendmentService amendmentService;
     private DeltaService deltaService;
-    private TemplateService templateService;
 
     public EditPeriodController() {
         super(EditPeriodCommand.class);
@@ -41,7 +40,7 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
         if (!isFormSubmission(request)) {
             period = deltaService.revise(period);
         }
-        return new EditPeriodCommand(period, amendmentService, templateService);
+        return new EditPeriodCommand(period, amendmentService, getTemplateService());
     }
 
     @Override
@@ -57,7 +56,7 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
         // include period in refdata for breadcrumbs
         EditPeriodCommand command = ((EditPeriodCommand) oCommand);
         getControllerTools().addHierarchyToModel(command.getPeriod(), refdata);
-        refdata.put("amendment", templateService.findStudy(command.getPeriod()).getDevelopmentAmendment());
+        refdata.put("amendment", getTemplateService().findStudy(command.getPeriod()).getDevelopmentAmendment());
         refdata.put("verb", "edit");
         return refdata;
     }
@@ -87,8 +86,4 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
         this.deltaService = deltaService;
     }
 
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
 }
