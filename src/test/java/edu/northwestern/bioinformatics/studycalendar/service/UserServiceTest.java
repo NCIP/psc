@@ -36,7 +36,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
     private UserRole userRole0, userRole1, userRole2;
     private List<User> users;
 
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 

@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.exceptions.CSTransactionException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,37 +15,51 @@ import java.io.Serializable;
 
 @Transactional
 public class UserService implements Serializable {
-
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
 
-    public User saveUser(User user, String password) throws Exception {
+    public User saveUser(User user, String password) {
         if(user == null)
             return null;
 
-        if(user.getCsmUserId() == null) {
-            gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user, password);
-            user.setCsmUserId(csmUser.getUserId());
-            if(csmUser.getUserId() == null)
-                throw new StudyCalendarSystemException("Csm User Id is null");
+        if (user.getCsmUserId() == null) {
+            try {
+                gov.nih.nci.security.authorization.domainobjects.User csmUser = createCsmUser(user, password);
+                user.setCsmUserId(csmUser.getUserId());
+                if (csmUser.getUserId() == null) {
+                    throw new StudyCalendarSystemException("CSM user did not get an ID on create");
+                }
+            } catch (CSTransactionException e) {
+                throw new StudyCalendarSystemException("CSM user creation failed", e);
+            }
         } else {
-            gov.nih.nci.security.authorization.domainobjects.User csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
-            csmUser.setPassword(password);
-            userProvisioningManager.modifyUser(csmUser);
+            try {
+                gov.nih.nci.security.authorization.domainobjects.User csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
+                csmUser.setPassword(password);
+                userProvisioningManager.modifyUser(csmUser);
+            } catch (CSObjectNotFoundException e) {
+                throw new StudyCalendarSystemException(
+                    "%s references CSM user with id %d but CSM reports no such user exists",
+                    user.getName(), user.getCsmUserId(), e);
+            } catch (CSTransactionException e) {
+                throw new StudyCalendarSystemException("CSM user update failed", e);
+            }
         }
 
-        return saveUser(user);
+        userDao.save(user);
+        return user;
     }
 
-    public User saveUser(User user) throws Exception {
+    @Deprecated // Use UserDao#save directly
+    public User saveUser(User user) {
         if (user == null) return null;
 
         userDao.save(user);
         return user;
     }
 
-    private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user, String password) throws Exception {
+    private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user, String password) throws CSTransactionException {
         gov.nih.nci.security.authorization.domainobjects.User csmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
         csmUser.setLoginName(user.getName());
@@ -55,16 +71,19 @@ public class UserService implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
+    @Deprecated // Use UserDao#getByName directly
     public User getUserByName(String userName) {
         User usersResults = userDao.getByName(userName);
         return usersResults;
     }
 
-    public List<User> getAllUsers() throws Exception {
+    @Deprecated // Use UserDao#getAllUsers directly
+    public List<User> getAllUsers() {
         return userDao.getAll();
     }
 
-    public User getUserById(int id)  throws Exception {
+    @Deprecated // Use UserDao#getById directly
+    public User getUserById(int id) {
         return userDao.getById(id);
     }
 
