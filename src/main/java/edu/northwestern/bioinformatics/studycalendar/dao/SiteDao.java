@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 /**
  * @author Padmaja Vedula
@@ -14,31 +15,28 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 @Transactional(readOnly = true)
 public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site> implements Serializable {
 
-	@Override
-	public Class<Site> domainClass() {
-		return Site.class;
-	}
+    @Override
+    public Class<Site> domainClass() {
+        return Site.class;
+    }
 
-	public List<Site> getAll() {
-		return getHibernateTemplate().find("from Site");
-	}
+    public List<Site> getAll() {
+        return getHibernateTemplate().find("from Site");
+    }
 
-	// TODO: this method assumes success
-	public Site getByName(final String name) {
-		List<Site> results = getHibernateTemplate().find("from Site where name= ?", name);
-		return results.get(0);
-	}
+    // TODO: this method assumes success
+    public Site getByName(final String name) {
+        List<Site> results = getHibernateTemplate().find("from Site where name= ?", name);
+        return results.get(0);
+    }
 
-	public Site getByAssignedIdentifier(final String assignedIdentifier) {
-		List<Site> results = getHibernateTemplate().find("from Site where assignedIdentifier= ?", assignedIdentifier);
-		if (!results.isEmpty()) {
-			return results.get(0);
-		}
-		return null;
-	}
+    public Site getByAssignedIdentifier(final String assignedIdentifier) {
+        List<Site> results = getHibernateTemplate().find("from Site where assignedIdentifier= ?", assignedIdentifier);
+        return CollectionUtils.firstElement(results);
+    }
 
-	public int getCount() {
-		Long count = (Long) getHibernateTemplate().find("select COUNT(s) from Site s").get(0);
-		return count.intValue();
-	}
+    public int getCount() {
+        Long count = (Long) getHibernateTemplate().find("select COUNT(s) from Site s").get(0);
+        return count.intValue();
+    }
 }
