@@ -1,9 +1,11 @@
 class InsertDefaultSite extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        insert("sites", [ name: 'default' ])
+        // Disabled for new deployments as of release 009
+        // insert("sites", [ name: 'default' ])
     }
 
     void down() {
-        execute("DELETE FROM sites WHERE name='default'");
+        // Disabled for new deployments as of release 009
+        // execute("DELETE FROM sites WHERE name='default'");
     }
 }
