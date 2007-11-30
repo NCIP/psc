@@ -28,7 +28,8 @@
             Study: ${study.name}
         </p>
 
-        <form:form method="post">
+        <c:url value="/pages/cal/assignSubject" var="action"/>
+        <form:form method="post" action="${action}">
             <form:errors path="*"/>
             <input type="hidden" name="study" value="${study.id}"/>
             <div class="row">
