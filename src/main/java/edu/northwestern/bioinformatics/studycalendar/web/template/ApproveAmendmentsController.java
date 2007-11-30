@@ -50,7 +50,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
         ApproveAmendmentsCommand command = (ApproveAmendmentsCommand) oCommand;
         Map<String, Object> refdata = new HashMap<String, Object>();
-        controllerTools.addToModel(command.getStudySite(), refdata);
+        getControllerTools().addToModel(command.getStudySite(), refdata);
         return refdata;
     }
 
@@ -59,7 +59,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
         ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
         command.apply();
         // TODO: this should update all amendments from the studysite, too, if the amendment is mandatory
-        return controllerTools.redirectToCalendarTemplate(command.getStudySite().getStudy().getId());
+        return getControllerTools().redirectToCalendarTemplate(command.getStudySite().getStudy().getId());
     }
 
     ////// CONFIGURATION
