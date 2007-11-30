@@ -38,7 +38,6 @@ public class AuditInfoFilterTest extends WebTestCase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		DataAuditInfo.setLocal(null);
-		ApplicationSecurityManager.removeUserSession();
 	}
 
 	public void testAuditInfoSetForChainHandling() throws Exception {

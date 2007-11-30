@@ -19,12 +19,6 @@ public class ApplicationSecurityManagerTest extends StudyCalendarTestCase {
         request.setSession(session);
     }
 
-
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        ApplicationSecurityManager.removeUserSession();
-    }
-
     public void testSetUser() throws Exception {
         SecurityContextHolderTestHelper.setSecurityContext("jim" , "pass");
         assertNotNull("Session attribute not set", ApplicationSecurityManager.getUser());

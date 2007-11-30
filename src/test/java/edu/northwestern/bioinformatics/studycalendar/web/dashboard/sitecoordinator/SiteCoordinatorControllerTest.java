@@ -69,12 +69,6 @@ public class SiteCoordinatorControllerTest extends WebTestCase {
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        ApplicationSecurityManager.removeUserSession();
-        super.tearDown();
-    }
-
     public void testUserInModel() throws Exception {
         Map<String, Object> actualModel = execAndReturnModel();
         assertTrue("Missing user", actualModel.containsKey("user"));

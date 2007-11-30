@@ -43,9 +43,6 @@ public class ReportBuilderSelectSitesControllerTest extends ControllerTestCase {
 		controller.setSiteDao(siteDao);
 		controller.setTemplateService(templateService);
         controller.setUserDao(userDao);
-
-        ApplicationSecurityManager.removeUserSession();
-
     }
 	
 	public void testHandleRequest() throws Exception {

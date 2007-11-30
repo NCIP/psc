@@ -140,11 +140,6 @@ public class AbstractAssignSubjectCoordinatorControllerTest extends ControllerTe
         expect(command.getAssignableUsers()).andReturn(users);
     }
 
-    protected void tearDown() throws Exception {
-        super.tearDown();
-        ApplicationSecurityManager.removeUserSession();
-    }
-
     private class SimpleAssignSubjectCoordinatorController extends AbstractAssignSubjectCoordinatorController {
         public SimpleAssignSubjectCoordinatorController() {
             setSiteDao(siteDao);

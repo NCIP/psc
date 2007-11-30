@@ -81,7 +81,6 @@ public class StudyListControllerTest extends ControllerTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         DataAuditInfo.setLocal(null);
-        ApplicationSecurityManager.removeUserSession();
     }
 
     public void testModelAndViewForStudyAndSubjectCoordinator() throws Exception {

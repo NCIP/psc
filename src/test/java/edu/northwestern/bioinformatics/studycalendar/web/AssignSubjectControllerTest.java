@@ -85,12 +85,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        ApplicationSecurityManager.removeUserSession();
-        super.tearDown();
-    }
-
     public void testSubjectAssignedOnSubmit() throws Exception {
         AssignSubjectCommand mockCommand = registerMockFor(AssignSubjectCommand.class);
         AssignSubjectController mockableController = new MockableCommandController(mockCommand);
