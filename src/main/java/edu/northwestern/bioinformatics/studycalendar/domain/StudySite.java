@@ -81,6 +81,7 @@ public class StudySite extends AbstractMutableDomainObject {
         return null;
     }
 
+    @Transient
     public List<Amendment> getUnapprovedAmendments() {
         List<Amendment> unapproved = new LinkedList<Amendment>();
         Amendment candidate = getStudy().getAmendment();
