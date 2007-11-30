@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -19,19 +20,21 @@ import java.util.*;
  * @author Rhett Sutphin
  */
 public class AssignSubjectControllerTest extends ControllerTestCase {
+    private AssignSubjectController controller;
+    private AssignSubjectCommand commandForRefdata;
+
     private SubjectDao subjectDao;
     private SiteService siteService;
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudySegmentDao studySegmentDao;
-
     private UserDao userDao;
-    private AssignSubjectController controller;
+
     private Study study;
     private List<Subject> subjects;
     private User user;
-    private StudySite studySite;
-    private Site site;
+    private Site seattle, tacoma;
+    private StudySite seattleSS, tacomaSS;
     private List<Site> sites;
 
     @Override
@@ -53,14 +56,20 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setStudySegmentDao(studySegmentDao);
         controller.setControllerTools(controllerTools);
 
+        commandForRefdata = new AssignSubjectCommand();
 
         study = setId(40, createNamedInstance("Protocol 1138", Study.class));
-        site  = createNamedInstance("Seattle", Site.class);
-        studySite = createStudySite(study, site);
         PlannedCalendar calendar = new PlannedCalendar();
         calendar.addEpoch(Epoch.create("Treatment", "A", "B", "C"));
         study.setPlannedCalendar(calendar);
         request.addParameter("study", study.getId().toString());
+        expect(studyDao.getById(40)).andReturn(study).anyTimes();
+        commandForRefdata.setStudy(study);
+
+        seattle = createNamedInstance("Seattle", Site.class);
+        tacoma = createNamedInstance("Tacoma", Site.class);
+        seattleSS = createStudySite(study, seattle);
+        tacomaSS = createStudySite(study, tacoma);
 
         user = new User();
         user.setName("user");
@@ -70,7 +79,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         userRoles.add(userRole);
         user.setUserRoles(userRoles);
 
-        sites = asList(site);
+        sites = asList(seattle, tacoma);
         subjects = new LinkedList<Subject>();
 
         SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
@@ -86,18 +95,28 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         AssignSubjectCommand mockCommand = registerMockFor(AssignSubjectCommand.class);
         AssignSubjectController mockableController = new MockableCommandController(mockCommand);
         mockableController.setUserDao(userDao);
-        mockCommand.setSubjectCoordinator(user);
+        mockableController.setControllerTools(controllerTools);
+        mockableController.setStudyDao(studyDao);
+        mockableController.setSiteDao(siteDao);
+        mockableController.setSubjectDao(subjectDao);
+        mockableController.setStudySegmentDao(studySegmentDao);
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
-        StudySubjectAssignment assignment = setId(14, new StudySubjectAssignment());
 
+        mockCommand.setSubjectCoordinator(user);
+        mockCommand.setStudy(study);
+        StudySubjectAssignment assignment = setId(14, new StudySubjectAssignment());
         expect(mockCommand.assignSubject()).andReturn(assignment);
         replayMocks();
 
         ModelAndView mv = mockableController.handleRequest(request, response);
-        verifyMocks();
 
+        Errors errors = (Errors) mv.getModel().get("org.springframework.validation.BindingResult.command");
+        if (errors != null) {
+            assertFalse("Should be no errors: " + errors, errors.hasErrors());
+        }
         assertEquals("Wrong view", "redirectToSchedule", mv.getViewName());
         assertEquals("Missing assignment ID", assignment.getId(), mv.getModel().get("assignment"));
+        verifyMocks();
     }
 
     public void testBindStartDate() throws Exception {
@@ -116,10 +135,10 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     public void testBindStudy() throws Exception {
         request.setParameter("study", "15");
-        Study expectedStudy = setId(15, createNamedInstance("Study B", Study.class));
-        expect(studyDao.getById(15)).andReturn(expectedStudy);
+        study = setId(15, createBasicTemplate());
+        expect(studyDao.getById(15)).andReturn(study);
         AssignSubjectCommand command = getAndReturnCommand("study");
-        assertEquals(expectedStudy, command.getStudy());
+        assertEquals(study, command.getStudy());
     }
 
     public void testBindSite() throws Exception {
@@ -134,7 +153,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private AssignSubjectCommand getAndReturnCommand(String expectNoErrorsForField) throws Exception {
         request.setMethod("GET");
         expectRefDataCalls();
-        expectFormBackingDataCalls();
         replayMocks();
         Map<String, Object> model = controller.handleRequest(request, response).getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
@@ -146,12 +164,6 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     private void expectRefDataCalls() {
         expect(subjectDao.getAll()).andReturn(subjects);
-        expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(siteService.getSitesForSubjectCoordinator(user.getName(), study)).andReturn(sites);
-    }
-
-    private void expectFormBackingDataCalls() {
-        expect(studyDao.getById(study.getId())).andReturn(study);
         expect(siteService.getSitesForSubjectCoordinator(user.getName(), study)).andReturn(sites);
     }
 
@@ -178,6 +190,13 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertEquals(study.getPlannedCalendar().getEpochs().get(0).getStudySegments(), getRefdata().get("studySegments"));
     }
 
+    // TODO
+/*
+    public void testSitesMapInRefdata() throws Exception {
+        Map<Site, String> actual = (Map<Site, String>) getRefdata().get("sites");
+    }
+*/
+
     @SuppressWarnings({ "unchecked" })
     public void testRefdataIncludesNoStudySegmentsWhenFirstEpochHasNoStudySegments() throws Exception {
         study.getPlannedCalendar().setEpochs(new LinkedList<Epoch>());
@@ -189,7 +208,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private Map<String, Object> getRefdata() throws Exception {
         expectRefDataCalls();
         replayMocks();
-        Map<String, Object> actualRefdata = controller.referenceData(request);
+        Map<String, Object> actualRefdata = controller.referenceData(request, commandForRefdata, null);
         verifyMocks();
         return actualRefdata;
     }
@@ -202,11 +221,14 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
             setStudySegmentDao(studySegmentDao);
         }
 
+        @Override
         protected Object formBackingObject(HttpServletRequest request) throws Exception {
             return command;
         }
 
-        protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        @Override
+        protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest, Object oCommand, Errors errors) throws Exception {
+            return null;
         }
     }
 }

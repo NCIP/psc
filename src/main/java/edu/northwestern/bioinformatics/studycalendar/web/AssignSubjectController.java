@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCr
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -55,10 +56,13 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     @Override
-    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
+    protected Map<String, Object> referenceData(
+        HttpServletRequest httpServletRequest, Object oCommand, Errors errors
+    ) throws Exception {
+        AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
         Map<String, Object> refdata = new HashMap<String, Object>();
         Collection<Subject> subjects = subjectDao.getAll();
-        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "study"));
+        Study study = command.getStudy();
 
         refdata.put("sites", getAvailableSites(study));
         refdata.put("study", study);
@@ -89,12 +93,14 @@ public class AssignSubjectController extends PscSimpleFormController {
         AssignSubjectCommand command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
 
+/*
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
 
         List<Site> availableSites = getAvailableSites(study);
         Integer siteId = ServletRequestUtils.getIntParameter(request, "site");
         Site defaultSite  = (siteId != null) ? siteDao.getById(siteId) : availableSites.get(0);
         command.setSite(defaultSite);
+*/
 
         return command;
     }
