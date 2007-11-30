@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 public class BatchRescheduleCommand {
     private ScheduledActivityMode<?> newMode;
     private Integer dateOffset;
+    private Integer moveDateOffset;
     private String newReason;
     private Set<ScheduledActivity> events;
     private ScheduledCalendar scheduledCalendar;
@@ -58,10 +59,16 @@ public class BatchRescheduleCommand {
 
     private Date createDate(Date baseDate) {
         Calendar c = Calendar.getInstance();
+        Integer shift = null;
+        if (getNewMode() == null) {
+            shift = getMoveDateOffset();
+        } else {
+            shift = getDateOffset();
+        }
         c.setTime(baseDate);
-        if(getNewMode() == null || ScheduledActivityMode.OCCURRED != getNewMode()) {
-            if (getDateOffset() != null) {
-                c.add(Calendar.DATE, getDateOffset());
+        if(getNewMode() == null || (ScheduledActivityMode.OCCURRED != getNewMode())) {
+            if (shift != null) {
+                c.add(Calendar.DATE, shift);
             } else {
                 c.add(Calendar.DATE, 0);
             }
@@ -118,5 +125,14 @@ public class BatchRescheduleCommand {
 
     public void setEvents(Set<ScheduledActivity> events) {
         this.events = events;
+    }
+
+
+    public Integer getMoveDateOffset() {
+        return moveDateOffset;
+    }
+
+    public void setMoveDateOffset(Integer moveDateOffset) {
+        this.moveDateOffset = moveDateOffset;
     }
 }

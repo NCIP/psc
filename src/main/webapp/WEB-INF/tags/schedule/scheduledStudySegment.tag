@@ -19,7 +19,7 @@
                 <div class="content">
                     <laf:division>
                         <div class="links-row">
-                            Check Activities:
+                            Select Activities:
                             <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
                             <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
                             <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
@@ -35,6 +35,7 @@
                             </select>
                         </label>
                         <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="0" size="4"/> days.</label>
+                        <label id="move_date_by_new-date-input-group"> by <input type="text" name="moveDateOffset" value="0" size="4"/> days.</label>
                         <label id="new-reason-input-group">
                             Why? <input type="text" name="newReason"/>
                         </label>
