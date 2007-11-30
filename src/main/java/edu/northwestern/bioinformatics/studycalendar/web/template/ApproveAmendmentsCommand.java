@@ -21,9 +21,9 @@ public class ApproveAmendmentsCommand {
     private NowFactory nowFactory;
 
     public ApproveAmendmentsCommand(
-        int studySiteId, StudySiteDao studySiteDao, NowFactory nowFactory
+        StudySite studySite, StudySiteDao studySiteDao, NowFactory nowFactory
     ) {
-        this.studySite = studySiteDao.getById(studySiteId);
+        this.studySite = studySite;
         this.studySiteDao = studySiteDao;
         this.nowFactory = nowFactory;
         approvals = new ArrayList<Approval>();

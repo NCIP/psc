@@ -36,7 +36,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int studySiteId = ServletRequestUtils.getRequiredIntParameter(request, "studySite");
-        return new ApproveAmendmentsCommand(studySiteId, studySiteDao, nowFactory);
+        return new ApproveAmendmentsCommand(studySiteDao.getById(studySiteId), studySiteDao, nowFactory);
     }
 
     @Override
