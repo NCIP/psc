@@ -16,7 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Padmaja Vedula
@@ -31,7 +37,6 @@ public class AssignSubjectController extends PscSimpleFormController {
     private UserDao userDao;
     private SiteDao siteDao;
 
-
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
         setFormView("assignSubject");
@@ -39,6 +44,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         setCrumb(new Crumb());
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
         binder.registerCustomEditor(Date.class, getControllerTools().getDateEditor(true));
@@ -48,10 +54,11 @@ public class AssignSubjectController extends PscSimpleFormController {
         getControllerTools().registerDomainObjectEditor(binder, "subject", subjectDao);
     }
 
+    @Override
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         Collection<Subject> subjects = subjectDao.getAll();
-        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "id"));
+        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(httpServletRequest, "study"));
 
         refdata.put("sites", getAvailableSites(study));
         refdata.put("study", study);
@@ -67,23 +74,25 @@ public class AssignSubjectController extends PscSimpleFormController {
         return refdata;
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         AssignSubjectCommand command = (AssignSubjectCommand) oCommand;
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
         command.setSubjectCoordinator(user);
         StudySubjectAssignment assignment = command.assignSubject();
-        return new ModelAndView("redirectToSchedule", "assignment", assignment.getId().intValue());
+        return new ModelAndView("redirectToSchedule", "assignment", assignment.getId());
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         AssignSubjectCommand command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
 
-        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "id"));
-        Integer siteId = ServletRequestUtils.getIntParameter(request, "siteId");
+        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
 
         List<Site> availableSites = getAvailableSites(study);
+        Integer siteId = ServletRequestUtils.getIntParameter(request, "site");
         Site defaultSite  = (siteId != null) ? siteDao.getById(siteId) : availableSites.get(0);
         command.setSite(defaultSite);
 
@@ -139,7 +148,11 @@ public class AssignSubjectController extends PscSimpleFormController {
         }
 
         public Map<String, String> getParameters(BreadcrumbContext context) {
-            return createParameters("id", context.getStudy().getId().toString());
+            Map<String, String> params = createParameters("study", context.getStudy().getId().toString());
+            if (context.getSite() != null) {
+                params.put("site", context.getSite().getId().toString());
+            }
+            return params;
         }
     }
 }

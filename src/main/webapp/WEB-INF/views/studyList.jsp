@@ -72,7 +72,7 @@
                                     Assign sites
                                 </tags:restrictedListItem>
                                 <c:if test="${template.canAssignSubjects}">
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="id=${template.id}">
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${template.id}">
                                         Assign subjects
                                     </tags:restrictedListItem>
                                 </c:if>

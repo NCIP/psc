@@ -34,6 +34,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private Site site;
     private List<Site> sites;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         subjectDao = registerDaoMockFor(SubjectDao.class);
@@ -59,7 +60,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         PlannedCalendar calendar = new PlannedCalendar();
         calendar.addEpoch(Epoch.create("Treatment", "A", "B", "C"));
         study.setPlannedCalendar(calendar);
-        request.addParameter("id", study.getId().toString());
+        request.addParameter("study", study.getId().toString());
 
         user = new User();
         user.setName("user");
@@ -75,10 +76,10 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
     }
 
-
+    @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
         ApplicationSecurityManager.removeUserSession();
+        super.tearDown();
     }
 
     public void testSubjectAssignedOnSubmit() throws Exception {
@@ -129,6 +130,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertEquals(expectedSite, command.getSite());
     }
 
+    @SuppressWarnings({ "unchecked" })
     private AssignSubjectCommand getAndReturnCommand(String expectNoErrorsForField) throws Exception {
         request.setMethod("GET");
         expectRefDataCalls();
@@ -157,8 +159,9 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertSame(study, getRefdata().get("study"));
     }
 
+    @SuppressWarnings({ "unchecked" })
     public void testRefdataIncludesStudySite() throws Exception {
-        List actualSites = ((ArrayList)getRefdata().get("sites"));
+        List<Site> actualSites = (List<Site>) getRefdata().get("sites");
         assertEquals(sites.size(), actualSites.size());
         assertEquals(sites.get(0), actualSites.get(0));
     }
@@ -175,6 +178,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertEquals(study.getPlannedCalendar().getEpochs().get(0).getStudySegments(), getRefdata().get("studySegments"));
     }
 
+    @SuppressWarnings({ "unchecked" })
     public void testRefdataIncludesNoStudySegmentsWhenFirstEpochHasNoStudySegments() throws Exception {
         study.getPlannedCalendar().setEpochs(new LinkedList<Epoch>());
         study.getPlannedCalendar().addEpoch(Epoch.create("Screening"));
