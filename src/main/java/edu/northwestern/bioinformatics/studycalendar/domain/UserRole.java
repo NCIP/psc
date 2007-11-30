@@ -23,6 +23,7 @@ import java.util.ArrayList;
 public class UserRole  extends AbstractMutableDomainObject {
     private User user;
     private Role role;
+    // TODO: why is one of these a set and the other a list?
     private Set<Site> sites = new HashSet<Site>();
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
@@ -111,6 +112,7 @@ public class UserRole  extends AbstractMutableDomainObject {
         studySites.remove(studySite);
     }
 
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -123,6 +125,7 @@ public class UserRole  extends AbstractMutableDomainObject {
         return true;
     }
 
+    @Override
     public int hashCode() {
         int result;
         result = (user != null ? user.hashCode() : 0);
