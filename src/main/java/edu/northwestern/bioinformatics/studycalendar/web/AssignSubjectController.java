@@ -2,12 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -24,6 +26,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.SortedSet;
+import java.util.LinkedList;
+import java.util.TreeMap;
 
 /**
  * @author Padmaja Vedula
@@ -64,7 +70,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         Collection<Subject> subjects = subjectDao.getAll();
         Study study = command.getStudy();
 
-        refdata.put("sites", getAvailableSites(study));
+        addAvailableSitesRefdata(refdata, study);
         refdata.put("study", study);
         refdata.put("subjects", subjects);
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
@@ -92,23 +98,38 @@ public class AssignSubjectController extends PscSimpleFormController {
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         AssignSubjectCommand command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
-
-/*
-        Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
-
-        List<Site> availableSites = getAvailableSites(study);
-        Integer siteId = ServletRequestUtils.getIntParameter(request, "site");
-        Site defaultSite  = (siteId != null) ? siteDao.getById(siteId) : availableSites.get(0);
-        command.setSite(defaultSite);
-*/
-
         return command;
     }
 
-    private List<Site> getAvailableSites(Study study) {
-        String userName = ApplicationSecurityManager.getUser();
-        Collection<Site> availableSites = siteService.getSitesForSubjectCoordinator(userName, study);
-        return new ArrayList<Site>(availableSites);
+    private void addAvailableSitesRefdata(Map<String, Object> refdata, Study study) {
+        UserRole subjCoord = userDao.getByName(ApplicationSecurityManager.getUser()).getUserRole(Role.SUBJECT_COORDINATOR);
+        List<StudySite> applicableStudySites = new LinkedList<StudySite>();
+        for (StudySite studySite : study.getStudySites()) {
+            if (subjCoord.getStudySites().contains(studySite)) applicableStudySites.add(studySite);
+        }
+        Map<Site, String> sites = new TreeMap<Site, String>(NamedComparator.INSTANCE);
+        SortedSet<Site> unapproved = new TreeSet<Site>(NamedComparator.INSTANCE);
+        for (StudySite studySite : applicableStudySites) {
+            Site site = studySite.getSite();
+            Amendment currentApproved = studySite.getCurrentApprovedAmendment();
+            if (currentApproved == null) {
+                log.debug("{} has not approved any amendments for {}", site.getName(), study.getName());
+                unapproved.add(site);
+            } else {
+                log.debug("{} has approved up to {}", site.getName(), currentApproved);
+                StringBuilder title = new StringBuilder(site.getName());
+                if (!currentApproved.isFirst()) {
+                    title.append(" - amendment ").append(currentApproved.getDisplayName());
+                    if (study.getAmendment().equals(currentApproved)) {
+                        title.append(" (current)");
+                    }
+                }
+                sites.put(site, title.toString());
+            }
+        }
+
+        refdata.put("sites", sites);
+        refdata.put("unapprovedSites", unapproved);
     }
 
     ////// CONFIGURATION

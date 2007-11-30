@@ -67,6 +67,11 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         return n.toString();
     }
 
+    @Transient
+    public boolean isFirst() {
+        return getPreviousAmendment() == null;
+    }
+
     /**
      * Returns true IFF the candidate is the previous amendment of this
      * one or the previous of any of its previous amendments.  In other words, is the candidate

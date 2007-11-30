@@ -5,6 +5,7 @@ import static java.util.Arrays.asList;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
@@ -15,6 +16,8 @@ import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 /**
  * @author Rhett Sutphin
@@ -33,8 +36,8 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private Study study;
     private List<Subject> subjects;
     private User user;
-    private Site seattle, tacoma;
-    private StudySite seattleSS, tacomaSS;
+    private Site seattle, tacoma, olympia;
+    private StudySite seattleSS, tacomaSS, olympiaSS;
     private List<Site> sites;
 
     @Override
@@ -68,18 +71,15 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
         seattle = createNamedInstance("Seattle", Site.class);
         tacoma = createNamedInstance("Tacoma", Site.class);
+        olympia = createNamedInstance("Olympia", Site.class);
         seattleSS = createStudySite(study, seattle);
         tacomaSS = createStudySite(study, tacoma);
+        olympiaSS = createStudySite(study, olympia);
 
-        user = new User();
-        user.setName("user");
-        Set<UserRole> userRoles = new HashSet<UserRole>();
-        UserRole userRole = new UserRole();
-        userRole.setRole(Role.SUBJECT_COORDINATOR);
-        userRoles.add(userRole);
-        user.setUserRoles(userRoles);
+        user = Fixtures.createUser("jimbo", Role.SUBJECT_COORDINATOR);
+        user.getUserRole(Role.SUBJECT_COORDINATOR).setSites(new HashSet<Site>(asList(seattle, tacoma, olympia)));
+        user.getUserRole(Role.SUBJECT_COORDINATOR).setStudySites(asList(seattleSS, tacomaSS, olympiaSS));
 
-        sites = asList(seattle, tacoma);
         subjects = new LinkedList<Subject>();
 
         SecurityContextHolderTestHelper.setSecurityContext(user.getName(), "pass");
@@ -164,18 +164,11 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
 
     private void expectRefDataCalls() {
         expect(subjectDao.getAll()).andReturn(subjects);
-        expect(siteService.getSitesForSubjectCoordinator(user.getName(), study)).andReturn(sites);
+        expect(userDao.getByName(user.getName())).andReturn(user).atLeastOnce();
     }
 
     public void testRefdataIncludesStudy() throws Exception {
         assertSame(study, getRefdata().get("study"));
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    public void testRefdataIncludesStudySite() throws Exception {
-        List<Site> actualSites = (List<Site>) getRefdata().get("sites");
-        assertEquals(sites.size(), actualSites.size());
-        assertEquals(sites.get(0), actualSites.get(0));
     }
 
     public void testRefdataIncludesSubjects() throws Exception {
@@ -190,12 +183,36 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         assertEquals(study.getPlannedCalendar().getEpochs().get(0).getStudySegments(), getRefdata().get("studySegments"));
     }
 
-    // TODO
-/*
+    @SuppressWarnings({ "unchecked" })
     public void testSitesMapInRefdata() throws Exception {
-        Map<Site, String> actual = (Map<Site, String>) getRefdata().get("sites");
+        Amendment current = Fixtures.createAmendments(
+            DateTools.createDate(2001, Calendar.JANUARY, 1),
+            DateTools.createDate(2004, Calendar.APRIL, 4),
+            DateTools.createDate(2007, Calendar.JULY, 7)
+        );
+        Amendment prev = current.getPreviousAmendment();
+        study.setAmendment(current);
+        seattleSS.approveAmendment(prev, DateTools.createDate(2004, Calendar.MAY, 5));
+        seattleSS.approveAmendment(current, DateTools.createDate(2007, Calendar.AUGUST, 5));
+        tacomaSS.approveAmendment(prev, DateTools.createDate(2004, Calendar.JUNE, 1));
+        olympiaSS.getAmendmentApprovals().clear();
+
+        Map<String, Object> refdata = getRefdata();
+        Map<Site, String> actualSites = (Map<Site, String>) refdata.get("sites");
+        assertNotNull("Missing sites refdata", actualSites);
+        assertEquals("Wrong number of assignable sites", 2, actualSites.size());
+        assertContainsKey("Seattle not in sites map", actualSites, seattle);
+        assertEquals("Wrong label for seattle", "Seattle - amendment 07/07/2007 (current)",
+            actualSites.get(seattle));
+        assertContainsKey("Tacoma not in sites map", actualSites, tacoma);
+        assertEquals("Wrong label for tacoma", "Tacoma - amendment 04/04/2004",
+            actualSites.get(tacoma));
+
+        assertContainsKey(refdata, "unapprovedSites");
+        Collection<Site> unapproved = (Collection<Site>) refdata.get("unapprovedSites");
+        assertEquals("Wrong number of unapproved sites", 1, unapproved.size());
+        assertSame(olympia, unapproved.iterator().next());
     }
-*/
 
     @SuppressWarnings({ "unchecked" })
     public void testRefdataIncludesNoStudySegmentsWhenFirstEpochHasNoStudySegments() throws Exception {

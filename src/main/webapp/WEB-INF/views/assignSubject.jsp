@@ -17,7 +17,7 @@
             text-align: right;
         }
         form {
-            width: 20em;
+            width: 30em;
         }
     </style>
 </head>
@@ -50,12 +50,14 @@
                     <div class="value">
                         <c:if test="${fn:length(sites) gt 1}">
                             <form:select path="site">
-                                <form:options items="${sites}" itemLabel="name" itemValue="id"/>
+                                <form:options items="${sites}"/>
                             </form:select>
                         </c:if>
                         <c:if test="${fn:length(sites) eq 1}">
-                            ${sites[0].name}
-                            <input type="hidden" name="site" value="${sites[0].id}"/>
+                            <c:forEach items="${sites}" var="pair">
+                                ${pair.value}
+                                <input type="hidden" name="site" value="${pair.key.id}"/>
+                            </c:forEach>
                         </c:if>
                     </div>
                 </div>
@@ -88,6 +90,21 @@
             </div>
         </form:form>
     </laf:division>
+    <c:if test="${not empty unapprovedSites}">
+        <h3>Unapproved sites</h3>
+        <laf:division>
+            <p>
+                Please note:  the following sites are participating in the study, but the template
+                has not yet been approved for them.  No subjects may be assigned until this happens.
+                Please speak to a site coordinator if you have any questions.
+            </p>
+            <ul>
+                <c:forEach items="${unapprovedSites}" var="site">
+                    <li>${site.name}</li>
+                </c:forEach>
+            </ul>
+        </laf:division>
+    </c:if>
 </laf:box>
 </body>
 </html>
