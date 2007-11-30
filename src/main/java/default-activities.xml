@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sources xmlns="http://edu.northwestern.bionformatics.studycalendar/activities"
+<sources xmlns="http://bioinformatics.northwestern.edu/ns/psc"
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-     xsi:schemaLocation="http://edu.northwestern.bionformatics.studycalendar/activities">
+     xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc">
     
 <source name="NU Sample Activities">
     <!-- Type 1 Activities -->

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://edu.northwestern.bionformatics.studycalendar/activities" 
+<xsd:schema targetNamespace="http://bioinformatics.northwestern.edu/ns/psc"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:psc="http://edu.northwestern.bionformatics.studycalendar/activities"
+            xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 

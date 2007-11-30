@@ -19,6 +19,7 @@ import org.springframework.context.ApplicationContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 
 /**
  * @author Rhett Sutphin
@@ -82,6 +83,12 @@ public abstract class StudyCalendarTestCase extends CoreTestCase {
     protected static void assertDayRange(Integer expectedStart, Integer expectedEnd, DayRange actual) {
         assertEquals("Wrong start day", expectedStart, actual.getStartDay());
         assertEquals("Wrong end day", expectedEnd, actual.getEndDay());
+    }
+
+
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        ApplicationSecurityManager.removeUserSession();
     }
 
     /**
