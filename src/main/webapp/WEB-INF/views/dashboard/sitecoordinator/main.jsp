@@ -69,7 +69,7 @@
                         <a class="control" href="<c:url value="/pages/cal/template/approve?studySite=${siteToStudySite.value.id}"/>">Approve amendments</a>
                     </c:if>
                     <c:if test="${empty siteToStudySite.value}">
-                        <em>Not available at this sites</em>
+                        <em>Not available at this site</em>
                     </c:if>
                     </td>
                 </c:forEach>
