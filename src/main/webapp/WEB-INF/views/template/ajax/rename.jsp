@@ -9,6 +9,6 @@
     <jsgen:replaceHtml targetElement="epoch-${command.epoch.id}-name">${command.revisedEpoch.name}</jsgen:replaceHtml>
 </c:if>
 <c:if test="${not empty command.study}">
-    <jsgen:replaceHtml targetElement="study-name">${command.study.name}</jsgen:replaceHtml>
+    <jsgen:replaceHtml targetElement="study-name">${command.study.assignedIdentifier}</jsgen:replaceHtml>
 </c:if>
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />

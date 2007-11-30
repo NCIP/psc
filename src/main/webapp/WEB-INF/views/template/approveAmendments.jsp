@@ -2,7 +2,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<c:set var="title">Approve amendments for ${study.name}</c:set>
+<c:set var="title">Approve amendments for ${study.assignedIdentifier}</c:set>
 <html>
 <head>
     <title>${title}</title>
@@ -17,7 +17,7 @@
     <laf:division>
         <p>
             You are approving the template<c:if test="${study.amended}"> and amendments</c:if>
-            of <strong>${study.name}</strong> for use at <strong>${site.name}</strong>.
+            of <strong>${study.assignedIdentifier}</strong> for use at <strong>${site.name}</strong>.
         </p>
         <p>
             You cannot reverse any changes you make here.  In the case of mandatory amendments,

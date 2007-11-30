@@ -81,7 +81,7 @@
                             <c:if test="${isAssignByStudy}">
                                 <select id="selector">
                                     <c:forEach items="${studies}" var="study">
-                                        <option value="${study.id}" <c:if test="${study.id == selected.id}">selected</c:if>>${study.name}</option>
+                                        <option value="${study.id}" <c:if test="${study.id == selected.id}">selected</c:if>>${study.assignedIdentifier}</option>
                                     </c:forEach>
                                 </select>
                             </c:if>

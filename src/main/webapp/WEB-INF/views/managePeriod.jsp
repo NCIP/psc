@@ -633,7 +633,7 @@ function createMarker(currentDurationIndex, activityName) {
   </c:if>
 
 <div id="period" class="section">
-<laf:box title="Set up ${period.name} (period) of ${studySegment.qualifiedName} in ${study.name}">
+<laf:box title="Set up ${period.name} (period) of ${studySegment.qualifiedName} in ${study.assignedIdentifier}">
     <laf:division>
         <p>
             This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.

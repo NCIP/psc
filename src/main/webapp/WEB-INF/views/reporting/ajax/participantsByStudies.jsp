@@ -22,7 +22,7 @@ SC.slideAndShow('subjectSelectorForm');
 
 var studiesFilterList = ""; 
 <c:forEach items="${studiesSelected}" var="selectedStudy"> 
-	studiesFilterList = "<div> " + studiesFilterList + "${selectedStudy.name} </div>"; 
+	studiesFilterList = "<div> " + studiesFilterList + "${selectedStudy.assignedIdentifier} </div>"; 
 </c:forEach> 
 $('studiesFilterDisplay').innerHTML = studiesFilterList;     
 

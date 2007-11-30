@@ -12,8 +12,7 @@
     <STUDIES
         id="-100"
         version="0"
-        name="First Study"
-        long_title="First Study"    
+        long_title="First Study"
         grid_id="long-GUID-string"
         assigned_identifier="NCI-IS-WATCHING"   
         amendment_id="-45"
@@ -23,7 +22,7 @@
     <STUDIES
         id="-101"
         version="0"
-        name="Study #2"
+        assigned_identifier="Study #2"
         long_title="Study # 2"
         />
 

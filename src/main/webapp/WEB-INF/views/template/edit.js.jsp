@@ -145,7 +145,7 @@ function updateAllEpochsControlVisibility() {
 }
 
 function createRenameControl(objectType, objectId) {
-    return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+    return createControlAnchor("rename", "Set study identifier", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
 }
 
 function createDeleteControl(objectType, objectId) {

@@ -7,7 +7,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
-        <title>Template for ${study.name}</title>
+        <title>Template for ${study.assignedIdentifier}</title>
         <tags:stylesheetLink name="main"/>
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
@@ -137,7 +137,7 @@
             }
         </style>
         <c:if test="${not empty developmentRevision}">
-            <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.name}"/>"></script>
+            <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
         </c:if>
         <script type="text/javascript">
             var lastRequest;

@@ -77,7 +77,7 @@
     <laf:division>
         <%--<h1>${action} Sites</h1>--%>
         <p>
-            Study: ${study.name}
+            Study: ${study.assignedIdentifier}
         </p>
         <c:url value="/pages/cal/assignSite?id=${study.id}" var="formAction"/>
 

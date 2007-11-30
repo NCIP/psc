@@ -41,7 +41,7 @@
 
     <STUDIES
         id="-1000"
-        name="Study A"
+        assigned_identifier="Study A"
         long_title="Study A"    />
 
     <STUDY_SITES

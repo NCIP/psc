@@ -24,12 +24,12 @@
     <AMENDMENTS id="-55" amendment_date="2005-01-08"/>
     <STUDIES
         id="-2001"
-        name="New Study"
+        assigned_identifier="New Study"
         long_title="New Study"    
         />
     <STUDIES
         id="-2000"
-        name="Old Study"
+        assigned_identifier="Old Study"
         amendment_id="-55"
         long_title="Old Study"
         />

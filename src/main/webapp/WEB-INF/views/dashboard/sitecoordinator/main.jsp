@@ -31,7 +31,7 @@
         <ul id="notices">
         <c:forEach items="${notices['approvals']}" var="notice">
             <li>
-                Amendment ${notice.amendment.displayName} of ${notice.studySite.study.name} needs to be
+                Amendment ${notice.amendment.displayName} of ${notice.studySite.study.assignedIdentifier} needs to be
                 <a class="control" href="<c:url value="/pages/cal/template/approve?studySite=${notice.studySite.id}"/>">approved</a>
                 for ${notice.studySite.site.name}.
             </li>

@@ -25,7 +25,7 @@
 <laf:box title="Assign Subject">
     <laf:division>
         <p>
-            Study: ${study.name}
+            Study: ${study.assignedIdentifier}
         </p>
 
         <c:url value="/pages/cal/assignSubject" var="action"/>

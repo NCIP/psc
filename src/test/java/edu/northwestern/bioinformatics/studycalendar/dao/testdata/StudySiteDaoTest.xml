@@ -6,7 +6,7 @@
 
     <STUDIES
         id="-100"
-        name="Study A"
+        assigned_identifier="Study A"
         amendment_id="-110"
         />
 

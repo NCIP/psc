@@ -8,16 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -37,8 +28,6 @@ import org.hibernate.annotations.Where;
 )
 @Where(clause = "load_status > 0")
 public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable {
-    @Deprecated
-    private String name;
     private String assignedIdentifier; // change it to assignedIdentifier...may be null
     private String longTitle;
     private PlannedCalendar plannedCalendar;
@@ -134,12 +123,14 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
      * The name of the study, also known as the protocol short title.
      * @return
      */
+    @Transient
     public String getName() {
-        return name;
+        return getAssignedIdentifier();
     }
 
+
     public void setName(String name) {
-        this.name = name;
+        setAssignedIdentifier(name);
     }
 
     /**
@@ -235,7 +226,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getSimpleName())
             .append("[id=").append(getId())
-            .append("; name=").append(getName());
+            .append("; assignedIdentifier=").append(getName());
         if (isMemoryOnly()) sb.append("; transient copy");
         return sb.append(']').toString();
     }

@@ -13,7 +13,7 @@ function replaceOptions(selectElt, text, value) {
 
 replaceOptions('studies', [
 <c:forEach items="${studies}" var="study">
-	"${study.name}",
+	"${study.assignedIdentifier}",
 </c:forEach>], [
 <c:forEach items="${studies}" var="study">
 	"${study.id}",

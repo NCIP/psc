@@ -14,7 +14,7 @@
                             <tr>
                                 <td>
                                     <a href="<c:url value="/pages/cal/schedule?calendar=${eventsMap.value[0].scheduledStudySegment.scheduledCalendar.id}&studySegment=${eventsMap.value[0].scheduledStudySegment.id}"/>"
-                                       title="View entire schedule on ${eventsMap.value[0].scheduledStudySegment.scheduledCalendar.assignment.studySite.study.name}" >${eventsMap.key} -</a><br>
+                                       title="View entire schedule on ${eventsMap.value[0].scheduledStudySegment.scheduledCalendar.assignment.studySite.study.assignedIdentifier}" >${eventsMap.key} -</a><br>
                                 </td>
                                 <td>
                                     <table cellspacing="0" cellpadding="0">

@@ -91,7 +91,7 @@
 
                 <li class="day autoclear ${commons:parity(status.index)}">
                     <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
-                        ${study.name}
+                        ${study.assignedIdentifier}
                     </a>
 
                     <ul class="noMargin" >
