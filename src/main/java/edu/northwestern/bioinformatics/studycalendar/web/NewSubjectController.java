@@ -22,6 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 /**
  * @author Padmaja Vedula
  */
+// TODO: this class needs to be cleaned up
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class NewSubjectController extends PscSimpleFormController {
     private SubjectDao subjectDao;
@@ -55,9 +56,8 @@ public class NewSubjectController extends PscSimpleFormController {
         Subject subject = subjectCommand.createSubject();
         subjectDao.save(subject);
 
-        Map<String, Object> model = errors.getModel();
-        model.put("subject", subject);
-        return new ModelAndView(new RedirectView(getSuccessView()), "id", ServletRequestUtils.getIntParameter(request, "id"));
+        // TODO: this is bad -- the redirect view should be full-path context-relative
+        return new ModelAndView(new RedirectView(getSuccessView()), "study", ServletRequestUtils.getIntParameter(request, "id"));
         //return new ModelAndView(new RedirectView(getSuccessView()), "newSubject", subject);
     }
 
