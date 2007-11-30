@@ -43,17 +43,6 @@ a:active {
     background-color: #fff;
 }
 
-#psc-module {
-    color: #3D3E6A;
-    font-size: 14pt;
-    font-family: "Arial", sans-serif;
-    font-weight: bold;
-    text-align: center;
-    float: right;
-    padding: 11px 1em;
-    height: 23px;
-}
-
 img#cabig-logo {
     display: block;
     float: left;
@@ -92,6 +81,23 @@ form#login {
     width: 20em;
 }
 
+table.grid {
+    border-collapse: collapse;
+    border: 1px solid #444;
+}
+table.grid td, table.grid th {
+    text-align: center;
+    padding: .5em;
+    border: 1px solid #444;
+}
+
+table.grid td.blocked {
+    background-color:#999;
+}
+
+table.grid th {
+    background-color:#ddf
+}
 
 /* IE only */
 * html div.row, * html div.autoclear { height: 1% }

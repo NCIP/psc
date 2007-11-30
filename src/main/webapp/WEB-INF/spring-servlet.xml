@@ -152,7 +152,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>SC dashboard</value></property>
+                <property name="name"><value>Subject coordinator</value></property>
                 <property name="parent"><ref local="dashboardController"/></property>
             </bean>
         </property>
@@ -160,18 +160,8 @@
 
     <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
-        <!--<property name="crumb">-->
-            <!--<bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">-->
-                <!--<property name="name"><value>Colleague dashboard</value></property>-->
-                <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
-                <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
-            <!--</bean>-->
-        <!--</property>-->
+        <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
     </bean>
-
-
-    <bean name="/redirectToDashboard" id="redirectToDashboardController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController"/>
 
     <bean name="/dashboard/researchAssociate" id="dashboardResearchAssociateController" autowire="byName"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
@@ -199,6 +189,16 @@
        <property name="viewName">
            <value>redirectToAdministration</value>
        </property>
+    </bean>
+
+    <bean name="/dashboard/siteCoordinator" id="dashboardSiteCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.SiteCoordinatorController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Site coordinator"/>
+                <property name="parent" ref="dashboardController"/>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
@@ -458,7 +458,7 @@
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Site Coordinator</value></property>
-                                <property name="linkName"><value>dashboardSiteCoordinatorControllerByStudy</value></property>
+                                <property name="linkName"><value>dashboardSiteCoordinatorController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

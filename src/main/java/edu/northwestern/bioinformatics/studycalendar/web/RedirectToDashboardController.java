@@ -21,27 +21,19 @@ import java.util.ArrayList;
 
 
 public class RedirectToDashboardController extends PscAbstractController {
-
-    private ScheduledActivityDao scheduledActivityDao;
-    private UserDao userDao;
-
-    private static final Logger log = LoggerFactory.getLogger(RedirectToDashboardController.class.getName());
-
-    public RedirectToDashboardController() {
-    }
-
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
        SecurityContext securityContext = SecurityContextHolder.getContext();
         Authentication authentication = securityContext.getAuthentication();
         GrantedAuthority[] authority = authentication.getAuthorities();
         List<String> authorityList = new ArrayList<String>();
-        for (int i = 0; i < authority.length; i++) {
-            authorityList.add(authority[i].getAuthority());
+        for (GrantedAuthority anAuthority : authority) {
+            authorityList.add(anAuthority.getAuthority());
         }
         if (authorityList.contains(Role.SUBJECT_COORDINATOR.toString())){
            return new ModelAndView(new RedirectView("dashboard/subjectCoordinatorSchedule"));
         } else if (authorityList.contains(Role.SITE_COORDINATOR.toString())){
-           return new ModelAndView(new RedirectView("dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"));
+           return new ModelAndView(new RedirectView("dashboard/siteCoordinator"));
         } else if (authorityList.contains(Role.SYSTEM_ADMINISTRATOR.toString())){
            return new ModelAndView(new RedirectView("dashboard/systemAdmin"));
         } else if (authorityList.contains(Role.STUDY_ADMIN.toString())){
@@ -52,21 +44,5 @@ public class RedirectToDashboardController extends PscAbstractController {
            return new ModelAndView(new RedirectView("dashboard/studyCoordinator"));
         }
         return null;
-    }
-
-    ////// CONFIGURATION
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-    public UserDao getUserDao() {
-        return userDao;
-    }
-    @Required
-    public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
-        this.scheduledActivityDao = scheduledActivityDao;
-    }
-    public ScheduledActivityDao getScheduledActivityDao() {
-        return scheduledActivityDao;
     }
 }

@@ -37,19 +37,6 @@
             cursor:pointer;
             white-space:nowrap;
         }
-
-        table.grid td, table.grid th {
-            text-align: center;
-            padding: .5em;
-        }
-
-        table.grid td.blocked {
-            background-color:#999;
-        }
-
-        table.grid th {
-            background-color:#ddf
-        }
     </style>
 </head>
 <body>
@@ -121,7 +108,7 @@
                             </c:if>
                         </div>
                         <div class="value">
-                            <table cellspacing="0" cellpading="0" border="1" class="grid">
+                            <table class="grid">
                                 <tr>
                                     <th></th>
 
