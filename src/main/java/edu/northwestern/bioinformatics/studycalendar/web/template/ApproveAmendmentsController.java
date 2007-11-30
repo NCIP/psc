@@ -10,9 +10,13 @@ import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.validation.Errors;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Rhett Sutphin
@@ -32,7 +36,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int studySiteId = ServletRequestUtils.getRequiredIntParameter(request, "studySite");
-        return new ApproveAmendmentsCommand(studySiteDao.getById(studySiteId), studySiteDao, nowFactory);
+        return new ApproveAmendmentsCommand(studySiteId, studySiteDao, nowFactory);
     }
 
     @Override
@@ -42,9 +46,20 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     }
 
     @Override
-    protected void doSubmitAction(Object command) throws Exception {
-        ((ApproveAmendmentsCommand) command).apply();
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
+        ApproveAmendmentsCommand command = (ApproveAmendmentsCommand) oCommand;
+        Map<String, Object> refdata = new HashMap<String, Object>();
+        controllerTools.addToModel(command.getStudySite(), refdata);
+        return refdata;
+    }
+
+    @Override
+    protected ModelAndView onSubmit(Object oCommand) throws Exception {
+        ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
+        command.apply();
         // TODO: this should update all amendments from the studysite, too, if the amendment is mandatory
+        return controllerTools.redirectToCalendarTemplate(command.getStudySite().getStudy().getId());
     }
 
     ////// CONFIGURATION

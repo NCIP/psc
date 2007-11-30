@@ -25,7 +25,7 @@
             have all necessary regulatory approvals before proceeding.
         </p>
         <form:form method="post">
-            <table id="approvals">
+            <table id="approvals" class="grid">
                 <tr>
                     <th>Approve</th>
                     <th>Amendment</th>
@@ -48,12 +48,14 @@
                             ${approval.amendment.displayName}
                         </td>
                         <td class="date">
-                            <c:when test="${approval.alreadyApproved}">
-                                <tags:formatDate value="${approval.date}"/>
-                            </c:when>
-                            <c:otherwise>
-                                <laf:dateInput path="approvals[${status.index}].date"/>
-                            </c:otherwise>
+                            <c:choose>
+                                <c:when test="${approval.alreadyApproved}">
+                                    <tags:formatDate value="${approval.date}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <laf:dateInput path="approvals[${status.index}].date"/>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>

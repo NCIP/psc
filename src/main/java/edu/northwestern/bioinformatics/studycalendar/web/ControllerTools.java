@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
@@ -97,7 +99,17 @@ public class ControllerTools {
 
     public void addHierarchyToModel(PlannedCalendar plannedCalendar, Map<String, Object> model) {
         model.put("plannedCalendar", plannedCalendar);
-        if (plannedCalendar != null) model.put("study", plannedCalendar.getStudy());
+        if (plannedCalendar != null) addHierarchyToModel(plannedCalendar.getStudy(), model);
+    }
+
+    public void addHierarchyToModel(Study study, Map<String, Object> model) {
+        model.put("study", study);
+    }
+
+    public void addToModel(StudySite studySite, Map<String, Object> model) {
+        model.put("studySite", studySite);
+        model.put("study", studySite.getStudy());
+        model.put("site", studySite.getSite());
     }
 
     public boolean isAjaxRequest(HttpServletRequest request) {

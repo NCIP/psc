@@ -21,9 +21,9 @@ public class ApproveAmendmentsCommand {
     private NowFactory nowFactory;
 
     public ApproveAmendmentsCommand(
-        StudySite studySite, StudySiteDao studySiteDao, NowFactory nowFactory
+        int studySiteId, StudySiteDao studySiteDao, NowFactory nowFactory
     ) {
-        this.studySite = studySite;
+        this.studySite = studySiteDao.getById(studySiteId);
         this.studySiteDao = studySiteDao;
         this.nowFactory = nowFactory;
         approvals = new ArrayList<Approval>();
@@ -56,6 +56,10 @@ public class ApproveAmendmentsCommand {
             }
         }
         studySiteDao.save(studySite);
+    }
+
+    public StudySite getStudySite() {
+        return studySite;
     }
 
     ////// BOUND PROPERTIES

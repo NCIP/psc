@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class PscSimpleFormController extends SimpleFormController implements CrumbSource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
-    private ControllerTools controllerTools;
+    protected ControllerTools controllerTools;
     private Crumb crumb;
 
     protected PscSimpleFormController() {

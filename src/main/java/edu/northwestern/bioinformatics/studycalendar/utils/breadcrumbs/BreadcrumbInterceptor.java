@@ -13,6 +13,8 @@ import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
@@ -48,6 +50,12 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
         for (Object o : model.values()) {
             if (o instanceof Amendment) {
                 context.setAmendment((Amendment) o);
+            }
+            if (o instanceof StudySite) {
+                context.setStudySite((StudySite) o);
+            }
+            if (o instanceof Site) {
+                context.setSite((Site) o);
             }
         }
         return context;
