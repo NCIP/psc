@@ -20,16 +20,17 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationContext;
 
 /**
  * @author Rhett Sutphin
  */
-public class MutatorFactory {
+public class MutatorFactory implements ApplicationContextAware {
     private DaoFinder daoFinder;
-    private SubjectService subjectService;
-    private TemplateService templateService;
-    private ScheduleService scheduleService;
     private ScheduledActivityDao scheduledActivityDao;
+    private ApplicationContext applicationContext;
 
     @SuppressWarnings({ "unchecked" })
     public <T extends PlanTreeNode<?>, D extends Change> Mutator createMutator(T target, D change) {
@@ -48,10 +49,10 @@ public class MutatorFactory {
     private <T extends PlanTreeNode<?>> Mutator createAddMutator(T target, Add add) {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
         if (target instanceof StudySegment) {
-            return new AddPeriodMutator(add, (PeriodDao) dao, subjectService);
+            return new AddPeriodMutator(add, (PeriodDao) dao, getSubjectService());
         } else if (target instanceof Period) {
             return new AddPlannedActivityMutator(add, (PlannedActivityDao) dao,
-                    subjectService, templateService);
+                getSubjectService(), getTemplateService());
         } else if (add.getIndex() == null) {
             return new CollectionAddMutator(add, dao);
         } else {
@@ -62,7 +63,7 @@ public class MutatorFactory {
     private <T extends PlanTreeNode<?>> Mutator createRemoveMutator(T target, Remove remove) {
         DomainObjectDao<? extends PlanTreeNode<?>> dao = findChildDao(target);
         if (target instanceof StudySegment) {
-            return new RemovePeriodMutator(remove, (PeriodDao) dao, templateService);
+            return new RemovePeriodMutator(remove, (PeriodDao) dao, getTemplateService());
         } else if (target instanceof Period) {
             return new RemovePlannedActivityMutator(remove, (PlannedActivityDao) dao);
         } else {
@@ -77,19 +78,19 @@ public class MutatorFactory {
     private <T extends PlanTreeNode<?>> Mutator createPropertyMutator(T target, PropertyChange change) {
         if (target instanceof Period) {
             if ("startDay".equals(change.getPropertyName())) {
-                return new ChangePeriodStartDayMutator(change, templateService, scheduleService);
+                return new ChangePeriodStartDayMutator(change, getTemplateService(), getScheduleService());
             } else if ("repetitions".equals(change.getPropertyName())) {
-                return new ChangePeriodRepetitionsMutator(change, templateService, subjectService);
+                return new ChangePeriodRepetitionsMutator(change, getTemplateService(), getSubjectService());
             } else if ("duration.quantity".equals(change.getPropertyName())) {
-                return new ChangePeriodDurationQuantityMutator(change, templateService, scheduleService);
+                return new ChangePeriodDurationQuantityMutator(change, getTemplateService(), getScheduleService());
             } else if ("duration.unit".equals(change.getPropertyName())) {
-                return new ChangePeriodDurationUnitMutator(change, templateService, scheduleService);
+                return new ChangePeriodDurationUnitMutator(change, getTemplateService(), getScheduleService());
             }
             // fall through
         }
         if (target instanceof PlannedActivity) {
             if ("day".equals(change.getPropertyName())) {
-                return new ChangePlannedActivityDayMutator(change, scheduledActivityDao, scheduleService);
+                return new ChangePlannedActivityDayMutator(change, scheduledActivityDao, getScheduleService());
             } else if ("details".equals(change.getPropertyName())) {
                 return new ChangePlannedActivitySimplePropertyMutator(change, scheduledActivityDao);
             }
@@ -112,24 +113,28 @@ public class MutatorFactory {
 
     ////// CONFIGURATION
 
+    // These services are extracted from the application context instead of being injected
+    // to resolve a circular reference.
+
+    private TemplateService getTemplateService() {
+        return (TemplateService) applicationContext.getBean("templateService");
+    }
+
+    private ScheduleService getScheduleService() {
+        return (ScheduleService) applicationContext.getBean("scheduleService");
+    }
+
+    private SubjectService getSubjectService() {
+        return (SubjectService) applicationContext.getBean("subjectService");
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
-    }
-
-    @Required
-    public void setSubjectService(SubjectService subjectService) {
-        this.subjectService = subjectService;
-    }
-
-    @Required
-    public void setTemplateService(TemplateService templateService) {
-        this.templateService = templateService;
-    }
-
-    @Required
-    public void setScheduleService(ScheduleService scheduleService) {
-        this.scheduleService = scheduleService;
     }
 
     @Required

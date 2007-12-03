@@ -16,6 +16,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import org.springframework.context.ApplicationContext;
+import org.easymock.classextension.EasyMock;
 
 /**
  * @author Rhett Sutphin
@@ -26,6 +28,7 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
     private StudySegmentDao studySegmentDao;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
+    private ApplicationContext mockApplicationContext;
 
     @Override
     protected void setUp() throws Exception {
@@ -39,7 +42,14 @@ public class MutatorFactoryTest extends StudyCalendarTestCase {
             plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class)
         );
 
+        mockApplicationContext = registerMockFor(ApplicationContext.class);
+        EasyMock.expect(mockApplicationContext.getBean("templateService")).andStubReturn(null);
+        EasyMock.expect(mockApplicationContext.getBean("subjectService")).andStubReturn(null);
+        EasyMock.expect(mockApplicationContext.getBean("scheduleService")).andStubReturn(null);
+
         factory.setDaoFinder(finder);
+        factory.setApplicationContext(mockApplicationContext);
+        replayMocks();
     }
 
     public void testCreateAdderWithIndex() throws Exception {

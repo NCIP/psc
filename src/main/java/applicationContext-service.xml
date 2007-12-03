@@ -12,28 +12,28 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
-    <bean id="subjectService" autowire="byName" lazy-init="true"
+    <bean id="subjectService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService"/>
-    <bean id="siteService" autowire="byName" lazy-init="true"
+    <bean id="siteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SiteService"/>
-    <bean id="templateService" autowire="byName" lazy-init="true"
+    <bean id="templateService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.TemplateService"/>
-    <bean id="scheduleService" autowire="byName" lazy-init="true"
+    <bean id="scheduleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ScheduleService"/>
-    <bean id="userService" autowire="byName" lazy-init="true"
+    <bean id="userService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.UserService"/>
-    <bean id="studyService" autowire="byName" lazy-init="true"
+    <bean id="studyService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudyService"/>
-    <bean id="amendmentService" autowire="byName" lazy-init="true"
+    <bean id="amendmentService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.AmendmentService"/>
-    <bean id="deltaService" autowire="byName" lazy-init="true"
+    <bean id="deltaService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.DeltaService"/>
-    <bean id="mutatorFactory" autowire="byName" lazy-init="true"
+    <bean id="mutatorFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory"/>
-    <bean id="subjectCoordinatorDashboardService" autowire="byName" lazy-init="true"
+    <bean id="subjectCoordinatorDashboardService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectCoordinatorDashboardService"/>
-    <bean id="userRoleService" autowire="byName" lazy-init="true"
+    <bean id="userRoleService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
-    <bean id="studySiteService" autowire="byName" lazy-init="true"
+    <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
 </beans>
