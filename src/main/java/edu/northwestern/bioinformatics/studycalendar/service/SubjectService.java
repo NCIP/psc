@@ -50,7 +50,7 @@ public class SubjectService {
         spa.setStartDateEpoch(startDate);
         spa.setGridId(assignmentGridIdentifier);
         spa.setSubjectCoordinator(subjectCoordinator);
-        spa.setCurrentAmendment(studySite.getStudy().getAmendment());
+        spa.setCurrentAmendment(studySite.getCurrentApprovedAmendment());
         subject.addAssignment(spa);
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
