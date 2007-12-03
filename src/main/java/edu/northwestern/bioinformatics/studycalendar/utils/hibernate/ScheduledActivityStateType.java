@@ -132,6 +132,8 @@ public class ScheduledActivityStateType implements CompositeUserType {
             return new Occurred();
         } else if (ScheduledActivityMode.CANCELED == mode) {
             return new Canceled();
+        } else if (ScheduledActivityMode.MISSED == mode) {
+            return new Missed();
         } else if (ScheduledActivityMode.CONDITIONAL == mode) {
             return new Conditional();
         } else if (ScheduledActivityMode.NOT_APPLICABLE == mode) {

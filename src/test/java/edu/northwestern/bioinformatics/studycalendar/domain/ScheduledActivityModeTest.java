@@ -12,13 +12,13 @@ public class ScheduledActivityModeTest extends StudyCalendarTestCase {
     public void testScheduledGetAvailableModesPos() throws Exception {
         Scheduled scheduledState = new Scheduled("Scheduled", DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
         List<ScheduledActivityMode> modes = getAvailableModes(scheduledState, true);
-        assertEquals("Wrong size of available modes", 5, modes.size());
+        assertEquals("Wrong size of available modes", 6, modes.size());
     }
 
     public void testScheduledGetAvailableModesNeg() throws Exception {
         Scheduled scheduledState = new Scheduled("Scheduled", DateUtils.createDate(2007, Calendar.SEPTEMBER, 1));
         List<ScheduledActivityMode> modes = getAvailableModes(scheduledState, false);
-        assertEquals("Wrong size of available modes", 3, modes.size());
+        assertEquals("Wrong size of available modes", 4, modes.size());
     }
 
     public void testGetUnscheduleMode() throws Exception {

@@ -1,11 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Conditional;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.Collection;
@@ -31,6 +26,8 @@ public class ScheduledActivityMode<T extends ScheduledActivityState> extends Abs
         = new ScheduledActivityMode<Conditional>(4, "conditional", Conditional.class);
     public static final ScheduledActivityMode<NotApplicable> NOT_APPLICABLE
         = new ScheduledActivityMode<NotApplicable>(5, "NA", NotApplicable.class);
+    public static final ScheduledActivityMode<Missed> MISSED
+        = new ScheduledActivityMode<Missed>(6, "missed", Missed.class);
 
 
     private Class<T> clazz;

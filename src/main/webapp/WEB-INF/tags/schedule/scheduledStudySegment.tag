@@ -23,6 +23,7 @@
                             <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
                             <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
                             <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
+                            <span id="check-all-missed-events"  class="batch-schedule-link" href="#">Missed</span>
                         </div>
                         <br>
                         <label id="new-mode-selector-group">
@@ -32,6 +33,7 @@
                                 <option value="1">Mark/Keep as scheduled</option>
                                 <option value="2">Mark occurred</option>
                                 <option value="3">Mark canceled</option>
+                                <option value="6">Mark as missed</option>
                             </select>
                         </label>
                         <label id="new-date-input-group">and shift date by <input type="text" name="dateOffset" value="0" size="4"/> days.</label>
@@ -55,6 +57,7 @@
                         <li class="even" ><img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/><a>  Canceled</a></li>
                         <li class="odd"><img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/><a>  Conditional</a></li>
                         <li class="even"><img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/><a>  NA</a></li>
+                        <li class="odd"><img src="<c:url value="/images/error.png"/>" alt="activity indicator"/><a>  Missed</a></li>
                     </ul>
                 </div>
                 <c:forEach items="${studySegment.eventsByDate}" var="entry" varStatus="status">
@@ -77,6 +80,9 @@
                                         </c:when>
                                         <c:when test="${event.currentState.mode.name == 'canceled'}">
                                             <img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/>
+                                        </c:when>
+                                        <c:when test="${event.currentState.mode.name == 'missed'}">
+                                            <img src="<c:url value="/images/error.png"/>" alt="activity indicator"/>
                                         </c:when>
                                         <c:otherwise>
                                             <img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/>

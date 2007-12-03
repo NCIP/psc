@@ -37,6 +37,7 @@ public class Scheduled extends DatedScheduledActivityState {
         availableStates.add(Occurred.class);
         availableStates.add(Scheduled.class);
         availableStates.add(Canceled.class);
+        availableStates.add(Missed.class);
         return availableStates;
     }
 }

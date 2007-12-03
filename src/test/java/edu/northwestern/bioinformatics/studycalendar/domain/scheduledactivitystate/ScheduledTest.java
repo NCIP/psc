@@ -22,11 +22,11 @@ public class ScheduledTest extends StudyCalendarTestCase {
 
     public void testConditionalScheduledAvailableStates() throws Exception {
         Scheduled event = new Scheduled("Reason", DateUtils.createDate(2004, Calendar.SEPTEMBER, 22));
-        assertEquals("Wrong number of available states", 5, event.getAvailableStates(true).size());
+        assertEquals("Wrong number of available states", 6, event.getAvailableStates(true).size());
     }
 
     public void testRegularScheduledAvailableStates() throws Exception {
         Scheduled event = new Scheduled("Reason", DateUtils.createDate(2004, Calendar.SEPTEMBER, 22));
-        assertEquals("Wrong number of available states", 3, event.getAvailableStates(false).size());
+        assertEquals("Wrong number of available states", 4, event.getAvailableStates(false).size());
     }
 }
