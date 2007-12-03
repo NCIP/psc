@@ -59,6 +59,7 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
 
         service = new DeltaService();
         service.setMutatorFactory(mutatorFactory);
+        service.setTemplateService(new TestingTemplateService());
     }
 
     public void testRevise() throws Exception {

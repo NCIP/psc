@@ -330,6 +330,35 @@ public class TemplateService {
         else return findAncestor(node, PlannedCalendar.class).getStudy();
     }
 
+    /**
+     * Finds the node in the given study which matches the type and id of parameter node.
+     */
+    public PlanTreeNode<?> findEquivalentChild(Study study, PlanTreeNode<?> node) {
+        return findEquivalentChild(study.getPlannedCalendar(), node);
+    }
+
+    public PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> tree, PlanTreeNode<?> parameterNode) {
+        if (isEquivalent(tree, parameterNode)) return tree;
+        if (tree instanceof PlanTreeInnerNode) {
+            for (PlanTreeNode<?> child : ((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) tree).getChildren()) {
+                PlanTreeNode<?> match = findEquivalentChild(child, parameterNode);
+                if (match != null) return match;
+            }
+        }
+        return null;
+    }
+
+    public boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
+        return (toMatch == node) ||
+            (sameClassIgnoringProxies(toMatch, node) && toMatch.getId().equals(node.getId()));
+    }
+
+    // This is not a general solution, but it will work for all PlanTreeNode subclasses
+    private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
+        return toMatch.getClass().isAssignableFrom(node.getClass())
+            || node.getClass().isAssignableFrom(toMatch.getClass());
+    }
+
     ////// CONFIGURATION
 
     @Required

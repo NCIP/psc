@@ -17,7 +17,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -78,7 +77,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         service.setStudyCalendarAuthorizationManager(authorizationManager);
         service.setStudySiteDao(studySiteDao);
 
-        user = Fixtures.createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
+        user = createUser("jimbo", Role.SITE_COORDINATOR, Role.SUBJECT_COORDINATOR);
         siteCoordinatorRole = user.getUserRole(Role.SITE_COORDINATOR);
         subjectCoordinatorRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
     }
@@ -585,7 +584,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFindParentWhenImmediatelyAvailable() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         assertSame(study.getPlannedCalendar(),
             service.findParent(study.getPlannedCalendar().getEpochs().get(1)));
         assertSame(study.getPlannedCalendar().getEpochs().get(1),
@@ -593,7 +592,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
     
     public void testFindParentWhenNotImmediatelyAvailable() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
         StudySegment e1a0 = e1.getStudySegments().get(0);
         e1a0.setParent(null);
@@ -611,9 +610,9 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         //   Period P0 with child P0E0 added to E1A1 --> Results in Add(P0) in amendment R0
         //   P0E0 removed in amendment R1 --> Results in  Remove(P0E0) and P0E0.period=>null
 
-        Study study = Fixtures.createBasicTemplate();
-        Period p = Fixtures.createPeriod("P0", 3, 17, 1);
-        PlannedActivity p0e0 = Fixtures.createPlannedActivity("P0E0", 4);
+        Study study = createBasicTemplate();
+        Period p = createPeriod("P0", 3, 17, 1);
+        PlannedActivity p0e0 = createPlannedActivity("P0E0", 4);
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(1).addPeriod(p);
 
         expect(deltaDao.findDeltaWhereAdded(p0e0)).andReturn(null);
@@ -625,7 +624,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFindAncestorWhenPossible() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
         StudySegment e1a0 = e1.getStudySegments().get(0);
 
@@ -635,7 +634,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFindAncestorWhenDynamicSubclass() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         Epoch dynamic = new Epoch() { };
         study.getPlannedCalendar().addEpoch(dynamic);
 
@@ -643,7 +642,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
     
     public void testFindAncestorWhenNotPossible() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         Epoch e1 = study.getPlannedCalendar().getEpochs().get(1);
 
         try {
@@ -655,15 +654,42 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFindStudyForPlannedCalendar() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         assertSame(study, service.findStudy(study.getPlannedCalendar()));
     }
 
     public void testFindStudyForOtherNodes() throws Exception {
-        Study study = Fixtures.createBasicTemplate();
+        Study study = createBasicTemplate();
         Epoch epoch = study.getPlannedCalendar().getEpochs().get(0);
         assertSame(study, service.findStudy(epoch));
         assertSame(study, service.findStudy(epoch.getStudySegments().get(0)));
+    }
+
+    public void testFindEquivalentChildWhenActualChild() throws Exception {
+        Study study = createBasicTemplate();
+        assignIds(study);
+        Epoch e = study.getPlannedCalendar().getEpochs().get(1);
+        assertSame(e, service.findEquivalentChild(study, e));
+    }
+
+    public void testFindEquivalentChildByIdAndType() throws Exception {
+        int sameId = 50;
+        PlannedActivity expectedNode = setId(sameId, createPlannedActivity("PA0", 3));
+
+        Study study = createBasicTemplate();
+        assignIds(study);
+        Period p0 = setId(sameId, createPeriod("P0", 1, 14, 4));
+        p0.addPlannedActivity(setId(49, createPlannedActivity("PA1", 1)));
+        p0.addPlannedActivity(expectedNode);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(p0);
+
+        PlannedActivity parameter = setId(sameId, new PlannedActivity());
+        // set one of each node to the same id to ensure that type checking is happening
+        study.getPlannedCalendar().setId(sameId);
+        study.getPlannedCalendar().getEpochs().get(0).setId(sameId);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setId(sameId);
+
+        assertSame(expectedNode, service.findEquivalentChild(study, parameter));
     }
 
     ////// CUSTOM MATCHERS

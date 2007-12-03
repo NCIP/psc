@@ -80,7 +80,7 @@ public class DeltaService {
         }
 
         Study revised = revise(calendar.getStudy(), revision);
-        return (T) findEquivalentChild(revised.getPlannedCalendar(), source);
+        return (T) templateService.findEquivalentChild(revised.getPlannedCalendar(), source);
     }
 
     /**
@@ -135,7 +135,7 @@ public class DeltaService {
             log.debug("{} is part of the live tree; track {} separately", node, change);
             Delta<?> existing = null;
             for (Delta<?> delta : target.getDeltas()) {
-                if (isEquivalent(delta.getNode(), node)) {
+                if (templateService.isEquivalent(delta.getNode(), node)) {
                     existing = delta;
                     break;
                 }
@@ -156,34 +156,12 @@ public class DeltaService {
     }
 
     private PlanTreeNode<?> findNodeForDelta(Study revised, Delta<?> delta) {
-        PlanTreeNode<?> affected = findEquivalentChild(revised.getPlannedCalendar(), delta.getNode());
+        PlanTreeNode<?> affected = templateService.findEquivalentChild(revised, delta.getNode());
         if (affected == null) {
             throw new StudyCalendarSystemException(
                 "Could not find a node in the target study matching the node in %s", delta);
         }
         return affected;
-    }
-
-    private PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> tree, PlanTreeNode<?> deltaNode) {
-        if (isEquivalent(tree, deltaNode)) return tree;
-        if (tree instanceof PlanTreeInnerNode) {
-            for (PlanTreeNode<?> child : ((PlanTreeInnerNode<?, PlanTreeNode<?>, ?>) tree).getChildren()) {
-                PlanTreeNode<?> match = findEquivalentChild(child, deltaNode);
-                if (match != null) return match;
-            }
-        }
-        return null;
-    }
-
-    private boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
-        return (toMatch == node) ||
-            (sameClassIgnoringProxies(toMatch, node) && toMatch.getId().equals(node.getId()));
-    }
-
-    // This is not a general solution, but it will work for all PlanTreeNode subclasses
-    private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
-        return toMatch.getClass().isAssignableFrom(node.getClass())
-            || node.getClass().isAssignableFrom(toMatch.getClass());
     }
 
     public void saveRevision(Revision revision) {
