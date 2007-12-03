@@ -70,6 +70,13 @@ public class AmendmentService {
         return amended;
     }
 
+    @SuppressWarnings({ "unchecked" })
+    public <T extends PlanTreeNode<?>> T getAmendedNode(T source, Amendment target) {
+        Study base = templateService.findStudy(source);
+        Study amended = getAmendedStudy(base, target);
+        return (T) templateService.findEquivalentChild(amended, source);
+    }
+
     /**
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.

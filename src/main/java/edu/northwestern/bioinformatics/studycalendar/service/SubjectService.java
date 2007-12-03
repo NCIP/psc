@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,6 +37,7 @@ public class SubjectService {
 
     private SubjectDao subjectDao;
     private SiteService siteService;
+    private AmendmentService amendmentService;
 
     public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, User subjectCoordinator) {
         return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, subjectCoordinator);
@@ -55,6 +57,7 @@ public class SubjectService {
         return spa;
     }
 
+    // TODO: is this used?
     public List<StudySubjectAssignment> getAssignedStudySubject(String userName, List<StudySubjectAssignment> assignments) {
         List<StudySubjectAssignment> actualAssignments = new ArrayList<StudySubjectAssignment>();
         List<Site> sites =  new ArrayList<Site>(siteService.getSitesForSubjectCoordinator(userName));
@@ -67,8 +70,6 @@ public class SubjectService {
         return actualAssignments;
     }
 
-    // TODO: should take SPA#currentAmendment into account when scheduling.
-    // That's out of scope for construction 2, though.  RMS20071023.
     public ScheduledStudySegment scheduleStudySegment(
         StudySubjectAssignment assignment, StudySegment studySegment, Date startDate, NextStudySegmentMode mode
     ) {
@@ -87,6 +88,7 @@ public class SubjectService {
         }
 
         Amendment sourceAmendment = assignment.getCurrentAmendment();
+        StudySegment amendedSegment = amendmentService.getAmendedNode(studySegment, sourceAmendment);
         Integer studySegmentStartDay = studySegment.getDayRange().getStartDay();
 
         ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
@@ -95,7 +97,7 @@ public class SubjectService {
         scheduledStudySegment.setStartDay(studySegmentStartDay);
         calendar.addStudySegment(scheduledStudySegment);
 
-        for (Period period : studySegment.getPeriods()) {
+        for (Period period : amendedSegment.getPeriods()) {
             schedulePeriod(period, sourceAmendment, scheduledStudySegment);
         }
 
@@ -111,6 +113,8 @@ public class SubjectService {
 
     /**
      * Derives scheduled events from the given period and applies them to the given scheduled studySegment.
+     * <p>
+     * The input period should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment) {
@@ -123,6 +127,8 @@ public class SubjectService {
     /**
      * Derives one repetition's worth of scheduled events from the given period and applies them to
      * the given scheduled studySegment.
+     * <p>
+     * The input period should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(
@@ -136,6 +142,8 @@ public class SubjectService {
 
     /**
      * Derives scheduled events from the given planned event and applies them to the given scheduled studySegment.
+     * <p>
+     * The input plannedActivity should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedActivity(
@@ -148,6 +156,8 @@ public class SubjectService {
 
     /**
      * Derives a single scheduled event from the given planned event and applies it to the given scheduled studySegment.
+     * <p>
+     * The input plannedActivity should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedActivity(
@@ -345,12 +355,19 @@ public class SubjectService {
 
     ////// CONFIGURATION
 
+    @Required
     public void setSubjectDao(SubjectDao subjectDao) {
         this.subjectDao = subjectDao;
     }
 
+    @Required
     public void setSiteService(SiteService siteService) {
         this.siteService = siteService;
+    }
+
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
     }
 
     private static class DatabaseEventOrderComparator implements Comparator<ScheduledActivity> {

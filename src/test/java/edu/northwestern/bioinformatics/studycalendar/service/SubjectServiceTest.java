@@ -22,8 +22,10 @@ import static org.easymock.classextension.EasyMock.*;
  * @author Rhett Sutphin
  */
 public class SubjectServiceTest extends StudyCalendarTestCase {
-    private SubjectDao subjectDao;
     private SubjectService service;
+
+    private SubjectDao subjectDao;
+    private AmendmentService amendmentService;
 
     private User user;
 
@@ -32,10 +34,12 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        subjectDao = registerMockFor(SubjectDao.class);
+        subjectDao = registerDaoMockFor(SubjectDao.class);
+        amendmentService = registerMockFor(AmendmentService.class);
 
         service = new SubjectService();
         service.setSubjectDao(subjectDao);
+        service.setAmendmentService(amendmentService);
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
         studySegment = epoch.getStudySegments().get(0);
@@ -49,7 +53,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         Activity a1 = new Activity();
         a1.setId(1);
         a1.setName("CBC");
-                                                                                                        // days
+                                                                                                              // days
         p1.addPlannedActivity(setId(1, createPlannedActivity("CBC", 1, "CBC Details")));                      // 1, 8, 15
         p1.addPlannedActivity(setId(2, createPlannedActivity("Vitals", 3, "Vitals Details")));                // 3, 10, 17
         p2.addPlannedActivity(setId(3, createPlannedActivity("Questionnaire", 1, "Questionnaire Details")));  // 3
@@ -75,6 +79,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         StudySegment expectedStudySegment = Epoch.create("Treatment", "A", "B", "C").getStudySegments().get(1);
         expectedStudySegment.addPeriod(createPeriod("DC", 1, 7, 1));
         expectedStudySegment.getPeriods().iterator().next().addPlannedActivity(createPlannedActivity("Any", 4));
+        expect(amendmentService.getAmendedNode(expectedStudySegment, expectedAmendment)).andReturn(expectedStudySegment);
 
         Subject subjectExpectedSave = createSubject("Alice", "Childress");
 
@@ -115,6 +120,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         Amendment expectedAmendment = new Amendment();
         assignment.setCurrentAmendment(expectedAmendment);
+        expect(amendmentService.getAmendedNode(studySegment, expectedAmendment)).andReturn(studySegment);
 
         replayMocks();
 
@@ -167,6 +173,10 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         studySite.setSite(new Site());
         assignment.setStudySite(studySite);        
 
+        Amendment expectedAmendment = new Amendment();
+        assignment.setCurrentAmendment(expectedAmendment);
+        expect(amendmentService.getAmendedNode(studySegment, expectedAmendment)).andReturn(studySegment);
+
         replayMocks();
 
 
@@ -202,6 +212,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         ScheduledCalendar calendar = new ScheduledCalendar();
         assignment.setScheduledCalendar(calendar);
         assignment.setSubject(createSubject("Alice", "Childress"));
+        Amendment expectedAmendment = new Amendment();
+        assignment.setCurrentAmendment(expectedAmendment);
+        expect(amendmentService.getAmendedNode(studySegment, expectedAmendment)).andReturn(studySegment);
 
         ScheduledStudySegment existingStudySegment = new ScheduledStudySegment();
         existingStudySegment.addEvent(createScheduledActivity("CBC", 2005, Calendar.AUGUST, 1));
@@ -348,7 +361,12 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         Period p1 = createPeriod("P1", 1, 7, 3);
         scheduledStudySegment.addPeriod(p1);
         p1.addPlannedActivity(setId(1, createPlannedActivity("CBC", 1)));
-        
+
+        Amendment expectedAmendment = new Amendment();
+        assignment.setCurrentAmendment(expectedAmendment);
+        expect(amendmentService.getAmendedNode(scheduledStudySegment, expectedAmendment))
+            .andReturn(scheduledStudySegment);
+
         StudySite studySite = new StudySite();
         Site site = new Site();
 
