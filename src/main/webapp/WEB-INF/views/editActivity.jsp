@@ -16,7 +16,7 @@
             text-align: right;
         }
         form {
-            width: 20em;
+            width: 25em;
         }
     </style>
 </head>
@@ -38,6 +38,14 @@
             </div>
             <div class="row">
                 <div class="label">
+                    <form:label path="activityCode">Activity code</form:label>
+                </div>
+                <div class="value">
+                    <form:input path="activityCode"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
                     <form:label path="activityDescription">Activity description</form:label>
                 </div>
                 <div class="value">
@@ -52,6 +60,14 @@
                     <form:select path="activityType">
                         <form:options items="${activityTypes}" itemLabel="name" itemValue="id"/>
                     </form:select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="label">
+                    Activity source
+                </div>
+                <div class="value">
+                    ${sourceName}
                 </div>
             </div>
             <div class="row">

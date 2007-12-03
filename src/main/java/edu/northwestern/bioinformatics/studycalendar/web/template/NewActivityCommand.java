@@ -2,14 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.springframework.validation.Errors;
-import org.springframework.beans.factory.annotation.Required;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gov.nih.nci.security.util.StringEncrypter;
 
 /**
  * @author Jaron Sampson
@@ -22,8 +21,10 @@ public class NewActivityCommand implements Validatable {
     private String activityName;
     private String activityDescription;
     private ActivityType activityType;
+    private Source activitySource;
+    private String activityCode;
 
-    private ActivityDao activityDao;    
+    private ActivityDao activityDao;
 
     ////// LOGIC
 
@@ -36,6 +37,8 @@ public class NewActivityCommand implements Validatable {
         activity.setName(getActivityName());
         activity.setDescription(getActivityDescription());
         activity.setType(getActivityType());
+        activity.setSource(getActivitySource());
+        activity.setCode(getActivityCode());
         return activity;
     }
 
@@ -71,6 +74,22 @@ public class NewActivityCommand implements Validatable {
 
     public void setReturnToPeriodId(Integer returnToPeriodId) {
         this.returnToPeriodId = returnToPeriodId;
+    }
+
+    public Source getActivitySource() {
+        return activitySource;
+    }
+
+    public void setActivitySource(Source activitySource) {
+        this.activitySource = activitySource;
+    }
+
+    public String getActivityCode() {
+        return activityCode;
+    }
+
+    public void setActivityCode(String activityCode) {
+        this.activityCode = activityCode;
     }
 
     public ActivityDao getActivityDao() {

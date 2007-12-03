@@ -1,8 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,19 +17,31 @@ import org.springframework.web.servlet.ModelAndView;
 public class NewActivityControllerTest extends ControllerTestCase {
     private NewActivityController controller;
     private ActivityDao activityDao;
+    private SourceDao sourceDao;
+    private Source source;
 
     protected void setUp() throws Exception {
         super.setUp();
         activityDao = registerMockFor(ActivityDao.class);
+        sourceDao   = registerDaoMockFor(SourceDao.class);
 
         controller = new NewActivityController();
         controller.setActivityDao(activityDao);
-        controller.setValidateOnBinding(false);        
+        controller.setSourceDao(sourceDao);
+        controller.setValidateOnBinding(false);
+
+        source = createNamedInstance(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME, Source.class);
     }
 
     public void testFormView() throws Exception {
         request.setMethod("GET");
-        assertEquals("editActivity", controller.handleRequest(request, response).getViewName());
+        replayMocks();
+
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+                
+        assertEquals("editActivity", mv.getViewName());
+        assertEquals(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME, ((String)mv.getModel().get("sourceName")));
     }
 
     public void testSuccessResponseBare() throws Exception {
@@ -40,6 +56,7 @@ public class NewActivityControllerTest extends ControllerTestCase {
     private void expectSuccessfulSubmit() {
         request.setMethod("POST");
         request.addParameter("activityType", "4");
+        expect(sourceDao.getByName(NewActivityController.PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME)).andReturn(source);
         activityDao.save((Activity) notNull());
     }
 

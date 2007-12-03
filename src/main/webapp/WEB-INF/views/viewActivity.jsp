@@ -10,10 +10,16 @@
     Activity: ${activity.name}
 </p>
 <p>
+    Activity Code: ${activity.code}
+</p>
+<p>
     Activity Description: ${activity.description}
 </p>
 <p>
     Activity Type: ${activity.type.name}
+</p>
+<p>
+    Activity Source: ${activity.source.name}
 </p>
 </body>
 </html>

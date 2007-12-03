@@ -12,4 +12,12 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
     public List<Source> getAll() throws Exception {
         return getHibernateTemplate().find("from Source order by name");
     }
+
+    public Source getByName(String name) {
+        List<Source> sources = getHibernateTemplate().find("from Source where name = ?", name);
+        if (sources != null) {
+            return sources.get(0);
+        }
+        return null; 
+    }
 }

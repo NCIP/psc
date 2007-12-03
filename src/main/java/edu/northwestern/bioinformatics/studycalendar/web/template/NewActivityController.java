@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.validation.BindException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.ui.ModelMap;
@@ -13,26 +12,26 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.HashMap;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.web.CreateUserCommand;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 /**
  * @author Jaron Sampson
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class NewActivityController extends PscSimpleFormController {
+    public static final String PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME = "PSC - Manual Activity Creation";
+
     private ActivityDao activityDao;
 
-    private static final Logger log = LoggerFactory.getLogger(NewActivityController.class.getName());    
+    private static final Logger log = LoggerFactory.getLogger(NewActivityController.class.getName());
+    private SourceDao sourceDao;
 
     public NewActivityController() {
         setCommandClass(NewActivityCommand.class);
@@ -46,6 +45,7 @@ public class NewActivityController extends PscSimpleFormController {
         Map<String, Object> refdata = new HashMap<String, Object>();
         refdata.put("activityTypes", ActivityType.values());
         refdata.put("action", "New");
+        refdata.put("sourceName", PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME);
         return refdata;
     }
 
@@ -57,6 +57,7 @@ public class NewActivityController extends PscSimpleFormController {
 
     protected ModelAndView onSubmit(Object oCommand, BindException errors) throws Exception {
         NewActivityCommand command = (NewActivityCommand) oCommand;
+        command.setActivitySource(sourceDao.getByName(PSC_CREATE_NEW_ACTIVITY_SOURCE_NAME));
         Activity activity = command.createActivity();
         // TODO: transaction
         activityDao.save(activity);
@@ -82,5 +83,9 @@ public class NewActivityController extends PscSimpleFormController {
     @Required
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
     }
 }
