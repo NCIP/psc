@@ -30,7 +30,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
         @Parameter(name="sequence", value="seq_study_sites_id")
     }
 )
-public class StudySite extends AbstractMutableDomainObject {
+public class StudySite extends AbstractMutableDomainObject implements Named {
     private Site site;
     private Study study;
     private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
@@ -38,6 +38,19 @@ public class StudySite extends AbstractMutableDomainObject {
     private List<AmendmentApproval> amendmentApprovals = new ArrayList<AmendmentApproval>();
 
     ////// LOGIC
+
+    @Transient
+    public String getName() {
+        return new StringBuilder()
+            .append(getStudy() == null ? "<none>" : getStudy().getName())
+            .append(": ")
+            .append(getSite() == null ? "<none>" : getSite().getName())
+            .toString();
+    }
+
+    public void setName(String name) {
+        throw new UnsupportedOperationException("Name is computed");
+    }
 
     /** Are there any assignments using this relationship? */
     @Transient

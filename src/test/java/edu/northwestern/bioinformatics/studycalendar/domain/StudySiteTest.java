@@ -32,6 +32,7 @@ public class StudySiteTest extends StudyCalendarTestCase {
         a2003 = a2004.getPreviousAmendment();
 
         study = Fixtures.createBasicTemplate();
+        study.setName("Picnic");
         aOrig = study.getAmendment();
         a2003.setPreviousAmendment(study.getAmendment());
         study.setAmendment(a2005);
@@ -116,5 +117,19 @@ public class StudySiteTest extends StudyCalendarTestCase {
         assertEquals("Wrong Study Site", studySite1, findStudySite(study0, site1));
         assertEquals("Wrong Study Site", studySite2, findStudySite(study1, site0));
         assertEquals("Wrong Study Site", studySite3, findStudySite(study1, site1));
+    }
+
+    public void testGetName() throws Exception {
+        assertEquals("Picnic: Galesburg", studySite.getName());
+    }
+
+    public void testGetNameWithNullSite() throws Exception {
+        studySite.setSite(null);
+        assertEquals("Picnic: <none>", studySite.getName());
+    }
+
+    public void testGetNameWithNullStudy() throws Exception {
+        studySite.setStudy(null);
+        assertEquals("<none>: Galesburg", studySite.getName());
     }
 }
