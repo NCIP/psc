@@ -326,7 +326,7 @@
 
 
     <bean name="/cal/amendment" id="amendmentLoginController" autowire="byName" lazy-init="true"
-           class="edu.northwestern.bioinformatics.studycalendar.web.delta.AmendmentController">
+           class="edu.northwestern.bioinformatics.studycalendar.web.delta.CreateAmendmentController">
            <property name="crumb">
              <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
                  <property name="name"><value>Amendment</value></property>

@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 
 import java.util.Date;
 
-public class AmendmentCommand {
+public class CreateAmendmentCommand {
     private Study study;
     private Date date;
     private String name;
@@ -18,7 +18,7 @@ public class AmendmentCommand {
     private String action;
 
 
-    public AmendmentCommand(StudyService studyService, AmendmentDao amendmentDao) {
+    public CreateAmendmentCommand(StudyService studyService, AmendmentDao amendmentDao) {
         this.studyService = studyService;
         this.amendmentDao = amendmentDao;
     }

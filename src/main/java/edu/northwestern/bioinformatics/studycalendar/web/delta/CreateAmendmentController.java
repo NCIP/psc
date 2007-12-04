@@ -17,13 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 @AccessControl(roles = {Role.STUDY_ADMIN, Role.SITE_COORDINATOR})
-public class AmendmentController extends PscCancellableFormController {
+public class CreateAmendmentController extends PscCancellableFormController {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private StudyService studyService;
 
-    public AmendmentController() {
-        setCommandClass(AmendmentCommand.class);
+    public CreateAmendmentController() {
+        setCommandClass(CreateAmendmentCommand.class);
         setFormView("template/createAmendment");
         setBindOnNewForm(true);
 
@@ -33,7 +33,7 @@ public class AmendmentController extends PscCancellableFormController {
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new AmendmentCommand(studyService, amendmentDao);
+        return new CreateAmendmentCommand(studyService, amendmentDao);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class AmendmentController extends PscCancellableFormController {
 
     @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
-        AmendmentCommand command = (AmendmentCommand) oCommand;
+        CreateAmendmentCommand command = (CreateAmendmentCommand) oCommand;
         command.apply();
         return new ModelAndView( new RedirectView(getSuccessView()));
     }
