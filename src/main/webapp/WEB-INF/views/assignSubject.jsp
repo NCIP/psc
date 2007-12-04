@@ -23,6 +23,7 @@
 </head>
 <body>
 <laf:box title="Assign Subject">
+    <c:if test="${not empty sites}">
         <laf:division>
             <p>
                 Study: ${study.assignedIdentifier}
@@ -90,6 +91,7 @@
                 </div>
             </form:form>
         </laf:division>
+    </c:if>
     <c:if test="${not empty unapprovedSites}">
         <h3>Unapproved sites</h3>
         <laf:division>
