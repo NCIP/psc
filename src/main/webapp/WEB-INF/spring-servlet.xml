@@ -258,6 +258,11 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
+    <bean name="/cal/template/amendments" id="viewAmendmentsController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.delta.ViewAmendmentsController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
     <bean name="/cal/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
