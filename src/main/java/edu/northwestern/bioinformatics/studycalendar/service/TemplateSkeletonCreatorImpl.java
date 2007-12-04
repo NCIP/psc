@@ -15,7 +15,7 @@ public class TemplateSkeletonCreatorImpl {
        Study study = new Study();
        study.setName(name);
        study.setPlannedCalendar(new PlannedCalendar());
-       Amendment start = new Amendment("[Original]");
+       Amendment start = new Amendment(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
        start.setDate(new Date()); // TODO: might want to use NowFactory
        start.addDelta(new PlannedCalendarDelta(study.getPlannedCalendar()));
        study.setDevelopmentAmendment(start);

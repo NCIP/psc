@@ -43,6 +43,8 @@ import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
     }
 )
 public class Amendment extends AbstractMutableDomainObject implements Revision {
+    public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
+
     private Amendment previousAmendment;
     private Date date;
     private String name;
@@ -61,11 +63,15 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
 
     @Transient
     public String getDisplayName() {
-        StringBuilder n = new StringBuilder(formatDate(getDate()));
-        if (!StringUtils.isBlank(getName())) {
-            n.append(" (").append(getName()).append(')');
+        if (INITIAL_TEMPLATE_AMENDMENT_NAME.equals(getName())) {
+            return "Initial template";
+        } else {
+            StringBuilder n = new StringBuilder(formatDate(getDate()));
+            if (!StringUtils.isBlank(getName())) {
+                n.append(" (").append(getName()).append(')');
+            }
+            return n.toString();
         }
-        return n.toString();
     }
 
     @Transient

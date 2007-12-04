@@ -67,4 +67,9 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a3.setDate(DateTools.createDate(2005, Calendar.MARCH, 6));
         assertEquals("03/06/2005 (A3)", a3.getDisplayName());
     }
+    
+    public void testDisplayNameForOriginalAmendment() throws Exception {
+        a0.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
+        assertEquals("Initial template", a0.getDisplayName());
+    }
 }
