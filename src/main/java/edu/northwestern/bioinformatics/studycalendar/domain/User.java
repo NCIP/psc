@@ -44,6 +44,10 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         return name;
     }
 
+    public boolean hasRole(Role role) {
+        return getUserRole(role) != null;
+    }
+
     public UserRole getUserRole(Role role) {
         for (UserRole userRole : getUserRoles()) {
             if (role.equals(userRole.getRole())) return userRole;
