@@ -188,7 +188,7 @@
 
         .topBordered {
             border-top:1px solid #000000;
-            padding-top:40px;
+            padding-top:30px;
         }
 
         #external-apps {
@@ -450,9 +450,9 @@
                 </form>
                 <tags:epochsAndStudySegments plannedCalendar="${plannedCalendar}"/>
         </div>
-        <br>
-        <br>
-        <br>
+        <%--<br style="clear:both">--%>
+        <br style="clear:both">
+        <br style="clear:both">
             <div class="section autoclear collapsible">
                 <h2 class="topBordered">Delay or advance</h2>
                 <div class="content" style="display: none">
