@@ -43,6 +43,20 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     ////// LOGIC
 
+    /**
+     * Adapter for backwards compatibility.  Passes through to assignedIdentifier.
+     */
+    public String getName() {
+        return getAssignedIdentifier();
+    }
+
+    /**
+     * Adapter for backwards compatibility.  Passes through to assignedIdentifier.
+     */
+    public void setName(String name) {
+        setAssignedIdentifier(name);
+    }
+
     @Transient
     public boolean isInDevelopment() {
         return getDevelopmentAmendment() != null;
@@ -118,21 +132,18 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         setAmendment(newAmendment);
     }
 
-    ////// BEAN PROPERTIES
-
-    /**
-     * The name of the study, also known as the protocol short title.
-     * @return
-     */
     @Transient
-    public String getName() {
-        return getAssignedIdentifier();
+    public List<Amendment> getAmendmentsList() {
+        List<Amendment> amendments = new LinkedList<Amendment>();
+        Amendment current = getAmendment();
+        while (current != null) {
+            amendments.add(current);
+            current = current.getPreviousAmendment();
+        }
+        return Collections.unmodifiableList(amendments);
     }
 
-
-    public void setName(String name) {
-        setAssignedIdentifier(name);
-    }
+    ////// BEAN PROPERTIES
 
     /**
      * The identifier given to the study by the organization in charge of it
@@ -230,16 +241,5 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             .append("; assignedIdentifier=").append(getName());
         if (isMemoryOnly()) sb.append("; transient copy");
         return sb.append(']').toString();
-    }
-
-    @Transient
-    public List<Amendment> getAmendmentsList() {
-        List<Amendment> amendments = new LinkedList<Amendment>();
-        Amendment current = getAmendment();
-        while (current != null) {
-            amendments.add(current);
-            current = current.getPreviousAmendment();
-        }
-        return Collections.unmodifiableList(amendments);
     }
 }
