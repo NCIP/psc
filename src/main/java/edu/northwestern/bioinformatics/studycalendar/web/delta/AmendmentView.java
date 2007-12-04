@@ -37,7 +37,6 @@ public class AmendmentView {
         if (amendment.equals(study.getDevelopmentAmendment())) return;
         Set<StudySite> readableStudySites = findUnapprovableStudySites(user);
         Set<StudySite> approvableStudySites = new HashSet<StudySite>();
-        findUnapprovableStudySites(user);
 
         if (user.hasRole(SITE_COORDINATOR)) {
             UserRole siteCoord = user.getUserRole(SITE_COORDINATOR);
