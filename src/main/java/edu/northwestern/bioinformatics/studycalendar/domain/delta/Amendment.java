@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,7 +62,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     @Transient
     public String getDisplayName() {
         StringBuilder n = new StringBuilder(formatDate(getDate()));
-        if (getName() != null) {
+        if (!StringUtils.isBlank(getName())) {
             n.append(" (").append(getName()).append(')');
         }
         return n.toString();
