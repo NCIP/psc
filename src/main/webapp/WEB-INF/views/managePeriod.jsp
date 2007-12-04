@@ -655,7 +655,7 @@ function createMarker(currentDurationIndex, activityName) {
                     </c:choose>
 
 
-                    <th colspan="${tableWidth - 2}">Days of studySegment (${commons:pluralize(period.repetitions, "repetition")})</th>
+                    <th colspan="${tableWidth - 2}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
                     <td></td>
                     <td class="emptyCellNoWidth"> </td>
                 </tr>
