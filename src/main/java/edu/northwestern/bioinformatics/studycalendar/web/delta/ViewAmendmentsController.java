@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.io.IOException;
 
 /**
+ * Note that this class also contains tests for AmendmentView, since it was once a inner class
+ * of the target controller.
+ *
  * @author Rhett Sutphin
  */
 public class ViewAmendmentsController extends PscAbstractController {
