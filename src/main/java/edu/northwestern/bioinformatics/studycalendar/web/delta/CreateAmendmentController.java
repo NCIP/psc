@@ -24,7 +24,7 @@ public class CreateAmendmentController extends PscCancellableFormController {
 
     public CreateAmendmentController() {
         setCommandClass(CreateAmendmentCommand.class);
-        setFormView("template/createAmendment");
+        setFormView("delta/createAmendment");
         setBindOnNewForm(true);
 
         setSuccessView("studyList");

@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
@@ -29,7 +29,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     public ApproveAmendmentsController() {
         super();
         setCommandClass(ApproveAmendmentsCommand.class);
-        setFormView("template/approveAmendments");
+        setFormView("delta/approveAmendments");
         setCrumb(new Crumb());
     }
 
