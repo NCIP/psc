@@ -15,7 +15,7 @@ function createStudySegmentControls(studySegmentItem) {
     var controlBox = Builder.node("div", {className: 'studySegment-controls controls'});
     studySegmentItem.appendChild(controlBox)
 
-    var renameControl = createRenameControl('studySegment', studySegmentId)
+    var renameControl = createRenameControl('study segment', studySegmentId, null)
     SC.inPlaceEdit(studySegmentA, renameControl.href, {
         externalControl: renameControl,
         externalControlOnly: true,
@@ -78,7 +78,7 @@ function createStudyControls() {
 
     h1.appendChild(controlBox)
 
-    var renameControl = createRenameControl('study', studyId)
+    var renameControl = createRenameControl('study', studyId, "Set study identifier")
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename"
@@ -104,7 +104,7 @@ function createEpochControls(epochH4) {
     var addStudySegmentControl = createAddControl("Add study segment", 'epoch', epochId)
     SC.asyncLink(addStudySegmentControl, {}, "epochs-indicator")
 
-    var renameControl = createRenameControl('epoch', epochId)
+    var renameControl = createRenameControl('epoch', epochId, null)
     SC.inPlaceEdit(epochName, renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename"
@@ -144,8 +144,13 @@ function updateAllEpochsControlVisibility() {
     $$('div.epoch').each(updateEpochControlVisibility)
 }
 
-function createRenameControl(objectType, objectId) {
-    return createControlAnchor("rename", "Set study identifier", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+
+function createRenameControl(objectType, objectId, name) {
+    if(name == null) {
+        return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+    } else {
+        return createControlAnchor("rename", name, "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+    }
 }
 
 function createDeleteControl(objectType, objectId) {
