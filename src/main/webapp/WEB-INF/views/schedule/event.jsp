@@ -74,7 +74,7 @@
 </head>
 <body>
 <%--<h1>Edit event for ${subject.fullName}</h1>--%>
-<laf:box title="Edit event for ${subject.fullName}">
+<laf:box title="Edit activity for ${subject.fullName}">
     <laf:division>
         <form:form>
             <div class="row even">
@@ -91,7 +91,14 @@
                     <div class="value">${scheduledActivity.plannedActivity.condition}</div>
                 </div>
             </c:if>
-            <div class="row even">
+            <c:choose>
+                <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
+                    <div class="row odd">
+                </c:when>
+                <c:otherwise>
+                    <div class="row even">
+                </c:otherwise>
+            </c:choose>
                 <div class="label">
                     Status
                     <a href="#" class="control" id="show-history-control">Show history</a>
@@ -115,7 +122,14 @@
                 </div>
             </div>
 
-            <div class="row odd">
+            <c:choose>
+                <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
+                    <div class="row even">
+                </c:when>
+                <c:otherwise>
+                    <div class="row odd">
+                </c:otherwise>
+            </c:choose>
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
                 <div class="value">
                     <form:textarea path="newNotes" rows="6" cols="30"/>
