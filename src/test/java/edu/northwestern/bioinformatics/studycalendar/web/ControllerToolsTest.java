@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -30,5 +32,12 @@ public class ControllerToolsTest extends StudyCalendarTestCase {
     public void testAjaxRequestWithOtherValue() throws Exception {
         request.addHeader("X-Requested-With", "Firefox");
         assertFalse(tools.isAjaxRequest(request));
+    }
+
+    public void testGetCurrentUser() throws Exception {
+        assertNull(tools.getCurrentUser(request));
+        User user = Fixtures.createUser("jimbo");
+        request.setAttribute("currentUser", user);
+        assertSame(user, tools.getCurrentUser(request));
     }
 }
