@@ -8,7 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -36,18 +36,19 @@ public class ViewAmendmentsController extends PscAbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
+        User user = getControllerTools().getCurrentUser(request);
 
         Study study = studyDao.getById(ServletRequestUtils.getRequiredIntParameter(request, "study"));
         model.put("study", study);
 
         if (exposeDevelopmentAmendment(request, study)) {
-            model.put("dev", new AmendmentView(study, study.getDevelopmentAmendment(), daoFinder));
+            model.put("dev", new AmendmentView(user, study, study.getDevelopmentAmendment(), daoFinder));
         }
 
         List<Amendment> amendments = study.getAmendmentsList();
         List<AmendmentView> views = new ArrayList<AmendmentView>(amendments.size());
         for (Amendment amendment : amendments) {
-            views.add(new AmendmentView(study, amendment, daoFinder));
+            views.add(new AmendmentView(user, study, amendment, daoFinder));
         }
         model.put("amendments", views);
 
