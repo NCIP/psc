@@ -1,25 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.FilterAdapter;
+import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
 
-import javax.servlet.FilterConfig;
+import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.FilterChain;
 import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  */
-public class UserInRequestFilter extends FilterAdapter {
-    public void init(FilterConfig filterConfig) throws ServletException { }
-    public void destroy() { }
-
+public class UserInRequestFilter extends ContextRetainingFilterAdapter {
+    @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         String username = ApplicationSecurityManager.getUser();
-        if (username != null) servletRequest.setAttribute("user", username);
+        if (username != null) {
+            servletRequest.setAttribute("currentUser", getUserDao().getByName(username));
+            // old behavior preserved for backwards compatibility
+            servletRequest.setAttribute("user", username);
+        }
         filterChain.doFilter(servletRequest, servletResponse);
+    }
+
+    private UserDao getUserDao() {
+        return (UserDao) getApplicationContext().getBean("userDao");
     }
 }
