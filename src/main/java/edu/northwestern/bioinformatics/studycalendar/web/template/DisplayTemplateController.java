@@ -3,15 +3,16 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -19,10 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -32,6 +30,8 @@ public class DisplayTemplateController extends PscAbstractController {
     private DeltaService deltaService;
     private AmendmentService amendmentService;
     private DaoFinder daoFinder;
+    private UserDao userDao;
+    private TemplateService templateService;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -54,6 +54,11 @@ public class DisplayTemplateController extends PscAbstractController {
         model.put("studySegment", new StudySegmentTemplate(studySegment));
 
         if (study.isReleased()) {
+            String userName = ApplicationSecurityManager.getUser();
+            User user = userDao.getByName(userName);
+            List<Study> subjectAssignableStudies = templateService.filterForVisibility(Collections.singletonList(study), user.getUserRole(SUBJECT_COORDINATOR));
+            Boolean canAssignSubjects = !subjectAssignableStudies.isEmpty();
+
             List<StudySubjectAssignment> offStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> onStudyAssignments = new ArrayList<StudySubjectAssignment>();
             List<StudySubjectAssignment> assignments = studyDao.getAssignmentsForStudy(studyId);
@@ -65,6 +70,7 @@ public class DisplayTemplateController extends PscAbstractController {
                     offStudyAssignments.add(currentAssignment);
             }
             model.put("assignments", assignments);
+            model.put("canAssignSubjects", canAssignSubjects);
             model.put("offStudyAssignments", offStudyAssignments);
             model.put("onStudyAssignments", onStudyAssignments);
         }
@@ -137,6 +143,14 @@ public class DisplayTemplateController extends PscAbstractController {
 
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 
     private static class Crumb extends DefaultCrumb {

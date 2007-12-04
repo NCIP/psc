@@ -1,18 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import static java.util.Collections.singletonList;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import static org.easymock.classextension.EasyMock.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,17 +33,22 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     private StudyDao studyDao;
     private DeltaService deltaService;
+    private TemplateService templateService;
     private AmendmentService amendmentService;
 
     private Study study;
     private StudySegment e1, e2a, e2b;
     private Amendment a0, a1, a2;
+    private UserDao userDao;
+    private User subjectCoord;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        userDao = registerDaoMockFor(UserDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         deltaService = registerMockFor(DeltaService.class);
+        templateService = registerMockFor(TemplateService.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
         study = setId(100, Fixtures.createBasicTemplate());
@@ -61,8 +68,10 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setAmendment(a2);
 
         controller = new DisplayTemplateController();
+        controller.setUserDao(userDao);
         controller.setStudyDao(studyDao);
         controller.setDeltaService(deltaService);
+        controller.setTemplateService(templateService);
         controller.setAmendmentService(amendmentService);
         controller.setControllerTools(controllerTools);
 
@@ -71,6 +80,14 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
         expect(studyDao.getById(study.getId())).andReturn(study);
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Collections.<StudySubjectAssignment>emptyList()).anyTimes();
+
+        subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
+        SecurityContextHolderTestHelper.setSecurityContext(subjectCoord.getName(), "asdf");
+
+         expect(userDao.getByName(subjectCoord.getName())).andReturn(subjectCoord).anyTimes();
+         expect(templateService.filterForVisibility(singletonList(study), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+                 .andReturn(singletonList(study)).anyTimes();
+
     }
 
     public void testView() throws Exception {
@@ -141,6 +158,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setDevelopmentAmendment(new Amendment("dev"));
         request.setParameter("amendment", "1");
         Study amended = study.transientClone();
+        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+                 .andReturn(singletonList(study)).anyTimes();
         expect(amendmentService.getAmendedStudy(study, a1)).andReturn(amended);
 
         Map<String, Object> actualModel = getAndReturnModel();
@@ -156,6 +175,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setParameter("amendment", "4");
         Study amended = study.transientClone();
 
+        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+                .andReturn(singletonList(study)).anyTimes();
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
@@ -186,10 +207,19 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setDevelopmentAmendment(dev);
         Study amended = study.transientClone();
 
+        expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
+                .andReturn(singletonList(study)).anyTimes();
         expect(deltaService.revise(study, dev)).andReturn(amended);
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("developmentRevision"));
+    }
+
+    public void testStudyAssignableIfSubjectCoordAssigned() throws Exception {
+
+        Map<String, Object> actualModel = getAndReturnModel();
+
+        assertSame("Study should be assignable", Boolean.TRUE, actualModel.get("canAssignSubjects"));
     }
 
     @SuppressWarnings({ "unchecked" })
