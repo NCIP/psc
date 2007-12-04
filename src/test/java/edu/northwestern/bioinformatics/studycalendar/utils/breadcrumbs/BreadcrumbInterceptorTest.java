@@ -50,7 +50,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
 
     public void testIntercept() throws Exception {
         ModelAndView mv = new ModelAndView("test", "modelObject", 17);
-        CrumbSource handler = new TestCrumbSource(new TestCrumb("crumb", null, null));
+        CrumbSource handler = testHandler();
         List<Anchor> expectedBreadcrumbs = new ArrayList<Anchor>();
         expect(creator.createAnchors(same(handler), (BreadcrumbContext) notNull())).andReturn(expectedBreadcrumbs);
 
@@ -74,7 +74,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
     public void testInterceptRedirectByName() throws Exception {
         ModelAndView mv = new ModelAndView("redirectToCalendarTemplate");
         replayMocks();
-        interceptor.postHandle(request, response, new TestCrumbSource(new TestCrumb("crumb", null, null)), mv);
+        interceptor.postHandle(request, response, testHandler(), mv);
         verifyMocks();
         assertEquals(0, mv.getModel().size());
     }
@@ -82,8 +82,19 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
     public void testInterceptRedirectView() throws Exception {
         ModelAndView mv = new ModelAndView(new RedirectView("target"));
         replayMocks();
-        interceptor.postHandle(request, response, new TestCrumbSource(new TestCrumb("crumb", null, null)), mv);
+        interceptor.postHandle(request, response, testHandler(), mv);
         verifyMocks();
         assertEquals(0, mv.getModel().size());
+    }
+
+    public void testInterceptWithNoModelAndView() throws Exception {
+        replayMocks();
+        interceptor.postHandle(request, response, testHandler(), null);
+        verifyMocks();
+        // no exceptions
+    }
+
+    private TestCrumbSource testHandler() {
+        return new TestCrumbSource(new TestCrumb("crumb", null, null));
     }
 }

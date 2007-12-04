@@ -24,8 +24,11 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
     private TemplateService templateService;
     private BreadcrumbCreator breadcrumbCreator;
 
+    @Override
+    @SuppressWarnings({ "unchecked" })
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView mv) throws Exception {
         if (!(handler instanceof CrumbSource)) return;
+        if (mv == null) return;
         if (isRedirect(mv)) return;
         CrumbSource src = (CrumbSource) handler;
         mv.getModel().put(
