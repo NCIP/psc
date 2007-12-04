@@ -82,21 +82,25 @@
                 <div class="value">${scheduledActivity.activity.name}</div>
             </div>
             <div class="row odd">
+                <div class="label">Code</div>
+                <div class="value">${scheduledActivity.activity.code}</div>
+            </div>
+            <div class="row even">
                 <div class="label">Details</div>
                 <div class="value">${scheduledActivity.details}</div>
             </div>
             <c:if test="${not empty scheduledActivity.plannedActivity.condition}">
-                <div class="row even">
+                <div class="row odd">
                     <div class="label">Condition</div>
                     <div class="value">${scheduledActivity.plannedActivity.condition}</div>
                 </div>
             </c:if>
             <c:choose>
                 <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
-                    <div class="row odd">
+                    <div class="row even">
                 </c:when>
                 <c:otherwise>
-                    <div class="row even">
+                    <div class="row odd">
                 </c:otherwise>
             </c:choose>
                 <div class="label">
@@ -124,10 +128,10 @@
 
             <c:choose>
                 <c:when test="${not empty scheduledActivity.plannedActivity.condition}">
-                    <div class="row even">
+                    <div class="row odd">
                 </c:when>
                 <c:otherwise>
-                    <div class="row odd">
+                    <div class="row even">
                 </c:otherwise>
             </c:choose>
                 <div class="label"><form:label path="newNotes">Notes</form:label></div>
