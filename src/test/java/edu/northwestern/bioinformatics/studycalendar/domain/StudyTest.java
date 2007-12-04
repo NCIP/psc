@@ -39,6 +39,32 @@ public class StudyTest extends StudyCalendarTestCase {
         assertSame(b, study.getAmendment());
         assertSame(a, b.getPreviousAmendment());
     }
+
+    public void testGetAmendmentsList() throws Exception {
+        study.pushAmendment(new Amendment("A"));
+        study.pushAmendment(new Amendment("B"));
+        study.pushAmendment(new Amendment("C"));
+
+        List<Amendment> actual = study.getAmendmentsList();
+        assertEquals("Wrong number of amendments", 3, actual.size());
+        assertEquals("Most recent not first", "C", actual.get(0).getName());
+        assertEquals("Amendments not in order", "B", actual.get(1).getName());
+        assertEquals("Amendments not in order", "A", actual.get(2).getName());
+    }
+    
+    public void testAmendmentsListIsImmutableView() throws Exception {
+        study.pushAmendment(new Amendment("A"));
+        study.pushAmendment(new Amendment("B"));
+        study.pushAmendment(new Amendment("C"));
+
+        List<Amendment> actual = study.getAmendmentsList();
+        try {
+            actual.remove(1);
+            fail("Exception not thrown");
+        } catch (UnsupportedOperationException uoe) {
+            // good
+        }
+    }
     
     public void testGetSitesWithNone() throws Exception {
         assertNotNull(study.getSites());

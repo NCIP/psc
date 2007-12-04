@@ -7,6 +7,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.LinkedList;
 
 import javax.persistence.*;
 
@@ -229,5 +230,16 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
             .append("; assignedIdentifier=").append(getName());
         if (isMemoryOnly()) sb.append("; transient copy");
         return sb.append(']').toString();
+    }
+
+    @Transient
+    public List<Amendment> getAmendmentsList() {
+        List<Amendment> amendments = new LinkedList<Amendment>();
+        Amendment current = getAmendment();
+        while (current != null) {
+            amendments.add(current);
+            current = current.getPreviousAmendment();
+        }
+        return Collections.unmodifiableList(amendments);
     }
 }
