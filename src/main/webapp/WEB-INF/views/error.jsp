@@ -5,6 +5,7 @@
     <head>
         <title>Error - ${statusName}</title>
         <laf:stylesheetLink name="debug"/>
+        <laf:stylesheetLink name="common"/>
         <tags:stylesheetLink name="common"/>
         <style type="text/css">
             body {
@@ -32,10 +33,6 @@
             .stacktrace .causedby {
                 border-top: 1px dotted gray ;
                 margin-top: 0.5em ;
-            }
-
-            p {
-                font-size: 10pt;
             }
         </style>
     </head>
