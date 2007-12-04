@@ -46,6 +46,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     /**
      * Adapter for backwards compatibility.  Passes through to assignedIdentifier.
      */
+    @Transient
     public String getName() {
         return getAssignedIdentifier();
     }
