@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 import java.util.*;
 import static java.util.Calendar.*;
@@ -136,6 +137,32 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertSame("Wrong amendment for new assignment", currentApproved, actual.getCurrentAmendment());
+    }
+
+    public void testExceptionWhenAssigningASubjectToASiteWithNoApprovedAmendments() throws Exception {
+        Subject subject = new Subject();
+        Study study = createBasicTemplate();
+        study.setName("ECOG 2502");
+        study.setAmendment(createAmendments(
+            DateTools.createDate(2005, MAY, 12),
+            DateTools.createDate(2005, JUNE, 13)
+        ));
+        Site mayo = createNamedInstance("Mayo", Site.class);
+        StudySite ss = createStudySite(study, mayo);
+
+        StudySegment seg = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        seg.addPeriod(createPeriod("P0", 4, 55, 1));
+
+        subjectDao.save(subject);
+        expectLastCall().times(2);
+
+        replayMocks();
+        try {
+            service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null);
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("The template for ECOG 2502 has not been approved by Mayo", scse.getMessage());
+        }
     }
 
     public void testScheduleFirstStudySegment() throws Exception {

@@ -44,13 +44,19 @@ public class SubjectService {
     }
 
     public StudySubjectAssignment assignSubject(Subject subject, StudySite studySite, StudySegment studySegmentOfFirstEpoch, Date startDate, String assignmentGridIdentifier, User subjectCoordinator) {
+        Amendment currentAmendment = studySite.getCurrentApprovedAmendment();
+        if (currentAmendment == null) {
+            throw new StudyCalendarSystemException("The template for %s has not been approved by %s",
+                studySite.getStudy().getName(), studySite.getSite().getName());
+        }
+
         StudySubjectAssignment spa = new StudySubjectAssignment();
         spa.setSubject(subject);
         spa.setStudySite(studySite);
         spa.setStartDateEpoch(startDate);
         spa.setGridId(assignmentGridIdentifier);
         spa.setSubjectCoordinator(subjectCoordinator);
-        spa.setCurrentAmendment(studySite.getCurrentApprovedAmendment());
+        spa.setCurrentAmendment(currentAmendment);
         subject.addAssignment(spa);
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
