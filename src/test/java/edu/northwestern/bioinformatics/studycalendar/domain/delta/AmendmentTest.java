@@ -72,4 +72,13 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a0.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
         assertEquals("Initial template", a0.getDisplayName());
     }
+
+    public void testIsInitialTemplate() throws Exception {
+        a0.setName(null);
+        assertFalse(a0.isInitialTemplate());
+        a0.setName("3");
+        assertFalse(a0.isInitialTemplate());
+        a0.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
+        assertTrue(a0.isInitialTemplate());
+    }
 }

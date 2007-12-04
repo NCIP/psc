@@ -80,6 +80,21 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     }
 
     /**
+     * Is this the internal representation of the unamended original protocol?
+     * Note that this is not the same as {@link #isFirst} -- in theory the first version
+     * of a protocol that PSC knows about could already be amended.  In that case,
+     * {@link #isFirst} would be true but this method would return false.  (Note that
+     * there's not currently any way to make this situation happen through the UI,
+     * but it may be added later.)
+     *
+     * @see #isFirst
+     */
+    @Transient
+    public boolean isInitialTemplate() {
+        return INITIAL_TEMPLATE_AMENDMENT_NAME.equals(getName());
+    }
+
+    /**
      * Returns true IFF the candidate is the previous amendment of this
      * one or the previous of any of its previous amendments.  In other words, is the candidate
      * part of the history that terminates in this amendment?
