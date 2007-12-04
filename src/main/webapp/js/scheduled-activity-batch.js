@@ -52,8 +52,16 @@ function registerCheckAllConditionalEvents() {
     })
 }
 
+function registerCheckAllPastDueEvents() {
+    Event.observe('check-all-past-due-events', "click", function(event){
+        $('batch-form').uncheckCheckboxes('event');Event.stop(event);
+        $('batch-form').checkCheckboxes('past-due-event');Event.stop(event);
+    })
+}
+
 Event.observe(window, "load", registerBatchRescheduleHandlers)
 Event.observe(window, "load", registerSubheaderCollapse)
 Event.observe(window, "load", registerCheckAllEvents)
 Event.observe(window, "load", registerUncheckAllEvents)
 Event.observe(window, "load", registerCheckAllConditionalEvents)
+Event.observe(window, "load", registerCheckAllPastDueEvents)

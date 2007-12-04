@@ -6,6 +6,8 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -32,6 +34,8 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     private Date startDate;
 
     private StudySegment studySegment;
+
+    private static final Logger log = LoggerFactory.getLogger(ScheduledStudySegment.class.getName());
 
     ////// LOGIC
 
@@ -75,6 +79,14 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
             byDate.get(key).add(event);
         }
         return byDate;
+    }
+
+    @Transient
+    public Date getTodayDate() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -1);
+        Date dayBeforeToday = c.getTime();
+        return dayBeforeToday;
     }
 
     @Transient

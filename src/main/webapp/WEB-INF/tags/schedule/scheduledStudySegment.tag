@@ -22,8 +22,8 @@
                             Select Activities:
                             <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
                             <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
-                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>
-                            <span id="check-all-missed-events"  class="batch-schedule-link" href="#">Missed</span>
+                            <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>,
+                            <span id="check-all-past-due-events"  class="batch-schedule-link" href="#">Past-Due</span>
                         </div>
                         <br>
                         <label id="new-mode-selector-group">
@@ -67,7 +67,10 @@
                         <ul>
                             <c:forEach items="${entry.value}" var="event">
                                 <li>
-                                    <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if>"/>
+                                    <input type="checkbox" value="${event.id}" name="events" class="event
+                                        <c:if test="${event.conditionalState}">conditional-event</c:if>
+                                        <c:if test="${entry.key < studySegment.todayDate}">past-due-event</c:if>"
+                                    />
                                     <c:choose>
                                         <c:when test="${event.currentState.mode.name == 'scheduled'}">
                                             <img src="<c:url value="/images/scheduled.png"/>" alt="activity indicator"/>
