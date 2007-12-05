@@ -26,6 +26,10 @@ public class AmendmentDaoTest extends DaoTestCase {
         assertSame("Reverse relationship not loaded", actual, delta.getRevision());
     }
 
+    public void testLoadMandatoryFlag() throws Exception {
+        assertFalse(amendmentDao.getById(-200).isMandatory());
+    }
+
     public void testSave() throws Exception {
         int initialCount;
         {

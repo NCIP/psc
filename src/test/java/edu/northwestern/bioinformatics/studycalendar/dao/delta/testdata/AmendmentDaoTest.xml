@@ -9,6 +9,7 @@
         name="def"
         amendment_date="2008-05-17"
         previous_amendment='-100'
+        mandatory="0"
         />
 
     <DELTAS

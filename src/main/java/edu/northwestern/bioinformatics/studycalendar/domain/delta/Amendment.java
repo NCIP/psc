@@ -49,6 +49,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     private Date date;
     private String name;
     private List<Delta<?>> deltas;
+    private boolean mandatory;
 
     public Amendment() {
         this(null);
@@ -57,6 +58,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
     public Amendment(String name) {
         this.name = name;
         deltas = new ArrayList<Delta<?>>();
+        mandatory = true;
     }
 
     ////// LOGIC
@@ -161,6 +163,16 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         this.date = date;
     }
 
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    ////// OBJECT METHODS
+
     @Override
     public String toString(){
         return new StringBuffer(getClass().getSimpleName())
@@ -169,5 +181,4 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
             .append("; prev=").append(getPreviousAmendment())
             .append(']').toString();
     }
-
 }

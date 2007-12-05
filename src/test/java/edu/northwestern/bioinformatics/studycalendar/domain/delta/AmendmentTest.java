@@ -81,4 +81,8 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a0.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
         assertTrue(a0.isInitialTemplate());
     }
+
+    public void testDefaultsToMandatory() throws Exception {
+        assertTrue(new Amendment().isMandatory());
+    }
 }
