@@ -14,8 +14,6 @@
     <tags:javascriptLink name="scheduled-activity"/>
     <tags:javascriptLink name="scheduled-activity-batch"/>
     <style type="text/css">
-        h1 { float: left };
-        
         .epochs-and-studySegments, #next-studySegment-form {
             margin: 1em;
         }
@@ -107,10 +105,6 @@
             height: 0;
         }
 
-        /*#selected-studySegment h3 {*/
-            /*margin: 0 1em;*/
-        /*}*/
-
         #selected-studySegment .legend {
             position: absolute;
             right: 1em;
@@ -197,15 +191,17 @@
         }
 
         #schedule-switch {
-            float: right;
             margin: 1em;
-            clear: right;
+            text-align: right
         }
 
         #schedule-controls {
             margin-right: 1em;
-            float: right;
-            clear: right;
+            text-align: right;
+        }
+
+        #schedule-controls li {
+            display: inline
         }
 
         .batch-schedule-link {
@@ -349,33 +345,60 @@
     </script>
 </head>
 <body>
-<h1>Subject Schedule for ${subject.fullName} on ${plannedCalendar.name}</h1>
-
-<div id="schedule-controls">
-    <c:if test="${assignment.endDateEpoch == null}">
-        <a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take subject off study</a>
-    </c:if>
-    <a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a>
+<div class="card title-card">
+    <div class="header">Schedule</div>
+    <h1>${subject.fullName}</h1>
+    <div class="row odd">
+        <div class="label">Study</div>
+        <div class="value">${plannedCalendar.name}</div>
+    </div>
+    <div class="row even">
+        <div class="label">Site</div>
+        <div class="value">${assignment.studySite.site.name}</div>
+    </div>
+    <div class="row odd">
+        <div class="label">Current amendment</div>
+        <div class="value">
+            ${assignment.currentAmendment.displayName}
+            <c:if test="${not onLatestAmendment}">
+                <a class="control" href="javascript:alert('not done')">Change</a>
+            </c:if>
+        </div>
+    </div>
 </div>
-<div id="schedule-switch">
-    <c:if test="${not empty onStudyAssignments}">
-        View schedule for current subject
-        <select id="assigned-subject-selector">
-            <c:forEach items="${onStudyAssignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
-            </c:forEach>
-        </select>
-        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
-    </c:if>
-    <c:if test="${not empty offStudyAssignments}">
-        View schedule for historical subject
-        <select id="offstudy-assigned-subject-selector">
-            <c:forEach items="${offStudyAssignments}" var="a">
-                <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
-            </c:forEach>
-        </select>
-        <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
-    </c:if>
+
+<div class="controls-card card">
+    <div class="header">Manipulate and view schedule</div>
+    <ul id="schedule-controls">
+        <c:if test="${assignment.endDateEpoch == null}">
+            <li><a class="control" href="<c:url value="/pages/cal/takeSubjectOffStudy?assignment=${assignment.id}"/>">Take subject off study</a></li>
+        </c:if>
+        <li><a class="control" href="<c:url value="/pages/cal/schedule/display/${assignment.gridId}.ics"/>" id="export-ics-calendar" title="Export as ICS for iCal, Outlook and other calendar applications">Export ICS</a></li>
+    </ul>
+    <div id="schedule-switch">
+        <span class="schedule-switch-control">
+            <c:if test="${not empty onStudyAssignments}">
+                View schedule for current subject
+                <select id="assigned-subject-selector">
+                    <c:forEach items="${onStudyAssignments}" var="a">
+                        <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
+                    </c:forEach>
+                </select>
+                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+            </c:if>
+        </span>
+        <span class="schedule-switch-control">
+            <c:if test="${not empty offStudyAssignments}">
+                View schedule for historical subject
+                <select id="offstudy-assigned-subject-selector">
+                    <c:forEach items="${offStudyAssignments}" var="a">
+                        <option value="${a.scheduledCalendar.id}" <c:if test="${a == assignment}">selected="selected"</c:if>>${a.subject.lastFirst}</option>
+                    </c:forEach>
+                </select>
+                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+            </c:if>
+        </span
+    </div>
 </div>
 
 <c:if test="${configuration.externalAppsConfigured}">

@@ -75,6 +75,10 @@ public class DisplayScheduleController extends PscAbstractCommandController<Disp
             model.addObject("offStudyAssignments", offStudyAssignments);
             model.addObject("onStudyAssignments", onStudyAssignments);
         }
+        log.debug("                  Current amendment: {}", assignment.getCurrentAmendment());
+        log.debug("Current approved amendment for site: {}", assignment.getStudySite().getCurrentApprovedAmendment());
+        model.addObject("onLatestAmendment",
+            assignment.getCurrentAmendment().equals(assignment.getStudySite().getCurrentApprovedAmendment()));
 
         return new ModelAndView("schedule/display", model);
     }
