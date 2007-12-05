@@ -21,6 +21,8 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -46,6 +48,8 @@ public class TemplateService {
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -325,6 +329,7 @@ public class TemplateService {
 
     // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug
     @SuppressWarnings({ "RawUseOfParameterizedType" })
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Study findStudy(PlanTreeNode node) {
         if (node instanceof PlannedCalendar) return ((PlannedCalendar) node).getStudy();
         else return findAncestor(node, PlannedCalendar.class).getStudy();
@@ -333,10 +338,12 @@ public class TemplateService {
     /**
      * Finds the node in the given study which matches the type and id of parameter node.
      */
+    @Transactional(propagation = Propagation.SUPPORTS)
     public PlanTreeNode<?> findEquivalentChild(Study study, PlanTreeNode<?> node) {
         return findEquivalentChild(study.getPlannedCalendar(), node);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public PlanTreeNode<?> findEquivalentChild(PlanTreeNode<?> tree, PlanTreeNode<?> parameterNode) {
         if (isEquivalent(tree, parameterNode)) return tree;
         if (tree instanceof PlanTreeInnerNode) {
@@ -348,6 +355,7 @@ public class TemplateService {
         return null;
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
         return (toMatch == node) ||
             (sameClassIgnoringProxies(toMatch, node) && toMatch.getId().equals(node.getId()));
