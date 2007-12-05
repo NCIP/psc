@@ -3,6 +3,7 @@
         id="-100"
         name="abc"
         amendment_date="2006-02-01"
+        mandatory="1"
         />
     <AMENDMENTS
         id="-200"

@@ -12,7 +12,13 @@ import java.util.Calendar;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 public class AmendmentDaoTest extends DaoTestCase {
-    private AmendmentDao amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+    private AmendmentDao amendmentDao;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+    }
 
     public void testGetById() throws Exception {
         Amendment actual = amendmentDao.getById(-100);
