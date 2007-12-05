@@ -20,10 +20,11 @@
                     <laf:division>
                         <div class="links-row">
                             Select Activities:
+                            <!-- TODO: why are these spans? (vs. anchors) -->
                             <span id="check-all-events"     class="batch-schedule-link" href="#">All</span>,
                             <span id="uncheck-all-events"   class="batch-schedule-link" href="#">None</span>,
                             <span id="check-all-conditional-events"  class="batch-schedule-link" href="#">Conditional</span>,
-                            <span id="check-all-past-due-events"  class="batch-schedule-link" href="#">Past-Due</span>
+                            <span id="check-all-past-due-events"  class="batch-schedule-link" href="#">Past due</span>
                         </div>
                         <br>
                         <label id="new-mode-selector-group">
@@ -52,12 +53,12 @@
                 <div class="legend">
                     <h3>Legend</h3>
                     <ul>
-                        <li class="even"><img src="<c:url value="/images/scheduled.png"/>" alt="activity indicator"/><a>  Scheduled</a></li>
-                        <li class="odd" ><img src="<c:url value="/images/occurred.png"/>" alt="activity indicator"/><a>  Occurred</a></li>
-                        <li class="even" ><img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/><a>  Canceled</a></li>
-                        <li class="odd"><img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/><a>  Conditional</a></li>
-                        <li class="even"><img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/><a>  NA</a></li>
-                        <li class="odd"><img src="<c:url value="/images/error.png"/>" alt="activity indicator"/><a>  Missed</a></li>
+                        <li class="even"><img src="<c:url value="/images/scheduled.png"/>" alt="scheduled icon"/> Scheduled</li>
+                        <li class="odd"> <img src="<c:url value="/images/occurred.png"/>" alt="occurred icon"/> Occurred</li>
+                        <li class="even"><img src="<c:url value="/images/canceled.png"/>" alt="canceled icon"/> Canceled</li>
+                        <li class="odd"> <img src="<c:url value="/images/missed.png"/>" alt="error icon"/> Missed</li>
+                        <li class="even"><img src="<c:url value="/images/conditional.png"/>" alt="conditional icon"/> Conditional</li>
+                        <li class="odd"><img src="<c:url value="/images/NA.png"/>" alt="not applicable icon"/> NA</li>
                     </ul>
                 </div>
                 <c:forEach items="${studySegment.eventsByDate}" var="entry" varStatus="status">
@@ -71,32 +72,17 @@
                                         <c:if test="${event.conditionalState}">conditional-event</c:if>
                                         <c:if test="${entry.key < studySegment.todayDate}">past-due-event</c:if>"
                                     />
-                                    <c:choose>
-                                        <c:when test="${event.currentState.mode.name == 'scheduled'}">
-                                            <img src="<c:url value="/images/scheduled.png"/>" alt="activity indicator"/>
-                                        </c:when>
-                                        <c:when test="${event.currentState.mode.name == 'conditional'}">
-                                            <img src="<c:url value="/images/conditional.png"/>" alt="activity indicator"/>
-                                        </c:when>
-                                        <c:when test="${event.currentState.mode.name == 'occurred'}">
-                                            <img src="<c:url value="/images/occurred.png"/>" alt="activity indicator"/>
-                                        </c:when>
-                                        <c:when test="${event.currentState.mode.name == 'canceled'}">
-                                            <img src="<c:url value="/images/canceled.png"/>" alt="activity indicator"/>
-                                        </c:when>
-                                        <c:when test="${event.currentState.mode.name == 'missed'}">
-                                            <img src="<c:url value="/images/error.png"/>" alt="activity indicator"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <img src="<c:url value="/images/notApplicable.png"/>" alt="activity indicator"/>
-                                        </c:otherwise>
-                                    </c:choose>
-
-                                        <a href="<c:url value="/pages/cal/scheduleActivity?event=${event.id}"/>" title="Event ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
-                                        <c:if test="${not empty event.details}"><span class="event-details">(${event.details})</span></c:if>
-                                </li>
-                                <li class="event-details">
-                                    <c:if test="${not empty event.plannedActivity.condition}">Conditional (${event.plannedActivity.condition})</c:if>
+                                    <img src="<c:url value="/images/${event.currentState.mode.name}.png"/>" alt="Status: ${event.currentState.mode.name}"/>
+                                    
+                                    <a href="<c:url value="/pages/cal/scheduleActivity?event=${event.id}"/>" title="Activity ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
+                                    <span class="event-details">
+                                        <c:if test="${not empty event.details}">
+                                            ${event.details}${not empty event.plannedActivity.condition ? ';' : ''}
+                                        </c:if>
+                                        <c:if test="${not empty event.plannedActivity.condition}">
+                                            Condition: ${event.plannedActivity.condition}
+                                        </c:if>
+                                    </span>
                                 </li>
                             </c:forEach>
                         </ul>

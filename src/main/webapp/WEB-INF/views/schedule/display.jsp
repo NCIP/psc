@@ -119,12 +119,11 @@
         }
 
         #selected-studySegment .legend h3 {
-            background-color: #444;
+            background: #444;
             color: #fff;
             padding: 4px;
             margin: 0;
-            font-size: 11pt;
-            font-family: inherit;
+            border-width: 0;
         }
 
         #selected-studySegment .legend ul {
