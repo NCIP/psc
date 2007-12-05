@@ -1,3 +1,38 @@
+.card {
+    border: 1px solid #444;
+    background-color: white;
+}
+.title-card {
+    float: left;
+    width: 30%;
+    margin: 0 1em 1em 0;
+}
+.title-card h1 {
+    margin: 0;
+    padding: 0.5em;
+    border-bottom: 1px solid #666;
+}
+.title-card .row {
+    font-size: 0.9em;
+}
+.title-card .label {
+    width: 30%;
+    color: #666;
+}
+.title-card .value {
+    margin-left: 35%;
+}
+.card .header {
+    background-color: #444;
+    color: white;
+    font-size: 0.8em;
+    padding: 2px;
+    margin: 0;
+}
+.controls-card {
+    margin-left: 32%;
+}
+
 .subsection {
     border-bottom: 1px solid #666;
 }

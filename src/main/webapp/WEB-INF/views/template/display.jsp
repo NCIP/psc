@@ -13,41 +13,6 @@
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
         <style type="text/css">
-            .card {
-                border: 1px solid #444;
-                background-color: white;
-            }
-            #study-info {
-                float: left;
-                width: 30%;
-                margin: 0 1em 1em 0;
-            }
-            #study-info h1 {
-                margin: 0;
-                padding: 0.5em;
-                border-bottom: 1px solid #666;
-            }
-            #study-info .row {
-                font-size: 0.9em;
-            }
-            #study-info .label {
-                width: 30%;
-                color: #666;
-            }
-            #study-info .value {
-                margin-left: 35%;
-            }
-            .card .header {
-                background-color: #444;
-                color: white;
-                font-size: 0.8em;
-                padding: 2px;
-                margin: 0;
-            }
-            #study-manipulations {
-                margin-left: 32%;
-            }
-
             #epochs {
                 clear: both;
             }
@@ -528,7 +493,7 @@
         </script>
     </head>
     <body>
-        <div id="study-info" class="card">
+        <div id="study-info" class="title-card card">
             <div class="header">Study info</div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
             <c:set var="count" value="1"/>
@@ -546,7 +511,7 @@
             </div>
             <c:set var="count" value="${count + 1}"/>
         </div>
-        <div id="study-manipulations" class="card">
+        <div id="study-manipulations" class="controls-card card">
             <div class="header">Manipulate study</div>
             <ul id="admin-options">
                 <c:if test="${not empty developmentRevision}">
