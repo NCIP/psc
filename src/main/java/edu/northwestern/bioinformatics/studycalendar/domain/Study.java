@@ -29,13 +29,13 @@ import org.hibernate.annotations.Where;
 )
 @Where(clause = "load_status > 0")
 public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable {
-    private String assignedIdentifier; // change it to assignedIdentifier...may be null
+    private String assignedIdentifier;
     private String longTitle;
     private PlannedCalendar plannedCalendar;
     private LoadStatus loadStatus = LoadStatus.COMPLETE;
 
-    private Amendment amendment; // the current effective/approved amendment
-    private Amendment developmentAmendment; // the next amendment, currently in development and not approved
+    private Amendment amendment;            // the current effective/released amendment
+    private Amendment developmentAmendment; // the next amendment, currently in development and not released
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
 
