@@ -69,13 +69,7 @@ function _updateAllStudySegmentsControlVisibility(eltId) {
 function createStudyControls() {
     var h1 = $$("h1")[0];
     var studyId = ${param.study}
-    var studyName = "${param.studyName}"
-    var studyNameSpan = Builder.node("span", {id: 'study-name'}, studyName)
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
-
-    h1.innerHTML = h1.innerHTML.truncate(h1.innerHTML.length - studyName.length, '')
-    h1.appendChild(studyNameSpan)
-
     h1.appendChild(controlBox)
 
     var renameControl = createRenameControl('study', studyId, "Set study identifier")
