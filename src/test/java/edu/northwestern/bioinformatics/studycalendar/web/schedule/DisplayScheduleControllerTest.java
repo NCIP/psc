@@ -14,6 +14,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -66,6 +67,7 @@ public class DisplayScheduleControllerTest extends ControllerTestCase {
             assignment.setSubject(createSubject("Preston", "Sturges"));
             assignment.setScheduledCalendar(expectedCalendar);
             assignment.setStudySite(studySite);
+            assignment.setCurrentAmendment(new Amendment());
         }
     }
 
