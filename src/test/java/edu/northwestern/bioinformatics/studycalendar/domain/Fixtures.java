@@ -189,6 +189,14 @@ public class Fixtures {
         return activity;
     }
 
+    public static Activity createActivity(String name, String code, Source source, ActivityType type) {
+        Activity activity = createActivity(name);
+        activity.setCode(code);
+        activity.setSource(source);
+        activity.setType(type);
+        return activity;
+    }
+
 
     public static void addEvents(ScheduledStudySegment scheduledStudySegment, ScheduledActivity... events) {
         for (ScheduledActivity event : events) {
