@@ -301,6 +301,11 @@
             <batchtest todir="${build-dir.unit-test}/junit">
                 <fileset dir="${src-dir.unit-test}">
                     <include name="${unit-test.pattern}"/>
+                    <!--
+                        Exclude this test because it wipes out lookup data in the CSM tables.
+                        It can still be run by hand if necessary.
+                     -->
+                    <exclude name="**/*UserProvisioningManagerTest*"/>
                 </fileset>
             </batchtest>
         </junit>
