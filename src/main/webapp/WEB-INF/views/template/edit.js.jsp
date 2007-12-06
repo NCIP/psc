@@ -15,7 +15,7 @@ function createStudySegmentControls(studySegmentItem) {
     var controlBox = Builder.node("div", {className: 'studySegment-controls controls'});
     studySegmentItem.appendChild(controlBox)
 
-    var renameControl = createRenameControl('study segment', studySegmentId, null)
+    var renameControl = createRenameControl('studySegment', studySegmentId, null)
     SC.inPlaceEdit(studySegmentA, renameControl.href, {
         externalControl: renameControl,
         externalControlOnly: true,
