@@ -794,12 +794,24 @@ function createMarker(currentDurationIndex, activityName) {
                         </c:otherwise>
                     </c:choose>
 
-
+                    <c:set var="MAX_REPETITION_SIZE" value="4"/>
+                    <c:set var="MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED" value="2"/>
+                    <c:set var="compressPeriod" value="${period.repetitions gt MAX_REPETITION_SIZE}"/>
                     <c:forEach items="${period.dayRanges[0].days}" var="d">
                         <th id="day-number" class="day-number">
                             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
-                                ${d + x * period.duration.days}
-                                <c:if test="${not xStatus.last}"><br/></c:if>
+                                <c:set var="visibleRow" value="${x lt MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED}"/>
+                                <c:set var="showCompressionRow" value="${x eq (MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED)}"/>
+
+                                <c:if test="${not compressPeriod or visibleRow or xStatus.last}">
+                                    ${d + x * period.duration.days}
+                                </c:if>
+
+                                <c:if test="${compressPeriod and not visibleRow and showCompressionRow and not xStatus.last}">
+                                    .
+                                </c:if>
+
+                                <c:if test="${not xStatus.last and (visibleRow or showCompressionRow)}"><br/></c:if>
                             </c:forEach>
                         </th>
                     </c:forEach>
