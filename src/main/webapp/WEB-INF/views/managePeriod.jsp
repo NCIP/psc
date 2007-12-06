@@ -18,6 +18,7 @@ activitiesByType[${activityType.id}] = []
 <c:forEach items="${activities}" var="activity">
 activitiesByType[${activity.type.id}].push({ name: '${activity.name}', id: ${activity.id} })
 </c:forEach>
+var activitiesAutocompleter;
 var initiallySelectedActivity = ${empty selectedActivity ? 0 : selectedActivity.id}
 
         function currentActivityCount() {
@@ -354,6 +355,7 @@ function registerHandlers() {
         registerCellInputHandlers(input)
     });
     Event.observe('add-activity-button', 'click', addActivityRow)
+    Event.observe('add-activity-button', 'click', resetActivitiesAutocompleter)
 //    Event.observe('return-to-template', 'click', returnToTemplate)
 }
 
@@ -398,8 +400,14 @@ function registerDraggablesAndDroppables() {
     Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
+function resetActivitiesAutocompleter() {
+    activitiesAutocompleter.reset();
+    $('add-activity').name="";
+    $('add-activity').value="";
+}
+
 function createAutocompleter() {
-    new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/cal/search/activities"/>',
+    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/cal/search/activities"/>',
     { method: 'get', paramName: 'searchText', callback: addAdditionalParameters, afterUpdateElement:updateActivity, revertOnEsc:true});
 }
 
@@ -485,6 +493,13 @@ Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocom
         this.active = false;
 
         if(this.options.revertOnEsc) this.revertOnEsc()
+    },
+
+    reset: function() {
+        this.active = false;
+        this.hide();
+        this.element.value = null;
+        this.oldEntry = null;
     }
 
 }) ;
@@ -874,6 +889,8 @@ function createMarker(currentDurationIndex, activityName) {
                     <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
                 </select>
                 <input id="activities-autocompleter-input" type="text" autocomplete="off"/>
+                <div id="activities-autocompleter-div" class="autocomplete"></div>
+
 
                 <input type="hidden" id="add-activity"/>
 
@@ -881,7 +898,6 @@ function createMarker(currentDurationIndex, activityName) {
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a> <span id="new-activities-link-separator">or</span>
                 <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import activities from xml</a>
              </div>
-             <div id="activities-autocompleter-div" class="autocomplete"></div>
 
              <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
         </form:form>
