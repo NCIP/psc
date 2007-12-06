@@ -29,6 +29,20 @@ public class AmendmentApproval extends AbstractMutableDomainObject {
     private StudySite studySite;
     private Date date;
 
+    ////// FACTORIES
+
+    public static AmendmentApproval create(Amendment amendment, Date approvalDate) {
+        return create(null, amendment, approvalDate);
+    }
+
+    public static AmendmentApproval create(StudySite studySite, Amendment amendment, Date approvalDate) {
+        AmendmentApproval approval = new AmendmentApproval();
+        approval.setAmendment(amendment);
+        approval.setStudySite(studySite);
+        approval.setDate(approvalDate);
+        return approval;
+    }
+
     ////// BEAN PROPERTIES
 
     @ManyToOne
