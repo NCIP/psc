@@ -881,11 +881,11 @@ function createMarker(currentDurationIndex, activityName) {
             <div id="activities-input">
                 <label for="add-activity">Activities:</label>
                 <select id="activity-sources-filter">
-                    <option value="">All</option>
+                    <option value="">All sources</option>
                     <c:forEach items="${sources}" var="source"><option value="${source.id}">${source.name}</option></c:forEach>
                 </select>
                 <select id="activity-type-filter">
-                    <option value="">All</option>
+                    <option value="">All types</option>
                     <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
                 </select>
                 <input id="activities-autocompleter-input" type="text" autocomplete="off"/>
