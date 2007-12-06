@@ -16,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
+import edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -114,7 +115,10 @@ public class DeltaService {
             PlanTreeNode<?> affected = findNodeForDelta(target.getAssignment().getStudySite().getStudy(), delta);
             for (Change change : delta.getChanges()) {
                 log.debug("Applying change {} on {}", change, affected);
-                mutatorFactory.createMutator(affected, change).apply(target);
+                Mutator mutator = mutatorFactory.createMutator(affected, change);
+                if (mutator.appliesToExistingSchedules()) {
+                    mutator.apply(target);
+                }
             }
         }
     }

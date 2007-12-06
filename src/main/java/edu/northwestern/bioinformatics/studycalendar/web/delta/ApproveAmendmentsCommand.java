@@ -50,9 +50,16 @@ public class ApproveAmendmentsCommand {
     }
 
     public void apply() {
-        for (Approval approval : approvals) {
+        List<Approval> interveningUnapproved = new ArrayList<Approval>();
+        for (Approval approval : getApprovals()) {
             if (approval.isJustApproved()) {
+                for (Approval intervening : interveningUnapproved) {
+                    studySite.approveAmendment(intervening.getAmendment(), approval.getDate());
+                }
                 studySite.approveAmendment(approval.getAmendment(), approval.getDate());
+                interveningUnapproved.clear();
+            } else if (!approval.isAlreadyApproved()) {
+                interveningUnapproved.add(approval);
             }
         }
         studySiteDao.save(studySite);
