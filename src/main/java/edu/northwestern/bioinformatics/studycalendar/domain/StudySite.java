@@ -33,9 +33,14 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 public class StudySite extends AbstractMutableDomainObject implements Named {
     private Site site;
     private Study study;
-    private List<StudySubjectAssignment> studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
+    private List<StudySubjectAssignment> studySubjectAssignments;
     private List<UserRole> userRoles;
-    private List<AmendmentApproval> amendmentApprovals = new ArrayList<AmendmentApproval>();
+    private List<AmendmentApproval> amendmentApprovals;
+
+    public StudySite() {
+        studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
+        amendmentApprovals = new ArrayList<AmendmentApproval>();
+    }
 
     ////// LOGIC
 
@@ -59,19 +64,25 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
     }
 
     public void approveAmendment(Amendment amendment, Date approvalDate) {
-        // verify that the amendment applies
-        Amendment test = getStudy().getAmendment();
-        while (test != null && !test.equals(amendment)) {
-            test = test.getPreviousAmendment();
-        }
-        if (test == null) {
-            throw new StudyCalendarSystemException("The designated amendment (%s) is not part of this study", amendment.getDisplayName());
-        }
-
         AmendmentApproval approval = new AmendmentApproval();
         approval.setStudySite(this);
         approval.setAmendment(amendment);
         approval.setDate(approvalDate);
+        addAmendmentApproval(approval);
+    }
+
+    public void addAmendmentApproval(AmendmentApproval approval) {
+        // verify that the amendment applies
+        Amendment test = getStudy().getAmendment();
+        while (test != null && !test.equals(approval.getAmendment())) {
+            test = test.getPreviousAmendment();
+        }
+        if (test == null) {
+            throw new StudyCalendarSystemException("The designated amendment (%s) is not part of this study",
+                    approval.getAmendment().getDisplayName());
+        }
+
+        approval.setStudySite(this);
         getAmendmentApprovals().add(approval);
     }
 

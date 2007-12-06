@@ -16,8 +16,6 @@ import java.util.List;
  */
 public class StudySiteTest extends StudyCalendarTestCase {
     private StudySite studySite;
-    private Study study;
-    private Site site;
     private Amendment aOrig, a2003, a2004, a2005;
 
     @Override
@@ -31,12 +29,12 @@ public class StudySiteTest extends StudyCalendarTestCase {
         a2004 = a2005.getPreviousAmendment();
         a2003 = a2004.getPreviousAmendment();
 
-        study = Fixtures.createBasicTemplate();
+        Study study = Fixtures.createBasicTemplate();
         study.setName("Picnic");
         aOrig = study.getAmendment();
         a2003.setPreviousAmendment(study.getAmendment());
         study.setAmendment(a2005);
-        site = Fixtures.createNamedInstance("Galesburg", Site.class);
+        Site site = Fixtures.createNamedInstance("Galesburg", Site.class);
         studySite = Fixtures.createStudySite(study, site);
     }
     
@@ -61,10 +59,33 @@ public class StudySiteTest extends StudyCalendarTestCase {
         assertEquals("Approval did not retain reverse relationship", studySite, actual.getStudySite());
     }
 
+    public void testAddAmendmentApproval() throws Exception {
+        assertEquals("Test setup failure", 0, studySite.getAmendmentApprovals().size());
+
+        AmendmentApproval approval = AmendmentApproval.create(a2003, DateTools.createDate(2003, Calendar.DECEMBER, 4));
+        studySite.addAmendmentApproval(approval);
+        assertEquals("Approval not added", 1, studySite.getAmendmentApprovals().size());
+        AmendmentApproval actual = studySite.getAmendmentApprovals().get(0);
+        assertSame(approval, actual);
+        assertEquals("Wrong amendment approved", a2003, actual.getAmendment());
+        assertDayOfDate("Wrong approval date", 2003, Calendar.DECEMBER, 4, actual.getDate());
+        assertEquals("Approval did not retain reverse relationship", studySite, actual.getStudySite());
+    }
+
     public void testApproveAmendmentWhenNotInStudy() throws Exception {
         Amendment random = createAmendments(DateTools.createDate(2003, Calendar.MARCH, 1));
         try {
             studySite.approveAmendment(random, DateTools.createDate(2003, Calendar.APRIL, 1));
+            fail("Exception not thrown");
+        } catch (StudyCalendarSystemException scse) {
+            assertEquals("The designated amendment (03/01/2003) is not part of this study", scse.getMessage());
+        }
+    }
+
+    public void testAddAmendmentApprovalWhenNotInStudy() throws Exception {
+        Amendment random = createAmendments(DateTools.createDate(2003, Calendar.MARCH, 1));
+        try {
+            studySite.addAmendmentApproval(AmendmentApproval.create(random, DateTools.createDate(2003, Calendar.APRIL, 1)));
             fail("Exception not thrown");
         } catch (StudyCalendarSystemException scse) {
             assertEquals("The designated amendment (03/01/2003) is not part of this study", scse.getMessage());
