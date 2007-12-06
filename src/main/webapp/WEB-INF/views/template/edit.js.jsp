@@ -66,23 +66,44 @@ function _updateAllStudySegmentsControlVisibility(eltId) {
     }
 }
 
+function createAddEpochControl() {
+    var studyId = ${param.study}
+    var addEpochControl = createAddControl("Add epoch", 'study', studyId)
+    SC.asyncLink(addEpochControl, {}, "epochs-indicator")
+    $('addEpoch').appendChild(addEpochControl)
+}
+
 function createStudyControls() {
     var h1 = $$("h1")[0];
     var studyId = ${param.study}
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
     h1.appendChild(controlBox)
 
-    var renameControl = createRenameControl('study', studyId, "Set study identifier")
+    var renameControl = createRenameControl('study', studyId, "Set protocol identifier")
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename"
     })
 
-    var addEpochControl = createAddControl("Add epoch", 'study', studyId)
-    SC.asyncLink(addEpochControl, {}, "epochs-indicator")
 
     controlBox.appendChild(renameControl)
-    controlBox.appendChild(addEpochControl)
+    var infoSentence = "To begin, "
+    var renameButton = createRenameControl('study', studyId, "enter")
+    var endOfInfoSentence = " protocol identifier."
+
+    var newValue = SC.inPlaceEdit("study-name", renameButton.href, {
+        externalControl: renameButton,
+        clickToEditText: "Click to rename"
+    })
+
+    var h1BeginSentence = Builder.node("span", {})
+    h1BeginSentence.innerHTML = infoSentence
+    var h1EndSentence = Builder.node("span", {})
+    h1EndSentence.innerHTML = endOfInfoSentence
+
+    controlBox.appendChild(h1BeginSentence)
+    controlBox.appendChild(renameButton)
+    controlBox.appendChild(h1EndSentence)
 }
 
 function createAllEpochControls() {
@@ -95,7 +116,7 @@ function createEpochControls(epochH4) {
     var epochId = epochH4.id.split('-')[1]
     var epochName = $('epoch-' + epochId + '-name')
 
-    var addStudySegmentControl = createAddControl("Add study segment", 'epoch', epochId)
+    var addStudySegmentControl = createAddControl("Add segment", 'epoch', epochId)
     SC.asyncLink(addStudySegmentControl, {}, "epochs-indicator")
 
     var renameControl = createRenameControl('epoch', epochId, null)
@@ -141,10 +162,9 @@ function updateAllEpochsControlVisibility() {
 
 function createRenameControl(objectType, objectId, name) {
     if(name == null) {
-        return createControlAnchor("rename", "Set name", "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
-    } else {
-        return createControlAnchor("rename", name, "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+        name ="Set name"
     }
+    return createControlAnchor("rename", name, "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
 }
 
 function createDeleteControl(objectType, objectId) {

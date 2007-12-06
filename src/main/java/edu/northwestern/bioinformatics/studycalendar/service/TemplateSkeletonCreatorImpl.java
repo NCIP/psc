@@ -41,7 +41,7 @@ public class TemplateSkeletonCreatorImpl {
 
    static class Basic implements TemplateSkeletonCreator {
        public Study create() {
-           Study study = createBase("[Unnamed study]");
+           Study study = createBase("[ABC 1234]");
            addEpoch(study, 0, Epoch.create("Screening"));
            addEpoch(study, 1, Epoch.create("Treatment", "A", "B", "C"));
            addEpoch(study, 2, Epoch.create("Follow up"));

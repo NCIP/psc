@@ -140,6 +140,10 @@
                 width: 70%;
                 float: left;
             }
+
+            .moreSpaces{
+                padding-left:8px;
+            }
         </style>
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
@@ -481,13 +485,17 @@
                 Event.observe(window, "load", createStudyControls)
             </c:if>
             Event.observe(window, "load", epochsAreaSetup)
-			<c:if test="${not empty studySegment.months}">
+
+            Event.observe(window, "load", createAddEpochControl)
+
+            <c:if test="${not empty studySegment.months}">
 				Event.observe(window, "load", showSetup)
 				Event.observe(window, "load", hideSetup)
 				Event.observe(window, "load", arrowSetup)
 				Event.observe(window, "load", showMonthSetup)
 				Event.observe(window, "load", hideMonthSetup)
-		    </c:if>
+
+            </c:if>
 			
 			
         </script>
@@ -554,6 +562,8 @@
         </div>
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
+                <p class="controls moreSpaces" id="addEpoch"/>
+              
                 <laf:division>
                     <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
                 </laf:division>

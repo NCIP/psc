@@ -39,7 +39,7 @@ public class TemplateSkeletonCreatorTest extends StudyCalendarTestCase {
     }
 
     public static void assertBasicStudy(Study actual) {
-        assertEquals("Wrong study name for new study", "[Unnamed study]", actual.getName());
+        assertEquals("Wrong study name for new study", "[ABC 1234]", actual.getName());
 
         Delta<?> actualDelta = assertHasSkeletonDevAmendment(actual);
 
