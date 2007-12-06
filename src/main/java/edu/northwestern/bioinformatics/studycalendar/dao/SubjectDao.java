@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Hibernate;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +30,10 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
 
     @SuppressWarnings("unchecked")
     public Subject findSubjectByPersonId(final String mrn) {
-        List<Subject> results = getHibernateTemplate().find("from Subject where personId= ?", mrn);
+        List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.personId= ?", mrn);
         if (!results.isEmpty()) {
-            return results.get(0);
+            Subject subject = results.get(0);
+            return subject;
         }
         String message = "No subject exist with the given mrn :" + mrn;
         logger.info(message);
