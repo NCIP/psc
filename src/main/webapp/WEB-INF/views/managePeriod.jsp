@@ -46,11 +46,10 @@ function selectedActivity() {
 }
 
 function selectedValue(selectorName) {
-    var selector = $(selectorName)
-    var selected = selector.options[selector.selectedIndex]
+    var input = $(selectorName)
     return {
-        name: selected.text,
-        id: selected.value
+        name: input.name,
+        id: input.value
     }
 }
 
@@ -131,18 +130,6 @@ function addActivityRow() {
         td2Element.style.display = 'table-cell';
     }
     SC.slideAndShow(rowId)
-}
-
-function updateActivitySelector() {
-    var selector = $('add-activity')
-    selector.options.length = 0
-    var selectedTypeId = selectedValue('select-activity-type').id
-    var activities = activitiesByType[selectedTypeId]
-    activities.each(function(elt) {
-        var opt = new Option(elt.name, elt.id)
-        if (elt.id == initiallySelectedActivity) opt.selected = true
-        selector.options[selector.options.length] = opt
-    })
 }
 
 function showEmptyMessage() {
@@ -367,7 +354,6 @@ function registerHandlers() {
         registerCellInputHandlers(input)
     });
     Event.observe('add-activity-button', 'click', addActivityRow)
-    Event.observe('select-activity-type', 'change', updateActivitySelector)
 //    Event.observe('return-to-template', 'click', returnToTemplate)
 }
 
@@ -412,9 +398,102 @@ function registerDraggablesAndDroppables() {
     Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
+function createAutocompleter() {
+    new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/cal/search/activities"/>',
+    { method: 'get', paramName: 'searchText', callback: addAdditionalParameters, afterUpdateElement:updateActivity, revertOnEsc:true});
+}
+
+function addAdditionalParameters(inputField, queryString) {
+    queryString = queryString + '&source=' + $('activity-sources-filter').value.escapeHTML();
+    queryString = queryString + '&activityType=' + $('activity-type-filter').value.escapeHTML();
+    return queryString;
+}
+
+function updateActivity(input, li) {
+    $('add-activity').name = li.innerHTML;
+    $('add-activity').value= li.id;
+}
+
+/*
+   Replicated a lot of functions from the superclass because in protype 1.5, if you override a function
+   child function is not given access to the parent function.  In protype 1.6 you are.
+*/
+Ajax.RevertableAutocompleter = Class.create();
+Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocompleter.prototype), {
+    initialize: function(element, update, url, options) {
+        this.baseInitialize(element, update, options);
+        this.options.asynchronous  = true;
+        this.options.onComplete    = this.onComplete.bind(this);
+        this.options.defaultParams = this.options.parameters || null;
+        this.url                   = url;
+    },
+
+    onKeyPress: function(event) {
+       if(this.active)
+         switch(event.keyCode) {
+          case Event.KEY_TAB:
+          case Event.KEY_RETURN:
+            this.selectEntry();
+            Event.stop(event);
+          case Event.KEY_ESC:
+            this.hide();
+            this.active = false;
+            if(this.options.revertOnEsc) this.revertOnEsc()
+            Event.stop(event);
+            return;
+          case Event.KEY_LEFT:
+          case Event.KEY_RIGHT:
+            return;
+          case Event.KEY_UP:
+            this.markPrevious();
+            this.render();
+            if(Prototype.Browser.WebKit) Event.stop(event);
+            return;
+          case Event.KEY_DOWN:
+            this.markNext();
+            this.render();
+            if(Prototype.Browser.WebKit) Event.stop(event);
+            return;
+         }
+        else
+          if(event.keyCode==Event.KEY_TAB || event.keyCode==Event.KEY_RETURN ||
+            (Prototype.Browser.WebKit > 0 && event.keyCode == 0)) return;
+
+       this.changed = true;
+       this.hasFocus = true;
+
+       if(this.observer) clearTimeout(this.observer);
+         this.observer =
+           setTimeout(this.onObserverEvent.bind(this), this.options.frequency*1000);
+     },
+
+    revertOnEsc: function() {
+        if(this.oldEntry) this.updateElement(this.oldEntry);
+    },
+
+    selectEntry: function() {
+        this.active = false;
+        this.updateElement(this.getCurrentEntry());
+
+        this.oldEntry = this.getCurrentEntry();
+    },
+
+    onBlur: function(event) {
+        // needed to make click events working
+        setTimeout(this.hide.bind(this), 250);
+        this.hasFocus = false;
+        this.active = false;
+
+        if(this.options.revertOnEsc) this.revertOnEsc()
+    }
+
+}) ;
+
+Event.observe(window, "load", createAutocompleter)
+
+
 Event.observe(window, "load", registerHandlers)
 Event.observe(window, "load", showEmptyMessage)
-Event.observe(window, "load", updateActivitySelector)
 Event.observe(window, "load", registerDraggablesAndDroppables)
 
 
@@ -617,6 +696,37 @@ function createMarker(currentDurationIndex, activityName) {
         padding:0 1em 0 1em;
     }
 
+    div.autocomplete {
+        position:absolute;
+        width:400px;
+        background-color:white;
+        border:1px solid #ccc;
+        margin:0px;
+        padding:0px;
+        font-size:0.8em;
+        text-align:left;
+        max-height:200px;
+        overflow:auto;
+    }
+
+    div.autocomplete ul {
+        list-style-type:none;
+        margin:0px;
+        padding:0px;
+    }
+
+    div.autocomplete ul li.selected {
+        background-color: #EAF2FB;
+    }
+
+    div.autocomplete ul li {
+        list-style-type:none;
+        display:block;
+        margin:0;
+        padding:2px;
+        cursor:pointer;
+    }
+
 </style>
 </head>
 <body>
@@ -755,16 +865,24 @@ function createMarker(currentDurationIndex, activityName) {
 
             <div id="activities-input">
                 <label for="add-activity">Activities:</label>
-                <select id="select-activity-type">
+                <select id="activity-sources-filter">
+                    <option value="">All</option>
+                    <c:forEach items="${sources}" var="source"><option value="${source.id}">${source.name}</option></c:forEach>
+                </select>
+                <select id="activity-type-filter">
+                    <option value="">All</option>
                     <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
                 </select>
-                <select id="add-activity">
-                    <option>Loading...</option>
-                </select>
+                <input id="activities-autocompleter-input" type="text" autocomplete="off"/>
+
+                <input type="hidden" id="add-activity"/>
+
                 <input type="button" id="add-activity-button" value="Add to period"/>
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a> <span id="new-activities-link-separator">or</span>
                 <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import activities from xml</a>
              </div>
+             <div id="activities-autocompleter-div" class="autocomplete"></div>
+
              <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
         </form:form>
     </laf:division>

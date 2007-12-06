@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import static java.util.Arrays.asList;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -16,9 +19,7 @@ import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -37,6 +38,8 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private DeltaService deltaService;
     private TemplateService templateService;
     private Study parent;
+    private SourceDao sourceDao;
+    private List<Source> sources;
 
     @Override
     protected void setUp() throws Exception {
@@ -49,9 +52,12 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         parent.setDevelopmentAmendment(new Amendment("dev"));
         Fixtures.assignIds(parent);
 
+        sources = asList(createNamedInstance("Source A", Source.class));
+
         revisedPeriod = (Period) period.transientClone();
 
         periodDao = registerDaoMockFor(PeriodDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
@@ -60,6 +66,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         templateService = registerMockFor(TemplateService.class);
 
         controller.setPeriodDao(periodDao);
+        controller.setSourceDao(sourceDao);
         controller.setActivityDao(activityDao);
         controller.setPlannedActivityDao(plannedActivityDao);
         controller.setControllerTools(controllerTools);
@@ -81,6 +88,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     }
 
     private ModelAndView doHandle() throws Exception {
+        expect(sourceDao.getAll()).andReturn(sources);
         expect(deltaService.revise(period)).andReturn(revisedPeriod);
         expect(templateService.findStudy(revisedPeriod)).andReturn(parent);
         replayMocks();
@@ -170,6 +178,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         Activity expectedActivity = setId(43, new Activity());
         expect(activityDao.getById(43)).andReturn(expectedActivity);
         expect(templateService.findStudy(period)).andReturn(parent);
+        expect(sourceDao.getAll()).andReturn(sources);
         replayMocks();
 
         Map<String, Object> refdata = controller.referenceData(request, command, null);
@@ -180,6 +189,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
     public void testReferenceDataEmptyIfNoNewActivity() throws Exception {
         expect(templateService.findStudy(period)).andReturn(parent);
+        expect(sourceDao.getAll()).andReturn(sources);        
         request.removeParameter("selectedActivity");
         replayMocks();
 

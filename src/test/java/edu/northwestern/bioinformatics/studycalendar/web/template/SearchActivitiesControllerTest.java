@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
@@ -23,12 +24,14 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
     private List<Activity> activities;
     private ActivityDao activityDao;
     private Source source0, source1;
+    private SourceDao sourceDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         command = registerMockFor(SearchActivitiesCommand.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
 
         controller = new SearchActivitiesController() {
             @Override
@@ -38,6 +41,7 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         };
         controller.setControllerTools(controllerTools);
         controller.setActivityDao(activityDao);
+        controller.setSourceDao(sourceDao);
 
         source0 = setId(0, createNamedInstance("PSC Manual Entry Source", Source.class));
         source1 = setId(1, createNamedInstance("LOINK", Source.class));
@@ -70,6 +74,15 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         assertEquals("Wrong search results", "Activity B", actual.get(0).getName());
     }
 
+    public void testHandleSearchByFullNameLowerCase() throws Exception {
+        expectSearch("activity b", null, null);
+
+        List<Activity> actual = (List<Activity>) getRefData("activities");
+
+        assertEquals("Wrong search results size", 1, actual.size());
+        assertEquals("Wrong search results", "Activity B", actual.get(0).getName());
+    }
+
     public void testHandleSearchByPartialName() throws Exception {
         expectSearch("Activity", null, null);
 
@@ -87,6 +100,15 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "AA", actual.get(0).getCode());
+    }
+
+    public void testHandleSearchByCodeLowerCase() throws Exception {
+        expectSearch("bb", null, null);
+
+        List<Activity> actual = (List<Activity>) getRefData("activities");
+
+        assertEquals("Wrong search results size", 1, actual.size());
+        assertEquals("Wrong search results", "BB", actual.get(0).getCode());
     }
 
     public void testHandleFilterBySource() throws Exception {

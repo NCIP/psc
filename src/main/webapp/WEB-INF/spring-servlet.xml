@@ -435,6 +435,9 @@
         </property>
     </bean>
 
+    <bean name="/cal/search/activities" id="searchActivitiesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
+
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">
         <property name="urlResolver">

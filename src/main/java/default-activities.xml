@@ -278,11 +278,7 @@
         name="Electronic Telephone Diary"
         code="ElectronicTelephoneDiary"
         type="5"/>
-
-    <activity
-        name="Reconsent"
-        code="Reconsent"
-        type="5"/>
+    
 </source>
 
 </sources>

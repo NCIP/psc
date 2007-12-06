@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
@@ -50,6 +47,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     private AmendmentService amendmentService;
     private TemplateService templateService;
     private DaoFinder daoFinder;
+    private SourceDao sourceDao;
 
     public ManagePeriodEventsController() {
         setBindOnNewForm(true);
@@ -90,6 +88,7 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
             refdata.put("selectedActivity", activityDao.getById(selectedActivityId));
         }
 
+        refdata.put("sources", sourceDao.getAll());
         refdata.put("activityTypes", ActivityType.values());
         refdata.put("activities", activityDao.getAll());
         refdata.put("activitiesById", DomainObjectTools.byId(activityDao.getAll()));
@@ -165,6 +164,11 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
     @Required
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+    @Required
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
     }
 
     private static class Crumb extends DefaultCrumb {
