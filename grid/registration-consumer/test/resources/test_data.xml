@@ -7,9 +7,18 @@
         
         />
 
-    <STUDIES id="-1" name="Foo" long_title="Foo" grid_id="gridStudy" assigned_identifier="CDR000007829" amendment_id="-45" />
+
+    <STUDIES id="-1"  long_title="Foo" grid_id="gridStudy" assigned_identifier="04_C_0121" amendment_id="-45" />
     <STUDY_SITES id="-1" site_id="-1" study_id="-1" />
-    <SITES id="-1" name="DC" grid_id="gridSite" assigned_identifier="CTEP" />
+    <SITES id="-1" name="DC" grid_id="gridid" assigned_identifier="SITE_01" />
+
+    <AMENDMENT_APPROVALS
+           id="-310"
+           study_site_id="-1"
+           amendment_id="-45"
+           approval_date="2007-02-01"
+           />
+    
 
 <AMENDMENTS   id="-17" amendment_date="1945-04-01" />
 
