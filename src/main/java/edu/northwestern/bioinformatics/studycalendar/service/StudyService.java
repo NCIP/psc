@@ -6,18 +6,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Hibernate;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 
 @Transactional
@@ -89,16 +83,23 @@ public class StudyService {
 		return study;
 	}
 
-	public Study getStudyNyAssignedIdentifier(final String assignedIdentifier) {
+    public Study getStudyByAssignedIdentifier(final String assignedIdentifier) {
 
-		Study systemStudy = studyDao.getByAssignedIdentifier(assignedIdentifier);
-		if (systemStudy == null) {
-			return null;
-		}
+        Study study = studyDao.getStudyByAssignedIdentifier(assignedIdentifier);
+        if (study == null) {
+            return null;
+        }
+        Hibernate.initialize(study);
+        List<StudySite> sites = study.getStudySites();
+        Hibernate.initialize(sites);
+        for (StudySite studySite : sites) {
+            Hibernate.initialize(studySite);
+            Hibernate.initialize(studySite.getCurrentApprovedAmendment());
+        }
 
-		plannedCalendarDao.initialize(systemStudy.getPlannedCalendar());
-		return systemStudy;
-	}
+        plannedCalendarDao.initialize(study.getPlannedCalendar());
+        return study;
+    }
 
 	// //// CONFIGURATION
 

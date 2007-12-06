@@ -6,8 +6,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
@@ -32,67 +36,14 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
         if (!results.isEmpty()) {
             return results.get(0);
         }
-        String msg = "No subject exist with the given mrn :" + mrn;
-        logger.info(msg);
+        String message = "No subject exist with the given mrn :" + mrn;
+        logger.info(message);
 
         return null;
     }
 
-
     @Transactional(readOnly = false)
-    public void commitInProgressSubject(String mrn) {
-        Object subjectId = getSession().createSQLQuery("select s.id from subjects s where s.person_id='" + mrn + "'").uniqueResult();
-        if (subjectId == null) {
-            String msg = "No subject exist with the given mrn :" + mrn;
-            logger.error(msg);
-            throw new StudyCalendarSystemException(msg);
-
-        }
-
-        logger.info("For MRN:" + mrn + " found subject:id-" + subjectId.toString());
-        //update subjects
-        getSession().createSQLQuery("update subjects set load_status = 1 where id = " +
-                subjectId.toString()).executeUpdate();
-
-        //update subject assignments
-//        getSession().createSQLQuery("update subject_assignments set load_status = 1 where subject_id = " +
-//                subjectId.toString()).executeUpdate();
-
-        logger.info("commited Subject:id:" + subjectId);
-
+    public void delete(Subject subject) {
+        getHibernateTemplate().delete(subject);
     }
-
-    @Transactional(readOnly = false)
-    public void deleteInprogressSubject(String mrn) {
-        Object subjectId = getSession().createSQLQuery("select s.id from subjects s where s.load_status=0 and s.person_id='" + mrn + "'").uniqueResult();
-        if (subjectId == null) {
-            String msg = "Either no subject exist with the given mrn :" + mrn + " or subject with given MRN is already commited";
-            logger.error(msg);
-            throw new StudyCalendarSystemException(msg);
-        }
-
-        //delete assignment
-        getSession().createSQLQuery("delete from scheduled_study_segments sss where sss.scheduled_calendar_id  in " +
-                "(select sc.id from scheduled_calendars sc where sc.assignment_id in (select sa.id from subject_assignments sa where subject_id =" +
-                subjectId.toString() + "))").executeUpdate();
-
-        getSession().createSQLQuery("delete from scheduled_calendars sc where assignment_id in " +
-                "(select sa.id from subject_assignments sa where subject_id =" +
-                subjectId.toString() + ")").executeUpdate();
-
-        getSession().createSQLQuery("delete from subject_assignments where subject_id = " +
-                subjectId.toString()).executeUpdate();
-
-        getSession().createSQLQuery("delete from subject_assignments where subject_id = " +
-                subjectId.toString()).executeUpdate();
-
-        //delete subject
-        getSession().createSQLQuery("delete from subjects where id = " +
-                subjectId.toString()).executeUpdate();
-
-        logger.info("rolledback Subject:id:" + subjectId);
-
-    }
-
-
 }

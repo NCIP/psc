@@ -162,8 +162,14 @@ public class Subject extends AbstractMutableDomainObject {
         return loadStatus;
     }
 
+    /**
+     * Added for hibernate only..
+     * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
+     * @param loadStatus
+     */
     public void setLoadStatus(final LoadStatus loadStatus) {
-        this.loadStatus = loadStatus;
+
+        //this.loadStatus = loadStatus;
     }
 
 }

@@ -200,12 +200,18 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         this.developmentAmendment = developmentAmendment;
     }
 
+
     // @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.LoadStatus")
     @Enumerated(EnumType.ORDINAL)
     public LoadStatus getLoadStatus() {
         return loadStatus;
     }
 
+    /**
+     * Added for hibernate only..
+     * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
+     * @param loadStatus
+     */
     public void setLoadStatus(LoadStatus loadStatus) {
         this.loadStatus = loadStatus;
     }
