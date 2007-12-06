@@ -73,27 +73,18 @@ function createAddEpochControl() {
     $('addEpoch').appendChild(addEpochControl)
 }
 
-function createStudyControls() {
-    var h1 = $$("h1")[0];
+function addToBeginSentence(){
     var studyId = ${param.study}
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
-    h1.appendChild(controlBox)
-
-    var renameControl = createRenameControl('study', studyId, "Set protocol identifier")
-    SC.inPlaceEdit("study-name", renameControl.href, {
-        externalControl: renameControl,
-        clickToEditText: "Click to rename"
-    })
-
-
-    controlBox.appendChild(renameControl)
     var infoSentence = "To begin, "
     var renameButton = createRenameControl('study', studyId, "enter")
     var endOfInfoSentence = " protocol identifier."
 
     var newValue = SC.inPlaceEdit("study-name", renameButton.href, {
         externalControl: renameButton,
-        clickToEditText: "Click to rename"
+        clickToEditText: "Click to rename",
+        onComplete:function() {newSomething()}
+
     })
 
     var h1BeginSentence = Builder.node("span", {})
@@ -104,6 +95,33 @@ function createStudyControls() {
     controlBox.appendChild(h1BeginSentence)
     controlBox.appendChild(renameButton)
     controlBox.appendChild(h1EndSentence)
+    $('enterStudyNameSentence').appendChild(controlBox)
+}
+
+function newSomething() {
+    if ($('study-name').innerHTML == '[ABC 1234]') {
+        $('enterStudyName').show()
+        $('releaseTemplate').hide()
+    }
+    else {
+       $('enterStudyName').hide()
+       $('releaseTemplate').show()
+    }
+}
+
+function createStudyControls() {
+    var h1 = $$("h1")[0];
+    var studyId = ${param.study}
+    var controlBox = Builder.node("span", {className: 'study-controls controls'})
+    h1.appendChild(controlBox)
+
+    var renameControl = createRenameControl('study', studyId, "Set protocol identifier")
+    SC.inPlaceEdit("study-name", renameControl.href, {
+        externalControl: renameControl,
+        clickToEditText: "Click to rename", onComplete:function() {newSomething()}
+    })
+
+    controlBox.appendChild(renameControl)
 }
 
 function createAllEpochControls() {
