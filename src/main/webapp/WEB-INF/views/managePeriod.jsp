@@ -56,6 +56,7 @@ function selectedValue(selectorName) {
 
 function addActivityRow() {
     var activity = selectedActivity()
+    if (!activity.id || !activity.name) return
     var cells = []
     var dayCount = ${period.dayRanges[0].days}.length
     var rowCount = $$("#input-body tr").length - 1
@@ -742,6 +743,12 @@ function createMarker(currentDurationIndex, activityName) {
         cursor:pointer;
     }
 
+    .limited-display-box {
+        width:500px;
+        overflow:scroll;
+        /*display:block;*/
+    }
+
 </style>
 </head>
 <body>
@@ -800,14 +807,14 @@ function createMarker(currentDurationIndex, activityName) {
                     <c:forEach items="${period.dayRanges[0].days}" var="d">
                         <th id="day-number" class="day-number">
                             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
-                                <c:set var="visibleRow" value="${x lt MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED}"/>
+                                <c:set var="visibleRow" value="${x lt MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED or not compressPeriod}"/>
                                 <c:set var="showCompressionRow" value="${x eq (MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED)}"/>
 
-                                <c:if test="${not compressPeriod or visibleRow or xStatus.last}">
+                                <c:if test="${visibleRow or xStatus.last}">
                                     ${d + x * period.duration.days}
                                 </c:if>
 
-                                <c:if test="${compressPeriod and not visibleRow and showCompressionRow and not xStatus.last}">
+                                <c:if test="${not visibleRow and showCompressionRow and not xStatus.last}">
                                     .
                                 </c:if>
 
