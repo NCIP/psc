@@ -744,9 +744,10 @@ function createMarker(currentDurationIndex, activityName) {
     }
 
     .limited-display-box {
-        width:500px;
-        overflow:scroll;
-        /*display:block;*/
+        width:670px;
+        padding:5px;
+        overflow-x:auto;
+        display:block;
     }
 
 </style>
@@ -774,7 +775,7 @@ function createMarker(currentDurationIndex, activityName) {
 
         <form:form>
             <c:set var="tableWidth" value="${period.duration.days + 2}"/>
-            <table>
+            <table class="limited-display-box">
              <tbody id="input-body">
                 <tr>
                     <c:choose>
