@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import gov.nih.nci.cabig.ctms.lang.NowFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 public class ApproveAmendmentsController extends PscSimpleFormController {
     private StudySiteDao studySiteDao;
     private NowFactory nowFactory;
+    private AmendmentService amendmentService;
 
     public ApproveAmendmentsController() {
         super();
@@ -36,7 +38,7 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         int studySiteId = ServletRequestUtils.getRequiredIntParameter(request, "studySite");
-        return new ApproveAmendmentsCommand(studySiteDao.getById(studySiteId), studySiteDao, nowFactory);
+        return new ApproveAmendmentsCommand(studySiteDao.getById(studySiteId), amendmentService, nowFactory);
     }
 
     @Override
@@ -58,7 +60,6 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     protected ModelAndView onSubmit(Object oCommand) throws Exception {
         ApproveAmendmentsCommand command = ((ApproveAmendmentsCommand) oCommand);
         command.apply();
-        // TODO: this should update all amendments from the studysite, too, if the amendment is mandatory
         return getControllerTools().redirectToCalendarTemplate(command.getStudySite().getStudy().getId());
     }
 
@@ -72,6 +73,11 @@ public class ApproveAmendmentsController extends PscSimpleFormController {
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    @Required
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
     }
 
     private static class Crumb extends DefaultCrumb {

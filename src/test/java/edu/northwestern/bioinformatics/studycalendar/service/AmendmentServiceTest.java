@@ -1,24 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
-import java.util.Collections;
+import java.util.Calendar;
+import static java.util.Calendar.*;
 
-import static org.easymock.classextension.EasyMock.*;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 /**
  * @author Rhett Sutphin
@@ -27,16 +30,17 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private AmendmentService service;
     private StudyService studyService;
     private DeltaService mockDeltaService;
-    private ScheduledCalendarDao scheduledCalendarDao;
 
     private Study study;
+    private Amendment a0, a1, a2, a3;
+    private Site portland;
+    private StudySite portlandSS;
     private PlannedCalendar calendar;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         studyService = registerMockFor(StudyService.class);
-        scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -45,18 +49,23 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         StudySegment e1a0 = setGridId("E1A0-GRID",
             setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
 
-        Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
-        Amendment a2 = a3.getPreviousAmendment();
+        a3 = createAmendments("A0", "A1", "A2", "A3");
+        a2 = a3.getPreviousAmendment();
+        a1 = a2.getPreviousAmendment();
+        a0 = a1.getPreviousAmendment();
         study.setAmendment(a3);
 
         a2.addDelta(Delta.createDeltaFor(calendar, Add.create(e2)));
         a3.addDelta(Delta.createDeltaFor(e1, Add.create(e1a0, 0)));
 
+        portland = setId(3, createNamedInstance("Portland", Site.class));
+        portlandSS = setId(4, createStudySite(study, portland));
+        portlandSS.approveAmendment(a0, DateTools.createDate(2004, JANUARY, 4));
+
         service = new AmendmentService();
         service.setStudyService(studyService);
         service.setDeltaService(Fixtures.getTestingDeltaService());
         service.setTemplateService(new TestingTemplateService());
-        service.setScheduledCalendarDao(scheduledCalendarDao);
 
         mockDeltaService = registerMockFor(DeltaService.class);
     }
@@ -72,8 +81,6 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         study.setDevelopmentAmendment(inProgress);
 
         studyService.save(study);
-        // temporary:
-        expect(scheduledCalendarDao.getAllFor(study)).andReturn(Collections.<ScheduledCalendar>emptyList());
 
         replayMocks();
         service.amend(study);
@@ -87,6 +94,57 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
             study.getAmendment().getPreviousAmendment().getName());
         assertNull("Development amendment not moved to stack (still present as dev)", study.getDevelopmentAmendment());
         assertEquals("Wrong number of amendments on stack", 4, study.getAmendment().getPreviousAmendmentsCount());
+    }
+
+    public void testApproveNonMandatoryAmendmentDoesNotAmend() throws Exception {
+        assertEquals("Test setup failure", 1, portlandSS.getAmendmentApprovals().size());
+
+        service.setDeltaService(mockDeltaService);
+        a1.setMandatory(false);
+        AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
+
+        replayMocks();
+        service.approve(portlandSS, expectedApproval);
+        verifyMocks();
+
+        assertEquals("Approval not recorded", 2, portlandSS.getAmendmentApprovals().size());
+        assertSame(expectedApproval, portlandSS.getAmendmentApprovals().get(1));
+    }
+
+    public void testApproveMandatoryAmendmentGenerallyAmends() throws Exception {
+        assertEquals("Test setup failure", 1, portlandSS.getAmendmentApprovals().size());
+        service.setDeltaService(mockDeltaService);
+
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setCurrentAmendment(a0);
+        portlandSS.addStudySubjectAssignment(assignment);
+        AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
+
+        mockDeltaService.amend(assignment, a1);
+
+        replayMocks();
+        service.approve(portlandSS, expectedApproval);
+        verifyMocks();
+
+        assertEquals("Approval not recorded", 2, portlandSS.getAmendmentApprovals().size());
+        assertSame(expectedApproval, portlandSS.getAmendmentApprovals().get(1));
+    }
+
+    public void testApproveMandatoryAmendmentDoesNotAmendAssignmentWhenNotOnImmediatelyPrecedingAmendment() throws Exception {
+        service.setDeltaService(mockDeltaService);
+        portlandSS.approveAmendment(a1, DateTools.createDate(2005, JANUARY, 3));
+
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setCurrentAmendment(a0);
+        portlandSS.addStudySubjectAssignment(assignment);
+        AmendmentApproval expectedApproval = AmendmentApproval.create(a2, DateTools.createDate(2006, DECEMBER, 1));
+
+        replayMocks();
+        service.approve(portlandSS, expectedApproval);
+        verifyMocks();
+
+        assertEquals("Approval not recorded", 3, portlandSS.getAmendmentApprovals().size());
+        assertSame(expectedApproval, portlandSS.getAmendmentApprovals().get(2));
     }
 
     public void testGetAmendedWhenAtAmendedLevel() throws Exception {

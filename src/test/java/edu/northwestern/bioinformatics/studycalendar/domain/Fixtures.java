@@ -257,12 +257,16 @@ public class Fixtures {
      */
     public static Amendment createAmendments(String... nameHistory) {
         Amendment current = new Amendment();
+        Calendar cal = Calendar.getInstance();
+        cal.set(2001, Calendar.JANUARY, 1);
         for (int i = 0; i < nameHistory.length - 1; i++) {
             String name = nameHistory[i];
             current.setName(name);
+            current.setDate(cal.getTime());
             Amendment next = new Amendment();
             next.setPreviousAmendment(current);
             current = next;
+            cal.add(Calendar.DAY_OF_YEAR, 1);
         }
         current.setName(nameHistory[nameHistory.length - 1]);
         return current;

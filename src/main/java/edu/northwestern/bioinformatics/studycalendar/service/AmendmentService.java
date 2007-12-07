@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ public class AmendmentService {
     private StudyService studyService;
     private DeltaService deltaService;
     private TemplateService templateService;
-    private ScheduledCalendarDao scheduledCalendarDao;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -31,7 +31,6 @@ public class AmendmentService {
      *   <li>Apply the deltas to the persistent calendar</li>
      *   <li>Move the development amendment to the study's amendment stack</li>
      *   <li>Save it all</li>
-     *   <li>Temporarily:  apply amendment to all existing schedules</li>
      * </ul>
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -44,9 +43,23 @@ public class AmendmentService {
         source.pushAmendment(dev);
         source.setDevelopmentAmendment(null);
         studyService.save(source);
+    }
 
-        for (ScheduledCalendar scheduledCalendar : scheduledCalendarDao.getAllFor(source)) {
-            deltaService.amend(scheduledCalendar.getAssignment(), dev);
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void approve(StudySite studySite, AmendmentApproval... approvals) {
+        for (AmendmentApproval approval : approvals) {
+            studySite.addAmendmentApproval(approval);
+            if (approval.getAmendment().isMandatory()) {
+                for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
+                    // TODO: some sort of notification about applied vs. not-applied amendments
+                    if (assignment.getCurrentAmendment().equals(approval.getAmendment().getPreviousAmendment())) {
+                        deltaService.amend(assignment, approval.getAmendment());
+                    } else {
+                        log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
+                            approval.getAmendment().getDisplayName(), assignment.getId());
+                    }
+                }
+            }
         }
     }
 
@@ -107,8 +120,4 @@ public class AmendmentService {
         this.templateService = templateService;
     }
 
-    @Required
-    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
-        this.scheduledCalendarDao = scheduledCalendarDao;
-    }
 }

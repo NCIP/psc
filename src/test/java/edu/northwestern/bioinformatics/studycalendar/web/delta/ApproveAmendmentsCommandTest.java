@@ -7,15 +7,17 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.nwu.bioinformatics.commons.DateUtils;
 
-import java.util.Calendar;
+import java.util.Date;
 import static java.util.Calendar.*;
 import java.sql.Timestamp;
 
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static org.easymock.classextension.EasyMock.*;
+import org.easymock.IArgumentMatcher;
 
 /**
  * @author Rhett Sutphin
@@ -26,12 +28,12 @@ public class ApproveAmendmentsCommandTest extends StudyCalendarTestCase {
     private ApproveAmendmentsCommand command;
     private StudySite studySite;
     private Amendment a2003, a2004, a2005;
-    private StudySiteDao studySiteDao;
+    private AmendmentService amendmentService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studySiteDao = registerDaoMockFor(StudySiteDao.class);
+        amendmentService = registerMockFor(AmendmentService.class);
 
         Study study = new Study();
         a2005 = createAmendments(
@@ -52,7 +54,7 @@ public class ApproveAmendmentsCommandTest extends StudyCalendarTestCase {
     private void initCommand() {
         StaticNowFactory nowFactory = new StaticNowFactory();
         nowFactory.setNowTimestamp(NOW);
-        command = new ApproveAmendmentsCommand(studySite, studySiteDao, nowFactory);
+        command = new ApproveAmendmentsCommand(studySite, amendmentService, nowFactory);
     }
 
     public void testApprovalSubcommandForApprovedAmendment() throws Exception {
@@ -77,22 +79,15 @@ public class ApproveAmendmentsCommandTest extends StudyCalendarTestCase {
     public void testApply() throws Exception {
         assertEquals("Test setup failure", 1, studySite.getAmendmentApprovals().size());
 
+        Date expectedDate = DateTools.createDate(2005, SEPTEMBER, 2);
         command.getApprovals().get(1).setJustApproved(true);
-        command.getApprovals().get(1).setDate(DateTools.createDate(2005, SEPTEMBER, 2));
-        studySiteDao.save(studySite);
+        command.getApprovals().get(1).setDate(expectedDate);
+
+        amendmentService.approve(eq(studySite), eqApproval(a2004, expectedDate));
         
         replayMocks();
         command.apply();
         verifyMocks();
-
-        assertEquals("New approval not registered", 2, studySite.getAmendmentApprovals().size());
-        AmendmentApproval oldA = studySite.getAmendmentApprovals().get(0);
-        assertEquals("Old approval modified", a2003, oldA.getAmendment());
-        assertDayOfDate("Old approval modified", 2003, APRIL, 1, oldA.getDate());
-        AmendmentApproval newA = studySite.getAmendmentApprovals().get(1);
-        assertEquals("New approval incorrect", a2004, newA.getAmendment());
-        assertDayOfDate("New approval incorrect", 2005, SEPTEMBER, 2, newA.getDate());
-        assertSame("New approval incorrect", studySite, newA.getStudySite());
     }
 
     public void testApplyAutomaticallyApprovesPreviousApprovedAmendments() throws Exception {
@@ -103,30 +98,50 @@ public class ApproveAmendmentsCommandTest extends StudyCalendarTestCase {
         studySite.approveAmendment(a2002, DateTools.createDate(2002, NOVEMBER, 4));
         initCommand();
 
+        Date expectedDate = DateTools.createDate(2005, DECEMBER, 8);
         command.getApprovals().get(2).setJustApproved(true);
-        command.getApprovals().get(2).setDate(DateTools.createDate(2005, DECEMBER, 8));
+        command.getApprovals().get(2).setDate(expectedDate);
         assertSame("Test setup failure", a2004, command.getApprovals().get(2).getAmendment());
 
-        studySiteDao.save(studySite);
+        amendmentService.approve(eq(studySite),
+            eqApproval(a2003, expectedDate),
+            eqApproval(a2004, expectedDate)
+        );
 
         replayMocks();
         command.apply();
         verifyMocks();
+    }
 
-        assertEquals("Wrong number of approvals", 3, studySite.getAmendmentApprovals().size());
+    //////
 
-        AmendmentApproval oldA = studySite.getAmendmentApprovals().get(0);
-        assertEquals("Old approval modified", a2002, oldA.getAmendment());
-        assertDayOfDate("Old approval modified", 2002, NOVEMBER, 4, oldA.getDate());
+    private static AmendmentApproval eqApproval(Amendment amendment, Date date) {
+        reportMatcher(new AmendmentApprovalMatcher(amendment, date));
+        return null;
+    }
 
-        AmendmentApproval newA = studySite.getAmendmentApprovals().get(2);
-        assertEquals("Requested approval incorrect", a2004, newA.getAmendment());
-        assertDayOfDate("Requested approval incorrect", 2005, DECEMBER, 8, newA.getDate());
-        assertSame("Requested approval incorrect", studySite, newA.getStudySite());
+    private static class AmendmentApprovalMatcher implements IArgumentMatcher {
+        private Amendment expectedAmendment;
+        private Date expectedDate;
 
-        AmendmentApproval midA = studySite.getAmendmentApprovals().get(1);
-        assertEquals("Intervening automatic approval incorrect", a2003, midA.getAmendment());
-        assertDayOfDate("Intervening automatic approval incorrect", 2005, DECEMBER, 8, midA.getDate());
-        assertSame("Intervening automatic approval incorrect", studySite, midA.getStudySite());
+        public AmendmentApprovalMatcher(Amendment amendment, Date date) {
+            expectedAmendment = amendment;
+            expectedDate = date;
+        }
+
+        public boolean matches(Object object) {
+            if (object instanceof AmendmentApproval) {
+                AmendmentApproval actual = (AmendmentApproval) object;
+                return actual.getAmendment().equals(expectedAmendment)
+                    && DateTools.daysEqual(expectedDate, actual.getDate());
+            } else {
+                return false;
+            }
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("AmendmentApproval with date=").append(expectedDate)
+                .append(" and amendment ").append(expectedAmendment);
+        }
     }
 }

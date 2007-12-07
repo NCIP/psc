@@ -57,6 +57,11 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
         throw new UnsupportedOperationException("Name is computed");
     }
 
+    public void addStudySubjectAssignment(StudySubjectAssignment assignment) {
+        getStudySubjectAssignments().add(assignment);
+        assignment.setStudySite(this);
+    }
+
     /** Are there any assignments using this relationship? */
     @Transient
     public boolean isUsed() {

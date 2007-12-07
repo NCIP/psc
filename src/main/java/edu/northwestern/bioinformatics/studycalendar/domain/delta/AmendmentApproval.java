@@ -71,4 +71,13 @@ public class AmendmentApproval extends AbstractMutableDomainObject {
     public void setDate(Date date) {
         this.date = date;
     }
+
+    ////// OBJECT METHODS
+
+    public String toString() {
+        return new StringBuilder().append(getClass().getSimpleName())
+            .append("[date=").append(getDate())
+            .append("; amendment=").append(getAmendment())
+            .append(']').toString();
+    }
 }

@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 
 import java.util.Date;
 import java.util.List;
@@ -17,14 +18,14 @@ import gov.nih.nci.cabig.ctms.lang.NowFactory;
 public class ApproveAmendmentsCommand {
     private StudySite studySite;
     private List<Approval> approvals;
-    private StudySiteDao studySiteDao;
     private NowFactory nowFactory;
+    private AmendmentService amendmentService;
 
     public ApproveAmendmentsCommand(
-        StudySite studySite, StudySiteDao studySiteDao, NowFactory nowFactory
+        StudySite studySite, AmendmentService amendmentService, NowFactory nowFactory
     ) {
         this.studySite = studySite;
-        this.studySiteDao = studySiteDao;
+        this.amendmentService = amendmentService;
         this.nowFactory = nowFactory;
         approvals = new ArrayList<Approval>();
         buildSubcommands();
@@ -50,19 +51,20 @@ public class ApproveAmendmentsCommand {
     }
 
     public void apply() {
-        List<Approval> interveningUnapproved = new ArrayList<Approval>();
+        List<AmendmentApproval> toApprove = new ArrayList<AmendmentApproval>();
         for (Approval approval : getApprovals()) {
             if (approval.isJustApproved()) {
-                for (Approval intervening : interveningUnapproved) {
-                    studySite.approveAmendment(intervening.getAmendment(), approval.getDate());
+                toApprove.add(approval.toDomainApproval());
+                for (AmendmentApproval amendmentApproval : toApprove) {
+                    amendmentApproval.setDate(approval.getDate());
                 }
-                studySite.approveAmendment(approval.getAmendment(), approval.getDate());
-                interveningUnapproved.clear();
+                amendmentService.approve(studySite,
+                    toApprove.toArray(new AmendmentApproval[toApprove.size()]));
+                toApprove.clear();
             } else if (!approval.isAlreadyApproved()) {
-                interveningUnapproved.add(approval);
+                toApprove.add(approval.toDomainApproval());
             }
         }
-        studySiteDao.save(studySite);
     }
 
     public StudySite getStudySite() {
@@ -86,6 +88,14 @@ public class ApproveAmendmentsCommand {
         public Approval(Amendment amendment) {
             this.amendment = amendment;
         }
+
+        /////// LOGIC
+
+        public AmendmentApproval toDomainApproval() {
+            return AmendmentApproval.create(getAmendment(), getDate());
+        }
+
+        /////// BEAN PROPERTIES
 
         public boolean isAlreadyApproved() {
             return alreadyApproved;
