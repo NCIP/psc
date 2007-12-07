@@ -1,23 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.security.util.ObjectSetUtil;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.security.util.ObjectSetUtil;
-import gov.nih.nci.cagrid.opensaml.artifact.ByteSizedSequence;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import java.util.List;
 
 /**
  * @author Ram Chilukuri
@@ -68,6 +72,14 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
         return getStudySubjectAssignments().size() > 0;
     }
 
+    /**
+     * Note that higher-level code should generally use
+     * {@link edu.northwestern.bioinformatics.studycalendar.service.AmendmentService#approve(StudySite, edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval[])}
+     * and not this method.  This method updates the internal structures
+     * to record the fact that the amendment was approved, but does not
+     * do any of the logic associated with approving amendments (e.g., applying
+     * mandatory ones to existing schedules)
+     */
     public void approveAmendment(Amendment amendment, Date approvalDate) {
         AmendmentApproval approval = new AmendmentApproval();
         approval.setStudySite(this);
