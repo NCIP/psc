@@ -15,7 +15,7 @@ function createStudySegmentControls(studySegmentItem) {
     var controlBox = Builder.node("div", {className: 'studySegment-controls controls'});
     studySegmentItem.appendChild(controlBox)
 
-    var renameControl = createRenameControl('studySegment', studySegmentId, null)
+    var renameControl = createRenameControl('studySegment', studySegmentId, null, 'study segment')
     SC.inPlaceEdit(studySegmentA, renameControl.href, {
         externalControl: renameControl,
         externalControlOnly: true,
@@ -23,7 +23,7 @@ function createStudySegmentControls(studySegmentItem) {
         clickToEditText: studySegmentA.title
     })
 
-    var deleteControl = createDeleteControl('studySegment', studySegmentId)
+    var deleteControl = createDeleteControl('studySegment', studySegmentId, 'study segment')
     Event.observe(deleteControl, "click", deleteHandler(function() {
             return "Are you sure you want to delete the study segment '" + studySegmentA.innerHTML +
                 "'?  This will permanently remove it, all its periods, and its events.  " +
@@ -31,9 +31,9 @@ function createStudySegmentControls(studySegmentItem) {
         }, deleteControl.href
     ))
 
-    var moveUpControl   = createMoveControl(-1, '&#9650;', 'studySegment', studySegmentId)
+    var moveUpControl   = createMoveControl(-1, '&#9650;', 'studySegment', studySegmentId, 'study segment')
     SC.asyncLink(moveUpControl, {}, "epochs-indicator")
-    var moveDownControl = createMoveControl( 1, '&#9660;', 'studySegment', studySegmentId)
+    var moveDownControl = createMoveControl( 1, '&#9660;', 'studySegment', studySegmentId, 'study segment')
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
@@ -68,7 +68,7 @@ function _updateAllStudySegmentsControlVisibility(eltId) {
 
 function createAddEpochControl() {
     var studyId = ${param.study}
-    var addEpochControl = createAddControl("Add epoch", 'study', studyId)
+    var addEpochControl = createAddControl("Add epoch", 'study', studyId, 'study')
     SC.asyncLink(addEpochControl, {}, "epochs-indicator")
     $('addEpoch').appendChild(addEpochControl)
 }
@@ -77,7 +77,7 @@ function addToBeginSentence(){
     var studyId = ${param.study}
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
     var infoSentence = "To begin, "
-    var renameButton = createRenameControl('study', studyId, "enter")
+    var renameButton = createRenameControl('study', studyId, "enter", 'study')
     var endOfInfoSentence = " protocol identifier."
 
     var newValue = SC.inPlaceEdit("study-name", renameButton.href, {
@@ -115,7 +115,7 @@ function createStudyControls() {
     var controlBox = Builder.node("span", {className: 'study-controls controls'})
     h1.appendChild(controlBox)
 
-    var renameControl = createRenameControl('study', studyId, "Set protocol identifier")
+    var renameControl = createRenameControl('study', studyId, "Set protocol identifier", 'study')
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename", onComplete:function() {newSomething()}
@@ -134,16 +134,16 @@ function createEpochControls(epochH4) {
     var epochId = epochH4.id.split('-')[1]
     var epochName = $('epoch-' + epochId + '-name')
 
-    var addStudySegmentControl = createAddControl("Add segment", 'epoch', epochId)
+    var addStudySegmentControl = createAddControl("Add segment", 'epoch', epochId, 'epoch')
     SC.asyncLink(addStudySegmentControl, {}, "epochs-indicator")
 
-    var renameControl = createRenameControl('epoch', epochId, null)
+    var renameControl = createRenameControl('epoch', epochId, null, 'epoch')
     SC.inPlaceEdit(epochName, renameControl.href, {
         externalControl: renameControl,
         clickToEditText: "Click to rename"
     })
 
-    var deleteControl = createDeleteControl('epoch', epochId)
+    var deleteControl = createDeleteControl('epoch', epochId, 'epoch')
     Event.observe(deleteControl, "click", deleteHandler(function() {
             return "Are you sure you want to delete the epoch '" + epochName.innerHTML +
                 "'?  This will permanently remove it, all its study segments, its periods, and its events. " +
@@ -151,9 +151,9 @@ function createEpochControls(epochH4) {
         }, deleteControl.href
     ));
 
-    var moveUpControl   = createMoveControl(-1, '&#9668;', 'epoch', epochId)
+    var moveUpControl   = createMoveControl(-1, '&#9668;', 'epoch', epochId, 'epoch')
     SC.asyncLink(moveUpControl,   {}, "epochs-indicator")
-    var moveDownControl = createMoveControl( 1, '&#9658;', 'epoch', epochId)
+    var moveDownControl = createMoveControl( 1, '&#9658;', 'epoch', epochId, 'epoch')
     SC.asyncLink(moveDownControl, {}, "epochs-indicator")
 
     controlBox.appendChild(moveUpControl)
@@ -178,23 +178,23 @@ function updateAllEpochsControlVisibility() {
 }
 
 
-function createRenameControl(objectType, objectId, name) {
+function createRenameControl(objectType, objectId, name, nameOfTheElement) {
     if(name == null) {
         name ="Set name"
     }
-    return createControlAnchor("rename", name, "Change the name of this " + objectType, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
+    return createControlAnchor("rename", name, "Change the name of this " + nameOfTheElement, '<c:url value="/pages/cal/template/rename"/>', objectType, objectId)
 }
 
-function createDeleteControl(objectType, objectId) {
-    return createControlAnchor("delete", "Delete", "Delete this " + objectType, '<c:url value="/pages/cal/template/delete"/>', objectType, objectId)
+function createDeleteControl(objectType, objectId, nameOfTheElement) {
+    return createControlAnchor("delete", "Delete", "Delete this " + nameOfTheElement, '<c:url value="/pages/cal/template/delete"/>', objectType, objectId)
 }
 
-function createAddControl(text, objectType, objectId) {
-    return createControlAnchor("add", text, "Add to this " + objectType, '<c:url value="/pages/cal/template/addTo"/>', objectType, objectId)
+function createAddControl(text, objectType, objectId, nameOfTheElement) {
+    return createControlAnchor("add", text, "Add to this " + nameOfTheElement, '<c:url value="/pages/cal/template/addTo"/>', objectType, objectId)
 }
 
-function createMoveControl(offset, text, objectType, objectId) {
-    return createControlAnchor("move" + offset, text, "Reorder the " + objectType + "s", '<c:url value="/pages/cal/template/move?offset="/>' + offset, objectType, objectId)
+function createMoveControl(offset, text, objectType, objectId, nameOfTheElement) {
+    return createControlAnchor("move" + offset, text, "Reorder the " + nameOfTheElement + "s", '<c:url value="/pages/cal/template/move?offset="/>' + offset, objectType, objectId)
 }
 
 function createControlAnchor(controlName, text, title, baseHref, objectType, objectId) {
