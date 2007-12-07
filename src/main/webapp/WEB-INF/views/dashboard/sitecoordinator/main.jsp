@@ -44,7 +44,7 @@
     <%-- TODO: merge the view for this into this box, instead of linking out --%>
     As a site coordinator, you can <a class="control" href="<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>">manage</a>
     the visibility of studies to individual subject coordinators.  You can also
-    <a class="control" href="<c:url value="pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"/>">change</a>
+    <a class="control" href="<c:url value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"/>">change</a>
     the primary subject coordinator for individual subjects.
 </laf:box>
 
