@@ -98,7 +98,7 @@ function addToBeginSentence(){
     $('enterStudyNameSentence').appendChild(controlBox)
 }
 
-function newSomething() {
+function hideShowReleaseTemplateButton() {
     if ($('study-name').innerHTML == '[ABC 1234]') {
         $('enterStudyName').show()
         $('releaseTemplate').hide()
@@ -118,7 +118,7 @@ function createStudyControls() {
     var renameControl = createRenameControl('study', studyId, "Set protocol identifier", 'study')
     SC.inPlaceEdit("study-name", renameControl.href, {
         externalControl: renameControl,
-        clickToEditText: "Click to rename", onComplete:function() {newSomething()}
+        clickToEditText: "Click to rename", onComplete:function() {hideShowReleaseTemplateButton()}
     })
 
     controlBox.appendChild(renameControl)

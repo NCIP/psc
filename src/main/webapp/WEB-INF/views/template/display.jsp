@@ -485,17 +485,21 @@
 					
 			}
 
+            function studyManipulationSetup(){
+                $('releaseTemplate').show()
+            }
+
+            Event.observe(window, "load", epochsAreaSetup)
+            Event.observe(window, "load", studyManipulationSetup)
 
             <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", createStudyControls)
+                Event.observe(window, "load", addToBeginSentence)
+
+                Event.observe(window, "load", hideShowReleaseTemplateButton)
+                Event.observe(window, "load", createAddEpochControl)
             </c:if>
-            Event.observe(window, "load", epochsAreaSetup)
 
-            Event.observe(window, "load", createAddEpochControl)
-
-            Event.observe(window, "load", addToBeginSentence)
-
-            Event.observe(window, "load", newSomething)
 
             <c:if test="${not empty studySegment.months}">
 				Event.observe(window, "load", showSetup)
