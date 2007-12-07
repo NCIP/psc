@@ -11,29 +11,23 @@ public class CreateAmendmentCommand {
     private Study study;
     private Date date;
     private String name;
-    private Integer previousAmendment;
+    private boolean mandatory;
 
-    private AmendmentDao amendmentDao;
     private StudyService studyService;
-    private String action;
 
-
-    public CreateAmendmentCommand(StudyService studyService, AmendmentDao amendmentDao) {
+    public CreateAmendmentCommand(StudyService studyService) {
         this.studyService = studyService;
-        this.amendmentDao = amendmentDao;
+        mandatory = true;
     }
 
     public void apply() throws Exception{
-        // TODO: why is this condition necessary?
-        if (getAction().equals("Submit")) {
-            Amendment a = new Amendment();
-            a.setName(getName());
-            a.setDate(getDate());
-            a.setPreviousAmendment(null);
-            amendmentDao.save(a);
-            study.setDevelopmentAmendment(a);
-            studyService.save(study);
-        }
+        Amendment a = new Amendment();
+        a.setName(getName());
+        a.setDate(getDate());
+        a.setPreviousAmendment(null);
+        a.setMandatory(getMandatory());
+        study.setDevelopmentAmendment(a);
+        studyService.save(study);
     }
 
     public String getName() {
@@ -44,14 +38,6 @@ public class CreateAmendmentCommand {
         this.name = name;
     }
 
-    public Integer getPreviousAmendment() {
-        return previousAmendment;
-    }
-
-    public void setPreviousAmendment(Integer previousAmendment) {
-        this.previousAmendment = previousAmendment;
-    }
-
     public Date getDate() {
         return date;
     }
@@ -60,28 +46,20 @@ public class CreateAmendmentCommand {
         this.date = date;
     }
 
+    public Boolean getMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
     public Study getStudy() {
         return study;
     }
 
     public void setStudy(Study study) {
         this.study = study;
-    }
-
-    public AmendmentDao getAmendmentDao() {
-        return amendmentDao;
-    }
-
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
-    }
-
-    public String getAction() {
-        return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
 }

@@ -12,14 +12,15 @@
         div.label {
             width: 25%;
         }
-        div.submit {
-            text-align: left;
-        }
         form {
-            width: 27em;
+            width: 40em;
         }
         #buttons {
             margin-top:10px;
+        }
+        p.tip {
+            line-height: 110%;
+            margin-left: 3em;
         }
     </style>
 
@@ -31,7 +32,7 @@
             <form:errors path="*"/>
             <div class="row">
                 <div class="label" id="dateDescription">
-                    <tags:requiredIndicator/> Amendment date 
+                    <form:label path="date"><tags:requiredIndicator/> Amendment date</form:label> 
                 </div>
                 <div class="value">
                     <laf:dateInput path="date"/>
@@ -39,17 +40,42 @@
             </div>
             <div class="row">
                 <div class="label">
-                    Amendment name
+                    <form:label path="name">Amendment name</form:label>
                 </div>
                 <div class="value">
                     <form:input path="name" id="name"/>
                 </div>
             </div>
+            <div class="row">
+                <div class="label">
+                    Mandatoriness
+                </div>
+                <div class="value">
+                    <div>
+                        <form:radiobutton path="mandatory" value="true" />&nbsp;Mandatory
+                        <p class="tip">
+                            All subjects currently on this study must adopt the schedule in
+                            this amendment in order to remain in the trial.  When the
+                            amendment is released and approved, existing subject schedules will
+                            automatically be amended to match.
+                        </p>
+                    </div>
+                    <div>
+                        <form:radiobutton path="mandatory" value="false"/>&nbsp;Non-mandatory
+                        <p class="tip">
+                            Subjects currently in the study have the option of staying on
+                            their current schedules instead of adopting this amendment's changes.
+                            When the amendment is released and approved, no existing subject
+                            schedules will be automatically changed.
+                        </p>
+                    </div>
+                </div>
+            </div>
             <div class="row" id="buttons">
                 <div class="label">&nbsp;</div>
                 <div class="value">
-                    <input type="submit" name="action" value="Submit" />
-                    <input type="submit" name="action" value="Cancel"/>
+                    <input type="submit" value="Submit" />
+                    <input type="submit" name="_cancel" value="Cancel"/>
                 </div>
             </div>
         </form:form>

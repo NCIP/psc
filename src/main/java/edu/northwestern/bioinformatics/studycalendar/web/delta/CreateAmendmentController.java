@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SITE_COORDINATOR})
+@AccessControl(roles = Role.STUDY_COORDINATOR)
 public class CreateAmendmentController extends PscCancellableFormController {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
@@ -27,13 +27,13 @@ public class CreateAmendmentController extends PscCancellableFormController {
         setFormView("delta/createAmendment");
         setBindOnNewForm(true);
 
-        setSuccessView("studyList");
-        setCancelView("studyList");
+        setSuccessView("redirectToStudyList");
+        setCancelView("redirectToStudyList");
     }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
-        return new CreateAmendmentCommand(studyService, amendmentDao);
+        return new CreateAmendmentCommand(studyService);
     }
 
     @Override
@@ -47,12 +47,7 @@ public class CreateAmendmentController extends PscCancellableFormController {
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         CreateAmendmentCommand command = (CreateAmendmentCommand) oCommand;
         command.apply();
-        return new ModelAndView( new RedirectView(getSuccessView()));
-    }
-
-    @Override
-    protected ModelAndView onCancel(Object command) throws Exception {
-        return new ModelAndView(new RedirectView(getCancelView()));
+        return new ModelAndView(getSuccessView());
     }
 
     ////// CONFIGURATION
