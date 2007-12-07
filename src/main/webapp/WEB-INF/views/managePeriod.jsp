@@ -421,6 +421,7 @@ function addAdditionalParameters(inputField, queryString) {
 function updateActivity(input, li) {
     $('add-activity').name = li.innerHTML;
     $('add-activity').value= li.id;
+    $('add-activity-button').focus()
 }
 
 /*
