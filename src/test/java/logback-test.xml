@@ -26,6 +26,7 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
+    <logger name="edu.northwestern.bioinformatics.studycalendar"><level value="trace"/></logger>
     <logger name="org.hibernate.type">         <level value="trace"/></logger>
     <logger name="org.apache.commons.digester"><level value="info"/></logger>
     <logger name="org.springframework">        <level value="info"/></logger>

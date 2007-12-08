@@ -178,7 +178,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         return new StringBuffer(getClass().getSimpleName())
             .append("[date=").append(getDate())
             .append("; name=").append(getName())
-            .append("; prev=").append(getPreviousAmendment())
+            .append("; prev=").append(getPreviousAmendment() == null ? null : getPreviousAmendment().getDisplayName())
             .append(']').toString();
     }
 }

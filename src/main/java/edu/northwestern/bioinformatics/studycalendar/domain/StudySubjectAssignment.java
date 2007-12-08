@@ -6,6 +6,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,6 +21,9 @@ import javax.persistence.Transient;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Collections;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
@@ -35,6 +40,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
     }
 )
 public class StudySubjectAssignment extends AbstractMutableDomainObject {
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     private String studyId;
     private StudySite studySite;
     private Subject subject;
@@ -61,6 +68,29 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     public void addAeNotification(AdverseEventNotification notification) {
         getAeNotifications().add(notification);
         notification.setAssignment(this);
+    }
+
+    @Transient
+    public List<Amendment> getAvailableUnappliedAmendments() {
+        List<Amendment> allAmendments = new ArrayList<Amendment>(getStudySite().getStudy().getAmendmentsList());
+        Collections.reverse(allAmendments);
+        log.trace("All amendments: {}", allAmendments);
+        // remove all amendments up to and including the current applied one
+        for (Iterator<Amendment> it = allAmendments.iterator(); it.hasNext();) {
+            Amendment amendment = it.next();
+            it.remove();
+            if (amendment.equals(getCurrentAmendment())) break;
+        }
+        log.trace("After removing up to the current applied: {}", allAmendments);
+        // remove all unapproved amendments
+        for (Iterator<Amendment> it = allAmendments.iterator(); it.hasNext();) {
+            Amendment amendment = it.next();
+            if (getStudySite().getAmendmentApproval(amendment) == null) {
+                it.remove();
+            }
+        }
+        log.trace("After removing unapproved: {}", allAmendments);
+        return allAmendments;
     }
 
     ////// BEAN PROPERTIES

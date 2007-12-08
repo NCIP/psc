@@ -285,6 +285,12 @@
     <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
 
+    <bean name="/cal/schedule/amend" id="changeAmendmentController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangeAmendmentController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
+
     <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">
     </bean>

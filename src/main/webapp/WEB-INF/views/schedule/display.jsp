@@ -360,7 +360,7 @@
         <div class="value">
             ${assignment.currentAmendment.displayName}
             <c:if test="${not onLatestAmendment}">
-                <a class="control" href="javascript:alert('not done')">Change</a>
+                <a class="control" href="<c:url value="/pages/cal/schedule/amend?assignment=${assignment.id}"/>">Change</a>
             </c:if>
         </div>
     </div>

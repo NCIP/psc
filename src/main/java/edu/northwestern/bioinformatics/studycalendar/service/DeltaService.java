@@ -59,8 +59,16 @@ public class DeltaService {
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void amend(StudySubjectAssignment assignment, Amendment amendment) {
-        apply(assignment.getScheduledCalendar(), amendment);
-        assignment.setCurrentAmendment(amendment);
+        if (!assignment.getStudySite().getStudy().getAmendmentsList().contains(amendment)) {
+            throw new StudyCalendarSystemException("The amendment {} does not apply to assignment {}", amendment.getId(), assignment.getId());
+        }
+        if (assignment.getCurrentAmendment().equals(amendment.getPreviousAmendment())) {
+            apply(assignment.getScheduledCalendar(), amendment);
+            assignment.setCurrentAmendment(amendment);
+        } else {
+            amend(assignment, amendment.getPreviousAmendment());
+            amend(assignment, amendment);
+        }
     }
 
     public <T extends PlanTreeNode<?>> T revise(T source) {

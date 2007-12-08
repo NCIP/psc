@@ -72,6 +72,7 @@ public class ControllerTools {
         if (assignment != null) {
             model.put("subject", assignment.getSubject());
             model.put("scheduledCalendar", assignment.getScheduledCalendar());
+            addToModel(assignment.getStudySite(), model);
         }
     }
 
@@ -130,6 +131,11 @@ public class ControllerTools {
         if (selectedStudySegmentId != null) model.put("studySegment", selectedStudySegmentId);
         if (selectedAmendmentId != null) model.put("amendment", selectedAmendmentId);
         return new ModelAndView("redirectToCalendarTemplate", model);
+    }
+
+    public ModelAndView redirectToSchedule(int assignmentId) {
+        ModelMap model = new ModelMap("assignment", assignmentId);
+        return new ModelAndView("redirectToSchedule", model);
     }
 
     // note that if you change the error message here, you need to change it in error-console.js, too
