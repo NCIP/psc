@@ -150,7 +150,7 @@
         </copy>
         <!-- Create valid CSM configuration for testing -->
         <copy todir="${build-dir.csm}" filtering="true" overwrite="true">
-            <fileset dir="${basedir}/conf/upt">
+            <fileset dir="${basedir}/csm/upt">
                 <include name="*.xml"/>
             </fileset>
             <filterset>
@@ -388,6 +388,17 @@
         </war>
         <!--delete file="${webapp.context-file}"/-->
     </target>
+
+    <!-- TODO: incomplete
+    <target name="dist" description="creates the distribution package" depends="war">
+        <property name="install.dir" value="dist/psc_install"/>
+        <property name="install-samples.dir" value="${install.dir}/conf_samples"/>
+        <mkdir dir="${install-samples.dir}"/>
+        <copy file="dist/studycalendar.war" tofile="${install.dir}/psc.war"/>
+        <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
+        <copy file="conf/upt/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
+    </target>
+    -->
 
     <!-- CRUISE CONTROL BUILDS -->
 
