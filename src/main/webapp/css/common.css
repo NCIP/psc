@@ -1,4 +1,6 @@
-
+body {
+    padding-bottom: 35px;
+}
 
 #body {
     margin: 0.5em 1em;
@@ -25,6 +27,15 @@ a:active {
     padding: 0.5em;
     border-top: 1px solid #444;
     text-align: right;
+}
+
+#build-name {
+    color: #666;
+    font-size: 85%;
+    padding: 3px;
+    position: relative;
+    bottom: 0;
+    clear: both;
 }
 
 .error {

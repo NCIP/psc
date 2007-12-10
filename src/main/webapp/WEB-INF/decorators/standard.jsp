@@ -47,5 +47,6 @@
 <c:if test="${configuration.map.showDebugInformation}">
     <laf:debugInfo/>
 </c:if>
+<div id="build-name">${buildInfo.buildName}</div>
 </body>
 </html>  

@@ -5,6 +5,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
+import gov.nih.nci.cabig.ctms.tools.BuildInfo;
+
+import java.util.Date;
 
 /**
  * These tests are intended to verify that the various application contexts will all load when
@@ -25,6 +28,14 @@ public class ApplicationContextInitializationTest extends StudyCalendarTestCase 
     public void testApplicationContextItself() throws Exception {
         getDeployedApplicationContext();
         // no exceptions
+    }
+
+    public void testBuildInfoTimestampIsParsed() throws Exception {
+        BuildInfo buildInfo = (BuildInfo) getDeployedApplicationContext().getBean("buildInfo");
+        assertNotNull(buildInfo.getTimestamp());
+        // note that this assertion will fail if you build and then run the tests much later
+        assertDatesClose("Build timestamp is not recent (this test will fail if you run it a long time after you build)",
+            new Date(), buildInfo.getTimestamp(), 3 * 60 * 60 * 1000 /* 3 hours */);
     }
 
     public void testSpringServletContext() throws Exception {

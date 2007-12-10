@@ -4,6 +4,15 @@
     xsi:schemaLocation="
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"
     >
+    
+    <bean id="buildInfo" class="gov.nih.nci.cabig.ctms.tools.BuildInfo">
+        <property name="applicationName" value="Patient Study Calendar"/>
+        <property name="versionNumber" value="@buildInfo.versionNumber@"/>
+        <property name="username" value="@buildInfo.username@"/>
+        <property name="hostname" value="@buildInfo.hostname@"/>
+        <property name="timestamp" value="@buildInfo.timestamp@"/>
+    </bean>
+
     <bean id="setupStatus" class="edu.northwestern.bioinformatics.studycalendar.web.setup.SetupStatus" autowire="byName"/>
 
     <!-- TODO: not sure if these beans should go here or somewhere specific to the flow -->

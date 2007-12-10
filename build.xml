@@ -2,6 +2,7 @@
 
     <!-- PROPERTIES AND PATHS -->
     <property name="application-short-name" value="psc"/>
+    <property name="version" value="1.3-SNAPSHOT"/>
 
     <property name="src-dir.main"      value="src/main/java"/>
     <property name="src-dir.bering"    value="src/main/db/migrate"/>
@@ -108,8 +109,15 @@
     </target>
 
     <target name="default-properties">
+        <property environment="env"/>
         <property name="test.failfast" value="false"/>
         <property name="config.database" value="datasource"/>
+        <!-- Note that this will only work on unixish systems -->
+        <exec executable="hostname" outputproperty="hostname" failifexecutionfails="false">
+            <arg value="-s"/>
+        </exec>
+        <!-- This is apparently the thing to do for windows.  Untested. -->
+        <property name="hostname" value="${env.COMPUTERNAME}"/>
     </target>
 
     <target name="clean">
@@ -120,13 +128,22 @@
     </target>
 
     <target name="resources" description="Copy resources into classpath" depends="init">
+        <tstamp>
+            <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss.S" />
+        </tstamp>
         <copy todir="${build-dir.main}" filtering="true" overwrite="true">
             <fileset dir="${src-dir.main}">
                 <include name="applicationContext-spring.xml"/>
+                <include name="applicationContext-setup.xml"/>
             </fileset>
             <filterset>
                 <filter token="config.database" value="${config.database}"/>
                 <filter token="application-short-name" value="${application-short-name}"/>
+
+                <filter token="buildInfo.versionNumber" value="${version}"/>
+                <filter token="buildInfo.username" value="${user.name}"/>
+                <filter token="buildInfo.hostname" value="${hostname}"/>
+                <filter token="buildInfo.timestamp" value="${buildtime}"/>
             </filterset>
         </copy>
         <copy todir="${build-dir.main}">
@@ -389,16 +406,24 @@
         <!--delete file="${webapp.context-file}"/-->
     </target>
 
-    <!-- TODO: incomplete
     <target name="dist" description="creates the distribution package" depends="war">
-        <property name="install.dir" value="dist/psc_install"/>
-        <property name="install-samples.dir" value="${install.dir}/conf_samples"/>
+        <property name="install.name" value="psc-${version}"/>
+        <property name="install.dir" value="dist/${install.name}"/>
+        <property name="install-samples.dir" value="${install.dir}/conf-samples"/>
         <mkdir dir="${install-samples.dir}"/>
-        <copy file="dist/studycalendar.war" tofile="${install.dir}/psc.war"/>
+        <copy file="dist/studycalendar.war" tofile="${install.dir}/psc.war" failonerror="true"/>
         <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
-        <copy file="conf/upt/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
+        <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config"/>
+        <exec executable="svn" taskname="svn">
+            <arg value="export"/>
+            <arg value="https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc"/>
+            <arg value="${install.dir}/psc_install.doc"/>
+        </exec>
+        <zip destfile="dist/${install.name}-bin.zip" basedir="dist">
+            <include name="${install.name}/**/*"/>
+        </zip>
+        <delete dir="${install.dir}"/>
     </target>
-    -->
 
     <!-- CRUISE CONTROL BUILDS -->
 
