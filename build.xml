@@ -437,36 +437,36 @@
         <property name="config.database" value="hsqldb"/>
     </target>
 
-    <target name="cruise.properties">
+    <target name="autobuild.properties">
         <!-- overrides properties set in default-properties -->
         <property name="test.failfast" value="false"/>
     </target>
 
-    <target name="cruise.exec" depends="clean, test.unit"/>
+    <target name="autobuild.exec" depends="clean, test.unit"/>
 
-    <target name="cruise.exec.db" depends="migrate, test.unit.select-database, cruise.exec"/>
+    <target name="autobuild.exec.db" depends="migrate, test.unit.select-database, autobuild.exec"/>
 
-    <target name="cruise.artifacts">
-        <property name="cruise.artifacts-dir" value="target/artifacts"/>
-        <mkdir dir="${cruise.artifacts-dir}/emma"/>
-        <copy todir="${cruise.artifacts-dir}/emma">
+    <target name="autobuild.artifacts">
+        <property name="autobuild.artifacts-dir" value="target/artifacts"/>
+        <mkdir dir="${autobuild.artifacts-dir}/emma"/>
+        <copy todir="${autobuild.artifacts-dir}/emma">
             <fileset dir="${coverage-dir}">
                 <exclude name="instrumented-classes/**/*"/>
                 <exclude name="instrumented-classes"/>
                 <exclude name="*.emma"/>
             </fileset>
         </copy>
-        <symlink link="${cruise.artifacts-dir}/emma/index.html" resource="coverage.html" failonerror="false"/>
+        <symlink link="${autobuild.artifacts-dir}/emma/index.html" resource="coverage.html" failonerror="false"/>
     </target>
 
-    <target name="cruisecontrol-full" description="CruiseControl build for all unit tests against HSQLDB"
-        depends="cruise.properties, create-hsqldb, hsqldb, emma, cruise.exec, cruise.artifacts"/>
+    <target name="autobuild-full" description="CruiseControl build for all unit tests against HSQLDB"
+        depends="autobuild.properties, create-hsqldb, hsqldb, emma, autobuild.exec, autobuild.artifacts"/>
 
-    <target name="cruisecontrol-oracle" description="CruiseControl build for db-only unit tests against Oracle"
-        depends="cruise.properties, oracle, cruise.exec.db"/>
+    <target name="autobuild-oracle" description="CruiseControl build for db-only unit tests against Oracle"
+        depends="autobuild.properties, oracle, autobuild.exec.db"/>
 
-    <target name="cruisecontrol-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
-        depends="cruise.properties, postgresql, cruise.exec.db"/>
+    <target name="autobuild-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
+        depends="autobuild.properties, postgresql, autobuild.exec.db"/>
 
     <!-- TOMCAT DEPLOYMENT -->
 
