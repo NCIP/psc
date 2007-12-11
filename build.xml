@@ -157,7 +157,7 @@
         <mkdir dir="${build-dir.main}/db/migrate"/>
         <copy todir="${build-dir.main}/db/migrate">
             <fileset dir="${src-dir.bering}">
-                <include name="**/*.groovy"/>
+                <include name="**/*"/>
             </fileset>
         </copy>
         <copy todir="${build-dir.unit-test}">
