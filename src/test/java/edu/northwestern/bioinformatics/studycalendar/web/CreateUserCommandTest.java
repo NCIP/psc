@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static org.easymock.EasyMock.expect;
 
 import java.util.*;
@@ -17,12 +18,14 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     List<Site> sites;
     Study study;
     private UserRoleService userRoleService;
+    private UserDao userDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         siteDao         = registerDaoMockFor(SiteDao.class);
+        userDao         = registerDaoMockFor(UserDao.class);
         userService     = registerMockFor(UserService.class);
         userRoleService = registerMockFor(UserRoleService.class);
 
@@ -151,14 +154,14 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     public CreateUserCommand createCommand(User user) {
-        return new CreateUserCommand(user, siteDao, userService, userRoleService);
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService);
     }
 
     public void testUserDefaultsToNewWhenNotSet() throws Exception {
         expect(siteDao.getAll()).andReturn(Collections.<Site>emptyList());
         replayMocks();
 
-        CreateUserCommand command = new CreateUserCommand(null, siteDao, userService, userRoleService);
+        CreateUserCommand command = new CreateUserCommand(null, siteDao, userService, userDao, userRoleService);
         assertNotNull(command.getUser());
         assertNull(command.getUser().getId());
         assertNull(command.getUser().getName());

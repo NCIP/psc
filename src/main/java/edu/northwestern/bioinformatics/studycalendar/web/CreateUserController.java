@@ -35,6 +35,7 @@ public class CreateUserController extends PscCancellableFormController {
     private UserService userService;
     private SiteDao siteDao;
     private UserRoleService userRoleService;
+    private UserDao userDao;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -45,6 +46,7 @@ public class CreateUserController extends PscCancellableFormController {
         setCrumb(new Crumb());
     }
 
+    @Override
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         CreateUserCommand command = (CreateUserCommand) o;
         Map<String, Object> refdata = new HashMap<String, Object>();
@@ -59,6 +61,7 @@ public class CreateUserController extends PscCancellableFormController {
         return refdata;
     }
 
+    @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
 
@@ -66,6 +69,7 @@ public class CreateUserController extends PscCancellableFormController {
         binder.registerCustomEditor(Role.class, new RoleEditor());
     }
 
+    @Override
     protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
         CreateUserCommand command = (CreateUserCommand) oCommand;
         
@@ -74,20 +78,21 @@ public class CreateUserController extends PscCancellableFormController {
         return new ModelAndView(new RedirectView(getSuccessView()));
     }
 
+    @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
-        User user = (editId != null) ? userService.getUserById(editId) : new User();
+        User user = (editId != null) ? userDao.getById(editId) : new User();
 
-        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService, userRoleService);
-
-        return command;
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService);
     }
 
+    @Override
     protected ModelAndView onCancel(Object command) throws Exception {
-		return new ModelAndView(new RedirectView(getCancelView()));
-	}
+        // TODO: fix this
+        return new ModelAndView(new RedirectView(getCancelView()));
+    }
 
-
+    ////// CONFIGURATION
 
     @Required
     public void setUserService(UserService userService) {
@@ -99,11 +104,18 @@ public class CreateUserController extends PscCancellableFormController {
         this.siteDao = siteDao;
     }
 
+    @Required
     public void setUserRoleService(UserRoleService userRoleService) {
         this.userRoleService = userRoleService;
     }
 
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
     private static class Crumb extends DefaultCrumb {
+        @Override
         public String getName(BreadcrumbContext context) {
             StringBuilder sb = new StringBuilder();
             if (context.getUser() == null || context.getUser().getId() == null) {
@@ -114,6 +126,7 @@ public class CreateUserController extends PscCancellableFormController {
             return sb.toString();
         }
 
+        @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = new HashMap<String, String>();
             if (context.getUser() != null && context.getUser().getId() != null) {

@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,20 +13,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
+@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class ListUsersController extends PscSimpleFormController {
-    private UserService userService;
+    private UserDao userDao;
 
+    @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-        List<User> users = userService.getAllUsers();
+        List<User> users = userDao.getAll();
         model.put("users", users);
 
         return new ModelAndView("listUsers", model);
     }
 
     @Required
-    public void setUserService(UserService userService) {
-        this.userService = userService;
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

@@ -62,49 +62,23 @@ public class UserServiceTest extends StudyCalendarTestCase {
         userRole2 = createUserRole(user2, Role.SITE_COORDINATOR, site0);
     }
 
-    public void testSaveUser() throws Exception {
+    public void testSaveNewUser() throws Exception {
         service.setUserProvisioningManager(userProvisioningManagerStub);
-        User expectedUser = createUser(200, "john", 100L, true, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-
-        gov.nih.nci.security.authorization.domainobjects.User expectedCsmUser =
-                new gov.nih.nci.security.authorization.domainobjects.User();
-        expectedCsmUser.setLoginName(expectedUser.getName());
-        expectedCsmUser.setUserId(expectedUser.getCsmUserId());
-
-        userProvisioningManagerStub.createUser(expectedCsmUser);
+        User expectedUser = createUser(null, "john", null, true, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
 
         userDao.save(expectedUser);
         replayMocks();
 
-        User actual = service.saveUser(expectedUser);
+        User actual = service.saveUser(expectedUser, "flan");
         verifyMocks();
 
-        assertUserEquals(expectedUser, actual);
-    }
-
-
-    public void testGetUserByName() throws Exception {
-        User expectedUser = createUser(-100, "john", -100L, true);
-
-        expect(userDao.getByName(expectedUser.getName())).andReturn(expectedUser);
-        replayMocks();
-
-        User actualUser = service.getUserByName("john");
-        verifyMocks();
-
-        assertUserEquals(expectedUser, actualUser);
-    }
-
-    public void testGetUserById() throws Exception {
-        User expectedUser = createUser(-200, "john", -100L, false, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
-
-        expect(userDao.getById(-200)).andReturn(expectedUser);
-        replayMocks();
-
-        User actualUser = service.getUserById(-200);
-        verifyMocks();
-
-        assertUserEquals(expectedUser, actualUser);
+        assertSame("Input user not returned", expectedUser, actual);
+        assertEquals("CSM ID not propagated to PSC user", (Long) UserProvisioningManagerStub.USER_ID,
+            actual.getCsmUserId());
+        assertEquals("CSM user not given correct login name", expectedUser.getName(),
+            userProvisioningManagerStub.getCreatedUser().getLoginName());
+        assertEquals("CSM user not given correct password", "flan",
+            userProvisioningManagerStub.getCreatedUser().getPassword());
     }
 
     public void testGetSubjectCoordinatorsForSites() throws Exception {
@@ -124,27 +98,6 @@ public class UserServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong Number of Users", 1, actualAssignableUsers.size());
-    }
-
-    public void assertUserEquals(User expected, User actual) throws Exception{
-
-        assertEquals("Names not equal", expected.getName(), actual.getName());
-        assertEquals("Csm user ids not equal", expected.getCsmUserId(), actual.getCsmUserId());
-        assertEquals("Active flags not equal", expected.getActiveFlag(), actual.getActiveFlag());
-        assertEquals("Different number of roles", expected.getUserRoles().size(), actual.getUserRoles().size());
-
-        Iterator<UserRole> expectedUserRolesIter = expected.getUserRoles().iterator();
-        Iterator<UserRole> actualUserRolesIter = actual.getUserRoles().iterator();
-        while (expectedUserRolesIter.hasNext()) {
-            UserRole expectedUserRole = expectedUserRolesIter.next();
-            UserRole actualUserRole = actualUserRolesIter.next();
-
-            assertEquals("Role not equal", expectedUserRole.getRole(), actualUserRole.getRole());
-            assertEquals("Different number of sites", expectedUserRole.getSites().size(), actualUserRole.getSites().size());
-            for (Site expectedSite : expectedUserRole.getSites()) {
-                assertTrue("Does not contain site", actualUserRole.getSites().contains(expectedSite));
-            }
-        }
     }
 
     public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
@@ -188,13 +141,36 @@ public class UserServiceTest extends StudyCalendarTestCase {
             Arrays.sort((Object[])expected);
         }
 
+        @Override
         public boolean matches(Object actual) {
             Arrays.sort((Object[])actual);
             return super.matches(actual);
         }
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     private class UserProvisioningManagerStub implements UserProvisioningManager {
+        public static final long USER_ID = 100L;
+        private gov.nih.nci.security.authorization.domainobjects.User createdUser;
+
+        public gov.nih.nci.security.authorization.domainobjects.User getCreatedUser() {
+            return createdUser;
+        }
+
+        ////// IMPLEMENTATION
+
+        public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
+            createdUser = user;
+            user.setUserId(USER_ID);
+        }
+
+        public Application getApplicationById(String string) throws CSObjectNotFoundException {
+            return new Application();
+        }
+
+        public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
+
+        ////// All remaining methods are unsupported
 
         public void assignUsersToGroup(String string, String[] strings) throws CSTransactionException {
             throw new UnsupportedOperationException();
@@ -236,18 +212,8 @@ public class UserServiceTest extends StudyCalendarTestCase {
             throw new UnsupportedOperationException();
         }
 
-        public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
-
         public List getObjects(SearchCriteria searchCriteria) {
             throw new UnsupportedOperationException();
-        }
-
-        public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
-            user.setUserId(100L);
-        }
-
-        public Application getApplicationById(String string) throws CSObjectNotFoundException {
-            return new Application();
         }
 
         public void createProtectionGroup(ProtectionGroup protectionGroup) throws CSTransactionException {

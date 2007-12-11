@@ -20,7 +20,7 @@ public class UserService implements Serializable {
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
 
     public User saveUser(User user, String password) {
-        if(user == null)
+        if (user == null)
             return null;
 
         if (user.getCsmUserId() == null) {
@@ -51,14 +51,6 @@ public class UserService implements Serializable {
         return user;
     }
 
-    @Deprecated // Use UserDao#save directly
-    public User saveUser(User user) {
-        if (user == null) return null;
-
-        userDao.save(user);
-        return user;
-    }
-
     private gov.nih.nci.security.authorization.domainobjects.User createCsmUser(User user, String password) throws CSTransactionException {
         gov.nih.nci.security.authorization.domainobjects.User csmUser =
                 new gov.nih.nci.security.authorization.domainobjects.User();
@@ -68,23 +60,6 @@ public class UserService implements Serializable {
         csmUser.setLastName("");    // Attribute can't be null
         userProvisioningManager.createUser(csmUser);
         return csmUser;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated // Use UserDao#getByName directly
-    public User getUserByName(String userName) {
-        User usersResults = userDao.getByName(userName);
-        return usersResults;
-    }
-
-    @Deprecated // Use UserDao#getAllUsers directly
-    public List<User> getAllUsers() {
-        return userDao.getAll();
-    }
-
-    @Deprecated // Use UserDao#getById directly
-    public User getUserById(int id) {
-        return userDao.getById(id);
     }
 
     public List<User> getSubjectCoordinatorsForSites(List<Site> sites) {

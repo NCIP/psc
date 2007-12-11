@@ -30,10 +30,11 @@ public class CreateUserCommand implements Validatable, Serializable {
     private UserRoleService userRoleService;
     private UserDao userDao;
 
-    public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserRoleService userRoleService) {
+    public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserDao userDao, UserRoleService userRoleService) {
         this.user = user == null ? new User() : user;
         this.siteDao = siteDao;
         this.userService = userService;
+        this.userDao = userDao;
         this.userRoleService = userRoleService;
         this.passwordModified = false;
         
@@ -90,8 +91,9 @@ public class CreateUserCommand implements Validatable, Serializable {
             user.setActiveFlag(userActiveFlag);
             userService.saveUser(user, password);
         } else {
+            // must be update only
             user.setActiveFlag(userActiveFlag);
-            userService.saveUser(user);
+            userDao.save(user);
         }
         assignUserRolesFromRolesGrid();
         return user;
@@ -210,19 +212,4 @@ public class CreateUserCommand implements Validatable, Serializable {
     public boolean isUserActiveFlag() {
         return userActiveFlag;
     }
-
-    ////// CONFIGURATION
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
-    }
-
 }
