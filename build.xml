@@ -419,7 +419,8 @@
             <arg value="https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc"/>
             <arg value="${install.dir}/psc_install.doc"/>
         </exec>
-        <zip destfile="dist/${install.name}-bin.zip" basedir="dist">
+        <property name="install.zip" value="${install.name}-bin.zip"/>
+        <zip destfile="dist/${install.zip}" basedir="dist">
             <include name="${install.name}/**/*"/>
         </zip>
         <delete dir="${install.dir}"/>
@@ -467,6 +468,19 @@
 
     <target name="autobuild-postgresql" description="Automated build for db-only unit tests against PostgreSQL"
         depends="autobuild.properties, postgresql, autobuild.exec.db"/>
+
+    <target name="autobuild.dist" depends="dist">
+        <property name="autobuild.artifacts-dir" value="target/artifacts"/>
+        <tstamp>
+            <format property="today" pattern="yyyyMMddHHmmss" />
+        </tstamp>
+        <copy file="dist/${install.zip}"
+              tofile="${autobuild.artifacts-dir}/psc-${version}-${today}-bin.zip"
+              verbose="true"/>
+    </target>
+
+    <target name="autobuild-nightly" description="Automated nightly build for distribution"
+        depends="autobuild.properties, create-hsqldb, hsqldb, autobuild.exec, autobuild.dist"/>
 
     <!-- TOMCAT DEPLOYMENT -->
 
