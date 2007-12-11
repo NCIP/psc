@@ -88,8 +88,9 @@
 
         <form:form method="post">
             <form:hidden path="user.id"/>
-            <form:hidden path="passwordModified"/> 
-            <form:errors path="*"/>
+            <form:hidden path="passwordModified"/>
+            <tags:errors path="user.*"/>
+            <tags:errors path="password*"/>
             <c:set var="passwordError" value="false"/>
             <spring:bind path="command.password">
                 <c:set var="passwordError" value="${status.errors.errorCount > 0}"/>
@@ -139,10 +140,11 @@
             </div>
             <div class="row">
                 <div class="label">
-                    <h2>Please select a role</h2>
+                    <h2>Please select roles</h2>
                 </div>
                 <div class="value">
-                    <table cellspacing="0" cellpading="0" border="1" class="siteRoles">
+                    <tags:errors path="rolesGrid*"/>
+                    <table class="grid siteRoles">
                         <tr>
                             <th></th>
                             <c:forEach items="${roles}" var="role">

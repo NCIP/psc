@@ -71,6 +71,13 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         this.userRoles.addAll(userRoles);
     }
 
+    public boolean hasAssignment(Site site) {
+        for (StudySubjectAssignment assignment : getStudySubjectAssignments()) {
+            if (assignment.getStudySite().getSite().equals(site)) return true;
+        }
+        return false;
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {

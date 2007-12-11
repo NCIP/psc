@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
@@ -15,6 +16,7 @@ import org.springframework.validation.Errors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 import java.io.Serializable;
 
 public class CreateUserCommand implements Validatable, Serializable {
@@ -46,7 +48,7 @@ public class CreateUserCommand implements Validatable, Serializable {
         rolesGrid = new HashMap<Site, Map<Role,RoleCell>>();
         
         for(Site site : siteDao.getAll()) {
-            for(Role role : Role.values()) {
+            for(Role role : values()) {
                 selected = false;
                 for(UserRole userRole : userRoles) {
                     if (userRole.getRole().equals(role) && (!role.isSiteSpecific() || userRole.getSites().contains(site)) ) {
@@ -83,7 +85,36 @@ public class CreateUserCommand implements Validatable, Serializable {
                 }
             }
         }
+        for (Site site : getRolesGrid().keySet()) {
+            // prevent the removal of the last site coordinator for a site that has assignments
+            if (site.hasAssignments()) {
+                List<User> siteCoords = userDao.getSiteCoordinators(site);
+                if (siteCoords.size() == 1 && siteCoords.contains(getUser())) {
+                    if (!getRolesGrid().get(site).get(SITE_COORDINATOR).isSelected()) {
+                        errors.rejectValue(gridFieldName(site, SITE_COORDINATOR),
+                            "error.user.last-site-coordinator",
+                            new Object[] { getUser().getName(), site.getName() },
+                            "Last site coordinator");
+                    }
+                }
+            }
+            // prevent the removal of subject coordinators with assignments
+            if (!getRolesGrid().get(site).get(SUBJECT_COORDINATOR).isSelected()) {
+                if (getUser().hasAssignment(site)) {
+                    errors.rejectValue(
+                        gridFieldName(site, SUBJECT_COORDINATOR),
+                        "error.user.subject-coordinator-has-subjects",
+                        new Object[] { getUser().getName(), site.getName() },
+                        "Subject coordinator has subjects"
+                    );
+                }
+            }
+        }
 
+    }
+
+    private String gridFieldName(Site site, Role role) {
+        return String.format("rolesGrid[%d][%s].selected", site.getId(), role);
     }
 
     public User apply() throws Exception {

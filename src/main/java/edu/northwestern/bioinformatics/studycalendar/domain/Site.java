@@ -21,95 +21,104 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "sites")
-@GenericGenerator(name = "id-generator", strategy = "native", parameters = { @Parameter(name = "sequence", value = "seq_sites_id") })
+@GenericGenerator(name = "id-generator", strategy = "native",
+    parameters = { @Parameter(name = "sequence", value = "seq_sites_id") }
+)
 public class Site extends AbstractMutableDomainObject implements Named, Serializable {
-	private String name;
+    private String name;
 
-	private List<StudySite> studySites = new ArrayList<StudySite>();
+    private List<StudySite> studySites = new ArrayList<StudySite>();
 
-	private String assignedIdentifier;
+    private String assignedIdentifier;
 
-	private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
+    private List<Holiday> holidaysAndWeekends = new ArrayList<Holiday>();
 
-	// //// LOGIC
+    ////// LOGIC
 
-	public void addStudySite(final StudySite studySite) {
-		getStudySites().add(studySite);
-		studySite.setSite(this);
-	}
+    public boolean hasAssignments() {
+        for (StudySite studySite : getStudySites()) {
+            if (studySite.getStudySubjectAssignments().size() > 0) return true;
+        }
+        return false;
+    }
 
-	public StudySite getStudySite(final Study study) {
-		for (StudySite studySite : getStudySites()) {
-			if (studySite.getStudy().equals(study)) {
-				return studySite;
-			}
-		}
-		return null;
-	}
+    public void addStudySite(final StudySite studySite) {
+        getStudySites().add(studySite);
+        studySite.setSite(this);
+    }
 
-	// //// BEAN PROPERTIES
+    public StudySite getStudySite(final Study study) {
+        for (StudySite studySite : getStudySites()) {
+            if (studySite.getStudy().equals(study)) {
+                return studySite;
+            }
+        }
+        return null;
+    }
 
-	public String getName() {
-		return name;
-	}
+    ////// BEAN PROPERTIES
 
-	public void setName(final String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setStudySites(final List<StudySite> studySites) {
-		this.studySites = studySites;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	@OneToMany(mappedBy = "site", fetch = FetchType.EAGER)
-	@OrderBy
-	// order by ID for testing consistency
-	@Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-	public List<StudySite> getStudySites() {
-		return studySites;
-	}
+    public void setStudySites(final List<StudySite> studySites) {
+        this.studySites = studySites;
+    }
 
-	public void setHolidaysAndWeekends(final List<Holiday> holidaysAndWeekends) {
-		this.holidaysAndWeekends = holidaysAndWeekends;
-	}
+    @OneToMany(mappedBy = "site", fetch = FetchType.EAGER)
+    @OrderBy // order by ID for testing consistency
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<StudySite> getStudySites() {
+        return studySites;
+    }
 
-	@OneToMany
-	@JoinColumn(name = "site_id", nullable = false)
-	@OrderBy
-	// order by ID for testing consistency
-	@Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-	public List<Holiday> getHolidaysAndWeekends() {
-		return holidaysAndWeekends;
-	}
+    public void setHolidaysAndWeekends(final List<Holiday> holidaysAndWeekends) {
+        this.holidaysAndWeekends = holidaysAndWeekends;
+    }
 
-	@Override
-	public boolean equals(final Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
+    public String getAssignedIdentifier() {
+        return assignedIdentifier;
+    }
 
-		Site site = (Site) o;
+    public void setAssignedIdentifier(final String assignedIdentifier) {
+        this.assignedIdentifier = assignedIdentifier;
+    }
 
-		if (name != null ? !name.equals(site.name) : site.name != null) {
-			return false;
-		}
+    @OneToMany
+    @JoinColumn(name = "site_id", nullable = false)
+    @OrderBy // order by ID for testing consistency
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public List<Holiday> getHolidaysAndWeekends() {
+        return holidaysAndWeekends;
+    }
 
-		return true;
-	}
+    ////// OBJECT METHODS
 
-	@Override
-	public int hashCode() {
-		return name != null ? name.hashCode() : 0;
-	}
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
-	public String getAssignedIdentifier() {
-		return assignedIdentifier;
-	}
+        Site site = (Site) o;
 
-	public void setAssignedIdentifier(final String assignedIdentifier) {
-		this.assignedIdentifier = assignedIdentifier;
-	}
+        if (name != null ? !name.equals(site.name) : site.name != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return name != null ? name.hashCode() : 0;
+    }
 }
