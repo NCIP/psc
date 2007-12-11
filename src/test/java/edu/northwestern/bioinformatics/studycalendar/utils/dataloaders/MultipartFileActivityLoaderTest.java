@@ -45,7 +45,7 @@ public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
-    public void testReadData() {
+    public void testReadData() throws Exception {
         InputStream stream = null;
 
         expect(activityXmlReader.read(stream)).andReturn(sources);

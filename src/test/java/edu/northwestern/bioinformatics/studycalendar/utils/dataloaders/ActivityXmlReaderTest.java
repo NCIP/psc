@@ -22,7 +22,7 @@ public class ActivityXmlReaderTest extends StudyCalendarTestCase {
         input = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/utils/dataloaders/data/ActivityXmlReaderTest.xml");
     }
 
-    public void testParser() {
+    public void testParser() throws Exception {
 
         List<Source> actual = reader.read(input);
 

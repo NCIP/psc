@@ -23,7 +23,7 @@ public class MultipartFileActivityLoader {
         save(validSources);
     }
 
-    protected List<Source> readData(InputStream dataFile) {
+    protected List<Source> readData(InputStream dataFile) throws Exception{
         return activityXmlReader.read(dataFile);
     }
 

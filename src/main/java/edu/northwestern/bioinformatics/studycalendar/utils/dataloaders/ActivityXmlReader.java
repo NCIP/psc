@@ -22,20 +22,12 @@ public class ActivityXmlReader extends DefaultHandler {
     private List<Source> sources = new ArrayList<Source>();
     private Source currentSource;
 
-    public List<Source> read(InputStream dataFile) {
+    public List<Source> read(InputStream dataFile) throws Exception {
         SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        
+        sp.parse(dataFile, this);
 
-        try {
-            SAXParser sp = spf.newSAXParser();
-            sp.parse(dataFile, this);
-
-        } catch(SAXException se) {
-            se.printStackTrace();
-        } catch(ParserConfigurationException pce) {
-            pce.printStackTrace();
-        } catch (IOException ie) {
-            ie.printStackTrace();
-        }
         return sources;
     }
 
