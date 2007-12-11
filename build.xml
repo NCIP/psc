@@ -18,7 +18,6 @@
     <property name="metrics-dir" value="target/metrics"/>
     <property name="coverage-dir" value="${metrics-dir}/coverage"/>
 
-    <property name="war-name" value="studycalendar.war"/>
     <property name="dbunit-dtd-filename" value="target/dbunit-sc.dtd"/>
 
     <property name="csm-security-policy" value="CSM_policy.xml"/>
@@ -238,6 +237,17 @@
         </javac>
     </target>
 
+    <target name="webapp.create-context">
+        <property name="webapp.context.docBase" value="${basedir}/${build-dir.webapp}"/>
+        <echo file="${webapp.context-file}"><![CDATA[
+            <Context path="${tomcat.deploy-path}" docBase="${webapp.context.docBase}" debug="9">
+              <Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar"
+                        userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
+                        roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"/>
+            </Context>
+        ]]></echo>
+    </target>
+
     <target name="api" description="Create javadoc for application code API (i.e. domain objects and DAOs)" depends="init">
         <mkdir dir="${api-dir}"/>
         <javadoc destdir="${api-dir}" classpathref="cp.main" source="1.5" use="true">
@@ -393,6 +403,8 @@
 
     <target name="war" description="creates a deployable WAR file">
         <mkdir dir="dist"/>
+        <property name="war-name" value="${application-short-name}.war"/>
+        <property name="tomcat.deploy-path" value="/${application-short-name}"/>
         <property name="webapp.context-file" value="dist/context.xml"/>
         <property name="webapp.context.docBase" value="${war-name}"/>
         <antcall target="webapp.create-context"/>
@@ -411,7 +423,7 @@
         <property name="install.dir" value="dist/${install.name}"/>
         <property name="install-samples.dir" value="${install.dir}/conf-samples"/>
         <mkdir dir="${install-samples.dir}"/>
-        <copy file="dist/studycalendar.war" tofile="${install.dir}/psc.war" failonerror="true"/>
+        <copy file="dist/${war-name}" tofile="${install.dir}/psc.war" failonerror="true"/>
         <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
         <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config"/>
         <exec executable="svn" taskname="svn">
@@ -475,7 +487,7 @@
             <format property="today" pattern="yyyyMMddHHmmss" />
         </tstamp>
         <copy file="dist/${install.zip}"
-              tofile="${autobuild.artifacts-dir}/psc-${version}-${today}-bin.zip"
+              tofile="${autobuild.artifacts-dir}/${install.name}-${today}-bin.zip"
               verbose="true"/>
     </target>
 
@@ -501,17 +513,6 @@
                 <path refid="cp.tomcat.server"/>
             </classpath>
         </taskdef>
-    </target>
-
-    <target name="webapp.create-context" depends="tomcat.init">
-        <property name="webapp.context.docBase" value="${basedir}/${build-dir.webapp}"/>
-        <echo file="${webapp.context-file}"><![CDATA[
-            <Context path="${tomcat.deploy-path}" docBase="${webapp.context.docBase}" debug="9">
-              <Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar"
-                        userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
-                        roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"/>
-            </Context>
-        ]]></echo>
     </target>
 
     <target name="tomcat.deploy" depends="tomcat.init, webapp.create-context"
