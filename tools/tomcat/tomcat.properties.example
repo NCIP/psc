@@ -1,4 +1,4 @@
-tomcat.deploy-path=/studycalendar
+webapp.deploy-path=/psc
 tomcat.server=localhost
 tomcat.manager.url=http://${tomcat.server}:8080/manager
 # This username and password must belong to an account in $CATALINA_HOME/conf/tomcat-users.xml
