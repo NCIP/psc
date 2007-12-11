@@ -18,6 +18,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     Study study;
     private UserRoleService userRoleService;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -82,7 +83,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         CreateUserCommand command = createCommand(expectedUser);
         expectedUser.setUserRoles(Collections.<UserRole>emptySet());        // empty user roles so we can test the assign method
-        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
+        command.assignUserRolesFromRolesGrid();
         verifyMocks();
     }
 
@@ -114,7 +115,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         CreateUserCommand command = createCommand(expectedUser);
         command.getRolesGrid().get(sites.get(0)).get(Role.STUDY_ADMIN).setSelected(false);
-        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
+        command.assignUserRolesFromRolesGrid();
         verifyMocks();
     }
 
@@ -145,13 +146,12 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         CreateUserCommand command = createCommand(expectedUser);
         command.getRolesGrid().get(sites.get(0)).get(Role.STUDY_ADMIN).setSelected(true);
-        command.assignUserRolesFromRolesGrid(command.getRolesGrid());
+        command.assignUserRolesFromRolesGrid();
         verifyMocks();
     }
 
     public CreateUserCommand createCommand(User user) {
-        CreateUserCommand command = new CreateUserCommand(user, siteDao, userService, userRoleService);
-        return command;
+        return new CreateUserCommand(user, siteDao, userService, userRoleService);
     }
 
     public void testUserDefaultsToNewWhenNotSet() throws Exception {

@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
@@ -17,15 +18,17 @@ import java.util.Set;
 import java.io.Serializable;
 
 public class CreateUserCommand implements Validatable, Serializable {
-    private UserService userService;
     private String password;
     private String rePassword;
     private boolean passwordModified;
     private User user;
-    private SiteDao siteDao;
     private Map<Site, Map<Role,RoleCell>> rolesGrid;
-    private UserRoleService userRoleService;
     private boolean userActiveFlag;
+
+    private UserService userService;
+    private SiteDao siteDao;
+    private UserRoleService userRoleService;
+    private UserDao userDao;
 
     public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserRoleService userRoleService) {
         this.user = user == null ? new User() : user;
@@ -65,7 +68,7 @@ public class CreateUserCommand implements Validatable, Serializable {
             if (user.getName() == null || StringUtils.isEmpty(user.getName())) {
                 errors.rejectValue("user.name", "error.user.name.not.specified");
             } else {
-                if (user.getId() == null && userService.getUserByName(user.getName()) != null){
+                if (user.getId() == null && userDao.getByName(user.getName()) != null){
                     errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
@@ -90,12 +93,12 @@ public class CreateUserCommand implements Validatable, Serializable {
             user.setActiveFlag(userActiveFlag);
             userService.saveUser(user);
         }
-        assignUserRolesFromRolesGrid(rolesGrid);
+        assignUserRolesFromRolesGrid();
         return user;
     }
 
 
-    public void assignUserRolesFromRolesGrid(Map<Site, Map<Role,RoleCell>> rolesGrid) throws Exception {
+    protected void assignUserRolesFromRolesGrid() throws Exception {
         for(Site site : rolesGrid.keySet()) {
             for(Role role : rolesGrid.get(site).keySet()) {
                 if (role.isSiteSpecific()) {
@@ -166,7 +169,8 @@ public class CreateUserCommand implements Validatable, Serializable {
         return new RoleCell(selected, siteSpecific);
     }
 
-    // bean getter and setters
+    ////// BOUND PROPERTIES
+
     public User getUser() {
         return user;
     }
@@ -185,18 +189,6 @@ public class CreateUserCommand implements Validatable, Serializable {
 
     public void setRePassword(String rePassword) {
         this.rePassword = rePassword;
-    }
-
-    public UserService getUserService() {
-        return userService;
-    }
-
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
-
-    public void setSiteDao(SiteDao siteDao) {
-        this.siteDao = siteDao;
     }
 
     public Map<Site, Map<Role, RoleCell>> getRolesGrid() {
@@ -218,4 +210,19 @@ public class CreateUserCommand implements Validatable, Serializable {
     public boolean isUserActiveFlag() {
         return userActiveFlag;
     }
+
+    ////// CONFIGURATION
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
 }
