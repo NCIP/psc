@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+    This applicationContext contains security-related beans
+-->
+
+<beans>
+    <bean id="csmContextName" class="java.lang.String">
+        <constructor-arg value="study_calendar"/>
+    </bean>
+
+    <!--<bean id="authenticationManager" class="gov.nih.nci.security.SecurityServiceProvider"-->
+          <!--factory-method="getAuthenticationManager" lazy-init="true">-->
+        <!--<constructor-arg><ref local="csmContextName"/></constructor-arg>-->
+    <!--</bean>-->
+
+    <!--<bean id="userProvisioningManager" class="gov.nih.nci.security.SecurityServiceProvider"-->
+          <!--factory-method="getUserProvisioningManager" lazy-init="true">-->
+        <!--<constructor-arg><ref local="csmContextName"/></constructor-arg>-->
+    <!--</bean>-->
+    <bean id="studyCalendarAuthorizationManager" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
+
+    <!--
+    <bean id="gridAuthenticationClient" class="gov.nih.nci.cabig.ctms.web.sso.GridBasicAuthenticationClientImpl">
+        <property name="idpUrl" value="https://cagrid-auth.nci.nih.gov:8443/wsrf/services/cagrid/AuthenticationService"/>
+        <property name="ifsUrl" value="https://cagrid-dorian.nci.nih.gov:8443/wsrf/services/cagrid/Dorian"/>
+        <property name="proxyLifetimeHours" value="12"/>
+        <property name="proxyLifetimeMinutes" value="0"/>
+        <property name="proxyLifetimeSeconds" value="0"/>
+        <property name="delegationPathLength" value="0"/>
+    </bean>
+
+    <bean id="gridProxyValidator" class="gov.nih.nci.cabig.ctms.web.sso.GridProxyValidatorImpl"/>
+
+    <bean id="gridProxyRetrievalStrategy" class="edu.northwestern.bioinformatics.studycalendar.web.sso.StudyCalendarGridProxyRetrievalStrategy">
+        <property name="authenticationClient" ref="gridAuthenticationClient"/>
+        <property name="validator" ref="gridProxyValidator"/>
+        <property name="usernameParam" value="username"/>
+        <property name="passwordParam" value="password"/>
+        <property name="gridProxyParam" value="gridProxy"/>
+    </bean>
+    -->
+
+    <bean id="csmAuthorizationDao"
+		class="gov.nih.nci.security.dao.DIAuthorizationDao"
+		init-method="init">
+		<property name="sessionFactory">
+			<bean
+				class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+				<property name="dataSource" ref="dataSource" />
+				<property name="mappingResources">
+					<list>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/Privilege.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/Application.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/Role.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/dao/hibernate/RolePrivilege.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/dao/hibernate/UserGroup.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/dao/hibernate/ProtectionGroupProtectionElement.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/Group.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/User.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/ProtectionGroup.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/ProtectionElement.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml
+						</value>
+						<value>
+							gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml
+						</value>
+					</list>
+				</property>
+				<property name="hibernateProperties">
+					<bean
+						class="edu.northwestern.bioinformatics.studycalendar.tools.spring.HibernatePropertiesFactoryBean">
+													<!--
+						<property name="dialectName">
+
+							<value>s[hibernate.dialect]</value>
+
+						</property>
+							 -->
+						<property name="properties">
+							<props>
+								<!--
+									<prop key="hibernate.show_sql">
+									true
+									</prop>
+									<prop key="hibernate.format_sql">
+									true
+									</prop>
+								-->
+								<prop
+									key="hibernate.connection.release_mode">
+									after_transaction
+								</prop>
+
+							</props>
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+		<property name="applicationContextName"
+			ref="csmContextName" />
+	</bean>
+
+	<bean id="userProvisioningManager"
+		class="gov.nih.nci.security.provisioning.UserProvisioningManagerImpl">
+		<property name="authorizationDAO" ref="csmAuthorizationDao" />
+	</bean>
+
+    <bean id="authorizationSwitch"
+		class="gov.nih.nci.security.acegi.csm.authorization.AuthorizationSwitch"
+		factory-method="getInstance">
+		<property name="on" value="true" />
+	</bean>
+</beans>

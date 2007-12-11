@@ -1,0 +1,307 @@
+/**
+ *
+ */
+package edu.northwestern.bioinformatics.studycalendar.grid;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import gov.nih.nci.ccts.grid.*;
+import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
+import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
+import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
+ */
+public class PSCRegistrationConsumer implements RegistrationConsumer {
+
+    private static final Log logger = LogFactory.getLog(PSCRegistrationConsumer.class);
+
+    public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
+
+    private static final String MRN_IDENTIFIER_TYPE = "MRN";
+
+    private ApplicationContext applicationContext;
+
+    private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
+
+    // private StudyDao studyDao;
+
+    private StudyService studyService;
+
+    private SubjectDao subjectDao;
+
+    private UserDao userDao;
+
+    private SubjectService subjectService;
+
+    public PSCRegistrationConsumer() {
+        applicationContext = new ClassPathXmlApplicationContext(new String[]{
+                // "classpath:applicationContext.xml",
+                "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
+                "classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
+                "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
+                "classpath:applicationContext-spring.xml"});
+
+        // studyDao = getStudyDao();
+
+
+        subjectDao = (SubjectDao) applicationContext.getBean("subjectDao");
+        userDao = (UserDao) applicationContext.getBean("userDao");
+        subjectService = (SubjectService) applicationContext.getBean("subjectService");
+        studyService = (StudyService) applicationContext.getBean("studyService");
+    }
+
+    /**
+     * Does nothing as we are already  commiting Registraiton message by default.
+     *
+     * @param registration
+     * @throws RemoteException
+     * @throws InvalidRegistrationException
+     */
+    public void commit(final Registration registration) throws RemoteException, InvalidRegistrationException {
+//        try {
+//            String mrn = findMedicalRecordNumber(registration.getParticipant());
+//            subjectDao.commitInProgressSubject(mrn);
+//
+//        } catch (Exception exp) {
+//            InvalidRegistrationException e = new InvalidRegistrationException();
+//            e.setFaultReason("Error while comitting, " + exp.getMessage());
+//            e.setFaultString("Error while comitting, " + exp.getMessage());
+//            exp.printStackTrace();
+//            throw e;
+//        }
+    }
+
+    public void rollback(final Registration registration) throws RemoteException, InvalidRegistrationException {
+        try {
+            String mrn = findMedicalRecordNumber(registration.getParticipant());
+            Subject subject = fetchCommitedSubject(mrn);
+
+            if (subject == null) {
+                String message = "Subject does not exists for this mrn:" + mrn;
+                throw getRegistrationConsumerException(message);
+            }
+            List<StudySubjectAssignment> assignmentList = subject.getAssignments();
+            if (assignmentList.size() > 1) {
+
+                subject.getAssignments().clear();
+                subjectDao.save(subject);
+
+            } else if (!assignmentList.isEmpty() && subject.getAssignments().size() == 1) {
+                //this participant got created by the previous registration message. so delete it.
+                subjectDao.delete(subject);
+            }
+
+        } catch (Exception exception) {
+
+            String message = "Error while rollback, " + exception.getMessage();
+            throw getRegistrationConsumerException(message);
+
+        }
+
+
+    }
+
+    /*
+      * (non-Javadoc)
+      * @see gov.nih.nci.cabig.ctms.common.RegistrationConsumer#createRegistration(gov.nih.nci.cabig.ctms.grid.RegistrationType)
+      */
+    public Registration register(final Registration registration) throws RemoteException, InvalidRegistrationException,
+            RegistrationConsumptionException {
+
+        String ccIdentifier = findCoordinatingCenterIdentifier(registration);
+        Study study = fetchStudy(ccIdentifier);
+
+        if (study == null) {
+            String message = "Study identified by Coordinating Center Identifier '" + ccIdentifier + "' doesn't exist";
+            throw getInvalidRegistrationException(message);
+        }
+
+        String siteNCICode = registration.getStudySite().getHealthcareSite(0).getNciInstituteCode();
+        StudySite studySite = findStudySite(study, siteNCICode);
+        if (studySite == null) {
+
+            String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
+                    + "' is not associated to a site identified by NCI code :'" + siteNCICode + "'";
+            throw getInvalidRegistrationException(message);
+
+        }
+        String mrn = findMedicalRecordNumber(registration.getParticipant());
+
+        Subject subject = fetchCommitedSubject(mrn);
+        if (subject == null) {
+            subject = createSubject(registration.getParticipant(), mrn);
+            subjectDao.save(subject);
+        } else {
+
+            StudySubjectAssignment assignment = subjectDao.getAssignment(subject, study, studySite.getSite());
+            if (assignment != null) {
+                String message = "Subject already assigned to this study. Use scheduleNextArm to change to the next arm.";
+                throw getInvalidRegistrationException(message);
+            }
+
+        }
+        // // retrieve Arm
+        StudySegment studySegment = null;
+        StudySegment loadedStudySegment = null;
+        if (registration.getScheduledEpoch() != null
+                && registration.getScheduledEpoch() instanceof ScheduledTreatmentEpochType
+                && ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm() != null
+                && ((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm().getArm() != null) {
+            studySegment = new StudySegment();
+            studySegment.setName(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
+                    .getArm().getName());
+            studySegment.setGridId(((ScheduledTreatmentEpochType) registration.getScheduledEpoch()).getScheduledArm()
+                    .getArm().getGridId());
+            loadedStudySegment = loadAndValidateStudySegmentInStudy(study, studySegment);
+        } else {
+            try {
+                loadedStudySegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+            } catch (Exception e) {
+                String message = "The study '" + study.getLongTitle() + "', identified by Coordinating Center Identifier '" + ccIdentifier
+                        + "' does not have any arm'";
+                throw getInvalidRegistrationException(message);
+
+            }
+        }
+
+
+        String userName = ApplicationSecurityManager.getUser();
+        // FIXME:Saurabh: check for correct implementation of userDao
+        // User user = userDao.getByName(userName);
+
+        String registrationGridId = registration.getGridId();
+        // Using the informed consent date as the calendar start date
+        Date startDate = registration.getInformedConsentFormSignedDate();
+        if (startDate == null) {
+            startDate = new Date();
+        }
+
+        StudySubjectAssignment newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
+                startDate, registrationGridId, null);
+
+        ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
+        logger.debug("Created assignment " + scheduledCalendar.getId());
+        return registration;
+    }
+
+    private Subject fetchCommitedSubject(String mrn) {
+        return subjectDao.findSubjectByPersonId(mrn);
+
+    }
+
+    private StudySite findStudySite(final Study study, final String siteNCICode) {
+        for (StudySite studySite : study.getStudySites()) {
+            if (StringUtils.equals(studySite.getSite().getAssignedIdentifier(), siteNCICode)) {
+                return studySite;
+            }
+        }
+        return null;
+    }
+
+    /*
+      * Finds the coordinating center identifier for the sutdy
+      */
+    private String findCoordinatingCenterIdentifier(final Registration registration)
+            throws InvalidRegistrationException {
+        String ccIdentifier = findIdentifierOfType(registration.getStudyRef().getIdentifier(),
+                COORDINATING_CENTER_IDENTIFIER_TYPE);
+
+        if (ccIdentifier == null) {
+            String message = "In StudyRef-Identifiers, Coordinating Center Identifier is not available";
+            throw getInvalidRegistrationException(message);
+        }
+        return ccIdentifier;
+
+    }
+
+    private InvalidRegistrationException getInvalidRegistrationException(String message) {
+        InvalidRegistrationException invalidRegistrationException = new InvalidRegistrationException();
+
+        invalidRegistrationException.setFaultReason(message);
+        invalidRegistrationException.setFaultString(message);
+        logger.error(message);
+        return invalidRegistrationException;
+    }
+
+    private String findIdentifierOfType(final IdentifierType[] idTypes, final String ofType) {
+        if (idTypes == null) {
+            return null;
+        }
+        for (IdentifierType identifierType : idTypes) {
+            if (identifierType instanceof OrganizationAssignedIdentifierType && StringUtils.equals(identifierType.getType(), ofType)) {
+                return identifierType.getValue();
+            }
+        }
+        return null;
+    }
+
+    private Study fetchStudy(final String ccIdentifier) {
+        Study study = studyService.getStudyByAssignedIdentifier(ccIdentifier);
+
+        return study;
+    }
+
+    private String findMedicalRecordNumber(final ParticipantType participantType) throws InvalidRegistrationException {
+        String subjectIdentifier = findIdentifierOfType(participantType.getIdentifier(), MRN_IDENTIFIER_TYPE);
+
+        if (subjectIdentifier == null) {
+
+            String message = "There is no identifier associated to this subject, Medical Record Number(MRN) is needed to register this subject ";
+            throw getInvalidRegistrationException(message);
+        }
+        return subjectIdentifier;
+    }
+
+
+    private StudySegment loadAndValidateStudySegmentInStudy(final Study study, final StudySegment requiredStudySegment) throws InvalidRegistrationException {
+        for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
+            List<StudySegment> studySegments = epoch.getStudySegments();
+            for (StudySegment studySegment : studySegments) {
+                if (studySegment.getName().equals(requiredStudySegment.getName())) {
+                    return studySegment;
+                }
+            }
+
+        }
+        String message = "Arm " + requiredStudySegment.getName() + " not part of template for study "
+                + study.getGridId();
+        throw getInvalidRegistrationException(message);
+    }
+
+    private Subject createSubject(final ParticipantType participantType, final String mrn) {
+        Subject subject = new Subject();
+        subject.setGridId(participantType.getGridId());
+
+        subject.setGender(participantType.getAdministrativeGenderCode());
+        subject.setDateOfBirth(participantType.getBirthDate());
+        subject.setFirstName(participantType.getFirstName());
+        subject.setLastName(participantType.getLastName());
+
+        subject.setPersonId(mrn);
+        return subject;
+    }
+
+    private RegistrationConsumptionException getRegistrationConsumerException(String message) {
+        RegistrationConsumptionException registrationConsumptionException = new RegistrationConsumptionException();
+        registrationConsumptionException.setFaultReason(message);
+        registrationConsumptionException.setFaultString(message);
+        logger.error(message);
+        return registrationConsumptionException;
+    }
+}

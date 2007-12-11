@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sources xmlns="http://edu.northwestern.bionformatics.studycalendar/activities"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://edu.northwestern.bionformatics.studycalendar/activities">
+    <source name="ICD-9">
+        <activity
+            name="Bone Scan"
+            description="Scan subjects bones"
+            code="BS1"
+            type="1"/>
+
+        <activity
+            name="Capecitabine"
+            description="Administer Drug Capecitabine"
+            code="C123"
+            type="2"/>
+    </source>
+    <source name="LOINK">
+        <activity
+            name="CTC Scan"
+            description="CTC Scan"
+            code="CTC1"
+            type="1"/>
+    </source>
+</sources>

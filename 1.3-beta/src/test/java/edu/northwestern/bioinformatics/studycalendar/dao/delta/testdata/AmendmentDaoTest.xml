@@ -1,0 +1,32 @@
+<dataset>
+    <AMENDMENTS
+        id="-100"
+        name="abc"
+        amendment_date="2006-02-01"
+        mandatory="1"
+        />
+    <AMENDMENTS
+        id="-200"
+        name="def"
+        amendment_date="2008-05-17"
+        previous_amendment='-100'
+        mandatory="0"
+        />
+
+    <DELTAS
+        id="-102"
+        node_id="-22"
+        node_type="cal"
+        amendment_id="-100"
+        />
+    <STUDIES
+        id="-20"
+        assigned_identifier="You need it"
+        long_title="You need it"    
+        amendment_id="-100"
+        />
+    <PLANNED_CALENDARS
+        id="-22"
+        study_id="-20"
+        />
+</dataset>

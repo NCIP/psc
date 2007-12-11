@@ -1,0 +1,140 @@
+package edu.northwestern.bioinformatics.studycalendar.web.reporting;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
+import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author Yufang Wang
+ * @author Jaron Sampson
+ */
+
+public class ReportBuilderController extends PscSimpleFormController {
+    private SiteService siteService;
+    private SiteDao siteDao;
+    private StudyDao studyDao;
+    private SubjectDao subjectDao;
+    private static final Logger log = LoggerFactory.getLogger(ReportBuilderController.class.getName());
+    private ReportRowDao reportRowDao;
+
+    public ReportBuilderController() {
+        setCommandClass(ReportBuilderCommand.class);
+        setFormView("reporting/reportBuilder");
+        setSuccessView("report");
+    }
+    
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
+        getControllerTools().registerDomainObjectEditor(binder, "sitesFilter", siteDao);
+        getControllerTools().registerDomainObjectEditor(binder, "studiesFilter", studyDao);
+        getControllerTools().registerDomainObjectEditor(binder, "subjectsFilter", subjectDao);
+    }
+
+    protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
+        log.debug("referenceData"); 
+        Map<String, Object> refdata = new HashMap<String, Object>();
+        List<Site> sites = new ArrayList<Site>();
+        sites = siteService.getSitesForUser(ApplicationSecurityManager.getUser());
+        refdata.put("sites", sites);
+        return refdata;
+    }
+
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+
+        ReportBuilderCommand reportCommand = (ReportBuilderCommand) oCommand;
+
+        Map<String, Object> model = new HashMap<String, Object>();
+        String startDate = reportCommand.getStartDate();
+        String endDate = reportCommand.getEndDate();
+        List<Study> studies = reportCommand.getStudiesFilter();
+        List<Site> sites = reportCommand.getSitesFilter();
+        List<Subject> subjects = reportCommand.getSubjectsFilter();
+
+        if(startDate == null) {startDate = "";}
+        if(endDate == null) {endDate = "";}
+        if(sites == null) {sites = new ArrayList<Site>();}
+        if(studies == null) {studies = new ArrayList<Study>();}
+        if(subjects == null) {subjects = new ArrayList<Subject>();}
+
+        Collection reportRows = initializeBeanCollection(sites, studies, subjects, startDate, endDate);
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportRows);
+        model.put("datasource", dataSource);
+        String format = new String();
+
+        if(reportCommand.getExcelFormat()) {
+            format = "xls";
+            model.put("format", format);
+            return new ModelAndView("xlsReport", model);
+        } else {
+            format = "pdf";
+            model.put("format", format);
+            return new ModelAndView("pdfReport", model);
+        }
+
+    }
+
+    private Collection initializeBeanCollection(List<Site> sites, List<Study> studies, List<Subject> subjects, String startDate, String endDate) {
+        List<ReportRow> reportRows = reportRowDao.getFilteredReport(sites, studies, subjects, startDate, endDate);
+
+        return reportRows;
+    }
+
+    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+        //log.debug("formBackingObject");
+        ReportBuilderCommand command = new ReportBuilderCommand();
+        return command;
+    }
+
+
+    ////// CONFIGURATION    
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setReportRowDao(ReportRowDao reportRowDao) {
+        this.reportRowDao = reportRowDao;
+    }
+
+    @Required
+    public void setSubjectDao(SubjectDao subjectDao) {
+        this.subjectDao = subjectDao;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setSiteService(SiteService siteService) {
+        this.siteService = siteService;
+    }
+
+}

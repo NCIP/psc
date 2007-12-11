@@ -1,0 +1,6 @@
+This directory contains code and libraries which are deployed alongside the application
+to facilitate integrated testing.  They are deployed by using the "selenium" target before the
+"webapp" target.
+
+The code and libraries here probably should not be deployed for general development and
+must not be deployed in production.
