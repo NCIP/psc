@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
@@ -36,5 +37,12 @@ public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implement
     public List<User> getByRole(Role role) {
         return getHibernateTemplate()
                 .find("select u from User u join u.userRoles r where r.role = ? order by u.name", role);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<User> getSiteCoordinators(Site from) {
+        return getHibernateTemplate()
+            .find("select u from User u join u.userRoles r where r.role = ? and ? in elements(r.sites)",
+                new Object[] { Role.SITE_COORDINATOR, from });
     }
 }

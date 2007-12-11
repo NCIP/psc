@@ -57,7 +57,7 @@
         current_amendment_id="-5221"
         />
 
-        <USERS
+    <USERS
         id="-300"
         name="PC A"
         csm_user_id="-350"
@@ -81,5 +81,30 @@
         id="-3"
         csm_group_name="SUBJECT_COORDINATOR"
         user_id="-400"
+        />
+
+    <USER_ROLES
+        id="-13"
+        csm_group_name="SITE_COORDINATOR"
+        user_id="-300"
+        />
+
+    <USER_ROLES
+        id="-14"
+        csm_group_name="SITE_COORDINATOR"
+        user_id="-400"
+        />
+
+    <SITES id="-30" name="Thirty"/>
+    <SITES id="-40" name="Forty"/>
+
+    <USER_ROLE_SITES
+        user_role_id="-13"
+        site_id="-30"
+        />
+
+    <USER_ROLE_SITES
+        user_role_id="-14"
+        site_id="-40"
         />
 </dataset>
