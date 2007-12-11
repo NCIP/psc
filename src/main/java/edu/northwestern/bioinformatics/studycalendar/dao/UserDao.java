@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 
 import java.util.List;
@@ -11,33 +12,27 @@ import java.io.Serializable;
 public class UserDao extends StudyCalendarMutableDomainObjectDao<User> implements Serializable {
     @Override public Class<User> domainClass() { return User.class; }
 
+    @SuppressWarnings({ "unchecked" })
     public List<User> getAll() {
         return getHibernateTemplate().find("from User order by name");
     }
 
+    @SuppressWarnings({ "unchecked" })
     public User getByName(String name) {
-        List<User> results = getHibernateTemplate().find("from User where name = ?", name);
-        if (results.size() == 0) {
-            return null;
-        }
-        return results.get(0);
+        return (User) CollectionUtils.firstElement(getHibernateTemplate().find("from User where name = ?", name));
     }
 
-    public List getByCsmUserId(Long csmUserId) {
-        List<User> results = getHibernateTemplate().find("from User where csm_user_id = ?", csmUserId);
-        return results;
-    }
-
+    @SuppressWarnings({ "unchecked" })
     public List<StudySubjectAssignment> getAssignments(User user) {
-        List<StudySubjectAssignment> results = getHibernateTemplate().find(
+        return (List<StudySubjectAssignment>) getHibernateTemplate().find(
                 "from StudySubjectAssignment a where a.subjectCoordinator = ? ", user);
-        return results;
     }
 
     public List<User> getAllSubjectCoordinators() {
         return getByRole(Role.SUBJECT_COORDINATOR);
     }
     
+    @SuppressWarnings({ "unchecked" })
     public List<User> getByRole(Role role) {
         return getHibernateTemplate()
                 .find("select u from User u join u.userRoles r where r.role = ? order by u.name", role);
