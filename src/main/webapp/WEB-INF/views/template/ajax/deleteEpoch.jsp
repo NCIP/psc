@@ -18,3 +18,7 @@ Element.addClassName("studySegment-${studySegment.id}-item", "selected")
 SC.slideAndShow('selected-studySegment-content')
 
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
+<jsgen:replaceHtml targetElement="errorMessages">
+    <tags:replaceErrorMessagesForTemplate/>
+</jsgen:replaceHtml>
+hideShowReleaseTemplateButton()

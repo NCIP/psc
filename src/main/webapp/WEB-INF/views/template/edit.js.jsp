@@ -83,8 +83,7 @@ function addToBeginSentence(){
     var newValue = SC.inPlaceEdit("study-name", renameButton.href, {
         externalControl: renameButton,
         clickToEditText: "Click to rename",
-        onComplete:function() {newSomething()}
-
+        onComplete:function() {hideShowReleaseTemplateButton()}
     })
 
     var h1BeginSentence = Builder.node("span", {})
@@ -101,11 +100,18 @@ function addToBeginSentence(){
 function hideShowReleaseTemplateButton() {
     if ($('study-name').innerHTML == '[ABC 1234]') {
         $('enterStudyName').show()
-        $('releaseTemplate').hide()
-    }
-    else {
-       $('enterStudyName').hide()
-       $('releaseTemplate').show()
+        $('errorMessages').hide()
+        $('admin-options').hide()
+    } else {
+       if ($('errorMessages').empty()) {
+            $('enterStudyName').hide()
+            $('errorMessages').hide()
+            $('admin-options').show()
+       } else {
+            $('errorMessages').show()
+            $('admin-options').hide()
+            $('enterStudyName').hide()
+       }
     }
 }
 

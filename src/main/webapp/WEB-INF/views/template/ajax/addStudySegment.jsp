@@ -11,4 +11,6 @@ registerSelectStudySegmentHandler($("studySegment-${studySegment.id}"))
 updateAllStudySegmentsControlVisibility(${studySegment.epoch.id})
 SC.Main.registerClickForwarder($("studySegment-${studySegment.id}-item"))
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
-
+<jsgen:replaceHtml targetElement="errorMessages">
+    <tags:replaceErrorMessagesForTemplate/>
+</jsgen:replaceHtml>

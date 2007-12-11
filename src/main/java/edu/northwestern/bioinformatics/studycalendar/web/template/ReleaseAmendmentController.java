@@ -14,13 +14,15 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 
 /**
  * @author Jaron Sampson
@@ -30,6 +32,8 @@ import java.util.Collections;
 public class ReleaseAmendmentController extends PscSimpleFormController {
     private StudyDao studyDao;
     private AmendmentService amendmentService;
+    private DeltaService deltaService;
+    private static final String UNNAMED_EPOCH = "[Unnamed epoch]";
 
     public ReleaseAmendmentController() {
         setCommandClass(ReleaseAmendmentCommand.class);
@@ -47,7 +51,15 @@ public class ReleaseAmendmentController extends PscSimpleFormController {
     @Override
     protected Map referenceData(HttpServletRequest request, Object oCommand, Errors errors) throws Exception {
          // for breadcrumbs
-        return new ModelMap("study", ((ReleaseAmendmentCommand) oCommand).getStudy());
+        ReleaseAmendmentCommand command = (ReleaseAmendmentCommand) oCommand;
+        Study theRevisedStudy = deltaService.revise(command.getStudy(), command.getStudy().getDevelopmentAmendment());
+
+        List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
+
+        ModelMap model = new ModelMap("epochs", epochs);
+        model.addObject("study", command.getStudy());
+        return model;
+
     }
 
     @Override
@@ -72,6 +84,11 @@ public class ReleaseAmendmentController extends PscSimpleFormController {
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 
     private static class Crumb extends DefaultCrumb {

@@ -2,6 +2,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <c:if test="${not empty command.studySegment}">
     <jsgen:replaceHtml targetElement="studySegment-${command.studySegment.id}">${command.revisedStudySegment.name}</jsgen:replaceHtml>
 </c:if>
@@ -16,3 +17,9 @@
     </jsgen:replaceHtml>
 </c:if>
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
+
+    <jsgen:replaceHtml targetElement="errorMessages">
+        <tags:replaceErrorMessagesForTemplate/>
+    </jsgen:replaceHtml>
+
+

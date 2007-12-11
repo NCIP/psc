@@ -19,3 +19,7 @@ updateAllEpochsControlVisibility()
 createAllStudySegmentControls()
 SC.Main.registerClickForwarder($("studySegment-${epoch.studySegments[0].id}-item"))
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
+<jsgen:replaceHtml targetElement="errorMessages">
+    <tags:replaceErrorMessagesForTemplate/>
+</jsgen:replaceHtml>
+hideShowReleaseTemplateButton()

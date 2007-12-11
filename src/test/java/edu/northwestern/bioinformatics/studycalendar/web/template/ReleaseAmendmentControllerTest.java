@@ -3,7 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +24,8 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
     private ReleaseAmendmentCommand command;
     private StudyDao studyDao;
     private AmendmentService amendmentService;
+    private DeltaService deltaService;
+
 
     @Override
     protected void setUp() throws Exception {
@@ -27,6 +33,7 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
 
         studyDao = registerDaoMockFor(StudyDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        deltaService = registerMockFor(DeltaService.class);
 
         mockCommand = registerMockFor(ReleaseAmendmentCommand.class);
         mockCommandController = new ReleaseAmendmentController() {
@@ -47,6 +54,7 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
         };
         controller.setStudyDao(studyDao);
         controller.setControllerTools(controllerTools);
+        controller.setDeltaService(deltaService);
     }
 
     public void testBindStudy() throws Exception {
@@ -55,8 +63,13 @@ public class ReleaseAmendmentControllerTest extends ControllerTestCase {
         int id = 4;
         request.addParameter("study", Integer.toString(id));
         Study study = setId(id, new Study());
+        Study revisedStudy = study;
+        PlannedCalendar pc = new PlannedCalendar();
+        Epoch e = new Epoch();
+        pc.addEpoch(e);
+        revisedStudy.setPlannedCalendar(pc);
+        expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(revisedStudy);
         expect(studyDao.getById(id)).andReturn(study);
-
         replayMocks();
         controller.handleRequest(request, response);
         verifyMocks();

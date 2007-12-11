@@ -75,6 +75,8 @@ public class DisplayTemplateController extends PscAbstractController {
             model.put("onStudyAssignments", onStudyAssignments);
         }
 
+        List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
+        model.put("epochs", epochs);
         return new ModelAndView("template/display", model);
     }
 

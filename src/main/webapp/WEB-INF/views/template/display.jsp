@@ -141,11 +141,11 @@
                 float: left;
             }
 
-            .moreSpaces{
+            p#addEpoch{
                 padding-left:8px;
             }
 
-            .spaceFromTheTop{
+            h1#enterStudyNameSentence{
                 padding-top:8px;
             }
 
@@ -486,7 +486,7 @@
 			}
 
             function studyManipulationSetup(){
-                $('releaseTemplate').show()
+                $('admin-options').show()
             }
 
             Event.observe(window, "load", epochsAreaSetup)
@@ -494,10 +494,10 @@
 
             <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", createStudyControls)
-                Event.observe(window, "load", addToBeginSentence)
-
-                Event.observe(window, "load", hideShowReleaseTemplateButton)
                 Event.observe(window, "load", createAddEpochControl)
+
+                Event.observe(window, "load", addToBeginSentence)
+                Event.observe(window, "load", hideShowReleaseTemplateButton)
             </c:if>
 
 
@@ -535,53 +535,55 @@
         <div id="study-manipulations" class="controls-card card">
             <div class="header">Manipulate study</div>
                 <div id="enterStudyName" style="display:none;">
-                    <h1 class="spaceFromTheTop" id="enterStudyNameSentence"></h1>
+                    <h1 id="enterStudyNameSentence"></h1>
                 </div>
 
-                <div id="releaseTemplate" style="display:none;">
-                    <ul id="admin-options">
-                      <c:if test="${not empty developmentRevision}">
-                            <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
-                                Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                            </tags:restrictedListItem>
-                        </c:if>
-                        <c:if test="${empty developmentRevision}">
-                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-                            <c:if test="${canAssignSubjects}">
-                                <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control"
-                                    >Assign Subject</tags:restrictedListItem>
-                            </c:if>
-                            <c:if test="${not empty onStudyAssignments}">
-                                <security:secureOperation element="/pages/cal/schedule">
-                                <li>View schedule (On Study) for
-                                    <select id="assigned-subject-selector">
-                                        <c:forEach items="${onStudyAssignments}" var="assignment">
-                                            <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
-                                </li>
-                                </security:secureOperation>
-                            </c:if>
-                            <c:if test="${not empty offStudyAssignments}">
-                                <security:secureOperation element="/pages/cal/schedule">
-                                <li>View schedule (Off Study) for
-                                    <select id="offstudy-assigned-subject-selector">
-                                        <c:forEach items="${offStudyAssignments}" var="assignment">
-                                            <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
-                                        </c:forEach>
-                                    </select>
-                                    <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
-                                </li>
-                                </security:secureOperation>
-                            </c:if>
-                        </c:if>
-                    </ul>
+                <div id="errorMessages" style="display:none;">
+                    <tags:replaceErrorMessagesForTemplate/>
                 </div>
+
+                <ul id="admin-options" style="display:none;">
+                  <c:if test="${not empty developmentRevision}">
+                        <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
+                            Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                        </tags:restrictedListItem>
+                    </c:if>
+                    <c:if test="${empty developmentRevision}">
+                        <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+                        <c:if test="${canAssignSubjects}">
+                            <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control"
+                                >Assign Subject</tags:restrictedListItem>
+                        </c:if>
+                        <c:if test="${not empty onStudyAssignments}">
+                            <security:secureOperation element="/pages/cal/schedule">
+                            <li>View schedule (On Study) for
+                                <select id="assigned-subject-selector">
+                                    <c:forEach items="${onStudyAssignments}" var="assignment">
+                                        <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
+                                    </c:forEach>
+                                </select>
+                                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="go-to-schedule-control">Go</a>
+                            </li>
+                            </security:secureOperation>
+                        </c:if>
+                        <c:if test="${not empty offStudyAssignments}">
+                            <security:secureOperation element="/pages/cal/schedule">
+                            <li>View schedule (Off Study) for
+                                <select id="offstudy-assigned-subject-selector">
+                                    <c:forEach items="${offStudyAssignments}" var="assignment">
+                                        <option value="${assignment.scheduledCalendar.id}">${assignment.subject.lastFirst}</option>
+                                    </c:forEach>
+                                </select>
+                                <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
+                            </li>
+                            </security:secureOperation>
+                        </c:if>
+                    </c:if>
+                </ul>
         </div>
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
-                <p class="controls moreSpaces" id="addEpoch"/>
+                <p class="controls" id="addEpoch"/>
               
                 <laf:division>
                     <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
