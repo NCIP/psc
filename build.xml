@@ -345,7 +345,7 @@
         <fail if="test.unit.failed">One or more unit tests failed.  See above or set test.failfast=true.</fail>
     </target>
 
-    <!-- N.b.: this task must not depend on init (directly or otherwise) or the cruisecontrol build will break. -->
+    <!-- N.b.: this task must not depend on init (directly or otherwise) or the automated build will break. -->
     <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
         <property name="hsqldb-dir" value="db/hsqldb"/>
         <property name="create-hsqldb.dbname" value="psc"/>
@@ -425,7 +425,7 @@
         <delete dir="${install.dir}"/>
     </target>
 
-    <!-- CRUISE CONTROL BUILDS -->
+    <!-- AUTOMATED BUILDS -->
 
     <target name="oracle">
         <property name="config.database" value="oracle"/>
@@ -459,13 +459,13 @@
         <symlink link="${autobuild.artifacts-dir}/emma/index.html" resource="coverage.html" failonerror="false"/>
     </target>
 
-    <target name="autobuild-full" description="CruiseControl build for all unit tests against HSQLDB"
+    <target name="autobuild-full" description="Automated build for all unit tests against HSQLDB"
         depends="autobuild.properties, create-hsqldb, hsqldb, emma, autobuild.exec, autobuild.artifacts"/>
 
-    <target name="autobuild-oracle" description="CruiseControl build for db-only unit tests against Oracle"
+    <target name="autobuild-oracle" description="Automated build for db-only unit tests against Oracle"
         depends="autobuild.properties, oracle, autobuild.exec.db"/>
 
-    <target name="autobuild-postgresql" description="CruiseControl build for db-only unit tests against PostgreSQL"
+    <target name="autobuild-postgresql" description="Automated build for db-only unit tests against PostgreSQL"
         depends="autobuild.properties, postgresql, autobuild.exec.db"/>
 
     <!-- TOMCAT DEPLOYMENT -->
