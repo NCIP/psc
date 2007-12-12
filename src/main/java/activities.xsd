@@ -9,7 +9,7 @@
 
     <xsd:complexType name="Sources">
         <xsd:sequence>
-            <xsd:element name="source" type="psc:Source"/>
+            <xsd:element name="source" type="psc:Source" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
