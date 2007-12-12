@@ -102,8 +102,13 @@ public class TemplateService {
             throw new IllegalArgumentException(USER_IS_NULL);
         }
         UserRole userRole = user.getUserRole(Role.SUBJECT_COORDINATOR);
-        if (userRole.getStudySites().contains(findStudySite(study, site))) {
-            userRole.removeStudySite(findStudySite(study, site));
+        StudySite studySite = study.getStudySite(site);
+        if (user.hasAssignment(studySite)) {
+            throw new StudyCalendarValidationException("%s is still responsible for one or more subjects on %s at %s.  Please reassign those subjects before removing %s from that study and site.",
+                user.getName(), study.getAssignedIdentifier(), site.getName(), user.getName());
+        }
+        if (userRole.getStudySites().contains(studySite)) {
+            userRole.removeStudySite(studySite);
             userRoleDao.save(userRole);
 
             removeMultipleTemplates(asList(study), site, user.getCsmUserId().toString());

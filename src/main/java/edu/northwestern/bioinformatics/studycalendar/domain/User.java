@@ -78,6 +78,13 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         return false;
     }
 
+    public boolean hasAssignment(StudySite ss) {
+        for (StudySubjectAssignment assignment : getStudySubjectAssignments()) {
+            if (assignment.getStudySite().equals(ss)) return true;
+        }
+        return false;
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {

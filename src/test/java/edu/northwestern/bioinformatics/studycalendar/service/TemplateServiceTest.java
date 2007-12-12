@@ -264,6 +264,36 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong study site", studySite1, actualUserRole.getStudySites().get(0));
     }
 
+    public void testRemoveAssignedTemplateFromSubjectCoordinatorWhenSubjCoordHasAssignments() throws Exception {
+        Site nu = setId(1, createNamedInstance("Northwestern", Site.class));
+        Site mayo = setId(2, createNamedInstance("Mayo", Site.class));
+        Study study = setId(1, createNamedInstance("Study A", Study.class));
+
+        StudySite nuSS = setId(1, createStudySite(study, nu));
+        StudySite mayoSS = setId(2, createStudySite(study, mayo));
+
+        StudySubjectAssignment assignment = createAssignment(study, nu, createSubject("Don't", "Care"));
+
+        edu.northwestern.bioinformatics.studycalendar.domain.User subjectCoordinator =
+                setId(1, createUser("jimbo", Role.SUBJECT_COORDINATOR));
+        subjectCoordinator.setCsmUserId(1L);
+        subjectCoordinator.getStudySubjectAssignments().add(assignment);
+
+        UserRole userRole = subjectCoordinator.getUserRole(Role.SUBJECT_COORDINATOR);
+        userRole.addStudySite(nuSS);
+        userRole.addStudySite(mayoSS);
+
+        replayMocks();
+        try {
+            service.removeAssignedTemplateFromSubjectCoordinator(study, nu, subjectCoordinator);
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("Wrong exception message", 
+                "jimbo is still responsible for one or more subjects on Study A at Northwestern.  Please reassign those subjects before removing jimbo from that study and site.",
+                scve.getMessage());
+        }
+    }
+
     public void testAssignMultipleTemplates() throws Exception {
         Study studyTemplate1 = createNamedInstance("aaa", Study.class);
         Study studyTemplate2 = createNamedInstance("bbb", Study.class);
