@@ -57,7 +57,7 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
 
             return new ModelAndView("template/ajax/activities", model);
         } else {
-            getControllerTools().sendPostOnlyError(response);
+            getControllerTools().sendGetOnlyError(response);
             return null;
         }
     }

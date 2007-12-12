@@ -143,6 +143,11 @@ public class ControllerTools {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "POST is the only valid method for this URL");
     }
 
+    // note that if you change the error message here, you need to change it in error-console.js, too
+    public void sendGetOnlyError(HttpServletResponse response) throws IOException {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "GET is the only valid method for this URL");
+    }
+
     /**
      * @see UserInRequestFilter
      */

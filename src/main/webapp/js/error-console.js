@@ -6,10 +6,13 @@ EC.AjaxResponders = {
         $('error-console').show()
     },
     onComplete: function(request, transport, json) {
+        var retryMessage = "Please retry your last action now that you have logged back in"
         if (request.responseIsFailure()) {
             // handle 400s caused by GETting a POST-only resource (see ControllerTools#sendPostOnlyError)
             if (transport.status == 400 && transport.statusText == "POST is the only valid method for this URL") {
-                alert("Please retry your last action now that you have logged back in")
+                alert(retryMessage)
+            } else if (transport.status == 400 && transport.statusText == "GET is the only valid method for this URL") {
+                alert(retryMessage)
             } else {
                 new Insertion.Top('error-console-errors', "<li>" + transport.status + " " + transport.statusText + "</li>")
                 $('error-console').show()
