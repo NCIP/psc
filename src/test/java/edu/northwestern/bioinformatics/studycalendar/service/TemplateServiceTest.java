@@ -346,7 +346,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
 
         replayMocks();
-        Map<String, List> siteListsToCompare;
+        Map<String, List<Site>> siteListsToCompare;
         siteListsToCompare = service.getSiteLists(studyTemplate1);
         verifyMocks();
         assertEquals(siteLists,siteListsToCompare);
@@ -387,7 +387,7 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
                 .andReturn(expectedAvailableSite1);
         replayMocks();
 
-        Map<String, List> assignedAndAvailableSites = service.getSiteLists(study);
+        Map<String, List<Site>> assignedAndAvailableSites = service.getSiteLists(study);
         verifyMocks();
 
         assertEquals("There should be assigned and available sites", 2, assignedAndAvailableSites.size());
