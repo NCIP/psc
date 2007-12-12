@@ -69,9 +69,7 @@ public class AssignSiteController extends PscSimpleFormController {
             }
         }
         if (errors.hasErrors()) {
-            Map<String, Object> model = referenceData(request);
-            model.putAll(errors.getModel());
-            return new ModelAndView(getFormView(), model);
+            return showForm(request, response, errors);
         } else {
             return getControllerTools().redirectToCalendarTemplate(ServletRequestUtils.getIntParameter(request, "id"));
         }
