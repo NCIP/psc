@@ -75,13 +75,15 @@
 <body>
 <laf:box title="${action} Sites">
     <laf:division>
-        <%--<h1>${action} Sites</h1>--%>
         <p>
-            Study: ${study.assignedIdentifier}
+            You are making <strong>${study.assignedIdentifier}</strong> available to specific
+            sites.
         </p>
         <c:url value="/pages/cal/assignSite?id=${study.id}" var="formAction"/>
 
         <form:form action="${formAction}" method="post">
+            <tags:errors/>
+
             <input type="hidden" name="studyId" value="${study.id}"/>
             <input type="hidden" name="assign" value="true"/>
             <div class="row">

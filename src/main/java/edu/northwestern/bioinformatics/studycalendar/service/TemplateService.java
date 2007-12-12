@@ -182,11 +182,12 @@ public class TemplateService {
         }
     }
 
-    public Map getSiteLists(Study studyTemplate) throws Exception {
+    @SuppressWarnings({ "unchecked" })
+    public Map<String, List<Site>> getSiteLists(Study studyTemplate) throws Exception {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
-        Map<String, List> siteLists = new HashMap<String, List>();
+        Map<String, List<Site>> siteLists = new HashMap<String, List<Site>>();
         List<Site> availableSites = new ArrayList<Site>();
         List<Site> assignedSites = new ArrayList<Site>();
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
@@ -196,7 +197,7 @@ public class TemplateService {
         for (StudySite ss : studyTemplate.getStudySites()) {
             assignedSites.add(ss.getSite());
         }
-        availableSites = (List) ObjectSetUtil.minus(availableSites, assignedSites);
+        availableSites = (List<Site>) ObjectSetUtil.minus(availableSites, assignedSites);
         siteLists.put(StudyCalendarAuthorizationManager.ASSIGNED_PGS, assignedSites);
         siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
 
