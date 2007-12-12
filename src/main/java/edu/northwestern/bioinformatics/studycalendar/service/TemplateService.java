@@ -30,6 +30,7 @@ import java.util.*;
  * @author Padmaja Vedula
  * @author Rhett Sutphin
  */
+// TODO: None of these methods should throw plain java.lang.Exception
 @Transactional
 public class TemplateService {
     public static final String SUBJECT_COORDINATOR_ACCESS_ROLE = "SUBJECT_COORDINATOR";
@@ -49,8 +50,6 @@ public class TemplateService {
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
-
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
@@ -66,10 +65,9 @@ public class TemplateService {
         }
     }
 
-    public edu.northwestern.bioinformatics.studycalendar.domain.User
-            assignTemplateToSubjectCoordinator( Study study,
-                                                    Site site,
-                                                    edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
+        Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
+    ) throws Exception {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -91,10 +89,9 @@ public class TemplateService {
         return user;
     }
 
-    public edu.northwestern.bioinformatics.studycalendar.domain.User
-            removeAssignedTemplateFromSubjectCoordinator(Study study,
-                                                             Site site,
-                                                             edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
+    public edu.northwestern.bioinformatics.studycalendar.domain.User removeAssignedTemplateFromSubjectCoordinator(
+        Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
+    ) throws Exception {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
         }
@@ -204,39 +201,6 @@ public class TemplateService {
         siteLists.put(StudyCalendarAuthorizationManager.AVAILABLE_PGS, availableSites);
 
         return siteLists;
-    }
-    
-    @SuppressWarnings({ "unchecked" })
-    public Map<String, List<Study>> getTemplatesLists(Site site, User subjectCdUser) throws Exception {
-        if (site == null) {
-            throw new IllegalArgumentException(SITE_IS_NULL);
-        }
-        if (subjectCdUser == null) {
-            throw new IllegalArgumentException(USER_IS_NULL);
-        }
-        Map<String, List<Study>> templatesMap = new HashMap<String, List<Study>>();
-        List<Study> assignedTemplates = new ArrayList<Study>();
-        List<Study> allTemplates = new ArrayList<Study>();
-
-        List<StudySite> studySites = site.getStudySites();
-        for (StudySite studySite : studySites) {
-            allTemplates.add(studySite.getStudy());
-            if (authorizationManager.isUserPGAssigned(DomainObjectTools.createExternalObjectId(studySite), subjectCdUser.getUserId().toString())) {
-                assignedTemplates.add(studySite.getStudy());
-            }
-        }
-
-        List<Study> availableTemplates = (List<Study>) ObjectSetUtil.minus(allTemplates, assignedTemplates);
-        templatesMap.put(StudyCalendarAuthorizationManager.ASSIGNED_PES, assignedTemplates);
-        templatesMap.put(StudyCalendarAuthorizationManager.AVAILABLE_PES, availableTemplates);
-        return templatesMap;
-    }
-    
-    public ProtectionGroup getSiteProtectionGroup(String siteName) throws Exception {
-        if(siteName == null) {
-            throw new IllegalArgumentException(STRING_IS_NULL);
-        }
-        return authorizationManager.getPGByName(siteName);
     }
 
     /**
