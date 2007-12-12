@@ -2,10 +2,14 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockMultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.fileupload.FileItem;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

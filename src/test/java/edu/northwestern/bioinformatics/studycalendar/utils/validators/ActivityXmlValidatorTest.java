@@ -8,7 +8,7 @@ import org.springframework.validation.ValidationUtils;
 import java.io.FileInputStream;
 import java.io.InputStream;
 
-public class ActivityValidatorTest extends StudyCalendarTestCase {
+public class ActivityXmlValidatorTest extends StudyCalendarTestCase {
     private InputStream valid, invalid;
 
     protected void setUp() throws Exception {
@@ -30,5 +30,7 @@ public class ActivityValidatorTest extends StudyCalendarTestCase {
         ValidationUtils.invokeValidator(new XmlValidator(Schema.activities), invalid, errors);
 
         assertTrue(errors.hasErrors());
+        assertEquals("Wrong error count", 1, errors.getErrorCount());
+        assertEquals("Wrong error code", "error.file.not.valid", errors.getGlobalError().getCode());
     }
 }

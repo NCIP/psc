@@ -57,6 +57,7 @@ public class XmlValidator implements Validator {
         }
         catch (IOException ioe) {
             errors.reject("error.problem.reading.file", getSchemaTitle());
+            log.debug("Error reading file {} because {}", getSchemaTitle(), ioe.getMessage());
         }
     }
 
