@@ -137,7 +137,7 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         verifyMocks();
 
         assertEquals("Wrong HTTP status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
-        assertEquals("Wrong error message", "POST is the only valid method for this URL", response.getErrorMessage());
+        assertEquals("Wrong error message", "GET is the only valid method for this URL", response.getErrorMessage());
     }
 
     private void expectSearch(String searchText, Source source, ActivityType activityType) {
