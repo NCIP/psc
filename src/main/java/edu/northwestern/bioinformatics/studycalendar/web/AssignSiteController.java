@@ -65,7 +65,7 @@ public class AssignSiteController extends PscSimpleFormController {
             try {
                 templateService.removeTemplateFromSites(assignedStudy, assignCommand.getAssignedSites());
             } catch (StudyCalendarValidationException scve) {
-                errors.reject("error.literal", scve.getMessage());
+                scve.rejectInto(errors);
             }
         }
         if (errors.hasErrors()) {
