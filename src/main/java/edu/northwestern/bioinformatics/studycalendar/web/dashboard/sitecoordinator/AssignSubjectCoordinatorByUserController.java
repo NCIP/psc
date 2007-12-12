@@ -5,12 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.springframework.validation.Errors;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
@@ -50,15 +53,22 @@ public class AssignSubjectCoordinatorByUserController extends AbstractAssignSubj
         return new AssignSubjectCoordinatorByUserCommand(getTemplateService(), selectedUser, assignableStudies, assignableSites, assignableUsers);
     }
 
-    protected ModelAndView onSubmit(Object o) throws Exception {
-        AssignSubjectCoordinatorByUserCommand command = (AssignSubjectCoordinatorByUserCommand) o;
-        command.apply();
+    @Override
+    protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+        AssignSubjectCoordinatorByUserCommand command = (AssignSubjectCoordinatorByUserCommand) oCommand;
+        try {
+            command.apply();
+        } catch (StudyCalendarValidationException scve) {
+            scve.rejectInto(errors);
+        }
 
-        RedirectView rv = new RedirectView("assignSubjectCoordinatorByUser");
-
-        rv.addStaticAttribute("selected", command.getSelected().getId());
-
-        return new ModelAndView(rv);
+        if (errors.hasErrors()) {
+            return showForm(request, response, errors);
+        } else {
+            RedirectView rv = new RedirectView("assignSubjectCoordinatorByUser");
+            rv.addStaticAttribute("selected", command.getSelected().getId());
+            return new ModelAndView(rv);
+        }
     }
 
     protected User getCurrentUser(Integer userId, List<User> assignableUsers) throws Exception {
