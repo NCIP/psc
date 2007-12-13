@@ -2,30 +2,31 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
+import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.validation.BindException;
 import org.springframework.mock.web.MockMultipartFile;
 import org.apache.commons.lang.StringUtils;
 
 public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
-    private MultipartFileActivityLoader loader;
+    private ImportActivitiesService service;
     private ImportActivitiesCommand command;
     private MultipartFile file;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        loader = registerMockFor(MultipartFileActivityLoader.class);
+        service = registerMockFor(ImportActivitiesService.class);
         file = registerMockFor(MockMultipartFile.class);
 
         command = new ImportActivitiesCommand();
-        command.setActivityLoader(loader);
+        command.setImportActivitiesService(service);
         command.setActivitiesFile(file);
     }
 
     public void testApply() throws Exception {
-        loader.loadData(file);
+        expect(file.getInputStream()).andReturn(null);
+        service.loadAndSave(null);
         replayMocks();
 
         command.apply();

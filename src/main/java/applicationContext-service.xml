@@ -36,4 +36,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.UserRoleService"/>
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
+    <bean id="importActivitiesService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService"/>
 </beans>

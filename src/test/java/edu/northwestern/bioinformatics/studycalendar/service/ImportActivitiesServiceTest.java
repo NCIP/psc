@@ -1,21 +1,21 @@
-package edu.northwestern.bioinformatics.studycalendar.xml.readers;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader;
 import static org.easymock.EasyMock.expect;
 
-import java.io.InputStream;
 import static java.util.Arrays.asList;
 import java.util.List;
 
 /**
  * @author John Dzak
  */
-public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
-    private MultipartFileActivityLoader loader;
+public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
+    private ImportActivitiesService service;
     private SourceDao sourceDao;
     private ActivityXmlReader activityXmlReader;
     private Source source0, source1;
@@ -27,9 +27,9 @@ public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
         activityXmlReader = registerMockFor(ActivityXmlReader.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
 
-        loader = new MultipartFileActivityLoader();
-        loader.setSourceDao(sourceDao);
-        loader.setActivityXmlReader(activityXmlReader);
+        service = new ImportActivitiesService();
+        service.setSourceDao(sourceDao);
+        service.setActivityXmlReader(activityXmlReader);
 
         source0 = createNamedInstance("ICD-9", Source.class);
         source1 = createNamedInstance("Loink", Source.class);
@@ -41,17 +41,14 @@ public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
         sourceDao.save(source1);
         replayMocks();
 
-        loader.save(sources);
+        service.save(sources);
         verifyMocks();
     }
 
-    public void testReadData() throws Exception {
-        InputStream stream = null;
-
-        expect(activityXmlReader.read(stream)).andReturn(sources);
+    public void testRead() throws Exception {
+        expect(activityXmlReader.read(null)).andReturn(sources);
         replayMocks();
-
-        loader.readData(stream);
+        service.readData(null);
         verifyMocks();
     }
 
@@ -66,7 +63,7 @@ public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
         expect(sourceDao.getAll()).andReturn(existingSources);
         replayMocks();
 
-        List<Source> actualSources = loader.replaceCollidingSources(sources);
+        List<Source> actualSources = service.replaceCollidingSources(sources);
         verifyMocks();
 
         Source actualSource0 = actualSources.get(0);
@@ -88,3 +85,4 @@ public class MultipartFileActivityLoaderTest extends StudyCalendarTestCase {
         return activity;
     }
 }
+

@@ -1,25 +1,22 @@
-package edu.northwestern.bioinformatics.studycalendar.xml.readers;
+package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import org.springframework.web.multipart.MultipartFile;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author John Dzak
- */
-public class MultipartFileActivityLoader {
-
+public class ImportActivitiesService {
     private SourceDao sourceDao;
     private ActivityXmlReader activityXmlReader;
 
-    public void loadData(MultipartFile dataFile) throws Exception {
-        List<Source> sources = readData(dataFile.getInputStream());
+    public void loadAndSave(InputStream sourcesXml) throws Exception {
+        List<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
+        
         save(validSources);
     }
 

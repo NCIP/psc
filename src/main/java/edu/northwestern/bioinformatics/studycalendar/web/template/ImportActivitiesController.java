@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.ui.ModelMap;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ImportActivitiesController extends PscSimpleFormController {
-    private MultipartFileActivityLoader activityLoader;
+    private ImportActivitiesService importActivitiesService;
 
     public ImportActivitiesController() {
         setCommandClass(ImportActivitiesCommand.class);
@@ -38,13 +38,13 @@ public class ImportActivitiesController extends PscSimpleFormController {
 
     protected ImportActivitiesCommand formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ImportActivitiesCommand command = new ImportActivitiesCommand();
-        command.setActivityLoader(activityLoader);
+        command.setImportActivitiesService(importActivitiesService);
         return command;
     }
 
     //// Field setters
     @Required
-    public void setActivityLoader(MultipartFileActivityLoader activityLoader) {
-        this.activityLoader = activityLoader;
+    public void setImportActivitiesService(ImportActivitiesService importActivitiesService) {
+        this.importActivitiesService = importActivitiesService;
     }
 }

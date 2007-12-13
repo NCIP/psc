@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
+import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +15,12 @@ import java.io.IOException;
 public class ImportActivitiesCommand implements Validatable {
     private static Logger log = LoggerFactory.getLogger(ImportActivitiesCommand.class);
 
-    private MultipartFileActivityLoader activityLoader;
+    private ImportActivitiesService service;
     private MultipartFile activitiesFile;
     private Integer returnToPeriodId;
 
     public void apply() throws Exception {
-        activityLoader.loadData(activitiesFile);
+        service.loadAndSave(activitiesFile.getInputStream());
     }
 
     public void validate(Errors errors) {
@@ -48,8 +48,8 @@ public class ImportActivitiesCommand implements Validatable {
         return activitiesFile;
     }
 
-    public void setActivityLoader(MultipartFileActivityLoader activityLoader) {
-        this.activityLoader = activityLoader;
+    public void setImportActivitiesService(ImportActivitiesService service) {
+        this.service = service;
     }
 
     public Integer getReturnToPeriodId() {

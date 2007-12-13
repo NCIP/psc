@@ -10,9 +10,6 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
     >
 
-    <bean id="activityLoader" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader"/>
-
     <bean id="activityXmlReader" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader"/>
 
