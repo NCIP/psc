@@ -489,6 +489,20 @@
                 $('admin-options').show()
             }
 
+            function deletePeriod(periodId) {
+                var formdata = "";
+                formdata = formdata + "period=" + periodId + "&";
+                formdata = formdata+ "studySegment=" + ${studySegment.base.id} + "&";
+
+                href = '<c:url value="/pages/deletePeriod"/>?period=' + periodId + "&studySegment=" + ${studySegment.base.id}
+                var lastRequest = new Ajax.Request(href,
+                {
+                    postBody: formdata
+                });
+
+                return true;
+            }
+
             Event.observe(window, "load", epochsAreaSetup)
             Event.observe(window, "load", studyManipulationSetup)
 

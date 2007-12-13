@@ -223,6 +223,11 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
+    <bean name="/deletePeriod" id="deletePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeletePeriodController">
+        <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
+    </bean>
+
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
         <property name="crumb">
