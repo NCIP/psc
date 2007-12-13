@@ -53,7 +53,7 @@ public class XmlValidator implements Validator {
         catch (SAXException ex) {
             // TODO: get cause of SaxException and display in form other than cryptic SaxException message.
             errors.reject("error.file.not.valid", toStringArray(getSchemaTitle()), "File not valid");
-            log.debug("Activities file {} is not valid because {}", getSchemaTitle(), ex.getMessage());
+            log.debug("{} file is not valid because {}", getSchemaTitle(), ex.getMessage());
         }
         catch (IOException ioe) {
             errors.reject("error.problem.reading.file", toStringArray(getSchemaTitle()), "Error reading file");

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://bioinformatics.northwestern.edu/ns/psc"
+<xsd:schema targetNamespace="http://bioinformatics.northwestern.edu/ns/psc/activities.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
+            xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc/activities.xsd"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
