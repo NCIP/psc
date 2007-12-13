@@ -5,23 +5,26 @@
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
-    <xsd:element name="template" type="psc:Amendments" />
+    <xsd:element name="study" type="psc:Study" />
 
-    <xsd:complexType name="Amendments">
+    <xsd:complexType name="Study">
         <xsd:sequence>
-            <xsd:element name="amendment" type="psc:Amendment"/>
+            <xsd:element name="planned-calendar" type="psc:PlannedCalendar" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="amendment" type="psc:Amendment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:complexType name="PlannedCalendar" />
+
     <xsd:complexType name="Amendment">
         <xsd:sequence>
-            <xsd:element name="delta" type="psc:PlannedCalendarDelta" maxOccurs="unbounded"/>
+            <xsd:element name="delta" type="psc:PlannedCalendarDelta" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="PlannedCalendarDelta">
         <xsd:sequence>
-            <xsd:element name="add" type="psc:Add" maxOccurs="unbounded"/>
+            <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
     </xsd:complexType>
 
