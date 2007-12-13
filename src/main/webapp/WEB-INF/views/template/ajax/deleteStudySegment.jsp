@@ -15,3 +15,7 @@ updateAllStudySegmentsControlVisibility(${epoch.id})
 Element.addClassName("select-studySegment-${studySegment.id}", "selected")
 SC.slideAndShow('selected-studySegment-content')
 
+<jsgen:replaceHtml targetElement="errorMessages">
+    <tags:replaceErrorMessagesForTemplate/>
+</jsgen:replaceHtml>
+hideShowReleaseTemplateButton()
