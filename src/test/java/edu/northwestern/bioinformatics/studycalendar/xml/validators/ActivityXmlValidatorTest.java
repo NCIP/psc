@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator.*;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
@@ -20,14 +21,14 @@ public class ActivityXmlValidatorTest extends StudyCalendarTestCase {
 
     public void testValidate() {
         BindException errors = new BindException(valid, StringUtils.EMPTY);
-        ValidationUtils.invokeValidator(new XmlValidator(Schema.activities), valid, errors);
+        ValidationUtils.invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, valid, errors);
 
         assertFalse(errors.hasErrors());
     }
 
     public void testInvalid() {
         BindException errors = new BindException(invalid, StringUtils.EMPTY);
-        ValidationUtils.invokeValidator(new XmlValidator(Schema.activities), invalid, errors);
+        ValidationUtils.invokeValidator(ACTIVITY_VALIDATOR_INSTANCE, invalid, errors);
 
         assertTrue(errors.hasErrors());
         assertEquals("Wrong error count", 1, errors.getErrorCount());

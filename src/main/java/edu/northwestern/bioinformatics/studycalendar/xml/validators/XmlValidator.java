@@ -17,6 +17,9 @@ import java.io.InputStream;
 public class XmlValidator implements Validator {
     private static Logger log = LoggerFactory.getLogger(XmlValidator.class);
 
+    public static final XmlValidator ACTIVITY_VALIDATOR_INSTANCE = new XmlValidator(Schema.activities);
+    public static final XmlValidator TEMPLATE_VALIDATOR_INSTANCE = new XmlValidator(Schema.template);
+
     private Schema schema;
 
     public XmlValidator(Schema schema) {

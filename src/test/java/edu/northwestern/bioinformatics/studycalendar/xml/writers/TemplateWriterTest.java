@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
@@ -25,7 +26,7 @@ public class TemplateWriterTest extends StudyCalendarTestCase {
         s +=        "<amendment><delta><add></add></delta></amendment></template>";
 
         BindException errors = new BindException(s, StringUtils.EMPTY);
-        invokeValidator(new XmlValidator(Schema.template), new ByteArrayInputStream(s.getBytes()), errors);
+        invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(s.getBytes()), errors);
 
 
         assertFalse("Template xml should be error free", errors.hasErrors());
