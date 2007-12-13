@@ -34,7 +34,7 @@ public class XmlValidator implements Validator {
         SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
         // 2. Load the specific schema you want.
-        File uncompiledSchema = getSchema();
+        File uncompiledSchema = schema.file();
 
         try {
             // 3. Compile the schema.
@@ -59,11 +59,6 @@ public class XmlValidator implements Validator {
             errors.reject("error.problem.reading.file", toStringArray(getSchemaTitle()), "Error reading file");
             log.debug("Error reading file {} because {}", getSchemaTitle(), ioe.getMessage());
         }
-    }
-
-    protected File getSchema() {
-        URL schemaLocation = getClass().getClassLoader().getResource(schema.fileName());
-        return new File(schemaLocation.getFile());
     }
 
     protected String getSchemaTitle() {

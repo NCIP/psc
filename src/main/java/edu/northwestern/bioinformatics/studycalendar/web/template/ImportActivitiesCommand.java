@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
@@ -13,7 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public class ImportActivitiesCommand implements Validatable {
-    private static Logger log = LoggerFactory.getLogger(ImportActivitiesCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(ImportActivitiesCommand.class);
+
+    private static final XmlValidator VALIDATOR = new XmlValidator(Schema.activities);
 
     private ImportActivitiesService service;
     private MultipartFile activitiesFile;
@@ -31,7 +34,7 @@ public class ImportActivitiesCommand implements Validatable {
         }
 
         try {
-            ValidationUtils.invokeValidator(new XmlValidator(Schema.activities), activitiesFile.getInputStream() , errors);
+            invokeValidator(VALIDATOR, activitiesFile.getInputStream() , errors);
         } catch (IOException ioe) {
             errors.reject("error.problem.reading.file", Schema.activities.title());
             log.debug("Error reading file {} because {}", Schema.activities.title(), ioe.getMessage());
