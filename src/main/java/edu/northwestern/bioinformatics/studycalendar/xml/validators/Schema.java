@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.validators;
+package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 public enum Schema {
     activities("Activities", "activities.xsd"), template("Template", "template.xsd");

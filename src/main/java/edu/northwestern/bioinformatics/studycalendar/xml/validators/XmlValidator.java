@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.validators;
+package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 import org.springframework.validation.Validator;
 import org.springframework.validation.Errors;

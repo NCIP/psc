@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.validators;
+package edu.northwestern.bioinformatics.studycalendar.xml.validators;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.apache.commons.lang.StringUtils;
@@ -14,8 +14,8 @@ public class ActivityXmlValidatorTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/utils/dataloaders/data/ActivityXmlReaderTest.xml");
-        invalid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/utils/dataloaders/data/ActivityXmlReaderTest-Invalid.xml");
+        valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/readers/data/ActivityXmlReaderTest.xml");
+        invalid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/readers/data/ActivityXmlReaderTest-Invalid.xml");
     }
 
     public void testValidate() {

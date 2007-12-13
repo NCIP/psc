@@ -11,9 +11,9 @@
     >
 
     <bean id="activityLoader" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.MultipartFileActivityLoader"/>
+          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader"/>
 
     <bean id="activityXmlReader" autowire="byName" lazy-init="true"
-          class="edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.ActivityXmlReader"/>
+          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader"/>
 
 </beans>

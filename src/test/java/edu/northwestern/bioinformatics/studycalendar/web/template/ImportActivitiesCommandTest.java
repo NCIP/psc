@@ -2,17 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.MultipartFileActivityLoader;
-import edu.northwestern.bioinformatics.studycalendar.utils.validators.XmlValidator;
-import edu.northwestern.bioinformatics.studycalendar.utils.validators.Schema;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.mock.web.MockMultipartFile;
-import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
-import org.easymock.EasyMock;
 
 public class ImportActivitiesCommandTest extends StudyCalendarTestCase {
     private MultipartFileActivityLoader loader;

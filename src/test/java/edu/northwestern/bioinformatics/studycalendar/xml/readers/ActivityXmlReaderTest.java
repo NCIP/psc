@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.dataloaders;
+package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
@@ -19,7 +19,7 @@ public class ActivityXmlReaderTest extends StudyCalendarTestCase {
         super.setUp();
 
         reader = new ActivityXmlReader();
-        input = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/utils/dataloaders/data/ActivityXmlReaderTest.xml");
+        input = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/readers/data/ActivityXmlReaderTest.xml");
     }
 
     public void testParser() throws Exception {

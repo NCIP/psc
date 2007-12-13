@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.MultipartFileActivityLoader;
-import edu.northwestern.bioinformatics.studycalendar.utils.validators.Schema;
-import edu.northwestern.bioinformatics.studycalendar.utils.validators.XmlValidator;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

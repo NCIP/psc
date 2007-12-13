@@ -1,11 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.utils.dataloaders.MultipartFileActivityLoader;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.MultipartFileActivityLoader;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,7 +12,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.Collections;
 
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ImportActivitiesController extends PscSimpleFormController {

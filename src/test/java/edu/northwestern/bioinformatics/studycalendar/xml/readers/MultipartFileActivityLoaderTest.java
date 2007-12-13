@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.dataloaders;
+package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
