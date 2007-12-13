@@ -3,11 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.BindException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,6 +32,31 @@ public class TemplateWriterTest extends StudyCalendarTestCase {
         assertContains(output, TemplateWriter.ROOT_END);
     }
 
+    public void testContainsPlannedCalendar() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContains(output, TemplateWriter.PLANNDED_CALENDAR);
+    }
+
+    public void testContainsAmendment() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContains(output, TemplateWriter.AMENDMENT_START);
+        assertContains(output, TemplateWriter.AMENDMENT_END);
+    }
+
+    public void testContainsDelta() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContains(output, TemplateWriter.DELTA_START);
+        assertContains(output, TemplateWriter.DELTA_END);
+    }
+
+    public void testContainsAddChange() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContains(output, TemplateWriter.ADD_CHANGE);
+    }
 
     /* Test Helpers */
 
