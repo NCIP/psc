@@ -12,15 +12,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 
-public class TemplateWriterTest extends StudyCalendarTestCase {
+public class StudyXmlWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private Study study;
-    private TemplateWriter witer;
+    private StudyXmlWriter witer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        witer = new TemplateWriter();
+        witer = new StudyXmlWriter();
 
         study = Fixtures.createBlankTemplate();
     }
@@ -28,44 +28,42 @@ public class TemplateWriterTest extends StudyCalendarTestCase {
     public void testContainsRoot() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContains(output, TemplateWriter.ROOT_START);
-        assertContains(output, TemplateWriter.ROOT_END);
+        assertContainsTag(output, StudyXmlWriter.ROOT);
     }
 
     public void testContainsPlannedCalendar() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContains(output, TemplateWriter.PLANNDED_CALENDAR);
+        assertContainsTag(output, StudyXmlWriter.PLANNDED_CALENDAR);
     }
 
     public void testContainsAmendment() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContains(output, TemplateWriter.AMENDMENT_START);
-        assertContains(output, TemplateWriter.AMENDMENT_END);
+        assertContainsTag(output, StudyXmlWriter.AMENDMENT);
     }
 
     public void testContainsDelta() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContains(output, TemplateWriter.DELTA_START);
-        assertContains(output, TemplateWriter.DELTA_END);
+        assertContainsTag(output, StudyXmlWriter.DELTA);
     }
 
     public void testContainsAddChange() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContains(output, TemplateWriter.ADD_CHANGE);
+        assertContainsTag(output, StudyXmlWriter.ADD);
     }
 
     /* Test Helpers */
 
-    public String createAndValidateXml(Study study) {
-        byte[] byteOutput = witer.writeTemplate(study);
+    public String createAndValidateXml(Study study) throws Exception{
+        String s = witer.createStudyXml(study);
+        log.debug("XML: {}", s);
+        
+        validate(s.getBytes());
 
-        validate(byteOutput);
-
-        return convertToString(byteOutput);
+        return s;
     }
 
     private void validate(byte[] byteOutput) {
@@ -75,9 +73,12 @@ public class TemplateWriterTest extends StudyCalendarTestCase {
         assertFalse("Template xml should be error free", errors.hasErrors());
     }
 
-    private String convertToString(byte[] byteOutput) {
-        String output = new String(byteOutput);
-        log.debug("XML: {}", output);
-        return output;
+
+    private void assertContainsTag(String output, String element) {
+        assertContains(output, toTag(element));
+    }
+
+    private String toTag(String element) {
+        return "<" + element;
     }
 }
