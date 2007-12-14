@@ -97,13 +97,13 @@ public class StudyXmlWriter {
 
     private void addDeltas(Document document, Amendment amendment, Element amendmentElement) {
         for (Delta<?> delta :  amendment.getDeltas()) {
-            if (delta instanceof PlannedCalendarDelta) {
+//            if (delta instanceof PlannedCalendarDelta) {
                 Element element = document.createElement(PLANNED_CALENDAR_DELTA);
                 element.setAttribute("grid-id", delta.getGridId());
                 amendmentElement.appendChild(element);
 
                 addChanges(document, delta, element);
-            }
+//            }
         }
     }
 
@@ -122,15 +122,15 @@ public class StudyXmlWriter {
 
     private void addNode(Document document, ChildrenChange change, Element changeElement) {
         PlanTreeNode<?> child = change.getChild();
-        if (child instanceof Epoch) {
-            Epoch epoch = (Epoch) child;
-            Element element = document.createElement(EPOCH);
-            element.setAttribute("name", epoch.getName());
-            element.setAttribute("grid-id", epoch.getGridId());
-            changeElement.appendChild(element);
-
-            addStudySegments(document, epoch, element);
-        }
+//        if (child instanceof Epoch) {
+//            Epoch epoch = (Epoch) child;
+//            Element element = document.createElement(EPOCH);
+//            element.setAttribute("name", epoch.getName());
+//            element.setAttribute("grid-id", epoch.getGridId());
+//            changeElement.appendChild(element);
+//
+//            addStudySegments(document, epoch, element);
+//        }
     }
 
     private void addStudySegments(Document document, Epoch epoch, Element epochElement) {

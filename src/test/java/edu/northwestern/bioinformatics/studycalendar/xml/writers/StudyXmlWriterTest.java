@@ -55,18 +55,18 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
         assertContainsTag(output, StudyXmlWriter.ADD);
     }
-
-    public void testContainsEpoch() throws Exception {
-        String output = createAndValidateXml(study);
-
-        assertContainsTag(output, StudyXmlWriter.EPOCH);
-    }
-
-    public void testContainsStudySegment() throws Exception {
-        String output = createAndValidateXml(study);
-
-        assertContainsTag(output, StudyXmlWriter.STUDY_SEGMENT);
-    }
+//
+//    public void testContainsEpoch() throws Exception {
+//        String output = createAndValidateXml(study);
+//
+//        assertContainsTag(output, StudyXmlWriter.EPOCH);
+//    }
+//
+//    public void testContainsStudySegment() throws Exception {
+//        String output = createAndValidateXml(study);
+//
+//        assertContainsTag(output, StudyXmlWriter.STUDY_SEGMENT);
+//    }
 
     /* Test Helpers */
 
