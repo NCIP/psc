@@ -9,11 +9,13 @@ import org.springframework.validation.BindException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.custommonkey.xmlunit.XMLTestCase;
 
 import java.io.ByteArrayInputStream;
 
 public class StudyXmlWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
+    
     private Study study;
     private StudyXmlWriter witer;
 
@@ -22,7 +24,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
         witer = new StudyXmlWriter();
 
-        study = Fixtures.createBlankTemplate();
+        study = Fixtures.createBasicTemplate();
     }
 
     public void testContainsRoot() throws Exception {
@@ -46,13 +48,25 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     public void testContainsDelta() throws Exception {
         String output = createAndValidateXml(study);
 
-        assertContainsTag(output, StudyXmlWriter.DELTA);
+        assertContainsTag(output, StudyXmlWriter.PLANNED_CALENDAR_DELTA);
     }
 
     public void testContainsAddChange() throws Exception {
         String output = createAndValidateXml(study);
 
         assertContainsTag(output, StudyXmlWriter.ADD);
+    }
+
+    public void testContainsEpoch() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContainsTag(output, StudyXmlWriter.EPOCH);
+    }
+
+    public void testContainsStudySegment() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContainsTag(output, StudyXmlWriter.STUDY_SEGMENT);
     }
 
     /* Test Helpers */
@@ -81,4 +95,16 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     private String toTag(String element) {
         return "<" + element;
     }
+
+
+    /* XMLUnit TestCase Implementer and example code */
+    public class XMLTestCaseImpl extends XMLTestCase {}
+
+//    public void testForEquality() throws Exception {
+//        String myControlXML = "<msg><uuid>0x00435A8C</uuid></msg>";
+//        String myTestXML = "<msg><localId>2376</localId></msg>";
+//        xmlTest.assertXMLEqual("Comparing test xml to control xml",
+//                       myControlXML, myTestXML);
+//    }
+
 }
