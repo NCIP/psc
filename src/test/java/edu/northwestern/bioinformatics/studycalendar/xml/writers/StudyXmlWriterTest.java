@@ -9,7 +9,6 @@ import org.springframework.validation.BindException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.custommonkey.xmlunit.XMLTestCase;
 
 import java.io.ByteArrayInputStream;
 
@@ -95,16 +94,5 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     private String toTag(String element) {
         return "<" + element;
     }
-
-
-    /* XMLUnit TestCase Implementer and example code */
-    public class XMLTestCaseImpl extends XMLTestCase {}
-
-//    public void testForEquality() throws Exception {
-//        String myControlXML = "<msg><uuid>0x00435A8C</uuid></msg>";
-//        String myTestXML = "<msg><localId>2376</localId></msg>";
-//        xmlTest.assertXMLEqual("Comparing test xml to control xml",
-//                       myControlXML, myTestXML);
-//    }
 
 }

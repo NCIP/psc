@@ -42,7 +42,7 @@
         <xsd:sequence>
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="index" type="xsd:integer"/>
+        <xsd:attribute name="index" type="xsd:integer" use="required"/>
         <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 

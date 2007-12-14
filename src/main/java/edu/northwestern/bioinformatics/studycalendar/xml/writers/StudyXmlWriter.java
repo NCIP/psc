@@ -112,6 +112,7 @@ public class StudyXmlWriter {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
                 element.setAttribute("grid-id", change.getGridId());
+                element.setAttribute("index", ((Add) change).getIndex().toString());
                 deltaElement.appendChild(element);
 
                 addNode(document, (ChildrenChange) change, element);
