@@ -1,9 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -48,6 +46,9 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
     
     // TODO: test the inclusion of the plan tree hierarchy
     public void testRequest() throws Exception {
+
+        expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
+
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -57,13 +58,14 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         Object actualStudySegment = mv.getModel().get("studySegment");
         assertNotNull("study segment missing", actualStudySegment);
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
-
-        assertEquals("Wrong model: " + mv.getModel(), 4, mv.getModel().size());
+        System.out.println("mv.getModel " + mv.getModel());
+        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
     }
     
     public void testRequestWhenAmended() throws Exception {
         study.setDevelopmentAmendment(new Amendment("dev"));
         expect(deltaService.revise(studySegment)).andReturn((StudySegment) studySegment.transientClone());
+        expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -74,6 +76,6 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
         assertTrue("study segment is not wrapped", actualStudySegment instanceof StudySegmentTemplate);
         assertNotNull("dev revision missing", mv.getModel().get("developmentRevision"));
 
-        assertEquals("Wrong model: " + mv.getModel(), 5, mv.getModel().size());
+        assertEquals("Wrong model: " + mv.getModel(), 6, mv.getModel().size());
     }
 }
