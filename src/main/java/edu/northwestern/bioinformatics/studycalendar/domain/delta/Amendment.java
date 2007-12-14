@@ -32,7 +32,6 @@ import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
  * implements this process.
  *
  * @author Rhett Sutphin
- * @see Customization
  * @see edu.northwestern.bioinformatics.studycalendar.service.DeltaService
  */
 @Entity
