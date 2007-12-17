@@ -15,6 +15,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
@@ -59,6 +60,9 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
             }
             if (o instanceof Site) {
                 context.setSite((Site) o);
+            }
+            if (o instanceof Population) {
+                context.setPopulation((Population) o);
             }
         }
         return context;

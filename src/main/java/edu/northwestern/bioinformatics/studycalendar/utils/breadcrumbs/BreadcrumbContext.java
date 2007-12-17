@@ -32,6 +32,7 @@ public class BreadcrumbContext {
     private Activity activity;
     private User user;
     private Amendment amendment;
+    private Population population;
 
     private TemplateService templateService;
 
@@ -146,6 +147,10 @@ public class BreadcrumbContext {
         this.amendment = amendment;
     }
 
+    public void setPopulation(Population population) {
+        this.population = population;
+    }
+
     // TODO: more setters, as needed
 
     ////// BEAN PROPERTIES
@@ -212,5 +217,9 @@ public class BreadcrumbContext {
 
     public Amendment getAmendment() {
         return amendment;
+    }
+
+    public Population getPopulation() {
+        return population;
     }
 }

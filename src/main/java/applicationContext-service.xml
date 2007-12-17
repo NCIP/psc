@@ -38,4 +38,6 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
     <bean id="importActivitiesService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService"/>
+    <bean id="populationService" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.service.PopulationService"/>
 </beans>

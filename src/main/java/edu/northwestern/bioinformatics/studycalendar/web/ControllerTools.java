@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
@@ -109,6 +110,11 @@ public class ControllerTools {
         model.put("studySite", studySite);
         model.put("study", studySite.getStudy());
         model.put("site", studySite.getSite());
+    }
+
+    public void addToModel(Population population, Map<String, Object> model) {
+        model.put("population", population);
+        addHierarchyToModel(population.getStudy(), model);
     }
 
     public boolean isAjaxRequest(HttpServletRequest request) {
