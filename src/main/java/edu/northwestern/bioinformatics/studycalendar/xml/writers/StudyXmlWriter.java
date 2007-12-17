@@ -22,12 +22,21 @@ import org.w3c.dom.*;
 public class StudyXmlWriter {
     public static String ROOT = "study";
 
+    /* Tag Element constants */
     public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String AMENDMENT = "amendment";
     public static final String PLANNED_CALENDAR_DELTA = "planned-calendar-delta";
     public static final String ADD = "add";
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
+
+    /* Tag Attribute constants */
+    public static final String ID = "id";
+    public static final String DATE = "date";
+    public static final String NAME = "name";
+    public static final String INDEX = "index";
+    public static final String MANDATORY = "mandatory";
+    public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
 
 
     public String createStudyXml(Study study) throws Exception {
@@ -57,8 +66,8 @@ public class StudyXmlWriter {
         rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" );
         rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:schemaLocation", "http://bioinformatics.northwestern.edu/ns/psc/study.xsd" );
 
-        rootElement.setAttribute("assigned-identifier", study.getAssignedIdentifier());
-        rootElement.setAttribute("grid-id", study.getGridId());
+        rootElement.setAttribute(ID, study.getGridId());
+        rootElement.setAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
         addPlannedCalendar(document, study, rootElement);
 
@@ -70,7 +79,7 @@ public class StudyXmlWriter {
     private void addPlannedCalendar(Document document, Study study, Element rootElement) {
         if (study.getPlannedCalendar() != null) {
             Element plannedCalEle = document.createElement(PLANNDED_CALENDAR);
-            plannedCalEle.setAttribute("grid-id", study.getPlannedCalendar().getGridId());
+            plannedCalEle.setAttribute(ID, study.getPlannedCalendar().getGridId());
 
             document.appendChild(rootElement);
             rootElement.appendChild(plannedCalEle);
@@ -81,12 +90,12 @@ public class StudyXmlWriter {
         for (Amendment amendment : study.getAmendmentsList()) {
             Element element = document.createElement(AMENDMENT);
 
-            element.setAttribute("name", amendment.getName());
-            element.setAttribute("mandatory", Boolean.toString(amendment.isMandatory()));
-            element.setAttribute("grid-id", amendment.getGridId());
+            element.setAttribute(NAME, amendment.getName());
+            element.setAttribute(MANDATORY, Boolean.toString(amendment.isMandatory()));
+            element.setAttribute(ID, amendment.getGridId());
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            element.setAttribute("date", formatter.format(amendment.getDate()));
+            element.setAttribute(DATE, formatter.format(amendment.getDate()));
 
             rootElement.appendChild(element);
 
@@ -99,7 +108,7 @@ public class StudyXmlWriter {
         for (Delta<?> delta :  amendment.getDeltas()) {
             if (delta instanceof PlannedCalendarDelta) {
                 Element element = document.createElement(PLANNED_CALENDAR_DELTA);
-                element.setAttribute("grid-id", delta.getGridId());
+                element.setAttribute(ID, delta.getGridId());
                 amendmentElement.appendChild(element);
 
                 addChanges(document, delta, element);
@@ -111,8 +120,8 @@ public class StudyXmlWriter {
         for (Change change : delta.getChanges()) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
-                element.setAttribute("grid-id", change.getGridId());
-                element.setAttribute("index", ((Add) change).getIndex().toString());
+                element.setAttribute(ID, change.getGridId());
+                element.setAttribute(INDEX, ((Add) change).getIndex().toString());
                 deltaElement.appendChild(element);
 
                 addNode(document, (ChildrenChange) change, element);
@@ -125,8 +134,8 @@ public class StudyXmlWriter {
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
             Element element = document.createElement(EPOCH);
-            element.setAttribute("name", epoch.getName());
-            element.setAttribute("grid-id", epoch.getGridId());
+            element.setAttribute(NAME, epoch.getName());
+            element.setAttribute(ID, epoch.getGridId());
             changeElement.appendChild(element);
 
             addStudySegments(document, epoch, element);
@@ -136,8 +145,8 @@ public class StudyXmlWriter {
     private void addStudySegments(Document document, Epoch epoch, Element epochElement) {
         for(StudySegment studySegment : epoch.getStudySegments()) {
             Element element = document.createElement(STUDY_SEGMENT);
-            element.setAttribute("name", studySegment.getName());
-            element.setAttribute("grid-id", studySegment.getGridId());
+            element.setAttribute(NAME, studySegment.getName());
+            element.setAttribute(ID, studySegment.getGridId());
 
             epochElement.appendChild(element);
         }

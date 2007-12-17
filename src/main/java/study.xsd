@@ -13,11 +13,11 @@
             <xsd:element name="amendment" type="psc:Amendment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="PlannedCalendar">
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Amendment">
@@ -27,14 +27,14 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="mandatory" type="xsd:boolean" use="required"/>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="PlannedCalendarDelta">
         <xsd:sequence>
             <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <!-- For ChildId use gridId to matchup with correct child and either create or use existing object -->
@@ -43,7 +43,7 @@
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="index" type="xsd:integer" use="required"/>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Epoch">
@@ -51,13 +51,12 @@
             <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="StudySegment">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="grid-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
-
 
 </xsd:schema>
