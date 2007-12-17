@@ -3,10 +3,26 @@
         id="-7"
         assigned_identifier="Color"
         />
+    <studies
+        id="-8"
+        assigned_identifier="Light"
+        />
     <populations
         id="-77"
         name="Hepatitis positive"
         abbreviation="H+"
         study_id="-7"
+        />
+    <populations
+        id="-76"
+        name="Mesothelioma"
+        abbreviation="M"
+        study_id="-7"
+        />
+    <populations
+        id="-88"
+        name="hepatoma"
+        abbreviation="h"
+        study_id="-8"
         />
 </dataset>
