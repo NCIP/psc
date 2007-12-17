@@ -51,6 +51,7 @@ JAKARTA_COMMONS = [
   "org.apache.commons:commons-io:jar:1.3.2",
   eponym("commons-lang", "2.1"),
   eponym("commons-pool", "1.2"),
+  eponym("commons-fileupload", "1.2")
 ]
 
 SPRING = [
