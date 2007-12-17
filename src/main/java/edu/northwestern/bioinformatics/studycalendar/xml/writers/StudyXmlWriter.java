@@ -15,6 +15,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.w3c.dom.*;
 
@@ -26,6 +28,7 @@ public class StudyXmlWriter {
     public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String AMENDMENT = "amendment";
     public static final String PLANNED_CALENDAR_DELTA = "planned-calendar-delta";
+    public static final String EPOCH_DELTA = "epoch-delta";
     public static final String ADD = "add";
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
@@ -60,6 +63,7 @@ public class StudyXmlWriter {
         return db.newDocument();
     }
 
+    // TODO: Break all these add methods into an ElementFactory
     private void addStudy(Document document, Study study) {
         Element rootElement = document.createElement(ROOT);
         rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "http://bioinformatics.northwestern.edu/ns/psc/study.xsd" );
@@ -87,7 +91,10 @@ public class StudyXmlWriter {
     }
 
     private void addAmendments(Document document, Study study, Element rootElement) {
-        for (Amendment amendment : study.getAmendmentsList()) {
+        List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
+        allAmendments.add(study.getDevelopmentAmendment());
+
+        for (Amendment amendment : allAmendments) {
             Element element = document.createElement(AMENDMENT);
 
             element.setAttribute(NAME, amendment.getName());
@@ -108,6 +115,14 @@ public class StudyXmlWriter {
         for (Delta<?> delta :  amendment.getDeltas()) {
             if (delta instanceof PlannedCalendarDelta) {
                 Element element = document.createElement(PLANNED_CALENDAR_DELTA);
+                element.setAttribute(ID, delta.getGridId());
+                amendmentElement.appendChild(element);
+
+                addChanges(document, delta, element);
+            }
+
+            if (delta instanceof EpochDelta) {
+                Element element = document.createElement(EPOCH_DELTA);
                 element.setAttribute(ID, delta.getGridId());
                 amendmentElement.appendChild(element);
 

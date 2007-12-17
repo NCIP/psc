@@ -1,23 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+
 import static java.lang.String.valueOf;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import org.springframework.validation.BindException;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
-import java.lang.reflect.Method;
+import java.util.Date;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 public class StudyXmlWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -33,7 +34,13 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         witer = new StudyXmlWriter();
 
         study = Fixtures.createBasicTemplate();
-        setGridId(  study,
+
+        Add add = createAdd(createNamedInstance("Segment 0", StudySegment.class), 0);
+        Delta<Epoch> delta = createDeltaFor(study.getPlannedCalendar().getEpochs().get(0), add);
+        study.setDevelopmentAmendment(createAmendment(study, delta));
+
+        // TODO: Clean this up
+        setGridIds( study,
                     study.getPlannedCalendar(),
                     study.getAmendmentsList().get(0),
                     study.getAmendmentsList().get(0).getDeltas().get(0),
@@ -48,7 +55,6 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
                     ((Epoch)((ChildrenChange) study.getAmendmentsList().get(0).getDeltas().get(0).getChanges().get(1)).getChild()).getStudySegments().get(2),
                      ((ChildrenChange) study.getAmendmentsList().get(0).getDeltas().get(0).getChanges().get(2)).getChild(),
                     ((Epoch)((ChildrenChange) study.getAmendmentsList().get(0).getDeltas().get(0).getChanges().get(2)).getChild()).getStudySegments().get(0)
-
         );
     }
 
@@ -94,6 +100,12 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         assertContainsTag(output, StudyXmlWriter.STUDY_SEGMENT);
     }
 
+    public void testContainsEpochDelta() throws Exception {
+        String output = createAndValidateXml(study);
+
+        assertContainsTag(output, StudyXmlWriter.EPOCH_DELTA);
+    }
+
     /* Test Helpers */
 
     public String createAndValidateXml(Study study) throws Exception{
@@ -121,12 +133,39 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         return "<" + element;
     }
 
-    private void setGridId(Object... objects) throws Exception {
-        for(Object object : objects) {
-            Method m = AbstractMutableDomainObject.class.getMethod("setGridId", String.class);
-            m.invoke(object, valueOf(id));
-            id++;
+    private void setGridIds(GridIdentifiable... objects) throws Exception {
+        for(GridIdentifiable object : objects) {
+            object.setGridId(valueOf(nextGridId()));
         }
     }
 
+    private <T extends GridIdentifiable> T setGridId(T object) throws Exception{
+        setGridIds(object);
+        return object;
+    }
+
+    private String nextGridId() {
+        return valueOf(id++);
+    }
+
+    public Amendment createAmendment(Study study, Delta delta) throws Exception {
+        Amendment amendment = new Amendment(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
+        amendment.setDate(new Date());
+        amendment.addDelta(delta);
+        setGridId(amendment);
+        return amendment;
+    }
+    
+    private  <T extends Named & GridIdentifiable> T createNamedInstance(String name, Class<T> clazz) throws Exception {
+        return setGridId(Fixtures.createNamedInstance(name, clazz));
+    }
+
+
+    private <T extends PlanTreeNode<? extends GridIdentifiable>> Delta<T> createDeltaFor(T node, Change... changes) throws Exception {
+        return setGridId(Delta.createDeltaFor(node, changes));
+    }
+
+    private Add createAdd(PlanTreeNode<?> child, int index) throws Exception {
+        return setGridId(Add.create(child, index));
+    }
 }

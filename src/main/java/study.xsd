@@ -23,6 +23,7 @@
     <xsd:complexType name="Amendment">
         <xsd:sequence>
             <xsd:element name="planned-calendar-delta" type="psc:PlannedCalendarDelta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="epoch-delta" type="psc:PlannedCalendarDelta" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
@@ -37,7 +38,15 @@
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
-    <!-- For ChildId use gridId to matchup with correct child and either create or use existing object -->
+    <!-- TODO: Inherit  changes types instead of repeating -->
+    <xsd:complexType name="EpochDelta">
+        <xsd:sequence>
+            <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    </xsd:complexType>
+
+    <!-- TODO: For ChildId use gridId to matchup with correct child and either create or use existing object -->
     <xsd:complexType name="Add">
         <xsd:sequence>
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
