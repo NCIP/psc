@@ -61,7 +61,7 @@
                         <li class="odd"><img src="<c:url value="/images/NA.png"/>" alt="not applicable icon"/> NA</li>
                     </ul>
                 </div>
-                <c:forEach items="${studySegment.eventsByDate}" var="entry" varStatus="status">
+                <c:forEach items="${studySegment.activitiesByDate}" var="entry" varStatus="status">
                     <div class="day autoclear ${commons:parity(status.index)}">
                         <h3><tags:formatDate value="${entry.key}"/></h3>
 

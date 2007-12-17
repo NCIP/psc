@@ -70,7 +70,7 @@ public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
         scheduledStudySegment.addEvent(createScheduledActivity("Three", 2006, Calendar.SEPTEMBER, 18));
         scheduledStudySegment.addEvent(createScheduledActivity("Two", 2006, Calendar.SEPTEMBER, 24));
 
-        Map<Date, List<ScheduledActivity>> byDate = scheduledStudySegment.getEventsByDate();
+        Map<Date, List<ScheduledActivity>> byDate = scheduledStudySegment.getActivitiesByDate();
         assertEquals(3, byDate.size());
         Iterator<Map.Entry<Date, List<ScheduledActivity>>> entries = byDate.entrySet().iterator();
 
@@ -173,20 +173,20 @@ public class ScheduledStudySegmentTest extends StudyCalendarTestCase {
 
         scheduledStudySegment.unscheduleOutstandingEvents("Testing");
 
-        assertEquals("Scheduled event not changed", 2, scheduledStudySegment.getEvents().get(0).getAllStates().size());
+        assertEquals("Scheduled event not changed", 2, scheduledStudySegment.getActivities().get(0).getAllStates().size());
         assertEquals("Scheduled not changed to canceled", ScheduledActivityMode.CANCELED,
-            scheduledStudySegment.getEvents().get(0).getCurrentState().getMode());
+            scheduledStudySegment.getActivities().get(0).getCurrentState().getMode());
         assertEquals("Scheduled new mode has wrong reason", "Testing",
-            scheduledStudySegment.getEvents().get(0).getCurrentState().getReason());
+            scheduledStudySegment.getActivities().get(0).getCurrentState().getReason());
 
-        assertEquals("Conditional event not changed", 3, scheduledStudySegment.getEvents().get(3).getAllStates().size());
+        assertEquals("Conditional event not changed", 3, scheduledStudySegment.getActivities().get(3).getAllStates().size());
         assertEquals("Conditional not changed to NA", ScheduledActivityMode.NOT_APPLICABLE,
-            scheduledStudySegment.getEvents().get(3).getCurrentState().getMode());
+            scheduledStudySegment.getActivities().get(3).getCurrentState().getMode());
         assertEquals("Conditional new mode has wrong reason", "Testing",
-            scheduledStudySegment.getEvents().get(3).getCurrentState().getReason());
+            scheduledStudySegment.getActivities().get(3).getCurrentState().getReason());
 
-        assertEquals("Occurred event changed", 2, scheduledStudySegment.getEvents().get(1).getAllStates().size());
-        assertEquals("Canceled event changed", 2, scheduledStudySegment.getEvents().get(2).getAllStates().size());
-        assertEquals("NA event changed", 2, scheduledStudySegment.getEvents().get(4).getAllStates().size());
+        assertEquals("Occurred event changed", 2, scheduledStudySegment.getActivities().get(1).getAllStates().size());
+        assertEquals("Canceled event changed", 2, scheduledStudySegment.getActivities().get(2).getAllStates().size());
+        assertEquals("NA event changed", 2, scheduledStudySegment.getActivities().get(4).getAllStates().size());
     }
 }

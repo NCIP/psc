@@ -1,22 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * @author Rhett Sutphin
@@ -35,12 +37,10 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
 
     private StudySegment studySegment;
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledStudySegment.class.getName());
-
     ////// LOGIC
 
     public void addEvent(ScheduledActivity event) {
-        getEvents().add(event);
+        getActivities().add(event);
         event.setScheduledStudySegment(this);
     }
 
@@ -69,9 +69,9 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     }
 
     @Transient
-    public SortedMap<Date, List<ScheduledActivity>> getEventsByDate() {
+    public SortedMap<Date, List<ScheduledActivity>> getActivitiesByDate() {
         SortedMap<Date, List<ScheduledActivity>> byDate = new TreeMap<Date, List<ScheduledActivity>>();
-        for (ScheduledActivity event : getEvents()) {
+        for (ScheduledActivity event : getActivities()) {
             Date key = event.getActualDate();
             if (!byDate.containsKey(key)) {
                 byDate.put(key, new LinkedList<ScheduledActivity>());
@@ -82,6 +82,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     }
 
     @Transient
+    // TODO: ?
     public Date getTodayDate() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.DATE, -1);
@@ -104,7 +105,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
 
     @Transient
     public boolean isComplete() {
-        for (ScheduledActivity event : getEvents()) {
+        for (ScheduledActivity event : getActivities()) {
             if (event.getCurrentState().getMode().isOutstanding()) {
                 return false;
             }
@@ -113,7 +114,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     }
 
     public void unscheduleOutstandingEvents(String reason) {
-        for (ScheduledActivity event : getEvents()) event.unscheduleIfOutstanding(reason);
+        for (ScheduledActivity event : getActivities()) event.unscheduleIfOutstanding(reason);
     }
 
     ////// BEAN PROPERTIES
@@ -121,11 +122,11 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     @OneToMany(mappedBy = "scheduledStudySegment")
     @OrderBy(clause="ideal_date")
     @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN})
-    public List<ScheduledActivity> getEvents() {
+    public List<ScheduledActivity> getActivities() {
         return events;
     }
 
-    public void setEvents(List<ScheduledActivity> events) {
+    public void setActivities(List<ScheduledActivity> events) {
         this.events = events;
     }
 
@@ -176,7 +177,7 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         if (getStudySegment() != null) {
             sb.append(getName());
         }
-        return sb.append("; events=").append(getEvents())
+        return sb.append("; events=").append(getActivities())
             .append(']').toString();
     }
 }

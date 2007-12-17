@@ -51,7 +51,7 @@ public class ICalTools {
 
 				// now add the events in calendar.
 				for (ScheduledStudySegment scheduledStudySegment : scheduledStudySegments) {
-					SortedMap<Date, List<ScheduledActivity>> events = scheduledStudySegment.getEventsByDate();
+					SortedMap<Date, List<ScheduledActivity>> events = scheduledStudySegment.getActivitiesByDate();
 					for (Date date : events.keySet()) {
 						List<ScheduledActivity> event = events.get(date);
 						for (final ScheduledActivity scheduleActivity : event) {

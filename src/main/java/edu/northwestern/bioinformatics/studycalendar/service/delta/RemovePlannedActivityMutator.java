@@ -26,7 +26,7 @@ public class RemovePlannedActivityMutator extends RemoveMutator {
         PlannedActivity removedPlannedActivity = (PlannedActivity) findChild();
         Revision revision = change.getDelta().getRevision();
         for (ScheduledStudySegment scheduledStudySegment : calendar.getScheduledStudySegments()) {
-            for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
+            for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
                 if (removedPlannedActivity.equals(event.getPlannedActivity())) {
                     event.unscheduleIfOutstanding("Removed in revision " + revision.getDisplayName());
                 }

@@ -40,7 +40,7 @@ public class EventsRescheduleCommand {
     private void changeEvents() {
         List<ScheduledStudySegment> scheduledStudySegments = scheduledCalendar.getScheduledStudySegments();
         for (ScheduledStudySegment segment : scheduledStudySegments) {
-            List<ScheduledActivity> events = segment.getEvents();
+            List<ScheduledActivity> events = segment.getActivities();
             List<ScheduledActivity> filteredEvents = filterEventsByDateAndState(events);
             for (ScheduledActivity event : filteredEvents) {
                 changeState(event);

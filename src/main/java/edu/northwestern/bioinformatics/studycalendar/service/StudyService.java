@@ -51,7 +51,7 @@ public class StudyService {
 	private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
 		for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
 			if (!studySegment.isComplete()) {
-				Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
+				Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getActivitiesByDate();
 				for (Date date : eventsByDate.keySet()) {
 					List<ScheduledActivity> events = eventsByDate.get(date);
 					for (ScheduledActivity event : events) {

@@ -23,7 +23,7 @@ public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<Sc
             Hibernate.initialize(scheduledStudySegment);
             Hibernate.initialize(scheduledStudySegment.getStudySegment());
             Hibernate.initialize(scheduledStudySegment.getStudySegment().getEpoch());
-            for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
+            for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
                 Hibernate.initialize(event);
                 Hibernate.initialize(event.getPreviousStates());
             }

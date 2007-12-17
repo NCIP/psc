@@ -76,7 +76,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         subjectService.schedulePeriod(period0, amendment, scheduledStudySegment);
         subjectService.schedulePeriod(period1, amendment, scheduledStudySegment);
         scheduledActivities = new ScheduledActivity[2][2][3];
-        for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
+        for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
             int period, pe;
             if      (event.getPlannedActivity() == p0e0) { period = 0; pe = 0; }
             else if (event.getPlannedActivity() == p0e1) { period = 0; pe = 1; }

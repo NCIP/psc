@@ -39,7 +39,7 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
 
     private void decrease(Collection<ScheduledStudySegment> studySegments) {
         for (ScheduledStudySegment scheduledStudySegment : studySegments) {
-            for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
+            for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
                 if (event.getRepetitionNumber() >= newRepetitionCount && getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     log.debug("Possibly canceling event from rep {}", event.getRepetitionNumber());
                     event.unscheduleIfOutstanding(createDecreaseMessage(event));

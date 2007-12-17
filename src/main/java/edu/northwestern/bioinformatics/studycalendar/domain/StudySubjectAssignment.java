@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashSet;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
@@ -56,7 +57,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     private Amendment currentAmendment;
     private ScheduledCalendar scheduledCalendar;
     private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
-    private Set<Population> populations;
+    private Set<Population> populations = new HashSet<Population>();
 
     ////// LOGIC
 
@@ -95,6 +96,10 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         }
         log.trace("After removing unapproved: {}", allAmendments);
         return allAmendments;
+    }
+
+    public void addPopulation(Population population) {
+        getPopulations().add(population);
     }
 
     ////// BEAN PROPERTIES

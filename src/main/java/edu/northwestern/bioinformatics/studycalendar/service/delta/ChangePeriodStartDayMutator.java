@@ -25,7 +25,7 @@ public class ChangePeriodStartDayMutator extends AbstractPeriodPropertyChangeMut
     @Override
     public void apply(ScheduledCalendar calendar) {
         for (ScheduledStudySegment scheduledStudySegment : getScheduledStudySegmentsToMutate(calendar)) {
-            for (ScheduledActivity event : scheduledStudySegment.getEvents()) {
+            for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
                 if (getChangedPeriod().equals(templateService.findParent(event.getPlannedActivity()))) {
                     scheduleService.reviseDate(event, shiftAmount, change.getDelta().getRevision());
                 }

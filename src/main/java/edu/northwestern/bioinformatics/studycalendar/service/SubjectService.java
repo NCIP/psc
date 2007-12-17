@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -108,7 +109,7 @@ public class SubjectService {
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
-        Collections.sort(scheduledStudySegment.getEvents(), DatabaseEventOrderComparator.INSTANCE);
+        Collections.sort(scheduledStudySegment.getActivities(), DatabaseEventOrderComparator.INSTANCE);
 
         Site site = calendar.getAssignment().getStudySite().getSite();
         avoidBlackoutDates(scheduledStudySegment, site);
@@ -170,6 +171,12 @@ public class SubjectService {
         PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment,
         int repetitionNumber
     ) {
+        Set<Population> subjectPopulations = targetStudySegment.getScheduledCalendar().getAssignment().getPopulations();
+        if (plannedActivity.getPopulation() != null && !subjectPopulations.contains(plannedActivity.getPopulation())) {
+            log.debug("Skipping {} since the subject is not in population {}", plannedActivity, plannedActivity.getPopulation().getAbbreviation());
+            return;
+        }
+        
         log.debug("Adding event {} from planned activity {}", repetitionNumber, plannedActivity);
 
         // amount needed to shift the relative days in the period such that
@@ -205,7 +212,7 @@ public class SubjectService {
     }
 
     private void avoidBlackoutDates(ScheduledStudySegment studySegment, Site site) {
-       List<ScheduledActivity> listOfEvents = studySegment.getEvents();
+       List<ScheduledActivity> listOfEvents = studySegment.getActivities();
         for (ScheduledActivity event : listOfEvents) {
             avoidBlackoutDates(event, site);
         }
@@ -343,7 +350,7 @@ public class SubjectService {
         List<ScheduledActivity> upcomingScheduledActivities = new ArrayList<ScheduledActivity>();
         for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
             if (!studySegment.isComplete()) {
-                Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getEventsByDate();
+                Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getActivitiesByDate();
                 for(Date date: eventsByDate.keySet()) {
                     List<ScheduledActivity> events = eventsByDate.get(date);
                     for(ScheduledActivity event : events) {

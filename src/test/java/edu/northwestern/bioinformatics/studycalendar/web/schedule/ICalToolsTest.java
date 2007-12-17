@@ -124,7 +124,7 @@ public class ICalToolsTest extends junit.framework.TestCase {
 		ScheduledStudySegment scheduledStudySegment = new ScheduledStudySegment();
 
 		// add few schedule events
-		scheduledStudySegment.setEvents(createScheduleActivities("event:" + name, count, eventMode));
+		scheduledStudySegment.setActivities(createScheduleActivities("event:" + name, count, eventMode));
 		return scheduledStudySegment;
 	}
 

@@ -35,7 +35,7 @@ public class RemovePeriodMutator extends RemoveMutator {
         Revision rev = change.getDelta().getRevision();
         for (ScheduledStudySegment scheduledStudySegment : calendar.getScheduledStudySegmentsFor(studySegment)) {
             log.debug("Applying removal of {} to {}", removedPeriod, scheduledStudySegment.getName());
-            for (ScheduledActivity sa : scheduledStudySegment.getEvents()) {
+            for (ScheduledActivity sa : scheduledStudySegment.getActivities()) {
                 Period period = templateService.findParent(sa.getPlannedActivity());
                 if (period.equals(removedPeriod)) {
                     sa.unscheduleIfOutstanding("Removed in revision " + rev.getDisplayName());
