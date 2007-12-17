@@ -13,13 +13,13 @@ import java.util.Set;
 public class PopulationService {
     private PopulationDao populationDao;
 
-    public void createPopulation(Population pop) {
+    public void savePopulation(Population pop) {
         if (pop.getAbbreviation() == null) {
             pop.setAbbreviation(suggestAbbreviation(pop.getStudy(), pop.getName()));
         } else {
             // ensure that the abbreviation isn't already in use in this study
             Population match = populationDao.getByAbbreviation(pop.getStudy(), pop.getAbbreviation());
-            if (match != null) {
+            if (match != null && !match.equals(pop)) {
                 throw new StudyCalendarValidationException("%s is already using the abbreviation '%s'",
                     match.getName(), match.getAbbreviation());
             }
