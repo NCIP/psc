@@ -43,4 +43,20 @@
         assignment_id="-10"
         adverse_event_id="-29"
         dismissed="1"/>
+    <POPULATIONS
+        id="-20"
+        name="Hatch"
+        abbreviation="H"
+        study_id="-100"
+        />
+    <POPULATIONS
+        id="-21"
+        name="Beach"
+        abbreviation="B"
+        study_id="-100"
+        />
+    <SUBJECT_POPULATIONS
+        population_id="-21"
+        assignment_id="-10"
+        />
 </dataset>

@@ -18,12 +18,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.ManyToMany;
+import javax.persistence.JoinTable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collections;
+import java.util.Set;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 
@@ -53,6 +56,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     private Amendment currentAmendment;
     private ScheduledCalendar scheduledCalendar;
     private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
+    private Set<Population> populations;
 
     ////// LOGIC
 
@@ -186,6 +190,19 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     @Transient
     public boolean isExpired() {
         return (endDateEpoch != null);
+    }
+
+    @ManyToMany
+    @JoinTable(name = "subject_populations",
+        joinColumns = @JoinColumn(name = "assignment_id"),
+        inverseJoinColumns = @JoinColumn(name = "population_id")
+    )
+    public Set<Population> getPopulations() {
+        return populations;
+    }
+
+    public void setPopulations(Set<Population> populations) {
+        this.populations = populations;
     }
 
     ////// OBJECT METHODS

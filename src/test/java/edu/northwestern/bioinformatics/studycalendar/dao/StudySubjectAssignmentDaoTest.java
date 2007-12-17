@@ -25,6 +25,8 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
         assertEquals("Wrong study id", "004-12", assignment.getStudyId());
         assertEquals("Wrong current amendment", -18, (int) assignment.getCurrentAmendment().getId());
+        assertEquals("Wrong number of populations", 1, assignment.getPopulations().size());
+        assertEquals("Wrong population", -21, (int) assignment.getPopulations().iterator().next().getId());
     }
 
     public void testGetByGridId() throws Exception {

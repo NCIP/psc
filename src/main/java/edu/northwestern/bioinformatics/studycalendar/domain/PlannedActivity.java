@@ -26,6 +26,7 @@ import java.util.ArrayList;
 )
 public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<PlannedActivity> {
     private Activity activity;
+    private Population population;
     private Integer day;
     private String details;
     private String condition;
@@ -84,6 +85,15 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         setParent(period);
     }
 
+    @ManyToOne
+    public Population getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(Population population) {
+        this.population = population;
+    }
+
     public Integer getDay() {
         return day;
     }
@@ -93,11 +103,11 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     }
     
     public String getDetails() {
-    	return details;
+        return details;
     }
     
     public void setDetails(String details) {
-    	this.details = details;
+        this.details = details;
     }
 
     public String getCondition() {

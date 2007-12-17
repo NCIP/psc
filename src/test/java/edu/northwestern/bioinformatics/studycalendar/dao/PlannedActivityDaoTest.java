@@ -16,10 +16,11 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertEquals("Wrong id", -12, (int) loaded.getId());
         assertEquals("Wrong day number", new Integer(4), loaded.getDay());
         assertNotNull("Period not loaded", loaded.getPeriod());
-        assertEquals("Wrong period", -300L, (long) loaded.getPeriod().getId());
+        assertEquals("Wrong period", -300, (int) loaded.getPeriod().getId());
         assertNotNull("Activity not loaded", loaded.getActivity());
-        assertEquals("Wrong activity", -200L, (long) loaded.getActivity().getId());
+        assertEquals("Wrong activity", -200, (int) loaded.getActivity().getId());
         assertEquals("Wrong condition", "At least 37", loaded.getCondition());
+        assertEquals("Wrong population", -45, (int) loaded.getPopulation().getId());
     }
 
     public void testPeriodBidirectional() throws Exception {

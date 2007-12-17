@@ -1,0 +1,12 @@
+<dataset>
+    <studies
+        id="-7"
+        assigned_identifier="Color"
+        />
+    <populations
+        id="-77"
+        name="Hepatitis positive"
+        abbreviation="H+"
+        study_id="-7"
+        />
+</dataset>
