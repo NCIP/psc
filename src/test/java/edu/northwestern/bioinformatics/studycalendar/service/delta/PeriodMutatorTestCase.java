@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -66,6 +67,7 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
         scheduledStudySegment.setStartDay(1);
         scheduledStudySegment.setStartDate(STUDY_SEGMENT_START_DATE);
         scheduledCalendar.addStudySegment(scheduledStudySegment);
+        scheduledCalendar.setAssignment(new StudySubjectAssignment());
 
         SubjectService subjectService = new SubjectService() {
             @Override
