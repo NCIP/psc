@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,6 +31,7 @@ public class StudyXmlWriter {
     public static final String AMENDMENT = "amendment";
     public static final String PLANNED_CALENDAR_DELTA = "planned-calendar-delta";
     public static final String EPOCH_DELTA = "epoch-delta";
+    public static String STUDY_SEGMENT_DELTA = "study-segment-delta";
     public static final String ADD = "add";
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
@@ -92,7 +95,7 @@ public class StudyXmlWriter {
 
     private void addAmendments(Document document, Study study, Element rootElement) {
         List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
-        allAmendments.add(study.getDevelopmentAmendment());
+        if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
 
         for (Amendment amendment : allAmendments) {
             Element element = document.createElement(AMENDMENT);
@@ -113,21 +116,22 @@ public class StudyXmlWriter {
 
     private void addDeltas(Document document, Amendment amendment, Element amendmentElement) {
         for (Delta<?> delta :  amendment.getDeltas()) {
+
+            Element element;
             if (delta instanceof PlannedCalendarDelta) {
-                Element element = document.createElement(PLANNED_CALENDAR_DELTA);
-                element.setAttribute(ID, delta.getGridId());
-                amendmentElement.appendChild(element);
-
-                addChanges(document, delta, element);
+                element = document.createElement(PLANNED_CALENDAR_DELTA);
+            } else if (delta instanceof EpochDelta) {
+                element = document.createElement(EPOCH_DELTA);
+            } else if (delta instanceof StudySegmentDelta) {
+                element = document.createElement(STUDY_SEGMENT_DELTA);
+            } else {
+                throw new StudyCalendarError("Unimplemented node type: %s", delta.getClass().getName());
             }
 
-            if (delta instanceof EpochDelta) {
-                Element element = document.createElement(EPOCH_DELTA);
-                element.setAttribute(ID, delta.getGridId());
-                amendmentElement.appendChild(element);
+            element.setAttribute(ID, delta.getGridId());
+            amendmentElement.appendChild(element);
 
-                addChanges(document, delta, element);
-            }
+            addChanges(document, delta, element);
         }
     }
 
