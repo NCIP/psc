@@ -89,4 +89,23 @@
         gender="M"
         person_id="37B"
         />
+
+    <POPULATIONS
+        id="-64"
+        study_id="-100"
+        name="Martian"
+        abbreviation="M"
+        />
+    <POPULATIONS
+        id="-65"
+        study_id="-101"
+        name="Martian"
+        abbreviation="M"
+        />
+    <POPULATIONS
+        id="-96"
+        study_id="-100"
+        name="Doctors"
+        abbreviation="Dr"
+        />
 </dataset>

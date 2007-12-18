@@ -3,11 +3,15 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Collection;
+import java.util.Set;
+import java.util.HashSet;
 
 import javax.persistence.*;
 
@@ -38,6 +42,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     private Amendment developmentAmendment; // the next amendment, currently in development and not released
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
+    private Set<Population> populations = new HashSet<Population>();
 
     private boolean memoryOnly = false;
 
@@ -144,6 +149,11 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         return Collections.unmodifiableList(amendments);
     }
 
+    public void addPopulation(Population population) {
+        getPopulations().add(population);
+        population.setStudy(this);
+    }
+
     ////// BEAN PROPERTIES
 
     /**
@@ -181,6 +191,15 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         return studySites;
     }
 
+    @OneToMany(mappedBy = "study")
+    public Set<Population> getPopulations() {
+        return populations;
+    }
+
+    public void setPopulations(Set<Population> populations) {
+        this.populations = populations;
+    }
+
     @ManyToOne
     public Amendment getAmendment() {
         return amendment;
@@ -199,7 +218,6 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     public void setDevelopmentAmendment(Amendment developmentAmendment) {
         this.developmentAmendment = developmentAmendment;
     }
-
 
     // @Type(type = "edu.northwestern.bioinformatics.studycalendar.domain.LoadStatus")
     @Enumerated(EnumType.ORDINAL)

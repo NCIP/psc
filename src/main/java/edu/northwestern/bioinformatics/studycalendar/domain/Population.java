@@ -21,15 +21,20 @@ public class Population extends AbstractMutableDomainObject implements Named {
     private String name;
     private String abbreviation;
 
+    ////// LOGIC
+
+    public void setStudy(Study study) {
+        this.study = study;
+        if (study != null && !study.getPopulations().contains(this)) {
+            study.addPopulation(this);
+        }
+    }
+
     ////// BEAN PROPERTIES
 
     @ManyToOne
     public Study getStudy() {
         return study;
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
     }
 
     public String getName() {

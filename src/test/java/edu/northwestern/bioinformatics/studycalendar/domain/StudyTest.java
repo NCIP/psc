@@ -115,6 +115,14 @@ public class StudyTest extends StudyCalendarTestCase {
         assertEquals("Extra studySite added", 1, study.getStudySites().size());
     }
 
+    public void testAddPopulation() throws Exception {
+        assertEquals("Test setup failure", 0, study.getPopulations().size());
+        Population p = new Population();
+        study.addPopulation(p);
+        assertEquals("Not added", 1, study.getPopulations().size());
+        assertSame("Bidirectionality not maintained", study, p.getStudy());
+    }
+
     public void testCloneWithNoCalendarWorks() throws Exception {
         assertNull("Test setup failure", study.getPlannedCalendar());
 
