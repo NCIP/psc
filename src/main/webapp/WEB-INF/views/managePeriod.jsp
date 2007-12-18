@@ -8,13 +8,12 @@
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <html>
 <head>
-<%--<title>Set up Period ${period.name} of ${studySegment.qualifiedName} in ${study.name}</title>--%>
+<title>Set up ${period.displayName} of ${studySegment.qualifiedName} in ${study.name}</title>
 <tags:includeScriptaculous/>
 <script type="text/javascript">
-var activitiesAutocompleter;
-        function currentActivityCount() {
-            return $$('.input-row').length;
-        }
+function currentActivityCount() {
+    return $$('.input-row').length;
+}
 
 function selectedActivity() {
     return selectedValue('add-activity')
@@ -327,17 +326,15 @@ function registerHandlers() {
 }
 
 function makeCellDraggableAndDroppable(input) {
-        document.getElementsByClassName('marker').each(
-			function(item) {
-				new Draggable(item,{revert: true});
-				item.currentDurationIndex = item.parentNode.durationIndex;
-				item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-			}
+    document.getElementsByClassName('marker').each(
+        function(item) {
+            new Draggable(item,{revert: true});
+            item.currentDurationIndex = item.parentNode.durationIndex;
+            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
+        }
         );
 
-		Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
-
-
+    Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
 function registerDraggablesAndDroppables() {
@@ -366,6 +363,92 @@ function registerDraggablesAndDroppables() {
 
     Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
+
+
+	var PERIOD_DURATION = 7;
+
+function moveEvent(draggable,dropZone) {
+    var wholeElement = dropZone.getElementsBySelector("span")[0]
+    var elementId = dropZone.getElementsBySelector("span")[0].id
+
+    var parentElement = draggable.parentNode.getElementsBySelector("span")[0]
+    if (parentElement == null) {
+        //means we are drugging a new event
+        if (wholeElement.firstChild == null) {
+            ajaxform(null, elementId, true, null, null)
+            setUpMarker(draggable, dropZone)
+        }
+    } else {
+        //means we are moving event from one cell to another
+        var parentElementId = parentElement.id
+        var arrayOfIndisesForParent = parseInput(parentElementId)
+        var arrayOfIndisesForChild = parseInput(elementId)
+        if (arrayOfIndisesForParent[0]== arrayOfIndisesForChild[0]) {
+            //need to set up ajax call for move
+            if (wholeElement.firstChild == null) {
+                moveAjaxForm(arrayOfIndisesForParent, arrayOfIndisesForChild, false)
+                setUpMovingMarker(draggable, dropZone)
+            }
+        }
+    }
+}
+
+
+function setUpMarker(draggable, dropZone) {
+    var prevDurationIndex = draggable.currentDurationIndex;
+    var newDurationIndex = dropZone.durationIndex;
+    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
+    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
+        var marker = createMarker(newDurationIndex, activity);
+        dropZone.appendChild(marker);
+
+        draggable.parentNode.removeChild(draggable);
+        if(draggable.className=='newMarker') {
+            var div = Builder.node("div", { className: 'newMarker' })
+            div.innerHTML = 'X';
+            new Draggable(div, { revert: true } );
+            $('newMarkerArea').appendChild(div);
+        }
+    }
+}    
+
+
+function setUpMovingMarker(draggable, dropZone) {
+    draggable.innerHTML='';
+    var element = dropZone.getElementsBySelector("span")[0];
+    element.innerHTML='X';
+}
+
+function deleteEvent(draggable,dropZone) {
+    var element = draggable.parentNode.getElementsBySelector("span")[0].id
+    ajaxform(null, element, false, null, null)
+
+    var prevDurationIndex = draggable.currentDurationIndex;
+    var prevActivity = draggable.activity;
+    draggable.innerHTML = '';
+}
+
+
+function createMarker(currentDurationIndex, activityName) {
+    var marker = document.createElement('span');
+    marker.innerHTML = 'X';
+    marker.className='marker';
+    marker.currentDurationIndex = currentDurationIndex;
+    marker.activity = activityName;
+    new Draggable(marker,{revert: true});
+    return marker;
+}
+
+
+Event.observe(window, "load", registerHandlers)
+Event.observe(window, "load", showEmptyMessage)
+Event.observe(window, "load", registerDraggablesAndDroppables)
+
+</script>
+
+<!-- ////// ACTIVITIES AUTOCOMPLETER -->
+<script type="text/javascript">
+var activitiesAutocompleter;
 
 function resetActivitiesAutocompleter() {
     activitiesAutocompleter.reset();
@@ -473,87 +556,6 @@ Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocom
 }) ;
 
 Event.observe(window, "load", createAutocompleter)
-
-
-Event.observe(window, "load", registerHandlers)
-Event.observe(window, "load", showEmptyMessage)
-Event.observe(window, "load", registerDraggablesAndDroppables)
-
-	var PERIOD_DURATION = 7;
-
-function moveEvent(draggable,dropZone) {
-    var wholeElement = dropZone.getElementsBySelector("span")[0]
-    var elementId = dropZone.getElementsBySelector("span")[0].id
-
-    var parentElement = draggable.parentNode.getElementsBySelector("span")[0]
-    if (parentElement == null) {
-        //means we are drugging a new event
-        if (wholeElement.firstChild == null) {
-            ajaxform(null, elementId, true, null, null)
-            setUpMarker(draggable, dropZone)
-        }
-    } else {
-        //means we are moving event from one cell to another
-        var parentElementId = parentElement.id
-        var arrayOfIndisesForParent = parseInput(parentElementId)
-        var arrayOfIndisesForChild = parseInput(elementId)
-        if (arrayOfIndisesForParent[0]== arrayOfIndisesForChild[0]) {
-            //need to set up ajax call for move
-            if (wholeElement.firstChild == null) {
-                moveAjaxForm(arrayOfIndisesForParent, arrayOfIndisesForChild, false)
-                setUpMovingMarker(draggable, dropZone)
-            }
-        }
-    }
-}
-
-
-function setUpMarker(draggable, dropZone) {
-    var prevDurationIndex = draggable.currentDurationIndex;
-    var newDurationIndex = dropZone.durationIndex;
-    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
-        var marker = createMarker(newDurationIndex, activity);
-        dropZone.appendChild(marker);
-
-        draggable.parentNode.removeChild(draggable);
-        if(draggable.className=='newMarker') {
-            var div = Builder.node("div", { className: 'newMarker' })
-            div.innerHTML = 'X';
-            new Draggable(div, { revert: true } );
-            $('newMarkerArea').appendChild(div);
-        }
-    }
-}    
-
-
-function setUpMovingMarker(draggable, dropZone) {
-    draggable.innerHTML='';
-    var element = dropZone.getElementsBySelector("span")[0];
-    element.innerHTML='X';
-}
-
-function deleteEvent(draggable,dropZone) {
-    var element = draggable.parentNode.getElementsBySelector("span")[0].id
-    ajaxform(null, element, false, null, null)
-
-    var prevDurationIndex = draggable.currentDurationIndex;
-    var prevActivity = draggable.activity;
-    draggable.innerHTML = '';
-}
-
-
-function createMarker(currentDurationIndex, activityName) {
-    var marker = document.createElement('span');
-    marker.innerHTML = 'X';
-    marker.className='marker';
-    marker.currentDurationIndex = currentDurationIndex;
-    marker.activity = activityName;
-    new Draggable(marker,{revert: true});
-    return marker;
-}
-
-
 </script>
 
 
@@ -656,8 +658,8 @@ function createMarker(currentDurationIndex, activityName) {
         width:400px;
         background-color:white;
         border:1px solid #ccc;
-        margin:0px;
-        padding:0px;
+        margin:0;
+        padding:0;
         font-size:0.8em;
         text-align:left;
         max-height:200px;
@@ -666,8 +668,8 @@ function createMarker(currentDurationIndex, activityName) {
 
     div.autocomplete ul {
         list-style-type:none;
-        margin:0px;
-        padding:0px;
+        margin:0;
+        padding:0;
     }
 
     div.autocomplete ul li.selected {
@@ -694,7 +696,6 @@ function createMarker(currentDurationIndex, activityName) {
 <body>
 
 <c:set var="showChanges" value="${not empty developmentRevision and not study.inInitialDevelopment}"/>
-<%--'${revisionChanges.flattened}'--%>
 
   <c:if test="${showChanges}">
       <div id="with-changes">
@@ -705,11 +706,11 @@ function createMarker(currentDurationIndex, activityName) {
   </c:if>
 
 <div id="period" class="section">
-<laf:box title="Set up ${period.name} (period) of ${studySegment.qualifiedName} in ${study.assignedIdentifier}">
+<laf:box title="Set up ${period.displayName} of ${studySegment.qualifiedName} in ${study.assignedIdentifier}">
     <laf:division>
         <p>
             This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
-            It begins on day ${period.startDay} of the ${studySegment.qualifiedName}.
+            It begins on day ${period.startDay} of ${studySegment.qualifiedName}.
         </p>
 
         <form:form>
@@ -755,7 +756,7 @@ function createMarker(currentDurationIndex, activityName) {
                                 </c:if>
 
                                 <c:if test="${not visibleRow and showCompressionRow and not xStatus.last}">
-                                    .
+                                    &hellip;
                                 </c:if>
 
                                 <c:if test="${not xStatus.last and (visibleRow or showCompressionRow)}"><br/></c:if>
