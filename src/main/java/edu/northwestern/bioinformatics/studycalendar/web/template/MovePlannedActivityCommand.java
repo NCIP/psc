@@ -6,8 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import java.util.HashMap;
 import java.util.Map;
 
-public class MoveEventCommand extends EditPeriodEventsCommand {
-    private PlannedActivity movedEvent = null;
+public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
+    private PlannedActivity movedPlannedActivity = null;
 
     @Override
     protected void performEdit() {
@@ -15,21 +15,22 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
             if (id != null && id>-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
                 event.setDay(getColumnNumber()+1);
-                setMovedEvent(event);
-                amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
+                setMovedPlannedActivity(event);
+                amendmentService.updateDevelopmentAmendment(event,
+                    PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
             }
         }
     }
 
     @Override
     public String getRelativeViewName() {
-        return "moveEvent";
+        return "movePlannedActivity";
     }
 
     @Override
     public Map<String, Object> getLocalModel() {
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("movedEvent", getMovedEvent());
+        map.put("movedEvent", getMovedPlannedActivity());
         map.put("moveFrom", getMoveFrom());
         map.put("moveTo", getMoveTo());
         map.put("rowNumber", getRowNumber());
@@ -37,11 +38,11 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
         return map;
     }
 
-    public PlannedActivity getMovedEvent() {
-        return movedEvent;
+    public PlannedActivity getMovedPlannedActivity() {
+        return movedPlannedActivity;
     }
 
-    public void setMovedEvent(PlannedActivity movedEvent) {
-        this.movedEvent = movedEvent;
+    public void setMovedPlannedActivity(PlannedActivity movedPlannedActivity) {
+        this.movedPlannedActivity = movedPlannedActivity;
     }
 }

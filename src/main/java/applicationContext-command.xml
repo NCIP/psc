@@ -27,6 +27,6 @@
     <bean id="updatePeriodCommand" autowire="byName" scope="prototype"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.UpdatePeriodCommand"/>
     <bean id="moveEventCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.MoveEventCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.MovePlannedActivityCommand"/>
 
 </beans>

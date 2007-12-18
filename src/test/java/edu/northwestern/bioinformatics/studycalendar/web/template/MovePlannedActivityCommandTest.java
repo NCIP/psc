@@ -19,8 +19,8 @@ import java.util.Map;
 /**
  * @author nshurupova
  */
-public class MoveEventCommandTest extends EditCommandTestCase {
-    private MoveEventCommand command = new MoveEventCommand();
+public class MovePlannedActivityCommandTest extends EditCommandTestCase {
+    private MovePlannedActivityCommand command = new MovePlannedActivityCommand();
     private Period period;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
@@ -80,7 +80,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
 
-        command.setMovedEvent(eventTwo);
+        command.setMovedPlannedActivity(eventTwo);
         period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
