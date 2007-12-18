@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
@@ -161,7 +160,9 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     public void testWriteEpoch() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        Add add = createAdd(null, 0);
+        Epoch epoch = createNamedInstance("Epoch A", Epoch.class);
+
+        Add add = createAdd(epoch, 0);
 
         Delta delta = setGridId(new PlannedCalendarDelta());
         delta.addChange(add);
@@ -174,6 +175,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
                         dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
             .append(format("<delta id=\"{0}\">", delta.getGridId()))
             .append(format("<add id=\"{0}\" index=\"{1}\">", add.getGridId(), add.getIndex()))
+            .append(format("<epoch id=\"{0}\" name=\"{1}\"/>", epoch.getGridId(), epoch.getName()))
             .append("</add>")
             .append("</delta>")
             .append("</amendment>");
@@ -184,7 +186,6 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
         assertXMLEqual(expected, output);
     }
-
 
 
 //    public void testContainsEpoch() throws Exception {
