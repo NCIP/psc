@@ -11,36 +11,10 @@
 <%--<title>Set up Period ${period.name} of ${studySegment.qualifiedName} in ${study.name}</title>--%>
 <tags:includeScriptaculous/>
 <script type="text/javascript">
-var activitiesByType = { }
-<c:forEach items="${activityTypes}" var="activityType">
-activitiesByType[${activityType.id}] = []
-</c:forEach>
-<c:forEach items="${activities}" var="activity">
-activitiesByType[${activity.type.id}].push({ name: '${activity.name}', id: ${activity.id} })
-</c:forEach>
 var activitiesAutocompleter;
-var initiallySelectedActivity = ${empty selectedActivity ? 0 : selectedActivity.id}
-
         function currentActivityCount() {
             return $$('.input-row').length;
         }
-
-function highlightNonZero(source) {
-    var input;
-    if (source.tagName) {
-        input = source;
-    } else {
-        input = Event.findElement(source, "INPUT")
-    }
-    var cell = input.parentNode
-    var value = $F(input)
-    var nonzero;
-    if (value == null) {
-        Element.removeClassName(cell, "nonzero")
-    } else {
-        Element.addClassName(cell, "nonzero")
-    }
-}
 
 function selectedActivity() {
     return selectedValue('add-activity')
@@ -65,8 +39,6 @@ function addActivityRow() {
     var activityInput = Builder.node("input", { id: activityName, name: activityName, type: 'hidden', value: activity.id })
     cells.push(Builder.node('th', {className: 'activity'}, activity.name), [activityInput]);
 
-
-
     // input cells
     for (var i = 0; i < dayCount; i++) {
         var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
@@ -87,25 +59,22 @@ function addActivityRow() {
     });
     cells.push(Builder.node('td', {}, [detailsInput]))
 
-
-
-    //corresponding to the conditional behavior
+    // corresponding to the conditional behavior
     cells.push(Builder.node('td', {className:'emptyCell'}));
 
-    //conditionCheckBox
+    // condition checkbox
     var name = 'grid[' + rowCount + '].conditionalCheckbox'
     var namePlusOne = name+1
     var input = Builder.node('input', {
-        type:'checkbox',
-        id:namePlusOne,
-        name:name,
-        value:'true'
-
+        type: 'checkbox',
+        id: namePlusOne,
+        name: name,
+        value: 'true'
     });
     registerCellInputHandlers(input)
     cells.push(Builder.node('td', {}, [input]))
 
-    //conditionalDetails
+    // conditionalDetails
     var conditionDetailsName = 'grid[' + rowCount + '].conditionalDetails'
     var conditionDetailsInput = Builder.node('input', {
         id: conditionDetailsName,
@@ -123,7 +92,7 @@ function addActivityRow() {
     registerDraggablesAndDroppables()
     showEmptyMessage()
 
-    //displaying the very fist empty column, that is not shown when no activities is present
+    // displaying the very fist empty column, that is not shown when no activities is present
     if (currentActivityCount() > 0) {
         var td1Element = document.getElementById("td1")
         var td2Element = document.getElementById("td2")
@@ -143,10 +112,7 @@ function showEmptyMessage() {
 }
 
 function registerCellInputHandlers(input) {
-    highlightNonZero(input);
     Event.observe(input, "click", function(e){return ajaxform(input, null, null, null, null)})
-    Event.observe(input, "change", highlightNonZero)
-    Event.observe(input, "keyup", highlightNonZero)
 }
 
 function parseInput(input) {
@@ -348,8 +314,6 @@ function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
     return true;
 }
 
-
-
 function registerHandlers() {
     $$('.input-row td.conditional').each(function(cell) {
         var input = cell.getElementsByTagName("INPUT")[0]
@@ -357,7 +321,9 @@ function registerHandlers() {
     });
     Event.observe('add-activity-button', 'click', addActivityRow)
     Event.observe('add-activity-button', 'click', resetActivitiesAutocompleter)
-//    Event.observe('return-to-template', 'click', returnToTemplate)
+    Event.observe('return-to-template', 'click', function() {
+        location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
+    })
 }
 
 function makeCellDraggableAndDroppable(input) {
@@ -521,8 +487,6 @@ Event.observe(window, "load", registerDraggablesAndDroppables)
 	}
 
 	var PERIOD_DURATION = 7;
-	var PERIOD_REPITITION = 3;        
-
 
 function trim(inputString) {
     if (typeof inputString != "string") { return inputString; }
@@ -920,7 +884,7 @@ function createMarker(currentDurationIndex, activityName) {
                 <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import activities from xml</a>
              </div>
 
-             <input align="right" type="button" name="action" value="Return to template" onclick="location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'" />
+             <input id="return-to-template" type="button" value="Return to template"/>
         </form:form>
     </laf:division>
 </laf:box>
