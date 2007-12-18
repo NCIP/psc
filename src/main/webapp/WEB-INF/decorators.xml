@@ -15,5 +15,6 @@
     <excludes>
         <pattern>/*/image/*</pattern>
         <pattern>/*/js/*</pattern>
+        <pattern>/*/fragment/*</pattern>
     </excludes>
 </decorators>

@@ -374,7 +374,7 @@ function resetActivitiesAutocompleter() {
 }
 
 function createAutocompleter() {
-    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/cal/search/activities"/>',
+    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/fragment/search/activities"/>',
     { method: 'get', paramName: 'searchText', callback: addAdditionalParameters, afterUpdateElement:updateActivity, revertOnEsc:true});
 }
 
@@ -481,37 +481,18 @@ Event.observe(window, "load", registerDraggablesAndDroppables)
 
 
 
-    String.prototype.trim = function() {
-		this.replace( /^\s+/g, "" );
-  		return this.replace( /\s+$/g, "" );
-	}
+String.prototype.trim = function() {
+    this.replace( /^\s+/g, "" );
+    return this.replace( /\s+$/g, "" );
+}
 
 	var PERIOD_DURATION = 7;
 
-function trim(inputString) {
-    if (typeof inputString != "string") { return inputString; }
-    var retValue = inputString;
-    var ch = retValue.substring(0, 1);
-    while (ch == " ") {
-        retValue = retValue.substring(1, retValue.length);
-        ch = retValue.substring(0, 1);
-    }
-    ch = retValue.substring(retValue.length-1, retValue.length);
-    while (ch == " ") {
-        retValue = retValue.substring(0, retValue.length-1);
-        ch = retValue.substring(retValue.length-1, retValue.length);
-    }
-    while (retValue.indexOf("  ") != -1) {
-        retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
-    }
-    return retValue;
-}
-
 function moveEvent(draggable,dropZone) {
-    var wholeElement = trim(dropZone.getElementsBySelector("span")[0])
+    var wholeElement = dropZone.getElementsBySelector("span")[0]
     var elementId = dropZone.getElementsBySelector("span")[0].id
 
-    var parentElement = trim(draggable.parentNode.getElementsBySelector("span")[0])
+    var parentElement = draggable.parentNode.getElementsBySelector("span")[0]
     if (parentElement == null) {
         //means we are drugging a new event
         if (wholeElement.firstChild == null) {
@@ -555,7 +536,7 @@ function setUpMarker(draggable, dropZone) {
 
 function setUpMovingMarker(draggable, dropZone) {
     draggable.innerHTML='';
-    var element = trim(dropZone.getElementsBySelector("span")[0]);
+    var element = dropZone.getElementsBySelector("span")[0];
     element.innerHTML='X';
 }
 

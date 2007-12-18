@@ -453,7 +453,7 @@
         </property>
     </bean>
 
-    <bean name="/cal/search/activities" id="searchActivitiesController" autowire="byName"
+    <bean name="/fragment/search/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"

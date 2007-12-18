@@ -62,6 +62,7 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
         }
     }
 
+    // TODO: search in database (i.e., in a DAO method) not in code
     // TODO: remove null check for code if find out code is required (Reconsent doesn't have code)
     private List<Activity> searchActivities(List<Activity>activities, String searchText) {
         if (searchText.equals(EMPTY)) return EMPTY_LIST;
