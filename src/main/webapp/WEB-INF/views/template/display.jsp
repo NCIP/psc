@@ -149,6 +149,13 @@
                 padding-top:8px;
             }
 
+            ul#populations {
+                padding: 0; margin: 0;
+            }
+
+            ul#populations li {
+                list-style-type: none;
+            }
         </style>
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
@@ -543,6 +550,20 @@
             <div class="row ${commons:parity(count)}">
                 <div class="label">Long title</div>
                 <div class="value">${study.longTitle}</div>
+            </div>
+            <c:set var="count" value="${count + 1}"/>
+            <div class="row ${commons:parity(count)}">
+                <div class="label">Populations</div>
+                <div class="value">
+                    <ul id="populations">
+                        <c:forEach items="${study.populations}" var="population">
+                            <li><a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">${population.abbreviation}: ${population.name}</a></li>
+                        </c:forEach>
+                        <li class="controls">
+                            <a class="control" href="<c:url value="/pages/cal/template/population?study=${study.id}"/>">Add</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <c:set var="count" value="${count + 1}"/>
         </div>
