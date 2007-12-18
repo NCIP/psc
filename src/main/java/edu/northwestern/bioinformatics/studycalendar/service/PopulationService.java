@@ -7,12 +7,17 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+
 /**
  * @author Rhett Sutphin
  */
+@Transactional(readOnly = true)
 public class PopulationService {
     private PopulationDao populationDao;
 
+    @Transactional(readOnly = false)
     public void savePopulation(Population pop) {
         if (pop.getAbbreviation() == null) {
             pop.setAbbreviation(suggestAbbreviation(pop.getStudy(), pop.getName()));
@@ -27,6 +32,7 @@ public class PopulationService {
         populationDao.save(pop);
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     public String suggestAbbreviation(Study study, String populationName) {
         Set<String> used = populationDao.getAbbreviations(study);
         // First option: first character
