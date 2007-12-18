@@ -1,40 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MoveEventCommand extends EditPeriodEventsCommand {
+    private PlannedActivity movedEvent = null;
 
-    private static final Logger log = LoggerFactory.getLogger(UpdatePeriodCommand.class.getName());
-
-    PlannedActivity newEvent = null;
-
-    protected PlannedActivity performEdit() {
+    @Override
+    protected void performEdit() {
         for (Integer id: getEventIds()) {
             if (id != null && id>-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
                 event.setDay(getColumnNumber()+1);
-                setNewEvent(event);
+                setMovedEvent(event);
                 amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
             }
         }
-        return null;
     }
 
+    @Override
     public String getRelativeViewName() {
         return "moveEvent";
     }
 
+    @Override
     public Map<String, Object> getLocalModel() {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (getNewEvent() != null) {
-            map.put("id", getNewEvent().getId());
-        }
+        map.put("movedEvent", getMovedEvent());
         map.put("moveFrom", getMoveFrom());
         map.put("moveTo", getMoveTo());
         map.put("rowNumber", getRowNumber());
@@ -42,12 +37,11 @@ public class MoveEventCommand extends EditPeriodEventsCommand {
         return map;
     }
 
-
-    public PlannedActivity getNewEvent() {
-        return newEvent;
+    public PlannedActivity getMovedEvent() {
+        return movedEvent;
     }
 
-    public void setNewEvent(PlannedActivity newEvent) {
-        this.newEvent = newEvent;
+    public void setMovedEvent(PlannedActivity movedEvent) {
+        this.movedEvent = movedEvent;
     }
 }

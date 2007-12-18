@@ -1,37 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
-import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-
-import java.util.*;
-
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import org.springframework.beans.factory.annotation.Required;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Sep 14, 2007
- * Time: 12:42:08 PM
- * To change this template use File | Settings | File Templates.
+ * @author nshurupova
  */
-public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActivity> {
-    private static final Logger log = LoggerFactory.getLogger(EditPeriodEventsCommand.class.getName());
+public abstract class EditPeriodEventsCommand implements EditCommand {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected Period period;
     protected PlannedActivityDao plannedActivityDao;
@@ -74,24 +63,21 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     /**
      * Template method that performs the actual work of the command
      */
-    protected abstract PlannedActivity performEdit();
+    protected abstract void performEdit();
 
     public abstract String getRelativeViewName();
-
 
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public PlannedActivity apply() {
-        log.info("inside EditPeriodEventsCommand ");
-        PlannedActivity event = performEdit();
+    public void apply() {
+        log.debug("inside EditPeriodEventsCommand");
+        performEdit();
         setStudy(studyService.saveStudyFor(getPeriod()));
-        return event;
     }
 
-
     public Period getPeriod() {
-        period = getPeriodDao().getById(getId());
+        period = periodDao.getById(getId());
         return period;
     }
 
@@ -157,13 +143,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
         this.updated = updated;
     }
 
-    public boolean isConditionalCheckbox() {
-        if (getConditionalDetails()!=null && getConditionalDetails().length()>0) {
-            return true;
-        }
-        return false;
-    }
-
     public String getConditionalDetails() {
         return conditionalDetails;
     }
@@ -171,7 +150,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     public void setConditionalDetails(String conditionalDetails) {
         this.conditionalDetails = conditionalDetails;
     }
-
 
     public boolean isConditionalUpdated() {
         return conditionalUpdated;
@@ -181,16 +159,7 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
         this.conditionalUpdated = conditionalUpdated;
     }
 
-
-    public PeriodDao getPeriodDao() {
-        return periodDao;
-    }
-
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
-    }
-
-
+    // TODO: rename this to something more descriptive
     public int getId() {
         return id;
     }
@@ -198,7 +167,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     public void setId(int id) {
         this.id = id;
     }
-
 
     public int getMoveFrom() {
         return moveFrom;
@@ -216,26 +184,26 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
         this.moveTo = moveTo;
     }
 
-    public AmendmentService getAmendmentService() {
-        return amendmentService;
+    public Study getStudy() {
+        return study;
+    }
+
+    public void setStudy(Study study) {
+        this.study = study;
+    }
+
+    ////// CONFIGURATION
+
+    public void setPeriodDao(PeriodDao periodDao) {
+        this.periodDao = periodDao;
     }
 
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
     }
 
-
-    public StudyService getStudyService() {
-        return studyService;
-    }
-
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
-    }
-
-
-    public PlannedActivityDao getPlannedActivityDao() {
-        return plannedActivityDao;
     }
 
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
@@ -245,13 +213,4 @@ public abstract class EditPeriodEventsCommand implements EditCommand<PlannedActi
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
     }
-
-    public Study getStudy() {
-        return study;
-    }
-
-    public void setStudy(Study study) {
-        this.study = study;
-    }
-
 }

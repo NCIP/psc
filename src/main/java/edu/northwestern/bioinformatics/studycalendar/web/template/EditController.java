@@ -1,24 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-
 import java.util.Map;
 
 /**
@@ -29,10 +28,10 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     private StudyDao studyDao;
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
+    private ActivityDao activityDao;
+    private PopulationDao populationDao;
 
     private String commandBeanName;
-
-    private ActivityDao activityDao;
 
     public EditController() {
         setCommandClass(EditCommand.class);
@@ -49,13 +48,12 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
         getControllerTools().registerDomainObjectEditor(binder, "epoch", epochDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "activity", activityDao);
+        getControllerTools().registerDomainObjectEditor(binder, "population", populationDao);
 
         binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(false));
         binder.registerCustomEditor(String.class, "details", new StringTrimmerEditor(true));
         binder.registerCustomEditor(String.class, "conditionalDetails", new StringTrimmerEditor(true));
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
-
-
     }
 
     @Override
@@ -104,4 +102,8 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
         this.activityDao = activityDao;
     }
 
+    @Required
+    public void setPopulationDao(PopulationDao populationDao) {
+        this.populationDao = populationDao;
+    }
 }

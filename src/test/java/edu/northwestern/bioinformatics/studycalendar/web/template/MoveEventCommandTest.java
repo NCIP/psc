@@ -1,38 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-
 import static org.easymock.EasyMock.expect;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Sep 25, 2007
- * Time: 4:15:06 PM
- * To change this template use File | Settings | File Templates.
+ * @author nshurupova
  */
 public class MoveEventCommandTest extends EditCommandTestCase {
     private MoveEventCommand command = new MoveEventCommand();
     private Period period;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
-    public int PERIOD_ID = 10;
-    public AmendmentService amendmentService;
-    public Activity activity;
-    public String periodDetails;
-
-    public String detailsToChange;
-    public String eventDetails;
-    public String eventConditionalDetails;
+    private static int PERIOD_ID = 10;
+    private AmendmentService amendmentService;
+    private Activity activity;
 
     @Override
     protected void setUp() throws Exception {
@@ -43,7 +37,6 @@ public class MoveEventCommandTest extends EditCommandTestCase {
 
         activity = createNamedInstance("Three", Activity.class);
         activity.setId(3);
-        periodDetails = "DETAILS";
 
         period = new Period();
         period.setName("period");
@@ -61,7 +54,6 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         command.setId(period.getId());
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
-        eventOne.setDetails(eventDetails);
         period.addPlannedActivity(eventOne);
 
         List<Integer> ids = new ArrayList<Integer>();
@@ -88,8 +80,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
 
-        command.setNewEvent(eventTwo);
-        command.setDetails(eventDetails);
+        command.setMovedEvent(eventTwo);
         period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
@@ -101,7 +92,7 @@ public class MoveEventCommandTest extends EditCommandTestCase {
         Map<String, Object> map = command.getLocalModel();
         verifyMocks();
         assertNotNull("Map is null", map);
-        assertEquals("Map's id is wrong", 22, map.get("id"));
+        assertEquals("Map's moved event is wrong", eventTwo, map.get("movedEvent"));
         assertEquals("Map's moveFrom is wrong", 2, map.get("moveFrom"));
         assertEquals("Map's moveTo is wrong", 5, map.get("moveTo"));        
         assertEquals("Map's column number is wrong", 0, map.get("columnNumber"));

@@ -1,26 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import org.springframework.beans.factory.annotation.Required;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for commands invoked from the main display template page.
  *
  * @author Rhett Sutphin
  */
-public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar> {
+public abstract class EditTemplateCommand implements EditCommand {
     private Mode mode;
     private DeltaService deltaService;
     private StudyService studyService;
@@ -36,15 +39,12 @@ public abstract class EditTemplateCommand implements EditCommand<PlannedCalendar
     private Epoch revisedEpoch;
     private StudySegment revisedStudySegment;
 
-    private static final Logger log = LoggerFactory.getLogger(EditTemplateCommand.class.getName());
-
-    public PlannedCalendar apply() {
+    public void apply() {
         Study target = getStudy();
         verifyEditable(target);
         performEdit();
         studyService.save(target);
         cleanUpdateRevised();
-        return null;
     }
 
     public void performEdit() {

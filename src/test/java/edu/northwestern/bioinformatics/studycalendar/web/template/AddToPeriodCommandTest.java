@@ -1,28 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.nullSafeEquals;
+import static org.easymock.EasyMock.*;
+import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
 
 import java.util.Map;
-
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.same;
-import org.easymock.classextension.EasyMock;
-import org.easymock.IArgumentMatcher;
-import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.nullSafeEquals;
 
 
 public class AddToPeriodCommandTest extends EditCommandTestCase {
     private AddToPeriodCommand command = new AddToPeriodCommand();
     private Period period;
     private PeriodDao periodDao;
-    public int PERIOD_ID = 88;
-    public AmendmentService amendmentService;
-    public Activity activity;
-    public String details;
+    private static int PERIOD_ID = 88;
+    private AmendmentService amendmentService;
+    private Activity activity;
+    private String details;
 
     @Override
     protected void setUp() throws Exception {
@@ -60,16 +61,15 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
-        PlannedActivity expectedEvent = command.performEdit();
+        command.performEdit();
         verifyMocks();
 
         assertEquals(1, command.getPeriod().getPlannedActivities().size());
-        assertEquals("Event's activity is wrong", expectedEvent.getActivity(), activity);
-        assertEquals("Event's details are wrong", expectedEvent.getDetails(), details );
-        assertEquals("Event's day is wrong", (int) expectedEvent.getDay(), 3 );
-
+        assertEquals("Event's activity is wrong", command.getAddedActivity().getActivity(), activity);
+        assertEquals("Event's details are wrong", command.getAddedActivity().getDetails(), details );
+        assertEquals("Event's day is wrong", (int) command.getAddedActivity().getDay(), 3 );
     }
- 
+
     public void testGetLocalModel() throws Exception {
         command.setId(period.getId());
         command.setColumnNumber(2);
@@ -88,7 +88,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         amendmentService.updateDevelopmentAmendment(same(period), addFor(event));
 
         replayMocks();
-        PlannedActivity expectedEvent = command.performEdit();
+        command.performEdit();
         Map<String, Object> map = command.getLocalModel();
         verifyMocks();
 
@@ -96,7 +96,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         assertNotNull("Map is null", map);
         assertEquals("Map's row number is wrong", 0, map.get("rowNumber"));
         assertEquals("Map's column number is wrong", 2, map.get("columnNumber"));
-     }    
+    }
 
 
 
@@ -109,8 +109,8 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
 
         protected boolean plannedActivityMatches(PlannedActivity actual) {
             return nullSafeEquals(expectedPlannedActivity.getActivity(), actual.getActivity())
-                    && nullSafeEquals(expectedPlannedActivity.getDetails(), actual.getDetails())
-                    && nullSafeEquals(expectedPlannedActivity.getCondition(), actual.getCondition());
+                && nullSafeEquals(expectedPlannedActivity.getDetails(), actual.getDetails())
+                && nullSafeEquals(expectedPlannedActivity.getCondition(), actual.getCondition());
         }
     }
 
@@ -126,8 +126,7 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
 
         public boolean matches(Object object) {
             if (!(object instanceof Add)) return false;
-            // Double cast to work around a javac bug
-            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
+            return plannedActivityMatches((PlannedActivity) ((Add) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {

@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.context.ApplicationContext;
 import org.springframework.ui.ModelMap;
@@ -27,15 +26,17 @@ public class EditControllerTest extends ControllerTestCase {
     private EditTemplateCommand command;
     private ApplicationContext applicationContext;
     private ActivityDao activityDao;
+    private PopulationDao populationDao;
 
-
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
         epochDao = registerDaoMockFor(EpochDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         applicationContext = registerMockFor(ApplicationContext.class);
-        activityDao = registerMockFor(ActivityDao.class);
+        activityDao = registerDaoMockFor(ActivityDao.class);
+        populationDao = registerDaoMockFor(PopulationDao.class);
         command = registerMockFor(EditTemplateCommand.class);
 
         controller = new EditController();
@@ -43,15 +44,16 @@ public class EditControllerTest extends ControllerTestCase {
         controller.setEpochDao(epochDao);
         controller.setStudyDao(studyDao);
         controller.setApplicationContext(applicationContext);
+        controller.setPopulationDao(populationDao);
         controller.setCommandBeanName("mockCommandBean");
         controller.setControllerTools(controllerTools);
         controller.setActivityDao(activityDao);
         expect(applicationContext.getBean("mockCommandBean")).andReturn(command).anyTimes();
     }
     
+    @SuppressWarnings({ "unchecked" })
     public void testHandle() throws Exception {
-        expect(command.apply()).andReturn(new PlannedCalendar());
-        expect(activityDao.domainClass()).andReturn(Activity.class);
+        command.apply();
         expect(command.getModel()).andReturn(new ModelMap("foo", 95));
         expect(command.getRelativeViewName()).andReturn("pony");
 
@@ -65,7 +67,6 @@ public class EditControllerTest extends ControllerTestCase {
     
     public void testHandleGetIsError() throws Exception {
         request.setMethod("GET");
-        expect(activityDao.domainClass()).andReturn(Activity.class);
         replayMocks();
 
         assertNull(controller.handleRequest(request, response));

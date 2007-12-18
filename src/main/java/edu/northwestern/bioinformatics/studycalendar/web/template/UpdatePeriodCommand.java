@@ -1,34 +1,29 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UpdatePeriodCommand extends EditPeriodEventsCommand {
-
-    private static final Logger log = LoggerFactory.getLogger(UpdatePeriodCommand.class.getName());
-
-    PlannedActivity newEvent = null;
-
-    protected PlannedActivity performEdit() {
+    @Override
+    protected void performEdit() {
         if (isDetailsUpdated()) {
             updateDetails(getDetails());
         } else if (isConditionalUpdated()) {
-            log.info("updating conditional details");
+            log.debug("updating conditional details");
             updateConditionalParameters();
             setColumnNumber(-1);
         }
-        return null;
     }
 
+    @Override
     public String getRelativeViewName() {
         return "updateDetails";
     }
 
+    @Override
     public Map<String, Object> getLocalModel() {
         Map<String, Object> map = new HashMap<String, Object>();
         if (isDetailsUpdated()) {

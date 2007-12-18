@@ -1,51 +1,53 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 
-public class AddToPeriodCommand extends EditPeriodEventsCommand{
+public class AddToPeriodCommand extends EditPeriodEventsCommand {
+    private PlannedActivity addedActivity;
+    private Population population;
 
-    private static final Logger log = LoggerFactory.getLogger(AddToPeriodCommand.class.getName());
-
-    PlannedActivity newEvent = null;
-
-    protected PlannedActivity performEdit() {
-        newEvent = new PlannedActivity();
-        newEvent.setDay(getColumnNumber()+1);
-        newEvent.setActivity(getActivity());
-        newEvent.setDetails(getDetails());
-        newEvent.setCondition(getConditionalDetails());
-        Add add = Add.create(newEvent);
-        amendmentService.updateDevelopmentAmendment(getPeriod(), add);
-        setPlannedActivity(newEvent);
-        return newEvent;
+    @Override
+    protected void performEdit() {
+        addedActivity = new PlannedActivity();
+        addedActivity.setDay(getColumnNumber()+1);
+        addedActivity.setActivity(getActivity());
+        addedActivity.setDetails(getDetails());
+        addedActivity.setCondition(getConditionalDetails());
+        addedActivity.setPopulation(getPopulation());
+        amendmentService.updateDevelopmentAmendment(getPeriod(), Add.create(addedActivity));
     }
 
+    @Override
     public String getRelativeViewName() {
         return "addPlannedActivity";
     }
 
+    @Override
     public Map<String, Object> getLocalModel() {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (getEvent() != null) {
-            map.put("id", getEvent().getId());
-        }
+        map.put("addedActivity", addedActivity);
         map.put("rowNumber", getRowNumber());
         map.put("columnNumber", getColumnNumber());
         return map;
     }
 
-    private PlannedActivity getEvent() {
-        return newEvent;
+    public PlannedActivity getAddedActivity() {
+        return addedActivity;
     }
 
-    private void setPlannedActivity(PlannedActivity event) {
-        this.newEvent = event;
+    ////// BOUND PROPERTIES
+
+    public Population getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(Population population) {
+        this.population = population;
     }
 }
