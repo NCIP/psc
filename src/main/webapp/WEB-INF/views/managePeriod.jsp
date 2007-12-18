@@ -331,7 +331,7 @@ function makeCellDraggableAndDroppable(input) {
 			function(item) {
 				new Draggable(item,{revert: true});
 				item.currentDurationIndex = item.parentNode.durationIndex;
-				item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+				item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
 			}
         );
 
@@ -360,7 +360,7 @@ function registerDraggablesAndDroppables() {
     document.getElementsByClassName('marker').each(
         function(item) {new Draggable(item,{revert: true});
             item.currentDurationIndex = item.parentNode.durationIndex;
-            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
+            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
         }
     );
 
@@ -479,13 +479,6 @@ Event.observe(window, "load", registerHandlers)
 Event.observe(window, "load", showEmptyMessage)
 Event.observe(window, "load", registerDraggablesAndDroppables)
 
-
-
-String.prototype.trim = function() {
-    this.replace( /^\s+/g, "" );
-    return this.replace( /\s+$/g, "" );
-}
-
 	var PERIOD_DURATION = 7;
 
 function moveEvent(draggable,dropZone) {
@@ -518,8 +511,8 @@ function moveEvent(draggable,dropZone) {
 function setUpMarker(draggable, dropZone) {
     var prevDurationIndex = draggable.currentDurationIndex;
     var newDurationIndex = dropZone.durationIndex;
-    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim();
-    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.trim()) {
+    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
+    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
         var marker = createMarker(newDurationIndex, activity);
         dropZone.appendChild(marker);
 
