@@ -7,9 +7,12 @@ import edu.nwu.bioinformatics.commons.CollectionUtils;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * @author Rhett Sutphin
  */
+@Transactional(readOnly = true)
 public class PopulationDao extends StudyCalendarMutableDomainObjectDao<Population> {
     @Override
     public Class<Population> domainClass() {

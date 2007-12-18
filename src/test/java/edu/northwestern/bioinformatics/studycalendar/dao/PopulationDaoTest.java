@@ -39,4 +39,25 @@ public class PopulationDaoTest extends ContextDaoTestCase<PopulationDao> {
         assertContains("Missing abbreviation", actual, "H+");
         assertContains("Missing abbreviation", actual, "M");
     }
+    
+    public void testSave() throws Exception {
+        Integer id;
+        {
+            Population newOne = new Population();
+            newOne.setName("Novelty");
+            newOne.setAbbreviation("N");
+            newOne.setStudy(studyDao.getById(-7));
+            getDao().save(newOne);
+            id = newOne.getId();
+            assertNotNull("ID not set", id);
+        }
+
+        interruptSession();
+
+        Population reloaded = getDao().getById(id);
+        assertNotNull("Could not reload", reloaded);
+        assertEquals("Novelty", reloaded.getName());
+        assertEquals("N", reloaded.getAbbreviation());
+        assertEquals(-7, (int) reloaded.getStudy().getId());
+    }
 }
