@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,17 +23,24 @@ import org.w3c.dom.*;
 
 
 public class StudyXmlWriter {
-    public static String ROOT = "study";
+    public static final String SCHEMA_NAMESPACE = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
+    public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
+    public static final String XML_SCHEMA       = "http://www.w3.org/2001/XMLSchema-instance";
+
+    public static final String SCHEMA_NAMESPACE_ATTRIBUTE = "xmlns";
+    public static final String SCHEMA_LOCATION_ATTRIBUTE  = "xmlns:schemaLocation";
+    public static final String XML_SCHEMA_ATTRIBUTE       = "xmlns:xsi";
 
     /* Tag Element constants */
+    public static final String ROOT = "study";
     public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String AMENDMENT = "amendment";
-    public static final String PLANNED_CALENDAR_DELTA = "planned-calendar-delta";
-    public static final String EPOCH_DELTA = "epoch-delta";
-    public static String STUDY_SEGMENT_DELTA = "study-segment-delta";
+    public static final String DELTA = "delta";
     public static final String ADD = "add";
+
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
+    public static final String PERIOD = "period";
 
     /* Tag Attribute constants */
     public static final String ID = "id";
@@ -54,7 +60,7 @@ public class StudyXmlWriter {
 
     }
 
-    private Document createDocument() throws Exception{
+    protected Document createDocument() throws Exception{
 
         //get an instance of factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -67,23 +73,24 @@ public class StudyXmlWriter {
     }
 
     // TODO: Break all these add methods into an ElementFactory
-    private void addStudy(Document document, Study study) {
+    protected void addStudy(Document document, Study study) {
         Element rootElement = document.createElement(ROOT);
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns", "http://bioinformatics.northwestern.edu/ns/psc/study.xsd" );
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance" );
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:schemaLocation", "http://bioinformatics.northwestern.edu/ns/psc/study.xsd" );
+        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE );
+        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", XML_SCHEMA_ATTRIBUTE, XML_SCHEMA );
+        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION );
 
         rootElement.setAttribute(ID, study.getGridId());
         rootElement.setAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
         addPlannedCalendar(document, study, rootElement);
 
-
-        addAmendments(document, study, rootElement);
+        List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
+        if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
+        addAmendments(document, allAmendments, rootElement);
 
     }
 
-    private void addPlannedCalendar(Document document, Study study, Element rootElement) {
+    protected void addPlannedCalendar(Document document, Study study, Element rootElement) {
         if (study.getPlannedCalendar() != null) {
             Element plannedCalEle = document.createElement(PLANNDED_CALENDAR);
             plannedCalEle.setAttribute(ID, study.getPlannedCalendar().getGridId());
@@ -93,11 +100,8 @@ public class StudyXmlWriter {
         }
     }
 
-    private void addAmendments(Document document, Study study, Element rootElement) {
-        List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
-        if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
-
-        for (Amendment amendment : allAmendments) {
+    protected void addAmendments(Document document, List<Amendment> amendments, Element parent) {
+        for (Amendment amendment : amendments) {
             Element element = document.createElement(AMENDMENT);
 
             element.setAttribute(NAME, amendment.getName());
@@ -107,71 +111,63 @@ public class StudyXmlWriter {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             element.setAttribute(DATE, formatter.format(amendment.getDate()));
 
-            rootElement.appendChild(element);
+            parent.appendChild(element);
 
-            addDeltas(document, amendment, element);
+            addDeltas(document, amendment.getDeltas(), element);
 
         }
     }
 
-    private void addDeltas(Document document, Amendment amendment, Element amendmentElement) {
-        for (Delta<?> delta :  amendment.getDeltas()) {
+    protected void addDeltas(Document document, List<Delta<?>> deltas, Element parent) {
+        for (Delta<?> delta : deltas) {
 
             Element element;
-            if (delta instanceof PlannedCalendarDelta) {
-                element = document.createElement(PLANNED_CALENDAR_DELTA);
-            } else if (delta instanceof EpochDelta) {
-                element = document.createElement(EPOCH_DELTA);
-            } else if (delta instanceof StudySegmentDelta) {
-                element = document.createElement(STUDY_SEGMENT_DELTA);
-            } else {
-                throw new StudyCalendarError("Unimplemented node type: %s", delta.getClass().getName());
-            }
+
+            element = document.createElement(DELTA);
 
             element.setAttribute(ID, delta.getGridId());
-            amendmentElement.appendChild(element);
+            parent.appendChild(element);
 
-            addChanges(document, delta, element);
+            addChanges(document, delta.getChanges(), element);
         }
     }
 
-    private void addChanges(Document document, Delta<?> delta, Element deltaElement) {
-        for (Change change : delta.getChanges()) {
+    protected void addChanges(Document document, List<Change> changes, Element parent) {
+        for (Change change : changes) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
                 element.setAttribute(ID, change.getGridId());
                 element.setAttribute(INDEX, ((Add) change).getIndex().toString());
-                deltaElement.appendChild(element);
+                parent.appendChild(element);
 
-                addNode(document, (ChildrenChange) change, element);
+                addNode(document, ((ChildrenChange) change).getChild(), element);
             }
         }
     }
 
-    private void addNode(Document document, ChildrenChange change, Element changeElement) {
-        PlanTreeNode<?> child = change.getChild();
+    protected void addNode(Document document, PlanTreeNode<?> child, Element parent) {
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
             Element element = document.createElement(EPOCH);
             element.setAttribute(NAME, epoch.getName());
             element.setAttribute(ID, epoch.getGridId());
-            changeElement.appendChild(element);
+            parent.appendChild(element);
 
             addStudySegments(document, epoch, element);
         }
     }
 
-    private void addStudySegments(Document document, Epoch epoch, Element epochElement) {
+    protected void addStudySegments(Document document, Epoch epoch, Element parent) {
         for(StudySegment studySegment : epoch.getStudySegments()) {
             Element element = document.createElement(STUDY_SEGMENT);
             element.setAttribute(NAME, studySegment.getName());
             element.setAttribute(ID, studySegment.getGridId());
 
-            epochElement.appendChild(element);
+            parent.appendChild(element);
         }
     }
 
-    private String convertToString(Document document) throws Exception {
+    protected String convertToString(Document document) throws Exception {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
