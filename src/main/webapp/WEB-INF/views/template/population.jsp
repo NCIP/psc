@@ -27,8 +27,7 @@
         }
 
         Event.observe(window, 'load', function() {
-            Event.observe('suggest-control', 'click', function() { alert("TODO") })
-            // Event.observe('suggest-control', 'click', suggest)
+            Event.observe('suggest-control', 'click', suggest)
         })
     </script>
 </head>

@@ -272,6 +272,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPopulationController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
+    <bean name="/cal/template/population/suggest" id="suggestPopulationAbbreviationController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SuggestPopulationAbbreviationController"/>
 
     <bean name="/cal/managePeriod" id="managePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
