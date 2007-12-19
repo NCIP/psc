@@ -80,7 +80,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     public void testWriteEpoch() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        /* Planned Calendar Delta */
+        /* Add Deltas */
         amendment.addDelta(calendarDelta);
 
         StringBuffer body = new StringBuffer();
@@ -102,7 +102,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     public void testWriteStudySegment() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        /* Planned Calendar Delta and Epoch Delta */
+        /* Add Deltas */
         amendment.addDelta(calendarDelta);
         amendment.addDelta(epochDelta);
 
@@ -130,7 +130,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     public void testWritePeriod() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        /* Planned Calendar Delta and Epoch Delta */
+        /* Add Deltas */
         amendment.addDelta(calendarDelta);
         amendment.addDelta(epochDelta);
         amendment.addDelta(segmentDelta);
@@ -165,7 +165,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
      public void testWritePlannedActivity() throws Exception {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-        /* Planned Calendar Delta and Epoch Delta */
+        /* Add Deltas */
         amendment.addDelta(calendarDelta);
         amendment.addDelta(epochDelta);
         amendment.addDelta(segmentDelta);
