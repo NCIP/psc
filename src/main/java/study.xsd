@@ -30,17 +30,21 @@
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
+    <!-- Need Node ID? for changed node -->
     <xsd:complexType name="Delta">
         <xsd:sequence>
             <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <!--<xsd:attribute name="node" type="xsd:IDREF" use="required"/>-->
     </xsd:complexType>
 
     <!-- TODO: For ChildId use gridId to matchup with correct child and either create or use existing object -->
     <xsd:complexType name="Add">
         <xsd:sequence>
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="index" type="xsd:integer" use="required"/>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
@@ -55,6 +59,14 @@
     </xsd:complexType>
 
     <xsd:complexType name="StudySegment">
+        <xsd:sequence>
+            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Period">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>

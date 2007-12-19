@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 
@@ -18,6 +15,8 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.SortedSet;
 
 import org.w3c.dom.*;
 
@@ -120,10 +119,7 @@ public class StudyXmlWriter {
 
     protected void addDeltas(Document document, List<Delta<?>> deltas, Element parent) {
         for (Delta<?> delta : deltas) {
-
-            Element element;
-
-            element = document.createElement(DELTA);
+            Element element = document.createElement(DELTA);
 
             element.setAttribute(ID, delta.getGridId());
             parent.appendChild(element);
@@ -153,15 +149,41 @@ public class StudyXmlWriter {
             element.setAttribute(ID, epoch.getGridId());
             parent.appendChild(element);
 
-            addStudySegments(document, epoch, element);
+            addStudySegments(document, epoch.getStudySegments(), element);
+        } else if (child instanceof StudySegment) {
+            StudySegment segment = (StudySegment) child;
+            Element element = document.createElement(STUDY_SEGMENT);
+            element.setAttribute(NAME, segment.getName());
+            element.setAttribute(ID, segment.getGridId());
+            parent.appendChild(element);
+
+            addPeriods(document, segment.getPeriods(), parent);
+        } else if (child instanceof Period) {
+            Period period = (Period) child;
+            Element element = document.createElement(PERIOD);
+            element.setAttribute(NAME, period.getName());
+            element.setAttribute(ID, period.getGridId());
+            parent.appendChild(element);
+
+//            addPlannedActivities(document, period.getPlannedActivities(), parent);
         }
     }
 
-    protected void addStudySegments(Document document, Epoch epoch, Element parent) {
-        for(StudySegment studySegment : epoch.getStudySegments()) {
+    protected void addStudySegments(Document document, List<StudySegment> studySegments, Element parent) {
+        for(StudySegment studySegment : studySegments) {
             Element element = document.createElement(STUDY_SEGMENT);
             element.setAttribute(NAME, studySegment.getName());
             element.setAttribute(ID, studySegment.getGridId());
+
+            parent.appendChild(element);
+        }
+    }
+
+    protected void addPeriods(Document document, SortedSet<Period> periods, Element parent) {
+        for(Period period : periods) {
+            Element element = document.createElement(STUDY_SEGMENT);
+            element.setAttribute(NAME, period.getName());
+            element.setAttribute(ID, period.getGridId());
 
             parent.appendChild(element);
         }
