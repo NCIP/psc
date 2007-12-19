@@ -31,7 +31,8 @@ function addActivityRow() {
     var activity = selectedActivity()
     if (!activity.id || !activity.name) return
     var cells = []
-    var dayCount = ${period.dayRanges[0].days}.length
+    var dayCount = ${period.dayRanges[0].days}.
+    length
     var rowCount = $$("#input-body tr").length - 1
     // header
     var activityName = 'grid[' + rowCount + '].activity';
@@ -53,8 +54,7 @@ function addActivityRow() {
     var detailsInput = Builder.node('input', {
         id: detailsName,
         name: detailsName,
-        type: 'text',
-        onChange:"return ajaxform(null, null, null,  this, null);"
+        type: 'text'
     });
     cells.push(Builder.node('td', {}, [detailsInput]))
 
@@ -70,7 +70,6 @@ function addActivityRow() {
         name: name,
         value: 'true'
     });
-    registerCellInputHandlers(input)
     cells.push(Builder.node('td', {}, [input]))
 
     // conditionalDetails
@@ -79,8 +78,8 @@ function addActivityRow() {
         id: conditionDetailsName,
         name: conditionDetailsName,
         type: 'text',
-        disabled: 'true',
-        onChange:"return ajaxform(null, null, null, null, this);"});
+        disabled: 'true'
+    });
     cells.push(Builder.node('td', {}, [conditionDetailsInput]))
 
     var rowId = 'activity' + activity.id;
@@ -88,6 +87,7 @@ function addActivityRow() {
 
     row.style.display = 'none';
     $('input-body').appendChild(row)
+    registerRowEventHandlers(row)
     registerDraggablesAndDroppables()
     showEmptyMessage()
 
@@ -110,68 +110,38 @@ function showEmptyMessage() {
     }
 }
 
-function registerCellInputHandlers(input) {
-    Event.observe(input, "click", function(e) {
-        return ajaxform(input, null, null, null, null)
-    })
+// extracts row from an ID like grid[row].property
+function extractRow(gridElementId) {
+    return gridElementId.substring(gridElementId.indexOf("[") + 1, gridElementId.indexOf("]"))
 }
 
 // extracts row and column from an ID like grid[row].eventIds[col]
 function extractRowAndColumn(gridElementId) {
-    var row = gridElementId.substring(gridElementId.indexOf("[") + 1, gridElementId.indexOf("]"));
+    var row = extractRow(gridElementId);
     var eventIdsPortion = gridElementId.substring(gridElementId.indexOf("]") + 1);
     var col = eventIdsPortion.substring(eventIdsPortion.indexOf("[") + 1, eventIdsPortion.indexOf("]"));
 
     return [row, col];
 }
 
-function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
-    var checkboxName = 'grid[' + index + '].conditionalCheckbox1';
-    var isChecked = $(checkboxName).checked;
-    var details = 'grid[' + index + '].conditionalDetails';
-    if (!isChecked) {
-        $(details).value = "";
-        $(details).disabled = true;
-    } else {
-        $(details).disabled = false;
+function createBasicPostBody(row) {
+    var data = { id: '${period.id}' }
+    if (row) addParametersForRow(data, row)
+    return data
+}
+
+function addParametersForRow(data, row) {
+    data.rowNumber = row
+    data.activity = $('grid[' + row + '].activity').value;
+    data.details = $('grid[' + row + '].details').value;
+    data.conditionalDetails = $('grid[' + row + '].conditionalDetails').value;
+
+    for (var c = 0; c < ${period.duration.days}; c++) {
+        var val = $('grid[' + row + '].eventIds[' + c + ']').getAttribute('value')
+        if (val && val != -1) {
+            data['eventIds[' + c + ']'] = val;
+        }
     }
-
-    return formdata
-}
-
-function getInfoFromEventCheckbox(formdata, checkbox, row, col) {
-    var data = { }
-    addInfoFromEventCheckbox(data, checkbox, row, col)
-    return formdata + '&' + Object.toQueryString(data) + '&';
-}
-
-function addInfoFromEventCheckbox(data, checkbox, row, col) {
-    var details = 'grid[' + row + '].details';
-    data.details = $(details).value;
-    data.columnNumber = col;
-}
-
-function getInfoFromEventDetails(formdata, details, index) {
-    var data = { }
-    addInfoFromEventDetails(data, details)
-    return formdata + '&' + Object.toQueryString(data) + '&';
-}
-
-function addInfoFromEventDetails(data, details) {
-    data.details = $(details).value;
-    data.columnNumber = -1;
-}
-
-function getInfoFromEventTextbox(formdata, isAdding, row, col) {
-    var data = { }
-    addInfoFromEventTextbox(data, isAdding, row, col)
-    return formdata + '&' + Object.toQueryString(data) + '&';
-}
-
-function addInfoFromEventTextbox(data, isAdding, row, col) {
-    var details = 'grid[' + row + '].details';
-    data.details = $(details).value;
-    data.columnNumber = col;
 }
 
 function createAddControl(text, objectType, objectId) {
@@ -186,105 +156,82 @@ function updateDetails(text, objectType, objectId) {
     return '<c:url value="/pages/cal/managePeriod/update"/>'
 }
 
-function executeActivityMove(row, fromCol, toCol) {
+function executePlannedActivityAdd(targetId) {
+    var rc = extractRowAndColumn(targetId)
+    var href = '<c:url value="/pages/cal/managePeriod/addTo"/>'
+    var data = createBasicPostBody(rc[0])
+    data.columnNumber = rc[1]
+
+    new Ajax.Request(href, {
+        postBody: Object.toQueryString(data)
+    });
+}
+
+function executePlannedActivityRemove(targetId) {
+    var rc = extractRowAndColumn(targetId)
+    var href = '<c:url value="/pages/cal/managePeriod/remove"/>'
+    var data = createBasicPostBody(rc[0])
+    data.columnNumber = rc[1]
+
+    new Ajax.Request(href, {
+        postBody: Object.toQueryString(data)
+    });
+}
+
+function executePlannedActivityMove(row, fromCol, toCol) {
     var href = '<c:url value="/pages/cal/managePeriod/move"/>';
     // Set up data variable
-    var data = { }
-    data.id = '${period.id}'
-    addInfoFromEventTextbox(data, false, row, toCol)
-
-    data.activity = $('grid[' + row + '].activity').value;
+    var data = createBasicPostBody(row)
     var eventIds = 'grid[' + row + '].eventIds';
 
     var fromElementId = eventIds + '[' + fromCol + ']';
     if ($(fromElementId).getAttribute('value') != null) {
         data['eventIds[' + fromCol + ']'] = $(fromElementId).getAttribute('value');
     }
-    data.rowNumber = row;
 
-    var details1 = 'grid[' + row + '].conditionalDetails';
-    data.conditionalDetails = $(details1).value;
-
+    data.columnNumber = toCol;
     data.moveFrom = fromCol;
     data.moveTo = toCol;
 
-    var lastRequest = new Ajax.Request(href, {
+    new Ajax.Request(href, {
         postBody: Object.toQueryString(data)
     });
-
-    return true;
 }
 
-function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
-    var href;
+function executeUpdateDetails(rowElement) {
+    var row = extractRow(rowElement.id)
+    var href = '<c:url value="/pages/cal/managePeriod/update"/>'
+    var data = createBasicPostBody(row)
 
-    // Set up data variable
-    var formdata = "";
-    formdata = formdata + 'id='+${period.id}+"&";
-    var rc
-
-    if (checkbox != null) {
-        rc = extractRowAndColumn(checkbox.name)
-        if (checkbox.name.indexOf(".conditionalCheckbox") >= 0) {
-            formdata = getInfoFromConditionalCheckbox(formdata, checkbox, rc[0])
-            href = updateDetails("Update details", "details", rc[0]);
-        } else {
-            formdata = getInfoFromEventCheckbox(formdata, checkbox, rc[0], rc[1])
-            if ($(checkbox).checked) {
-                href = createAddControl("Add checkbox", "checkbox", rc[0])
-            } else {
-                href = createRemoveControl("Remove checkbox", "checkbox", rc[0])
-            }
-        }
-
-    } else if (details != null) {
-        rc = extractRowAndColumn($(details).name);
-        formdata = getInfoFromEventDetails(formdata, details, rc[0]);
-        href = updateDetails("Update details", "details", rc[0]);
-    } else if (conditionalDetails != null) {
-        rc = extractRowAndColumn(conditionalDetails.name)
-        href = updateDetails("Update details", "details", rc[0]);
-    } else if (textbox != null) {
-        rc = extractRowAndColumn(textbox)
-        formdata = getInfoFromEventTextbox(formdata, isAdd, rc[0], rc[1])
-        if (isAdd) {
-            href = createAddControl("Add checkbox", "checkbox", rc[0])
-        } else {
-            href = createRemoveControl("Remove checkbox", "checkbox", rc[0])
-        }
-    }
-
-    var activity = 'grid[' + rc[0] + '].activity';
-    formdata = formdata + "activity=" + escape($(activity).value) + "&";
-
-    var arrayOfCounts = 'grid[' + rc[0] + '].eventIds';
-    for (var i = 0; i < ${period.duration.days}; i++) {
-        var singleElement = arrayOfCounts + '[' + i + ']';
-        if ($(singleElement).getAttribute('value') == null) {
-            formdata = formdata + 'eventIds' + '[' + i + ']' + "=-1" + "&";
-        } else {
-            formdata = formdata + 'eventIds' + '[' + i + ']' + "=" + $(singleElement).getAttribute('value') + "&";
-        }
-    }
-
-    formdata = formdata + 'rowNumber' + "=" + rc[0] + "&";
-
-    var details1 = 'grid[' + rc[0] + '].conditionalDetails';
-    formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
-
-    var lastRequest = new Ajax.Request(href,
-    {
-        postBody: formdata
+    new Ajax.Request(href, {
+        postBody: Object.toQueryString(data)
     });
+}
 
-    return true;
+function registerRowEventHandlers(rowElt) {
+    rowElt.select('input[type=checkbox]').each(function(condCheckbox) {
+        condCheckbox.observe("click", function() {
+            var row = extractRow(condCheckbox.id)
+            var conditionElt = $('grid[' + row + '].conditionalDetails')
+            if (condCheckbox.checked) {
+                conditionElt.disabled = false;
+            } else {
+                conditionElt.value = "";
+                conditionElt.disabled = true;
+            }
+            executeUpdateDetails(condCheckbox)
+        })
+    })
+
+    rowElt.select('input[type=text]').each(function(input) {
+        input.observe('change', function(evt) {
+            executeUpdateDetails(input)
+        })
+    })
 }
 
 function registerHandlers() {
-    $$('.input-row td.conditional').each(function(cell) {
-        var input = cell.getElementsByTagName("INPUT")[0]
-        registerCellInputHandlers(input)
-    });
+    $$('.input-row').each(registerRowEventHandlers)
     Event.observe('add-activity-button', 'click', addActivityRow)
     Event.observe('add-activity-button', 'click', resetActivitiesAutocompleter)
     Event.observe('return-to-template', 'click', function() {
@@ -334,7 +281,6 @@ function registerDraggablesAndDroppables() {
     Droppables.add($('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
-
 var PERIOD_DURATION = 7;
 
 function moveEvent(draggable, dropZone) {
@@ -345,7 +291,7 @@ function moveEvent(draggable, dropZone) {
     if (parentElement == null) {
         //means we are drugging a new event
         if (wholeElement.firstChild == null) {
-            ajaxform(null, elementId, true, null, null)
+            executePlannedActivityAdd(elementId)
             setUpMarker(draggable, dropZone)
         }
     } else {
@@ -356,7 +302,7 @@ function moveEvent(draggable, dropZone) {
         if (parentRC[0] == childRC[0]) {
             //need to set up ajax call for move
             if (wholeElement.firstChild == null) {
-                executeActivityMove(parentRC[0], parentRC[1], childRC[1])
+                executePlannedActivityMove(parentRC[0], parentRC[1], childRC[1])
                 setUpMovingMarker(draggable, dropZone)
             }
         }
@@ -391,7 +337,7 @@ function setUpMovingMarker(draggable, dropZone) {
 
 function deleteEvent(draggable, dropZone) {
     var element = draggable.parentNode.getElementsBySelector("span")[0].id
-    ajaxform(null, element, false, null, null)
+    executePlannedActivityRemove(element)
 
     var prevDurationIndex = draggable.currentDurationIndex;
     var prevActivity = draggable.activity;
@@ -772,8 +718,7 @@ Event.observe(window, "load", createAutocompleter)
                                 </td>
                             </c:forEach>
                             <td>
-                                <form:input path="grid[${gridStatus.index}].details"
-                                            onchange="ajaxform(null, null, null, this, null);" />
+                                <form:input path="grid[${gridStatus.index}].details"/>
                             </td>
                             <!--corresponds to the conditional behavior-->
                             <td class="emptyCell" ></td>
@@ -783,7 +728,6 @@ Event.observe(window, "load", createAutocompleter)
                             </td>
                             <td>
                                 <form:input path="grid[${gridStatus.index}].conditionalDetails"
-                                            onchange="return ajaxform(null, null, null, null, this);"
                                             disabled="${empty gridRow.conditionalDetails}"
                                         />
                             </td>
