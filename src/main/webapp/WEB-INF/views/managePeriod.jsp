@@ -41,7 +41,7 @@ function addActivityRow() {
     // input cells
     for (var i = 0; i < dayCount; i++) {
         var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
-        var input = Builder.node('span', {            
+        var input = Builder.node('span', {
             id:name,
             name:name,
             class: "marker",
@@ -63,7 +63,7 @@ function addActivityRow() {
 
     // condition checkbox
     var name = 'grid[' + rowCount + '].conditionalCheckbox'
-    var namePlusOne = name+1
+    var namePlusOne = name + 1
     var input = Builder.node('input', {
         type: 'checkbox',
         id: namePlusOne,
@@ -111,23 +111,22 @@ function showEmptyMessage() {
 }
 
 function registerCellInputHandlers(input) {
-    Event.observe(input, "click", function(e){return ajaxform(input, null, null, null, null)})
+    Event.observe(input, "click", function(e) {
+        return ajaxform(input, null, null, null, null)
+    })
 }
 
-function parseInput(input) {
-    var substring1 = input.substring(input.indexOf("[")+1, input.indexOf("]"));
-    var substring2 = input.substring(input.indexOf("]") + 1);
-    var substring3 = substring2.substring(substring2.indexOf("[")+1, substring2.indexOf("]"));
-    var rowNumber = input.substring(input.length-1, input.length);
+// extracts row and column from an ID like grid[row].eventIds[col]
+function extractRowAndColumn(gridElementId) {
+    var row = gridElementId.substring(gridElementId.indexOf("[") + 1, gridElementId.indexOf("]"));
+    var eventIdsPortion = gridElementId.substring(gridElementId.indexOf("]") + 1);
+    var col = eventIdsPortion.substring(eventIdsPortion.indexOf("[") + 1, eventIdsPortion.indexOf("]"));
 
-    var array = new Array();
-    array[0] = substring1;
-    array[1] = substring3;
-    return array;
+    return [row, col];
 }
 
 function parseDetailName(name) {
-    return name.substring(name.indexOf("[")+1, name.indexOf("]"));
+    return name.substring(name.indexOf("[") + 1, name.indexOf("]"));
 
 }
 
@@ -140,9 +139,9 @@ function getInfoFromConditionalDetails(formdata, conditionalDetails, index) {
 function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
     var checkboxName = 'grid[' + index + '].conditionalCheckbox1';
     var isChecked = $(checkboxName).checked;
-    var details = 'grid[' +  index + '].conditionalDetails';
-    if(!isChecked) {
-        $(details).value ="";
+    var details = 'grid[' + index + '].conditionalDetails';
+    if (!isChecked) {
+        $(details).value = "";
         $(details).disabled = true;
     } else {
         $(details).disabled = false;
@@ -154,49 +153,49 @@ function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
 }
 
 function getInfoFromEventCheckbox(formdata, checkbox, index1, index2) {
-   var details = 'grid[' + index1 + '].details';
+    var details = 'grid[' + index1 + '].details';
     formdata = formdata + "details=" + escape($(details).value) + "&";
-    formdata = formdata + 'columnNumber'+ "=" + index2 + "&";
+    formdata = formdata + 'columnNumber' + "=" + index2 + "&";
     formdata = formdata + 'addition' + "=" + escape($(checkbox).checked) + "&";
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";    
+    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
     return formdata;
 }
 
 function getInfoFromEventDetails(formdata, details, index) {
     formdata = formdata + "details=" + escape($(details).value) + "&";
     formdata = formdata + 'addition' + "=" + escape(false) + "&";
-    formdata = formdata + 'columnNumber'+ "=" + escape(-1) + "&";
+    formdata = formdata + 'columnNumber' + "=" + escape(-1) + "&";
     formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
     return formdata;
 }
 
 function getInfoFromEventTextbox(formdata, isAdding, index1, index2) {
-   var details = 'grid[' + index1 + '].details';
+    var details = 'grid[' + index1 + '].details';
     formdata = formdata + "details=" + escape($(details).value) + "&";
-    formdata = formdata + 'columnNumber'+ "=" + index2 + "&";
+    formdata = formdata + 'columnNumber' + "=" + index2 + "&";
     formdata = formdata + 'addition' + "=" + isAdding + "&";
     formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
     return formdata;
 }
 
 function createAddControl(text, objectType, objectId) {
-    return createControlAnchorOne("add", text, "Add this " + objectType, '<c:url value="/pages/cal/managePeriod/addTo"/>')
+    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/addTo"/>')
 }
 
 function createRemoveControl(text, objectType, objectId) {
-    return createControlAnchorOne("remove", text, "Remove this " + objectType, '<c:url value="/pages/cal/managePeriod/remove"/>')
+    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/remove"/>')
 }
 
 
 function updateDetails(text, objectType, objectId) {
-    return createControlAnchorOne("update", text, "Update " + objectType, '<c:url value="/pages/cal/managePeriod/update"/>')
+    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/update"/>')
 }
 
 function move(text, objectType, objectId) {
-    return createControlAnchorOne("move", text, "Move " + objectType, '<c:url value="/pages/cal/managePeriod/move"/>')
+    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/move"/>')
 }
 
-function createControlAnchorOne(controlName, text, title, baseHref) {
+function createAjaxBaseHref(baseHref) {
     var href = baseHref;
     if (href.indexOf('?') >= 0) {
         href += '&'
@@ -206,31 +205,31 @@ function createControlAnchorOne(controlName, text, title, baseHref) {
     return href
 }
 
-function moveAjaxForm(arrayOfIndicesForParent, arrayOfIndicesForChild, isAdd) {
-    var href = move("Move event", "event ", arrayOfIndicesForChild[0]);
+function moveAjaxForm(fromRC, toRC) {
+    var href = move("Move event", "event ", toRC[0]);
     // Set up data variable
     var formdata = "";
     formdata = formdata + 'id='+${period.id}+"&";
-    formdata = getInfoFromEventTextbox(formdata, isAdd, arrayOfIndicesForChild[0], arrayOfIndicesForChild[1])
+    formdata = getInfoFromEventTextbox(formdata, false, toRC[0], toRC[1])
 
-    var activity = 'grid[' + arrayOfIndicesForChild[0] + '].activity';
-    formdata = formdata + "activity=" + escape($(activity).value) +"&";
-    var arrayOfCounts = 'grid[' + arrayOfIndicesForChild[0] + '].eventIds';
+    var activity = 'grid[' + toRC[0] + '].activity';
+    formdata = formdata + "activity=" + escape($(activity).value) + "&";
+    var arrayOfCounts = 'grid[' + toRC[0] + '].eventIds';
 
-    singleElement = arrayOfCounts +'[' +arrayOfIndicesForParent[1] + ']';
-    if ($(singleElement).getAttribute('value') !=  null ) {
-        formdata = formdata + 'eventIds' + '[' +arrayOfIndicesForParent[1] + ']'+  "=" + $(singleElement).getAttribute('value') + "&" ;
+    var singleElement = arrayOfCounts + '[' + fromRC[1] + ']';
+    if ($(singleElement).getAttribute('value') != null) {
+        formdata = formdata + 'eventIds' + '[' + fromRC[1] + ']' + "=" + $(singleElement).getAttribute('value') + "&";
     }
-    formdata = formdata + 'rowNumber'+ "=" + arrayOfIndicesForChild[0] + "&";
+    formdata = formdata + 'rowNumber' + "=" + toRC[0] + "&";
     formdata = formdata + 'updated' + "=" + escape(true) + "&";
 
-    var checkboxName = 'grid[' + arrayOfIndicesForChild[0] + '].conditionalCheckbox1';
-    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&" ;
-    var details1 = 'grid[' +  arrayOfIndicesForChild[0] + '].conditionalDetails';
+    var checkboxName = 'grid[' + toRC[0] + '].conditionalCheckbox1';
+    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&";
+    var details1 = 'grid[' + toRC[0] + '].conditionalDetails';
     formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
 
-    formdata = formdata+ "moveFrom=" + arrayOfIndicesForParent[1] + "&";
-    formdata = formdata+ "moveTo=" + arrayOfIndicesForChild[1] + "&";
+    formdata = formdata + "moveFrom=" + fromRC[1] + "&";
+    formdata = formdata + "moveTo=" + toRC[1] + "&";
 
     var lastRequest = new Ajax.Request(href,
     {
@@ -248,61 +247,61 @@ function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
     // Set up data variable
     var formdata = "";
     formdata = formdata + 'id='+${period.id}+"&";
-    var arrayOfIndexes
+    var rc
 
-    if (checkbox != null){
-        arrayOfIndexes = parseInput(checkbox.name)
-        if (checkbox.name.indexOf(".conditionalCheckbox")>=0) {
-            formdata = getInfoFromConditionalCheckbox(formdata, checkbox, arrayOfIndexes[0])
-            href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
+    if (checkbox != null) {
+        rc = extractRowAndColumn(checkbox.name)
+        if (checkbox.name.indexOf(".conditionalCheckbox") >= 0) {
+            formdata = getInfoFromConditionalCheckbox(formdata, checkbox, rc[0])
+            href = updateDetails("Update details", "details", rc[0]);
         } else {
-            formdata = getInfoFromEventCheckbox(formdata, checkbox, arrayOfIndexes[0], arrayOfIndexes[1])
-            if($(checkbox).checked) {
-                href = createAddControl("Add checkbox", "checkbox", arrayOfIndexes[0])
+            formdata = getInfoFromEventCheckbox(formdata, checkbox, rc[0], rc[1])
+            if ($(checkbox).checked) {
+                href = createAddControl("Add checkbox", "checkbox", rc[0])
             } else {
-                href = createRemoveControl("Remove checkbox", "checkbox", arrayOfIndexes[0])
+                href = createRemoveControl("Remove checkbox", "checkbox", rc[0])
             }
         }
 
     } else if (details != null) {
-        arrayOfIndexes = parseInput($(details).name);
-        formdata = getInfoFromEventDetails(formdata, details, arrayOfIndexes[0]);
-        href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
+        rc = extractRowAndColumn($(details).name);
+        formdata = getInfoFromEventDetails(formdata, details, rc[0]);
+        href = updateDetails("Update details", "details", rc[0]);
     } else if (conditionalDetails != null) {
-        arrayOfIndexes = parseInput(conditionalDetails.name)
-        formdata = getInfoFromConditionalDetails(formdata, conditionalDetails, arrayOfIndexes[0])
-        href = updateDetails ("Update details", "details", arrayOfIndexes[0]);
+        rc = extractRowAndColumn(conditionalDetails.name)
+        formdata = getInfoFromConditionalDetails(formdata, conditionalDetails, rc[0])
+        href = updateDetails("Update details", "details", rc[0]);
     } else if (textbox != null) {
-        arrayOfIndexes = parseInput(textbox)
-        formdata = getInfoFromEventTextbox(formdata, isAdd, arrayOfIndexes[0], arrayOfIndexes[1])
+        rc = extractRowAndColumn(textbox)
+        formdata = getInfoFromEventTextbox(formdata, isAdd, rc[0], rc[1])
         if (isAdd) {
-            href = createAddControl("Add checkbox", "checkbox", arrayOfIndexes[0])
+            href = createAddControl("Add checkbox", "checkbox", rc[0])
         } else {
-            href = createRemoveControl("Remove checkbox", "checkbox", arrayOfIndexes[0])
+            href = createRemoveControl("Remove checkbox", "checkbox", rc[0])
         }
     }
 
-    var activity = 'grid[' + arrayOfIndexes[0] + '].activity';
-    formdata = formdata + "activity=" + escape($(activity).value) +"&";
+    var activity = 'grid[' + rc[0] + '].activity';
+    formdata = formdata + "activity=" + escape($(activity).value) + "&";
 
-    var arrayOfCounts = 'grid[' + arrayOfIndexes[0] + '].eventIds';
+    var arrayOfCounts = 'grid[' + rc[0] + '].eventIds';
     for (var i = 0; i < ${period.duration.days}; i++) {
-        singleElement = arrayOfCounts +'[' +i + ']';
-        if ($(singleElement).getAttribute('value') ==  null ) {
-            formdata = formdata + 'eventIds' + '[' +i + ']'+  "=-1" + "&" ;
+        var singleElement = arrayOfCounts + '[' + i + ']';
+        if ($(singleElement).getAttribute('value') == null) {
+            formdata = formdata + 'eventIds' + '[' + i + ']' + "=-1" + "&";
         } else {
-            formdata = formdata + 'eventIds' + '[' +i + ']'+  "=" + $(singleElement).getAttribute('value') + "&" ;
+            formdata = formdata + 'eventIds' + '[' + i + ']' + "=" + $(singleElement).getAttribute('value') + "&";
         }
     }
 
-    formdata = formdata + 'rowNumber'+ "=" + arrayOfIndexes[0] + "&";
+    formdata = formdata + 'rowNumber' + "=" + rc[0] + "&";
     formdata = formdata + 'updated' + "=" + escape(true) + "&";
 
 
-    var checkboxName = 'grid[' + arrayOfIndexes[0] + '].conditionalCheckbox1';
-    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&" ;
+    var checkboxName = 'grid[' + rc[0] + '].conditionalCheckbox1';
+    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&";
 
-    var details1 = 'grid[' +  arrayOfIndexes[0] + '].conditionalDetails';
+    var details1 = 'grid[' + rc[0] + '].conditionalDetails';
     formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
 
     var lastRequest = new Ajax.Request(href,
@@ -321,53 +320,56 @@ function registerHandlers() {
     Event.observe('add-activity-button', 'click', addActivityRow)
     Event.observe('add-activity-button', 'click', resetActivitiesAutocompleter)
     Event.observe('return-to-template', 'click', function() {
-        location.href='<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
+        location.href = '<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
     })
 }
 
 function makeCellDraggableAndDroppable(input) {
     document.getElementsByClassName('marker').each(
         function(item) {
-            new Draggable(item,{revert: true});
+            new Draggable(item, {revert: true});
             item.currentDurationIndex = item.parentNode.durationIndex;
             item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
         }
         );
 
-    Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
+    Droppables.add($('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
 function registerDraggablesAndDroppables() {
     document.getElementsByClassName('newMarker').each(
-        function(item) {new Draggable(item, {revert: true});
-      }
-    );
-
-    var x=0;
-    document.getElementsByClassName('counter').each(
-        function(item) {Droppables.add(item, {
-                    accept:['marker','newMarker'],
-                    hoverclass: 'hoverActive',
-                    onDrop: moveEvent })
-            item.durationIndex = x;
-            x = (x == PERIOD_DURATION-1) ? 0 : (x+1);
+        function(item) {
+            new Draggable(item, {revert: true});
         }
-    );
+        );
+
+    var x = 0;
+    document.getElementsByClassName('counter').each(
+        function(item) {
+            Droppables.add(item, {
+                accept:['marker','newMarker'],
+                hoverclass: 'hoverActive',
+                onDrop: moveEvent })
+            item.durationIndex = x;
+            x = (x == PERIOD_DURATION - 1) ? 0 : (x + 1);
+        }
+        );
 
     document.getElementsByClassName('marker').each(
-        function(item) {new Draggable(item,{revert: true});
+        function(item) {
+            new Draggable(item, {revert: true});
             item.currentDurationIndex = item.parentNode.durationIndex;
             item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
         }
-    );
+        );
 
-    Droppables.add( $('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
+    Droppables.add($('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
 }
 
 
-	var PERIOD_DURATION = 7;
+var PERIOD_DURATION = 7;
 
-function moveEvent(draggable,dropZone) {
+function moveEvent(draggable, dropZone) {
     var wholeElement = dropZone.getElementsBySelector("span")[0]
     var elementId = dropZone.getElementsBySelector("span")[0].id
 
@@ -381,12 +383,12 @@ function moveEvent(draggable,dropZone) {
     } else {
         //means we are moving event from one cell to another
         var parentElementId = parentElement.id
-        var arrayOfIndisesForParent = parseInput(parentElementId)
-        var arrayOfIndisesForChild = parseInput(elementId)
-        if (arrayOfIndisesForParent[0]== arrayOfIndisesForChild[0]) {
+        var parentRC = extractRowAndColumn(parentElementId)
+        var childRC = extractRowAndColumn(elementId)
+        if (parentRC[0] == childRC[0]) {
             //need to set up ajax call for move
             if (wholeElement.firstChild == null) {
-                moveAjaxForm(arrayOfIndisesForParent, arrayOfIndisesForChild, false)
+                moveAjaxForm(parentRC, childRC)
                 setUpMovingMarker(draggable, dropZone)
             }
         }
@@ -397,29 +399,29 @@ function moveEvent(draggable,dropZone) {
 function setUpMarker(draggable, dropZone) {
     var prevDurationIndex = draggable.currentDurationIndex;
     var newDurationIndex = dropZone.durationIndex;
-    var activity = (typeof(draggable.activity) != 'undefined')? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-    if(prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
+    var activity = (typeof(draggable.activity) != 'undefined') ? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
+    if (prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
         var marker = createMarker(newDurationIndex, activity);
         dropZone.appendChild(marker);
 
         draggable.parentNode.removeChild(draggable);
-        if(draggable.className=='newMarker') {
+        if (draggable.className == 'newMarker') {
             var div = Builder.node("div", { className: 'newMarker' })
             div.innerHTML = 'X';
-            new Draggable(div, { revert: true } );
+            new Draggable(div, { revert: true });
             $('newMarkerArea').appendChild(div);
         }
     }
-}    
+}
 
 
 function setUpMovingMarker(draggable, dropZone) {
-    draggable.innerHTML='';
+    draggable.innerHTML = '';
     var element = dropZone.getElementsBySelector("span")[0];
-    element.innerHTML='X';
+    element.innerHTML = 'X';
 }
 
-function deleteEvent(draggable,dropZone) {
+function deleteEvent(draggable, dropZone) {
     var element = draggable.parentNode.getElementsBySelector("span")[0].id
     ajaxform(null, element, false, null, null)
 
@@ -432,10 +434,10 @@ function deleteEvent(draggable,dropZone) {
 function createMarker(currentDurationIndex, activityName) {
     var marker = document.createElement('span');
     marker.innerHTML = 'X';
-    marker.className='marker';
+    marker.className = 'marker';
     marker.currentDurationIndex = currentDurationIndex;
     marker.activity = activityName;
-    new Draggable(marker,{revert: true});
+    new Draggable(marker, {revert: true});
     return marker;
 }
 
@@ -452,12 +454,12 @@ var activitiesAutocompleter;
 
 function resetActivitiesAutocompleter() {
     activitiesAutocompleter.reset();
-    $('add-activity').name="";
-    $('add-activity').value="";
+    $('add-activity').name = "";
+    $('add-activity').value = "";
 }
 
 function createAutocompleter() {
-    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input','activities-autocompleter-div','<c:url value="/pages/fragment/search/activities"/>',
+    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/fragment/search/activities"/>',
     { method: 'get', paramName: 'searchText', callback: addAdditionalParameters, afterUpdateElement:updateActivity, revertOnEsc:true});
 }
 
