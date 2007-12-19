@@ -49,7 +49,7 @@ public class StudyXmlWriter {
     public static final String INDEX = "index";
     public static final String MANDATORY = "mandatory";
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
-
+    public static final String NODE_ID = "node-id";
 
 
     public String createStudyXml(Study study) throws Exception {
@@ -124,6 +124,7 @@ public class StudyXmlWriter {
             Element element = document.createElement(DELTA);
 
             element.setAttribute(ID, delta.getGridId());
+            element.setAttribute(NODE_ID, delta.getNode().getGridId());
             parent.appendChild(element);
 
             addChanges(document, delta.getChanges(), element);

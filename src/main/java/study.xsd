@@ -36,8 +36,7 @@
             <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
-        <!-- Node would be grid id.. implement for remove or chage -->
-        <!--<xsd:attribute name="node" type="xsd:IDREF" use="required"/>-->
+        <xsd:attribute name="node-id" type="xsd:IDREF" use="required"/>
     </xsd:complexType>
 
     <!-- TODO: For ChildId use gridId to matchup with correct child and either create or use existing object -->
