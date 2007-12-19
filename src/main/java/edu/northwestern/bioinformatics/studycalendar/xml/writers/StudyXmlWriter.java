@@ -40,6 +40,7 @@ public class StudyXmlWriter {
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
     public static final String PERIOD = "period";
+    public static final String PLANNED_ACTIVITY = "planned-activity";
 
     /* Tag Attribute constants */
     public static final String ID = "id";
@@ -48,6 +49,7 @@ public class StudyXmlWriter {
     public static final String INDEX = "index";
     public static final String MANDATORY = "mandatory";
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
+
 
 
     public String createStudyXml(Study study) throws Exception {
@@ -165,27 +167,31 @@ public class StudyXmlWriter {
             element.setAttribute(ID, period.getGridId());
             parent.appendChild(element);
 
-//            addPlannedActivities(document, period.getPlannedActivities(), parent);
+            addPlannedActivities(document, period.getPlannedActivities(), parent);
+        } else if (child instanceof PlannedActivity) {
+            PlannedActivity activity = (PlannedActivity) child;
+            Element element = document.createElement(PLANNED_ACTIVITY);
+            element.setAttribute(ID, activity.getGridId());
+
+            parent.appendChild(element);
         }
     }
 
     protected void addStudySegments(Document document, List<StudySegment> studySegments, Element parent) {
         for(StudySegment studySegment : studySegments) {
-            Element element = document.createElement(STUDY_SEGMENT);
-            element.setAttribute(NAME, studySegment.getName());
-            element.setAttribute(ID, studySegment.getGridId());
-
-            parent.appendChild(element);
+            addNode(document, studySegment, parent);
         }
     }
 
     protected void addPeriods(Document document, SortedSet<Period> periods, Element parent) {
         for(Period period : periods) {
-            Element element = document.createElement(STUDY_SEGMENT);
-            element.setAttribute(NAME, period.getName());
-            element.setAttribute(ID, period.getGridId());
+            addNode(document, period, parent);
+        }
+    }
 
-            parent.appendChild(element);
+    protected void addPlannedActivities(Document document, List<PlannedActivity> plannedActivities, Element parent) {
+        for (PlannedActivity activity : plannedActivities) {
+            addNode(document, activity, parent);
         }
     }
 

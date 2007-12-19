@@ -31,15 +31,18 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
     private static int id = 1;
     private Amendment amendment;
-    private Epoch epoch;
-    private Add addEpoch;
     private Delta<PlannedCalendar> calendarDelta;
-    private StudySegment segment;
-    private Add addSegment;
     private Delta<Epoch> epochDelta;
     private Delta<StudySegment> segmentDelta;
-    private Period period;
+    private Delta<PlannedActivity> plannedActivityDelta;
+    private Add addEpoch;
+    private Add addSegment;
     private Add addPeriod;
+    private Add addActivity;
+    private Epoch epoch;
+    private StudySegment segment;
+    private Period period;
+    private PlannedActivity plannedActivity;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -67,6 +70,11 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         period = createNamedInstance("Period A", Period.class);
         addPeriod = createAdd(period, 0);
         segmentDelta = createDeltaFor(segment, addPeriod);
+
+        /* Period Delta for Add(ing) Planned Activities */
+        plannedActivity = createPlannedActivity("Bone Scan", 1, "details", ActivityType.DISEASE_MEASURE);
+        addActivity = createAdd(plannedActivity, 0);
+        plannedActivityDelta = createDeltaFor(plannedActivity, addActivity);
     }
 
     public void testWriteEpoch() throws Exception {
@@ -154,6 +162,47 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     }
 
 
+     public void testWritePlannedActivity() throws Exception {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        /* Planned Calendar Delta and Epoch Delta */
+        amendment.addDelta(calendarDelta);
+        amendment.addDelta(epochDelta);
+        amendment.addDelta(segmentDelta);
+        amendment.addDelta(plannedActivityDelta);
+
+        StringBuffer body = new StringBuffer();
+        body.append(format(    "<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(format("  <delta id=\"{0}\">", calendarDelta.getGridId()))
+                .append(format("    <add id=\"{0}\" index=\"{1}\">", addEpoch.getGridId(), addEpoch.getIndex()))
+                .append(format("      <epoch id=\"{0}\" name=\"{1}\"/>", epoch.getGridId(), epoch.getName()))
+                .append(       "    </add>")
+                .append(       "  </delta>")
+                .append(format("  <delta id=\"{0}\">", epochDelta.getGridId()))
+                .append(format("    <add id=\"{0}\" index=\"{1}\">", addSegment.getGridId(), addSegment.getIndex()))
+                .append(format("      <study-segment id=\"{0}\" name=\"{1}\"/>", segment.getGridId(), segment.getName()))
+                .append(       "    </add>")
+                .append(       "  </delta>")
+                .append(format("  <delta id=\"{0}\">", segmentDelta.getGridId()))
+                .append(format("    <add id=\"{0}\" index=\"{1}\">", addPeriod.getGridId(), addPeriod.getIndex()))
+                .append(format("      <period id=\"{0}\" name=\"{1}\"/>", period.getGridId(), period.getName()))
+                .append(       "    </add>")
+                .append(       "  </delta>")
+                .append(format("  <delta id=\"{0}\">", plannedActivityDelta.getGridId()))
+                .append(format("    <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
+                .append(format("      <planned-activity id=\"{0}\" />", plannedActivity.getGridId()))
+                .append(       "    </add>")
+                .append(       "  </delta>")
+                .append(       "</amendment>");
+
+
+        String expected = insertXml(study, body.toString());
+        String output = createAndValidateXml(study);
+
+        assertXMLEqual(expected, output);
+    }
+
+
     /* Validate methods */
     public String createAndValidateXml(Study study) throws Exception{
         String s = writer.createStudyXml(study);
@@ -198,13 +247,8 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         return setGridId(Add.create(child, index));
     }
 
-    private static PlannedActivity createPlannedActivity(String activityName) throws Exception{
-        PlannedActivity activity = new PlannedActivity();
-        activity.setActivity(setGridId(createActivity(activityName)));
-        activity.setDay(1);
-        activity.setDetails("Scan Arm");
-        setGridId(activity);
-        return activity;
+    private static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type) throws Exception {
+        return setGridId(Fixtures.createPlannedActivity(activityName, day, details, type));
     }
 
 

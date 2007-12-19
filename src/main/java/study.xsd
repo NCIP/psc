@@ -45,6 +45,7 @@
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="index" type="xsd:integer" use="required"/>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
@@ -68,6 +69,10 @@
 
     <xsd:complexType name="Period">
         <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PlannedActivity">
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 

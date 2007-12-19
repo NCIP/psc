@@ -89,6 +89,12 @@ public class Fixtures {
         return event;
     }
 
+    public static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type) {
+        PlannedActivity event = createPlannedActivity(activityName, day, details);
+        event.getActivity().setType(type);
+        return event;
+    }
+
     public static Study createSingleEpochStudy(String studyName, String epochName, String... studySegmentNames) {
         Study study = createNamedInstance(studyName, Study.class);
         study.setPlannedCalendar(new PlannedCalendar());
