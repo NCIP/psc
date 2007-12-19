@@ -13,10 +13,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.SortedSet;
+import java.util.*;
 
 import org.w3c.dom.*;
 
@@ -50,6 +47,14 @@ public class StudyXmlWriter {
     public static final String MANDATORY = "mandatory";
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
     public static final String NODE_ID = "node-id";
+    public static final String DAY = "day";
+    public static final String DETAILS = "details";
+    public static final String CONDITION = "condition";
+
+    private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
+    {
+      optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
+    };
 
 
     public String createStudyXml(Study study) throws Exception {
@@ -80,8 +85,8 @@ public class StudyXmlWriter {
         rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", XML_SCHEMA_ATTRIBUTE, XML_SCHEMA );
         rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION );
 
-        rootElement.setAttribute(ID, study.getGridId());
-        rootElement.setAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
+        setAttrib(rootElement, ID, study.getGridId());
+        setAttrib(rootElement, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
         addPlannedCalendar(document, study, rootElement);
 
@@ -93,11 +98,11 @@ public class StudyXmlWriter {
 
     protected void addPlannedCalendar(Document document, Study study, Element rootElement) {
         if (study.getPlannedCalendar() != null) {
-            Element plannedCalEle = document.createElement(PLANNDED_CALENDAR);
-            plannedCalEle.setAttribute(ID, study.getPlannedCalendar().getGridId());
+            Element element = document.createElement(PLANNDED_CALENDAR);
+            setAttrib(element, ID, study.getPlannedCalendar().getGridId());
 
             document.appendChild(rootElement);
-            rootElement.appendChild(plannedCalEle);
+            rootElement.appendChild(element);
         }
     }
 
@@ -105,12 +110,12 @@ public class StudyXmlWriter {
         for (Amendment amendment : amendments) {
             Element element = document.createElement(AMENDMENT);
 
-            element.setAttribute(NAME, amendment.getName());
-            element.setAttribute(MANDATORY, Boolean.toString(amendment.isMandatory()));
-            element.setAttribute(ID, amendment.getGridId());
+            setAttrib(element, NAME, amendment.getName());
+            setAttrib(element, MANDATORY, Boolean.toString(amendment.isMandatory()));
+            setAttrib(element, ID, amendment.getGridId());
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            element.setAttribute(DATE, formatter.format(amendment.getDate()));
+            setAttrib(element, DATE, formatter.format(amendment.getDate()));
 
             parent.appendChild(element);
 
@@ -123,8 +128,8 @@ public class StudyXmlWriter {
         for (Delta<?> delta : deltas) {
             Element element = document.createElement(DELTA);
 
-            element.setAttribute(ID, delta.getGridId());
-            element.setAttribute(NODE_ID, delta.getNode().getGridId());
+            setAttrib(element, ID, delta.getGridId());
+            setAttrib(element, NODE_ID, delta.getNode().getGridId());
             parent.appendChild(element);
 
             addChanges(document, delta.getChanges(), element);
@@ -135,8 +140,8 @@ public class StudyXmlWriter {
         for (Change change : changes) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
-                element.setAttribute(ID, change.getGridId());
-                element.setAttribute(INDEX, ((Add) change).getIndex().toString());
+                setAttrib(element, ID, change.getGridId());
+                setAttrib(element, INDEX, ((Add) change).getIndex().toString());
                 parent.appendChild(element);
 
                 addNode(document, ((ChildrenChange) change).getChild(), element);
@@ -148,31 +153,34 @@ public class StudyXmlWriter {
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
             Element element = document.createElement(EPOCH);
-            element.setAttribute(NAME, epoch.getName());
-            element.setAttribute(ID, epoch.getGridId());
+            setAttrib(element, NAME, epoch.getName());
+            setAttrib(element, ID, epoch.getGridId());
             parent.appendChild(element);
 
             addStudySegments(document, epoch.getStudySegments(), element);
         } else if (child instanceof StudySegment) {
             StudySegment segment = (StudySegment) child;
             Element element = document.createElement(STUDY_SEGMENT);
-            element.setAttribute(NAME, segment.getName());
-            element.setAttribute(ID, segment.getGridId());
+            setAttrib(element, NAME, segment.getName());
+            setAttrib(element, ID, segment.getGridId());
             parent.appendChild(element);
 
             addPeriods(document, segment.getPeriods(), parent);
         } else if (child instanceof Period) {
             Period period = (Period) child;
             Element element = document.createElement(PERIOD);
-            element.setAttribute(NAME, period.getName());
-            element.setAttribute(ID, period.getGridId());
+            setAttrib(element, NAME, period.getName());
+            setAttrib(element, ID, period.getGridId());
             parent.appendChild(element);
 
             addPlannedActivities(document, period.getPlannedActivities(), parent);
         } else if (child instanceof PlannedActivity) {
             PlannedActivity activity = (PlannedActivity) child;
             Element element = document.createElement(PLANNED_ACTIVITY);
-            element.setAttribute(ID, activity.getGridId());
+            setAttrib(element, ID, activity.getGridId());
+            setAttrib(element, DAY, activity.getDay().toString());
+            setAttrib(element, DETAILS, activity.getDetails());
+            setAttrib(element, CONDITION, activity.getCondition());
 
             parent.appendChild(element);
         }
@@ -210,5 +218,22 @@ public class StudyXmlWriter {
 
         return result.getWriter().toString();
     }
+
+   private void setAttrib(Element element, String name, String value) {
+       if (value != null) {
+           element.setAttribute(name, value);
+           return;
+       }
+
+       String tagName = element.getTagName();
+       String[] optionalAttribs = optionalAttributes.get(tagName);
+       if (optionalAttribs != null) {
+           for (String optionalAttrib : optionalAttribs) {
+               if (name.equals(optionalAttrib)) return;
+           }
+       }
+
+       throw new StudyCalendarError("Attribute is required and value is null: %s", name);
+   }
 
 }

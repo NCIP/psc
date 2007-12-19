@@ -74,16 +74,16 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         segmentDelta = createDeltaFor(segment, addPeriod);
 
         /* Period Delta for Add(ing) Planned Activities */
-        plannedActivity = createPlannedActivity("Bone Scan", 1, "details", ActivityType.DISEASE_MEASURE);
+        plannedActivity = createPlannedActivity("Bone Scan", 1, "details", ActivityType.DISEASE_MEASURE, "patient is male");
         addActivity = createAdd(plannedActivity, 0);
         periodDelta = createDeltaFor(plannedActivity, addActivity);
     }
 
     public void testWriteEpoch() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format(    "<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(            calendarDeltaXML())
-                .append(       "</amendment>");
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(   "</amendment>");
 
 
         String expected = insertXml(study, body.toString());
@@ -94,10 +94,10 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
     public void testWriteStudySegment() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format(    "<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(            calendarDeltaXML())
-                .append(            epochDeltaXML())
-                .append(       "</amendment>");
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        epochDeltaXML())
+                .append(   "</amendment>");
 
         String expected = insertXml(study, body.toString());
         String output = createAndValidateXml(study);
@@ -107,11 +107,11 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
     public void testWritePeriod() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format(    "<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(            calendarDeltaXML())
-                .append(            epochDeltaXML())
-                .append(            segmentDeltaXML())
-                .append(       "</amendment>");
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        epochDeltaXML())
+                .append(        segmentDeltaXML())
+                .append(   "</amendment>");
 
         String expected = insertXml(study, body.toString());
         String output = createAndValidateXml(study);
@@ -122,12 +122,28 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
      public void testWritePlannedActivity() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format(    "<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(            calendarDeltaXML())
-                .append(            epochDeltaXML())
-                .append(            segmentDeltaXML())
-                .append(            periodDeltaXML())
-                .append(       "</amendment>");
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        epochDeltaXML())
+                .append(        segmentDeltaXML())
+                .append(        periodDeltaXML())
+                .append(   "</amendment>");
+
+        String expected = insertXml(study, body.toString());
+        String output = createAndValidateXml(study);
+
+        assertXMLEqual(expected, output);
+    }
+
+
+    public void testWritePlannedActivityWithoutDetailsAndCondition() throws Exception {
+        StringBuffer body = new StringBuffer();
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        epochDeltaXML())
+                .append(        segmentDeltaXML())
+                .append(        periodDeltaXMLWithoutDetailsAndCondition())
+                .append(   "</amendment>");
 
         String expected = insertXml(study, body.toString());
         String output = createAndValidateXml(study);
@@ -180,7 +196,27 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
-            .append(format("    <planned-activity id=\"{0}\" />", plannedActivity.getGridId()))
+            .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" details=\"{2}\" condition=\"{3}\" >", plannedActivity.getGridId(), plannedActivity.getDay(), plannedActivity.getDetails(), plannedActivity.getCondition()))
+//            .append(format("      <activity/>"))
+            .append(       "    </planned-activity>")
+            .append(       "  </add>")
+            .append(       "</delta>");
+
+        return body.toString();
+    }
+
+    private String periodDeltaXMLWithoutDetailsAndCondition() {
+        plannedActivity.setDetails(null);
+        plannedActivity.setCondition(null);
+
+        amendment.addDelta(periodDelta);
+
+        StringBuffer body = new StringBuffer();
+        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
+            .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
+            .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" >", plannedActivity.getGridId(), plannedActivity.getDay()))
+//            .append(format("      <activity/>"))
+            .append(       "    </planned-activity>")
             .append(       "  </add>")
             .append(       "</delta>");
 
@@ -231,8 +267,8 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         return setGridId(Add.create(child, index));
     }
 
-    private static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type) throws Exception {
-        return setGridId(Fixtures.createPlannedActivity(activityName, day, details, type));
+    private static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type, String condition) throws Exception {
+        return setGridId(Fixtures.createPlannedActivity(activityName, day, details, type, condition));
     }
 
 
@@ -243,8 +279,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     }
 
     private static String nextGridId() {
-        // For some reason, the schema doesn't like strings integers 15 and up for ids, so prepend 'a'
-        return 'a' + valueOf(id++);
+        return 'a' + valueOf(id++); // For some reason, the schema doesn't like integers for ids, so prepend 'a'
     }
 
     public static class StudyXMLSkeleton {

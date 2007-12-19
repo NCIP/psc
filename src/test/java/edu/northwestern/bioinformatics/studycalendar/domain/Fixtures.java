@@ -89,9 +89,10 @@ public class Fixtures {
         return event;
     }
 
-    public static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type) {
+    public static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type, String condition) {
         PlannedActivity event = createPlannedActivity(activityName, day, details);
         event.getActivity().setType(type);
+        event.setCondition(condition);
         return event;
     }
 

@@ -39,7 +39,7 @@
         <xsd:attribute name="node-id" type="xsd:IDREF" use="required"/>
     </xsd:complexType>
 
-    <!-- TODO: For ChildId use gridId to matchup with correct child and either create or use existing object -->
+    <!-- TODO: For modify and delete changes add child-id to refer back to existing objects -->
     <xsd:complexType name="Add">
         <xsd:sequence>
             <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
@@ -72,11 +72,15 @@
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 
+    <!-- TODO: add population -->
     <xsd:complexType name="PlannedActivity">
         <!--<xsd:sequence>-->
             <!--<xsd:element name="activity" type="psc:Activity" minOccurs="1" maxOccurs="1"/>-->
         <!--</xsd:sequence>-->
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="details" type="xsd:string"/>
+        <xsd:attribute name="condition" type="xsd:string"/>
     </xsd:complexType>
 
 
