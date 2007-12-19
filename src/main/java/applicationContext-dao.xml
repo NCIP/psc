@@ -174,12 +174,6 @@
 		<property name="auditAll"><value>false</value></property>
 	</bean>
         
-    <bean name="dataAuditRepository" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository">
-		<property name="sessionFactory">
-			<ref local="auditSessionFactory" />
-		</property>
-	</bean>
-    
     <bean id="gridIdentifierCreator" class="edu.northwestern.bioinformatics.studycalendar.utils.LocalGridIdentifierCreator"/>
 
     <bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor" autowire="byName">
@@ -210,6 +204,16 @@
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 
     <!-- ACTUAL DAOS -->
+    <bean name="dataAuditRepository" class="gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository">
+        <property name="sessionFactory">
+            <ref local="auditSessionFactory"/>
+        </property>
+    </bean>
+
+    <bean id="auditHistoryRepository" class="gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository">
+        <property name="sessionFactory" ref="auditSessionFactory"></property>
+    </bean>
+
 
     <tx:annotation-driven proxy-target-class="true"/>
 

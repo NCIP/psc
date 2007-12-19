@@ -18,7 +18,7 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
         <type>Coordinating Center Identifier</type>
-        <value>value12</value>
+        <value>value14</value>
         <primaryIndicator>true</primaryIndicator>
         <healthcareSite>
             <name>duke healthcare</name>
@@ -111,30 +111,6 @@
             <address><streetAddress>12359 sunrise valley drive</streetAddress><city>Reston</city><stateCode>VA</stateCode><postalCode>20191</postalCode><countryCode>USA</countryCode></address>
             <nciInstituteCode>DUKE</nciInstituteCode>
         </healthcareSite>
-        <studyInvestigator>
-            <roleCode>role1</roleCode>
-            <statusCode>Active</statusCode>
-            <startDate>0006-06-23</startDate>
-            <endDate>0006-06-23</endDate>
-            <healthcareSiteInvestigator>
-                <investigator>
-                    <fullName>Investigator Bill Staff1</fullName>
-                    <nciIdentifier>DUKE_INV2</nciIdentifier>
-                </investigator>
-            </healthcareSiteInvestigator>
-        </studyInvestigator>
-        <studyInvestigator>
-            <roleCode>role2</roleCode>
-            <statusCode>Active</statusCode>
-            <startDate>0006-06-23</startDate>
-            <endDate>0006-06-23</endDate>
-            <healthcareSiteInvestigator>
-                <investigator>
-                    <fullName>Investigator George Staff2</fullName>
-                    <nciIdentifier>DUKE_INV1</nciIdentifier>
-                </investigator>
-            </healthcareSiteInvestigator>
-        </studyInvestigator>
         <irbApprovalDate>0006-06-23</irbApprovalDate>
         <roleCode>role</roleCode>
         <startDate>0006-06-24</startDate>

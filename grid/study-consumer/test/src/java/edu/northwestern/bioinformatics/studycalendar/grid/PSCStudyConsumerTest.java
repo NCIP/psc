@@ -3,7 +3,9 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import gov.nih.nci.cagrid.common.Utils;
+import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
+import gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository;
 import gov.nih.nci.ccts.grid.Study;
 import gov.nih.nci.ccts.grid.client.StudyConsumerClient;
 import junit.framework.Test;
@@ -13,8 +15,11 @@ import org.dbunit.PropertiesBasedJdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.*;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -28,6 +33,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
     private String configLoction;
 
     private String serviceUrl;
+    private static final Log logger = LogFactory.getLog(PSCStudyConsumerTest.class);
 
     private void init() {
 
@@ -37,14 +43,14 @@ public class PSCStudyConsumerTest extends DBTestCase {
         regFile = System.getProperty("psc.test.sampleStudyFile",
                 "grid/study-consumer/test/resources/SampleStudyMessage.xml");
 
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "http://localhost:8080/wsrf/services/cagrid/StudyConsumer");
+        serviceUrl = System.getProperty("psc.test.serviceUrl",
+                "http://localhost:8080/wsrf/services/cagrid/StudyConsumer");
 
 //        serviceUrl = System.getProperty("psc.test.serviceUrl",
 //                "http://10.10.10.2:9012/wsrf/services/cagrid/StudyConsumer");
 
-        serviceUrl = System.getProperty("psc.test.serviceUrl",
-                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/StudyConsumer");
+//        serviceUrl = System.getProperty("psc.test.serviceUrl",
+//                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/StudyConsumer");
 
 
         String driver = System.getProperty("psc.test.db.driver", "org.postgresql.Driver");
@@ -87,8 +93,12 @@ public class PSCStudyConsumerTest extends DBTestCase {
 
     public void testCreateStudyLocal() throws Exception {
         PSCStudyConsumer studyClient = new PSCStudyConsumer();
+       logger.info("running test create study local method");
+        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+
         Study study = populateStudyDTO();
-        studyClient.createStudy(study);
+         studyClient.createStudy(study);
+
         studyClient.rollback(study);
 
 //        studyClient.createStudy(study);
@@ -96,7 +106,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
 //
 //        studyClient.rollback(study);
 
-
+        DataAuditInfo.setLocal(null);
     }
 
     public void testCommitStudyLocal() {
@@ -104,7 +114,11 @@ public class PSCStudyConsumerTest extends DBTestCase {
             PSCStudyConsumer studyClient = new PSCStudyConsumer();
             Study study = populateStudyDTO();
             studyClient.createStudy(study);
-            //studyClient.commit(study);
+            studyClient.commit(study);
+
+//            //now check for audit info
+//
+//            assertTrue(auditHistoryRepository.checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(),study.get));
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -117,8 +131,13 @@ public class PSCStudyConsumerTest extends DBTestCase {
         try {
             PSCStudyConsumer studyClient = new PSCStudyConsumer();
             Study study = populateStudyDTO();
+            DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+
             studyClient.createStudy(study);
+
             studyClient.rollback(study);
+            DataAuditInfo.setLocal(null);
+
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -159,10 +178,10 @@ public class PSCStudyConsumerTest extends DBTestCase {
         try {
             StudyConsumerClient studyClient = new StudyConsumerClient(serviceUrl);
             Study study = populateStudyDTO();
-
-            studyClient.createStudy(study);
+             studyClient.rollback(study);
+            //studyClient.createStudy(study);
             //studyClient.commit(study);
-            studyClient.commit(study);
+           // studyClient.commit(study);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -176,7 +195,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
             InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream(
                     "gov/nih/nci/ccts/grid/client/client-config.wsdd");
             Reader reader = new FileReader(regFile);
-            studyDTO = (Study) Utils.deserializeObject(reader, Study.class, config);
+            studyDTO = (Study) gov.nih.nci.cagrid.common.Utils.deserializeObject(reader, Study.class, config);
         }
         catch (Exception e) {
             // TODO Auto-generated catch block
@@ -212,4 +231,9 @@ public class PSCStudyConsumerTest extends DBTestCase {
         return new FlatXmlDataSet(new FileInputStream(testFile));
     }
 
+    private AuditHistoryRepository auditHistoryRepository;
+
+    public void setAuditHistoryRepository(AuditHistoryRepository auditHistoryRepository) {
+        this.auditHistoryRepository = auditHistoryRepository;
+    }
 }

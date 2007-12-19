@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
+import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import gov.nih.nci.ccts.grid.*;
 import gov.nih.nci.ccts.grid.common.StudyConsumerI;
 import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
@@ -24,6 +25,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -47,6 +49,8 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private StudyDao studyDao;
 
+    private AuditHistoryRepository auditHistoryRepository;
+
     public PSCStudyConsumer() {
         ctx = new ClassPathXmlApplicationContext(new String[]{
                 // "classpath:applicationContext.xml",
@@ -57,6 +61,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         siteDao = (SiteDao) ctx.getBean("siteDao");
         studyService = (StudyService) ctx.getBean("studyService");
         studyDao = (StudyDao) ctx.getBean("studyDao");
+        auditHistoryRepository = (AuditHistoryRepository) ctx.getBean("auditHistoryRepository");
     }
 
     public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -124,13 +129,26 @@ public class PSCStudyConsumer implements StudyConsumerI {
         }
         logger.info("rollback called for study:long titlte-" + studyDto.getLongTitleText());
         String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
+        Study study = studyService.getStudyByAssignedIdentifier(ccIdentifier);
+        //check if this study was created one minute before or not
+        if (study == null) {
+            String message = "Exception while rollback study..no study found with given identifier:"+ccIdentifier;
+            throw getInvalidStudyException(message);
+        }
+        Calendar calendar = Calendar.getInstance();
 
+        boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime =auditHistoryRepository.
+                checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 1);
         try {
-            Study study = studyService.getStudyByAssignedIdentifier(ccIdentifier);
-            studyDao.delete(study);
+            if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
+                logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
+                studyDao.delete(study);
+            } else {
+                logger.debug("Study was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this study:" + study.getId());
+            }
         }
         catch (Exception exp) {
-            String message = "Exception while rollback study," + exp.getMessage();
+            String message = "Exception while rollback study," + exp.getMessage()+exp.getClass();
             throw getInvalidStudyException(message);
         }
     }
