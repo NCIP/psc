@@ -15,6 +15,7 @@ import static org.easymock.EasyMock.expect;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Arrays;
 
 /**
  * @author nshurupova
@@ -45,16 +46,15 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
 
         command.setPlannedActivityDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
+        command.setPeriod(period);
     }
 
     public void testPerformEdit() throws Exception {
-        command.setPeriod(period);
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         period.addPlannedActivity(eventOne);
 
-        List<Integer> ids = new ArrayList<Integer>();
-        ids.add(eventOne.getId());
+        List<Integer> ids = Arrays.asList(null, eventOne.getId());
         command.setEventIds(ids);
         command.setMoveFrom(1);
         command.setMoveTo(4);
@@ -63,6 +63,28 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
 
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("day", command.getMoveFrom() + 1, command.getMoveTo() + 1));
+
+        replayMocks();
+        command.performEdit();
+        verifyMocks();
+
+        assertEquals(1, period.getPlannedActivities().size());
+        assertEquals("Details should not be updated in place", 1, (int) eventOne.getDay());
+    }
+    
+    public void testPerformWithMultipleActivities() throws Exception {
+        PlannedActivity eventOne = createPlannedActivity(1, 25);
+        eventOne.setId(21);
+        period.addPlannedActivity(eventOne);
+
+        command.setEventIds(Arrays.asList(14, 16, 21));
+        command.setMoveFrom(2);
+        command.setMoveTo(0);
+
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
+
+        amendmentService.updateDevelopmentAmendment(eventOne,
+            PropertyChange.create("day", 3, 1));
 
         replayMocks();
         command.performEdit();
@@ -90,7 +112,7 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
         assertEquals("Map's moved event is wrong", eventTwo, map.get("movedEvent"));
         assertEquals("Map's moveFrom is wrong", 2, map.get("moveFrom"));
         assertEquals("Map's moveTo is wrong", 5, map.get("moveTo"));        
-        assertEquals("Map's column number is wrong", 0, map.get("columnNumber"));
+        assertEquals("Map's column number is wrong", 5, map.get("columnNumber"));
         assertEquals("Map's row number is wrong", 0, map.get("rowNumber"));
      }
 

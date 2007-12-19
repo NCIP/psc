@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,15 +15,14 @@ public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
 
     @Override
     protected void performEdit() {
-        for (Integer id: getEventIds()) {
-            if (id != null && id>-1) {
-                PlannedActivity event = plannedActivityDao.getById(id);
-                event.setDay(getColumnNumber()+1);
-                setMovedPlannedActivity(event);
-                amendmentService.updateDevelopmentAmendment(event,
-                    PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
-            }
+        Integer targetId = getEventIds().get(getMoveFrom());
+        if (targetId == null || targetId < 0) {
+            throw new StudyCalendarValidationException("No event ID for the requested move");
         }
+        PlannedActivity event = plannedActivityDao.getById(targetId);
+        setMovedPlannedActivity(event);
+        amendmentService.updateDevelopmentAmendment(event,
+            PropertyChange.create("day", getMoveFrom()+1, getMoveTo()+1));
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
         map.put("moveFrom", getMoveFrom());
         map.put("moveTo", getMoveTo());
         map.put("rowNumber", getRowNumber());
-        map.put("columnNumber", getColumnNumber());
+        map.put("columnNumber", getMoveTo());
         return map;
     }
 
