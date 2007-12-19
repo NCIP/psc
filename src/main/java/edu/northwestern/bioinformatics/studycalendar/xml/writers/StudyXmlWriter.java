@@ -22,7 +22,7 @@ import org.w3c.dom.*;
 
 
 public class StudyXmlWriter {
-    public static final String SCHEMA_NAMESPACE = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
+    public static final String SCHEMA_NAMESPACE = "http://bioinformatics.northwestern.edu/ns/psc";
     public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
     public static final String XML_SCHEMA       = "http://www.w3.org/2001/XMLSchema-instance";
 
