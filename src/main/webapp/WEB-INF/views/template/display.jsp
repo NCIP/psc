@@ -335,7 +335,7 @@
 				       	effects,
 						$H(options).merge({
 					         duration: 1.0
-					    })
+					    }).toObject()
 					);
 			}			
 			function quickSlideAndHide(elementArray, options)
@@ -353,10 +353,10 @@
 				       	effects,
 						$H(options).merge({
 					         duration: 1.0
-					    })
+					    }).toObject()
 					);
 			}
-	            function registerSelectStudySegmentHandler(a) {
+            function registerSelectStudySegmentHandler(a) {
                 var aElement = $(a)
                 Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
@@ -496,6 +496,7 @@
                 $('admin-options').show()
             }
 
+            // TODO: this method must go in edit.js with everything else
             function deletePeriod(periodId) {
                 var formdata = "";
                 formdata = formdata + "period=" + periodId + "&";

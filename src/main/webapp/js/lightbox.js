@@ -148,4 +148,6 @@ LB.addLightboxMarkup = function() {
 
 Event.observe(window, 'load', LB.addLightboxMarkup);
 Event.observe(window, 'load', LB.getBrowserInfo);
-Event.observe(window, 'unload', Event.unloadCache);
+// Remove to avoid 'handler has no properties' JS errors with prototype 1.6.
+// See http://groups.google.com/group/rubyonrails-spinoffs/browse_thread/thread/9462257e3df7975e
+// Event.observe(window, 'unload', Event.unloadCache);

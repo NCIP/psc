@@ -5,7 +5,7 @@ SC.asyncSubmit = function(form, options) {
     new Ajax.Request(f.action, $H(options).merge({
         asynchronous: true,
         parameters: Form.serialize(f)
-    }))
+    }).toObject())
 }
 
 SC.asyncLink = function(anchor, options, indicator) {
