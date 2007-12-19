@@ -125,17 +125,6 @@ function extractRowAndColumn(gridElementId) {
     return [row, col];
 }
 
-function parseDetailName(name) {
-    return name.substring(name.indexOf("[") + 1, name.indexOf("]"));
-
-}
-
-function getInfoFromConditionalDetails(formdata, conditionalDetails, index) {
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(true) + "&";
-    formdata = formdata + 'addition' + "=" + escape(false) + "&";
-    return formdata
-}
-
 function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
     var checkboxName = 'grid[' + index + '].conditionalCheckbox1';
     var isChecked = $(checkboxName).checked;
@@ -147,98 +136,83 @@ function getInfoFromConditionalCheckbox(formdata, conditionalCheckbox, index) {
         $(details).disabled = false;
     }
 
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(true) + "&";
-    formdata = formdata + 'addition' + "=" + escape(false) + "&";
     return formdata
 }
 
-function getInfoFromEventCheckbox(formdata, checkbox, index1, index2) {
-    var details = 'grid[' + index1 + '].details';
-    formdata = formdata + "details=" + escape($(details).value) + "&";
-    formdata = formdata + 'columnNumber' + "=" + index2 + "&";
-    formdata = formdata + 'addition' + "=" + escape($(checkbox).checked) + "&";
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
-    return formdata;
+function getInfoFromEventCheckbox(formdata, checkbox, row, col) {
+    var data = { }
+    addInfoFromEventCheckbox(data, checkbox, row, col)
+    return formdata + '&' + Object.toQueryString(data) + '&';
+}
+
+function addInfoFromEventCheckbox(data, checkbox, row, col) {
+    var details = 'grid[' + row + '].details';
+    data.details = $(details).value;
+    data.columnNumber = col;
 }
 
 function getInfoFromEventDetails(formdata, details, index) {
-    formdata = formdata + "details=" + escape($(details).value) + "&";
-    formdata = formdata + 'addition' + "=" + escape(false) + "&";
-    formdata = formdata + 'columnNumber' + "=" + escape(-1) + "&";
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
-    return formdata;
+    var data = { }
+    addInfoFromEventDetails(data, details)
+    return formdata + '&' + Object.toQueryString(data) + '&';
 }
 
-function getInfoFromEventTextbox(formdata, isAdding, index1, index2) {
-    var details = 'grid[' + index1 + '].details';
-    formdata = formdata + "details=" + escape($(details).value) + "&";
-    formdata = formdata + 'columnNumber' + "=" + index2 + "&";
-    formdata = formdata + 'addition' + "=" + isAdding + "&";
-    formdata = formdata + 'conditionalUpdated' + "=" + escape(false) + "&";
-    return formdata;
+function addInfoFromEventDetails(data, details) {
+    data.details = $(details).value;
+    data.columnNumber = -1;
+}
+
+function getInfoFromEventTextbox(formdata, isAdding, row, col) {
+    var data = { }
+    addInfoFromEventTextbox(data, isAdding, row, col)
+    return formdata + '&' + Object.toQueryString(data) + '&';
+}
+
+function addInfoFromEventTextbox(data, isAdding, row, col) {
+    var details = 'grid[' + row + '].details';
+    data.details = $(details).value;
+    data.columnNumber = col;
 }
 
 function createAddControl(text, objectType, objectId) {
-    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/addTo"/>')
+    return '<c:url value="/pages/cal/managePeriod/addTo"/>'
 }
 
 function createRemoveControl(text, objectType, objectId) {
-    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/remove"/>')
+    return '<c:url value="/pages/cal/managePeriod/remove"/>'
 }
-
 
 function updateDetails(text, objectType, objectId) {
-    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/update"/>')
+    return '<c:url value="/pages/cal/managePeriod/update"/>'
 }
 
-function move(text, objectType, objectId) {
-    return createAjaxBaseHref('<c:url value="/pages/cal/managePeriod/move"/>')
-}
-
-function createAjaxBaseHref(baseHref) {
-    var href = baseHref;
-    if (href.indexOf('?') >= 0) {
-        href += '&'
-    } else {
-        href += '?'
-    }
-    return href
-}
-
-function moveAjaxForm(fromRC, toRC) {
-    var href = move("Move event", "event ", toRC[0]);
+function executeActivityMove(row, fromCol, toCol) {
+    var href = '<c:url value="/pages/cal/managePeriod/move"/>';
     // Set up data variable
-    var formdata = "";
-    formdata = formdata + 'id='+${period.id}+"&";
-    formdata = getInfoFromEventTextbox(formdata, false, toRC[0], toRC[1])
+    var data = { }
+    data.id = '${period.id}'
+    addInfoFromEventTextbox(data, false, row, toCol)
 
-    var activity = 'grid[' + toRC[0] + '].activity';
-    formdata = formdata + "activity=" + escape($(activity).value) + "&";
-    var arrayOfCounts = 'grid[' + toRC[0] + '].eventIds';
+    data.activity = $('grid[' + row + '].activity').value;
+    var eventIds = 'grid[' + row + '].eventIds';
 
-    var singleElement = arrayOfCounts + '[' + fromRC[1] + ']';
-    if ($(singleElement).getAttribute('value') != null) {
-        formdata = formdata + 'eventIds' + '[' + fromRC[1] + ']' + "=" + $(singleElement).getAttribute('value') + "&";
+    var fromElementId = eventIds + '[' + fromCol + ']';
+    if ($(fromElementId).getAttribute('value') != null) {
+        data['eventIds[' + fromCol + ']'] = $(fromElementId).getAttribute('value');
     }
-    formdata = formdata + 'rowNumber' + "=" + toRC[0] + "&";
-    formdata = formdata + 'updated' + "=" + escape(true) + "&";
+    data.rowNumber = row;
 
-    var checkboxName = 'grid[' + toRC[0] + '].conditionalCheckbox1';
-    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&";
-    var details1 = 'grid[' + toRC[0] + '].conditionalDetails';
-    formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
+    var details1 = 'grid[' + row + '].conditionalDetails';
+    data.conditionalDetails = $(details1).value;
 
-    formdata = formdata + "moveFrom=" + fromRC[1] + "&";
-    formdata = formdata + "moveTo=" + toRC[1] + "&";
+    data.moveFrom = fromCol;
+    data.moveTo = toCol;
 
-    var lastRequest = new Ajax.Request(href,
-    {
-        postBody: formdata
+    var lastRequest = new Ajax.Request(href, {
+        postBody: Object.toQueryString(data)
     });
 
     return true;
-
-
 }
 
 function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
@@ -269,7 +243,6 @@ function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
         href = updateDetails("Update details", "details", rc[0]);
     } else if (conditionalDetails != null) {
         rc = extractRowAndColumn(conditionalDetails.name)
-        formdata = getInfoFromConditionalDetails(formdata, conditionalDetails, rc[0])
         href = updateDetails("Update details", "details", rc[0]);
     } else if (textbox != null) {
         rc = extractRowAndColumn(textbox)
@@ -295,11 +268,6 @@ function ajaxform(checkbox, textbox, isAdd, details, conditionalDetails) {
     }
 
     formdata = formdata + 'rowNumber' + "=" + rc[0] + "&";
-    formdata = formdata + 'updated' + "=" + escape(true) + "&";
-
-
-    var checkboxName = 'grid[' + rc[0] + '].conditionalCheckbox1';
-    formdata = formdata + "conditionalCheckbox1=" + $(checkboxName).checked + "&";
 
     var details1 = 'grid[' + rc[0] + '].conditionalDetails';
     formdata = formdata + "conditionalDetails=" + $(details1).value + "&";
@@ -388,7 +356,7 @@ function moveEvent(draggable, dropZone) {
         if (parentRC[0] == childRC[0]) {
             //need to set up ajax call for move
             if (wholeElement.firstChild == null) {
-                moveAjaxForm(parentRC, childRC)
+                executeActivityMove(parentRC[0], parentRC[1], childRC[1])
                 setUpMovingMarker(draggable, dropZone)
             }
         }
@@ -769,7 +737,7 @@ Event.observe(window, "load", createAutocompleter)
 
                     <td class="emptyCell" ></td>
                     <td class="emptyCellNoWidth"></td>
-                    <th>Condition Details</th>
+                    <th>Condition</th>
                 </tr>
 
                     <tr id="no-activities-message" >
