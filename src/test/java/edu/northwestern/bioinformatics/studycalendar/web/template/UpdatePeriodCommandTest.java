@@ -66,10 +66,12 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setColumnNumber(-1);
         
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne).anyTimes();
 
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("details", eventDetails, detailsToChange));
+        amendmentService.updateDevelopmentAmendment(eventOne,
+            PropertyChange.create("condition", null, null));
 
         replayMocks();
         command.performEdit();
@@ -93,8 +95,10 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setColumnNumber(0);
 
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        expect(plannedActivityDao.getById(21)).andReturn(eventOne);
+        expect(plannedActivityDao.getById(21)).andReturn(eventOne).anyTimes();
 
+        amendmentService.updateDevelopmentAmendment(eventOne,
+            PropertyChange.create("details", null, null));
         amendmentService.updateDevelopmentAmendment(eventOne,
             PropertyChange.create("condition", eventConditionalDetails, detailsToChange));
 
