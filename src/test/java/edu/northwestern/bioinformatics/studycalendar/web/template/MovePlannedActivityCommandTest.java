@@ -22,7 +22,6 @@ import java.util.Map;
 public class MovePlannedActivityCommandTest extends EditCommandTestCase {
     private MovePlannedActivityCommand command = new MovePlannedActivityCommand();
     private Period period;
-    private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
     private static int PERIOD_ID = 10;
     private AmendmentService amendmentService;
@@ -31,7 +30,6 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerMockFor(PeriodDao.class);
         plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
@@ -45,13 +43,12 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
         period.getDuration().setUnit(Duration.Unit.day);
         period.setId(PERIOD_ID);
 
-        command.setPeriodDao(periodDao);
         command.setPlannedActivityDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
     }
 
     public void testPerformEdit() throws Exception {
-        command.setId(period.getId());
+        command.setPeriod(period);
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         period.addPlannedActivity(eventOne);
@@ -62,7 +59,6 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
         command.setMoveFrom(1);
         command.setMoveTo(4);
 
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
         amendmentService.updateDevelopmentAmendment(eventOne,
@@ -82,8 +78,7 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
 
         command.setMovedPlannedActivity(eventTwo);
         period.addPlannedActivity(eventTwo);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        command.setId(period.getId());
+        command.setPeriod(period);
         command.setMoveFrom(2);
         command.setMoveTo(5);
 

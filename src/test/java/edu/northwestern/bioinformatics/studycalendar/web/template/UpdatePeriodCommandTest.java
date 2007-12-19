@@ -17,7 +17,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
     private UpdatePeriodCommand command = new UpdatePeriodCommand();
     private Period period;
-    private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
     private AmendmentService amendmentService;
     private Activity activity;
@@ -29,7 +28,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerDaoMockFor(PeriodDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
@@ -47,13 +45,13 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         period.getDuration().setUnit(Duration.Unit.day);
         period.setId(PERIOD_ID);
 
-        command.setPeriodDao(periodDao);
         command.setPlannedActivityDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
+
+        command.setPeriod(period);
     }
 
     public void testPerformEditOnDetails() throws Exception {
-        command.setId(period.getId());
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         eventOne.setDetails(eventDetails);
@@ -65,7 +63,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setDetails(detailsToChange);
         command.setColumnNumber(-1);
         
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         expect(plannedActivityDao.getById(21)).andReturn(eventOne).anyTimes();
 
         amendmentService.updateDevelopmentAmendment(eventOne,
@@ -82,7 +79,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
     }
 
     public void testPerformEditOnConditionalDetails() throws Exception {
-        command.setId(period.getId());
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         eventOne.setCondition(eventConditionalDetails);
@@ -94,7 +90,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         command.setConditionalDetails(detailsToChange);
         command.setColumnNumber(0);
 
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         expect(plannedActivityDao.getById(21)).andReturn(eventOne).anyTimes();
 
         amendmentService.updateDevelopmentAmendment(eventOne,
@@ -115,8 +110,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         eventTwo.setId(22);
         command.setDetails(eventDetails);
         period.addPlannedActivity(eventTwo);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        command.setId(period.getId());
         command.setColumnNumber(-1);
         command.setRowNumber(3);
 
@@ -135,8 +128,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         eventTwo.setId(22);
         command.setConditionalDetails(eventConditionalDetails);
         period.addPlannedActivity(eventTwo);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        command.setId(period.getId());
         command.setColumnNumber(1);
         command.setRowNumber(3);
 

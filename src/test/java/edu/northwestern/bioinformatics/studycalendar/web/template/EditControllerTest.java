@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.context.ApplicationContext;
@@ -18,15 +19,15 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class EditControllerTest extends ControllerTestCase {
     private EditController controller;
+    private EditTemplateCommand command;
 
     private StudyDao studyDao;
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
-
-    private EditTemplateCommand command;
-    private ApplicationContext applicationContext;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
+    private PeriodDao periodDao;
+    private ApplicationContext applicationContext;
 
     @Override
     protected void setUp() throws Exception {
@@ -37,6 +38,7 @@ public class EditControllerTest extends ControllerTestCase {
         applicationContext = registerMockFor(ApplicationContext.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
+        periodDao = registerDaoMockFor(PeriodDao.class);
         command = registerMockFor(EditTemplateCommand.class);
 
         controller = new EditController();
@@ -45,9 +47,10 @@ public class EditControllerTest extends ControllerTestCase {
         controller.setStudyDao(studyDao);
         controller.setApplicationContext(applicationContext);
         controller.setPopulationDao(populationDao);
-        controller.setCommandBeanName("mockCommandBean");
-        controller.setControllerTools(controllerTools);
         controller.setActivityDao(activityDao);
+        controller.setPeriodDao(periodDao);
+        controller.setControllerTools(controllerTools);
+        controller.setCommandBeanName("mockCommandBean");
         expect(applicationContext.getBean("mockCommandBean")).andReturn(command).anyTimes();
     }
     

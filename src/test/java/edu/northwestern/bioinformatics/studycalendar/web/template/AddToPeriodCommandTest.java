@@ -19,7 +19,6 @@ import java.util.Map;
 public class AddToPeriodCommandTest extends EditCommandTestCase {
     private AddToPeriodCommand command = new AddToPeriodCommand();
     private Period period;
-    private PeriodDao periodDao;
     private static int PERIOD_ID = 88;
     private AmendmentService amendmentService;
     private Activity activity;
@@ -28,7 +27,6 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerMockFor(PeriodDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         period = new Period();
         activity = createNamedInstance("Three", Activity.class);
@@ -39,18 +37,16 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
         period.getDuration().setQuantity(7);
         period.getDuration().setUnit(Duration.Unit.day);
         period.setId(PERIOD_ID);
-        command.setPeriodDao(periodDao);
         command.setAmendmentService(amendmentService);
     }
 
     public void testAddToPeriodPerformEdit() throws Exception {
-        command.setId(period.getId());
+        command.setPeriod(period);
         command.setColumnNumber(2);
 
         command.setActivity(activity);
         command.setDetails(details);
         command.setConditionalDetails(null);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
         PlannedActivity event = new PlannedActivity();
         event.setDay(command.getColumnNumber()+1);
@@ -71,13 +67,12 @@ public class AddToPeriodCommandTest extends EditCommandTestCase {
     }
 
     public void testGetLocalModel() throws Exception {
-        command.setId(period.getId());
+        command.setPeriod(period);
         command.setColumnNumber(2);
 
         command.setActivity(activity);
         command.setDetails(details);
         command.setConditionalDetails(null);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
         PlannedActivity event = new PlannedActivity();
         event.setDay(command.getColumnNumber()+1);

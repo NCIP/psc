@@ -27,11 +27,9 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     protected AmendmentService amendmentService;
     protected StudyService studyService;
 
-    protected PeriodDao periodDao;
     private DaoFinder daoFinder;
     private Study study;
 
-    private int id;
     private Activity activity;
     private List<Integer> eventIds = new ArrayList<Integer>();
 
@@ -67,11 +65,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
         log.debug("inside EditPeriodEventsCommand");
         performEdit();
         setStudy(studyService.saveStudyFor(getPeriod()));
-    }
-
-    public Period getPeriod() {
-        period = periodDao.getById(getId());
-        return period;
     }
 
     ////// BOUND PROPERTIES
@@ -124,13 +117,12 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
         this.conditionalDetails = conditionalDetails;
     }
 
-    // TODO: rename this to something more descriptive
-    public int getId() {
-        return id;
+    public Period getPeriod() {
+        return period;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPeriod(Period period) {
+        this.period = period;
     }
 
     public Study getStudy() {
@@ -142,10 +134,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     }
 
     ////// CONFIGURATION
-
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
-    }
 
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;

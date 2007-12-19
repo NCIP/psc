@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
@@ -21,6 +22,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
+ * Controller front-end for various asynchronous edits, both on the main template
+ * design interface and in manage period.  The meat of a particular edit is handled
+ * by an implementor of {@link EditCommand}.
+ *
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
@@ -30,6 +35,7 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     private StudySegmentDao studySegmentDao;
     private ActivityDao activityDao;
     private PopulationDao populationDao;
+    private PeriodDao periodDao;
 
     private String commandBeanName;
 
@@ -46,6 +52,7 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         getControllerTools().registerDomainObjectEditor(binder, "studySegment", studySegmentDao);
         getControllerTools().registerDomainObjectEditor(binder, "epoch", epochDao);
+        getControllerTools().registerDomainObjectEditor(binder, "period", periodDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "activity", activityDao);
         getControllerTools().registerDomainObjectEditor(binder, "population", populationDao);
@@ -85,6 +92,11 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setPeriodDao(PeriodDao periodDao) {
+        this.periodDao = periodDao;
     }
 
     @Required

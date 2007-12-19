@@ -23,25 +23,21 @@ import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.nullSafeEquals;
 public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
     private DeleteFromPeriodCommand command = new DeleteFromPeriodCommand();
     private Period period;
-    private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
-    public int PERIOD_ID = 10;
-    public AmendmentService amendmentService;
-    public StudyService studyService;
-    public Activity activity;
-    public String details;
+    private static final int PERIOD_ID = 10;
+    private AmendmentService amendmentService;
+    private StudyService studyService;
+    private Activity activity;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        periodDao = registerMockFor(PeriodDao.class);
         plannedActivityDao = registerMockFor(PlannedActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         studyService = registerMockFor(StudyService.class);
 
         activity = createNamedInstance("Three", Activity.class);
         activity.setId(3);
-        details = "DETAILS";
 
         period = new Period();
         period.setName("period");
@@ -50,18 +46,16 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         period.getDuration().setUnit(Duration.Unit.day);
         period.setId(PERIOD_ID);
 
-        command.setPeriodDao(periodDao);
         command.setPlannedActivityDao(plannedActivityDao);
         command.setAmendmentService(amendmentService);
         command.setStudyService(studyService);
     }
 
     public void testPerformEdit() throws Exception {
-        command.setId(period.getId());
+        command.setPeriod(period);
         PlannedActivity eventOne = createPlannedActivity(1, 25);
         eventOne.setId(21);
         period.addPlannedActivity(eventOne);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
@@ -81,8 +75,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
         period.addPlannedActivity(eventTwo);
-        expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
-        command.setId(period.getId());
+        command.setPeriod(period);
         command.setColumnNumber(2);
 
         replayMocks();
@@ -125,7 +118,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
         public boolean matches(Object object) {
             if (!(object instanceof Remove)) return false;
             // Double cast to work around a javac bug
-            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
+            return plannedActivityMatches((PlannedActivity) ((Remove) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {

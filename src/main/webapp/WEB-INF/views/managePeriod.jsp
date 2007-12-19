@@ -125,7 +125,7 @@ function extractRowAndColumn(gridElementId) {
 }
 
 function createBasicPostBody(row) {
-    var data = { id: '${period.id}' }
+    var data = { period: '${period.id}' }
     if (row) addParametersForRow(data, row)
     return data
 }
@@ -142,18 +142,6 @@ function addParametersForRow(data, row) {
             data['eventIds[' + c + ']'] = val;
         }
     }
-}
-
-function createAddControl(text, objectType, objectId) {
-    return '<c:url value="/pages/cal/managePeriod/addTo"/>'
-}
-
-function createRemoveControl(text, objectType, objectId) {
-    return '<c:url value="/pages/cal/managePeriod/remove"/>'
-}
-
-function updateDetails(text, objectType, objectId) {
-    return '<c:url value="/pages/cal/managePeriod/update"/>'
 }
 
 function executePlannedActivityAdd(targetId) {
