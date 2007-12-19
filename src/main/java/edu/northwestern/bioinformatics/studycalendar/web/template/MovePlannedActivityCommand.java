@@ -9,6 +9,9 @@ import java.util.Map;
 public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
     private PlannedActivity movedPlannedActivity = null;
 
+    private Integer moveFrom;
+    private Integer moveTo;
+
     @Override
     protected void performEdit() {
         for (Integer id: getEventIds()) {
@@ -44,5 +47,23 @@ public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
 
     public void setMovedPlannedActivity(PlannedActivity movedPlannedActivity) {
         this.movedPlannedActivity = movedPlannedActivity;
+    }
+
+    ////// BOUND PROPERTIES
+
+    public Integer getMoveFrom() {
+        return moveFrom;
+    }
+
+    public void setMoveFrom(Integer moveFrom) {
+        this.moveFrom = moveFrom;
+    }
+
+    public Integer getMoveTo() {
+        return moveTo;
+    }
+
+    public void setMoveTo(Integer moveTo) {
+        this.moveTo = moveTo;
     }
 }

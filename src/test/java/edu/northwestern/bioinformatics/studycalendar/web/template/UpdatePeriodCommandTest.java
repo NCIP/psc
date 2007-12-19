@@ -90,7 +90,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         ids.add(eventOne.getId());
         command.setEventIds(ids);
         command.setConditionalDetails(detailsToChange);
-        command.setConditionalUpdated(true);
         command.setColumnNumber(0);
 
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
@@ -123,7 +122,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         verifyMocks();
 
         assertNotNull("Map is null", map);
-        assertEquals("Map's details is wrong", eventDetails, map.get("details"));
         assertEquals("Map's column number is wrong", -1, map.get("columnNumber"));
         assertEquals("Map's row number is wrong", 3, map.get("rowNumber"));
      }
@@ -132,7 +130,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         PlannedActivity eventTwo = createPlannedActivity(2, 26);
         eventTwo.setId(22);
         command.setConditionalDetails(eventConditionalDetails);
-        command.setConditionalUpdated(true);
         period.addPlannedActivity(eventTwo);
         expect(periodDao.getById(PERIOD_ID)).andReturn(period).anyTimes();
         command.setId(period.getId());
@@ -145,7 +142,6 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
         verifyMocks();
         System.out.println("map " + map);
         assertNotNull("Map is null", map);
-        assertEquals("Map's details is wrong", eventConditionalDetails, map.get("conditionalDetails"));
         assertEquals("Map's column number is wrong", 1, map.get("columnNumber"));
         assertEquals("Map's row number is wrong", 3, map.get("rowNumber"));
      }

@@ -36,16 +36,9 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     private List<Integer> eventIds = new ArrayList<Integer>();
 
     private String details;
+    private String conditionalDetails;
     private int rowNumber;
     private int columnNumber;
-    private boolean addition;
-    private boolean updated;
-
-    private String conditionalDetails;
-    private boolean conditionalUpdated;
-
-    private int moveFrom;
-    private int moveTo;
 
     public Map<String, Object> getModel() {
         Map<String, Object> model = getLocalModel();
@@ -79,10 +72,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     public Period getPeriod() {
         period = periodDao.getById(getId());
         return period;
-    }
-
-    public boolean isDetailsUpdated() {
-        return getColumnNumber() <0;
     }
 
     ////// BOUND PROPERTIES
@@ -127,36 +116,12 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
         this.columnNumber = columnNumber;
     }
 
-    public boolean isAddition() {
-        return addition;
-    }
-
-    public void setAddition(boolean addition) {
-        this.addition = addition;
-    }
-
-    public boolean isUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(boolean updated) {
-        this.updated = updated;
-    }
-
     public String getConditionalDetails() {
         return conditionalDetails;
     }
 
     public void setConditionalDetails(String conditionalDetails) {
         this.conditionalDetails = conditionalDetails;
-    }
-
-    public boolean isConditionalUpdated() {
-        return conditionalUpdated;
-    }
-
-    public void setConditionalUpdated(boolean conditionalUpdated) {
-        this.conditionalUpdated = conditionalUpdated;
     }
 
     // TODO: rename this to something more descriptive
@@ -166,22 +131,6 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getMoveFrom() {
-        return moveFrom;
-    }
-
-    public void setMoveFrom(int moveFrom) {
-        this.moveFrom = moveFrom;
-    }
-
-    public int getMoveTo() {
-        return moveTo;
-    }
-
-    public void setMoveTo(int moveTo) {
-        this.moveTo = moveTo;
     }
 
     public Study getStudy() {

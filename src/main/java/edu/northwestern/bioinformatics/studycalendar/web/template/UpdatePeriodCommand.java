@@ -9,13 +9,9 @@ import java.util.Map;
 public class UpdatePeriodCommand extends EditPeriodEventsCommand {
     @Override
     protected void performEdit() {
-        if (isDetailsUpdated()) {
-            updateDetails(getDetails());
-        } else if (isConditionalUpdated()) {
-            log.debug("updating conditional details");
-            updateConditionalParameters();
-            setColumnNumber(-1);
-        }
+        updateDetails();
+        log.debug("updating conditional details");
+        updateCondition();
     }
 
     @Override
@@ -26,17 +22,12 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
     @Override
     public Map<String, Object> getLocalModel() {
         Map<String, Object> map = new HashMap<String, Object>();
-        if (isDetailsUpdated()) {
-            map.put("details", getDetails());
-        } else if (isConditionalUpdated()) {
-            map.put("conditionalDetails", getConditionalDetails());
-        }
         map.put("rowNumber", getRowNumber());
         map.put("columnNumber", getColumnNumber());
         return map;
     }
     
-    private void updateConditionalParameters() {
+    private void updateCondition() {
         for (Integer id: getEventIds()) {
             if (id != null && id>-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
@@ -47,11 +38,12 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
         }
     }
 
-     private void updateDetails(String details){
+     private void updateDetails() {
         for (Integer id: getEventIds()) {
             if (id != null && id >-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
-                amendmentService.updateDevelopmentAmendment(event, PropertyChange.create("details", event.getDetails(), details));
+                amendmentService.updateDevelopmentAmendment(event,
+                    PropertyChange.create("details", event.getDetails(), getDetails()));
             }
         }
     }
