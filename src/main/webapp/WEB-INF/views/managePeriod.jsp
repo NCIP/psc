@@ -31,8 +31,7 @@ function addActivityRow() {
     var activity = selectedActivity()
     if (!activity.id || !activity.name) return
     var cells = []
-    var dayCount = ${period.dayRanges[0].days}.
-    length
+    var dayCount = ${period.dayRanges[0].days}.length
     var rowCount = $$("#input-body tr").length - 1
     // header
     var activityName = 'grid[' + rowCount + '].activity';
@@ -231,7 +230,6 @@ function makeCellDraggableAndDroppable(input) {
     document.getElementsByClassName('marker').each(
         function(item) {
             new Draggable(item, {revert: true});
-            item.currentDurationIndex = item.parentNode.durationIndex;
             item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
         }
         );
@@ -244,7 +242,7 @@ function registerDraggablesAndDroppables() {
         function(item) {
             new Draggable(item, {revert: true});
         }
-        );
+    );
 
     var x = 0;
     document.getElementsByClassName('counter').each(
@@ -253,23 +251,18 @@ function registerDraggablesAndDroppables() {
                 accept:['marker','newMarker'],
                 hoverclass: 'hoverActive',
                 onDrop: moveEvent })
-            item.durationIndex = x;
-            x = (x == PERIOD_DURATION - 1) ? 0 : (x + 1);
         }
-        );
+    );
 
     document.getElementsByClassName('marker').each(
         function(item) {
             new Draggable(item, {revert: true});
-            item.currentDurationIndex = item.parentNode.durationIndex;
             item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
         }
-        );
+    );
 
-    Droppables.add($('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
+    Droppables.add($('deleteDrop'), { accept:'marker', hoverclass: 'hoverActive', onDrop:deleteEvent })
 }
-
-var PERIOD_DURATION = 7;
 
 function moveEvent(draggable, dropZone) {
     var wholeElement = dropZone.getElementsBySelector("span")[0]
@@ -297,13 +290,10 @@ function moveEvent(draggable, dropZone) {
     }
 }
 
-
 function setUpMarker(draggable, dropZone) {
-    var prevDurationIndex = draggable.currentDurationIndex;
-    var newDurationIndex = dropZone.durationIndex;
     var activity = (typeof(draggable.activity) != 'undefined') ? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-    if (prevDurationIndex != newDurationIndex && activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
-        var marker = createMarker(newDurationIndex, activity);
+    if (activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
+        var marker = createMarker(activity);
         dropZone.appendChild(marker);
 
         draggable.parentNode.removeChild(draggable);
@@ -316,7 +306,6 @@ function setUpMarker(draggable, dropZone) {
     }
 }
 
-
 function setUpMovingMarker(draggable, dropZone) {
     draggable.innerHTML = '';
     var element = dropZone.getElementsBySelector("span")[0];
@@ -327,17 +316,15 @@ function deleteEvent(draggable, dropZone) {
     var element = draggable.parentNode.getElementsBySelector("span")[0].id
     executePlannedActivityRemove(element)
 
-    var prevDurationIndex = draggable.currentDurationIndex;
     var prevActivity = draggable.activity;
     draggable.innerHTML = '';
 }
 
 
-function createMarker(currentDurationIndex, activityName) {
+function createMarker(activityName) {
     var marker = document.createElement('span');
     marker.innerHTML = 'X';
     marker.className = 'marker';
-    marker.currentDurationIndex = currentDurationIndex;
     marker.activity = activityName;
     new Draggable(marker, {revert: true});
     return marker;
