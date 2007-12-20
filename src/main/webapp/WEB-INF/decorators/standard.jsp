@@ -11,6 +11,7 @@
     <title>caBIG Study Calendar Module - <decorator:title/></title>
     <laf:stylesheetLink name="debug"/>
     <laf:stylesheetLink name="common"/>
+    <laf:stylesheetLink name="fields"/>
     <laf:stylesheetLink name="calendar-blue"/>
     <tags:stylesheetLink name="lightbox"/>
     <tags:stylesheetLink name="error-console"/>
