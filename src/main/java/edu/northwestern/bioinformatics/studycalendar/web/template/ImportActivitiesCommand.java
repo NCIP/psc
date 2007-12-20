@@ -2,14 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XmlValidator.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.*;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

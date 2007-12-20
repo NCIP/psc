@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ImportActivitiesService {
     private SourceDao sourceDao;
-    private ActivityXmlReader activityXmlReader;
+    private ActivityXMLReader activityXMLReader;
 
     public void loadAndSave(InputStream sourcesXml) throws Exception {
         List<Source> sources = readData(sourcesXml);
@@ -21,7 +21,7 @@ public class ImportActivitiesService {
     }
 
     protected List<Source> readData(InputStream dataFile) throws Exception{
-        return activityXmlReader.read(dataFile);
+        return activityXMLReader.read(dataFile);
     }
 
     protected List<Source> replaceCollidingSources(List<Source> sources) throws Exception {
@@ -59,7 +59,7 @@ public class ImportActivitiesService {
         this.sourceDao = sourceDao;
     }
 
-    public void setActivityXmlReader(ActivityXmlReader activityXmlReader) {
-        this.activityXmlReader = activityXmlReader;
+    public void setActivityXMLReader(ActivityXMLReader activityXMLReader) {
+        this.activityXMLReader = activityXMLReader;
     }
 }

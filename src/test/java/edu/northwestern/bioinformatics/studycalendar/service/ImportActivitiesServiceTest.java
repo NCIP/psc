@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXmlReader;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader;
 import static org.easymock.EasyMock.expect;
 
 import static java.util.Arrays.asList;
@@ -17,19 +17,19 @@ import java.util.List;
 public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     private ImportActivitiesService service;
     private SourceDao sourceDao;
-    private ActivityXmlReader activityXmlReader;
+    private ActivityXMLReader activityXMLReader;
     private Source source0, source1;
     private List<Source> sources;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        activityXmlReader = registerMockFor(ActivityXmlReader.class);
+        activityXMLReader = registerMockFor(ActivityXMLReader.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
 
         service = new ImportActivitiesService();
         service.setSourceDao(sourceDao);
-        service.setActivityXmlReader(activityXmlReader);
+        service.setActivityXMLReader(activityXMLReader);
 
         source0 = createNamedInstance("ICD-9", Source.class);
         source1 = createNamedInstance("Loink", Source.class);
@@ -46,7 +46,7 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRead() throws Exception {
-        expect(activityXmlReader.read(null)).andReturn(sources);
+        expect(activityXMLReader.read(null)).andReturn(sources);
         replayMocks();
         service.readData(null);
         verifyMocks();
