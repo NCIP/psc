@@ -41,7 +41,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
-    private ApplicationContext ctx;
+    private ApplicationContext applicationContext;
 
     private SiteDao siteDao;
 
@@ -51,17 +51,21 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private AuditHistoryRepository auditHistoryRepository;
 
+    private String studyConsumerGridServiceUrl;
+
     public PSCStudyConsumer() {
-        ctx = new ClassPathXmlApplicationContext(new String[]{
+        applicationContext = new ClassPathXmlApplicationContext(new String[]{
                 // "classpath:applicationContext.xml",
                 "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
                 "classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
                 "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
                 "classpath:applicationContext-spring.xml"});
-        siteDao = (SiteDao) ctx.getBean("siteDao");
-        studyService = (StudyService) ctx.getBean("studyService");
-        studyDao = (StudyDao) ctx.getBean("studyDao");
-        auditHistoryRepository = (AuditHistoryRepository) ctx.getBean("auditHistoryRepository");
+        siteDao = (SiteDao) applicationContext.getBean("siteDao");
+        studyService = (StudyService) applicationContext.getBean("studyService");
+        studyDao = (StudyDao) applicationContext.getBean("studyDao");
+        auditHistoryRepository = (AuditHistoryRepository) applicationContext.getBean("auditHistoryRepository");
+        studyConsumerGridServiceUrl = (String) applicationContext.getBean("studyConsumerGridServiceUrl");
+        
     }
 
     public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -130,11 +134,22 @@ public class PSCStudyConsumer implements StudyConsumerI {
         logger.info("rollback called for study:long titlte-" + studyDto.getLongTitleText());
         String ccIdentifier = findCoordinatingCenterIdentifier(studyDto);
         Study study = studyService.getStudyByAssignedIdentifier(ccIdentifier);
-        //check if this study was created one minute before or not
+
         if (study == null) {
             String message = "Exception while rollback study..no study found with given identifier:"+ccIdentifier;
             throw getInvalidStudyException(message);
         }
+        //check if study was created by the grid service or not
+
+        boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(study.getClass(), study.getId(), studyConsumerGridServiceUrl);
+
+        if(!checkIfEntityWasCreatedByGridService){
+            logger.debug("Study was not created by the grid service url:" + studyConsumerGridServiceUrl + " so can not rollback this study:" + study.getId());
+            return;
+        }
+        logger.info("Study (id:"+ study.getId()+") was created by the grid service url:" + studyConsumerGridServiceUrl);
+
+        //check if this study was created one minute before or not
         Calendar calendar = Calendar.getInstance();
 
         boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime =auditHistoryRepository.

@@ -14,6 +14,7 @@ import gov.nih.nci.ccts.grid.*;
 import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
 import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
 import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
+import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
+import java.util.Calendar;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -34,7 +36,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
 
     private static final String MRN_IDENTIFIER_TYPE = "MRN";
-
+        
     private ApplicationContext applicationContext;
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
@@ -49,6 +51,9 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
 
     private SubjectService subjectService;
 
+    private AuditHistoryRepository auditHistoryRepository;
+    private String registrationConsumerGridServiceUrl;
+
     public PSCRegistrationConsumer() {
         applicationContext = new ClassPathXmlApplicationContext(new String[]{
                 // "classpath:applicationContext.xml",
@@ -57,13 +62,12 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
                 "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
                 "classpath:applicationContext-spring.xml"});
 
-        // studyDao = getStudyDao();
-
-
         subjectDao = (SubjectDao) applicationContext.getBean("subjectDao");
         userDao = (UserDao) applicationContext.getBean("userDao");
         subjectService = (SubjectService) applicationContext.getBean("subjectService");
         studyService = (StudyService) applicationContext.getBean("studyService");
+        auditHistoryRepository = (AuditHistoryRepository) applicationContext.getBean("auditHistoryRepository");
+         registrationConsumerGridServiceUrl = (String) applicationContext.getBean("registrationConsumerGridServiceUrl");
     }
 
     /**
@@ -88,25 +92,47 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     }
 
     public void rollback(final Registration registration) throws RemoteException, InvalidRegistrationException {
-        try {
-            String mrn = findMedicalRecordNumber(registration.getParticipant());
-            Subject subject = fetchCommitedSubject(mrn);
 
-            if (subject == null) {
-                String message = "Subject does not exists for this mrn:" + mrn;
-                throw getRegistrationConsumerException(message);
+        String mrn = findMedicalRecordNumber(registration.getParticipant());
+        Subject subject = fetchCommitedSubject(mrn);
+        if (subject == null) {
+            String message = "Exception while rollback subject..no subject found with given identifier:" + mrn;
+            throw getInvalidRegistrationException(message);
+        }
+        try {
+            //check if subject was created by the grid service or not
+
+            boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(subject.getClass(), subject.getId(), registrationConsumerGridServiceUrl);
+
+            if (!checkIfEntityWasCreatedByGridService) {
+                logger.debug("Subject was not created by the grid service url:" + registrationConsumerGridServiceUrl + " so can not rollback this study:" + subject.getId());
+                return;
             }
+            logger.info("Subject (id:" + subject.getId() + ") was created by the grid service url:" + registrationConsumerGridServiceUrl);
+
+            //check if this subject was created one minute before or not
+
+
+            Calendar calendar = Calendar.getInstance();
+            boolean checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
+                    checkIfEntityWasCreatedMinutesBeforeSpecificDate(subject.getClass(), subject.getId(), calendar, 1);
+            if (!checkIfSubjectWasCreatedOneMinuteBeforeCurrentTime) {
+                logger.debug("Subject was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this subject:" + subject.getId());
+                return;
+
+            }
+            logger.info("Subject was created one minute before the current time:" + calendar.getTime().toString());
             List<StudySubjectAssignment> assignmentList = subject.getAssignments();
             if (assignmentList.size() > 1) {
-
+                logger.info("Subject has more than one assignments so deleting the assignments only for the subject: " + subject.getId());
                 subject.getAssignments().clear();
                 subjectDao.save(subject);
 
             } else if (!assignmentList.isEmpty() && subject.getAssignments().size() == 1) {
                 //this participant got created by the previous registration message. so delete it.
+                logger.info("Subject has either only one assignments so deleting the subject: " + subject.getId());
                 subjectDao.delete(subject);
             }
-
         } catch (Exception exception) {
 
             String message = "Error while rollback, " + exception.getMessage();
@@ -201,7 +227,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     }
 
     private Subject fetchCommitedSubject(String mrn) {
-        return subjectDao.findSubjectByPersonId(mrn);
+        return subjectService.findSubjectByPersonId(mrn);
 
     }
 

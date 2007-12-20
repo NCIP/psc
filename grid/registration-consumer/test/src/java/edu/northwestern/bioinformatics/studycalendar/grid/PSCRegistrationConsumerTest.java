@@ -15,11 +15,11 @@ import gov.nih.nci.ccts.grid.ParticipantType;
 import gov.nih.nci.ccts.grid.Registration;
 import gov.nih.nci.ccts.grid.client.RegistrationConsumerClient;
 import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
+import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dbunit.DBTestCase;
 import org.dbunit.PropertiesBasedJdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.*;
+import java.util.Date;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -57,7 +58,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
-    private static Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
+    // private static Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
 
     private void init() {
         clientConfigFile = System.getProperty("psc.test.clientConfigFile",
@@ -67,10 +68,10 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 //        serviceUrl = System.getProperty("psc.test.serviceUrl",
 //                "http://10.10.10.2:9012/wsrf/services/cagrid/RegistrationConsumer");
 ////
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "http://localhost:8080/wsrf/services/cagrid/RegistrationConsumer");
         serviceUrl = System.getProperty("psc.test.serviceUrl",
-                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/RegistrationConsumer");
+                "http://localhost:8080/wsrf/services/cagrid/RegistrationConsumer");
+//        serviceUrl = System.getProperty("psc.test.serviceUrl",
+//                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/RegistrationConsumer");
 
 //        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://cbiovdev5004.nci.nih.gov:5455/psc");
 //        String usr = System.getProperty("psc.test.db.usr", "pscdev");
@@ -122,12 +123,14 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
+        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
     }
 
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
+        DataAuditInfo.setLocal(null);
+
     }
 
     @Override
@@ -145,7 +148,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
         RegistrationConsumer consumer = new PSCRegistrationConsumer();
         consumer.register(registration);
 //        consumer.commit(registration);
-//        consumer.rollback(registration);
+        consumer.rollback(registration);
 //        //consumer.register(registration);
 
 //            consumer.commit(registration);
@@ -194,6 +197,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
         try {
             RegistrationConsumerClient client = new RegistrationConsumerClient(serviceUrl);
             client.register(reg);
+
 
         }
         catch (Exception ex) {
@@ -309,9 +313,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
            * NOTE: These tests CANNOT be run in succession because it will cause the maximum number of connections to be exceeded.
            */
         //  suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
-      //  suite.addTest(new PSCRegistrationConsumerTest("testRollbackRegistrationLocal"));
-        //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
-        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+        //  suite.addTest(new PSCRegistrationConsumerTest("testRollbackRegistrationLocal"));
+        suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
+        //suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
 //        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
         //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationRemote"));
         return suite;

@@ -70,6 +70,19 @@ public class PSCStudyConsumerTest extends DBTestCase {
         System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
     }
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        DataAuditInfo.setLocal(null);
+
+    }
+
     public PSCStudyConsumerTest() {
         super();
         init();
@@ -94,10 +107,10 @@ public class PSCStudyConsumerTest extends DBTestCase {
     public void testCreateStudyLocal() throws Exception {
         PSCStudyConsumer studyClient = new PSCStudyConsumer();
        logger.info("running test create study local method");
-        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "127.0.0.1", new Date(), ""));
+
 
         Study study = populateStudyDTO();
-         studyClient.createStudy(study);
+        studyClient.createStudy(study);
 
         studyClient.rollback(study);
 
@@ -166,7 +179,8 @@ public class PSCStudyConsumerTest extends DBTestCase {
         try {
             StudyConsumerClient studyClient = new StudyConsumerClient(serviceUrl);
             Study study = populateStudyDTO();
-            //studyClient.rollback(study);
+            studyClient.createStudy(study);
+            studyClient.rollback(study);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -178,8 +192,8 @@ public class PSCStudyConsumerTest extends DBTestCase {
         try {
             StudyConsumerClient studyClient = new StudyConsumerClient(serviceUrl);
             Study study = populateStudyDTO();
-             studyClient.rollback(study);
-            //studyClient.createStudy(study);
+             //studyClient.rollback(study);
+            studyClient.createStudy(study);
             //studyClient.commit(study);
            // studyClient.commit(study);
         }
