@@ -89,9 +89,8 @@ public class Fixtures {
         return event;
     }
 
-    public static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type, String condition) {
+    public static PlannedActivity createPlannedActivity(String activityName, int day, String details,String condition) {
         PlannedActivity event = createPlannedActivity(activityName, day, details);
-        event.getActivity().setType(type);
         event.setCondition(condition);
         return event;
     }
@@ -201,6 +200,12 @@ public class Fixtures {
         activity.setCode(code);
         activity.setSource(source);
         activity.setType(type);
+        return activity;
+    }
+
+    public static Activity createActivity(String name, String code, Source source, ActivityType type, String description) {
+        Activity activity = createActivity(name, code, source, type);
+        activity.setDescription(description);
         return activity;
     }
 

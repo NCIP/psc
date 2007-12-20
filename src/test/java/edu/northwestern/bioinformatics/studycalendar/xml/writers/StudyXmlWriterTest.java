@@ -44,6 +44,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     private Period period;
     private PlannedActivity plannedActivity;
     private SimpleDateFormat dateFormat;
+    private Activity activity;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -74,7 +75,9 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         segmentDelta = createDeltaFor(segment, addPeriod);
 
         /* Period Delta for Add(ing) Planned Activities */
-        plannedActivity = createPlannedActivity("Bone Scan", 1, "details", ActivityType.DISEASE_MEASURE, "patient is male");
+        activity = createActivity("Bone Scan", "AA", null, ActivityType.DISEASE_MEASURE, "make sure im not broken");
+        plannedActivity = createPlannedActivity("Bone Scan", 1, "details", "patient is male");
+        plannedActivity.setActivity(activity);
         addActivity = createAdd(plannedActivity, 0);
         periodDelta = createDeltaFor(plannedActivity, addActivity);
     }
@@ -197,7 +200,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" details=\"{2}\" condition=\"{3}\" >", plannedActivity.getGridId(), plannedActivity.getDay(), plannedActivity.getDetails(), plannedActivity.getCondition()))
-//            .append(format("      <activity/>"))
+            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\"/>", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
             .append(       "    </planned-activity>")
             .append(       "  </add>")
             .append(       "</delta>");
@@ -215,7 +218,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" >", plannedActivity.getGridId(), plannedActivity.getDay()))
-//            .append(format("      <activity/>"))
+            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\"/>", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
             .append(       "    </planned-activity>")
             .append(       "  </add>")
             .append(       "</delta>");
@@ -233,7 +236,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         return s;
     }
 
-    private static void validate(byte[] byteOutput) {
+    private void validate(byte[] byteOutput) {
         BindException errors = new BindException(byteOutput, EMPTY);
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
@@ -242,43 +245,47 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
 
 
     /* Create Domain Objects with Grid Ids */
-    private  static <T extends Named & GridIdentifiable> T createNamedInstance(String name, Class<T> clazz) throws Exception {
+    private <T extends Named & GridIdentifiable> T createNamedInstance(String name, Class<T> clazz) throws Exception {
         return setGridId(Fixtures.createNamedInstance(name, clazz));
     }
 
-    public static Study createStudy(String name) throws Exception {
+    public Study createStudy(String name) throws Exception {
         Study study = createNamedInstance(name, Study.class);
         study.setPlannedCalendar(setGridId(new PlannedCalendar()));
         return study;
     }
 
-    public static Amendment createAmendment() throws Exception {
+    public Amendment createAmendment() throws Exception {
         Amendment amendment = new Amendment(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
         amendment.setDate(new Date());
         setGridId(amendment);
         return amendment;
     }
     
-    private static <T extends PlanTreeNode<? extends GridIdentifiable>> Delta<T> createDeltaFor(T node, Change... changes) throws Exception {
+    private <T extends PlanTreeNode<? extends GridIdentifiable>> Delta<T> createDeltaFor(T node, Change... changes) throws Exception {
         return setGridId(Delta.createDeltaFor(node, changes));
     }
 
-    private static Add createAdd(PlanTreeNode<?> child, int index) throws Exception {
+    private Add createAdd(PlanTreeNode<?> child, int index) throws Exception {
         return setGridId(Add.create(child, index));
     }
 
-    private static PlannedActivity createPlannedActivity(String activityName, int day, String details, ActivityType type, String condition) throws Exception {
-        return setGridId(Fixtures.createPlannedActivity(activityName, day, details, type, condition));
+    private PlannedActivity createPlannedActivity(String activityName, int day, String details, String condition) throws Exception {
+        return setGridId(Fixtures.createPlannedActivity(activityName, day, details, condition));
+    }
+
+    private Activity createActivity(String name, String code, Source source, ActivityType type, String description) throws Exception {
+        return setGridId(Fixtures.createActivity(name, code, source, type, description));
     }
 
 
     /* Grid Id Assignment Methods */
-    private static <T extends GridIdentifiable> T setGridId(T object) throws Exception{
+    private <T extends GridIdentifiable> T setGridId(T object) throws Exception{
         object.setGridId(valueOf(nextGridId()));
         return object;
     }
 
-    private static String nextGridId() {
+    private String nextGridId() {
         return 'a' + valueOf(id++); // For some reason, the schema doesn't like integers for ids, so prepend 'a'
     }
 

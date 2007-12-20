@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static java.lang.String.valueOf;
+
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
@@ -38,6 +40,7 @@ public class StudyXmlWriter {
     public static final String STUDY_SEGMENT = "study-segment";
     public static final String PERIOD = "period";
     public static final String PLANNED_ACTIVITY = "planned-activity";
+    public static final String ACTIVITY = "activity";
 
     /* Tag Attribute constants */
     public static final String ID = "id";
@@ -50,10 +53,15 @@ public class StudyXmlWriter {
     public static final String DAY = "day";
     public static final String DETAILS = "details";
     public static final String CONDITION = "condition";
+    public static final String DESCRIPTION = "description";
+    public static final String SOURCE_ID = "source-id";
+    private static final String TYPE_ID = "type-id";
+    private static final String CODE = "code";
 
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
     {
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
+      optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
     };
 
 
@@ -144,12 +152,12 @@ public class StudyXmlWriter {
                 setAttrib(element, INDEX, ((Add) change).getIndex().toString());
                 parent.appendChild(element);
 
-                addNode(document, ((ChildrenChange) change).getChild(), element);
+                addChild(document, ((ChildrenChange) change).getChild(), element);
             }
         }
     }
 
-    protected void addNode(Document document, PlanTreeNode<?> child, Element parent) {
+    protected void addChild(Document document, PlanTreeNode<?> child, Element parent) {
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
             Element element = document.createElement(EPOCH);
@@ -157,7 +165,7 @@ public class StudyXmlWriter {
             setAttrib(element, ID, epoch.getGridId());
             parent.appendChild(element);
 
-            addStudySegments(document, epoch.getStudySegments(), element);
+            addChildren(document, epoch.getChildren(), element);
         } else if (child instanceof StudySegment) {
             StudySegment segment = (StudySegment) child;
             Element element = document.createElement(STUDY_SEGMENT);
@@ -165,7 +173,7 @@ public class StudyXmlWriter {
             setAttrib(element, ID, segment.getGridId());
             parent.appendChild(element);
 
-            addPeriods(document, segment.getPeriods(), parent);
+            addChildren(document, segment.getChildren(), element);
         } else if (child instanceof Period) {
             Period period = (Period) child;
             Element element = document.createElement(PERIOD);
@@ -173,37 +181,44 @@ public class StudyXmlWriter {
             setAttrib(element, ID, period.getGridId());
             parent.appendChild(element);
 
-            addPlannedActivities(document, period.getPlannedActivities(), parent);
+            addChildren(document, period.getPlannedActivities(), element);
         } else if (child instanceof PlannedActivity) {
-            PlannedActivity activity = (PlannedActivity) child;
+            PlannedActivity plannedActivity = (PlannedActivity) child;
             Element element = document.createElement(PLANNED_ACTIVITY);
-            setAttrib(element, ID, activity.getGridId());
-            setAttrib(element, DAY, activity.getDay().toString());
-            setAttrib(element, DETAILS, activity.getDetails());
-            setAttrib(element, CONDITION, activity.getCondition());
+            setAttrib(element, ID, plannedActivity.getGridId());
+            setAttrib(element, DAY, plannedActivity.getDay().toString());
+            setAttrib(element, DETAILS, plannedActivity.getDetails());
+            setAttrib(element, CONDITION, plannedActivity.getCondition());
 
             parent.appendChild(element);
+            addActivity(document, plannedActivity.getActivity(), element);
         }
     }
 
-    protected void addStudySegments(Document document, List<StudySegment> studySegments, Element parent) {
-        for(StudySegment studySegment : studySegments) {
-            addNode(document, studySegment, parent);
+    protected void addChildren(Document document, Collection<? extends PlanTreeNode<?>> children, Element parent) {
+        for (PlanTreeNode<?> child : children) {
+            addChild(document, child, parent);
         }
     }
 
-    protected void addPeriods(Document document, SortedSet<Period> periods, Element parent) {
-        for(Period period : periods) {
-            addNode(document, period, parent);
-        }
+    protected void addActivity(Document document, Activity activity, Element parent) {
+        Element element = document.createElement(ACTIVITY);
+//        if (activity.getSource() == null) {
+//            throw new StudyCalendarError("Source for activity %s (%s) is required and value is null", activity.getName(), activity.getGridId());
+//        }
+
+        setAttrib(element, ID, activity.getGridId());
+        setAttrib(element, NAME, activity.getName());
+        setAttrib(element, DESCRIPTION, activity.getDescription());
+        setAttrib(element, TYPE_ID, valueOf(activity.getType().getId()));
+        setAttrib(element, CODE, activity.getCode());
+//        setAttrib(element, SOURCE_ID, valueOf(activity.getSource().getId()));
+
+        parent.appendChild(element);
     }
 
-    protected void addPlannedActivities(Document document, List<PlannedActivity> plannedActivities, Element parent) {
-        for (PlannedActivity activity : plannedActivities) {
-            addNode(document, activity, parent);
-        }
-    }
 
+    /* XML Helpers */
     protected String convertToString(Document document) throws Exception {
         Transformer transformer = TransformerFactory.newInstance().newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");

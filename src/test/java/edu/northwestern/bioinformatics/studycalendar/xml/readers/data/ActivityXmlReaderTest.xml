@@ -8,19 +8,19 @@
             name="Bone Scan"
             description="Scan subjects bones"
             code="BS1"
-            type="1"/>
+            type-id="1"/>
 
         <activity
             name="Capecitabine"
             description="Administer Drug Capecitabine"
             code="C123"
-            type="2"/>
+            type-id="2"/>
     </source>
     <source name="LOINK">
         <activity
             name="CTC Scan"
             description="CTC Scan"
             code="CTC1"
-            type="1"/>
+            type-id="1"/>
     </source>
 </sources>

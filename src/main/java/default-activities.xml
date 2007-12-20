@@ -8,276 +8,276 @@
     <activity
         name="CT"
         code="CT"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="X-Ray"
         code="X-Ray"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="Bone Scan"
         code="BoneScan"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="Mammogram"
         code="Mammogram"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="Ultrasound"
         code="Ultrasound"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="CXR"
         code="CXR"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="CSF cytology"
         code="CSFCytology"
-        type="1"/>
+        type-id="1"/>
 
     <activity
         name="Tumor Measurement"
         code="TumorMeasurement"
-        type="1"/>
+        type-id="1"/>
 
-    <!-- Type 2 Activities -->
+    <!-- type-id 2 Activities -->
     <activity
         name="Infusion"
         code="Infusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Capecitabine"
         code="Capecitabine"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Docetaxel"
         code="Docetaxel"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Peptide Vaccine"
         code=""
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Cytoxan Infusion"
         code="CytoxanInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Adriamycin Infusion"
         code="AdriamycinInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Taxol Infusion"
         code="TaxolInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Infusion CPT-11"
         code="InfusionCPT-11"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="PBSCT"
         code="PBSCT"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="IL-2"
         code="IL-2"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Thalidomide daily"
         code="ThalidomideDaily"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Cyclosphosphamide Tablets"
         code="CyclosphosphamideTablets"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Methotrexate Infusion"
         code="MethotrexateInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Fluorouracil Infusion"
         code="FluorouracilInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Cyclosphosphamide Infusion"
         code="CyclosphosphamideInfusion"
-        type="2"/>
+        type-id="2"/>
 
     <activity
         name="Capecitabine Tablets"
         code="CapecitabineTablets"
-        type="2"/>
+        type-id="2"/>
 
-    <!-- Type 3 Activities -->
+    <!-- type-id 3 Activities -->
     <activity
         name="CBC"
         code="CBC"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="CK"
         code="CK"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="CMP"
         code="CMP"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="Plates"
         code="Plates"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="PT/PTT"
         code="PT/PTT"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="ANA"
         code="ANA"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="calcium"
         code="calcium"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="Rheumatoid factor"
         code="RheumatoidFactor"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="BhCG"
         code="BhCG"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="Creatinine kinase"
         code="CreatinineKinase"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="Urinalysis"
         code="Urinalysis"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="Albumin"
         code="Albumin"
-        type="3"/>
+        type-id="3"/>
 
     <activity
         name="uric acid"
         code="UricAcid"
-        type="3"/>
+        type-id="3"/>
 
-    <!-- Type 4 Activities -->
+    <!-- type-id 4 Activities -->
     <activity
         name="EKG"
         code="EKG"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="DTH skin test"
         code="DTHSkinTest"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="Physical Exam"
         code="PhysicalExam"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="Bone Marrow Biopsy"
         code="BoneMarrowBiopsy"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="MUGA or ECHO"
         code="MUGAorECHO"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="Height, Weight, Perf Status"
         code="Height,Weight,Perf Status"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="Vital signs"
         code="VitalSigns"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="LVEF"
         code="LVEF"
-        type="4"/>
+        type-id="4"/>
 
     <activity
         name="Eye Exam"
         code="EyeExam"
-        type="4"/>
+        type-id="4"/>
 
-    <!-- Type 5 Activities -->
+    <!-- type-id 5 Activities -->
     <activity
         name="Quality of Life (QOL)"
         code="QOL"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Mini Mental State Exam (MMSE)"
         code="MMSE"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Diary Entry"
         code="DiaryEntry"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Brief Pain Inventory"
         code="BriefPainInventory"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="12 minute walk"
         code="12MinuteWalk"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Rest 14 days"
         code="Rest14Days"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Rest 4 weeks"
         code="Rest4Weeks"
-        type="5"/>
+        type-id="5"/>
 
     <activity
         name="Electronic Telephone Diary"
         code="ElectronicTelephoneDiary"
-        type="5"/>
+        type-id="5"/>
     
 </source>
 

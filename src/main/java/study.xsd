@@ -74,9 +74,9 @@
 
     <!-- TODO: add population -->
     <xsd:complexType name="PlannedActivity">
-        <!--<xsd:sequence>-->
-            <!--<xsd:element name="activity" type="psc:Activity" minOccurs="1" maxOccurs="1"/>-->
-        <!--</xsd:sequence>-->
+        <xsd:sequence>
+            <xsd:element name="activity" type="psc:Activity" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
         <xsd:attribute name="day" type="xsd:integer" use="required"/>
         <xsd:attribute name="details" type="xsd:string"/>
@@ -96,15 +96,18 @@
         <xsd:sequence>
             <xsd:element name="activity" type="psc:Activity" maxOccurs="unbounded"/>
         </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:ID"/>
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="Activity">
+        <xsd:attribute name="id" type="xsd:ID"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string"/>
-        <xsd:attribute name="type" type="xsd:integer" use="required"/>
+        <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
         <xsd:attribute name="code" type="xsd:string"  use="required"/>
-        <xsd:attribute name="source_id" type="xsd:IDREF"/>
+        <!-- optional for activity import, but required for study export -->
+        <xsd:attribute name="source-id" type="xsd:IDREF"/>
     </xsd:complexType>
 
 </xsd:schema>

@@ -40,10 +40,10 @@ public class ActivityXmlReader extends DefaultHandler {
             activity.setName(attributes.getValue("name"));
             activity.setCode(attributes.getValue("code"));
             activity.setDescription(attributes.getValue("description"));
-            activity.setType(ActivityType.getById(Integer.parseInt(attributes.getValue("type"))));
+            activity.setType(ActivityType.getById(Integer.parseInt(attributes.getValue("type-id"))));
 
             activity.setSource(currentSource);
             currentSource.getActivities().add(activity);
         }
     }
-    }
+}
