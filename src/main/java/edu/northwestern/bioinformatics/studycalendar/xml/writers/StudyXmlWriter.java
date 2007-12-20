@@ -30,19 +30,20 @@ public class StudyXmlWriter {
     public static final String XML_SCHEMA_ATTRIBUTE       = "xmlns:xsi";
 
     /* Tag Element constants */
-    public static final String ROOT = "study";
-    public static final String PLANNDED_CALENDAR = "planned-calendar";
-    public static final String AMENDMENT = "amendment";
     public static final String DELTA = "delta";
     public static final String ADD = "add";
+    private static final String REMOVE = "remove";
 
+    public static final String ROOT = "study";
+    public static final String AMENDMENT = "amendment";
+    public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
     public static final String PERIOD = "period";
     public static final String PLANNED_ACTIVITY = "planned-activity";
     public static final String ACTIVITY = "activity";
     public static final String SOURCE = "source";
-
+    
     /* Tag Attribute constants */
     public static final String ID = "id";
     public static final String DATE = "date";
@@ -56,9 +57,10 @@ public class StudyXmlWriter {
     public static final String CONDITION = "condition";
     public static final String DESCRIPTION = "description";
     public static final String SOURCE_ID = "source-id";
-    private static final String TYPE_ID = "type-id";
-    private static final String CODE = "code";
-    
+    public static final String TYPE_ID = "type-id";
+    public static final String CODE = "code";
+
+    public static final String CHILD_ID = "child-id";
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
 
     {
@@ -155,6 +157,11 @@ public class StudyXmlWriter {
                 parent.appendChild(element);
 
                 addChild(document, ((ChildrenChange) change).getChild(), element);
+            } else if ((ChangeAction.REMOVE).equals(change.getAction())) {
+                Element element = document.createElement(REMOVE);
+                setAttrib(element, ID, change.getGridId());
+                setAttrib(element, CHILD_ID, ((Remove) change).getChild().getGridId());
+                parent.appendChild(element);
             }
         }
     }

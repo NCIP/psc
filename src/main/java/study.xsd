@@ -34,6 +34,7 @@
     <xsd:complexType name="Delta">
         <xsd:sequence>
             <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="remove" type="psc:Remove" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
         <xsd:attribute name="node-id" type="xsd:IDREF" use="required"/>
@@ -49,6 +50,11 @@
         </xsd:sequence>
         <xsd:attribute name="index" type="xsd:integer" use="required"/>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Remove">
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="child-id" type="xsd:IDREF" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Epoch">
