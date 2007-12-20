@@ -94,20 +94,21 @@
 
     <xsd:complexType name="Source">
         <xsd:sequence>
-            <xsd:element name="activity" type="psc:Activity" maxOccurs="unbounded"/>
+            <xsd:element name="activity" type="psc:Activity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID"/>
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="Activity">
+        <xsd:sequence>
+            <xsd:element name="source" type="psc:Source" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string"/>
         <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
         <xsd:attribute name="code" type="xsd:string"  use="required"/>
-        <!-- optional for activity import, but required for study export -->
-        <xsd:attribute name="source-id" type="xsd:IDREF"/>
     </xsd:complexType>
 
 </xsd:schema>

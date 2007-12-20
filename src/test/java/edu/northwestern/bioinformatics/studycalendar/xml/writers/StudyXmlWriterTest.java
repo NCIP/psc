@@ -45,6 +45,7 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
     private PlannedActivity plannedActivity;
     private SimpleDateFormat dateFormat;
     private Activity activity;
+    private Source source;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -75,7 +76,9 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         segmentDelta = createDeltaFor(segment, addPeriod);
 
         /* Period Delta for Add(ing) Planned Activities */
+        source = createNamedInstance("LOINK Source", Source.class);
         activity = createActivity("Bone Scan", "AA", null, ActivityType.DISEASE_MEASURE, "make sure im not broken");
+        activity.setSource(source);
         plannedActivity = createPlannedActivity("Bone Scan", 1, "details", "patient is male");
         plannedActivity.setActivity(activity);
         addActivity = createAdd(plannedActivity, 0);
@@ -200,7 +203,9 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" details=\"{2}\" condition=\"{3}\" >", plannedActivity.getGridId(), plannedActivity.getDay(), plannedActivity.getDetails(), plannedActivity.getCondition()))
-            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\"/>", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
+            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\">", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
+            .append(format("        <source id=\"{0}\" name=\"{1}\"/>", source.getGridId(), source.getName()))
+            .append(       "      </activity>")
             .append(       "    </planned-activity>")
             .append(       "  </add>")
             .append(       "</delta>");
@@ -218,7 +223,9 @@ public class StudyXmlWriterTest extends StudyCalendarTestCase {
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" >", plannedActivity.getGridId(), plannedActivity.getDay()))
-            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\"/>", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
+            .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\">", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
+            .append(format("        <source id=\"{0}\" name=\"{1}\"/>", source.getGridId(), source.getName()))
+            .append(       "      </activity>")
             .append(       "    </planned-activity>")
             .append(       "  </add>")
             .append(       "</delta>");

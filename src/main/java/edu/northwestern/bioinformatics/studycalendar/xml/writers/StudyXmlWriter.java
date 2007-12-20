@@ -41,6 +41,7 @@ public class StudyXmlWriter {
     public static final String PERIOD = "period";
     public static final String PLANNED_ACTIVITY = "planned-activity";
     public static final String ACTIVITY = "activity";
+    public static final String SOURCE = "source";
 
     /* Tag Attribute constants */
     public static final String ID = "id";
@@ -57,8 +58,9 @@ public class StudyXmlWriter {
     public static final String SOURCE_ID = "source-id";
     private static final String TYPE_ID = "type-id";
     private static final String CODE = "code";
-
+    
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
+
     {
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
@@ -202,17 +204,27 @@ public class StudyXmlWriter {
     }
 
     protected void addActivity(Document document, Activity activity, Element parent) {
+        if (activity.getSource() == null) {
+            throw new StudyCalendarError("Source for activity %s (%s) is required and value is null", activity.getName(), activity.getGridId());
+        }
+
         Element element = document.createElement(ACTIVITY);
-//        if (activity.getSource() == null) {
-//            throw new StudyCalendarError("Source for activity %s (%s) is required and value is null", activity.getName(), activity.getGridId());
-//        }
 
         setAttrib(element, ID, activity.getGridId());
         setAttrib(element, NAME, activity.getName());
         setAttrib(element, DESCRIPTION, activity.getDescription());
         setAttrib(element, TYPE_ID, valueOf(activity.getType().getId()));
         setAttrib(element, CODE, activity.getCode());
-//        setAttrib(element, SOURCE_ID, valueOf(activity.getSource().getId()));
+
+        parent.appendChild(element);
+        addSource(document, activity.getSource(), element);
+    }
+
+    protected void addSource(Document document, Source source, Element parent) {
+        Element element = document.createElement(SOURCE);
+
+        setAttrib(element, ID, source.getGridId());
+        setAttrib(element, NAME, source.getName());
 
         parent.appendChild(element);
     }
