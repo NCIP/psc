@@ -56,6 +56,7 @@ public class EditPopulationController extends PscSimpleFormController {
         EditPopulationCommand command = (EditPopulationCommand) oCommand;
         Map<String, Object> refdata = new HashMap<String, Object>();
         getControllerTools().addToModel(command.getPopulation(), refdata);
+        refdata.put("amendment", command.getPopulation().getStudy().getDevelopmentAmendment());
         return refdata;
     }
 
@@ -77,7 +78,10 @@ public class EditPopulationController extends PscSimpleFormController {
         }
 
         if (errors.hasErrors()) return showForm(request, response, errors);
-        else return getControllerTools().redirectToCalendarTemplate(command.getPopulation().getStudy().getId());
+        else return getControllerTools().redirectToCalendarTemplate(
+            command.getPopulation().getStudy().getId(),
+            null,
+            command.getPopulation().getStudy().getDevelopmentAmendment().getId());
     }
 
     /////// CONFIGURATION
