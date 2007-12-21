@@ -367,9 +367,11 @@
             <entry key="datasource.url"      value="${create-hsqldb.url}"/>
             <entry key="datasource.username" value="sa"/>
             <entry key="datasource.password" value=""/>
-            <!--<entry key="datasource.dialect"  value="org.hibernate.dialect.HSQLDialect"/>-->
-            <!--<entry key="bering.dialect"      value="edu.northwestern.bioinformatics.bering.dialect.Hsqldb"/>-->
             <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
+            <entry key="authenticationMode"  value="local"/>
+            <entry key="webSSO.server.baseUrl"         value="ignored"/>
+            <entry key="webSSO.server.trustCert"       value="ignored"/>
+            <entry key="webSSO.cas.acegi.security.url" value="ignored"/>
         </propertyfile>
 
         <echo>${create-hsqldb.url}</echo>
