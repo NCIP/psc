@@ -6,10 +6,33 @@ datasource.password=
 ## DB-specific config:  uncomment the line for the database you are using
 
 #### PostgreSQL
+#datasource.dialect=edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ImprovedPostgreSQLDialect
+# # Needed since UPT doesn't have our custom dialect
+datasource.dialect.upt=org.hibernate.dialect.PostgreSQLDialect
+datasource.driver=org.postgresql.Driver
+bering.dialect=edu.northwestern.bioinformatics.bering.dialect.PostgreSQL
+
+
+#### PostgreSQL
+# datasource.dialect=edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ImprovedPostgreSQLDialect
+# # Needed since UPT doesn't have our custom dialect
+# datasource.dialect.upt=org.hibernate.dialect.PostgreSQLDialect
 # datasource.driver=org.postgresql.Driver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.PostgreSQL
 
 #### HSQLDB
+# datasource.dialect=org.hibernate.dialect.HSQLDialect
 # datasource.driver=org.hsqldb.jdbcDriver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.Generic
 
 #### Oracle
+# datasource.dialect=org.hibernate.dialect.Oracle9Dialect
 # datasource.driver=oracle.jdbc.OracleDriver
+# bering.dialect=edu.northwestern.bioinformatics.bering.dialect.Oracle
+#mode can be local or webSSO  
+
+#authenticationMode=local
+authenticationMode=webSSO
+webSSO.server.baseUrl=https://cbvapp-d1017.nci.nih.gov:48443/cas
+webSSO.server.trustCert=C:\\a\\cacerts
+webSSO.cas.acegi.security.url=http://localhost:8080/psc/j_acegi_cas_security_check
