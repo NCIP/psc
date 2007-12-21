@@ -34,6 +34,7 @@ public class StudyXMLWriter {
     public static final String ADD = "add";
     private static final String REMOVE = "remove";
     private static final String REORDER = "reorder";
+    private static final String PROPERTY_CHANGE = "property-change";
 
     public static final String ROOT = "study";
     public static final String AMENDMENT = "amendment";
@@ -63,7 +64,10 @@ public class StudyXMLWriter {
     public static final String CHILD_ID = "child-id";
     public static final String NEW_INDEX = "new-index";
     public static final String OLD_INDEX = "old-index";
-
+    private static final String PROPERTY_NAME = "property-name";
+    private static final String OLD_VALUE = "old-value";
+    private static final String NEW_VALUE = "new-value";
+    
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
 
     {
@@ -171,6 +175,13 @@ public class StudyXMLWriter {
                 setAttrib(element, CHILD_ID, ((Reorder) change).getChild().getGridId());
                 setAttrib(element, OLD_INDEX, ((Reorder) change).getOldIndex().toString());
                 setAttrib(element, NEW_INDEX, ((Reorder) change).getNewIndex().toString());
+                parent.appendChild(element);
+            } else if (ChangeAction.CHANGE_PROPERTY.equals(change.getAction())) {
+                Element element = document.createElement(PROPERTY_CHANGE);
+                setAttrib(element, ID, change.getGridId());
+                setAttrib(element, PROPERTY_NAME, ((PropertyChange) change).getPropertyName());
+                setAttrib(element, OLD_VALUE, ((PropertyChange) change).getOldValue());
+                setAttrib(element, NEW_VALUE, ((PropertyChange) change).getNewValue());
                 parent.appendChild(element);
             } else {
                 throw new StudyCalendarError("Change is not recognized: %s", change.getAction());

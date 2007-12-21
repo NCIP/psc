@@ -34,6 +34,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Delta<PlannedCalendar> calendarDelta;
     private Delta<PlannedCalendar> calendarDeltaForRemove;
     private Delta<PlannedCalendar> calendarDeltaForReorder;
+    private Delta<Epoch> epochDeltaForPropertyChange;
     private Delta<Epoch> epochDelta;
     private Delta<StudySegment> segmentDelta;
     private Delta<PlannedActivity> periodDelta;
@@ -43,6 +44,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Add addActivity;
     private Remove removeEpoch;
     private Reorder reorderEpoch;
+    private PropertyChange epochPropertyChange;
     private Epoch epoch;
     private StudySegment segment;
     private Period period;
@@ -95,6 +97,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         /* Planned Calendar Delta for Reorder(ing) an Epoch */
         reorderEpoch = createReorder(epoch, 0, 1);
         calendarDeltaForReorder = createDeltaFor(study.getPlannedCalendar(), reorderEpoch);
+
+        /* Epoch Delta for an Epoch Property Change */
+        epochPropertyChange = createPropertyChange("name", "Epoch A", "Epoch B");
+        epochDeltaForPropertyChange = createDeltaFor(epoch, epochPropertyChange);
     }
 
     public void testWriteEpoch() throws Exception {
@@ -187,6 +193,20 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
                 .append(        calendarDeltaXML())
                 .append(        calendarDeltaReorderEpochXML())
+                .append(   "</amendment>");
+
+        String expected = insertXml(study, body.toString());
+        String output = createAndValidateXml(study);
+
+        assertXMLEqual(expected, output);
+    }
+
+    public void testWritePlannedCalendarPropertyChange() throws Exception {
+        StringBuffer body = new StringBuffer();
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        epochDeltaXML())
+                .append(        epochDeltaPropertyChangeXML())
                 .append(   "</amendment>");
 
         String expected = insertXml(study, body.toString());
@@ -294,6 +314,17 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         return body.toString();
     }
 
+    private String epochDeltaPropertyChangeXML() {
+        amendment.addDelta(epochDeltaForPropertyChange);
+
+        StringBuffer body = new StringBuffer();
+        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", epochDeltaForPropertyChange.getGridId(), epochDeltaForPropertyChange.getNode().getGridId()))
+            .append(format("  <property-change id=\"{0}\" property-name=\"{1}\" old-value=\"{2}\" new-value=\"{3}\" />", epochPropertyChange.getGridId(), epochPropertyChange.getPropertyName(), epochPropertyChange.getOldValue(), epochPropertyChange.getNewValue()))
+            .append(       "</delta>");
+
+        return body.toString();
+    }
+
     /* Validate methods */
     public String createAndValidateXml(Study study) throws Exception{
         String s = writer.createStudyXml(study);
@@ -344,6 +375,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private Reorder createReorder(PlanTreeNode<?> child, Integer oldIndex, Integer newIndex) throws Exception {
         return setGridId(Reorder.create(child, oldIndex, newIndex));
+    }
+
+    private PropertyChange createPropertyChange(String prop, String oldValue, String newValue) throws Exception {
+        return setGridId(PropertyChange.create(prop, oldValue, newValue));
     }
 
     private PlannedActivity createPlannedActivity(String activityName, int day, String details, String condition) throws Exception {

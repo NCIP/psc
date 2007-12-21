@@ -36,6 +36,7 @@
             <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="remove" type="psc:Remove" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="reorder" type="psc:Reorder" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="property-change" type="psc:PropertyChange" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
         <xsd:attribute name="node-id" type="xsd:IDREF" use="required"/>
@@ -65,6 +66,12 @@
         <xsd:attribute name="new-index" type="xsd:integer" use="required"/>
     </xsd:complexType>
 
+    <xsd:complexType name="PropertyChange">
+        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="property-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="old-value" type="xsd:string" use="required"/>
+        <xsd:attribute name="new-value" type="xsd:string" use="required"/>
+    </xsd:complexType>
 
     <xsd:complexType name="Epoch">
         <xsd:sequence>
