@@ -583,6 +583,40 @@ Event.observe(window, "load", createAutocompleter)
         border-style: none;
     }
 
+    .palette {
+        float: left;
+        position: relative;
+        margin-right: 20px
+    }
+
+    .palette span.tab {
+        border: 1px solid #ccc;
+        margin: 0;
+        margin-left: 5px;
+        padding: 2px;
+        font-size: 90%;
+    }
+
+    .palette div.well {
+        border: 1px solid #ccc;
+        width: 50px;
+        text-align: center;
+        margin: 2px 5px 10px 5px;
+    }
+
+    .palette div#newMarkerArea {
+        height: 50px;
+        vertical-align: middle;
+        line-height: 50px;
+        cursor: move;
+    }
+
+    .palette div#deleteDrop {
+        width: 40px; /* allow for padding */
+        z-index: 1;
+        padding: 5px;
+        font-size: 120%;
+    }
 </style>
 </head>
 <body>
@@ -604,6 +638,18 @@ Event.observe(window, "load", createAutocompleter)
             This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
             It begins on day ${period.startDay} of ${studySegment.qualifiedName}.
         </p>
+
+        <div class="palette">
+            <span class="tab" title="Add an activity for all subjects">Add</span>
+            <div class="well" id="newMarkerArea">
+                <div class="newMarker">X</div>
+            </div>
+
+            <span class="tab">Delete</span>
+            <div class="well" id="deleteDrop">
+                Drop Here
+            </div>
+         </div>
 
         <form:form>
             <c:set var="tableWidth" value="${period.duration.days + 4}"/>
@@ -681,20 +727,6 @@ Event.observe(window, "load", createAutocompleter)
                             </td>
                         </tr>
                     </c:forEach>
-
-
-                    <div  style="float:left;position:relative;margin-right:20px">
-                        <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Add</span>
-                        <div style="border:1px solid #ccc;width:50px;height:50px;text-align:center;vertical-align:middle;line-height:50px;margin:2px 5px 10px 5px;cursor:move;" id="newMarkerArea">
-                            <div class="newMarker">X</div>
-                        </div>
-                        <span style="border:1px solid #ccc;margin-left:5px;font-size:12px;padding:2px">Delete</span>
-
-                        <div style="border:1px solid #ccc;width:50px;text-align:center;margin:2px 5px 10px 5px;z-index:1" id="deleteDrop">
-                            <p style="margin:5px;font-size:16px">Drop Here</p>
-                        </div>
-                     </div>
-
                 </tbody>
             </table>
 
