@@ -33,6 +33,10 @@ function addActivityRow() {
     var cells = []
     var dayCount = ${period.dayRanges[0].days}.length
     var rowCount = $$("#input-body tr").length - 1
+    // indicator
+    var indicator = SC.activityIndicator('<c:url value="/"/>', 'row-' + rowCount + '-indicator')
+    cells.push(Builder.node('td', { className: 'indicator-column' }, [ indicator ]))
+
     // header
     var activityName = 'grid[' + rowCount + '].activity';
     var activityInput = Builder.node("input", { id: activityName, name: activityName, type: 'hidden', value: activity.id })
@@ -137,7 +141,10 @@ function addParametersForRow(data, row) {
     data.rowNumber = row
     data.activity = $('grid[' + row + '].activity').value;
     data.details = $('grid[' + row + '].details').value;
-    data.conditionalDetails = $('grid[' + row + '].conditionalDetails').value;
+    var conditionElement = $('grid[' + row + '].conditionalDetails')
+    if (!conditionElement.hasClassName('no-condition')) {
+        data.conditionalDetails = conditionElement.value;
+    }
 
     for (var c = 0; c < ${period.duration.days}; c++) {
         var val = $('grid[' + row + '].eventIds[' + c + ']').getAttribute('value')
@@ -153,9 +160,7 @@ function executePlannedActivityAdd(targetId) {
     var data = createBasicPostBody(rc[0])
     data.columnNumber = rc[1]
 
-    new Ajax.Request(href, {
-        postBody: Object.toQueryString(data)
-    });
+    executeManagePeriodPost(href, data, rc[0])
 }
 
 function executePlannedActivityRemove(targetId) {
@@ -164,9 +169,7 @@ function executePlannedActivityRemove(targetId) {
     var data = createBasicPostBody(rc[0])
     data.columnNumber = rc[1]
 
-    new Ajax.Request(href, {
-        postBody: Object.toQueryString(data)
-    });
+    executeManagePeriodPost(href, data, rc[0])
 }
 
 function executePlannedActivityMove(row, fromCol, toCol) {
@@ -184,9 +187,7 @@ function executePlannedActivityMove(row, fromCol, toCol) {
     data.moveFrom = fromCol;
     data.moveTo = toCol;
 
-    new Ajax.Request(href, {
-        postBody: Object.toQueryString(data)
-    });
+    executeManagePeriodPost(href, data, row)
 }
 
 function executeUpdateDetails(rowElement) {
@@ -194,28 +195,21 @@ function executeUpdateDetails(rowElement) {
     var href = '<c:url value="/pages/cal/managePeriod/update"/>'
     var data = createBasicPostBody(row)
 
+    executeManagePeriodPost(href, data, row)
+}
+
+function executeManagePeriodPost(href, data, row) {
+    var indicator = $('row-' + row + '-indicator')
+    indicator.reveal()
     new Ajax.Request(href, {
-        postBody: Object.toQueryString(data)
+        postBody: Object.toQueryString(data),
+        onComplete: function() {
+            indicator.conceal()
+        }
     });
 }
 
 function registerRowEventHandlers(rowElt) {
-    /* TODO: remove
-    rowElt.select('input[type=checkbox]').each(function(condCheckbox) {
-        condCheckbox.observe("click", function() {
-            var row = extractRow(condCheckbox.id)
-            var conditionElt = $('grid[' + row + '].conditionalDetails')
-            if (condCheckbox.checked) {
-                conditionElt.disabled = false;
-            } else {
-                conditionElt.value = "";
-                conditionElt.disabled = true;
-            }
-            executeUpdateDetails(condCheckbox)
-        })
-    })
-    */
-
     rowElt.select('input[name*=conditionalDetails]').each(function(input) {
         input.observe('focus', focusConditionInput)
         input.observe('blur', changedConditionInput)
@@ -533,17 +527,6 @@ Event.observe(window, "load", createAutocompleter)
         margin-top: 1%;
         padding: 10px;
     }
-    /*
-    td.emptyCell{
-        empty-cells:hide;
-        border:none;
-        width:100px;
-    }
-    td.emptyCellNoWidth {
-        empty-cells:hide;
-        border:none;
-    }
-    */
 
    #revision-changes {
         float: right;
@@ -553,11 +536,6 @@ Event.observe(window, "load", createAutocompleter)
     #with-changes #period {
         width: 70%;
         float: left;
-    }
-    label#emptyLabel {
-        empty-cells:hide;
-        border:none;
-        width:100px;
     }
 
     #new-activities-link-separator {
@@ -595,10 +573,14 @@ Event.observe(window, "load", createAutocompleter)
         cursor:pointer;
     }
 
-    #period table {
+    table#manage-period {
         padding:5px;
         overflow-x:auto;
         display:block;
+    }
+
+    .indicator-column {
+        border-style: none;
     }
 
 </style>
@@ -624,15 +606,17 @@ Event.observe(window, "load", createAutocompleter)
         </p>
 
         <form:form>
-            <c:set var="tableWidth" value="${period.duration.days + 3}"/>
-            <table>
-             <tbody id="input-body">
+            <c:set var="tableWidth" value="${period.duration.days + 4}"/>
+            <table id="manage-period">
+            <tbody id="input-body">
                 <tr>
+                    <th class="indicator-column spacer"></th>
                     <th class="activity-column spacer"><!-- Spacer --></th>
-                    <th colspan="${tableWidth - 3}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
+                    <th colspan="${tableWidth - 4}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
                     <th colspan="2">Notes</th>
                 </tr>
                 <tr id="days-header">
+                    <th class="indicator-column spacer"></th>
                     <th class="activity-column spacer"><!-- Spacer --></th>
                     <c:set var="MAX_REPETITION_SIZE" value="4"/>
                     <c:set var="MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED" value="2"/>
@@ -660,12 +644,16 @@ Event.observe(window, "load", createAutocompleter)
                 </tr>
 
                     <tr id="no-activities-message" style="display: none">
+                        <th class="indicator-column spacer"></th>
                         <th class="activity-column spacer"><!-- Spacer --></th>
-                        <td colspan="${tableWidth - 3}">This period does not have any activities yet</td>
+                        <td colspan="${tableWidth - 4}">This period does not have any activities yet</td>
                         <th colspan="2" class="spacer"></th>
                     </tr>
                     <c:forEach items="${command.grid}" var="gridRow" varStatus="gridStatus">
                         <tr class="input-row">
+                            <td class="indicator-column">
+                                <tags:activityIndicator id="row-${gridStatus.index}-indicator"/>
+                            </td>
                             <th class="activity">
                                     ${gridRow.activity.name}
                                 <form:hidden path="grid[${gridStatus.index}].activity"/>

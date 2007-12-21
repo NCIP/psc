@@ -41,6 +41,17 @@ SC.highlight = function(element, options) {
     }, options));
 }
 
+// creates an indicator image tag just like the one created by tags:activityIndicator
+SC.activityIndicator = function(baseHref, id) {
+    var attrs = {
+        className: 'indicator',
+        src: baseHref + 'images/indicator.white.gif',
+        alt: 'activity indicator'
+    }
+    if (id) attrs.id = id
+    return Builder.node('img', attrs)
+}
+
 ////// CONTROLS
 
 SC.InPlaceEditor = Class.create()
