@@ -33,6 +33,7 @@ public class StudyXMLWriter {
     public static final String DELTA = "delta";
     public static final String ADD = "add";
     private static final String REMOVE = "remove";
+    private static final String REORDER = "reorder";
 
     public static final String ROOT = "study";
     public static final String AMENDMENT = "amendment";
@@ -59,8 +60,10 @@ public class StudyXMLWriter {
     public static final String SOURCE_ID = "source-id";
     public static final String TYPE_ID = "type-id";
     public static final String CODE = "code";
-
     public static final String CHILD_ID = "child-id";
+    public static final String NEW_INDEX = "new-index";
+    public static final String OLD_INDEX = "old-index";
+
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
 
     {
@@ -162,6 +165,15 @@ public class StudyXMLWriter {
                 setAttrib(element, ID, change.getGridId());
                 setAttrib(element, CHILD_ID, ((Remove) change).getChild().getGridId());
                 parent.appendChild(element);
+            } else if (ChangeAction.REORDER.equals(change.getAction())) {
+                Element element = document.createElement(REORDER);
+                setAttrib(element, ID, change.getGridId());
+                setAttrib(element, CHILD_ID, ((Reorder) change).getChild().getGridId());
+                setAttrib(element, OLD_INDEX, ((Reorder) change).getOldIndex().toString());
+                setAttrib(element, NEW_INDEX, ((Reorder) change).getNewIndex().toString());
+                parent.appendChild(element);
+            } else {
+                throw new StudyCalendarError("Change is not recognized: %s", change.getAction());
             }
         }
     }

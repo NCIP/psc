@@ -33,6 +33,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Amendment amendment;
     private Delta<PlannedCalendar> calendarDelta;
     private Delta<PlannedCalendar> calendarDeltaForRemove;
+    private Delta<PlannedCalendar> calendarDeltaForReorder;
     private Delta<Epoch> epochDelta;
     private Delta<StudySegment> segmentDelta;
     private Delta<PlannedActivity> periodDelta;
@@ -41,6 +42,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Add addPeriod;
     private Add addActivity;
     private Remove removeEpoch;
+    private Reorder reorderEpoch;
     private Epoch epoch;
     private StudySegment segment;
     private Period period;
@@ -89,6 +91,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         /* Planned Calendar Delta for Remove(ing) an Epoch */
         removeEpoch = createRemove(epoch);
         calendarDeltaForRemove = createDeltaFor(study.getPlannedCalendar(), removeEpoch);
+
+        /* Planned Calendar Delta for Reorder(ing) an Epoch */
+        reorderEpoch = createReorder(epoch, 0, 1);
+        calendarDeltaForReorder = createDeltaFor(study.getPlannedCalendar(), reorderEpoch);
     }
 
     public void testWriteEpoch() throws Exception {
@@ -176,6 +182,18 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         assertXMLEqual(expected, output);
     }
 
+    public void testWriteReorderEpochs() throws Exception {
+        StringBuffer body = new StringBuffer();
+        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+                .append(        calendarDeltaXML())
+                .append(        calendarDeltaReorderEpochXML())
+                .append(   "</amendment>");
+
+        String expected = insertXml(study, body.toString());
+        String output = createAndValidateXml(study);
+
+        assertXMLEqual(expected, output);
+    }
 
     /* Output XML Methods */
     private String calendarDeltaXML() {
@@ -264,6 +282,18 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         return body.toString();
     }
 
+
+    private String calendarDeltaReorderEpochXML() {
+        amendment.addDelta(calendarDeltaForReorder);
+
+        StringBuffer body = new StringBuffer();
+        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", calendarDeltaForReorder.getGridId(), calendarDeltaForReorder.getNode().getGridId()))
+            .append(format("  <reorder id=\"{0}\" child-id=\"{1}\" old-index=\"{2}\" new-index=\"{3}\"  />", reorderEpoch.getGridId(), reorderEpoch.getChild().getGridId(), reorderEpoch.getOldIndex(), reorderEpoch.getNewIndex()))
+            .append(       "</delta>");
+
+        return body.toString();
+    }
+
     /* Validate methods */
     public String createAndValidateXml(Study study) throws Exception{
         String s = writer.createStudyXml(study);
@@ -310,6 +340,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private Remove createRemove(PlanTreeNode<?> child) throws Exception {
         return setGridId(Remove.create(child));
+    }
+
+    private Reorder createReorder(PlanTreeNode<?> child, Integer oldIndex, Integer newIndex) throws Exception {
+        return setGridId(Reorder.create(child, oldIndex, newIndex));
     }
 
     private PlannedActivity createPlannedActivity(String activityName, int day, String details, String condition) throws Exception {
