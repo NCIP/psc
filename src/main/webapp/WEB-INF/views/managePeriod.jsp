@@ -57,27 +57,14 @@ function addActivityRow() {
     });
     cells.push(Builder.node('td', {}, [detailsInput]))
 
-    // corresponding to the conditional behavior
-    cells.push(Builder.node('td', {className:'emptyCell'}));
-
-    // condition checkbox
-    var name = 'grid[' + rowCount + '].conditionalCheckbox'
-    var namePlusOne = name + 1
-    var input = Builder.node('input', {
-        type: 'checkbox',
-        id: namePlusOne,
-        name: name,
-        value: 'true'
-    });
-    cells.push(Builder.node('td', {}, [input]))
-
     // conditionalDetails
     var conditionDetailsName = 'grid[' + rowCount + '].conditionalDetails'
     var conditionDetailsInput = Builder.node('input', {
         id: conditionDetailsName,
         name: conditionDetailsName,
         type: 'text',
-        disabled: 'true'
+        class: 'no-condition',
+        value: 'Click to add condition'
     });
     cells.push(Builder.node('td', {}, [conditionDetailsInput]))
 
@@ -90,24 +77,41 @@ function addActivityRow() {
     registerDraggablesAndDroppables()
     showEmptyMessage()
 
-    // displaying the very fist empty column, that is not shown when no activities is present
-    if (currentActivityCount() > 0) {
-        var td1Element = document.getElementById("td1")
-        var td2Element = document.getElementById("td2")
-
-        td1Element.style.display = 'table-cell';
-        td2Element.style.display = 'table-cell';
-    }
     SC.slideAndShow(rowId)
 }
 
 function showEmptyMessage() {
     if (currentActivityCount() > 0) {
-        SC.slideAndHide('no-activities-message');
+        $('no-activities-message').hide();
+        $$('.activity-column').each(Element.show)
     } else {
-        SC.slideAndShow('no-activities-message');
+        $('no-activities-message').show();
+        $$('.activity-column').each(Element.hide)
     }
 }
+
+/* ***** CONDITION INPUT HANDLING */
+
+function focusConditionInput(evt) {
+    var input = evt.element('input')
+    if (input.hasClassName('no-condition')) {
+        input.value = ""
+        input.removeClassName('no-condition')
+    }
+}
+
+function changedConditionInput(evt) {
+    var input = evt.element("input")
+    executeUpdateDetails(input)
+    if (input.value.blank()) {
+        input.addClassName('no-condition')
+        input.value = 'Click to add condition'
+    } else {
+        input.removeClassName('no-condition')
+    }
+}
+
+/* ***** ASYNCHRONOUS UPDATERS */
 
 // extracts row from an ID like grid[row].property
 function extractRow(gridElementId) {
@@ -196,6 +200,7 @@ function executeUpdateDetails(rowElement) {
 }
 
 function registerRowEventHandlers(rowElt) {
+    /* TODO: remove
     rowElt.select('input[type=checkbox]').each(function(condCheckbox) {
         condCheckbox.observe("click", function() {
             var row = extractRow(condCheckbox.id)
@@ -209,8 +214,14 @@ function registerRowEventHandlers(rowElt) {
             executeUpdateDetails(condCheckbox)
         })
     })
+    */
 
-    rowElt.select('input[type=text]').each(function(input) {
+    rowElt.select('input[name*=conditionalDetails]').each(function(input) {
+        input.observe('focus', focusConditionInput)
+        input.observe('blur', changedConditionInput)
+    })
+
+    rowElt.select('input[name*=details]').each(function(input) {
         input.observe('change', function(evt) {
             executeUpdateDetails(input)
         })
@@ -452,7 +463,8 @@ Event.observe(window, "load", createAutocompleter)
 
 <style type="text/css">
     #no-activities-message td {
-        text-align: center;
+        text-align: left;
+        padding-left: 2em;
     }
 
     th.activity {
@@ -477,10 +489,20 @@ Event.observe(window, "load", createAutocompleter)
     }
 
     .input-row td input {
-        /*border-width: 0; border-bottom: 1px dotted #666;*/
-        border-width: 0; border-bottom: 1px #666;
+        border-width: 0; border-bottom: 1px dotted #666;
         text-align: center;
         padding: 2px;
+        background-color: transparent;
+    }
+
+    .input-row td input[disabled] {
+        background-color: #ddc; /* from ctms-laf fields.css */
+        border-color: #bba;
+    }
+
+    .input-row .no-condition {
+        color: #666;
+        font-style: italic;
     }
 
     table {
@@ -511,6 +533,7 @@ Event.observe(window, "load", createAutocompleter)
         margin-top: 1%;
         padding: 10px;
     }
+    /*
     td.emptyCell{
         empty-cells:hide;
         border:none;
@@ -520,6 +543,7 @@ Event.observe(window, "load", createAutocompleter)
         empty-cells:hide;
         border:none;
     }
+    */
 
    #revision-changes {
         float: right;
@@ -534,10 +558,6 @@ Event.observe(window, "load", createAutocompleter)
         empty-cells:hide;
         border:none;
         width:100px;
-    }
-
-    #td1, #td2, #td3 {
-        display:none;
     }
 
     #new-activities-link-separator {
@@ -575,8 +595,7 @@ Event.observe(window, "load", createAutocompleter)
         cursor:pointer;
     }
 
-    .limited-display-box {
-        width:670px;
+    #period table {
         padding:5px;
         overflow-x:auto;
         display:block;
@@ -605,34 +624,16 @@ Event.observe(window, "load", createAutocompleter)
         </p>
 
         <form:form>
-            <c:set var="tableWidth" value="${period.duration.days + 2}"/>
-            <table class="limited-display-box">
+            <c:set var="tableWidth" value="${period.duration.days + 3}"/>
+            <table>
              <tbody id="input-body">
                 <tr>
-                    <c:choose>
-                        <c:when test="${not empty command.grid}">
-                            <td id="td1" style="display:table-cell;"></td>
-                        </c:when>
-                        <c:otherwise>
-                            <td id="td1"></td>
-                        </c:otherwise>
-                    </c:choose>
-
-
-                    <th colspan="${tableWidth - 2}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
-                    <td></td>
-                    <td class="emptyCellNoWidth"> </td>
+                    <th class="activity-column spacer"><!-- Spacer --></th>
+                    <th colspan="${tableWidth - 3}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
+                    <th colspan="2">Notes</th>
                 </tr>
                 <tr id="days-header">
-                    <c:choose>
-                        <c:when test="${not empty command.grid}">
-                            <td id="td2" style="display:table-cell;"></td>
-                        </c:when>
-                        <c:otherwise>
-                            <td id="td2"></td>
-                        </c:otherwise>
-                    </c:choose>
-
+                    <th class="activity-column spacer"><!-- Spacer --></th>
                     <c:set var="MAX_REPETITION_SIZE" value="4"/>
                     <c:set var="MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED" value="2"/>
                     <c:set var="compressPeriod" value="${period.repetitions gt MAX_REPETITION_SIZE}"/>
@@ -655,24 +656,13 @@ Event.observe(window, "load", createAutocompleter)
                         </th>
                     </c:forEach>
                     <th>Details</th>
-
-                    <td class="emptyCell" ></td>
-                    <td class="emptyCellNoWidth"></td>
                     <th>Condition</th>
                 </tr>
 
-                    <tr id="no-activities-message" >
-                        <td id="td3"></td>
-                        <c:choose>
-                            <c:when test="${not empty command.grid}">
-                            </c:when>
-                            <c:otherwise>
-                                <td colspan="${tableWidth - 1}">This period does not have any activities yet</td>
-                            </c:otherwise>
-                        </c:choose>
-                        <td class="emptyCell"/>
-                        <td class="emptyCellNoWidth"/>
-                        <td class="emptyCellNoWidth"/>
+                    <tr id="no-activities-message" style="display: none">
+                        <th class="activity-column spacer"><!-- Spacer --></th>
+                        <td colspan="${tableWidth - 3}">This period does not have any activities yet</td>
+                        <th colspan="2" class="spacer"></th>
                     </tr>
                     <c:forEach items="${command.grid}" var="gridRow" varStatus="gridStatus">
                         <tr class="input-row">
@@ -695,16 +685,11 @@ Event.observe(window, "load", createAutocompleter)
                             <td>
                                 <form:input path="grid[${gridStatus.index}].details"/>
                             </td>
-                            <!--corresponds to the conditional behavior-->
-                            <td class="emptyCell" ></td>
-                            <td class="conditional">
-                                <form:checkbox path="grid[${gridStatus.index}].conditionalCheckbox"
-                                               value="${gridRow.conditionalCheckbox}" />
-                            </td>
                             <td>
-                                <form:input path="grid[${gridStatus.index}].conditionalDetails"
-                                            disabled="${empty gridRow.conditionalDetails}"
-                                        />
+                                <input name="grid[${gridStatus.index}].conditionalDetails" id="grid[${gridStatus.index}].conditionalDetails"
+                                    class="${empty gridRow.conditionalDetails ? 'no-condition' : ''}"
+                                    value="${empty gridRow.conditionalDetails ? 'Click to add condition' : gridRow.conditionalDetails}"
+                                    />
                             </td>
                         </tr>
                     </c:forEach>
