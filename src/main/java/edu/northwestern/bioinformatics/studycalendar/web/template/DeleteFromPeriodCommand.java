@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeleteFromPeriodCommand extends EditPeriodEventsCommand{
+public class DeleteFromPeriodCommand extends EditPeriodEventsCommand {
     @Override
     protected void performEdit() {
         Integer id = getEventIds().get(getColumnNumber());

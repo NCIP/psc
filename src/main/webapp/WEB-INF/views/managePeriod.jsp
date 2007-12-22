@@ -10,6 +10,7 @@
 <head>
 <title>Set up ${period.displayName} of ${studySegment.qualifiedName} in ${study.name}</title>
 <tags:includeScriptaculous/>
+<tags:stylesheetLink name="main"/>
 <script type="text/javascript">
 function currentActivityCount() {
     return $$('.input-row').length;
@@ -45,13 +46,13 @@ function addActivityRow() {
     // input cells
     for (var i = 0; i < dayCount; i++) {
         var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
-        var input = Builder.node('span', {
-            id:name,
-            name:name,
-            class: "marker",
-            value: -1
+        var input = Builder.node('input', {
+            id: name,
+            name: name,
+            type: 'hidden'
         });
-        cells.push(Builder.node('td', {class:'counter', style:'position: relative;'}, [input]))
+        var marker = Builder.node('span', { className: 'marker' })
+        cells.push(Builder.node('td', { className: 'counter' }, [ input, marker ]))
     }
     var detailsName = 'grid[' + rowCount + '].details'
     var detailsInput = Builder.node('input', {
@@ -154,11 +155,12 @@ function addParametersForRow(data, row) {
     }
 }
 
-function executePlannedActivityAdd(targetId) {
+function executePlannedActivityAdd(targetId, populationId) {
     var rc = extractRowAndColumn(targetId)
     var href = '<c:url value="/pages/cal/managePeriod/addTo"/>'
     var data = createBasicPostBody(rc[0])
     data.columnNumber = rc[1]
+    data.population = populationId
 
     executeManagePeriodPost(href, data, rc[0])
 }
@@ -231,110 +233,101 @@ function registerHandlers() {
     })
 }
 
-function makeCellDraggableAndDroppable(input) {
-    document.getElementsByClassName('marker').each(
-        function(item) {
-            new Draggable(item, {revert: true});
-            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-        }
-        );
-
-    Droppables.add($('deleteDrop'), {accept:'marker',hoverclass: 'hoverActive',onDrop:deleteEvent})
-}
-
 function registerDraggablesAndDroppables() {
-    document.getElementsByClassName('newMarker').each(
+    $$('.new-marker').each(
         function(item) {
-            new Draggable(item, {revert: true});
+            new Draggable(item, { revert: true });
         }
     );
 
-    var x = 0;
-    document.getElementsByClassName('counter').each(
+    $$('.counter').each(
         function(item) {
             Droppables.add(item, {
-                accept:['marker','newMarker'],
-                hoverclass: 'hoverActive',
-                onDrop: moveEvent })
+                accept: ['marker', 'new-marker'],
+                hoverclass: 'hover',
+                onDrop: moveMarker })
         }
     );
 
-    document.getElementsByClassName('marker').each(
+    $$('.marker').each(
         function(item) {
-            new Draggable(item, {revert: true});
-            item.activity = item.parentNode.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
+            new Draggable(item, { revert: true });
+            item.activity = item.up('tr').select('input[id*=activity]')[0].value;
         }
     );
 
-    Droppables.add($('deleteDrop'), { accept:'marker', hoverclass: 'hoverActive', onDrop:deleteEvent })
+    Droppables.add($('delete-drop'), { accept:'marker', hoverclass: 'hover', onDrop: deleteMarker })
 }
 
-function moveEvent(draggable, dropZone) {
-    var wholeElement = dropZone.getElementsBySelector("span")[0]
-    var elementId = dropZone.getElementsBySelector("span")[0].id
+function moveMarker(draggedMarker, dropZone) {
+    var targetMarker = dropZone.select(".marker")[0]
+    var gridCellId = dropZone.select("input")[0].id
 
-    var parentElement = draggable.parentNode.getElementsBySelector("span")[0]
-    if (parentElement == null) {
-        //means we are drugging a new event
-        if (wholeElement.firstChild == null) {
-            executePlannedActivityAdd(elementId)
-            setUpMarker(draggable, dropZone)
+    var plannedActivityElement = draggedMarker.up().select('input')[0]
+    if (plannedActivityElement == null) {
+        // means we are drugging a new event
+        if (targetMarker.empty()) {
+            var population = null
+            if (draggedMarker.id.startsWith('population-marker-')) {
+                population = draggedMarker.id.substr(18)
+            }
+            executePlannedActivityAdd(gridCellId, population)
+            updateAddedMarker(draggedMarker, dropZone)
         }
     } else {
         //means we are moving event from one cell to another
-        var parentElementId = parentElement.id
-        var parentRC = extractRowAndColumn(parentElementId)
-        var childRC = extractRowAndColumn(elementId)
-        if (parentRC[0] == childRC[0]) {
-            //need to set up ajax call for move
-            if (wholeElement.firstChild == null) {
-                executePlannedActivityMove(parentRC[0], parentRC[1], childRC[1])
-                setUpMovingMarker(draggable, dropZone)
+        var plannedActivityElementId = plannedActivityElement.id
+        var startRC = extractRowAndColumn(plannedActivityElementId)
+        var endRC = extractRowAndColumn(gridCellId)
+        if (startRC[0] == endRC[0]) {
+            // need to set up ajax call for move
+            if (targetMarker.empty()) {
+                executePlannedActivityMove(startRC[0], startRC[1], endRC[1])
+                updateMovedMarker(draggedMarker, dropZone)
             }
         }
     }
 }
 
-function setUpMarker(draggable, dropZone) {
-    var activity = (typeof(draggable.activity) != 'undefined') ? draggable.activity : dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip();
-    if (activity == dropZone.parentNode.getElementsByClassName('activity')[0].innerHTML.strip()) {
-        var marker = createMarker(activity);
-        dropZone.appendChild(marker);
-
-        draggable.parentNode.removeChild(draggable);
-        if (draggable.className == 'newMarker') {
-            var div = Builder.node("div", { className: 'newMarker' })
-            div.innerHTML = 'X';
-            new Draggable(div, { revert: true });
-            $('newMarkerArea').appendChild(div);
+function updateAddedMarker(draggedMarker, dropZone) {
+    var rowActivity = dropZone.up('tr').select('input[id*=activity]')[0].value
+    var activity = draggedMarker.activity ? draggedMarker.activity : rowActivity;
+    if (activity == rowActivity) {
+        dropZone.select('.marker')[0].update(draggedMarker.innerHTML);
+        
+        // Have to clone the node to avoid the revert animation
+        var draggedMarkerParent = draggedMarker.parentNode
+        draggedMarkerParent.removeChild(draggedMarker);
+        if (draggedMarker.hasClassName('new-marker')) {
+            var clone = $(draggedMarker.cloneNode(true))
+            clone.style.position = ''
+            clone.style.top = ''
+            clone.style.left = ''
+            clone.style.zIndex = ''
+            clone.style.opacity = '0'
+            new Draggable(clone, { revert: true })
+            registerNewMarkerHoverTip(clone)
+            draggedMarkerParent.appendChild(clone);
+            new Effect.Opacity(clone, {
+                duration: 0.8,
+            })
         }
     }
 }
 
-function setUpMovingMarker(draggable, dropZone) {
-    draggable.innerHTML = '';
-    var element = dropZone.getElementsBySelector("span")[0];
-    element.innerHTML = 'X';
+function updateMovedMarker(draggedMarker, dropZone) {
+    var target = dropZone.select(".marker")[0];
+    target.innerHTML = draggedMarker.innerHTML;
+    draggedMarker.innerHTML = '';
 }
 
-function deleteEvent(draggable, dropZone) {
-    var element = draggable.parentNode.getElementsBySelector("span")[0].id
+function deleteMarker(draggedMarker, dropZone) {
+    var element = draggedMarker.parentNode.getElementsBySelector("input")[0].id
     executePlannedActivityRemove(element)
 
-    var prevActivity = draggable.activity;
-    draggable.innerHTML = '';
+    var prevActivity = draggedMarker.activity;
+    draggedMarker.innerHTML = '';
 }
-
-
-function createMarker(activityName) {
-    var marker = document.createElement('span');
-    marker.innerHTML = 'X';
-    marker.className = 'marker';
-    marker.activity = activityName;
-    new Draggable(marker, {revert: true});
-    return marker;
-}
-
 
 Event.observe(window, "load", registerHandlers)
 Event.observe(window, "load", showEmptyMessage)
@@ -454,6 +447,34 @@ Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocom
 Event.observe(window, "load", createAutocompleter)
 </script>
 
+<script type="text/javascript">
+function clearHoverTip() {
+    $('palette-tip').innerHTML = '&nbsp;'
+}
+    
+function registerHoverTip(element, message) {
+    element.observe('mouseover', function() { $('palette-tip').innerHTML = message })
+    element.observe('mouseout', clearHoverTip)
+}
+
+function registerNewMarkerHoverTip(marker) {
+    var popName = marker.getAttribute("population-name");
+    var message;
+    if (popName) {
+        message = "Drag into the grid to add an activity for the population " + popName
+    } else {
+        message = "Drag into the grid to add an activity for all subjects"
+    }
+    registerHoverTip(marker, message)
+}
+
+function registerHoverTips() {
+    $$('.new-marker').each(registerNewMarkerHoverTip)
+    registerHoverTip($('delete-drop'), "Drag an activity from the grid to delete it")
+}
+
+Event.observe(window, "dom:loaded", registerHoverTips)
+</script>
 
 <style type="text/css">
     #no-activities-message td {
@@ -528,7 +549,7 @@ Event.observe(window, "load", createAutocompleter)
         padding: 10px;
     }
 
-   #revision-changes {
+    #revision-changes {
         float: right;
         width: 29%;
     }
@@ -578,44 +599,54 @@ Event.observe(window, "load", createAutocompleter)
         overflow-x:auto;
         display:block;
     }
-
+    
     .indicator-column {
         border-style: none;
     }
 
     .palette {
-        float: left;
         position: relative;
-        margin-right: 20px
+        padding-left: 12em;
     }
 
-    .palette span.tab {
-        border: 1px solid #ccc;
-        margin: 0;
-        margin-left: 5px;
-        padding: 2px;
-        font-size: 90%;
+    .palette .header {
+        line-height: 100%;
+        text-align: left;
     }
 
     .palette div.well {
-        border: 1px solid #ccc;
         width: 50px;
         text-align: center;
-        margin: 2px 5px 10px 5px;
+        margin: 2px 10px 10px 0px;
+        float: left
     }
 
-    .palette div#newMarkerArea {
+    .palette .new-marker {
         height: 50px;
         vertical-align: middle;
         line-height: 50px;
         cursor: move;
     }
 
-    .palette div#deleteDrop {
-        width: 40px; /* allow for padding */
+    .palette div#delete-drop {
         z-index: 1;
-        padding: 5px;
+        margin-left: 25px
+    }
+
+    .palette div#delete-drop p {
+        height: 40px;
+        padding: 0;
+        margin: 5px;
         font-size: 120%;
+    }
+
+    .palette div#delete-drop.hover {
+        background-color: #f99;
+        cursor: pointer;
+    }
+    
+    .palette .tip {
+        clear: both;
     }
 </style>
 </head>
@@ -639,16 +670,25 @@ Event.observe(window, "load", createAutocompleter)
             It begins on day ${period.startDay} of ${studySegment.qualifiedName}.
         </p>
 
-        <div class="palette">
-            <span class="tab" title="Add an activity for all subjects">Add</span>
-            <div class="well" id="newMarkerArea">
-                <div class="newMarker">X</div>
+        <div class="palette autoclear">
+            <div class="well card" id="add-marker-area">
+                <div class="header" title="Add an activity for all subjects">Add</div>
+                <div class="new-marker">X</div>
             </div>
 
-            <span class="tab">Delete</span>
-            <div class="well" id="deleteDrop">
-                Drop Here
+            <c:forEach items="${study.populations}" var="pop">
+                <div class="well card" title="Add an activity for subjects in the ${pop.name} population">
+                    <div class="header">Add</div>
+                    <div class="new-marker" id="population-marker-${pop.id}" population-name="${pop.name}">${pop.abbreviation}</div>
+                </div>
+            </c:forEach>
+
+            <div class="well card" id="delete-drop">
+                <div class="header">Delete</div>
+                <p>Drop Here</p>
             </div>
+
+            <p class="tip" id="palette-tip">&nbsp;</p>
          </div>
 
         <form:form>
@@ -701,19 +741,19 @@ Event.observe(window, "load", createAutocompleter)
                                 <tags:activityIndicator id="row-${gridStatus.index}-indicator"/>
                             </td>
                             <th class="activity">
-                                    ${gridRow.activity.name}
+                                ${gridRow.activity.name}
                                 <form:hidden path="grid[${gridStatus.index}].activity"/>
                             </th>
                             <c:forEach items="${gridRow.eventIds}" varStatus="cStatus">
                                 <td class="counter">
-                                    <c:choose>
-                                        <c:when test="${not empty gridRow.eventIds[cStatus.index]}">
-                                        <span id="grid[${gridStatus.index}].eventIds[${cStatus.index}]" value="${gridRow.eventIds[cStatus.index]}" class="marker">X</span>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <span id="grid[${gridStatus.index}].eventIds[${cStatus.index}]" value="-1" class="marker"></span>
-                                    </c:otherwise>
-                                    </c:choose>
+                                    <form:hidden path="grid[${gridStatus.index}].eventIds[${cStatus.index}]"/>
+                                    <span class="marker">
+                                        <c:if test="${not empty command.grid[gridStatus.index].eventIds[cStatus.index]}">
+                                            ${empty command.grid[gridStatus.index].eventIds[cStatus.index].population 
+                                                ? 'X' 
+                                                : command.grid[gridStatus.index].eventIds[cStatus.index].population.abbreviation }
+                                        </c:if>
+                                    </span>
                                 </td>
                             </c:forEach>
                             <td>

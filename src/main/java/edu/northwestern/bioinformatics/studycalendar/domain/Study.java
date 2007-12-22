@@ -192,6 +192,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     }
 
     @OneToMany(mappedBy = "study")
+    @OrderBy(value = "name")
     public Set<Population> getPopulations() {
         return populations;
     }

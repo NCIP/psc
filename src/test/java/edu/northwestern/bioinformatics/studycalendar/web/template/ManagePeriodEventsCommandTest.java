@@ -3,25 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-
-import java.util.List;
-import java.util.ArrayList;
-
-import static org.easymock.EasyMock.*;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.nullSafeEquals;
 import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
-import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -82,173 +78,15 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     ) {
         assertEquals("Wrong activity", expectedActivity, actual.getActivity());
         assertEquals("Wrong details", expectedDetails, actual.getDetails());
-        assertEqualArrays("Wrong counts", eventIds, actual.getEventIds().toArray(new Integer[0]));
-    }
-
-    public void testApplyToBlank() throws Exception {
-        ManagePeriodEventsCommand.GridRow row1 =
-                createGridRow(activities.get(0), "Det A", null, null, 2, null, null, null, null, null );
-        row1.setUpdated(true);
-        row1.setAddition(true);
-
-        initCommand();
-
-        command.getGrid().add(row1);
-        PlannedActivity event1 = new PlannedActivity();
-        event1.setDetails(row1.getDetails());
-        event1.setActivity(row1.getActivity());
-        amendmentService.updateDevelopmentAmendment(same(period), addFor(event1));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals("Event was added directory" , 0, period.getPlannedActivities().size());
-    }
-
-    public void testApplyDoesNotAddOverExisting() throws Exception {
-        PlannedActivity expectedEvent = createPlannedActivity(3, 4, 25);
-
-        period.addPlannedActivity(expectedEvent);
-        initCommand();
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals(1, period.getPlannedActivities().size());
-        assertSame(expectedEvent, period.getPlannedActivities().get(0));
-    }
-
-    public void testApplyAddSecond() throws Exception {
-        PlannedActivity expectedEvent = createPlannedActivity(3, 4, 25);
-
-        period.addPlannedActivity(expectedEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow gr = command.getGrid().get(0);
-        gr.setUpdated(true);
-        gr.setAddition(true);
-
-        amendmentService.updateDevelopmentAmendment(same(period), addFor(expectedEvent));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals(1, period.getPlannedActivities().size());
-        assertSame(period.getPlannedActivities().get(0), expectedEvent);
-    }
-
-    public void testApplyRemove() throws Exception {
-        PlannedActivity existingEvent = createPlannedActivity(4, 2, 23);
-        period.addPlannedActivity(existingEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow rowToRemove = command.getGrid().get(0);
-        rowToRemove.setUpdated(true);
-        rowToRemove.setColumnNumber(existingEvent.getDay()-1);
-        rowToRemove.setAddition(false);
-
-        amendmentService.updateDevelopmentAmendment(same(period), removeFor(existingEvent));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-        assertEquals("Event should not be directly removed", 1, period.getPlannedActivities().size());
-    }
-
-    public void testApplyChangeDetailsDirectly() throws Exception {
-        PlannedActivity existingEvent = createPlannedActivity(4, 2, "Det A", 23, null);
-        period.addPlannedActivity(existingEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
-        rowToUpdate.setUpdated(true);
-        rowToUpdate.setColumnNumber(-1);
-        rowToUpdate.setDetails("Det B");
-
-        expect(plannedActivityDao.getById(23)).andReturn(existingEvent);
-        amendmentService.updateDevelopmentAmendment(existingEvent,
-            PropertyChange.create("details", "Det A", "Det B"));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals(1, period.getPlannedActivities().size());
-        PlannedActivity actual = period.getPlannedActivities().get(0);
-        assertEquals("Details should not be updated in place", "Det A", actual.getDetails());
-    }
-
-    public void testApplyConditionalDetailsDirectly() throws Exception {
-        String initialConditionalDetails = "InitialConditionalDetails";
-        String expectedConditionalDetails = "ExpectedConditionalDetails";
-        PlannedActivity existingEvent = createPlannedActivity(4, 2, "Det A", 23, initialConditionalDetails);
-        period.addPlannedActivity(existingEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
-        rowToUpdate.setUpdated(true);
-        rowToUpdate.setConditionalUpdated(true);
-        rowToUpdate.setConditionalDetails(expectedConditionalDetails);
-
-        expect(plannedActivityDao.getById(23)).andReturn(existingEvent);
-        amendmentService.updateDevelopmentAmendment(existingEvent,
-            PropertyChange.create("condition", initialConditionalDetails, expectedConditionalDetails));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals(1, period.getPlannedActivities().size());
-        PlannedActivity actual = period.getPlannedActivities().get(0);
-        assertEquals("ConditionalDetails should not be directly updated", initialConditionalDetails,
-            actual.getCondition());
-    }
-
-    public void testApplyConditionalDetailsWithUncheckedCheckbox() throws Exception {
-        String expectedConditionalDetails = "ExpectedConditionalDetails";
-        PlannedActivity existingEvent = createPlannedActivity(4, 2, 23);
-        period.addPlannedActivity(existingEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow rowToUpdate = command.getGrid().get(0);
-        rowToUpdate.setUpdated(true);
-        rowToUpdate.setConditionalUpdated(true);
-        rowToUpdate.setConditionalDetails(expectedConditionalDetails);
-
-        expect(plannedActivityDao.getById(existingEvent.getId())).andReturn(existingEvent);
-        amendmentService.updateDevelopmentAmendment(existingEvent,
-            PropertyChange.create("condition", null, expectedConditionalDetails));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-    }
-
-    public void testApplyAnotherWithDifferentDetails() throws Exception {
-        PlannedActivity existingEvent = createPlannedActivity(4, 2, "Det A", 2, null);
-        period.addPlannedActivity(existingEvent);
-        initCommand();
-
-        ManagePeriodEventsCommand.GridRow row =
-                createGridRow(activities.get(4), "Det B", null, null, null, 3, null, null, null, null);
-        row.setUpdated(true);
-        row.setAddition(true);
-        command.setOldRow(row);
-        command.getGrid().add(row);
-
-        PlannedActivity addedEvent = createPlannedActivity(4, 2, "Det B", null, null);
-        amendmentService.updateDevelopmentAmendment(same(period), addFor(addedEvent));
-
-        replayMocks();
-        command.apply();
-        verifyMocks();
-
-        assertEquals("New PE added directly to model", 1, period.getPlannedActivities().size());
-        assertEquals("Details incorrectly changed on old event", "Det A",
-            period.getPlannedActivities().get(0).getDetails());
+        assertEquals("Wrong number of planned activities", eventIds.length, actual.getEventIds().size());
+        for (int i = 0; i < eventIds.length; i++) {
+            Integer eventId = eventIds[i];
+            if (eventId != null) {
+                assertEquals("Wrong planned activity " + i, eventId, actual.getEventIds().get(0).getId());
+            } else {
+                assertNull("Expected no planned activity at " + i);
+            }
+        }
     }
 
     private static abstract class AbstractPlannedActivityMatcher implements IArgumentMatcher {
@@ -299,7 +137,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         public boolean matches(Object object) {
             if (!(object instanceof Add)) return false;
             // Double cast to work around a javac bug
-            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Add) object).getChild());
+            return plannedActivityMatches((PlannedActivity) ((Add) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
@@ -320,7 +158,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         public boolean matches(Object object) {
             if (!(object instanceof Remove)) return false;
             // Double cast to work around a javac bug
-            return plannedActivityMatches((PlannedActivity) (PlanTreeNode) ((Remove) object).getChild());
+            return plannedActivityMatches((PlannedActivity) ((Remove) object).getChild());
         }
 
         public void appendTo(StringBuffer sb) {
@@ -329,7 +167,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     private void initCommand() {
-        command = new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
+        command = new ManagePeriodEventsCommand(period);
     }
 
     private PlannedActivity createPlannedActivity(int activityId, int day, Integer id) {
@@ -353,7 +191,7 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     ) {
         ManagePeriodEventsCommand.GridRow row = new ManagePeriodEventsCommand.GridRow(activity, details, eventIds.length, conditionalDetails);
         for (int i = 0; i < eventIds.length; i++) {
-            row.getEventIds().set(i, eventIds[i]);
+            row.getEventIds().set(i, setId(eventIds[i], new PlannedActivity()));
         }
         return row;
     }

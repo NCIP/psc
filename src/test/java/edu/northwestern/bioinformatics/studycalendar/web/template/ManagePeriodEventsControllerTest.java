@@ -1,25 +1,31 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import static java.util.Arrays.asList;
-
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import static org.easymock.classextension.EasyMock.expect;
-import org.easymock.classextension.EasyMock;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.easymock.IArgumentMatcher;
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
+import static java.util.Arrays.asList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -33,8 +39,6 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private Period period, revisedPeriod;
     private List<Activity> activities = new LinkedList<Activity>();
     private ManagePeriodEventsCommand command;
-    private AmendmentService amendmentService;
-    private StudyService studyService;
     private DeltaService deltaService;
     private TemplateService templateService;
     private Study parent;
@@ -59,20 +63,16 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         periodDao = registerDaoMockFor(PeriodDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
-        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
-        amendmentService = registerMockFor(AmendmentService.class);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         deltaService = registerMockFor(DeltaService.class);
-        studyService = registerMockFor(StudyService.class);
         templateService = registerMockFor(TemplateService.class);
 
         controller.setPeriodDao(periodDao);
         controller.setSourceDao(sourceDao);
         controller.setActivityDao(activityDao);
         controller.setPlannedActivityDao(plannedActivityDao);
-        controller.setControllerTools(controllerTools);
         controller.setDeltaService(deltaService);
-        controller.setAmendmentService(amendmentService);
-        controller.setStudyService(studyService);
+        controller.setControllerTools(controllerTools);
         controller.setTemplateService(templateService);
             
         request.setMethod("GET"); // To simplify the binding tests
@@ -80,7 +80,7 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         expect(periodDao.getById(15)).andReturn(period).anyTimes();
         expect(activityDao.getAll()).andReturn(activities).anyTimes();
-        command = new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
+        command = new ManagePeriodEventsCommand(period);
     }
 
     private ManagePeriodEventsCommand handleAndReturnBoundCommand() throws Exception {
@@ -103,22 +103,11 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
         expect(deltaService.revise(period)).andReturn(expectedPeriod);
 
         replayMocks();
-        Object command = controller.formBackingObject(request);
+        Object command = controller.getCommand(request);
         verifyMocks();
 
         assertTrue(command instanceof ManagePeriodEventsCommand);
         assertSame(expectedPeriod, ((ManagePeriodEventsCommand) command).getPeriod());
-    }
-
-    public void testFormBackingObjectForPOST() throws Exception {
-        request.setMethod("POST");
-
-        replayMocks();
-        Object command = controller.formBackingObject(request);
-        verifyMocks();
-
-        assertTrue(command instanceof ManagePeriodEventsCommand);
-        assertSame(period, ((ManagePeriodEventsCommand) command).getPeriod());
     }
 
     public void testBindingGridDetails() throws Exception {
@@ -132,22 +121,6 @@ public class ManagePeriodEventsControllerTest extends ControllerTestCase {
 
         ManagePeriodEventsCommand command = handleAndReturnBoundCommand();
         assertEquals("Value not bound", null, command.getGrid().get(7).getDetails());
-    }
-
-    public void testBindingGridCount() throws Exception {
-        request.addParameter("grid[7].eventIds[4]", "11");
-
-        ManagePeriodEventsCommand command = handleAndReturnBoundCommand();
-        Integer actual = command.getGrid().get(7).getEventIds().get(4);
-        assertEquals("Value not bound", 11, (int) actual);
-    }
-
-    public void testBindingGridCountBlankIsZero() throws Exception {
-        request.addParameter("grid[7].eventIds[4]", "22");
-
-        ManagePeriodEventsCommand command = handleAndReturnBoundCommand();
-        Integer actual = command.getGrid().get(7).getEventIds().get(4);
-        assertEquals("Value not bound", 22, (int) actual);
     }
 
     public void testBindingGridActivity() throws Exception {

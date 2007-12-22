@@ -1,21 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
+import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -26,7 +27,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,32 +38,26 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 @AccessControl(roles = Role.STUDY_COORDINATOR)
-public class ManagePeriodEventsController  extends PscSimpleFormController {
+public class ManagePeriodEventsController extends PscAbstractCommandController<ManagePeriodEventsCommand> {
     private PeriodDao periodDao;
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
-    private StudyService studyService;
-    private DeltaService deltaService;
-    private AmendmentService amendmentService;
     private TemplateService templateService;
+    private DeltaService deltaService;
     private DaoFinder daoFinder;
     private SourceDao sourceDao;
 
     public ManagePeriodEventsController() {
-        setBindOnNewForm(true);
         setCommandClass(ManagePeriodEventsCommand.class);
-        setFormView("managePeriod");
         setCrumb(new Crumb());
     }
 
     @Override
-    protected Object formBackingObject(HttpServletRequest request) throws Exception {
+    protected Object getCommand(HttpServletRequest request) throws Exception {
         int periodId = ServletRequestUtils.getRequiredIntParameter(request, "id");
         Period period = periodDao.getById(periodId);
-        if (!isFormSubmission(request)) { // TODO: the need for this branch points up that the AJAX requests should be handled by a different controller
-            period = deltaService.revise(period);
-        }
-        return new ManagePeriodEventsCommand(period, plannedActivityDao, amendmentService);
+        period = deltaService.revise(period);
+        return new ManagePeriodEventsCommand(period);
     }
 
     @Override
@@ -72,10 +66,18 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         binder.registerCustomEditor(String.class, "grid.details", new StringTrimmerEditor(true));
         binder.registerCustomEditor(String.class, "grid.conditionalDetails", new StringTrimmerEditor(true));
         getControllerTools().registerDomainObjectEditor(binder, "grid.activity", activityDao);
+        getControllerTools().registerDomainObjectEditor(binder, "grid.eventIds", plannedActivityDao);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
     }
 
     @Override
+    @SuppressWarnings({ "unchecked" })
+    protected ModelAndView handle(ManagePeriodEventsCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        Map<String, Object> refdata = referenceData(request, command, errors);
+        refdata.putAll(errors.getModel());
+        return new ModelAndView("managePeriod", refdata);
+    }
+
     protected Map<String, Object> referenceData(
         HttpServletRequest request, Object oCommand, Errors errors
     ) throws Exception {
@@ -103,27 +105,6 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         return refdata;
     }
 
-    @Override
-    protected ModelAndView processFormSubmission(
-        HttpServletRequest request, HttpServletResponse response, Object oCommand,
-        BindException errors
-    ) throws Exception {
-        ManagePeriodEventsCommand command = (ManagePeriodEventsCommand) oCommand;
-        PlannedActivity event = command.apply();
-        studyService.saveStudyFor(command.getPeriod());
-        ManagePeriodEventsCommand.GridRow row = command.getOldRow();
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        if (event != null) {
-            map.put("id", event.getId());
-        }
-        map.put("rowNumber", row.getRowNumber());
-        map.put("columnNumber", row.getColumnNumber());
-        getControllerTools().addHierarchyToModel(command.getPeriod(), map);
-        return new ModelAndView("template/ajax/updateManagePeriod", map);
-    }
-
-
     ////// CONFIGURATION
 
     @Required
@@ -136,24 +117,13 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         this.activityDao = activityDao;
     }
 
-    @Required
     public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
         this.plannedActivityDao = plannedActivityDao;
     }
 
     @Required
-    public void setAmendmentService(AmendmentService amendmentService) {
-        this.amendmentService = amendmentService;
-    }
-
-    @Required
     public void setDeltaService(DeltaService templateService) {
         this.deltaService = templateService;
-    }
-
-    @Required
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
     }
 
     @Required
@@ -176,9 +146,9 @@ public class ManagePeriodEventsController  extends PscSimpleFormController {
         public String getName(BreadcrumbContext context) {
             Period p = context.getPeriod();
             if (p.getName() != null) {
-                return p.getName();
+                return "Manage " + p.getName();
             } else {
-                return "Period";
+                return "Manage period";
             }
         }
 

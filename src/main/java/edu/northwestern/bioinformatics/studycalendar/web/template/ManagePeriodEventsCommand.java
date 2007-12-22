@@ -4,9 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 import org.slf4j.Logger;
@@ -23,24 +20,12 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public class ManagePeriodEventsCommand {
-    private static final Logger log = LoggerFactory.getLogger(ManagePeriodEventsCommand.class.getName());
     private Period period;
-    private PlannedActivityDao plannedActivityDao;
-    private AmendmentService amendmentService;
-    private GridRow oldRow;
 
-
-    /** Representation of the activity/day grid.
-     * Map keys are activity IDs,
-     * values are lists of counts of the number of times that activity occurs on that day
-     * (list index is day number, zero-based).
-     */
     private List<GridRow> grid;
 
-    public ManagePeriodEventsCommand(Period period, PlannedActivityDao plannedActivityDao, AmendmentService amendmentService) {
+    public ManagePeriodEventsCommand(Period period) {
         this.period = period;
-        this.plannedActivityDao = plannedActivityDao;
-        this.amendmentService = amendmentService;
         grid = createGrid();
     }
 
@@ -66,94 +51,11 @@ public class ManagePeriodEventsCommand {
             if (!bins.containsKey(binKey)) {
                 bins.put(binKey, new GridRow(event.getActivity(), event.getDetails(), dayCount, event.getCondition()));
             }
-            bins.get(binKey).addId(event);
+            bins.get(binKey).addPlannedActivity(event);
         }
         return new ExpandingList<GridRow>(
             new GridFiller(dayCount),
             new LinkedList<GridRow>(bins.values()));
-    }
-
-    /**
-     * Apply any changes in the grid to the period in the command.
-     */
-    public PlannedActivity apply() {
-        // calculate difference from bound grid
-         for (GridRow bound : getGrid()) {
-            setOldRow(bound);
-            //just need to update details on the row
-            if (!bound.isUpdated()) continue;
-            if (bound.isDetailsUpdated()) {
-                updateDetails(bound, bound.getDetails());
-            } else if (bound.isConditionalUpdated()) {
-                log.info("updating conditional details");
-                updateConditionalParameters(bound);
-                bound.setColumnNumber(-1);
-            } else {
-                log.debug("Processing grid " + bound.getRowNumber() + ", " + bound.getColumnNumber());
-                if (!bound.isAddition()) {
-                    log.debug("Action is remove from an existing row");
-                    Integer id = bound.getEventIds().get(bound.getColumnNumber());
-                    if (id != null) {
-                        removeEvent(id);
-                    } else {
-                        log.debug("Attempted to remove event twice: " + bound.getRowNumber() + ", " + bound.getColumnNumber() + " (r, c)");
-                    }
-                    return null;
-                } else {
-                    return addEvent(bound);
-                }
-            }
-        }
-        return null;
-    }
-
-    public void setOldRow (GridRow row) {
-        this.oldRow = row;
-    }
-
-    public GridRow getOldRow() {
-        return this.oldRow;
-    }
-
-    private void updateConditionalParameters(GridRow row) {
-        for (Integer id: row.getEventIds()) {
-            if (id != null && id>-1) {
-                PlannedActivity event = plannedActivityDao.getById(id);
-                amendmentService.updateDevelopmentAmendment(event,
-                    PropertyChange.create("condition", event.getCondition(),
-                        row.getConditionalDetails()));
-            }
-        }
-    }
-
-    protected PlannedActivity addEvent(GridRow row) {
-        PlannedActivity newEvent = new PlannedActivity();
-        newEvent.setDay(row.getColumnNumber()+1);
-        newEvent.setActivity(row.getActivity());
-        newEvent.setDetails(row.getDetails());
-        newEvent.setCondition(row.getConditionalDetails());
-
-        amendmentService.updateDevelopmentAmendment(period, Add.create(newEvent));
-
-        return newEvent;
-    }
-
-    private void removeEvent(Integer eventId) {
-        for (PlannedActivity event : period.getPlannedActivities()) {
-            if (eventId.equals(event.getId())) {
-                amendmentService.updateDevelopmentAmendment(period, Remove.create(event));
-            }
-        }
-    }
-
-    private void updateDetails(GridRow row, String details){
-        for (Integer id: row.getEventIds()) {
-            if (id != null && id >-1) {
-                PlannedActivity event = plannedActivityDao.getById(id);
-                amendmentService.updateDevelopmentAmendment(event,
-                    PropertyChange.create("details", event.getDetails(), details));
-            }
-        }
     }
 
     public List<GridRow> getGrid() {
@@ -178,19 +80,17 @@ public class ManagePeriodEventsCommand {
 
     public static class GridRow {
         private Activity activity;
-        private List<Integer> eventIds;
+        // TODO: rename
+        private List<PlannedActivity> eventIds;
 
         private String details;
         private int rowNumber;
         private int columnNumber;
-        private boolean addition;
-        private boolean updated;
 
         private String conditionalDetails;
-        private boolean conditionalUpdated;
 
         public GridRow(int length) {
-            eventIds = new ArrayList<Integer>(length);
+            eventIds = new ArrayList<PlannedActivity>(length);
             while (eventIds.size() < length) {
                 eventIds.add(null);
             }
@@ -205,7 +105,7 @@ public class ManagePeriodEventsCommand {
 
         ////// LOGIC
 
-         private static String key(Activity activity, String details, String conditionalDetails) {
+        private static String key(Activity activity, String details, String conditionalDetails) {
             return activity.getId() + details + conditionalDetails;
         }
 
@@ -213,15 +113,9 @@ public class ManagePeriodEventsCommand {
             return key(event.getActivity(), event.getDetails(), event.getCondition());
         }
 
-        public void addId(PlannedActivity event) {
-            int id = event.getId();
+        public void addPlannedActivity(PlannedActivity event) {
             int day = event.getDay();
-            this.getEventIds().set(day-1, id);
-            //To change body of created methods use File | Settings | File Templates.
-        }
-
-        public boolean isDetailsUpdated() {
-            return getColumnNumber() <0;
+            this.getEventIds().set(day-1, event);
         }
 
         ////// BOUND PROPERTIES
@@ -234,11 +128,11 @@ public class ManagePeriodEventsCommand {
             this.activity = activity;
         }
 
-        public List<Integer> getEventIds() {
+        public List<PlannedActivity> getEventIds() {
             return eventIds;
         }
 
-        public void setEventIds(List<Integer> eventIds) {
+        public void setEventIds(List<PlannedActivity> eventIds) {
             this.eventIds = eventIds;
         }
 
@@ -266,44 +160,12 @@ public class ManagePeriodEventsCommand {
             this.columnNumber = columnNumber;
         }
 
-        public boolean isAddition() {
-            return addition;
-        }
-
-        public void setAddition(boolean addition) {
-            this.addition = addition;
-        }
-
-        public boolean isUpdated() {
-            return updated;
-        }
-
-        public void setUpdated(boolean updated) {
-            this.updated = updated;
-        }
-
-        public boolean isConditionalCheckbox() {
-            if (getConditionalDetails()!=null && getConditionalDetails().length()>0) {
-                return true;
-            }
-            return false;
-        }
-
         public String getConditionalDetails() {
             return conditionalDetails;
         }
 
         public void setConditionalDetails(String conditionalDetails) {
             this.conditionalDetails = conditionalDetails;
-        }
-
-
-        public boolean isConditionalUpdated() {
-            return conditionalUpdated;
-        }
-
-        public void setConditionalUpdated(boolean conditionalUpdated) {
-            this.conditionalUpdated = conditionalUpdated;
         }
     }
 }
