@@ -52,8 +52,8 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     }
 
     public void testInitializeGrid() throws Exception {
-        period.addPlannedActivity(createPlannedActivity( 0, 2, "Det A", 2, null));
-        period.addPlannedActivity(createPlannedActivity( 0, 5, "Det B", 5, null));
+        period.addPlannedActivity(createPlannedActivity( 0, 2, "Det A", 37, null));
+        period.addPlannedActivity(createPlannedActivity( 0, 5, "Det B", 55, null));
         period.addPlannedActivity(createPlannedActivity( 2, 7, 27));
         period.addPlannedActivity(createPlannedActivity( 3, 5, 35));
         period.addPlannedActivity(createPlannedActivity( 4, 3, "Det C", 43, null));
@@ -64,8 +64,8 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         initCommand();
         assertEquals("Wrong number of rows in grid", 6, command.getGrid().size());
 
-        assertGridRow(command.getGrid().get(0), activities.get(0), "Det A", null, 2, null, null, null, null, null);
-        assertGridRow(command.getGrid().get(1), activities.get(0), "Det B", null, null, null, null, 5, null, null);
+        assertGridRow(command.getGrid().get(0), activities.get(0), "Det A", null, 37, null, null, null, null, null);
+        assertGridRow(command.getGrid().get(1), activities.get(0), "Det B", null, null, null, null, 55, null, null);
         assertGridRow(command.getGrid().get(2), activities.get(2), null, null, null, null, null, null, null, 27);
         assertGridRow(command.getGrid().get(3), activities.get(3), null, null, null, null, null, 35, null, null);
         assertGridRow(command.getGrid().get(5), activities.get(4), "Det C", null, null, 143, null, null, null, null);
@@ -74,17 +74,18 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
 
     private void assertGridRow(
         ManagePeriodEventsCommand.GridRow actual, Activity expectedActivity, String expectedDetails,
-        Integer... eventIds
+        Integer... expectedPlannedActivityIds
     ) {
         assertEquals("Wrong activity", expectedActivity, actual.getActivity());
         assertEquals("Wrong details", expectedDetails, actual.getDetails());
-        assertEquals("Wrong number of planned activities", eventIds.length, actual.getEventIds().size());
-        for (int i = 0; i < eventIds.length; i++) {
-            Integer eventId = eventIds[i];
-            if (eventId != null) {
-                assertEquals("Wrong planned activity " + i, eventId, actual.getEventIds().get(0).getId());
+        assertEquals("Wrong number of planned activities", expectedPlannedActivityIds.length, actual.getEventIds().size());
+        for (int i = 0; i < expectedPlannedActivityIds.length; i++) {
+            Integer paId = expectedPlannedActivityIds[i];
+            if (paId != null) {
+                assertNotNull("No actual planned activity at " + i + "; expected " + paId, actual.getEventIds().get(i));
+                assertEquals("Wrong planned activity " + i, paId, actual.getEventIds().get(i).getId());
             } else {
-                assertNull("Expected no planned activity at " + i);
+                assertNull("Expected no planned activity at " + i, paId);
             }
         }
     }
