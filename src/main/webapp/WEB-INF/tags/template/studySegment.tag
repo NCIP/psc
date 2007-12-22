@@ -93,6 +93,7 @@
                         <ul>
                             <c:forEach items="${entry.value.events}" var="event">
                                 <li>
+                                    <c:if test="${not empty event.population}">${event.population.abbreviation}:</c:if>
                                     <c:choose>
                                         <c:when test="${not editable}"><span>${event.activity.name}</span></c:when>
                                         <c:otherwise><a href="<c:url value="/pages/cal/managePeriod?id=${event.period.id}"/>">${event.activity.name}</a></c:otherwise>
