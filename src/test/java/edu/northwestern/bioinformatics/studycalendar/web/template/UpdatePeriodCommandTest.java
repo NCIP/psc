@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import static org.easymock.EasyMock.expect;
@@ -59,7 +58,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
-        command.setEventIds(ids);
+        command.setPlannedActivities(ids);
         command.setDetails(detailsToChange);
         command.setColumnNumber(-1);
         
@@ -86,7 +85,7 @@ public class UpdatePeriodCommandTest  extends EditCommandTestCase {
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
-        command.setEventIds(ids);
+        command.setPlannedActivities(ids);
         command.setConditionalDetails(detailsToChange);
         command.setColumnNumber(0);
 

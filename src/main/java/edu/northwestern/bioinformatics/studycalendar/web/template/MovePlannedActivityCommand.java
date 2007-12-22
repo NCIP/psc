@@ -15,7 +15,7 @@ public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
 
     @Override
     protected void performEdit() {
-        Integer targetId = getEventIds().get(getMoveFrom());
+        Integer targetId = getPlannedActivities().get(getMoveFrom());
         if (targetId == null || targetId < 0) {
             throw new StudyCalendarValidationException("No event ID for the requested move");
         }

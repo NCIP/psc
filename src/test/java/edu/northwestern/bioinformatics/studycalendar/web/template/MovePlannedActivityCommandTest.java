@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Duration;
@@ -12,7 +11,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import static org.easymock.EasyMock.expect;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Arrays;
@@ -55,7 +53,7 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
         period.addPlannedActivity(eventOne);
 
         List<Integer> ids = Arrays.asList(null, eventOne.getId());
-        command.setEventIds(ids);
+        command.setPlannedActivities(ids);
         command.setMoveFrom(1);
         command.setMoveTo(4);
 
@@ -77,7 +75,7 @@ public class MovePlannedActivityCommandTest extends EditCommandTestCase {
         eventOne.setId(21);
         period.addPlannedActivity(eventOne);
 
-        command.setEventIds(Arrays.asList(14, 16, 21));
+        command.setPlannedActivities(Arrays.asList(14, 16, 21));
         command.setMoveFrom(2);
         command.setMoveTo(0);
 

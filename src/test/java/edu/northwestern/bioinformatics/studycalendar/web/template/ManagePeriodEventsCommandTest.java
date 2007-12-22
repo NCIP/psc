@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -10,7 +9,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static gov.nih.nci.cabig.ctms.lang.ComparisonTools.nullSafeEquals;
 import org.easymock.IArgumentMatcher;
@@ -26,8 +24,6 @@ import java.util.List;
 public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     private ManagePeriodEventsCommand command;
     private Period period;
-    private PlannedActivityDao plannedActivityDao;
-    private AmendmentService amendmentService;
 
     private List<Activity> activities;
     private Study study;
@@ -36,8 +32,6 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         period = createPeriod("src", 13, 7, 2);
-        plannedActivityDao = registerMockFor(PlannedActivityDao.class);
-        amendmentService = registerMockFor(AmendmentService.class);
 
         study = Fixtures.createBasicTemplate();
         study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(period);
@@ -78,12 +72,12 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     ) {
         assertEquals("Wrong activity", expectedActivity, actual.getActivity());
         assertEquals("Wrong details", expectedDetails, actual.getDetails());
-        assertEquals("Wrong number of planned activities", expectedPlannedActivityIds.length, actual.getEventIds().size());
+        assertEquals("Wrong number of planned activities", expectedPlannedActivityIds.length, actual.getPlannedActivities().size());
         for (int i = 0; i < expectedPlannedActivityIds.length; i++) {
             Integer paId = expectedPlannedActivityIds[i];
             if (paId != null) {
-                assertNotNull("No actual planned activity at " + i + "; expected " + paId, actual.getEventIds().get(i));
-                assertEquals("Wrong planned activity " + i, paId, actual.getEventIds().get(i).getId());
+                assertNotNull("No actual planned activity at " + i + "; expected " + paId, actual.getPlannedActivities().get(i));
+                assertEquals("Wrong planned activity " + i, paId, actual.getPlannedActivities().get(i).getId());
             } else {
                 assertNull("Expected no planned activity at " + i, paId);
             }
@@ -185,15 +179,5 @@ public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
         evt.setDetails(details);
         evt.setCondition(conditionalDetails);
         return evt;
-    }
-
-    private ManagePeriodEventsCommand.GridRow createGridRow(
-        Activity activity, String details, String conditionalDetails, Integer... eventIds
-    ) {
-        ManagePeriodEventsCommand.GridRow row = new ManagePeriodEventsCommand.GridRow(activity, details, eventIds.length, conditionalDetails);
-        for (int i = 0; i < eventIds.length; i++) {
-            row.getEventIds().set(i, setId(eventIds[i], new PlannedActivity()));
-        }
-        return row;
     }
 }

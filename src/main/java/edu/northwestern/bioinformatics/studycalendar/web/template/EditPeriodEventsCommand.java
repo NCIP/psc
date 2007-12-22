@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
@@ -31,7 +30,7 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     private Study study;
 
     private Activity activity;
-    private List<Integer> eventIds = new ArrayList<Integer>();
+    private List<Integer> plannedActivities = new ArrayList<Integer>();
 
     private String details;
     private String conditionalDetails;
@@ -77,12 +76,12 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
         this.activity = activity;
     }
 
-    public List<Integer> getEventIds() {
-        return eventIds;
+    public List<Integer> getPlannedActivities() {
+        return plannedActivities;
     }
 
-    public void setEventIds(List<Integer> eventIds) {
-        this.eventIds = eventIds;
+    public void setPlannedActivities(List<Integer> plannedActivities) {
+        this.plannedActivities = plannedActivities;
     }
 
     public String getDetails() {

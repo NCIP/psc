@@ -45,7 +45,7 @@ function addActivityRow() {
 
     // input cells
     for (var i = 0; i < dayCount; i++) {
-        var name = 'grid[' + rowCount + '].eventIds[' + i + ']'
+        var name = 'grid[' + rowCount + '].plannedActivities[' + i + ']'
         var input = Builder.node('input', {
             id: name,
             name: name,
@@ -123,11 +123,11 @@ function extractRow(gridElementId) {
     return gridElementId.substring(gridElementId.indexOf("[") + 1, gridElementId.indexOf("]"))
 }
 
-// extracts row and column from an ID like grid[row].eventIds[col]
+// extracts row and column from an ID like grid[row].plannedActivities[col]
 function extractRowAndColumn(gridElementId) {
     var row = extractRow(gridElementId);
-    var eventIdsPortion = gridElementId.substring(gridElementId.indexOf("]") + 1);
-    var col = eventIdsPortion.substring(eventIdsPortion.indexOf("[") + 1, eventIdsPortion.indexOf("]"));
+    var plannedActivitiesPortion = gridElementId.substring(gridElementId.indexOf("]") + 1);
+    var col = plannedActivitiesPortion.substring(plannedActivitiesPortion.indexOf("[") + 1, plannedActivitiesPortion.indexOf("]"));
 
     return [row, col];
 }
@@ -148,9 +148,9 @@ function addParametersForRow(data, row) {
     }
 
     for (var c = 0; c < ${period.duration.days}; c++) {
-        var val = $('grid[' + row + '].eventIds[' + c + ']').getAttribute('value')
+        var val = $('grid[' + row + '].plannedActivities[' + c + ']').getAttribute('value')
         if (val && val != -1) {
-            data['eventIds[' + c + ']'] = val;
+            data['plannedActivities[' + c + ']'] = val;
         }
     }
 }
@@ -178,11 +178,11 @@ function executePlannedActivityMove(row, fromCol, toCol) {
     var href = '<c:url value="/pages/cal/managePeriod/move"/>';
     // Set up data variable
     var data = createBasicPostBody(row)
-    var eventIds = 'grid[' + row + '].eventIds';
+    var plannedActivities = 'grid[' + row + '].plannedActivities';
 
-    var fromElementId = eventIds + '[' + fromCol + ']';
+    var fromElementId = plannedActivities + '[' + fromCol + ']';
     if ($(fromElementId).getAttribute('value') != null) {
-        data['eventIds[' + fromCol + ']'] = $(fromElementId).getAttribute('value');
+        data['plannedActivities[' + fromCol + ']'] = $(fromElementId).getAttribute('value');
     }
 
     data.columnNumber = toCol;
@@ -744,14 +744,14 @@ Event.observe(window, "dom:loaded", registerHoverTips)
                                 ${gridRow.activity.name}
                                 <form:hidden path="grid[${gridStatus.index}].activity"/>
                             </th>
-                            <c:forEach items="${gridRow.eventIds}" varStatus="cStatus">
+                            <c:forEach items="${gridRow.plannedActivities}" varStatus="cStatus">
                                 <td class="counter">
-                                    <form:hidden path="grid[${gridStatus.index}].eventIds[${cStatus.index}]"/>
+                                    <form:hidden path="grid[${gridStatus.index}].plannedActivities[${cStatus.index}]"/>
                                     <span class="marker">
-                                        <c:if test="${not empty command.grid[gridStatus.index].eventIds[cStatus.index]}">
-                                            ${empty command.grid[gridStatus.index].eventIds[cStatus.index].population 
+                                        <c:if test="${not empty command.grid[gridStatus.index].plannedActivities[cStatus.index]}">
+                                            ${empty command.grid[gridStatus.index].plannedActivities[cStatus.index].population 
                                                 ? 'X' 
-                                                : command.grid[gridStatus.index].eventIds[cStatus.index].population.abbreviation }
+                                                : command.grid[gridStatus.index].plannedActivities[cStatus.index].population.abbreviation }
                                         </c:if>
                                     </span>
                                 </td>

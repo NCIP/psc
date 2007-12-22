@@ -28,7 +28,7 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
     }
     
     private void updateCondition() {
-        for (Integer id: getEventIds()) {
+        for (Integer id: getPlannedActivities()) {
             if (id != null && id>-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,
@@ -39,7 +39,7 @@ public class UpdatePeriodCommand extends EditPeriodEventsCommand {
     }
 
      private void updateDetails() {
-        for (Integer id: getEventIds()) {
+        for (Integer id: getPlannedActivities()) {
             if (id != null && id >-1) {
                 PlannedActivity event = plannedActivityDao.getById(id);
                 amendmentService.updateDevelopmentAmendment(event,

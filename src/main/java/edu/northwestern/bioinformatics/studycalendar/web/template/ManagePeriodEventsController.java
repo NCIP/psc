@@ -66,7 +66,7 @@ public class ManagePeriodEventsController extends PscAbstractCommandController<M
         binder.registerCustomEditor(String.class, "grid.details", new StringTrimmerEditor(true));
         binder.registerCustomEditor(String.class, "grid.conditionalDetails", new StringTrimmerEditor(true));
         getControllerTools().registerDomainObjectEditor(binder, "grid.activity", activityDao);
-        getControllerTools().registerDomainObjectEditor(binder, "grid.eventIds", plannedActivityDao);
+        getControllerTools().registerDomainObjectEditor(binder, "grid.plannedActivities", plannedActivityDao);
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
     }
 

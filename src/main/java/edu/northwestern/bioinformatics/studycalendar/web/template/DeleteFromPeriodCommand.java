@@ -9,7 +9,7 @@ import java.util.Map;
 public class DeleteFromPeriodCommand extends EditPeriodEventsCommand {
     @Override
     protected void performEdit() {
-        Integer id = getEventIds().get(getColumnNumber());
+        Integer id = getPlannedActivities().get(getColumnNumber());
         PlannedActivity plannedActivity = plannedActivityDao.getById(id);
         Remove remove = Remove.create(plannedActivity);
         amendmentService.updateDevelopmentAmendment(getPeriod(), remove);

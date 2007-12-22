@@ -1,13 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -80,8 +76,7 @@ public class ManagePeriodEventsCommand {
 
     public static class GridRow {
         private Activity activity;
-        // TODO: rename
-        private List<PlannedActivity> eventIds;
+        private List<PlannedActivity> plannedActivities;
 
         private String details;
         private int rowNumber;
@@ -90,9 +85,9 @@ public class ManagePeriodEventsCommand {
         private String conditionalDetails;
 
         public GridRow(int length) {
-            eventIds = new ArrayList<PlannedActivity>(length);
-            while (eventIds.size() < length) {
-                eventIds.add(null);
+            plannedActivities = new ArrayList<PlannedActivity>(length);
+            while (plannedActivities.size() < length) {
+                plannedActivities.add(null);
             }
         }
         
@@ -115,7 +110,7 @@ public class ManagePeriodEventsCommand {
 
         public void addPlannedActivity(PlannedActivity event) {
             int day = event.getDay();
-            this.getEventIds().set(day-1, event);
+            this.getPlannedActivities().set(day-1, event);
         }
 
         ////// BOUND PROPERTIES
@@ -128,12 +123,12 @@ public class ManagePeriodEventsCommand {
             this.activity = activity;
         }
 
-        public List<PlannedActivity> getEventIds() {
-            return eventIds;
+        public List<PlannedActivity> getPlannedActivities() {
+            return plannedActivities;
         }
 
-        public void setEventIds(List<PlannedActivity> eventIds) {
-            this.eventIds = eventIds;
+        public void setPlannedActivities(List<PlannedActivity> plannedActivities) {
+            this.plannedActivities = plannedActivities;
         }
 
         public String getDetails() {

@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -59,7 +58,7 @@ public class DeleteFromPeriodCommandTest extends EditCommandTestCase {
 
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(eventOne.getId());
-        command.setEventIds(ids);
+        command.setPlannedActivities(ids);
         command.setColumnNumber(0);
         expect(plannedActivityDao.getById(21)).andReturn(eventOne);
 
