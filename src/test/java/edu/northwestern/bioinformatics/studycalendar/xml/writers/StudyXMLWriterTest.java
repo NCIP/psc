@@ -317,7 +317,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     /* Validate methods */
     public String createAndValidateXml(Study study) throws Exception{
-        String s = writer.createStudyXml(study);
+        String s = writer.createStudyXML(study);
         log.debug("XML: {}", s);
         
         validate(s.getBytes());

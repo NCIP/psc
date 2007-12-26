@@ -36,7 +36,7 @@ public class StudyXMLWriter {
     private static final String REORDER = "reorder";
     private static final String PROPERTY_CHANGE = "property-change";
 
-    public static final String ROOT = "study";
+    public static final String STUDY = "study";
     public static final String AMENDMENT = "amendment";
     public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String EPOCH = "epoch";
@@ -69,14 +69,13 @@ public class StudyXMLWriter {
     private static final String NEW_VALUE = "new-value";
     
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
-
     {
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
     };
 
 
-    public String createStudyXml(Study study) throws Exception {
+    public String createStudyXML(Study study) throws Exception {
         Document document = createDocument();
 
         addStudy(document, study);
@@ -99,29 +98,29 @@ public class StudyXMLWriter {
 
     // TODO: Break all these add methods into an ElementFactory
     protected void addStudy(Document document, Study study) {
-        Element rootElement = document.createElement(ROOT);
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE );
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", XML_SCHEMA_ATTRIBUTE, XML_SCHEMA );
-        rootElement.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION );
+        Element element = document.createElement(STUDY);
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE );
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", XML_SCHEMA_ATTRIBUTE, XML_SCHEMA );
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION );
 
-        setAttrib(rootElement, ID, study.getGridId());
-        setAttrib(rootElement, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
+        setAttrib(element, ID, study.getGridId());
+        setAttrib(element, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
-        addPlannedCalendar(document, study, rootElement);
+        addPlannedCalendar(document, study, element);
 
         List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
         if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
-        addAmendments(document, allAmendments, rootElement);
 
+        addAmendments(document, allAmendments, element);
     }
 
-    protected void addPlannedCalendar(Document document, Study study, Element rootElement) {
+    protected void addPlannedCalendar(Document document, Study study, Element parent) {
         if (study.getPlannedCalendar() != null) {
             Element element = document.createElement(PLANNDED_CALENDAR);
             setAttrib(element, ID, study.getPlannedCalendar().getGridId());
 
-            document.appendChild(rootElement);
-            rootElement.appendChild(element);
+            document.appendChild(parent);
+            parent.appendChild(element);
         }
     }
 
