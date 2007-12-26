@@ -8,20 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -41,50 +33,26 @@ public class StudyListController extends PscAbstractController {
         log.debug("{} studies found total", studies.size());
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
-        List<Study> devableStudies = templateService.filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
-        devableStudies = union(devableStudies, templateService.filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-        log.debug("{} developable studies visible to {}", devableStudies.size(), userName);
 
-        List<Study> subjectAssignableStudies = templateService.filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
-
-        List<Study> visibleStudies = union(
-            devableStudies,
-            templateService.filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies,
-            templateService.filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
-        );
-
-        List<DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<DevelopmentTemplate>();
-        for (Study devableStudy : devableStudies) {
-            if (devableStudy.isInDevelopment()) {
-                inDevelopmentTemplates.add(new DevelopmentTemplate(devableStudy));
-            }
-        }
-
-        List<ReleasedTemplate> releasedTemplates = new ArrayList<ReleasedTemplate>();
-        for (Study visibleStudy : visibleStudies) {
-            if (visibleStudy.isReleased()) {
-                releasedTemplates.add(new ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
-            }
-        }
+        List<DevelopmentTemplate> inDevelopmentTemplates = templateService.getInDevelopmentTemplates(studies, user);
+        List<ReleasedTemplate> releasedTemplates = templateService.getReleasedTemplates(studies, user);
+        List<ReleasedTemplate> pendingTemplates = templateService.getPendingTemplates(studies, user);
+        List<ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
 
         log.debug("{} released templates visible to {}", releasedTemplates.size(), userName);
         log.debug("{} studies open for editing by {}", inDevelopmentTemplates.size(), userName);
 
         Map<String, Object> model = new HashMap<String, Object>();
+        model.put("pendingTemplates", pendingTemplates);
+        model.put("releasedAndAssignedTemplate", releasedAndAssignedTemplates);
+        model.put("releasedAndAssignedTemplatesSize", releasedAndAssignedTemplates.size());
+
         model.put("releasedTemplates", releasedTemplates);
         model.put("inDevelopmentTemplates", inDevelopmentTemplates);
 
         return new ModelAndView("studyList", model);
     }
 
-    private List<Study> union(List<Study>... lists) {
-        Set<Study> union = new LinkedHashSet<Study>();
-        for (List<Study> list : lists) {
-            union.addAll(list);
-        }
-        return new ArrayList<Study>(union);
-    }
 
     ////// CONFIGURATION
 
@@ -153,5 +121,24 @@ public class StudyListController extends PscAbstractController {
             }
             return sb.toString();
         }
+
+        public Study getStudy() {
+            return study;
+        }
+
+
+//    private List<SiteCoordinatorController.Notification> createPendingApprovalNotifications(Collection<Site> sites) {
+//        List<SiteCoordinatorController.Notification> notes = new ArrayList<SiteCoordinatorController.Notification>();
+//        for (Site site : sites) {
+//            for (StudySite studySite : site.getStudySites()) {
+//                for (Amendment amendment : studySite.getUnapprovedAmendments()) {
+//                    notes.add(new SiteCoordinatorController.Notification(studySite, amendment));
+//                }
+//            }
+//        }
+//        return notes;
+//    }
+        
+
     }
 }

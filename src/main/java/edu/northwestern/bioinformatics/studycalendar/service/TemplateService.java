@@ -4,16 +4,23 @@ import static java.util.Arrays.asList;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.RESEARCH_ASSOCIATE;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.authorization.domainobjects.User;
@@ -21,9 +28,12 @@ import gov.nih.nci.security.util.ObjectSetUtil;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.web.servlet.ModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 /**
@@ -49,6 +59,8 @@ public class TemplateService {
     public static final String LIST_IS_NULL = "List parameter is null";
     public static final String STUDIES_LIST_IS_NULL = "StudiesList is null";
     public static final String STRING_IS_NULL = "String parameter is null";
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -336,6 +348,217 @@ public class TemplateService {
         return toMatch.getClass().isAssignableFrom(node.getClass())
             || node.getClass().isAssignableFrom(toMatch.getClass());
     }
+
+
+    public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+//        for (int i = 0; i < studies.size(); i++) {
+//            log.info("======= studies " + studies.get(i).getName());
+//        }
+
+        log.debug("{} studies found total", studies.size());
+        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+
+//        for (int i = 0; i < devableStudies.size(); i++) {
+//            log.info("======= devableStudies " + devableStudies.get(i).getName());
+//        }
+
+        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+
+//        for (int i = 0; i < subjectAssignableStudies.size(); i++) {
+//            log.info("======= subjectAssignableStudies " + subjectAssignableStudies.get(i).getName());
+//        }
+
+        List<Study> visibleStudies = union(
+            devableStudies,
+            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+            subjectAssignableStudies,
+            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+        );
+
+//        for (int i = 0; i < visibleStudies.size(); i++) {
+//            log.info("======= visibleStudies " + visibleStudies.get(i).getName());
+//        }
+
+
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        for (Study visibleStudy : visibleStudies) {
+            if (visibleStudy.isReleased()) {
+                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+            }
+        }
+
+//        for (int i = 0; i < releasedTemplates.size(); i++) {
+//            log.info("======= releasedTemplates " + releasedTemplates.get(i).getStudy().getName());
+//        }
+
+        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+
+        for (StudyListController.ReleasedTemplate releasedTemplate: releasedTemplates) {
+            Study releasedTemplateStudy = releasedTemplate.getStudy();
+            List<Site> sites = releasedTemplateStudy.getSites();
+            for (Site site : sites) {
+//                log.info("========= insidePending site " + site.getName() + " === study " + releasedTemplateStudy.getName());
+//                log.info(" ======== releasedTemplate " + releasedTemplateStudy + " 1. " + isStudyAssignedToSite(releasedTemplateStudy)
+//                        +" 2. " + isStudyApprovedBySite(site, releasedTemplateStudy) + " 3. " + isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy));
+                if (!isStudyAssignedToSite(releasedTemplateStudy) ||
+                    !isStudyApprovedBySite(site, releasedTemplateStudy) ||
+                    !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
+                    if (!pendingTemplates.contains(releasedTemplate)) {
+                     pendingTemplates.add(releasedTemplate);
+                    }
+                }
+            }
+        }
+
+//        log.info("========= pendingTemplates " + pendingTemplates);
+        log.info("pendingTemplates " + pendingTemplates);
+        return pendingTemplates;
+    }
+
+
+    public List<StudyListController.ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+        log.debug("{} studies found total", studies.size());
+        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+
+        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+
+        List<Study> visibleStudies = union(
+            devableStudies,
+            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+            subjectAssignableStudies,
+            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+        );
+
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        for (Study visibleStudy : visibleStudies) {
+            if (visibleStudy.isReleased()) {
+                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+            }
+        }
+
+        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+
+        for (StudyListController.ReleasedTemplate releasedTemplate: releasedTemplates) {
+            Study releasedTemplateStudy = releasedTemplate.getStudy();
+            List<Site> sites = releasedTemplateStudy.getSites();
+            for (Site site: sites) {
+//                log.info(" ======== releasedTemplate " + releasedTemplateStudy + " 1. " + isStudyAssignedToSite(releasedTemplateStudy)
+//                            +" 2. " + isStudyApprovedBySite(site, releasedTemplateStudy) + " 3. " + isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy));
+                if (isStudyAssignedToSite(releasedTemplateStudy) &&
+                    isStudyApprovedBySite(site, releasedTemplateStudy) &&
+                    isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)){
+                    if (!releasedAndAssignedTemplates.contains(releasedTemplate)) {
+                        releasedAndAssignedTemplates.add(releasedTemplate);
+                    }
+                }
+            }
+        }
+
+//        log.info("========= releasedAndAssignedTemplate " + releasedAndAssignedTemplates);
+        log.info("releasedAndAssignedTemplate " + releasedAndAssignedTemplates);
+        return releasedAndAssignedTemplates;
+    }
+
+
+
+    public List<StudyListController.ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+        log.debug("{} studies found total", studies.size());
+        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+
+        List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
+
+        List<Study> visibleStudies = union(
+            devableStudies,
+            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+            subjectAssignableStudies,
+            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+        );
+
+
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        for (Study visibleStudy : visibleStudies) {
+            if (visibleStudy.isReleased()) {
+                releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
+            }
+        }
+//        log.info("====== releasedTemplates " + releasedTemplates);
+        log.info("releasedTemplates " + releasedTemplates);
+        return releasedTemplates;
+    }
+
+    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+        log.debug("{} studies found total", studies.size());
+        List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
+        devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
+
+        List<StudyListController.DevelopmentTemplate> inDevelopmentTemplates = new ArrayList<StudyListController.DevelopmentTemplate>();
+        for (Study devableStudy : devableStudies) {
+            if (devableStudy.isInDevelopment()) {
+                inDevelopmentTemplates.add(new StudyListController.DevelopmentTemplate(devableStudy));
+            }
+        }
+//        log.info("===== inDevelopmentTemplates " + inDevelopmentTemplates);
+        log.info("inDevelopmentTemplates " + inDevelopmentTemplates);
+        return inDevelopmentTemplates;
+    }
+
+
+    private List<Study> union(List<Study>... lists) {
+        Set<Study> union = new LinkedHashSet<Study>();
+        for (List<Study> list : lists) {
+            union.addAll(list);
+        }
+        return new ArrayList<Study>(union);
+    }
+
+    private boolean isStudyAssignedToSite(Study study) {
+        if(study.getStudySites() == null || study.getStudySites().size() == 0 ){
+            return false;
+        }
+        return true;
+    }
+
+    private boolean isStudyApprovedBySite(Site site, Study study) {
+//        log.info("====here study " + study.getName());
+//        List<StudySite> studySiteList = study.getStudySites();
+//        if(studySiteList != null && studySiteList.size() != 0 ){
+//            for (StudySite studySite : studySiteList) {
+//                log.info("====== studySite site = " + studySite.getSite().getName() + " === studySite study =" + studySite.getStudy().getName());
+//                if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
+//                    log.info("=====uapprovedAmendments " + studySite.getUnapprovedAmendments());
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+
+//        log.info("====here study " + study.getName());
+        StudySite studySite = site.getStudySite(study);
+//                log.info("====== studySite site = " + studySite.getSite().getName() + " === studySite study =" + studySite.getStudy().getName());
+                if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
+//                    log.info("=====uapprovedAmendments " + studySite.getUnapprovedAmendments());
+                    return false;
+                }
+        return true;
+
+    }
+
+
+    private boolean isSubjectCoordinatorAssignedToStudy(Study study) {
+        for (StudySite studySite : study.getStudySites()) {
+            List<UserRole> userRoles = studySite.getUserRoles();
+            for(UserRole userRole : userRoles) {
+                if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 
     ////// CONFIGURATION
 

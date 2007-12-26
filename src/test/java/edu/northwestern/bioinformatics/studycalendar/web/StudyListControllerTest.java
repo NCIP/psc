@@ -73,8 +73,9 @@ public class StudyListControllerTest extends ControllerTestCase {
         allStudies = Arrays.asList(incomplete, complete, both);
         expect(studyDao.getAll()).andReturn(allStudies).anyTimes();
 
-        expect(templateService.filterForVisibility(allStudies, null))
-            .andReturn(Collections.<Study>emptyList()).anyTimes();
+//        expect(templateService.filterForVisibility(allStudies, null))
+//            .andReturn(Collections.<Study>emptyList()).anyTimes();
+
     }
 
     @Override
@@ -86,10 +87,24 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelAndViewForStudyAndSubjectCoordinator() throws Exception {
         setUserRoles(user, Role.SUBJECT_COORDINATOR, Role.STUDY_COORDINATOR);
 
-        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.STUDY_COORDINATOR)))
-            .andReturn(Arrays.asList(incomplete, complete, both));
-        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
-            .andReturn(Arrays.asList(complete, both));
+        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
+        inDevelopment.add(0, (new StudyListController.DevelopmentTemplate(incomplete)));
+        inDevelopment.add(1, (new StudyListController.DevelopmentTemplate(both)));
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, true));
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, true));
+        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+
+        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
+        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
+        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
+        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
+
+//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.STUDY_COORDINATOR)))
+//            .andReturn(Arrays.asList(incomplete, complete, both));
+//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
+//            .andReturn(Arrays.asList(complete, both));
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -103,13 +118,26 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelForSubjectCoordinatorAndResearchAssociate() throws Exception {
         setUserRoles(user, Role.SUBJECT_COORDINATOR, Role.RESEARCH_ASSOCIATE);
 
-        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
-            .andReturn(Arrays.asList(complete));
-        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.RESEARCH_ASSOCIATE)))
-            .andReturn(Arrays.asList(complete, both));
+        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, true));
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, false));
+        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+
+        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
+        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
+        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
+        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
+//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
+//            .andReturn(Arrays.asList(complete));
+//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.RESEARCH_ASSOCIATE)))
+//            .andReturn(Arrays.asList(complete, both));
+
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
+        System.out.println("mv " + mv);
         verifyMocks();
 
         assertDevelopmentTemplateList(Collections.<Study>emptyList(), mv);
@@ -119,8 +147,22 @@ public class StudyListControllerTest extends ControllerTestCase {
     public void testModelForSiteCoordinator() throws Exception {
         setUserRoles(user, Role.SITE_COORDINATOR);
 
-        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SITE_COORDINATOR)))
-            .andReturn(Arrays.asList(incomplete, complete, both));
+        List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
+        List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(complete, false));
+        releasedTemplates.add(new StudyListController.ReleasedTemplate(both, false));
+        List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+        List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
+
+        expect(templateService.getInDevelopmentTemplates(allStudies, user)).andReturn(inDevelopment);
+        expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
+        expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
+        expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
+        
+
+
+//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SITE_COORDINATOR)))
+//            .andReturn(Arrays.asList(incomplete, complete, both));
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);

@@ -225,7 +225,10 @@
 
     <bean name="/deletePeriod" id="deletePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DeletePeriodController">
-        <!--<property name="crumb.parent"><ref local="displayTemplateController"/></property>-->
+    </bean>
+
+    <bean name="/cal/deleteStudy" id="deleteStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteStudyController">
     </bean>
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
@@ -455,6 +458,10 @@
 
     <bean name="/fragment/search/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
+
+
+    <bean name="/cal/search/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">

@@ -149,13 +149,22 @@
                 padding-top:8px;
             }
 
-            ul#populations {
-                padding: 0; margin: 0;
+            div.row div.label {
+                text-align:left;
             }
 
-            ul#populations li {
-                list-style-type: none;
+            div.row {
+                padding-top:2px;
+                margin:0px;
+                /*text-align:right;*/
+               /*line-height:1px;*/
             }
+            div.controls-card {
+                float:right;
+                margin-left:0px;
+                width:68%;
+            }
+
         </style>
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
@@ -175,7 +184,7 @@
 			var allDaysArePresent = false;
 			var allDaysAreHidden = true;
 			var init;
-			
+
             function registerSelectStudySegmentHandlers() {
                 $$('#epochs a').each(registerSelectStudySegmentHandler)
             }
@@ -196,10 +205,10 @@
 			}
 			function check()
 			{
-			
+
 				// Will figure out when the Show Month Arrows should be visible
 			    days.each(function(dc, counter) {
-					
+
 		            if (isMonthPresent(counter)){
                         hideMonth[counter].reveal();
                         showMonth[counter].conceal();
@@ -208,28 +217,28 @@
  					else {
                         showMonth[counter].reveal();
 						presentMonths[counter] = false;
-						
+
                     }
 				})
 
-				
+
 				// Will figure out when the Hide Month Arrows should be visible
-				
+
 				days.each(function(dc, counter) {
                    if (isMonthHidden(counter)){
                        hideMonth[counter].conceal();
 					   if(!isMonthPresent(counter)) showMonth[counter].reveal();
 					   hiddenMonths[counter] = true;
-					
+
                    }
 					else {
                        hideMonth[counter].reveal();
 					   hiddenMonths[counter] = false;
-					
+
                    }
 			     })
-			
-			
+
+
 				// Will figure out when the Show All button should be visible
 				allDaysArePresent = true
 				for (var i=0; i < presentMonths.length; i++)
@@ -237,26 +246,26 @@
 					if (allDaysArePresent && presentMonths[i])
 						allDaysArePresent = true
 					else allDaysArePresent = false
-					
+
 				}
-				
+
 				if (allDaysArePresent)	showButton.conceal()
 				else showButton.reveal()
 
 				// Will figure out when the Hide All button should be visible
-				
+
 				allDaysAreHidden = true
 				for (var i=0; i < hiddenMonths.length; i++)
 				{
 					if (allDaysAreHidden && hiddenMonths[i])
 						allDaysAreHidden = true
 					else allDaysAreHidden = false
-					
+
 				}
-				
+
 				if (allDaysAreHidden) hideButton.conceal()
 				else hideButton.reveal()
-				
+
 			}
 
 			function isDayPresent(day1){
@@ -268,41 +277,41 @@
 			}
 			function allDaysArePresent(){
 				var continue1 = true
-				
-				day.each(function(e){ 
-				
+
+				day.each(function(e){
+
 					if (isDayPresent($(e)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
-		
+
 				})
 				return continue1
 			}
 			function allDaysAreHidden(){
 				var continue1 = true
-				
-				day.each(function(e){ 
-				
+
+				day.each(function(e){
+
 					if (!isDayPresent($(e)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
-		
+
 				})
 				return continue1
 			}
 			function isMonthPresent(num)
 			{
 				var continue1 = true
-				
-				days[num].getElementsByClassName('day').each(function(e){ 
-				
+
+				days[num].getElementsByClassName('day').each(function(e){
+
 					if (isDayPresent($(e)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
-		
+
 				})
 				return continue1
 			}
@@ -310,13 +319,13 @@
 			{
 				var continue1 = true
 
-				days[num].getElementsByClassName('day').each(function(e){ 
-				
+				days[num].getElementsByClassName('day').each(function(e){
+
 					if (!isDayPresent($(e)) && continue1){
 					continue1 = true
 					}
 					else continue1 = false
-		
+
 				})
 				return continue1
 			}
@@ -337,7 +346,7 @@
 					         duration: 1.0
 					    }).toObject()
 					);
-			}			
+			}
 			function quickSlideAndHide(elementArray, options)
 			{
 				var eA = elementArray
@@ -393,18 +402,18 @@
   					hideMonth.each(function(e){e.reveal();});
 					showButton.conceal()
 					hideButton.reveal()
-					
+
 					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>');});
-					
-				}							
-				);				
+
+				}
+				);
 			}
-			
+
 			function showSetup(){
 				if (init == null) initialize_arrows();
 				registerShowHandler()
 			}
-			
+
 			function registerHideHandler(){
 				var hide = $("hide_button")
 				Event.observe(hide, "click", function(e) {
@@ -414,30 +423,30 @@
   					hideMonth.each(function(e){e.conceal();});
 					showButton.conceal()
 					hideButton.reveal()
-					
+
 					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#65291;</a>');});
-				}							
-				);	
-			
+				}
+				);
+
 			}
 			function hideSetup(){
 				registerHideHandler()
 			}
-			
+
 			function registerArrowHandler(a, counter){
 				var aElement = $(a)
-				
+
 				Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
 					if ($('showArrow').innerHTML == '<b>—</b>'){
                 		Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#65291;</a>')
 						SC.slideAndHide(day[counter], {afterFinish: check})
-				
-						
+
+
 					}
                 	else{
 						Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>')
-						SC.slideAndShow(day[counter], {afterFinish: check})	
+						SC.slideAndShow(day[counter], {afterFinish: check})
 					}
                 })
 			}
@@ -445,18 +454,18 @@
 				var counter = 0;
                 showDay.each(function(num) {registerArrowHandler(num, counter); counter++;});
             }
-			
+
 			function registerShowMonthHandler(a, counter){
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
-		            Event.stop(e)          		
+		            Event.stop(e)
 						quickSlideAndShow(days[counter].getElementsByClassName('day'), {afterFinish: check})
 				})
 			}
 			function registerHideMonthHandler(a, counter){
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
-		            Event.stop(e)          		
+		            Event.stop(e)
 						quickSlideAndHide(days[counter].getElementsByClassName('day'), {afterFinish: check})
 				})
 			}
@@ -478,7 +487,7 @@
 			function hideMonthSetup(){
 				var counter = 0;
 				hideMonth.each(function(num) {registerHideMonthHandler(num, counter); counter++;});
-				
+
 			}
 			function initializeNewStudySegment(){
 			    if ($$(".day").length != 0){
@@ -489,7 +498,7 @@
 					showMonthSetup()
 					hideMonthSetup()
 				}
-					
+
 			}
 
             function studyManipulationSetup(){
@@ -498,6 +507,10 @@
 
             // TODO: this method must go in edit.js with everything else
             function deletePeriod(periodId) {
+//    Event.observe("deleteEpochButton", "click", function() {
+//            return "Are you sure you want to delete the study segment ?  This will permanently remove it, all its periods, and its events.  " +
+//                "\n\nThis action cannot be undone."
+//        })
                 var formdata = "";
                 formdata = formdata + "period=" + periodId + "&";
                 formdata = formdata+ "studySegment=" + ${studySegment.base.id} + "&";
@@ -531,8 +544,8 @@
 				Event.observe(window, "load", hideMonthSetup)
 
             </c:if>
-			
-			
+
+
         </script>
     </head>
     <body>
@@ -579,17 +592,57 @@
                 </div>
 
                 <ul id="admin-options" style="display:none;">
-                  <c:if test="${not empty developmentRevision}">
-                        <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
-                            Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                        </tags:restrictedListItem>
-                    </c:if>
-                    <c:if test="${empty developmentRevision}">
-                        <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-                        <c:if test="${canAssignSubjects}">
-                            <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control"
-                                >Assign Subject</tags:restrictedListItem>
+
+                <div class="row">
+                    <div class="value" style="margin:0px;">
+                        <c:if test="${not empty developmentRevision}">
+                            <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
+                                Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
+                            </tags:restrictedListItem>
                         </c:if>
+                        <c:if test="${empty developmentRevision}">
+                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+                            <c:if test="${canAssignSubjects}">
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${template.id}">
+                                    Schedule reconsent
+                                </tags:restrictedListItem>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${template.id}">
+                                    Add amendment
+                                </tags:restrictedListItem>
+                            </c:if>
+
+                        </div>
+                    </div>
+
+                    <c:forEach items="${study.studySites}" var="studySite" varStatus="studySiteStatus">
+                       <div class="row">
+                            <div class="label" >
+                                ${studySite.site.name}
+                            </div>
+                            <div class="value">
+                                <c:if test="${not empty studySite.unapprovedAmendments}">
+                                     Waiting for approval at site ${studySite.site.name}. A <b>Site Coordinator</b> can do that
+                                </c:if>
+                                <c:if test="${empty studySite.unapprovedAmendments}">
+                                    <c:set var="isSubjectCoordinatorAssigned" value="false"/>
+                                    <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
+                                        <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
+                                            <c:set var="isSubjectCoordinatorAssigned" value="true"/>
+                                        </c:if>
+                                    </c:forEach>
+                                    <c:if test="${isSubjectCoordinatorAssigned == false}">
+                                        Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
+                                    </c:if>
+                                    <c:if test="${isSubjectCoordinatorAssigned == true}">
+                                        <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control">
+                                            Assign Subject
+                                        </tags:restrictedListItem>
+                                    </c:if>
+                                </c:if>
+                            </div>
+                        </div>
+                        </c:forEach>
+
                         <c:if test="${not empty onStudyAssignments}">
                             <security:secureOperation element="/pages/cal/schedule">
                             <li>View schedule (On Study) for
