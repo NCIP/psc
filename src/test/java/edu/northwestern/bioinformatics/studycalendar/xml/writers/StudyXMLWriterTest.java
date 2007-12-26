@@ -49,7 +49,6 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private StudySegment segment;
     private Period period;
     private PlannedActivity plannedActivity;
-    private SimpleDateFormat dateFormat;
     private Activity activity;
     private Source source;
 
@@ -57,7 +56,6 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         super.setUp();
 
         setIgnoreWhitespace(true);
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         writer = new StudyXMLWriter();
 
@@ -105,12 +103,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWriteEpoch() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(   "</amendment>");
 
+        body.append( calendarDeltaXML());
 
-        String expected = insertXml(study, body.toString());
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -118,12 +114,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWriteStudySegment() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        epochDeltaXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( epochDeltaXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -131,13 +126,12 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWritePeriod() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        epochDeltaXML())
-                .append(        segmentDeltaXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( epochDeltaXML())
+            .append( segmentDeltaXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -146,14 +140,13 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
      public void testWritePlannedActivity() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        epochDeltaXML())
-                .append(        segmentDeltaXML())
-                .append(        periodDeltaXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( epochDeltaXML())
+            .append( segmentDeltaXML())
+            .append( periodDeltaXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -162,14 +155,13 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWritePlannedActivityWithoutDetailsAndCondition() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        epochDeltaXML())
-                .append(        segmentDeltaXML())
-                .append(        periodDeltaXMLWithoutDetailsAndCondition())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+                .append( epochDeltaXML())
+                .append( segmentDeltaXML())
+                .append( periodDeltaXMLWithoutDetailsAndCondition());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -177,12 +169,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWriteRemoveEpoch() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        calendarDeltaRemoveEpochXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( calendarDeltaRemoveEpochXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -190,12 +181,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWriteReorderEpochs() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        calendarDeltaReorderEpochXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( calendarDeltaReorderEpochXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
@@ -203,17 +193,17 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     public void testWritePlannedCalendarPropertyChange() throws Exception {
         StringBuffer body = new StringBuffer();
-        body.append(format("<amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
-                .append(        calendarDeltaXML())
-                .append(        epochDeltaXML())
-                .append(        epochDeltaPropertyChangeXML())
-                .append(   "</amendment>");
 
-        String expected = insertXml(study, body.toString());
+        body.append( calendarDeltaXML())
+            .append( epochDeltaXML())
+            .append( epochDeltaPropertyChangeXML());
+
+        String expected = insertXml(study, amendment, body);
         String output = createAndValidateXml(study);
 
         assertXMLEqual(expected, output);
     }
+
 
     /* Output XML Methods */
     private String calendarDeltaXML() {
@@ -390,7 +380,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     }
 
 
-    /* Grid Id Assignment Methods */
+    /* Base Grid Id Assignment Methods */
     private <T extends GridIdentifiable> T setGridId(T object) throws Exception{
         object.setGridId(valueOf(nextGridId()));
         return object;
@@ -400,19 +390,25 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         return 'a' + valueOf(id++); // For some reason, the schema doesn't like integers for ids, so prepend 'a'
     }
 
-    public static class StudyXMLSkeleton {
 
-        public static String insertXml(Study study, String xml) {
+    /* Skeleton for test XML */
+    public static class StudyXMLSkeleton {
+        private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        public static String insertXml(Study study, Amendment amendment, StringBuffer xml) {
             StringBuffer buf = new StringBuffer();
             buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-               .append(format("<{0} {1}=\"{2}\" \n" , ROOT, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier()))
-               .append(format(" {0}=\"{1}\" \n"     , ID, study.getGridId()))
-               .append(format(" {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
-               .append(format(" {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-               .append(format(" {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
-               .append(format("<{0} {1}=\"{2}\"/>\n", PLANNDED_CALENDAR, ID, study.getPlannedCalendar().getGridId()))
-               .append(xml)
-               .append(format("</{0}>", ROOT));
+               .append(format("<study assigned-identifier=\"{0}\" id=\"{1}\" \n", study.getAssignedIdentifier(), study.getGridId()))
+               .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+               .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
+               .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+               .append(format("     <planned-calendar id=\"{0}\"/>\n", study.getPlannedCalendar().getGridId()))
+               .append(format("     <amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
+
+               .append(                 xml)
+
+               .append(       "     </amendment>")
+               .append(       "</study>");
             return buf.toString();
         }
     }
