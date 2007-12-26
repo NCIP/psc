@@ -7,6 +7,7 @@
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@attribute name="modes" type="java.util.Collection" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <laf:box title="${studySegment.name}">
@@ -82,6 +83,26 @@
                                         <c:if test="${not empty event.plannedActivity.condition}">
                                             Condition: ${event.plannedActivity.condition}
                                         </c:if>
+                                    </span>
+                                </li>
+                                <li>
+                                    <span class="event-details">
+                                        <c:set var="repetitionEnding" value="th"/>
+                                        <c:set var="repetition" value="${event.repetitionNumber +1}"/>
+                                        <c:if test="${fn:endsWith(repetition,'1')}">
+                                            <c:set var="repetitionEnding" value="st"/>
+                                        </c:if>
+                                        <c:if test="${fn:endsWith(repetition,'2')}">
+                                            <c:set var="repetitionEnding" value="nd"/>
+                                        </c:if>
+                                        <c:if test="${fn:endsWith(repetition,'3')}">
+                                            <c:set var="repetitionEnding" value="rd"/>    
+                                        </c:if>
+
+                                        Day ${event.plannedActivity.day} of ${event.repetitionNumber +1}${repetitionEnding} 
+                                        <c:if test="${empty event.plannedActivity.period.name}">"Unnamed period"</c:if>
+                                        <c:if test="${not empty event.plannedActivity.period.name}">${event.plannedActivity.period.name}</c:if>
+
                                     </span>
                                 </li>
                             </c:forEach>
