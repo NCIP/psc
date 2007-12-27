@@ -232,10 +232,22 @@
             }
 
             var R2 = $('R2');
-            $(R2).style.display = "inline"
-            var arrayOfSiblings = $('R2').siblings();
-            for (var i = 0; i < arrayOfSiblings.length; i++){
-                $(arrayOfSiblings[i]).style.display = "none";
+            if (R2 != null) {
+                $(R2).style.display = "inline"
+                var arrayOfSiblings = $('R2').siblings();
+                for (var i = 0; i < arrayOfSiblings.length; i++){
+                    $(arrayOfSiblings[i]).style.display = "none";
+                }
+            } else {
+                var R1 = $('R1');
+                if (R1 != null) {
+                    $(R1).style.display = "none"
+                    var arrayOfSiblings = $('R1').siblings();
+                    for (var i = 0; i < arrayOfSiblings.length; i++){
+                        $(arrayOfSiblings[i]).style.display = "none";
+                    }
+                }
+                $('nextTenStudies').hide()
             }
         }
 
@@ -430,7 +442,7 @@
 
                 <ul class="menu" >
                     <li style="float:right;">
-                        <a class="control" style="cursor:pointer;" onclick="nextTenStudies()"> Next 10 studies -> </a>
+                        <a id="nextTenStudies" class="control" style="cursor:pointer;" onclick="nextTenStudies()"> Next 10 studies -> </a>
                     </li>
                 </ul>
                 <br style="clear:both;">
