@@ -351,23 +351,10 @@ public class TemplateService {
 
 
     public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
-//        for (int i = 0; i < studies.size(); i++) {
-//            log.info("======= studies " + studies.get(i).getName());
-//        }
-
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
-
-//        for (int i = 0; i < devableStudies.size(); i++) {
-//            log.info("======= devableStudies " + devableStudies.get(i).getName());
-//        }
-
         List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
-
-//        for (int i = 0; i < subjectAssignableStudies.size(); i++) {
-//            log.info("======= subjectAssignableStudies " + subjectAssignableStudies.get(i).getName());
-//        }
 
         List<Study> visibleStudies = union(
             devableStudies,
@@ -376,11 +363,6 @@ public class TemplateService {
             filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
         );
 
-//        for (int i = 0; i < visibleStudies.size(); i++) {
-//            log.info("======= visibleStudies " + visibleStudies.get(i).getName());
-//        }
-
-
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
         for (Study visibleStudy : visibleStudies) {
             if (visibleStudy.isReleased()) {
@@ -388,19 +370,17 @@ public class TemplateService {
             }
         }
 
-//        for (int i = 0; i < releasedTemplates.size(); i++) {
-//            log.info("======= releasedTemplates " + releasedTemplates.get(i).getStudy().getName());
-//        }
-
         List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
 
         for (StudyListController.ReleasedTemplate releasedTemplate: releasedTemplates) {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
+            if (sites.size()==0 ) {
+                if (!pendingTemplates.contains(releasedTemplate)) {
+                     pendingTemplates.add(releasedTemplate);
+                }
+            }
             for (Site site : sites) {
-//                log.info("========= insidePending site " + site.getName() + " === study " + releasedTemplateStudy.getName());
-//                log.info(" ======== releasedTemplate " + releasedTemplateStudy + " 1. " + isStudyAssignedToSite(releasedTemplateStudy)
-//                        +" 2. " + isStudyApprovedBySite(site, releasedTemplateStudy) + " 3. " + isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy));
                 if (!isStudyAssignedToSite(releasedTemplateStudy) ||
                     !isStudyApprovedBySite(site, releasedTemplateStudy) ||
                     !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
@@ -411,8 +391,6 @@ public class TemplateService {
             }
         }
 
-//        log.info("========= pendingTemplates " + pendingTemplates);
-        log.info("pendingTemplates " + pendingTemplates);
         return pendingTemplates;
     }
 
@@ -444,8 +422,6 @@ public class TemplateService {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
             for (Site site: sites) {
-//                log.info(" ======== releasedTemplate " + releasedTemplateStudy + " 1. " + isStudyAssignedToSite(releasedTemplateStudy)
-//                            +" 2. " + isStudyApprovedBySite(site, releasedTemplateStudy) + " 3. " + isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy));
                 if (isStudyAssignedToSite(releasedTemplateStudy) &&
                     isStudyApprovedBySite(site, releasedTemplateStudy) &&
                     isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)){
@@ -456,7 +432,6 @@ public class TemplateService {
             }
         }
 
-//        log.info("========= releasedAndAssignedTemplate " + releasedAndAssignedTemplates);
         log.info("releasedAndAssignedTemplate " + releasedAndAssignedTemplates);
         return releasedAndAssignedTemplates;
     }
@@ -484,7 +459,6 @@ public class TemplateService {
                 releasedTemplates.add(new StudyListController.ReleasedTemplate(visibleStudy, subjectAssignableStudies.contains(visibleStudy)));
             }
         }
-//        log.info("====== releasedTemplates " + releasedTemplates);
         log.info("releasedTemplates " + releasedTemplates);
         return releasedTemplates;
     }
@@ -500,7 +474,6 @@ public class TemplateService {
                 inDevelopmentTemplates.add(new StudyListController.DevelopmentTemplate(devableStudy));
             }
         }
-//        log.info("===== inDevelopmentTemplates " + inDevelopmentTemplates);
         log.info("inDevelopmentTemplates " + inDevelopmentTemplates);
         return inDevelopmentTemplates;
     }
@@ -522,26 +495,10 @@ public class TemplateService {
     }
 
     private boolean isStudyApprovedBySite(Site site, Study study) {
-//        log.info("====here study " + study.getName());
-//        List<StudySite> studySiteList = study.getStudySites();
-//        if(studySiteList != null && studySiteList.size() != 0 ){
-//            for (StudySite studySite : studySiteList) {
-//                log.info("====== studySite site = " + studySite.getSite().getName() + " === studySite study =" + studySite.getStudy().getName());
-//                if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
-//                    log.info("=====uapprovedAmendments " + studySite.getUnapprovedAmendments());
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-
-//        log.info("====here study " + study.getName());
         StudySite studySite = site.getStudySite(study);
-//                log.info("====== studySite site = " + studySite.getSite().getName() + " === studySite study =" + studySite.getStudy().getName());
-                if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
-//                    log.info("=====uapprovedAmendments " + studySite.getUnapprovedAmendments());
-                    return false;
-                }
+        if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
+            return false;
+        }
         return true;
 
     }

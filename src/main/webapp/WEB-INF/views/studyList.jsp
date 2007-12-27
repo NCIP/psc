@@ -334,10 +334,7 @@
                             </a>
                             <div style="width:80%;float:right;">
                                  <c:if test="${empty template.study.studySites}">
-                                     Must
-                                         <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}">
-                                            assign
-                                         </tags:restrictedListItem>
+                                     Must <tags:restrictedItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}"> assign </tags:restrictedItem>
                                      the template to a site. A <b>Study Administrator</b> can do this.
                                  </c:if>
                                 </div>
@@ -362,52 +359,6 @@
                          </li>
                     </c:forEach>
                 </ul>
-
-                    <%--<c:forEach items="${pendingTemplates}" var="template" varStatus="status">--%>
-                        <%--<li class="autoclear ${commons:parity(status.count)}">-->
-                       <!--<div class="row">-->
-                            <!--<div class="label" >-->
-                                <!--<a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">-->
-                                    ${template.displayName}
-                                <!--</a>-->
-                            <!--</div>-->
-                            <!--<div class="value">-->
-                                <%--<c:if test="${empty template.study.studySites}">--%>
-                                     <!--Must-->
-                                         <%--<tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}">--%>
-                                            <!--assign-->
-                                         <%--</tags:restrictedListItem>--%>
-                                     <!--the template to a site. A <b>Study Administrator</b> can do this.-->
-                                 <%--</c:if>--%>
-                                 <%--<c:if test="${not empty template.study.studySites}">--%>
-                                     <%--<c:forEach items="${template.study.studySites}" var="studySite" varStatus="studySiteStatus">--%>
-                                         <%--<c:if test="${not empty studySite.unapprovedAmendments}">--%>
-                                             <%--Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.-->
-                                         <%--</c:if>--%>
-                                         <%--<c:if test="${empty studySite.unapprovedAmendments}">--%>
-                                             <%--<c:set var="isSubjectCoordinatorAssigned" value="false"/>--%>
-                                             <%--<c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">--%>
-                                                 <%--<c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">--%>
-                                                    <%--<c:set var="isSubjectCoordinatorAssigned" value="true"/>--%>
-                                                 <%--</c:if>--%>
-                                             <%--</c:forEach>--%>
-                                             <%--<c:if test="${isSubjectCoordinatorAssigned == false}">--%>
-                                                 <%--Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.-->
-                                             <%--</c:if>--%>
-                                         <%--</c:if>--%>
-                                     <%--</c:forEach>--%>
-                                 <%--</c:if>--%>
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--</li>-->
-                    <%--</c:forEach>--%>
-
-
-
-
-
-
-
             </laf:division>
         </c:if>
 
