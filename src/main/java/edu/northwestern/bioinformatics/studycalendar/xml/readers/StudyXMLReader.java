@@ -1,10 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static java.lang.Boolean.valueOf;
+
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
@@ -17,15 +21,15 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
+import java.util.List;
+import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 
 public class StudyXMLReader  {
     private StudyDao studyDao;
+    private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
-
-    public StudyXMLReader(StudyDao studyDao, PlannedCalendarDao plannedCalendarDao) {
-        this.studyDao = studyDao;
-        this.plannedCalendarDao = plannedCalendarDao;
-    }
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public Study read(InputStream dataFile) throws Exception {
         //get the factory
@@ -69,4 +73,48 @@ public class StudyXMLReader  {
     }
 
 
+    public List<Amendment> parseAmendment(Document doc) throws Exception {
+        List<Amendment> amendments = new ArrayList<Amendment>();
+
+        NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.AMENDMENT);
+        for (int i=0; i < nodes.getLength(); i++) {
+            Element element = ((Element)nodes.item(i));
+
+            String gridId = element.getAttribute(ID);
+            Amendment amendment = amendmentDao.getByGridId(gridId);
+            if (amendment == null) {
+                amendment = new Amendment();
+                amendment.setGridId(gridId);
+                amendment.setName(element.getAttribute(StudyXMLWriter.NAME));
+                amendment.setMandatory(valueOf(element.getAttribute(StudyXMLWriter.MANDATORY)));
+                amendment.setDate(formatter.parse(element.getAttribute(StudyXMLWriter.DATE)));
+
+                String prevAmendmentGridId = element.getAttribute(StudyXMLWriter.PREVIOUS_AMENDMENT_ID);
+                if (prevAmendmentGridId != null) {
+                    for (Amendment searchAmendment : amendments) {
+                        if (searchAmendment.getGridId().equals(prevAmendmentGridId)) {
+                            amendment.setPreviousAmendment(searchAmendment);
+                        }
+                    }
+                }
+            }
+            amendments.add(amendment);
+        }
+
+
+        return amendments;
+    }
+
+    /* Dao Setters */
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
+    }
+
+    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
+        this.plannedCalendarDao = plannedCalendarDao;
+    }
 }

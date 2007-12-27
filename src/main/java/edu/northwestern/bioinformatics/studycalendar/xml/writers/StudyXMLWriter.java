@@ -64,12 +64,14 @@ public class StudyXMLWriter {
     public static final String CHILD_ID = "child-id";
     public static final String NEW_INDEX = "new-index";
     public static final String OLD_INDEX = "old-index";
-    private static final String PROPERTY_NAME = "property-name";
-    private static final String OLD_VALUE = "old-value";
-    private static final String NEW_VALUE = "new-value";
-    
+    public static final String PROPERTY_NAME = "property-name";
+    public static final String OLD_VALUE = "old-value";
+    public static final String NEW_VALUE = "new-value";
+    public static final String PREVIOUS_AMENDMENT_ID = "previous-amendment-id";
+
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
     {
+      optionalAttributes.put(AMENDMENT, new String[]{PREVIOUS_AMENDMENT_ID});
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
     };
@@ -134,6 +136,10 @@ public class StudyXMLWriter {
 
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             setAttrib(element, DATE, formatter.format(amendment.getDate()));
+
+            if (amendment.getPreviousAmendment() != null) {
+                setAttrib(element, PREVIOUS_AMENDMENT_ID, amendment.getPreviousAmendment().getGridId());
+            }
 
             parent.appendChild(element);
 
