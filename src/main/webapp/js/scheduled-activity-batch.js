@@ -12,7 +12,7 @@ function registerBatchRescheduleHandlers() {
 
 function registerSubheaderCollapse() {
     $$(".subcollapsible").each(function(section) {
-        var header = section.getElementsByTagName("H3")[0]
+        var header = section.getElementsByByTagName("H3")[0]
         header.innerHTML += " <span class='collapse-icon'>&#65291;</span>"
         header.title = "Click to reveal"
         Event.observe(header, 'click', function() {
@@ -59,9 +59,36 @@ function registerCheckAllPastDueEvents() {
     })
 }
 
+
+function registerShowDaysButton() {
+    Event.observe('show_days_button', "click", function(event){
+        var allDaysPerPeriod = document.getElementsByClassName("days_from_period")
+        for (var i=0; i<allDaysPerPeriod.length; i++) {
+            allDaysPerPeriod[i].show()
+        }
+        $('show_days_button').hide()
+        $('hide_days_button').show()
+    })
+}
+
+
+function registerHideDaysButton() {
+    Event.observe('hide_days_button', "click", function(event){
+        var allDaysPerPeriod = document.getElementsByClassName("days_from_period")
+        for (var i=0; i<allDaysPerPeriod.length; i++) {
+            allDaysPerPeriod[i].hide()
+        }
+        $('show_days_button').show()
+        $('hide_days_button').hide()
+    })
+}
+
 Event.observe(window, "load", registerBatchRescheduleHandlers)
 Event.observe(window, "load", registerSubheaderCollapse)
 Event.observe(window, "load", registerCheckAllEvents)
 Event.observe(window, "load", registerUncheckAllEvents)
 Event.observe(window, "load", registerCheckAllConditionalEvents)
 Event.observe(window, "load", registerCheckAllPastDueEvents)
+
+Event.observe(window, "load", registerShowDaysButton)
+Event.observe(window, "load", registerHideDaysButton)

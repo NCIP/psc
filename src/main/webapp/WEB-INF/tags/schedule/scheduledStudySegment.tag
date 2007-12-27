@@ -51,6 +51,9 @@
 
 
             <div class="content" id="selected-studySegment-content"<c:if test="${not visible}"> style="display: none"</c:if>>
+                <a id="show_days_button" href="#?" class = "control">Show days from study plan</a>
+                <a id="hide_days_button" href="#?" class = "control" style="display:none;">Hide days from study plan</a>
+
                 <div class="legend">
                     <h3>Legend</h3>
                     <ul>
@@ -85,7 +88,7 @@
                                         </c:if>
                                     </span>
                                 </li>
-                                <li>
+                                <li class="days_from_period" id="days_from_period" style="display:none;">
                                     <span class="event-details">
                                         <c:set var="repetitionEnding" value="th"/>
                                         <c:set var="repetition" value="${event.repetitionNumber +1}"/>
@@ -96,10 +99,10 @@
                                             <c:set var="repetitionEnding" value="nd"/>
                                         </c:if>
                                         <c:if test="${fn:endsWith(repetition,'3')}">
-                                            <c:set var="repetitionEnding" value="rd"/>    
+                                            <c:set var="repetitionEnding" value="rd"/>
                                         </c:if>
 
-                                        Day ${event.plannedActivity.day} of ${event.repetitionNumber +1}${repetitionEnding} 
+                                        Day ${event.plannedActivity.day} of ${event.repetitionNumber +1}${repetitionEnding}
                                         <c:if test="${empty event.plannedActivity.period.name}">"Unnamed period"</c:if>
                                         <c:if test="${not empty event.plannedActivity.period.name}">${event.plannedActivity.period.name}</c:if>
 
