@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <%--<title>${action} Subject</title>--%>
+    <title>Assign subject</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {
@@ -18,6 +18,12 @@
         }
         form {
             width: 30em;
+        }
+        ul#population-checkboxes {
+            margin: 0; padding: 0;
+        }
+        ul#population-checkboxes li {
+            list-style-type: none
         }
     </style>
 </head>
@@ -41,9 +47,9 @@
                         <form:select path="subject">
                             <form:options items="${subjects}" itemLabel="fullName" itemValue="id"/>
                         </form:select>
+                        <a href="<c:url value="/pages/cal/createSubject?id=${study.id}"/>">Create new subject</a>
                     </div>
                 </div>
-                <p><a href="<c:url value="/pages/cal/createSubject?id=${study.id}"/>">Create New Subject</a></p>
                     <div class="row">
                         <div class="label">
                             <form:label path="site">Site</form:label>
@@ -78,12 +84,31 @@
 
                 <div class="row">
                     <div class="label">
-                        <form:label path="startDate">Start date of first epoch (mm/dd/yyyy)</form:label>
+                        <form:label path="startDate">Start date of first epoch</form:label>
                     </div>
                     <div class="value">
-                        <form:input path="startDate"/>
+                        <laf:dateInput path="startDate"/>
                     </div>
                 </div>
+
+                <c:if test="${not empty populations}">
+                    <div class="row">
+                        <div class="label">
+                            Populations
+                        </div>
+                        <div class="value">
+                            <ul id="population-checkboxes">
+                            <c:forEach items="${populations}" var="pop">
+                                <li><label>
+                                    <form:checkbox path="populations" value="${pop.id}"/>
+                                    ${pop.name}
+                                </label></li>
+                            </c:forEach>
+                            </ul>
+                        </div>
+                    </div>
+                </c:if>
+
                 <div class="row">
                     <div class="submit">
                         <input type="submit" value="Assign"/>

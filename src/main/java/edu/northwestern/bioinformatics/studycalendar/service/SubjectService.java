@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * @author Rhett Sutphin
@@ -105,7 +106,7 @@ public class SubjectService {
         calendar.addStudySegment(scheduledStudySegment);
 
         for (Period period : amendedSegment.getPeriods()) {
-            schedulePeriod(period, sourceAmendment, scheduledStudySegment);
+            schedulePeriod(period, sourceAmendment, "Initialized from template", scheduledStudySegment);
         }
 
         // Sort in the same order they'll be coming out of the database (for consistency)
@@ -124,10 +125,15 @@ public class SubjectService {
      * The input period should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void schedulePeriod(Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment) {
+    public void schedulePeriod(Period period, Amendment sourceAmendment, String reason, ScheduledStudySegment targetStudySegment) {
+        schedulePeriod(period, sourceAmendment, reason, null, targetStudySegment);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    protected void schedulePeriod(Period period, Amendment sourceAmendment, String reason, Population restrictToPopulation, ScheduledStudySegment targetStudySegment) {
         log.debug("Adding events from period {}", period);
         for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, reason, restrictToPopulation, targetStudySegment);
         }
     }
 
@@ -139,11 +145,19 @@ public class SubjectService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePeriod(
-        Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment, int repetitionNumber
+        Period period, Amendment sourceAmendment, String reason, ScheduledStudySegment targetStudySegment, int repetitionNumber
+    ) {
+        schedulePeriod(period, sourceAmendment, reason, null, targetStudySegment, repetitionNumber);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    protected void schedulePeriod(
+        Period period, Amendment sourceAmendment, String reason, Population restrictToPopulation, ScheduledStudySegment targetStudySegment,
+        int repetitionNumber
     ) {
         log.debug("Adding events for rep {} from period {}", repetitionNumber, period);
         for (PlannedActivity plannedActivity : period.getPlannedActivities()) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment, repetitionNumber);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, reason, restrictToPopulation, targetStudySegment, repetitionNumber);
         }
     }
 
@@ -154,10 +168,18 @@ public class SubjectService {
      */
     @Transactional(propagation = Propagation.SUPPORTS)
     public void schedulePlannedActivity(
-        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, String reason, ScheduledStudySegment targetStudySegment
+    ) {
+        schedulePlannedActivity(plannedActivity, period, sourceAmendment, reason, null, targetStudySegment);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    protected void schedulePlannedActivity(
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, String reason,
+        Population restrictToPopulation, ScheduledStudySegment targetStudySegment
     ) {
         for (int r = 0 ; r < period.getRepetitions() ; r++) {
-            schedulePlannedActivity(plannedActivity, period, sourceAmendment, targetStudySegment, r);
+            schedulePlannedActivity(plannedActivity, period, sourceAmendment, reason, restrictToPopulation, targetStudySegment, r);
         }
     }
 
@@ -167,13 +189,17 @@ public class SubjectService {
      * The input plannedActivity should already match the provided sourceAmendment.
      */
     @Transactional(propagation = Propagation.SUPPORTS)
-    public void schedulePlannedActivity(
-        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, ScheduledStudySegment targetStudySegment,
-        int repetitionNumber
+    protected void schedulePlannedActivity(
+        PlannedActivity plannedActivity, Period period, Amendment sourceAmendment, String reason,
+        Population restrictToPopulation, ScheduledStudySegment targetStudySegment, int repetitionNumber
     ) {
         Set<Population> subjectPopulations = targetStudySegment.getScheduledCalendar().getAssignment().getPopulations();
         if (plannedActivity.getPopulation() != null && !subjectPopulations.contains(plannedActivity.getPopulation())) {
             log.debug("Skipping {} since the subject is not in population {}", plannedActivity, plannedActivity.getPopulation().getAbbreviation());
+            return;
+        }
+        if (restrictToPopulation != null && !restrictToPopulation.equals(plannedActivity.getPopulation())) {
+            log.debug("Only adding planned activities for the {} population", restrictToPopulation);
             return;
         }
         
@@ -193,7 +219,7 @@ public class SubjectService {
 
         DatedScheduledActivityState initialState
             = (DatedScheduledActivityState) plannedActivity.getInitialScheduledMode().createStateInstance();
-        initialState.setReason("Initialized from template");
+        initialState.setReason(reason);
         initialState.setDate(event.getIdealDate());
         event.changeState(initialState);
 
@@ -364,6 +390,44 @@ public class SubjectService {
             }
         }
         return upcomingScheduledActivities;
+    }
+
+    public void updatePopulations(StudySubjectAssignment assignment, Set<Population> newPopulations) {
+        log.debug("updating populations for {} to {}", assignment, newPopulations);
+        if (newPopulations == null) newPopulations = Collections.emptySet();
+        for (Population currentPopulation : assignment.getPopulations()) {
+            if (!newPopulations.contains(currentPopulation)) {
+                removePopulation(assignment, currentPopulation);
+            }
+        }
+        for (Population newPopulation : newPopulations) {
+            if (!assignment.getPopulations().contains(newPopulation)) {
+                addPopulation(assignment, newPopulation);
+            }
+        }
+    }
+
+    private void removePopulation(StudySubjectAssignment assignment, Population toRemove) {
+        log.debug("removing population {} from {}", toRemove.getAbbreviation(), assignment);
+        assignment.getPopulations().remove(toRemove);
+        for (ScheduledStudySegment segment : assignment.getScheduledCalendar().getScheduledStudySegments()) {
+            segment.unscheduleOutstandingEvents("Subject removed from population " + toRemove.getName());
+        }
+    }
+
+    private void addPopulation(StudySubjectAssignment assignment, Population toAdd) {
+        log.debug("adding population {} for {}", toAdd.getAbbreviation(), assignment);
+        assignment.addPopulation(toAdd);
+        for (ScheduledStudySegment segment : assignment.getScheduledCalendar().getScheduledStudySegments()) {
+            if (!segment.isComplete()) {
+                StudySegment amendedSourceSegment
+                    = amendmentService.getAmendedNode(segment.getStudySegment(), assignment.getCurrentAmendment());
+                for (Period period : amendedSourceSegment.getPeriods()) {
+                    schedulePeriod(period, assignment.getCurrentAmendment(),
+                        "Subject added to population " + toAdd.getName(), toAdd, segment);
+                }
+            }
+        }
     }
 
     ////// CONFIGURATION

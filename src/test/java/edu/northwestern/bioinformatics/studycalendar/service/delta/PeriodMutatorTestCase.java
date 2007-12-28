@@ -75,8 +75,8 @@ public abstract class PeriodMutatorTestCase<C extends Change> extends StudyCalen
                 return createUnschedulableMockEvent(event);
             }
         };
-        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment);
-        subjectService.schedulePeriod(period1, amendment, scheduledStudySegment);
+        subjectService.schedulePeriod(period0, amendment, "DC", scheduledStudySegment);
+        subjectService.schedulePeriod(period1, amendment, "DC", scheduledStudySegment);
         scheduledActivities = new ScheduledActivity[2][2][3];
         for (ScheduledActivity event : scheduledStudySegment.getActivities()) {
             int period, pe;

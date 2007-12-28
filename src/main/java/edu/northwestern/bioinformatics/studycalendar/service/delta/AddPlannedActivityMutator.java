@@ -31,12 +31,13 @@ public class AddPlannedActivityMutator extends CollectionAddMutator {
     @Override
     public void apply(ScheduledCalendar calendar) {
         PlannedActivity event = (PlannedActivity) findChild();
-        // Second cast works around a dumb javac bug
-        Period period = (Period) (PlanTreeNode) change.getDelta().getNode();
+        Period period = (Period) change.getDelta().getNode();
         StudySegment studySegment = templateService.findParent(period);
 
+        Amendment sourceAmendment = (Amendment) change.getDelta().getRevision();
         for (ScheduledStudySegment scheduledStudySegment : calendar.getScheduledStudySegmentsFor(studySegment)) {
-            subjectService.schedulePlannedActivity(event, period, (Amendment) change.getDelta().getRevision(), scheduledStudySegment);
+            subjectService.schedulePlannedActivity(event, period, sourceAmendment,
+                "Activity added in amendment " + sourceAmendment.getDisplayName(), scheduledStudySegment);
         }
     }
 }

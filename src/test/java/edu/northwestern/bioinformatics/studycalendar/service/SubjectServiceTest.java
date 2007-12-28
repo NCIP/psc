@@ -554,7 +554,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         segment.setStartDay(1);
         segment.setStartDate(new Date());
 
-        service.schedulePlannedActivity(plannedActivity, period, new Amendment(), segment);
+        service.schedulePlannedActivity(plannedActivity, period, new Amendment(),
+            "Initialized from template", segment);
 
         assertEquals("Wrong number of activites scheduled", 1, segment.getActivities().size());
         assertSame("Wrong activity scheduled, somehow", plannedActivity,
@@ -574,7 +575,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         segment.setStartDay(1);
         segment.setStartDate(new Date());
 
-        service.schedulePlannedActivity(plannedActivity, period, new Amendment(), segment);
+        service.schedulePlannedActivity(plannedActivity, period, new Amendment(), "DC", segment);
 
         assertEquals("No activites should have been scheduled", 0, segment.getActivities().size());
     }

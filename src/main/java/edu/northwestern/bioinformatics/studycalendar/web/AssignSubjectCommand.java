@@ -1,9 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -16,12 +25,19 @@ public class AssignSubjectCommand {
     private Site site;
     private Study study;
     private User subjectCoordinator;
+    private Set<Population> populations;
 
     private SubjectService subjectService;
 
+    public AssignSubjectCommand() {
+        populations = new HashSet<Population>();
+    }
+
     public StudySubjectAssignment assignSubject() {
-        return subjectService.assignSubject(
+        StudySubjectAssignment assignment = subjectService.assignSubject(
             getSubject(), getStudySite(), getEffectiveStudySegment(), getStartDate(), getSubjectCoordinator());
+        subjectService.updatePopulations(assignment, getPopulations());
+        return assignment;
     }
 
     private StudySegment getEffectiveStudySegment() {
@@ -90,5 +106,13 @@ public class AssignSubjectCommand {
 
     public void setStudy(Study study) {
         this.study = study;
+    }
+
+    public Set<Population> getPopulations() {
+        return populations;
+    }
+
+    public void setPopulations(Set<Population> populations) {
+        this.populations = populations;
     }
 }

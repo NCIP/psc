@@ -31,8 +31,8 @@ public class ChangePeriodRepetitionsMutatorTest extends PeriodMutatorTestCase<Pr
 
     public void testIncreaseReps() throws Exception {
         expect(templateService.findParent(period0)).andReturn(studySegment);
-        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment, 3);
-        subjectService.schedulePeriod(period0, amendment, scheduledStudySegment, 4);
+        subjectService.schedulePeriod(period0, amendment, "Repetition 4 added in revision 02/04/1909 (Oops)", scheduledStudySegment, 3);
+        subjectService.schedulePeriod(period0, amendment, "Repetition 5 added in revision 02/04/1909 (Oops)", scheduledStudySegment, 4);
 
         replayMocks();
         getMutator().apply(scheduledCalendar);

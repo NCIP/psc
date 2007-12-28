@@ -14,6 +14,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import static org.easymock.EasyMock.expect;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -44,6 +47,7 @@ public class AddPlannedActivityMutatorTest extends StudyCalendarTestCase {
         plannedActivity = setId(21, Fixtures.createPlannedActivity("Swim", 8));
         add = Add.create(plannedActivity, 4);
         amendment = createAmendments("Oops");
+        amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
         amendment.addDelta(Delta.createDeltaFor(period, add));
 
         scheduledCalendar = new ScheduledCalendar();
@@ -76,7 +80,7 @@ public class AddPlannedActivityMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
         scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledStudySegments().get(1));
+        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, "Activity added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(1));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -88,8 +92,8 @@ public class AddPlannedActivityMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
         scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledStudySegments().get(0));
-        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, scheduledCalendar.getScheduledStudySegments().get(2));
+        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, "Activity added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(0));
+        subjectService.schedulePlannedActivity(plannedActivity, period, amendment, "Activity added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(2));
 
         replayMocks();
         mutator.apply(scheduledCalendar);

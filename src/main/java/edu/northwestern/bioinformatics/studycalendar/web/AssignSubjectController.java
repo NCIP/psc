@@ -43,6 +43,7 @@ public class AssignSubjectController extends PscSimpleFormController {
     private StudySegmentDao studySegmentDao;
     private UserDao userDao;
     private SiteDao siteDao;
+    private PopulationDao populationDao;
 
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
@@ -59,6 +60,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         getControllerTools().registerDomainObjectEditor(binder, "site", siteDao);
         getControllerTools().registerDomainObjectEditor(binder, "study", studyDao);
         getControllerTools().registerDomainObjectEditor(binder, "subject", subjectDao);
+        getControllerTools().registerDomainObjectEditor(binder, "populations", populationDao);
     }
 
     @Override
@@ -81,6 +83,7 @@ public class AssignSubjectController extends PscSimpleFormController {
         } else {
             refdata.put("studySegments", Collections.emptyList());
         }
+        refdata.put("populations", study.getPopulations());
         return refdata;
     }
 
@@ -160,6 +163,11 @@ public class AssignSubjectController extends PscSimpleFormController {
     }
 
     @Required
+    public void setPopulationDao(PopulationDao populationDao) {
+        this.populationDao = populationDao;
+    }
+
+    @Required
     public void setSubjectService(SubjectService subjectService) {
         this.subjectService = subjectService;
     }
@@ -174,6 +182,7 @@ public class AssignSubjectController extends PscSimpleFormController {
             super("Assign Subject");
         }
 
+        @Override
         public Map<String, String> getParameters(BreadcrumbContext context) {
             Map<String, String> params = createParameters("study", context.getStudy().getId().toString());
             if (context.getSite() != null) {

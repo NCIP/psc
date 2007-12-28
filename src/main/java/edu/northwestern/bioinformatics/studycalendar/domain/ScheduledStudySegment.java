@@ -47,8 +47,8 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
     @Transient
     public String getName() {
         Epoch epoch = getStudySegment().getEpoch();
-        StringBuilder name = new StringBuilder(epoch.getName());
-        if (epoch.getStudySegments().size() > 1) {
+        StringBuilder name = new StringBuilder(epoch == null ? "null" : epoch.getName());
+        if (epoch != null && epoch.getStudySegments().size() > 1) {
             name.append(": ").append(getStudySegment().getName());
         }
 

@@ -11,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -39,6 +42,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         add = Add.create(period);
 
         amendment = Fixtures.createAmendments("Oops");
+        amendment.setDate(DateTools.createDate(1922, Calendar.APRIL, 5));
         amendment.addDelta(Delta.createDeltaFor(studySegment, add));
 
         scheduledCalendar = new ScheduledCalendar();
@@ -67,7 +71,7 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
         scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(1));
+        subjectService.schedulePeriod(period, amendment, "Period added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(1));
 
         replayMocks();
         mutator.apply(scheduledCalendar);
@@ -79,8 +83,8 @@ public class AddPeriodMutatorTest extends StudyCalendarTestCase {
         scheduledCalendar.addStudySegment(createScheduledStudySegment(createNamedInstance("Some other study segment", StudySegment.class)));
         scheduledCalendar.addStudySegment(createScheduledStudySegment(studySegment));
 
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(0));
-        subjectService.schedulePeriod(period, amendment, scheduledCalendar.getScheduledStudySegments().get(2));
+        subjectService.schedulePeriod(period, amendment, "Period added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(0));
+        subjectService.schedulePeriod(period, amendment, "Period added in amendment 04/05/1922 (Oops)", scheduledCalendar.getScheduledStudySegments().get(2));
 
         replayMocks();
         mutator.apply(scheduledCalendar);

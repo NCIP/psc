@@ -67,7 +67,12 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
         if (INITIAL_TEMPLATE_AMENDMENT_NAME.equals(getName())) {
             return "Initial template";
         } else {
-            StringBuilder n = new StringBuilder(formatDate(getDate()));
+            StringBuilder n = new StringBuilder();
+            if (getDate() != null) {
+                n.append(formatDate(getDate()));
+            } else {
+                n.append("Timeless");
+            }
             if (!StringUtils.isBlank(getName())) {
                 n.append(" (").append(getName()).append(')');
             }

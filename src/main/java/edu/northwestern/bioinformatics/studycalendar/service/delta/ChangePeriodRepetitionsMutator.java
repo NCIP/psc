@@ -56,12 +56,21 @@ public class ChangePeriodRepetitionsMutator extends AbstractPeriodPropertyChange
             .toString();
     }
 
+    private String createIncreaseMessage(int repetitionNumber) {
+        return new StringBuilder()
+            .append("Repetition ").append(repetitionNumber + 1)
+            .append(" added in revision ")
+            .append(change.getDelta().getRevision().getDisplayName())
+            .toString();
+    }
+
     private void increase(Collection<ScheduledStudySegment> studySegments) {
         for (int r = oldRepetitionCount ; r < newRepetitionCount ; r++) {
             for (ScheduledStudySegment scheduledStudySegment : studySegments) {
                 subjectService.schedulePeriod(getChangedPeriod(),
                     // TODO: eliminate this cast
-                    (Amendment) change.getDelta().getRevision(), scheduledStudySegment, r);
+                    (Amendment) change.getDelta().getRevision(), createIncreaseMessage(r),
+                    scheduledStudySegment, r);
             }
         }
     }

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service.delta;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
@@ -31,16 +32,17 @@ public class AddPeriodMutator extends CollectionAddMutator {
     @Override
     public void apply(ScheduledCalendar calendar) {
         Period newPeriod = (Period) findChild();
+        Revision revision = change.getDelta().getRevision();
         for (ScheduledStudySegment scheduledStudySegment : findMatchingStudySegments(calendar)) {
             subjectService.schedulePeriod(newPeriod,
                 // TODO: make this cast unnecessary
-                (Amendment) change.getDelta().getRevision(), scheduledStudySegment);
+                (Amendment) revision, "Period added in amendment " + revision.getDisplayName(),
+                scheduledStudySegment);
         }
     }
 
     private Collection<ScheduledStudySegment> findMatchingStudySegments(ScheduledCalendar cal) {
-        // Second cast works around a dumb javac bug
-        return cal.getScheduledStudySegmentsFor((StudySegment) (PlanTreeNode) change.getDelta().getNode());
+        return cal.getScheduledStudySegmentsFor((StudySegment) change.getDelta().getNode());
     }
 }
       

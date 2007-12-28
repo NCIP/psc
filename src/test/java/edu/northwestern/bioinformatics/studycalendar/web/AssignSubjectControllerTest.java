@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 
 /**
  * @author Rhett Sutphin
@@ -32,13 +33,13 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private SiteDao siteDao;
     private StudySegmentDao studySegmentDao;
     private UserDao userDao;
+    private PopulationDao populationDao;
 
     private Study study;
     private List<Subject> subjects;
     private User user;
     private Site seattle, tacoma, olympia;
     private StudySite seattleSS, tacomaSS, olympiaSS;
-    private List<Site> sites;
 
     @Override
     protected void setUp() throws Exception {
@@ -49,6 +50,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         userDao = registerDaoMockFor(UserDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
+        populationDao = registerDaoMockFor(PopulationDao.class);
 
         controller = new AssignSubjectController();
         controller.setSubjectDao(subjectDao);
@@ -57,6 +59,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setSiteDao(siteDao);
         controller.setUserDao(userDao);
         controller.setStudySegmentDao(studySegmentDao);
+        controller.setPopulationDao(populationDao);
         controller.setControllerTools(controllerTools);
 
         commandForRefdata = new AssignSubjectCommand();
@@ -94,6 +97,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         mockableController.setSiteDao(siteDao);
         mockableController.setSubjectDao(subjectDao);
         mockableController.setStudySegmentDao(studySegmentDao);
+        mockableController.setPopulationDao(populationDao);
         expect(userDao.getByName(user.getName())).andReturn(user).anyTimes();
 
         mockCommand.setSubjectCoordinator(user);
@@ -141,6 +145,20 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         expect(siteDao.getById(25)).andReturn(expectedSite);
         AssignSubjectCommand command = getAndReturnCommand("site");
         assertEquals(expectedSite, command.getSite());
+    }
+
+    public void testBindPopulation() throws Exception {
+        request.addParameter("populations", "25");
+        request.addParameter("populations", "28");
+        Population p25 = setId(25, new Population());
+        Population p28 = setId(28, new Population());
+        expect(populationDao.getById(25)).andReturn(p25);
+        expect(populationDao.getById(28)).andReturn(p28);
+        AssignSubjectCommand command = getAndReturnCommand("populations");
+        Set<Population> actual = command.getPopulations();
+        assertEquals("Wrong number of populations", 2, actual.size());
+        assertContains("Missing expected pop", actual, p25);
+        assertContains("Missing expected pop", actual, p28);
     }
 
     @SuppressWarnings({ "unchecked" })
