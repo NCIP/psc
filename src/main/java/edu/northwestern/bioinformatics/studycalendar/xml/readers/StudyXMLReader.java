@@ -5,13 +5,18 @@ import static java.lang.Boolean.valueOf;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,11 +30,15 @@ import java.util.List;
 import java.util.ArrayList;
 import java.text.SimpleDateFormat;
 
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+
 public class StudyXMLReader  {
     private StudyDao studyDao;
+    private DeltaDao deltaDao;
     private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    private EpochDao epochDao;
 
     public Study read(InputStream dataFile) throws Exception {
         //get the factory
@@ -73,7 +82,7 @@ public class StudyXMLReader  {
     }
 
 
-    public List<Amendment> parseAmendment(Document doc) throws Exception {
+    protected List<Amendment> parseAmendment(Document doc, Study study) throws Exception {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
         NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.AMENDMENT);
@@ -96,14 +105,52 @@ public class StudyXMLReader  {
                             amendment.setPreviousAmendment(searchAmendment);
                         }
                     }
+                } else {
+                    study.setAmendment(amendment);
                 }
             }
             amendments.add(amendment);
         }
 
-
         return amendments;
     }
+
+
+    protected List<Delta> parseDeltas(Document doc, List<Amendment> amendments) {
+        List<Delta> deltas = new ArrayList<Delta>();
+
+        NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
+        for (int i=0; i < nodes.getLength(); i++) {
+            Element element = ((Element)nodes.item(i));
+
+            String gridId = element.getAttribute(ID);
+            Delta delta = deltaDao.getByGridId(gridId);
+            if (delta == null) {
+                Amendment amendment = findParent(element, amendments);
+                if (amendment == null) {
+                    throw new StudyCalendarError("Cannot find parent for Delta: %s", gridId);
+                }
+
+            }
+
+            deltas.add(delta);
+        }
+
+        return deltas;
+    }
+
+    /* Find element parent by passing XML element and list of possible parents */
+    private <T extends GridIdentifiable> T findParent (Element element, List<T> possibleParents) {
+        Element parent = (Element) element.getParentNode();
+        String parentGridId = parent.getAttribute(ID);
+        for (T possibleParent : possibleParents) {
+            if (parentGridId.equals(possibleParent.getGridId())) {
+                return possibleParent;
+            }
+        }
+        return null;
+    }
+
 
     /* Dao Setters */
     public void setStudyDao(StudyDao studyDao) {
@@ -116,5 +163,13 @@ public class StudyXMLReader  {
 
     public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
         this.plannedCalendarDao = plannedCalendarDao;
+    }
+
+    public void setDeltaDao(DeltaDao deltaDao) {
+        this.deltaDao = deltaDao;
+    }
+
+    public void setEpochDao(EpochDao epochDao) {
+        this.epochDao = epochDao;
     }
 }

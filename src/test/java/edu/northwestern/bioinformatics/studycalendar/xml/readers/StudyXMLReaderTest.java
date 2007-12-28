@@ -1,12 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static java.util.Arrays.asList;
+
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -25,16 +30,22 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private PlannedCalendarDao plannedCalendarDao;
     private AmendmentDao amendmentDao;
+    private EpochDao epochDao;
+    private DeltaDao deltaDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         studyDao = registerDaoMockFor(StudyDao.class);
+        epochDao = registerDaoMockFor(EpochDao.class);
+        deltaDao = registerDaoMockFor(DeltaDao.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
 
         reader = new StudyXMLReader();
         reader.setStudyDao(studyDao);
+        reader.setEpochDao(epochDao);
+        reader.setDeltaDao(deltaDao);
         reader.setAmendmentDao(amendmentDao);
         reader.setPlannedCalendarDao(plannedCalendarDao);
     }
@@ -81,6 +92,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Grid Id", "grid1", actual.getGridId());
     }
 
+    // TODO: When new Planned Calendar check relation to study
     public void testReadNewPlannedCalendar() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -113,6 +125,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Grid Id", "grid1", actual.getGridId());
     }
 
+    // TODO: When new Amendment check relation to study
     public void testReadAmendments() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -131,7 +144,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(amendmentDao.getByGridId("grid2")).andReturn(null);
         replayMocks();
 
-        List<Amendment> actual = reader.parseAmendment(getDocument(buf));
+        List<Amendment> actual = reader.parseAmendment(getDocument(buf), new Study());
         verifyMocks();
 
         Amendment actualAmendment0 = actual.get(0);
@@ -149,6 +162,35 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertTrue("Wrong Mandatory Value", actualAmendment1.isMandatory());
         assertSame("Previous Amendment Should be same", amendment0, actualAmendment1.getPreviousAmendment());
 
+    }
+
+    public void testReadExistingDeltas() throws Exception {
+        StringBuffer buf = new StringBuffer();
+        buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+           .append(       "<amendment id=\"grid1\">")
+           .append(       "  <delta id=\"grid2\">\n")
+           .append(       "    <add id=\"grid3\" index=\"0\">")
+           .append(       "      <epoch id=\"grid4\" name=\"Epoch A\"/>")
+           .append(       "    </add>")
+           .append(       "  </delta>")
+           .append(       "</amendment>");
+
+        Epoch epoch = createNamedInstance("Epoch A", Epoch.class);
+        epoch.setGridId("grid4");
+
+        Add add = Add.create(epoch, 0);
+
+        Delta delta = Delta.createDeltaFor(epoch, add);
+        delta.setGridId("grid2");
+
+        expect(deltaDao.getByGridId("grid2")).andReturn(delta);
+        replayMocks();
+        List<Delta> actual = reader.parseDeltas(getDocument(buf), asList(new Amendment()));
+
+        Delta actualDelta0 = actual.get(0);
+        assertSame("Deltas should be the same", delta, actualDelta0);
+        assertSame("Changes should be the same", add, actualDelta0.getChanges().get(0));
+        assertSame("Child should be the same", epoch, ((ChildrenChange) actualDelta0.getChanges().get(0)).getChild());
     }
 
 
