@@ -159,9 +159,11 @@
                  switch(event.keyCode) {
                   case Event.KEY_TAB:
                   case Event.KEY_RETURN:
-                    this.selectEntry();
-                    Event.stop(event);
-                    return;
+                      this.selectEntry();
+                      this.hide()
+                      this.active = false;
+                      Event.stop(event);
+                      return;
                   case Event.KEY_ESC:
                     this.hide();
                     this.active = false;

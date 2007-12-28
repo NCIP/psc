@@ -382,6 +382,8 @@ Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocom
           case Event.KEY_TAB:
           case Event.KEY_RETURN:
             this.selectEntry();
+            this.hide()
+            this.active = false;
             Event.stop(event);
           return;
           case Event.KEY_ESC:
