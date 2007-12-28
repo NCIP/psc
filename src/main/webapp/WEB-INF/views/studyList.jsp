@@ -161,6 +161,7 @@
                   case Event.KEY_RETURN:
                     this.selectEntry();
                     Event.stop(event);
+                  return;
                   case Event.KEY_ESC:
                     this.hide();
                     this.active = false;
