@@ -4,6 +4,7 @@
 
 ////// STUDY CALENDAR JS STYLES
 
+
 SC.slideAndHide = function(element, options) {
     var e = $(element);
     if (e.style.display != "none")
@@ -61,7 +62,7 @@ Object.extend(Object.extend(SC.InPlaceEditor.prototype, Ajax.InPlaceEditor.proto
         Ajax.InPlaceEditor.prototype.initialize.call(this,
             element, url,
             Object.extend({
-                highlight: true, okText: 'OK', cancelText: 'Cancel',
+                highlight: true, okText: 'OK', cancelText: 'Cancel', htmlResponse: false, ajaxOptions: {method: 'post'},
                 // replace standard callbacks to implement highlight option
                 onEnterHover: function(ipe) {
                     if (ipe.options.highlight) {
