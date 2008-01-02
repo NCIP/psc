@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 
 import org.easymock.classextension.EasyMock;
 
@@ -90,6 +91,24 @@ public class SubjectServicePopulationTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Should have no pops", 0, ladyPatient.getPopulations().size());
+        ScheduledActivity activity = scheduledSegment().getActivities().get(0);
+        assertEquals("Test assumption failure", forFemales, activity.getPlannedActivity());
+        assertEquals("Activity for removed pop not canceled",
+            ScheduledActivityMode.CANCELED, activity.getCurrentState().getMode());
+        assertEquals("Wrong reason for cancelation",
+            "Subject removed from population F",
+            activity.getCurrentState().getReason());
+    }
+
+    public void testUpdatePopulationsRemoveOneWhenTwoPresent() throws Exception {
+        // checking for concurrent modification exception, so order matters
+        ladyPatient.setPopulations(new LinkedHashSet<Population>(Arrays.asList(females, oldFolks)));
+        replayMocks();
+        service.updatePopulations(ladyPatient, Collections.singleton(oldFolks));
+        verifyMocks();
+
+        assertEquals("Should have one pop left", 1, ladyPatient.getPopulations().size());
+        assertSame("Wrong pop left", oldFolks, ladyPatient.getPopulations().iterator().next());
         ScheduledActivity activity = scheduledSegment().getActivities().get(0);
         assertEquals("Test assumption failure", forFemales, activity.getPlannedActivity());
         assertEquals("Activity for removed pop not canceled",

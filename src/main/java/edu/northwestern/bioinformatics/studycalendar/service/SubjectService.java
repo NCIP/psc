@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -395,9 +395,10 @@ public class SubjectService {
     public void updatePopulations(StudySubjectAssignment assignment, Set<Population> newPopulations) {
         log.debug("updating populations for {} to {}", assignment, newPopulations);
         if (newPopulations == null) newPopulations = Collections.emptySet();
-        for (Population currentPopulation : assignment.getPopulations()) {
+        for (Iterator<Population> it = assignment.getPopulations().iterator(); it.hasNext();) {
+            Population currentPopulation = it.next();
             if (!newPopulations.contains(currentPopulation)) {
-                removePopulation(assignment, currentPopulation);
+                removePopulation(assignment, currentPopulation, it);
             }
         }
         for (Population newPopulation : newPopulations) {
@@ -407,9 +408,9 @@ public class SubjectService {
         }
     }
 
-    private void removePopulation(StudySubjectAssignment assignment, Population toRemove) {
+    private void removePopulation(StudySubjectAssignment assignment, Population toRemove, Iterator<Population> iterator) {
         log.debug("removing population {} from {}", toRemove.getAbbreviation(), assignment);
-        assignment.getPopulations().remove(toRemove);
+        iterator.remove();
         for (ScheduledStudySegment segment : assignment.getScheduledCalendar().getScheduledStudySegments()) {
             segment.unscheduleOutstandingEvents("Subject removed from population " + toRemove.getName());
         }
