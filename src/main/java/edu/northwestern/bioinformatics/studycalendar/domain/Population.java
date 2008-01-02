@@ -47,4 +47,14 @@ public class Population extends AbstractMutableDomainObject implements Named {
     public void setAbbreviation(String abbreviation) {
         this.abbreviation = abbreviation;
     }
+
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName())
+            .append('[').append(getId())
+            .append(" | ").append(getAbbreviation())
+            .append(": ").append(getName())
+            .append(']').toString();
+    }
 }

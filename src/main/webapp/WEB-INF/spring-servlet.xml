@@ -305,6 +305,10 @@
         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
     </bean>
 
+    <bean name="/cal/schedule/populations" id="changePopulationsController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangePopulationsController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
 
     <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">

@@ -213,6 +213,15 @@
             clear: both;
         }
 
+        .card .value ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .card .value ul li {
+            list-style-type: none;
+            padding-bottom: 0.25em;
+        }
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -364,6 +373,20 @@
             </c:if>
         </div>
     </div>
+    <c:if test="${not empty study.populations}">
+        <div class="row even">
+            <div class="label">Populations</div>
+            <div class="value">
+                <ul>
+                    <c:if test="${empty assignment.populations}"><em>None</em></c:if>
+                    <c:forEach items="${assignment.populations}" var="pop">
+                        <li>${pop.name}</li>
+                    </c:forEach>
+                    <li><a class="control" href="<c:url value="/pages/cal/schedule/populations?assignment=${assignment.id}"/>">Change</a></li>
+                </ul>
+            </div>
+        </div>
+    </c:if>
 </div>
 
 <div class="controls-card card">
