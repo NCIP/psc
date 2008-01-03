@@ -8,16 +8,15 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXML
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
@@ -43,9 +42,10 @@ public class StudyXMLReader  {
     private DeltaDao deltaDao;
     private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
+    private ChangeDao changeDao;
+
+
     private EpochDao epochDao;
-
-
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public Study read(InputStream dataFile) throws Exception {
@@ -163,9 +163,7 @@ public class StudyXMLReader  {
 
                     delta = new PlannedCalendarDelta();
                     ((PlannedCalendarDelta)delta).setNode((PlannedCalendar) planTreeNode);
-                    delta.setRevision(amendment);
                     //Delta.createDeltaFor(planTreeNode, change);
-
                 } else {
                     throw new StudyCalendarError("Cannot find PlanTreeNode for: %s", node.getNodeName());
                 }
@@ -174,25 +172,41 @@ public class StudyXMLReader  {
                     throw new StudyCalendarError("Cannot find Planned Calendar: %s", nodeGridId);
                 }
 
+                delta.setRevision(amendment);
                 delta.setGridId(deltaGridId);
             }
+            List<Change> changes = parseChanges(doc, delta);
+            delta.addChanges(changes.toArray(new Change[]{}));
 
             deltas.add(delta);
         }
 
         return deltas;
     }
-    /* Find element parent by passing XML element and list of possible parents */
-    private <T extends GridIdentifiable> T findParent (Element element, List<T> possibleParents) {
-        Element parent = (Element) element.getParentNode();
-        String parentGridId = parent.getAttribute(ID);
-        for (T possibleParent : possibleParents) {
-            if (parentGridId.equals(possibleParent.getGridId())) {
-                return possibleParent;
+
+    protected List<Change> parseChanges(Document doc, Delta delta) {
+        List<Change> changes = new ArrayList<Change>();
+
+        NodeList allAddNodes = doc.getElementsByTagName(StudyXMLWriter.ADD);
+        NodeList allDeltaChildrenNodes = doc.getElementById(delta.getGridId()).getChildNodes();
+
+        List<Element> addNodes = union(allAddNodes, allDeltaChildrenNodes);
+
+        for (Element element : addNodes) {
+             // Get Add if Delta Exists
+            String addGridId = element.getAttribute(ID);
+            Add add = (Add) changeDao.getByGridId(addGridId);
+            if (add == null) {
+                // Create new add
+                add = new Add();
             }
+            changes.add(add);
         }
-        return null;
+
+        return changes;
     }
+
+    /* Class Helpers */
 
     private List<Element> union(NodeList list0, NodeList list1) {
         List resultList = new ArrayList();
@@ -226,5 +240,9 @@ public class StudyXMLReader  {
 
     public void setEpochDao(EpochDao epochDao) {
         this.epochDao = epochDao;
+    }
+
+    public void setChangeDao(ChangeDao changeDao) {
+        this.changeDao = changeDao;
     }
 }
