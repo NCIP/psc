@@ -117,7 +117,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Grid Id", "grid0", actual.getGridId());
     }
 
-    // TODO: When new Planned Calendar check relation to study
     public void testReadNewPlannedCalendar() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -135,6 +134,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong Grid Id", "grid1", actual.getGridId());
+        assertEquals("Wrong Study Name", "Study A", actual.getStudy().getName());
     }
 
     public void testReadExistingPlannedCalendar() throws Exception {
@@ -160,7 +160,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Grid Id", "grid1", actual.getGridId());
     }
 
-    // TODO: When new Amendment check relation to study
     public void testReadAmendments() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -183,7 +182,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(amendmentDao.getByGridId("grid3")).andReturn(null);
         replayMocks();
 
-        Amendment current = reader.parseAmendment(getDocument(buf), new Study());
+        Amendment current = reader.parseAmendment(getDocument(buf), createNamedInstance("Study A", Study.class));
         verifyMocks();
 
         Amendment actualAmendment0 = current.getPreviousAmendment();
@@ -279,9 +278,11 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta0 instanceof PlannedCalendarDelta);
         assertEquals("Wrong grid id", "grid3", actualDelta0.getGridId());
         assertEquals("Wrong node grid id", "grid1", actualDelta0.getNode().getGridId());
+        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta0.getRevision()).getGridId());
         
         assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
         assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
+        assertEquals("Wrong parent Delta ID", "grid3", ((Change) actualDelta0.getChanges().get(0)).getDelta().getGridId());
         assertEquals("Wrong Index", 0, (int) ((Add)actualDelta0.getChanges().get(0)).getIndex());
         assertEquals("Child should instance of epoch", "grid5", ((Add) actualDelta0.getChanges().get(0)).getChild().getGridId());
     }
