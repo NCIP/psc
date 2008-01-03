@@ -240,8 +240,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Delta actualDelta0 = actual.get(0);
         assertSame("Deltas should be the same", delta, actualDelta0);
         assertSame("Changes should be the same", add, actualDelta0.getChanges().get(0));
-        assertSame("Child should be the same", epoch, ((ChildrenChange) actualDelta0.getChanges().get(0)).getChild());
-        assertSame("Change should be the same", add, actualDelta0.getChanges().get(0));
+        assertSame("Children should be the same", epoch, ((ChildrenChange) actualDelta0.getChanges().get(0)).getChild());
     }
 
     public void testReadNewDelta() throws Exception {
@@ -270,6 +269,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(deltaDao.getByGridId("grid3")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid4")).andReturn(null);
+        expect(epochDao.getByGridId("grid5")).andReturn(null);
         replayMocks();
 
         List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
@@ -283,6 +283,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
         assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
         assertEquals("Wrong Index", 0, (int) ((Add)actualDelta0.getChanges().get(0)).getIndex());
+        assertEquals("Child should instance of epoch", "grid5", ((Add) actualDelta0.getChanges().get(0)).getChild().getGridId());
     }
 
 

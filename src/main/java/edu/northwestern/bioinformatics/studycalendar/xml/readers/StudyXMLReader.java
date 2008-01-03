@@ -1,5 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.EPOCH;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ADD;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.INDEX;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.NAME;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.NODE_ID;
 
 import static java.lang.Boolean.valueOf;
@@ -12,10 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDom
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
@@ -111,7 +112,7 @@ public class StudyXMLReader  {
             if (amendment == null) {
                 amendment = new Amendment();
                 amendment.setGridId(gridId);
-                amendment.setName(element.getAttribute(StudyXMLWriter.NAME));
+                amendment.setName(element.getAttribute(NAME));
                 amendment.setMandatory(valueOf(element.getAttribute(StudyXMLWriter.MANDATORY)));
                 amendment.setDate(formatter.parse(element.getAttribute(StudyXMLWriter.DATE)));
 
@@ -175,7 +176,7 @@ public class StudyXMLReader  {
                 delta.setRevision(amendment);
                 delta.setGridId(deltaGridId);
             }
-            List<Change> changes = parseChanges(doc, delta);
+            List<Change> changes = parseChanges(doc, deltaGridId);
             delta.addChanges(changes.toArray(new Change[]{}));
 
             deltas.add(delta);
@@ -184,36 +185,63 @@ public class StudyXMLReader  {
         return deltas;
     }
 
-    protected List<Change> parseChanges(Document doc, Delta delta) {
+    protected List<Change> parseChanges(Document doc, String deltaGridId) {
         List<Change> changes = new ArrayList<Change>();
 
-        NodeList allAddNodes = doc.getElementsByTagName(StudyXMLWriter.ADD);
-        NodeList allDeltaChildrenNodes = doc.getElementById(delta.getGridId()).getChildNodes();
+        NodeList allAddNodes = doc.getElementsByTagName(ADD);
+        NodeList allDeltaChildrenNodes = doc.getElementById(deltaGridId).getChildNodes();
 
         List<Element> addNodes = union(allAddNodes, allDeltaChildrenNodes);
 
         for (Element element : addNodes) {
              // Get Add if Delta Exists
-            String addGridId = element.getAttribute(ID);
-            Change change = changeDao.getByGridId(addGridId);
+            String gridId = element.getAttribute(ID);
+            Change change = changeDao.getByGridId(gridId);
             if (change == null) {
                 if (StudyXMLWriter.ADD.equals(element.getNodeName())) {
-                    change = new Add();
-                    ((Add) change).setIndex(new Integer(element.getAttribute(StudyXMLWriter.INDEX)));
+                    PlanTreeNode<?> changeChild = parsePlanTreeNode(doc, gridId);
+                    change = Add.create(changeChild, Integer.parseInt(element.getAttribute(INDEX)));
                 } else {
                     throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
                 }
 
-                change.setGridId(addGridId);
+                change.setGridId(gridId);
             }
+
+
             changes.add(change);
         }
 
         return changes;
     }
 
-    /* Class Helpers */
+    protected PlanTreeNode<?> parsePlanTreeNode(Document doc, String changeGridId) {
+        PlanTreeNode<?> childPlanTreeNode;
 
+        NodeList allEpochNodes = doc.getElementsByTagName(EPOCH);
+        NodeList allChangeChildrenNodes = doc.getElementById(changeGridId).getChildNodes();
+
+        List<Element> childNodes = union(allEpochNodes, allChangeChildrenNodes);
+
+        Element element = childNodes.get(0);
+        // There should be one child Node
+        String gridId = element.getAttribute(ID);
+
+        if (StudyXMLWriter.EPOCH.equals(element.getNodeName())) {
+            childPlanTreeNode = epochDao.getByGridId(gridId);
+            if (childPlanTreeNode == null) {
+                childPlanTreeNode = new Epoch();
+                ((Epoch) childPlanTreeNode).setName(element.getAttribute(NAME));
+            }
+            childPlanTreeNode.setGridId(gridId);
+        } else {
+            throw new StudyCalendarError("Cannot find Child Node for: %s", element.getNodeName());
+        }
+        
+        return childPlanTreeNode;
+    }
+
+    /* Class Helpers */
     private List<Element> union(NodeList list0, NodeList list1) {
         List resultList = new ArrayList();
         for (int i = 0; i < list0.getLength(); i++) {
