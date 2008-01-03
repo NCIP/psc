@@ -279,8 +279,10 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta0 instanceof PlannedCalendarDelta);
         assertEquals("Wrong grid id", "grid3", actualDelta0.getGridId());
         assertEquals("Wrong node grid id", "grid1", actualDelta0.getNode().getGridId());
-//        assertEquals("Wrong change grid id", "grid4", ((Change)actualDelta0.getChanges().get(0)).getGridId());
-//        assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
+        
+        assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
+        assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
+        assertEquals("Wrong Index", 0, (int) ((Add)actualDelta0.getChanges().get(0)).getIndex());
     }
 
 

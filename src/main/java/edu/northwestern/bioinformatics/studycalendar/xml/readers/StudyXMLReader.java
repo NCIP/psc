@@ -195,12 +195,18 @@ public class StudyXMLReader  {
         for (Element element : addNodes) {
              // Get Add if Delta Exists
             String addGridId = element.getAttribute(ID);
-            Add add = (Add) changeDao.getByGridId(addGridId);
-            if (add == null) {
-                // Create new add
-                add = new Add();
+            Change change = changeDao.getByGridId(addGridId);
+            if (change == null) {
+                if (StudyXMLWriter.ADD.equals(element.getNodeName())) {
+                    change = new Add();
+                    ((Add) change).setIndex(new Integer(element.getAttribute(StudyXMLWriter.INDEX)));
+                } else {
+                    throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
+                }
+
+                change.setGridId(addGridId);
             }
-            changes.add(add);
+            changes.add(change);
         }
 
         return changes;
