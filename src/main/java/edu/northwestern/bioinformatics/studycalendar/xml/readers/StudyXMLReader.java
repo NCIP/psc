@@ -33,6 +33,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.text.SimpleDateFormat;
 
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -70,7 +71,13 @@ public class StudyXMLReader  {
             study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
         }
 
-        parsePlannedCalendar(doc, study);
+        // Parse and set PlannedCalendar
+        PlannedCalendar calendar = parsePlannedCalendar(doc, study);
+        study.setPlannedCalendar(calendar);
+
+        // Parse and set Amendment
+        Amendment amendment = parseAmendment(doc, study);
+        study.setAmendment(amendment);
 
         return study;
     }
@@ -84,20 +91,19 @@ public class StudyXMLReader  {
         if (calendar == null) {
             calendar = new PlannedCalendar();
             calendar.setGridId(gridId);
-            study.setPlannedCalendar(calendar);
+            calendar.setStudy(study);
         }
-
-        parseAmendment(doc, study);
 
         return calendar;
     }
 
 
-    protected List<Amendment> parseAmendment(Document doc, Study study) throws Exception {
+    protected Amendment parseAmendment(Document doc, Study study) throws Exception {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
         NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.AMENDMENT);
         for (int i=0; i < nodes.getLength(); i++) {
+
             Element element = ((Element)nodes.item(i));
 
             String gridId = element.getAttribute(ID);
@@ -109,11 +115,8 @@ public class StudyXMLReader  {
                 amendment.setMandatory(valueOf(element.getAttribute(StudyXMLWriter.MANDATORY)));
                 amendment.setDate(formatter.parse(element.getAttribute(StudyXMLWriter.DATE)));
 
-
                 String prevAmendmentGridId = element.getAttribute(StudyXMLWriter.PREVIOUS_AMENDMENT_ID);
-                if (prevAmendmentGridId == null) {
-                    study.setAmendment(amendment);
-                } else {
+                if (prevAmendmentGridId != null) {
                     for (Amendment searchAmendment : amendments) {
                         if (searchAmendment.getGridId().equals(prevAmendmentGridId)) {
                             amendment.setPreviousAmendment(searchAmendment);
@@ -121,18 +124,23 @@ public class StudyXMLReader  {
                     }
                 }
             }
-
-            parseDeltas(doc, amendment);
-
             amendments.add(amendment);
+
+            List<Delta<?>> deltas = parseDeltas(doc, amendment);
+            amendment.setDeltas(deltas);
         }
 
-        return amendments;
+        if (amendments.isEmpty()) {
+            return null;
+        }
+
+        return (amendments.size() == 0) ? amendments.get(0) : amendments.get(amendments.size() - 1);
     }
 
 
-    protected List<Delta> parseDeltas(Document doc, Amendment amendment) {
-        List<Delta> deltas = new ArrayList<Delta>();
+    // TODO: Use Delta.createDeltaFor method
+    protected List<Delta<?>> parseDeltas(Document doc, Amendment amendment) {
+        List<Delta<?>> deltas = new ArrayList<Delta<?>>();
 
         NodeList allDeltaNodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
         NodeList allAmendmentChildrenNodes = doc.getElementById(amendment.getGridId()).getChildNodes();
@@ -142,7 +150,7 @@ public class StudyXMLReader  {
         for (Element element : deltaNodes) {
             // Get Delta if Delta Exists
             String deltaGridId = element.getAttribute(ID);
-            Delta delta = deltaDao.getByGridId(deltaGridId);
+            Delta<?> delta = deltaDao.getByGridId(deltaGridId);
 
             if (delta == null) {
                 // Get Delta Node if Node Exists
@@ -154,6 +162,8 @@ public class StudyXMLReader  {
                     planTreeNode  = plannedCalendarDao.getByGridId(nodeGridId);
 
                     delta = new PlannedCalendarDelta();
+                    ((PlannedCalendarDelta)delta).setNode((PlannedCalendar) planTreeNode);
+                    delta.setRevision(amendment);
                     //Delta.createDeltaFor(planTreeNode, change);
 
                 } else {
@@ -164,7 +174,6 @@ public class StudyXMLReader  {
                     throw new StudyCalendarError("Cannot find Planned Calendar: %s", nodeGridId);
                 }
 
-                delta.setNode(planTreeNode);
                 delta.setGridId(deltaGridId);
             }
 
@@ -173,7 +182,6 @@ public class StudyXMLReader  {
 
         return deltas;
     }
-
     /* Find element parent by passing XML element and list of possible parents */
     private <T extends GridIdentifiable> T findParent (Element element, List<T> possibleParents) {
         Element parent = (Element) element.getParentNode();

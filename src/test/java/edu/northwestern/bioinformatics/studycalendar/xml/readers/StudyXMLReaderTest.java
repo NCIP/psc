@@ -36,6 +36,8 @@ import java.io.File;
 import static java.text.MessageFormat.format;
 import java.util.List;
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.Collections;
 import java.net.URL;
 
 public class StudyXMLReaderTest extends StudyCalendarTestCase {
@@ -177,10 +179,10 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(amendmentDao.getByGridId("grid3")).andReturn(null);
         replayMocks();
 
-        List<Amendment> actual = reader.parseAmendment(getDocument(buf), new Study());
+        Amendment current = reader.parseAmendment(getDocument(buf), new Study());
         verifyMocks();
 
-        Amendment actualAmendment0 = actual.get(0);
+        Amendment actualAmendment0 = current.getPreviousAmendment();
         assertSame("Amendments Should be the same", amendment0, actualAmendment0);
         assertEquals("Wrong Grid Id", "grid2", actualAmendment0.getGridId());
         assertEquals("Wrong Name", "amendment A", actualAmendment0.getName());
@@ -188,12 +190,11 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertTrue("Wrong Mandatory Value", actualAmendment0.isMandatory());
         assertNull("Previous Amendment Should be null", actualAmendment0.getPreviousAmendment());
 
-        Amendment actualAmendment1 = actual.get(1);
-        assertEquals("Wrong Grid Id", "grid3", actualAmendment1.getGridId());
-        assertEquals("Wrong Name", "amendment B", actualAmendment1.getName());
-        assertEquals("Wrong Date", DateUtils.createDate(2007, Calendar.DECEMBER, 26, 0, 0, 0), actualAmendment1.getDate());
-        assertTrue("Wrong Mandatory Value", actualAmendment1.isMandatory());
-        assertSame("Previous Amendment Should be same", amendment0, actualAmendment1.getPreviousAmendment());
+        assertEquals("Wrong Grid Id", "grid3", current.getGridId());
+        assertEquals("Wrong Name", "amendment B", current.getName());
+        assertEquals("Wrong Date", DateUtils.createDate(2007, Calendar.DECEMBER, 26, 0, 0, 0), current.getDate());
+        assertTrue("Wrong Mandatory Value", current.isMandatory());
+        assertSame("Previous Amendment Should be same", amendment0, current.getPreviousAmendment());
 
     }
 
@@ -228,7 +229,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(deltaDao.getByGridId("grid3")).andReturn(delta);
         replayMocks();
 
-        List<Delta> actual = reader.parseDeltas(getDocument(buf), amendment);
+        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
         verifyMocks();
 
         Delta actualDelta0 = actual.get(0);
@@ -264,7 +265,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         replayMocks();
 
-        List<Delta> actual = reader.parseDeltas(getDocument(buf), amendment);
+        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
         verifyMocks();
 
         Delta actualDelta0 = actual.get(0);
@@ -296,6 +297,15 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         DocumentBuilder db = dbf.newDocumentBuilder();
 
         return db.parse(input);
+    }
+
+    private List<Amendment> getAmendmentsList(Amendment current) {
+        List<Amendment> amendments = new LinkedList<Amendment>();
+        while (current != null) {
+            amendments.add(current);
+            current = current.getPreviousAmendment();
+        }
+        return Collections.unmodifiableList(amendments);
     }
 
 }
