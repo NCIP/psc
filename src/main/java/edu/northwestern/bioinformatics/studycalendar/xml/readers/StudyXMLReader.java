@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.NODE_ID;
+
 import static java.lang.Boolean.valueOf;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
@@ -11,8 +13,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
@@ -37,8 +42,10 @@ public class StudyXMLReader  {
     private DeltaDao deltaDao;
     private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private EpochDao epochDao;
+
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public Study read(InputStream dataFile) throws Exception {
         //get the factory
@@ -53,21 +60,22 @@ public class StudyXMLReader  {
         return parseStudy(dom);
     }
 
-    protected Study parseStudy(Document doc) throws SAXException {
+    protected Study parseStudy(Document doc) throws Exception {
         Element element = doc.getDocumentElement();
         String gridId = element.getAttribute(ID);
         Study study = studyDao.getByGridId(gridId);
         if (study == null) {
             study = new Study();
             study.setGridId(gridId);
+            study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
         }
-        //TODO: Use amendments to figure out which study is newer and use that assigned identifier
-        study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
-                                Node e = element.getFirstChild();
+
+        parsePlannedCalendar(doc, study);
+
         return study;
     }
 
-    protected PlannedCalendar parsePlannedCalendar(Document doc) {
+    protected PlannedCalendar parsePlannedCalendar(Document doc, Study study) throws Exception {
         NodeList nodes = doc.getElementsByTagName(PLANNDED_CALENDAR);
 
         Element element = ((Element)nodes.item(0));
@@ -76,7 +84,10 @@ public class StudyXMLReader  {
         if (calendar == null) {
             calendar = new PlannedCalendar();
             calendar.setGridId(gridId);
+            study.setPlannedCalendar(calendar);
         }
+
+        parseAmendment(doc, study);
 
         return calendar;
     }
@@ -98,17 +109,21 @@ public class StudyXMLReader  {
                 amendment.setMandatory(valueOf(element.getAttribute(StudyXMLWriter.MANDATORY)));
                 amendment.setDate(formatter.parse(element.getAttribute(StudyXMLWriter.DATE)));
 
+
                 String prevAmendmentGridId = element.getAttribute(StudyXMLWriter.PREVIOUS_AMENDMENT_ID);
-                if (prevAmendmentGridId != null) {
+                if (prevAmendmentGridId == null) {
+                    study.setAmendment(amendment);
+                } else {
                     for (Amendment searchAmendment : amendments) {
                         if (searchAmendment.getGridId().equals(prevAmendmentGridId)) {
                             amendment.setPreviousAmendment(searchAmendment);
                         }
                     }
-                } else {
-                    study.setAmendment(amendment);
                 }
             }
+
+            parseDeltas(doc, amendment);
+
             amendments.add(amendment);
         }
 
@@ -116,21 +131,41 @@ public class StudyXMLReader  {
     }
 
 
-    protected List<Delta> parseDeltas(Document doc, List<Amendment> amendments) {
+    protected List<Delta> parseDeltas(Document doc, Amendment amendment) {
         List<Delta> deltas = new ArrayList<Delta>();
 
-        NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
-        for (int i=0; i < nodes.getLength(); i++) {
-            Element element = ((Element)nodes.item(i));
+        NodeList allDeltaNodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
+        NodeList allAmendmentChildrenNodes = doc.getElementById(amendment.getGridId()).getChildNodes();
 
-            String gridId = element.getAttribute(ID);
-            Delta delta = deltaDao.getByGridId(gridId);
+        List<Element> deltaNodes = union(allDeltaNodes, allAmendmentChildrenNodes);
+
+        for (Element element : deltaNodes) {
+            // Get Delta if Delta Exists
+            String deltaGridId = element.getAttribute(ID);
+            Delta delta = deltaDao.getByGridId(deltaGridId);
+
             if (delta == null) {
-                Amendment amendment = findParent(element, amendments);
-                if (amendment == null) {
-                    throw new StudyCalendarError("Cannot find parent for Delta: %s", gridId);
+                // Get Delta Node if Node Exists
+                String nodeGridId = element.getAttribute(NODE_ID);
+                Node node = doc.getElementById(nodeGridId);
+
+                PlanTreeNode<?> planTreeNode;
+                if(PLANNDED_CALENDAR.equals(node.getNodeName())) {
+                    planTreeNode  = plannedCalendarDao.getByGridId(nodeGridId);
+
+                    delta = new PlannedCalendarDelta();
+                    //Delta.createDeltaFor(planTreeNode, change);
+
+                } else {
+                    throw new StudyCalendarError("Cannot find PlanTreeNode for: %s", node.getNodeName());
                 }
 
+                if (planTreeNode == null) {
+                    throw new StudyCalendarError("Cannot find Planned Calendar: %s", nodeGridId);
+                }
+
+                delta.setNode(planTreeNode);
+                delta.setGridId(deltaGridId);
             }
 
             deltas.add(delta);
@@ -149,6 +184,18 @@ public class StudyXMLReader  {
             }
         }
         return null;
+    }
+
+    private List<Element> union(NodeList list0, NodeList list1) {
+        List resultList = new ArrayList();
+        for (int i = 0; i < list0.getLength(); i++) {
+            for (int j = 0; j < list1.getLength(); j++) {
+                if (list0.item(i) == list1.item(j)) {
+                    resultList.add(list0.item(i));
+                }
+            }
+        }
+        return resultList;
     }
 
 
