@@ -9,10 +9,7 @@ SC.Main.registerClickForwarders = function() {
 
 SC.Main.registerClickForwarder = function(studySegmentItem) {
     Event.observe(studySegmentItem, 'click', function() {
-        var studySegmentA;
-        $A(studySegmentItem.getElementsByTagName("a")).each(function(a) {
-            if (Element.hasClassName(a, "studySegment")) { studySegmentA = a; }
-        });
+        var studySegmentA = studySegmentItem.select("a.studySegment")[0];
         studySegmentA.click();
     });
 }

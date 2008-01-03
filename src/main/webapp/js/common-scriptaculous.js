@@ -80,12 +80,6 @@ Object.extend(Object.extend(SC.InPlaceEditor.prototype, Ajax.InPlaceEditor.proto
                     }
                 }
             }, options));
-        // remove handlers from element, if requested
-        if (options.externalControlOnly) {
-            Event.stopObserving(this.element, 'click', this.onclickListener);
-            Event.stopObserving(this.element, 'mouseover', this.mouseoverListener);
-            Event.stopObserving(this.element, 'mouseout', this.mouseoutListener);
-        }
     }
 })
 
