@@ -50,7 +50,7 @@
             <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="index" type="xsd:integer" use="required"/>
+        <xsd:attribute name="index" type="xsd:integer" use="optional"/>
         <xsd:attribute name="id" type="xsd:ID" use="required"/>
     </xsd:complexType>
 

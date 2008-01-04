@@ -77,7 +77,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
         /* Study Segment Delta for Add(ing) Periods */
         period = createNamedInstance("Period A", Period.class);
-        addPeriod = createAdd(period, 0);
+        addPeriod = createAdd(period);
         segmentDelta = createDeltaFor(segment, addPeriod);
 
         /* Period Delta for Add(ing) Planned Activities */
@@ -237,7 +237,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">", segmentDelta.getGridId(), segmentDelta.getNode().getGridId()))
-            .append(format("  <add id=\"{0}\" index=\"{1}\">", addPeriod.getGridId(), addPeriod.getIndex()))
+            .append(format("  <add id=\"{0}\">", addPeriod.getGridId()))
             .append(format("    <period id=\"{0}\" name=\"{1}\"/>", period.getGridId(), period.getName()))
             .append(       "  </add>")
             .append(       "</delta>");
@@ -354,6 +354,10 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     
     private <T extends PlanTreeNode<? extends GridIdentifiable>> Delta<T> createDeltaFor(T node, Change... changes) throws Exception {
         return setGridId(Delta.createDeltaFor(node, changes));
+    }
+
+    private Add createAdd(PlanTreeNode<?> child) throws Exception {
+        return setGridId(Add.create(child));
     }
 
     private Add createAdd(PlanTreeNode<?> child, int index) throws Exception {
