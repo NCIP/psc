@@ -142,11 +142,11 @@
             }
 
             p#addEpoch{
-                padding-left:8px;
+                padding-left: 8px;
             }
 
-            h1#enterStudyNameSentence{
-                padding-top:8px;
+            h1#enterStudyNameSentence {
+                padding-top: 8px;
             }
 
             div.row div.label {
@@ -154,15 +154,13 @@
             }
 
             div.row {
-                padding-top:2px;
-                margin:0px;
-                /*text-align:right;*/
-               /*line-height:1px;*/
+                padding-top: 2px;
+                margin: 0;
             }
             div.controls-card {
-                float:right;
-                margin-left:0px;
-                width:68%;
+                float: right;
+                margin-left: 0;
+                width: 68%;
             }
 
             ul#populations {
