@@ -163,11 +163,11 @@
                 width: 68%;
             }
 
-            ul#populations {
+            #study-info ul {
                 padding: 0; margin: 0;
             }
 
-            ul#populations li {
+            #study-info ul li {
                 list-style-type: none;
             }
         </style>
@@ -565,21 +565,18 @@
         <div id="study-info" class="title-card card">
             <div class="header">Study info</div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
-            <c:set var="count" value="1"/>
-            <div class="row ${commons:parity(count)}">
+            <div class="row odd">
                 <div class="label">Amendment</div>
                 <div class="value">
                     <a href="<c:url value="/pages/cal/template/amendments?study=${study.id}#amendment=${amendment.id}"/>">${amendment.displayName}</a>
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
                 </div>
             </div>
-            <c:set var="count" value="${count + 1}"/>
-            <div class="row ${commons:parity(count)}">
+            <div class="row even">
                 <div class="label">Long title</div>
                 <div class="value">${study.longTitle}</div>
             </div>
-            <c:set var="count" value="${count + 1}"/>
-            <div class="row ${commons:parity(count)}">
+            <div class="row odd">
                 <div class="label">Populations</div>
                 <div class="value">
                     <ul id="populations">
@@ -592,7 +589,14 @@
                     </ul>
                 </div>
             </div>
-            <c:set var="count" value="${count + 1}"/>
+            <div class="row even">
+                <div class="label">Other formats</div>
+                <div class="value">
+                    <ul>
+                        <li><a href="<c:url value="/pages/cal/template/display/${empty developmentRevision ? study.assignedIdentifier : study.gridId}.xml"/>">PSC XML</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
         <div id="study-manipulations" class="controls-card card">
             <div class="header">Manipulate study</div>

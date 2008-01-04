@@ -107,6 +107,8 @@
         <property name="commandBeanName"><value>moveCommand</value></property>
     </bean>
 
+    <bean name="/cal/template/display/*.xml" id="displayTemplateXmlController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportTemplateXmlController"/>
 
 <!--to separate ManagePeriodCommands to a separate commands-->
     <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
