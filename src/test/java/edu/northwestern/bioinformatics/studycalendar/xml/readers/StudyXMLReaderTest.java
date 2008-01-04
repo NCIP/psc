@@ -116,9 +116,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
             .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -136,9 +136,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -159,9 +159,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       "  <planned-calendar id=\"grid1\" />\n")
            .append(       "  <amendment id=\"grid2\" name=\"amendment A\" date=\"2007-12-25\" mandatory=\"true\"/>\n")
            .append(       "  <amendment id=\"grid3\" name=\"amendment B\" date=\"2007-12-26\" mandatory=\"true\" previous-amendment-id=\"grid2\"/>\n")
@@ -200,9 +200,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       "  <planned-calendar id=\"grid1\" />\n")
            .append(       "  <amendment id=\"grid2\" name=\"amendment A\" date=\"2007-12-25\" mandatory=\"true\">\n")
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
@@ -244,9 +244,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
            .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       "  <planned-calendar id=\"grid1\"/>\n")
            .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
