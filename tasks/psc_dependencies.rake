@@ -29,9 +29,7 @@ CTMS_COMMONS = group(%w{base core laf lang web}.map { |a| "ctms-commons-#{a}"},
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = [
-  eponym("xml-apis", "2.0.2"), 
   eponym("xalan", "2.4.0"), 
-  eponym("xerces","2.4.0"),
   eponym("dom4j", "1.6.1"),
   # "javax.xml:jaxrpc:jar:1.1",
   eponym("jdom", "1.0b8")
