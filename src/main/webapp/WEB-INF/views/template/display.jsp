@@ -165,6 +165,13 @@
                 width:68%;
             }
 
+            ul#populations {
+                padding: 0; margin: 0;
+            }
+
+            ul#populations li {
+                list-style-type: none;
+            }
         </style>
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
