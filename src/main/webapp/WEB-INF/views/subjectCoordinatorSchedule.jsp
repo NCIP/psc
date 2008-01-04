@@ -127,15 +127,16 @@
             </c:forEach>
         </ul>
     </laf:box>
-
-    <laf:box title="Colleagues - Subject Coordinators">
-        <ul class="menu">
-            <c:forEach items="${colleguesStudies}" var="mapOfUsersAndStudies" varStatus="status">
-                <li class="autoclear ">
-                    <a href="<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${mapOfUsersAndStudies.key.id}"/>"> ${mapOfUsersAndStudies.key.name} </a>
-                </li>
-            </c:forEach>
-        </ul>
-    </laf:box>
+    <c:if test="${not empty colleguesStudies}">
+        <laf:box title="Colleagues - Subject Coordinators">
+            <ul class="menu">
+                <c:forEach items="${colleguesStudies}" var="mapOfUsersAndStudies" varStatus="status">
+                    <li class="autoclear ">
+                        <a href="<c:url value="/pages/dashboard/colleagueSubjectCoordinator?id=${mapOfUsersAndStudies.key.id}"/>"> ${mapOfUsersAndStudies.key.name} </a>
+                    </li>
+                </c:forEach>
+            </ul>
+        </laf:box>
+    </c:if>
 </body>
 </html>
