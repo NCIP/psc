@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
+import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 import static org.apache.commons.collections.CollectionUtils.union;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.EPOCH;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ADD;
@@ -18,9 +20,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -39,10 +43,7 @@ public class StudyXMLReader  {
     private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
     private ChangeDao changeDao;
-    private EpochDao epochDao;
-    private AmendmentService amendmentService;
-    private StudySegmentDao studySegmentDao;
-    private PeriodDao periodDao;
+    private TemplateService templateService;
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -99,7 +100,7 @@ public class StudyXMLReader  {
     protected Amendment parseAmendment(Document doc, Study study) throws Exception {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
-        NodeList nodes = doc.getElementsByTagName(StudyXMLWriter.AMENDMENT);
+        NodeList nodes = doc.getElementsByTagName(AMENDMENT);
         for (int i=0; i < nodes.getLength(); i++) {
 
             Element element = ((Element)nodes.item(i));
@@ -110,10 +111,10 @@ public class StudyXMLReader  {
                 amendment = new Amendment();
                 amendment.setGridId(gridId);
                 amendment.setName(element.getAttribute(NAME));
-                amendment.setMandatory(valueOf(element.getAttribute(StudyXMLWriter.MANDATORY)));
-                amendment.setDate(formatter.parse(element.getAttribute(StudyXMLWriter.DATE)));
+                amendment.setMandatory(valueOf(element.getAttribute(MANDATORY)));
+                amendment.setDate(formatter.parse(element.getAttribute(DATE)));
 
-                String prevAmendmentGridId = element.getAttribute(StudyXMLWriter.PREVIOUS_AMENDMENT_ID);
+                String prevAmendmentGridId = element.getAttribute(PREVIOUS_AMENDMENT_ID);
                 if (prevAmendmentGridId != null) {
                     for (Amendment searchAmendment : amendments) {
                         if (searchAmendment.getGridId().equals(prevAmendmentGridId)) {
@@ -124,7 +125,7 @@ public class StudyXMLReader  {
             }
             amendments.add(amendment);
 
-            List<Delta<?>> deltas = parseDeltas(doc, amendment);
+            List<Delta<?>> deltas = parseDeltas(doc, amendment, study);
             amendment.setDeltas(deltas);
         }
 
@@ -137,13 +138,13 @@ public class StudyXMLReader  {
 
 
     // TODO: Use Delta.createDeltaFor method
-    protected List<Delta<?>> parseDeltas(Document doc, Amendment amendment) {
+    protected List<Delta<?>> parseDeltas(Document doc, Amendment amendment, Study study) {
         List<Delta<?>> deltas = new ArrayList<Delta<?>>();
 
-        NodeList allDeltaNodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
+        NodeList allDeltaNodes = doc.getElementsByTagName(DELTA);
         NodeList allAmendmentChildrenNodes = doc.getElementById(amendment.getGridId()).getChildNodes();
 
-        List<Node> deltaNodes = intersection(allDeltaNodes, allAmendmentChildrenNodes);
+        Collection<Node> deltaNodes = CollectionUtils.intersection(new NodeListCollection(allDeltaNodes), new NodeListCollection(allAmendmentChildrenNodes));
 
         for (Node deltaNode : deltaNodes) {
             Element element = (Element) deltaNode;
@@ -169,15 +170,15 @@ public class StudyXMLReader  {
                     planTreeNode.setGridId(nodeGridId);
 
                     // getting amended Node for the revision
-                    planTreeNode = amendmentService.getAmendedNode(planTreeNode, amendment);
+                    planTreeNode = templateService.findEquivalentChild(study, planTreeNode);
 
                     delta = new EpochDelta();
                     ((EpochDelta)delta).setNode((Epoch) planTreeNode);
-                } else if (StudyXMLWriter.STUDY_SEGMENT.equals(node.getNodeName())) {
+                } else if (STUDY_SEGMENT.equals(node.getNodeName())) {
                     planTreeNode = new StudySegment();
                     planTreeNode.setGridId(nodeGridId);
 
-                    planTreeNode = amendmentService.getAmendedNode(planTreeNode, amendment);
+                    planTreeNode = templateService.findEquivalentChild(study, planTreeNode);
 
                     delta = new StudySegmentDelta();
                     ((StudySegmentDelta) delta).setNode((StudySegment) planTreeNode);
@@ -186,13 +187,13 @@ public class StudyXMLReader  {
                 }
 
                 if (planTreeNode == null) {
-                    throw new StudyCalendarError("Cannot find Planned Calendar: %s", nodeGridId);
+                    throw new StudyCalendarError("Cannot find PlannedNode: %s", nodeGridId);
                 }
 
                 delta.setRevision(amendment);
                 delta.setGridId(deltaGridId);
             }
-            List<Change> changes = parseChanges(doc, deltaGridId);
+            List<Change> changes = parseChanges(doc, deltaGridId, study);
             delta.addChanges(changes.toArray(new Change[]{}));
 
             deltas.add(delta);
@@ -201,13 +202,13 @@ public class StudyXMLReader  {
         return deltas;
     }
 
-    protected List<Change> parseChanges(Document doc, String deltaGridId) {
+    protected List<Change> parseChanges(Document doc, String deltaGridId, Study study) {
         List<Change> changes = new ArrayList<Change>();
 
         NodeList allAddNodes = doc.getElementsByTagName(ADD);
         NodeList allDeltaChildrenNodes = doc.getElementById(deltaGridId).getChildNodes();
 
-        List<Node> addNodes = intersection(allAddNodes, allDeltaChildrenNodes);
+        Collection<Node> addNodes = CollectionUtils.intersection(new NodeListCollection(allAddNodes), new NodeListCollection(allDeltaChildrenNodes));
 
         for (Node addNode : addNodes) {
             Element element = (Element) addNode;
@@ -215,8 +216,8 @@ public class StudyXMLReader  {
             String gridId = element.getAttribute(ID);
             Change change = changeDao.getByGridId(gridId);
             if (change == null) {
-                if (StudyXMLWriter.ADD.equals(element.getNodeName())) {
-                    PlanTreeNode<?> changeChild = parsePlanTreeNode(doc, gridId);
+                if (ADD.equals(element.getNodeName())) {
+                    PlanTreeNode<?> changeChild = parsePlanTreeNode(doc, gridId, study);
                     change = Add.create(changeChild, Integer.parseInt(element.getAttribute(INDEX)));
                 } else {
                     throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
@@ -232,75 +233,65 @@ public class StudyXMLReader  {
         return changes;
     }
 
-    protected PlanTreeNode<?> parsePlanTreeNode(Document doc, String changeGridId) {
-        PlanTreeNode<?> childPlanTreeNode = null;
+    protected PlanTreeNode<?> parsePlanTreeNode(Document doc, String changeGridId, Study study) {
+        return firstElement(parsePlanTreeNodes(doc, changeGridId, study));
+    }
+
+    protected List<PlanTreeNode<?>> parsePlanTreeNodes(Document doc, String parentGridId, Study study) {
+        List<PlanTreeNode<?>> planTreeNodes = new ArrayList<PlanTreeNode<?>>();
 
         NodeList allEpochNodes = doc.getElementsByTagName(EPOCH);
-        NodeList allSegmentNodes = doc.getElementsByTagName(StudyXMLWriter.STUDY_SEGMENT);
-        NodeList allPeriodNodes = doc.getElementsByTagName(StudyXMLWriter.PERIOD);
+        NodeList allSegmentNodes = doc.getElementsByTagName(STUDY_SEGMENT);
+        NodeList allPeriodNodes = doc.getElementsByTagName(PERIOD);
 
-        NodeList allChangeChildrenNodes = doc.getElementById(changeGridId).getChildNodes();
+        NodeList allChangeChildrenNodes = doc.getElementById(parentGridId).getChildNodes();
 
-        List<Node> childNodes =
-                intersection( allChangeChildrenNodes,
-                union ( new NodeListCollection(allPeriodNodes),
-                        union(new NodeListCollection(allEpochNodes), new NodeListCollection(allSegmentNodes))));
+        Collection<Node> childNodes =
+                CollectionUtils.intersection( new NodeListCollection(allChangeChildrenNodes),
+                    union ( new NodeListCollection(allPeriodNodes),
+                        union( new NodeListCollection(allEpochNodes), new NodeListCollection(allSegmentNodes))));
 
-        if (!childNodes.isEmpty()) {
-            Element element = (Element) childNodes.get(0);
-            // There should be one child Node
-            String gridId = element.getAttribute(ID);
 
-            if (StudyXMLWriter.EPOCH.equals(element.getNodeName())) {
-                childPlanTreeNode = epochDao.getByGridId(gridId);
-                if (childPlanTreeNode == null) {
-                    childPlanTreeNode = new Epoch();
-                    ((Epoch) childPlanTreeNode).setName(element.getAttribute(NAME));
-                    childPlanTreeNode.setGridId(gridId);
-                }
-            } else if (StudyXMLWriter.STUDY_SEGMENT.equals(element.getNodeName())) {
-                childPlanTreeNode = studySegmentDao.getByGridId(gridId);
-                if (childPlanTreeNode == null) {
-                    childPlanTreeNode = new StudySegment();
-                    ((StudySegment) childPlanTreeNode).setName(element.getAttribute(NAME));
-                    childPlanTreeNode.setGridId(gridId);
-                }
-            } else if  (StudyXMLWriter.PERIOD.equals(element.getNodeName())) {
-                childPlanTreeNode = periodDao.getByGridId(gridId);
-                if (childPlanTreeNode == null) {
-                    childPlanTreeNode = new Period();
-                    ((Period) childPlanTreeNode).setName(element.getAttribute(NAME));
-                    childPlanTreeNode.setGridId(gridId);
-                }
+        for (Node childNode : childNodes) {
+            Element element = (Element) childNode;
+            String childGridId = element.getAttribute(ID);
+
+            PlanTreeNode<?> parameter;
+            if (EPOCH.equals(element.getNodeName())) {
+                parameter = new Epoch();
+            } else if (STUDY_SEGMENT.equals(element.getNodeName())) {
+                parameter = new StudySegment();
+            } else if  (PERIOD.equals(element.getNodeName())) {
+                parameter = new Period();
             } else {
                 throw new StudyCalendarError("Cannot find Child Node for: %s", element.getNodeName());
             }
+
+            if (parameter instanceof Named) {
+                ((Named) parameter).setName(element.getAttribute(NAME));
+            }
+
+            parameter.setGridId(childGridId);
+            PlanTreeNode<?> planTreeNode = templateService.findEquivalentChild(study, parameter);
+
+            if (planTreeNode == null) {
+                planTreeNode = parameter;
+            }
+
+            List<PlanTreeNode<?>> childrenTreeNodes = parsePlanTreeNodes(doc, childGridId, study);
+            if (!childrenTreeNodes.isEmpty()) {
+                for (PlanTreeNode node : childrenTreeNodes) {
+                    cast(planTreeNode).addChild(node);
+                }
+            }
+
+           planTreeNodes.add(planTreeNode);
+
         }
-        
-        return childPlanTreeNode;
+        return planTreeNodes;
     }
 
     /* Class Helpers */
-    private List<Node> intersection(NodeList list0, NodeList list1) {
-        return intersection(new NodeListCollection(list0), new NodeListCollection(list1));
-    }
-
-    private List<Node> intersection(NodeList list0, Collection<Node> list1) {
-        return intersection(new NodeListCollection(list0), list1);
-    }
-
-    private List<Node> intersection(Collection<Node> list0, Collection<Node> list1) {
-        List<Node> resultList = new ArrayList<Node>();
-        for (Node outter : list0) {
-            for (Node inner : list1) {
-                if (outter == inner) {
-                    resultList.add(outter);
-                }
-            }
-        }
-        return resultList;
-    }
-
     private class NodeListCollection extends AbstractList<Node> {
 
         private NodeList nodeList;
@@ -335,24 +326,11 @@ public class StudyXMLReader  {
     public void setDeltaDao(DeltaDao deltaDao) {
         this.deltaDao = deltaDao;
     }
-
-    public void setEpochDao(EpochDao epochDao) {
-        this.epochDao = epochDao;
-    }
-
     public void setChangeDao(ChangeDao changeDao) {
         this.changeDao = changeDao;
     }
 
-    public void setAmendmentService(AmendmentService amendmentService) {
-        this.amendmentService = amendmentService;
-    }
-
-    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
-        this.studySegmentDao = studySegmentDao;
-    }
-
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static org.easymock.EasyMock.eq;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
@@ -13,6 +14,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
 import org.easymock.classextension.EasyMock;
@@ -39,35 +42,24 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private PlannedCalendarDao plannedCalendarDao;
     private AmendmentDao amendmentDao;
-    private EpochDao epochDao;
     private DeltaDao deltaDao;
     private ChangeDao changeDao;
-    private AmendmentService amendmentService;
-    private StudySegmentDao studySegmentDao;
-    private PeriodDao periodDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         studyDao = registerDaoMockFor(StudyDao.class);
-        epochDao = registerDaoMockFor(EpochDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
-        periodDao = registerDaoMockFor(PeriodDao.class);
-        amendmentService = registerMockFor(AmendmentService.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
-        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
 
         reader = new StudyXMLReader();
         reader.setStudyDao(studyDao);
-        reader.setEpochDao(epochDao);
         reader.setDeltaDao(deltaDao);
         reader.setChangeDao(changeDao);
-        reader.setPeriodDao(periodDao);
         reader.setAmendmentDao(amendmentDao);
-        reader.setStudySegmentDao(studySegmentDao);
-        reader.setAmendmentService(amendmentService);
+        reader.setTemplateService(new TestingTemplateService());
         reader.setPlannedCalendarDao(plannedCalendarDao);
     }
 
@@ -229,11 +221,14 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Amendment amendment = new Amendment();
         amendment.setGridId("grid2");
 
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setAmendment(amendment);
+
         expect(deltaDao.getByGridId("grid3")).andReturn(delta);
         expect(changeDao.getByGridId("grid4")).andReturn(add);
         replayMocks();
 
-        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
+        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment, study);
         verifyMocks();
 
         Delta actualDelta0 = actual.get(0);
@@ -242,7 +237,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertSame("Children should be the same", epoch, ((ChildrenChange) actualDelta0.getChanges().get(0)).getChild());
     }
 
-    public void testReadNewPlannedCalendarDelta() throws Exception {
+    public void testReadNewDeltas() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
            .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
@@ -253,7 +248,11 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
            .append(       "      <add id=\"grid4\" index=\"0\">\n")
-           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\"/>\n")
+           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\">\n")
+           .append(       "          <study-segment id=\"grid8\" name=\"Segment A\">\n")
+           .append(       "            <period id=\"grid11\" name=\"Period A\"/>\n")
+           .append("                 </study-segment>")
+           .append(       "        </epoch>")
            .append(       "      </add>\n")
            .append(       "    </delta>\n")
            .append(       "  </amendment>\n")
@@ -265,186 +264,39 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Amendment amendment = new Amendment();
         amendment.setGridId("grid2");
 
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setAmendment(amendment);
+        study.setPlannedCalendar(calendar);
+
+        // PlannedCalendarDelta
         expect(deltaDao.getByGridId("grid3")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid4")).andReturn(null);
-        expect(epochDao.getByGridId("grid5")).andReturn(null);
+
         replayMocks();
 
-        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
+        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment, study);
         verifyMocks();
 
+        // PlannedCalendarDelta
         Delta actualDelta0 = actual.get(0);
         assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta0 instanceof PlannedCalendarDelta);
         assertEquals("Wrong grid id", "grid3", actualDelta0.getGridId());
         assertEquals("Wrong node grid id", "grid1", actualDelta0.getNode().getGridId());
         assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta0.getRevision()).getGridId());
 
-        assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid3", ((Change) actualDelta0.getChanges().get(0)).getDelta().getGridId());
-        assertEquals("Wrong Index", 0, (int) ((Add)actualDelta0.getChanges().get(0)).getIndex());
-        assertTrue("Child should be instance of Epoch", ((Add) actualDelta0.getChanges().get(0)).getChild() instanceof Epoch);
-        assertEquals("Wrong Child GridId", "grid5", ((Add) actualDelta0.getChanges().get(0)).getChild().getGridId());
-    }
+        // Add Change
+        Add add = (Add) actualDelta0.getChanges().get(0);
+        assertEquals("Wrong change grid id", "grid4", add.getGridId());
+        assertEquals("Wrong parent Delta ID", "grid3", add.getDelta().getGridId());
 
-    public void testReadNewEpochDelta() throws Exception {
-        StringBuffer buf = new StringBuffer();
-        buf.append(       "<?xml version=\"1.0\"?>\n")
-           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
-           .append(       "  <planned-calendar id=\"grid1\"/>\n")
-           .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
-           .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
-           .append(       "      <add id=\"grid4\" index=\"0\">\n")
-           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\"/>\n")
-           .append(       "      </add>\n")
-           .append(       "    </delta>\n")
-           .append(       "    <delta id=\"grid6\" node-id=\"grid5\">\n")
-           .append(       "      <add id=\"grid7\" index=\"0\">\n")
-           .append(       "        <study-segment id=\"grid8\" name=\"Segment A\"/>\n")
-           .append(       "      </add>\n")
-           .append(       "    </delta>\n")
-           .append(       "  </amendment>\n")
-           .append(       "</study>");
+        // Epoch
+        Epoch epoch = (Epoch) add.getChild();
+        assertEquals("Wrong Child GridId", "grid5", epoch.getGridId());
 
-        PlannedCalendar calendar = new PlannedCalendar();
-        calendar.setGridId("grid1");
-
-        Amendment amendment = new Amendment();
-        amendment.setGridId("grid2");
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(null);
-        expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
-        expect(changeDao.getByGridId("grid4")).andReturn(null);
-        expect(epochDao.getByGridId("grid5")).andReturn(null);
-
-        expect(deltaDao.getByGridId("grid6")).andReturn(null);
-        expect(amendmentService.getAmendedNode(planTreeNodeEq(setGridId("grid5", new Epoch())), planTreeNodeEq(amendment))).andReturn(setGridId("grid5", new Epoch()));
-        expect(changeDao.getByGridId("grid7")).andReturn(null);
-        expect(studySegmentDao.getByGridId("grid8")).andReturn(null);
-        replayMocks();
-
-        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
-        verifyMocks();
-
-        Delta actualDelta0 = actual.get(0);
-        assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta0 instanceof PlannedCalendarDelta);
-        assertEquals("Wrong grid id", "grid3", actualDelta0.getGridId());
-        assertEquals("Wrong node grid id", "grid1", actualDelta0.getNode().getGridId());
-        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta0.getRevision()).getGridId());
-
-        assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid3", ((Change) actualDelta0.getChanges().get(0)).getDelta().getGridId());
-        assertTrue("Child should be instance of Epoch", ((Add) actualDelta0.getChanges().get(0)).getChild() instanceof Epoch);
-        assertEquals("Wrong Child GridId", "grid5", ((Add) actualDelta0.getChanges().get(0)).getChild().getGridId());
-
-        Delta actualDelta1 = actual.get(1);
-        assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta1 instanceof EpochDelta);
-        assertEquals("Wrong grid id", "grid6", actualDelta1.getGridId());
-        assertEquals("Wrong node grid id", "grid5", actualDelta1.getNode().getGridId());
-        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta1.getRevision()).getGridId());
-
-        assertTrue("Change should be instance of Add Change", actualDelta1.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid7", ((Add)actualDelta1.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid6", ((Change) actualDelta1.getChanges().get(0)).getDelta().getGridId());
-        assertEquals("Wrong Index", 0, (int) ((Add)actualDelta1.getChanges().get(0)).getIndex());
-        assertTrue("Child should be instance of StudySegment", ((Add) actualDelta1.getChanges().get(0)).getChild() instanceof StudySegment);
-        assertEquals("Wrong Child GridId", "grid8", ((Add) actualDelta1.getChanges().get(0)).getChild().getGridId());
-    }
-
-    public void testReadNewSegmentDelta() throws Exception {
-        StringBuffer buf = new StringBuffer();
-        buf.append(       "<?xml version=\"1.0\"?>\n")
-           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
-           .append(       "  <planned-calendar id=\"grid1\"/>\n")
-           .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
-           .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
-           .append(       "      <add id=\"grid4\" index=\"0\">\n")
-           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\"/>\n")
-           .append(       "      </add>\n")
-           .append(       "    </delta>\n")
-           .append(       "    <delta id=\"grid6\" node-id=\"grid5\">\n")
-           .append(       "      <add id=\"grid7\" index=\"0\">\n")
-           .append(       "        <study-segment id=\"grid8\" name=\"Segment A\"/>\n")
-           .append(       "      </add>\n")
-           .append(       "    </delta>\n")
-           .append(       "    <delta id=\"grid9\" node-id=\"grid8\">\n")
-           .append(       "      <add id=\"grid10\" index=\"1\">\n")
-           .append(       "        <period id=\"grid11\" name=\"Period A\"/>\n")
-           .append(       "      </add>\n")
-           .append(       "    </delta>\n")
-           .append(       "  </amendment>\n")
-           .append(       "</study>");
-
-        PlannedCalendar calendar = new PlannedCalendar();
-        calendar.setGridId("grid1");
-
-        Amendment amendment = new Amendment();
-        amendment.setGridId("grid2");
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(null);
-        expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
-        expect(changeDao.getByGridId("grid4")).andReturn(null);
-        expect(epochDao.getByGridId("grid5")).andReturn(null);
-
-        expect(deltaDao.getByGridId("grid6")).andReturn(null);
-        expect(amendmentService.getAmendedNode(planTreeNodeEq(setGridId("grid5", new Epoch())), planTreeNodeEq(amendment))).andReturn(setGridId("grid5", new Epoch()));
-        expect(changeDao.getByGridId("grid7")).andReturn(null);
-        expect(studySegmentDao.getByGridId("grid8")).andReturn(null);
-
-        expect(deltaDao.getByGridId("grid9")).andReturn(null);
-        expect(amendmentService.getAmendedNode(planTreeNodeEq(setGridId("grid8", new StudySegment())), planTreeNodeEq(amendment))).andReturn(setGridId("grid8", new StudySegment()));
-        expect(changeDao.getByGridId("grid10")).andReturn(null);
-        expect(periodDao.getByGridId("grid11")).andReturn(null);
-        replayMocks();
-
-        List<Delta<?>> actual = reader.parseDeltas(getDocument(buf), amendment);
-        verifyMocks();
-
-        Delta actualDelta0 = actual.get(0);
-        assertTrue("Delta should be instance of PlannedCalendarDelta", actualDelta0 instanceof PlannedCalendarDelta);
-        assertEquals("Wrong grid id", "grid3", actualDelta0.getGridId());
-        assertEquals("Wrong node grid id", "grid1", actualDelta0.getNode().getGridId());
-        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta0.getRevision()).getGridId());
-
-        assertTrue("Change should be instance of Add Change", actualDelta0.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid4", ((Add)actualDelta0.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid3", ((Change) actualDelta0.getChanges().get(0)).getDelta().getGridId());
-        assertTrue("Child should be instance of Epoch", ((Add) actualDelta0.getChanges().get(0)).getChild() instanceof Epoch);
-        assertEquals("Wrong Child GridId", "grid5", ((Add) actualDelta0.getChanges().get(0)).getChild().getGridId());
-
-        Delta actualDelta1 = actual.get(1);
-        assertTrue("Delta should be instance of EpochDelta", actualDelta1 instanceof EpochDelta);
-        assertEquals("Wrong grid id", "grid6", actualDelta1.getGridId());
-        assertEquals("Wrong node grid id", "grid5", actualDelta1.getNode().getGridId());
-        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta1.getRevision()).getGridId());
-
-        assertTrue("Change should be instance of Add Change", actualDelta1.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid7", ((Add)actualDelta1.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid6", ((Change) actualDelta1.getChanges().get(0)).getDelta().getGridId());
-        assertEquals("Wrong Index", 0, (int) ((Add)actualDelta1.getChanges().get(0)).getIndex());
-        assertTrue("Child should be instance of StudySegment", ((Add) actualDelta1.getChanges().get(0)).getChild() instanceof StudySegment);
-        assertEquals("Wrong Child GridId", "grid8", ((Add) actualDelta1.getChanges().get(0)).getChild().getGridId());
-
-        Delta actualDelta2 = actual.get(2);
-        assertTrue("Delta should be instance of StudySegmentDelta", actualDelta2 instanceof StudySegmentDelta);
-        assertEquals("Wrong grid id", "grid9", actualDelta2.getGridId());
-        assertEquals("Wrong node grid id", "grid8", actualDelta2.getNode().getGridId());
-        assertEquals("Wrong Parent Amendment ID", "grid2", ((Amendment) actualDelta2.getRevision()).getGridId());
-
-        assertTrue("Change should be instance of Add Change", actualDelta2.getChanges().get(0) instanceof Add);
-        assertEquals("Wrong change grid id", "grid10", ((Add)actualDelta2.getChanges().get(0)).getGridId());
-        assertEquals("Wrong parent Delta ID", "grid9", ((Change) actualDelta2.getChanges().get(0)).getDelta().getGridId());
-        assertEquals("Wrong Index", 1, (int) ((Add)actualDelta2.getChanges().get(0)).getIndex());
-        assertTrue("Child should be instance of Period", ((Add) actualDelta2.getChanges().get(0)).getChild() instanceof Period);
-        assertEquals("Wrong Child GridId", "grid11", ((Add) actualDelta2.getChanges().get(0)).getChild().getGridId());
+        // StudySegment
+        StudySegment segment = epoch.getStudySegments().get(0);
+        assertEquals("Wrong Child GridId", "grid8", segment.getGridId());
     }
 
     /* Test Helpers */
