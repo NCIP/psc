@@ -29,9 +29,7 @@ CTMS_COMMONS = group(%w{base core laf lang web}.map { |a| "ctms-commons-#{a}"},
 CORE_COMMONS = "edu.northwestern.bioinformatics:core-commons:jar:#{CORE_COMMONS_VERSION}"
 
 XML = [
-  eponym("xalan", "2.4.0"), 
   eponym("dom4j", "1.6.1"),
-  # "javax.xml:jaxrpc:jar:1.1",
   eponym("jdom", "1.0b8")
 ]
 
@@ -78,7 +76,8 @@ SECURITY = [
     :under => "gov.nih.nci.security.acegi", :version => CTMS_COMMONS_VERSION),
   "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
   "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
-  "org.acegisecurity:acegi-security:jar:1.0.3"
+  "org.acegisecurity:acegi-security:jar:1.0.3",
+  "cas:casclient:2.0.11"
 ]
 
 CAGRID = [
