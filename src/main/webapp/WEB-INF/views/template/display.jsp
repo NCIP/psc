@@ -505,12 +505,22 @@
                 $('admin-options').show()
             }
 
+
+            function deletePeriodPopup(periodId, periodName) {
+                var message = "Are you sure you want to delete the period '" + periodName +
+                        "'?  This will permanently remove it and its events. " +
+                        "\n\nThis action cannot be undone."
+                if (window.confirm(message)) {//Boolean variable. Sets to true if user pressed "OK" versus "Cancel."
+                   deletePeriod(periodId)
+                    return true;
+                } else {
+                  return false;
+                }
+            }
+
             // TODO: this method must go in edit.js with everything else
             function deletePeriod(periodId) {
-//    Event.observe("deleteEpochButton", "click", function() {
-//            return "Are you sure you want to delete the study segment ?  This will permanently remove it, all its periods, and its events.  " +
-//                "\n\nThis action cannot be undone."
-//        })
+
                 var formdata = "";
                 formdata = formdata + "period=" + periodId + "&";
                 formdata = formdata+ "studySegment=" + ${studySegment.base.id} + "&";
@@ -523,7 +533,6 @@
 
                 return true;
             }
-
             Event.observe(window, "load", epochsAreaSetup)
             Event.observe(window, "load", studyManipulationSetup)
 
@@ -544,7 +553,6 @@
 				Event.observe(window, "load", hideMonthSetup)
 
             </c:if>
-
 
         </script>
     </head>

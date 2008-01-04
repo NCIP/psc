@@ -61,7 +61,11 @@
                         </c:choose>
 
                     </c:forEach>
-                    <c:if test="${editable}"><td class="controls"><a class="control" style="cursor:pointer;" onclick="deletePeriod(${period.id})">Delete</a></td></c:if>
+                    <c:if test="${editable}">
+                        <td class="controls">
+                            <a class="control" style="cursor:pointer;" onclick="return deletePeriodPopup(${period.id}, '${period.name}')" >Delete</a>
+                        </td>
+                    </c:if>
                 </tr>
             </c:forEach>
 
