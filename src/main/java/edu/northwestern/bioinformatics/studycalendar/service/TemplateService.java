@@ -340,7 +340,7 @@ public class TemplateService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
         return (toMatch == node) ||
-            (sameClassIgnoringProxies(toMatch, node) && toMatch.getId().equals(node.getId()));
+            (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
     }
 
     // This is not a general solution, but it will work for all PlanTreeNode subclasses
@@ -349,6 +349,18 @@ public class TemplateService {
             || node.getClass().isAssignableFrom(toMatch.getClass());
     }
 
+    private boolean identifiersMatch(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
+        boolean idMatch, gridIdMatch;
+        idMatch = gridIdMatch = false;
+
+        if (toMatch.getId() != null && node.getId() != null) {
+            idMatch = toMatch.getId().equals(node.getId());
+        }
+        if (toMatch.getGridId() != null && node.getGridId() != null) {
+            gridIdMatch = toMatch.getGridId().equals(node.getGridId());
+        }
+        return (idMatch || gridIdMatch);
+    }
 
     public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
         log.debug("{} studies found total", studies.size());

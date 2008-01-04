@@ -9,10 +9,7 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXML
 import static java.lang.Boolean.valueOf;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
@@ -22,21 +19,18 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXML
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.text.SimpleDateFormat;
-
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 
 public class StudyXMLReader  {
     private StudyDao studyDao;
@@ -44,9 +38,10 @@ public class StudyXMLReader  {
     private AmendmentDao amendmentDao;
     private PlannedCalendarDao plannedCalendarDao;
     private ChangeDao changeDao;
-
-
     private EpochDao epochDao;
+    private AmendmentService amendmentService;
+    private StudySegmentDao studySegmentDao;
+
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public Study read(InputStream dataFile) throws Exception {
@@ -146,9 +141,10 @@ public class StudyXMLReader  {
         NodeList allDeltaNodes = doc.getElementsByTagName(StudyXMLWriter.DELTA);
         NodeList allAmendmentChildrenNodes = doc.getElementById(amendment.getGridId()).getChildNodes();
 
-        List<Element> deltaNodes = union(allDeltaNodes, allAmendmentChildrenNodes);
+        List<Node> deltaNodes = intersection(allDeltaNodes, allAmendmentChildrenNodes);
 
-        for (Element element : deltaNodes) {
+        for (Node deltaNode : deltaNodes) {
+            Element element = (Element) deltaNode;
             // Get Delta if Delta Exists
             String deltaGridId = element.getAttribute(ID);
             Delta<?> delta = deltaDao.getByGridId(deltaGridId);
@@ -160,11 +156,21 @@ public class StudyXMLReader  {
 
                 PlanTreeNode<?> planTreeNode;
                 if(PLANNDED_CALENDAR.equals(node.getNodeName())) {
-                    planTreeNode  = plannedCalendarDao.getByGridId(nodeGridId);
+                    planTreeNode = plannedCalendarDao.getByGridId(nodeGridId);
 
                     delta = new PlannedCalendarDelta();
                     ((PlannedCalendarDelta)delta).setNode((PlannedCalendar) planTreeNode);
                     //Delta.createDeltaFor(planTreeNode, change);
+                } else if (EPOCH.equals(node.getNodeName())) {
+                    planTreeNode = epochDao.getByGridId(nodeGridId);
+                    //TODO: Use getAmendedNode
+                    if (planTreeNode == null) {
+                        planTreeNode = new Epoch();
+                        planTreeNode.setGridId(nodeGridId);
+                        planTreeNode = amendmentService.getAmendedNode(planTreeNode, amendment);
+                    }
+                    delta = new EpochDelta();
+                    ((EpochDelta)delta).setNode((Epoch) planTreeNode);
                 } else {
                     throw new StudyCalendarError("Cannot find PlanTreeNode for: %s", node.getNodeName());
                 }
@@ -191,9 +197,10 @@ public class StudyXMLReader  {
         NodeList allAddNodes = doc.getElementsByTagName(ADD);
         NodeList allDeltaChildrenNodes = doc.getElementById(deltaGridId).getChildNodes();
 
-        List<Element> addNodes = union(allAddNodes, allDeltaChildrenNodes);
+        List<Node> addNodes = intersection(allAddNodes, allDeltaChildrenNodes);
 
-        for (Element element : addNodes) {
+        for (Node addNode : addNodes) {
+            Element element = (Element) addNode;
              // Get Add if Delta Exists
             String gridId = element.getAttribute(ID);
             Change change = changeDao.getByGridId(gridId);
@@ -216,46 +223,82 @@ public class StudyXMLReader  {
     }
 
     protected PlanTreeNode<?> parsePlanTreeNode(Document doc, String changeGridId) {
-        PlanTreeNode<?> childPlanTreeNode;
+        PlanTreeNode<?> childPlanTreeNode = null;
 
         NodeList allEpochNodes = doc.getElementsByTagName(EPOCH);
+        NodeList allSegmentNodes = doc.getElementsByTagName(StudyXMLWriter.STUDY_SEGMENT);
+
         NodeList allChangeChildrenNodes = doc.getElementById(changeGridId).getChildNodes();
 
-        List<Element> childNodes = union(allEpochNodes, allChangeChildrenNodes);
+        List<Node> childNodes =
+                intersection( allChangeChildrenNodes,
+                CollectionUtils.union(new NodeListCollection(allEpochNodes), new NodeListCollection(allSegmentNodes)));
 
-        Element element = childNodes.get(0);
-        // There should be one child Node
-        String gridId = element.getAttribute(ID);
+        if (!childNodes.isEmpty()) {
+            Element element = (Element) childNodes.get(0);
+            // There should be one child Node
+            String gridId = element.getAttribute(ID);
 
-        if (StudyXMLWriter.EPOCH.equals(element.getNodeName())) {
-            childPlanTreeNode = epochDao.getByGridId(gridId);
-            if (childPlanTreeNode == null) {
-                childPlanTreeNode = new Epoch();
-                ((Epoch) childPlanTreeNode).setName(element.getAttribute(NAME));
+            if (StudyXMLWriter.EPOCH.equals(element.getNodeName())) {
+                childPlanTreeNode = epochDao.getByGridId(gridId);
+                if (childPlanTreeNode == null) {
+                    childPlanTreeNode = new Epoch();
+                    ((Epoch) childPlanTreeNode).setName(element.getAttribute(NAME));
+                }
+                childPlanTreeNode.setGridId(gridId);
+            } else if(StudyXMLWriter.STUDY_SEGMENT.equals(element.getNodeName())) {
+                childPlanTreeNode = studySegmentDao.getByGridId(gridId);
+                if (childPlanTreeNode == null) {
+                    childPlanTreeNode = new StudySegment();
+                    ((StudySegment) childPlanTreeNode).setName(element.getAttribute(NAME));
+                }
+                childPlanTreeNode.setGridId(gridId);
+            } else {
+                throw new StudyCalendarError("Cannot find Child Node for: %s", element.getNodeName());
             }
-            childPlanTreeNode.setGridId(gridId);
-        } else {
-            throw new StudyCalendarError("Cannot find Child Node for: %s", element.getNodeName());
         }
         
         return childPlanTreeNode;
     }
 
     /* Class Helpers */
-    private List<Element> union(NodeList list0, NodeList list1) {
-        List resultList = new ArrayList();
-        for (int i = 0; i < list0.getLength(); i++) {
-            for (int j = 0; j < list1.getLength(); j++) {
-                if (list0.item(i) == list1.item(j)) {
-                    resultList.add(list0.item(i));
+    private List<Node> intersection(NodeList list0, NodeList list1) {
+        return intersection(new NodeListCollection(list0), new NodeListCollection(list1));
+    }
+
+    private List<Node> intersection(NodeList list0, Collection<Node> list1) {
+        return intersection(new NodeListCollection(list0), list1);
+    }
+
+    private List<Node> intersection(Collection<Node> list0, Collection<Node> list1) {
+        List<Node> resultList = new ArrayList<Node>();
+        for (Node outter : list0) {
+            for (Node inner : list1) {
+                if (outter == inner) {
+                    resultList.add(outter);
                 }
             }
         }
         return resultList;
     }
 
+    private class NodeListCollection extends AbstractList<Node> {
+        private NodeList nodeList;
 
-    /* Dao Setters */
+        public NodeListCollection(NodeList nodeList) {
+            this.nodeList = nodeList;
+        }
+
+        public Node get(int i) {
+            return nodeList.item(i);
+        }
+
+        public int size() {
+            return nodeList.getLength();
+        }
+    }
+
+    /* Dao and Service Setters */
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
@@ -278,5 +321,13 @@ public class StudyXMLReader  {
 
     public void setChangeDao(ChangeDao changeDao) {
         this.changeDao = changeDao;
+    }
+
+    public void setAmendmentService(AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
+    }
+
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 }

@@ -651,6 +651,26 @@ public class TemplateServiceTest extends StudyCalendarTestCase {
         assertSame(expectedNode, service.findEquivalentChild(study, parameter));
     }
 
+    public void testFindEquivalentChildByGridIdAndType() throws Exception {
+        String sameGridId = "gridId50";
+        PlannedActivity expectedNode = setGridId(sameGridId, createPlannedActivity("PA0", 3));
+
+        Study study = createBasicTemplate();
+        assignIds(study);
+        Period p0 = setGridId(sameGridId, createPeriod("P0", 1, 14, 4));
+        p0.addPlannedActivity(setGridId("gridId49", createPlannedActivity("PA1", 1)));
+        p0.addPlannedActivity(expectedNode);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).addPeriod(p0);
+
+        PlannedActivity parameter = setGridId(sameGridId, new PlannedActivity());
+        // set one of each node to the same id to ensure that type checking is happening
+        study.getPlannedCalendar().setGridId(sameGridId);
+        study.getPlannedCalendar().getEpochs().get(0).setGridId(sameGridId);
+        study.getPlannedCalendar().getEpochs().get(1).getStudySegments().get(0).setGridId(sameGridId);
+
+        assertSame(expectedNode, service.findEquivalentChild(study, parameter));
+    }
+
     ////// CUSTOM MATCHERS
 
     private static StudySite studySiteEq(Study expectedStudy, Site expectedSite) {
