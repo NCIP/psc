@@ -1,32 +1,53 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static java.lang.String.valueOf;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import static java.lang.String.valueOf;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.w3c.dom.*;
-
-
+/**
+ * @author John Dzak
+ */
 public class StudyXMLWriter {
-    public static final String SCHEMA_NAMESPACE = "http://bioinformatics.northwestern.edu/ns/psc";
+    public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
+    public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";
     public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
-    public static final String XML_SCHEMA       = "http://www.w3.org/2001/XMLSchema-instance";
 
     public static final String SCHEMA_NAMESPACE_ATTRIBUTE = "xmlns";
-    public static final String SCHEMA_LOCATION_ATTRIBUTE  = "xmlns:schemaLocation";
+    public static final String SCHEMA_LOCATION_ATTRIBUTE  = "xsi:schemaLocation";
     public static final String XML_SCHEMA_ATTRIBUTE       = "xmlns:xsi";
 
     /* Tag Element constants */
@@ -70,11 +91,12 @@ public class StudyXMLWriter {
     public static final String PREVIOUS_AMENDMENT_ID = "previous-amendment-id";
 
     private static final Map<String, String[]> optionalAttributes = new HashMap<String, String[]>();
+
     {
       optionalAttributes.put(AMENDMENT, new String[]{PREVIOUS_AMENDMENT_ID});
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
-    };
+    }
 
 
     public String createStudyXML(Study study) throws Exception {
@@ -101,16 +123,16 @@ public class StudyXMLWriter {
     // TODO: Break all these add methods into an ElementFactory
     protected void addStudy(Document document, Study study) {
         Element element = document.createElement(STUDY);
-        element.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE );
-        element.setAttributeNS("http://www.w3.org/2000/xmlns/", XML_SCHEMA_ATTRIBUTE, XML_SCHEMA );
-        element.setAttributeNS("http://www.w3.org/2000/xmlns/", SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION );
+        element.setAttributeNS(XML_NS, SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS);
+        element.setAttributeNS(XML_NS, XML_SCHEMA_ATTRIBUTE, XSI_NS);
+        element.setAttributeNS(XSI_NS, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
 
         setAttrib(element, ID, study.getGridId());
         setAttrib(element, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
         addPlannedCalendar(document, study, element);
 
-        List<Amendment> allAmendments = new ArrayList(study.getAmendmentsList());
+        List<Amendment> allAmendments = new ArrayList<Amendment>(study.getAmendmentsList());
         if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
 
         addAmendments(document, allAmendments, element);

@@ -52,6 +52,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Activity activity;
     private Source source;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -399,9 +400,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
             StringBuffer buf = new StringBuffer();
             buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
                .append(format("<study assigned-identifier=\"{0}\" id=\"{1}\" \n", study.getAssignedIdentifier(), study.getGridId()))
-               .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
-               .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-               .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+               .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
+               .append(format("       {0}=\"{1} {2}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
+               .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
                .append(format("     <planned-calendar id=\"{0}\"/>\n", study.getPlannedCalendar().getGridId()))
                .append(format("     <amendment date=\"{0}\" id=\"{1}\" mandatory=\"{2}\" name=\"{3}\">", dateFormat.format(amendment.getDate()), amendment.getGridId(), amendment.isMandatory(), amendment.getName()))
 

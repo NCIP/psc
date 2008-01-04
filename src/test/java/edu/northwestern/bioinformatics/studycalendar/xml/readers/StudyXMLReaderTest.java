@@ -1,39 +1,41 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
-import static org.easymock.EasyMock.eq;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import static org.easymock.EasyMock.expect;
-import org.easymock.classextension.EasyMock;
 import org.easymock.IArgumentMatcher;
-import org.w3c.dom.Document;
+import org.easymock.classextension.EasyMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.validation.SchemaFactory;
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import static java.text.MessageFormat.format;
-import java.util.List;
 import java.util.Calendar;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import java.util.List;
 
 public class StudyXMLReaderTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -45,6 +47,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     private DeltaDao deltaDao;
     private ChangeDao changeDao;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -67,9 +70,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -88,9 +91,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -113,9 +116,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
             .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -133,9 +136,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
@@ -156,9 +159,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
            .append(       "  <planned-calendar id=\"grid1\" />\n")
            .append(       "  <amendment id=\"grid2\" name=\"amendment A\" date=\"2007-12-25\" mandatory=\"true\"/>\n")
            .append(       "  <amendment id=\"grid3\" name=\"amendment B\" date=\"2007-12-26\" mandatory=\"true\" previous-amendment-id=\"grid2\"/>\n")
@@ -197,9 +200,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
            .append(       "  <planned-calendar id=\"grid1\" />\n")
            .append(       "  <amendment id=\"grid2\" name=\"amendment A\" date=\"2007-12-25\" mandatory=\"true\">\n")
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
@@ -241,9 +244,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
            .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
-           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_NAMESPACE))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, XML_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
-           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XML_SCHEMA))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, PSC_NS))
            .append(       "  <planned-calendar id=\"grid1\"/>\n")
            .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
