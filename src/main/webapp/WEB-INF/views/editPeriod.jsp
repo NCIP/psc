@@ -123,14 +123,17 @@
         }
 
         Element.observe(window, "load", function() {
-            $$("#period-form input").each(function(elt) {
-                Element.observe(elt, "change", updateSummary)
-            })
-            $$("#period-form select").each(function(elt) {
-                Element.observe(elt, "change", updateSummary)
-            })
-            updateSummary();
-        })
+           $$("#period-form input").each(function(elt) {
+                new Form.Element.Observer(elt, 1, updateSummary);
+
+           })
+
+           $$("#period-form select").each(function(elt) {
+                new Form.Element.Observer(elt, 1, updateSummary);
+           })
+
+           updateSummary();
+       })
     </script>
 </head>
 <body>
