@@ -125,6 +125,7 @@
 
 
         function createAutocompleter() {
+            if (${not empty releasedAndAssignedTemplate}){
             activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/releasedTemplates"/>',
             {
                 method: 'get',
@@ -132,6 +133,7 @@
                 afterUpdateElement:updateActivity,
                 revertOnEsc:true
             });
+                }
         }
 
         function updateActivity(input, li) {
@@ -228,10 +230,12 @@
 
         function disableDivs() {
             var L1 = $('L1');
-            $(L1).style.display = "inline"
-            var arrayOfSiblings = $('L1').siblings();
-            for (var i = 0; i < arrayOfSiblings.length; i++){
-                $(arrayOfSiblings[i]).style.display = "none";
+            if (L1 != null) {
+                $(L1).style.display = "inline"
+                var arrayOfSiblings = $('L1').siblings();
+                for (var i = 0; i < arrayOfSiblings.length; i++){
+                    $(arrayOfSiblings[i]).style.display = "none";
+                }
             }
 
             var R2 = $('R2');
@@ -250,7 +254,9 @@
                         $(arrayOfSiblings[i]).style.display = "none";
                     }
                 }
-                $('nextTenStudies').hide()
+                if ($('nextTenStudies') != null) {
+                    $('nextTenStudies').hide()
+                }
             }
         }
 
