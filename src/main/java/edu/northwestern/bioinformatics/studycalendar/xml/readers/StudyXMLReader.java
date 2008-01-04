@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static org.apache.commons.collections.CollectionUtils.intersection;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNED_ACTIVITY;
 import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 import static org.apache.commons.collections.CollectionUtils.union;
@@ -20,6 +22,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
@@ -144,7 +147,7 @@ public class StudyXMLReader  {
         NodeList allDeltaNodes = doc.getElementsByTagName(DELTA);
         NodeList allAmendmentChildrenNodes = doc.getElementById(amendment.getGridId()).getChildNodes();
 
-        Collection<Node> deltaNodes = CollectionUtils.intersection(new NodeListCollection(allDeltaNodes), new NodeListCollection(allAmendmentChildrenNodes));
+        Collection<Node> deltaNodes = intersection(new NodeListCollection(allDeltaNodes), new NodeListCollection(allAmendmentChildrenNodes));
 
         for (Node deltaNode : deltaNodes) {
             Element element = (Element) deltaNode;
@@ -208,7 +211,7 @@ public class StudyXMLReader  {
         NodeList allAddNodes = doc.getElementsByTagName(ADD);
         NodeList allDeltaChildrenNodes = doc.getElementById(deltaGridId).getChildNodes();
 
-        Collection<Node> addNodes = CollectionUtils.intersection(new NodeListCollection(allAddNodes), new NodeListCollection(allDeltaChildrenNodes));
+        Collection<Node> addNodes = intersection(new NodeListCollection(allAddNodes), new NodeListCollection(allDeltaChildrenNodes));
 
         for (Node addNode : addNodes) {
             Element element = (Element) addNode;
@@ -240,16 +243,18 @@ public class StudyXMLReader  {
     protected List<PlanTreeNode<?>> parsePlanTreeNodes(Document doc, String parentGridId, Study study) {
         List<PlanTreeNode<?>> planTreeNodes = new ArrayList<PlanTreeNode<?>>();
 
-        NodeList allEpochNodes = doc.getElementsByTagName(EPOCH);
-        NodeList allSegmentNodes = doc.getElementsByTagName(STUDY_SEGMENT);
-        NodeList allPeriodNodes = doc.getElementsByTagName(PERIOD);
+        List allEpochNodes = new NodeListCollection(doc.getElementsByTagName(EPOCH));
+        List allSegmentNodes = new NodeListCollection(doc.getElementsByTagName(STUDY_SEGMENT));
+        List allPeriodNodes = new NodeListCollection(doc.getElementsByTagName(PERIOD));
+        List allPlannedActivityNodes = new NodeListCollection(doc.getElementsByTagName(PLANNED_ACTIVITY));
 
-        NodeList allChangeChildrenNodes = doc.getElementById(parentGridId).getChildNodes();
+        List allChangeChildrenNodes = new NodeListCollection(doc.getElementById(parentGridId).getChildNodes());
 
         Collection<Node> childNodes =
-                CollectionUtils.intersection( new NodeListCollection(allChangeChildrenNodes),
-                    union ( new NodeListCollection(allPeriodNodes),
-                        union( new NodeListCollection(allEpochNodes), new NodeListCollection(allSegmentNodes))));
+                intersection( allChangeChildrenNodes,
+                        union( allPlannedActivityNodes,
+                            union ( allPeriodNodes,
+                                union( allEpochNodes, allSegmentNodes))));
 
 
         for (Node childNode : childNodes) {
@@ -263,6 +268,30 @@ public class StudyXMLReader  {
                 parameter = new StudySegment();
             } else if  (PERIOD.equals(element.getNodeName())) {
                 parameter = new Period();
+            } else if (PLANNED_ACTIVITY.equals(element.getNodeName())) {
+                parameter = new PlannedActivity();
+                ((PlannedActivity) parameter).setDay(new Integer(element.getAttribute(DAY)));
+                ((PlannedActivity) parameter).setDetails(element.getAttribute(DETAILS));
+                ((PlannedActivity) parameter).setCondition(element.getAttribute(CONDITION));
+            } else if (ACTIVITY.equals(element.getNodeName())) {
+                Activity activity =  new Activity();
+                activity.setGridId(element.getAttribute(ID));
+                activity.setName(element.getAttribute(NAME));
+                activity.setDescription(element.getAttribute(DESCRIPTION));
+                activity.setType(ActivityType.getById(Integer.parseInt(element.getAttribute(TYPE_ID))));
+                activity.setCode(element.getAttribute(CODE));
+
+                PlannedActivity plannedActivityParam = new PlannedActivity();
+                plannedActivityParam.setGridId(parentGridId);
+                PlanTreeNode<?> plannedActivity = templateService.findEquivalentChild(study, plannedActivityParam);
+
+                if (plannedActivity == null) {
+                    throw new StudyCalendarError("Cannot find PlannedActivity: %s", parentGridId);
+                }
+                
+                ((PlannedActivity) plannedActivity).setActivity(activity);
+
+                return null;
             } else {
                 throw new StudyCalendarError("Cannot find Child Node for: %s", element.getNodeName());
             }

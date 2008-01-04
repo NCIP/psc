@@ -5,11 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
@@ -252,9 +249,13 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
            .append(       "      <add id=\"grid4\" index=\"0\">\n")
            .append(       "        <epoch id=\"grid5\" name=\"Epoch A\">\n")
-           .append(       "          <study-segment id=\"grid8\" name=\"Segment A\">\n")
-           .append(       "            <period id=\"grid11\" name=\"Period A\"/>\n")
-           .append("                 </study-segment>")
+           .append(       "          <study-segment id=\"grid6\" name=\"Segment A\">\n")
+           .append(       "            <period id=\"grid7\" name=\"Period A\">\n")
+           .append(       "              <planned-activity id=\"grid8\" day=\"1\" details=\"My Details\" condition=\"My Condition\">\n")
+           .append(       "                <activity id=\"grid9\" name=\"Bone Scan\" description=\"make sure im not broken\" type-id=\"1\" code=\"AA\"/>")
+           .append(       "              </planned-activity>")
+           .append(       "            </period>")
+           .append(       "          </study-segment>")
            .append(       "        </epoch>")
            .append(       "      </add>\n")
            .append(       "    </delta>\n")
@@ -296,10 +297,34 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         // Epoch
         Epoch epoch = (Epoch) add.getChild();
         assertEquals("Wrong Child GridId", "grid5", epoch.getGridId());
+        assertEquals("Wrong Child Name", "Epoch A", epoch.getName());
 
         // StudySegment
         StudySegment segment = epoch.getStudySegments().get(0);
-        assertEquals("Wrong Child GridId", "grid8", segment.getGridId());
+        assertEquals("Wrong Child GridId", "grid6", segment.getGridId());
+        assertEquals("Wrong Child Name", "Segment A", segment.getName());
+
+
+        // Period
+        Period period = segment.getPeriods().first();
+        assertEquals("Wrong Child GridId", "grid7", period.getGridId());
+        assertEquals("Wrong Child Name", "Period A", period.getName());
+
+
+        // PlannedActivity
+        PlannedActivity plannedActivity = period.getPlannedActivities().get(0);
+        assertEquals("Wrong Child GridId", "grid8", plannedActivity.getGridId());
+        assertEquals("Wrong Day", 1, (int) plannedActivity.getDay());
+        assertEquals("Wrong details", "My Details", plannedActivity.getDetails());
+        assertEquals("Wrong condition", "My Condition", plannedActivity.getCondition());
+
+        // Activity
+        Activity activity = plannedActivity.getActivity();
+//        assertEquals("Wrong GridId", "grid9", activity.getGridId());
+//        assertEquals("Wrong Name", "Bone Scane", activity.getName());
+//        assertEquals("Wrong Description", "make sure im not broken", activity.getDescription());
+//        assertEquals("Wrong Type Id", ActivityType.DISEASE_MEASURE, activity.getType());
+//        assertEquals("Wrong Code", "AA", activity.getCode());
     }
 
     /* Test Helpers */
