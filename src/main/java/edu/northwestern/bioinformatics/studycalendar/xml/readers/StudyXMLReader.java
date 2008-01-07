@@ -20,6 +20,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
@@ -139,6 +141,8 @@ public class StudyXMLReader  {
             amendments.add(amendment);
 
             addDeltas(element, amendment, parent);
+
+            amendmentDao.save(amendment);
         }
 
         Collections.reverse(amendments);
@@ -184,6 +188,13 @@ public class StudyXMLReader  {
             if (change == null) {
                 if (ADD.equals(element.getNodeName())) {
                     change = new Add();
+                } else if(REMOVE.equals(element.getNodeName()) ){
+                    change = new Remove();
+                    String childGridId = element.getAttribute(CHILD_ID);
+                    Element changeElement = parent.getOwnerDocument().getElementById(childGridId);
+                    PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
+                    ((Remove)change).setChild(planTreeNode);
+                    ((Remove)change).setChildId(planTreeNode.getId());
                 } else {
                     throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
                 }

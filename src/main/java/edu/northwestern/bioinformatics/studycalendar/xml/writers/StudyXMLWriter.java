@@ -53,9 +53,9 @@ public class StudyXMLWriter {
     /* Tag Element constants */
     public static final String DELTA = "delta";
     public static final String ADD = "add";
-    private static final String REMOVE = "remove";
-    private static final String REORDER = "reorder";
-    private static final String PROPERTY_CHANGE = "property-change";
+    public static final String REMOVE = "remove";
+    public static final String REORDER = "reorder";
+    public static final String PROPERTY_CHANGE = "property-change";
 
     public static final String STUDY = "study";
     public static final String AMENDMENT = "amendment";

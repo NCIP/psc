@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
@@ -151,6 +152,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid3")).andReturn(null);
+
+        amendmentDao.save(amendment0);
+        amendmentDao.save(gridIdEq(setGridId("grid3", new Amendment())));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -201,6 +205,8 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment);
 
+        amendmentDao.save(amendment);
+
         expect(deltaDao.getByGridId("grid3")).andReturn(delta);
         expect(changeDao.getByGridId("grid4")).andReturn(add);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
@@ -248,6 +254,8 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment);
+
+        amendmentDao.save(amendment);
 
         // PlannedCalendarDelta
         expect(deltaDao.getByGridId("grid3")).andReturn(null);
@@ -351,6 +359,8 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
+        amendmentDao.save(amendment0);
+        amendmentDao.save(amendment1);
 
         // PlannedCalendarDelta
         expect(deltaDao.getByGridId("grid3")).andReturn(delta);
@@ -442,6 +452,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
         expect(amendmentDao.getByGridId("grid10")).andReturn(amendment2);
+        amendmentDao.save(amendment0);
+        amendmentDao.save(amendment1);
+        amendmentDao.save(amendment2);
 
         // PlannedCalendarDelta
         expect(deltaDao.getByGridId("grid3")).andReturn(plannedCalendarDelta);
@@ -481,6 +494,71 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Child Name", "Period A", actualStudySegment.getName());
     }
 
+        public void testRemoveChange() throws Exception {
+        StringBuffer buf = new StringBuffer();
+        buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
+           .append(       "  <planned-calendar id=\"grid1\" />\n")
+           .append(       "  <amendment id=\"grid2\" name=\"amendment0 A\" date=\"2007-12-25\" mandatory=\"true\">\n")
+           .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
+           .append(       "      <add id=\"grid4\" index=\"0\">")
+           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\"/>")
+           .append(       "      </add>")
+           .append(       "    </delta>")
+           .append(       "  </amendment>")
+           .append(       "  <amendment id=\"grid6\" name=\"amendment0 B\" date=\"2007-12-25\" mandatory=\"true\">\n")
+           .append(       "    <delta id=\"grid7\" node-id=\"grid1\">\n")
+           .append(       "      <remove id=\"grid8\" child-id=\"grid5\"/>")
+           .append(       "    </delta>")
+           .append(       "  </amendment>")
+           .append(       "</study>");
+
+        Epoch epoch = setId(50, setGridId("grid5", createNamedInstance("Epoch A", Epoch.class)));
+
+        Add add = setGridId("grid4", Add.create(epoch, 0));
+
+        Delta delta = setGridId("grid3", Delta.createDeltaFor(epoch, add));
+        delta.setNode(calendar);
+
+        Amendment amendment0 = setGridId("grid2", new Amendment());
+        Amendment amendment1 = setGridId("grid6", new Amendment());
+        amendment0.addDelta(delta);
+
+        study.setAmendment(amendment1);
+
+        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
+        expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
+
+        amendmentDao.save(amendment0);
+        amendmentDao.save(amendment1);
+
+
+        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
+        expect(changeDao.getByGridId("grid4")).andReturn(add);
+        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
+
+        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
+        expect(deltaDao.getByGridId("grid7")).andReturn(null);
+        expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
+        expect(changeDao.getByGridId("grid8")).andReturn(null);
+        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
+
+        replayMocks();
+
+        Study actual = reader.read(toInputStream(buf));
+        verifyMocks();
+
+        Remove actualRemove = (Remove) actual.getAmendment().getDeltas().get(0).getChanges().get(0);
+        assertEquals("Wrong gridId", "grid8", actualRemove.getGridId());
+        assertEquals("Wrong gridId", 50, (int) actualRemove.getChildId());
+        assertSame("Wrong child", epoch, actualRemove.getChild());
+    }
+
+
     /* Test Helpers */
     private InputStream toInputStream(StringBuffer buf) throws Exception {
         return new ByteArrayInputStream(buf.toString().getBytes());
@@ -488,15 +566,15 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
      ////// CUSTOM MATCHERS
 
-    private static <T extends AbstractMutableDomainObject> T planTreeNodeEq(T expectedNode) {
-        EasyMock.reportMatcher(new StudySiteMatcher<T>(expectedNode));
+    private static <T extends AbstractMutableDomainObject> T gridIdEq(T expectedNode) {
+        EasyMock.reportMatcher(new GridIdMatcher<T>(expectedNode));
         return null;
     }
 
-    private static class StudySiteMatcher<T extends AbstractMutableDomainObject> implements IArgumentMatcher {
+    private static class GridIdMatcher<T extends AbstractMutableDomainObject> implements IArgumentMatcher {
         private T expectedNode;
 
-        public StudySiteMatcher(T expectedNode) {
+        public GridIdMatcher(T expectedNode) {
             this.expectedNode = expectedNode;
         }
 
