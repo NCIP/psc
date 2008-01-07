@@ -151,6 +151,9 @@
 
             div.row div.label {
                 text-align:left;
+                display:inline;
+                width:auto;
+                margin-right:10px;
             }
 
             div.row {
@@ -647,10 +650,10 @@
                                             <c:set var="isSubjectCoordinatorAssigned" value="true"/>
                                         </c:if>
                                     </c:forEach>
-                                    <c:if test="${isSubjectCoordinatorAssigned == false}">
+                                    <c:if test="${!isSubjectCoordinatorAssigned}">
                                         Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
                                     </c:if>
-                                    <c:if test="${isSubjectCoordinatorAssigned == true}">
+                                    <c:if test="${isSubjectCoordinatorAssigned}">
                                         <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control">
                                             Assign Subject
                                         </tags:restrictedListItem>
