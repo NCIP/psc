@@ -8,17 +8,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.ccts.grid.IdentifierType;
 import gov.nih.nci.ccts.grid.OrganizationAssignedIdentifierType;
 import gov.nih.nci.ccts.grid.ParticipantType;
 import gov.nih.nci.ccts.grid.Registration;
 import gov.nih.nci.ccts.grid.client.RegistrationConsumerClient;
-import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
-import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import org.apache.axis.message.addressing.EndpointReferenceType;
 import org.apache.commons.lang.StringUtils;
 import org.dbunit.DBTestCase;
 import org.dbunit.PropertiesBasedJdbcDatabaseTester;
@@ -56,11 +54,24 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     private StudySiteDao studySiteDao;
 
+    private PSCRegistrationConsumer registrationConsumer;
+
+
+    private ApplicationContext applicationContext;
+
+
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
     // private static Log logger = LogFactory.getLog(PSCRegistrationConsumerTest.class);
 
     private void init() {
+
+        applicationContext=new ClassPathXmlApplicationContext(new String[]{
+                        // "classpath:applicationContext.xml",
+                        "classpath:applicationContext--grid.xml"});
+        registrationConsumer= (PSCRegistrationConsumer) applicationContext.getBean("registrationConsumer");
+
+
         clientConfigFile = System.getProperty("psc.test.clientConfigFile",
                 "gov/nih/nci/ccts/grid/client/client-config.wsdd");
         regFile = System.getProperty("psc.test.sampleRegistrationFile",
@@ -145,10 +156,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     public void testCreateRegistrationLocal() throws Exception {
         Registration registration = getRegistration();
-        RegistrationConsumer consumer = new PSCRegistrationConsumer();
-        consumer.register(registration);
+        registrationConsumer.register(registration);
 //        consumer.commit(registration);
-        consumer.rollback(registration);
+        registrationConsumer.rollback(registration);
 //        //consumer.register(registration);
 
 //            consumer.commit(registration);
@@ -162,10 +172,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
         Registration registration = getRegistration();
         try {
             // DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-            RegistrationConsumer consumer = new PSCRegistrationConsumer();
-            consumer.register(registration);
+            registrationConsumer.register(registration);
 //            validateRegistration(registration);
-            consumer.rollback(registration);
+            registrationConsumer.rollback(registration);
             // DataAuditInfo.setLocal(null);
         }
         catch (Exception ex) {
@@ -179,10 +188,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
         Registration registration = getRegistration();
         try {
             // DataAuditInfo.setLocal(new DataAuditInfo("test", "127.0.0.1", new Date(), ""));
-            RegistrationConsumer consumer = new PSCRegistrationConsumer();
-            consumer.register(registration);
+            registrationConsumer.register(registration);
 //            validateRegistration(registration);
-            consumer.commit(registration);
+            registrationConsumer.commit(registration);
             // DataAuditInfo.setLocal(null);
         }
         catch (Exception ex) {

@@ -23,7 +23,7 @@ public class AuditInfoRequestHandler extends BasicHandler {
 
 	private static final Log logger = LogFactory.getLog(AuditInfoRequestHandler.class);
 
-	/*
+	/*                                                    A
 	 * (non-Javadoc)
 	 * @see org.apache.axis.Handler#invoke(org.apache.axis.MessageContext)
 	 */

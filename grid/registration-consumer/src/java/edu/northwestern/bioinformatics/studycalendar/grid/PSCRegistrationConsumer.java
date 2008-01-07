@@ -10,21 +10,20 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import gov.nih.nci.ccts.grid.*;
 import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
 import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
 import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
-import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Calendar;
 
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
@@ -36,8 +35,7 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
 
     private static final String MRN_IDENTIFIER_TYPE = "MRN";
-        
-    private ApplicationContext applicationContext;
+
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
@@ -52,23 +50,9 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     private SubjectService subjectService;
 
     private AuditHistoryRepository auditHistoryRepository;
+
     private String registrationConsumerGridServiceUrl;
 
-    public PSCRegistrationConsumer() {
-        applicationContext = new ClassPathXmlApplicationContext(new String[]{
-                // "classpath:applicationContext.xml",
-                "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
-                "classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
-                "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
-                "classpath:applicationContext-spring.xml"});
-
-        subjectDao = (SubjectDao) applicationContext.getBean("subjectDao");
-        userDao = (UserDao) applicationContext.getBean("userDao");
-        subjectService = (SubjectService) applicationContext.getBean("subjectService");
-        studyService = (StudyService) applicationContext.getBean("studyService");
-        auditHistoryRepository = (AuditHistoryRepository) applicationContext.getBean("auditHistoryRepository");
-         registrationConsumerGridServiceUrl = (String) applicationContext.getBean("registrationConsumerGridServiceUrl");
-    }
 
     /**
      * Does nothing as we are already  commiting Registraiton message by default.
@@ -329,5 +313,35 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         registrationConsumptionException.setFaultString(message);
         logger.error(message);
         return registrationConsumptionException;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    @Required
+    public void setSubjectDao(SubjectDao subjectDao) {
+        this.subjectDao = subjectDao;
+    }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    @Required
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
+    }
+
+    @Required
+    public void setAuditHistoryRepository(AuditHistoryRepository auditHistoryRepository) {
+        this.auditHistoryRepository = auditHistoryRepository;
+    }
+
+    @Required
+    public void setRegistrationConsumerGridServiceUrl(String registrationConsumerGridServiceUrl) {
+        this.registrationConsumerGridServiceUrl = registrationConsumerGridServiceUrl;
     }
 }
