@@ -341,9 +341,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Delta delta = setGridId("grid3", Delta.createDeltaFor(epoch, add));
         delta.setNode(calendar);
 
-        Amendment amendment = setGridId("grid2", new Amendment());
-        amendment.addDelta(delta);
-
         Amendment amendment0 = setGridId("grid2", new Amendment());
         Amendment amendment1 = setGridId("grid6", new Amendment());
         amendment1.setPreviousAmendment(amendment0);
@@ -385,6 +382,103 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StudySegment actualStudySegment = (StudySegment) actualAdd.getChild();
         assertEquals("Wrong Child GridId", "grid9", actualStudySegment.getGridId());
         assertEquals("Wrong Child Name", "Segment A", actualStudySegment.getName());
+    }
+
+    public void testReadNewStudySegmentDelta() throws Exception {
+        StringBuffer buf = new StringBuffer();
+        buf.append(       "<?xml version=\"1.0\"?>\n")
+           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
+           .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
+           .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
+           .append(       "  <planned-calendar id=\"grid1\"/>\n")
+           .append(       "  <amendment id=\"grid2\" name=\"Amendment A\" date=\"2008-01-01\" mandatory=\"true\">\n")
+           .append(       "    <delta id=\"grid3\" node-id=\"grid1\">\n")
+           .append(       "      <add id=\"grid4\" index=\"0\">\n")
+           .append(       "        <epoch id=\"grid5\" name=\"Epoch A\">\n")
+           .append(       "        </epoch>")
+           .append(       "      </add>\n")
+           .append(       "    </delta>\n")
+           .append(       "  </amendment>\n")
+           .append(       "  <amendment id=\"grid6\" name=\"Amendment B\" date=\"2008-01-01\" mandatory=\"true\">\n")
+           .append(       "    <delta id=\"grid7\" node-id=\"grid5\">\n")
+           .append(       "      <add id=\"grid8\" index=\"0\">\n")
+           .append(       "        <study-segment id=\"grid9\" name=\"Segment A\"/>\n")
+           .append(       "      </add>\n")
+           .append(       "    </delta>\n")
+           .append(       "  </amendment>\n")
+           .append(       "  <amendment id=\"grid10\" name=\"Amendment C\" date=\"2008-01-01\" mandatory=\"true\">\n")
+           .append(       "    <delta id=\"grid11\" node-id=\"grid9\">\n")
+           .append(       "      <add id=\"grid12\" index=\"0\">\n")
+           .append(       "        <study-segment id=\"grid13\" name=\"Period A\"/>\n")
+           .append(       "      </add>\n")
+           .append(       "    </delta>\n")
+           .append(       "  </amendment>\n")
+           .append(       "</study>");
+
+
+        Epoch epoch = setGridId("grid5", createNamedInstance("Epoch A", Epoch.class));
+        StudySegment studySegment = setGridId("grid9", createNamedInstance("StudySegment A", StudySegment.class));
+
+        Add addEpoch = setGridId("grid4", Add.create(epoch, 0));
+        Add addStudySegment = setGridId("grid9", Add.create(studySegment, 0));
+
+        Delta plannedCalendarDelta = setGridId("grid3", Delta.createDeltaFor(epoch, addEpoch));
+        plannedCalendarDelta.setNode(calendar);
+
+        Delta epochDelta = setGridId("grid6", Delta.createDeltaFor(studySegment,  addStudySegment));
+        epochDelta.setNode(epoch);
+
+        Amendment amendment0 = setGridId("grid2", new Amendment());
+        Amendment amendment1 = setGridId("grid6", new Amendment());
+        Amendment amendment2 = setGridId("grid10", new Amendment());
+        amendment1.setPreviousAmendment(amendment0);
+        amendment2.setPreviousAmendment(amendment1);
+
+        study.setAmendment(amendment2);
+
+        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
+        expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
+        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
+        expect(amendmentDao.getByGridId("grid10")).andReturn(amendment2);
+
+        // PlannedCalendarDelta
+        expect(deltaDao.getByGridId("grid3")).andReturn(plannedCalendarDelta);
+        expect(changeDao.getByGridId("grid4")).andReturn(addEpoch);
+        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
+
+        expect(deltaDao.getByGridId("grid7")).andReturn(epochDelta);
+        expect(changeDao.getByGridId("grid8")).andReturn(addStudySegment);
+        expect(studySegmentDao.getByGridId("grid9")).andReturn(studySegment);
+
+        expect(deltaDao.getByGridId("grid11")).andReturn(null);
+        expect(studySegmentDao.getByGridId("grid9")).andReturn(studySegment);
+        expect(changeDao.getByGridId("grid12")).andReturn(null);
+        expect(studySegmentDao.getByGridId("grid13")).andReturn(null);
+
+
+        replayMocks();
+
+        Study actual = reader.read(toInputStream(buf));
+        verifyMocks();
+
+        // StudySegmentDelta
+        Delta actualDelta1 = actual.getAmendment().getDeltas().get(0);
+        assertTrue("Delta should be instance of StudySegmentDelta", actualDelta1 instanceof StudySegmentDelta);
+        assertEquals("Wrong grid id", "grid11", actualDelta1.getGridId());
+        assertEquals("Wrong node grid id", "grid9", actualDelta1.getNode().getGridId());
+        assertEquals("Wrong Parent Amendment ID", "grid10", ((Amendment) actualDelta1.getRevision()).getGridId());
+
+        // Add Change
+        Add actualAdd = (Add) actualDelta1.getChanges().get(0);
+        assertEquals("Wrong change grid id", "grid12", actualAdd.getGridId());
+        assertEquals("Wrong parent Delta ID", "grid11", actualAdd.getDelta().getGridId());
+
+        // StudySegment
+        StudySegment actualStudySegment = (StudySegment) actualAdd.getChild();
+        assertEquals("Wrong Child GridId", "grid13", actualStudySegment.getGridId());
+        assertEquals("Wrong Child Name", "Period A", actualStudySegment.getName());
     }
 
     /* Test Helpers */
