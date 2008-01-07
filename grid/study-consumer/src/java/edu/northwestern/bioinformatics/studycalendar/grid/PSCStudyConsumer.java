@@ -20,8 +20,7 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
-    private ApplicationContext applicationContext;
 
     private SiteDao siteDao;
 
@@ -53,20 +51,6 @@ public class PSCStudyConsumer implements StudyConsumerI {
 
     private String studyConsumerGridServiceUrl;
 
-    public PSCStudyConsumer() {
-        applicationContext = new ClassPathXmlApplicationContext(new String[]{
-                // "classpath:applicationContext.xml",
-                "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
-                "classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
-                "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
-                "classpath:applicationContext-spring.xml"});
-        siteDao = (SiteDao) applicationContext.getBean("siteDao");
-        studyService = (StudyService) applicationContext.getBean("studyService");
-        studyDao = (StudyDao) applicationContext.getBean("studyDao");
-        auditHistoryRepository = (AuditHistoryRepository) applicationContext.getBean("auditHistoryRepository");
-        studyConsumerGridServiceUrl = (String) applicationContext.getBean("studyConsumerGridServiceUrl");
-        
-    }
 
     public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
             StudyCreationException {
@@ -153,17 +137,18 @@ public class PSCStudyConsumer implements StudyConsumerI {
         Calendar calendar = Calendar.getInstance();
 
         boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime =auditHistoryRepository.
-                checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 1);
+                checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 100);
         try {
             if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
-                studyDao.delete(study);
+                studyService.delete(study);
             } else {
                 logger.debug("Study was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this study:" + study.getId());
             }
         }
-        catch (Exception exp) {
-            String message = "Exception while rollback study," + exp.getMessage()+exp.getClass();
+        catch (Exception expception) {
+            String message = "Exception while rollback study," + expception.getMessage()+expception.getClass();
+            expception.printStackTrace();
             throw getInvalidStudyException(message);
         }
     }
@@ -286,5 +271,29 @@ public class PSCStudyConsumer implements StudyConsumerI {
         throw invalidStudyException;
     }
 
+    @Required
+    public void setStudyConsumerGridServiceUrl(String studyConsumerGridServiceUrl) {
+        this.studyConsumerGridServiceUrl = studyConsumerGridServiceUrl;
+    }
 
+
+    @Required
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setAuditHistoryRepository(AuditHistoryRepository auditHistoryRepository) {
+        this.auditHistoryRepository = auditHistoryRepository;
+    }
 }

@@ -1,4 +1,4 @@
-<project name="adverse-event-consumer">
+<project name="study-consumer">
 
 	<property environment="env"/>
 
@@ -11,19 +11,19 @@
 	<property name="test.build.dir" value="test/${build.dir}"/>
 	<property name="test.lib.dir" value="test/${lib.dir}"/>
 	<property name="test.report.dir" value="test/report"/>
-	<property name="jar.name" value="psc-adverse-event-consumer.jar"/>
+	<property name="jar.name" value="psc-study-consumer.jar"/>
 	
 	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
 	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>	
 	
-	<taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"> </taskdef>
+	<!--taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask"  resource="lib/dbunit-2.1.jar" > </taskdef-->
 
 	
     <target name="get-jars">
 
         <mkdir dir="ext/lib"/>
         <ant dir="../.." antfile="build.xml" target="compile" inheritAll="false"/>
-        <jar basedir="../../web/WEB-INF/classes" destfile="ext/lib/psc.jar" includes="**/*"/>
+        <jar basedir="../../src/main/webapp/WEB-INF/classes" destfile="ext/lib/psc.jar" includes="**/*"/>
 
         <copy todir="ext/lib" overwrite="true">
             <!--
@@ -33,7 +33,7 @@
             </fileset>
             -->
             
-            <fileset dir="../../web/WEB-INF/lib">
+            <fileset dir="../../src/main/webapp/WEB-INF/lib">
                 <include name="activation-1.0.2.jar"/>
                 <include name="antlr-2.7.6.jar"/>
                 <include name="asm-attr.jar"/>

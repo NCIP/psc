@@ -4,19 +4,19 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
-import gov.nih.nci.cabig.ctms.audit.dao.DataAuditRepository;
 import gov.nih.nci.ccts.grid.Study;
 import gov.nih.nci.ccts.grid.client.StudyConsumerClient;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dbunit.DBTestCase;
 import org.dbunit.PropertiesBasedJdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.*;
 import java.util.Date;
@@ -25,6 +25,9 @@ import java.util.Date;
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
  */
 public class PSCStudyConsumerTest extends DBTestCase {
+
+
+
 
     private String clientConfigFile;
 
@@ -35,7 +38,16 @@ public class PSCStudyConsumerTest extends DBTestCase {
     private String serviceUrl;
     private static final Log logger = LogFactory.getLog(PSCStudyConsumerTest.class);
 
+    private PSCStudyConsumer pscStudyConsumer;
+
+    private ApplicationContext applicationContext;
+
     private void init() {
+
+        applicationContext=new ClassPathXmlApplicationContext(new String[]{
+                // "classpath:applicationContext.xml",
+                "classpath:applicationContext-studyConsumer-grid.xml"});
+        pscStudyConsumer= (PSCStudyConsumer) applicationContext.getBean("studyConsumer");
 
         clientConfigFile = System.getProperty("psc.test.clientConfigFile",
                 "gov/nih/nci/ccts/grid/client/client-config.wsdd");
@@ -96,23 +108,24 @@ public class PSCStudyConsumerTest extends DBTestCase {
 
     @Override
     protected DatabaseOperation getSetUpOperation() throws Exception {
+        //return DatabaseOperation.INSERT;
         return DatabaseOperation.CLEAN_INSERT;
     }
 
     @Override
     protected DatabaseOperation getTearDownOperation() throws Exception {
         return DatabaseOperation.NONE;
+        //return DatabaseOperation.NONE;
     }
 
     public void testCreateStudyLocal() throws Exception {
-        PSCStudyConsumer studyClient = new PSCStudyConsumer();
-       logger.info("running test create study local method");
+        logger.info("running test create study local method");
 
 
         Study study = populateStudyDTO();
-        studyClient.createStudy(study);
+        pscStudyConsumer.createStudy(study);
 
-        studyClient.rollback(study);
+        pscStudyConsumer.rollback(study);
 
 //        studyClient.createStudy(study);
 //        studyClient.commit(study);
@@ -125,6 +138,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
     public void testCommitStudyLocal() {
         try {
             PSCStudyConsumer studyClient = new PSCStudyConsumer();
+
             Study study = populateStudyDTO();
             studyClient.createStudy(study);
             studyClient.commit(study);
@@ -134,6 +148,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
 //            assertTrue(auditHistoryRepository.checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(),study.get));
         }
         catch (Exception e) {
+
             e.printStackTrace();
 
         }
@@ -192,10 +207,10 @@ public class PSCStudyConsumerTest extends DBTestCase {
         try {
             StudyConsumerClient studyClient = new StudyConsumerClient(serviceUrl);
             Study study = populateStudyDTO();
-             //studyClient.rollback(study);
+            //studyClient.rollback(study);
             studyClient.createStudy(study);
             //studyClient.commit(study);
-           // studyClient.commit(study);
+            // studyClient.commit(study);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -245,9 +260,5 @@ public class PSCStudyConsumerTest extends DBTestCase {
         return new FlatXmlDataSet(new FileInputStream(testFile));
     }
 
-    private AuditHistoryRepository auditHistoryRepository;
-
-    public void setAuditHistoryRepository(AuditHistoryRepository auditHistoryRepository) {
-        this.auditHistoryRepository = auditHistoryRepository;
-    }
+    
 }

@@ -18,7 +18,7 @@
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
         <type>Coordinating Center Identifier</type>
-        <value>value14</value>
+        <value>value15</value>
         <primaryIndicator>true</primaryIndicator>
         <healthcareSite>
             <name>duke healthcare</name>
