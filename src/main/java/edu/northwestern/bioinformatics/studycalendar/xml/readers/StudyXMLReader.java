@@ -204,7 +204,13 @@ public class StudyXMLReader  {
                     ((Reorder)change).setChildId(planTreeNode.getId());
                     ((Reorder)change).setOldIndex(new Integer(element.getAttribute(OLD_INDEX)));
                     ((Reorder)change).setNewIndex(new Integer(element.getAttribute(NEW_INDEX)));
-                } else {
+                } else if (PROPERTY_CHANGE.equals(element.getNodeName())) {
+                    change = new PropertyChange();
+                    change.setGridId(element.getAttribute(CHILD_ID));
+                    ((PropertyChange) change).setPropertyName(element.getAttribute(PROPERTY_NAME));
+                    ((PropertyChange) change).setOldValue(element.getAttribute(OLD_VALUE));
+                    ((PropertyChange) change).setNewValue(element.getAttribute(NEW_VALUE));
+                }else {
                     throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
                 }
 
