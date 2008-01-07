@@ -3,6 +3,7 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
@@ -202,8 +203,14 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
             startDate = new Date();
         }
 
-        StudySubjectAssignment newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
-                startDate, registrationGridId, null);
+        StudySubjectAssignment newAssignment = null;
+        try {
+            newAssignment = subjectService.assignSubject(subject, studySite, loadedStudySegment,
+                    startDate, registrationGridId, null);
+        } catch (StudyCalendarSystemException exp) {
+            throw getRegistrationConsumerException(exp.getMessage());
+
+        }
 
         ScheduledCalendar scheduledCalendar = newAssignment.getScheduledCalendar();
         logger.debug("Created assignment " + scheduledCalendar.getId());

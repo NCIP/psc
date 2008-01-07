@@ -8,24 +8,17 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -446,6 +439,24 @@ public class SubjectService {
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Subject findSubjectByPersonId(final String mrn) {
+        Subject subject = subjectDao.findSubjectByPersonId(mrn);
+        if (subject != null) {
+            Hibernate.initialize(subject.getAssignments());
+            List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
+            for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
+                Hibernate.initialize(studySubjectAssignment.getScheduledCalendar());
+                if (studySubjectAssignment.getScheduledCalendar() != null) {
+                    Hibernate.initialize(studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments());
+                }
+            }
+        }
+
+        return subject;
+
     }
 
     private static class DatabaseEventOrderComparator implements Comparator<ScheduledActivity> {
