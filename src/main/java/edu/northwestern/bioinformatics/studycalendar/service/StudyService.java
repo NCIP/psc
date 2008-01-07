@@ -1,18 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-import org.hibernate.Hibernate;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 
 @Transactional
 public class StudyService {
@@ -26,7 +30,11 @@ public class StudyService {
 
 	private PlannedCalendarDao plannedCalendarDao;
 
-	public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
+    private AmendmentDao  amendmentDao;
+
+    private EpochDao epochDao;
+
+    public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
 		List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
 		Activity reconsent = activityDao.getByName("Reconsent");
 		for (StudySubjectAssignment assignment : subjectAssignments) {
@@ -98,10 +106,37 @@ public class StudyService {
         }
 
         plannedCalendarDao.initialize(study.getPlannedCalendar());
+        Amendment developmentAmendment = study.getDevelopmentAmendment();
+        Hibernate.initialize(developmentAmendment);
+        if (developmentAmendment != null) {
+            List<Delta<?>> deltas = developmentAmendment.getDeltas();
+            Hibernate.initialize(deltas);
+            for (Delta delta : deltas) {
+                Hibernate.initialize(delta.getChanges());
+                List<Change> changes = delta.getChanges();
+                for (Change change : changes) {
+                    Hibernate.initialize(change);
+                }
+            }
+        }
         return study;
     }
 
-	// //// CONFIGURATION
+    public void delete(Study study) {
+        deltaService.apply(study, study.getDevelopmentAmendment());
+        Amendment amendment = study.getDevelopmentAmendment();
+        amendment.getDeltas().clear();
+
+        amendmentDao.save(amendment);
+        List<Epoch> epochList = study.getPlannedCalendar().getEpochs();
+        studyDao.delete(study);
+
+        for (Epoch epoch : epochList) {
+            epochDao.delete(epoch);
+        }
+    }
+
+    // //// CONFIGURATION
 
 	@Required
 	public void setActivityDao(final ActivityDao activityDao) {
@@ -127,4 +162,14 @@ public class StudyService {
 	public void setPlannedCalendarDao(final PlannedCalendarDao plannedCalendarDao) {
 		this.plannedCalendarDao = plannedCalendarDao;
 	}
+
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
+    }
+
+    @Required
+    public void setEpochDao(EpochDao epochDao) {
+        this.epochDao = epochDao;
+    }
 }

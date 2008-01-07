@@ -3,23 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Collection;
-import java.util.Set;
-import java.util.HashSet;
-
-import javax.persistence.*;
-
-import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.*;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.Where;
+
+import javax.persistence.Entity;
+import javax.persistence.*;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
+import java.util.*;
 
 /**
  * @author Rhett Sutphin
@@ -169,7 +160,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     }
 
     @OneToOne(mappedBy = "study")
-    @Cascade(value = { CascadeType.ALL })
+    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public PlannedCalendar getPlannedCalendar() {
         return plannedCalendar;
     }
