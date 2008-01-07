@@ -160,7 +160,7 @@ public class StudyXMLReader  {
             if (delta == null) {
                 delta = createDelta(deltaElement);
 
-                PlanTreeNode<?> planTreeNode = createPlanTreeNodeParam(deltaElement, study);
+                PlanTreeNode<?> planTreeNode = createPlanTreeNode(deltaElement);
 
                 assignDeltaAttributes(delta, deltaGridId, amendment, planTreeNode);
                 
@@ -216,7 +216,6 @@ public class StudyXMLReader  {
                    ((ChildrenChange) change).setChild(child);
                 }
 
-                // TODO: Set Child Parent and Add child to children
                 addPlanTreeNode(element, child, study);
             }
         }
@@ -325,7 +324,7 @@ public class StudyXMLReader  {
         }
     }
 
-    private PlanTreeNode<?> createPlanTreeNodeParam(Element delta, Study study) {
+   /* private PlanTreeNode<?> createPlanTreeNodeParam(Element delta, Study study) {
         String nodeGridId = delta.getAttribute(NODE_ID);
         Element node = delta.getOwnerDocument().getElementById(nodeGridId);
 
@@ -346,6 +345,32 @@ public class StudyXMLReader  {
 
         param.setGridId(nodeGridId);
         PlanTreeNode<?> planTreeNode = templateService.findEquivalentChild(study, param);
+
+        if (planTreeNode == null) {
+            throw new StudyCalendarError("Cannot find PlanTreeNode for: %s [%s]", node.getNodeName(), nodeGridId);
+        }
+
+        return planTreeNode;
+    }*/
+
+     private PlanTreeNode<?> createPlanTreeNode(Element delta) {
+        String nodeGridId = delta.getAttribute(NODE_ID);
+        Element node = delta.getOwnerDocument().getElementById(nodeGridId);
+
+        PlanTreeNode<?> planTreeNode;
+        if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
+            planTreeNode = plannedCalendarDao.getByGridId(nodeGridId);
+        } else if (EPOCH.equals(node.getNodeName())) {
+           planTreeNode = epochDao.getByGridId(nodeGridId);
+        } else if (STUDY_SEGMENT.equals(node.getNodeName())) {
+            planTreeNode = studySegmentDao.getByGridId(nodeGridId);
+        } else if (PERIOD.equals(node.getNodeName())) {
+            planTreeNode = periodDao.getByGridId(nodeGridId);
+        } else if (PLANNED_ACTIVITY.equals(node.getNodeName())) {
+            planTreeNode = plannedActivityDao.getByGridId(nodeGridId);
+        } else {
+            throw new StudyCalendarError("Cannot find PlanTreeNode Type for: %s", node.getNodeName());
+        }
 
         if (planTreeNode == null) {
             throw new StudyCalendarError("Cannot find PlanTreeNode for: %s [%s]", node.getNodeName(), nodeGridId);
