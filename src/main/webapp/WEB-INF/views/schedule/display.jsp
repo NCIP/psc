@@ -419,46 +419,44 @@
                 </select>
                 <a class="control" href="<c:url value="/pages/cal/schedule"/>" id="offstudy-go-to-schedule-control">Go</a>
             </c:if>
-        </span
+        </span>
     </div>
-</div>
 
-<c:if test="${configuration.externalAppsConfigured}">
-<laf:box title="Other applications">
-<laf:division id="external-apps">
-    <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
-    <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-    View this subject's
-    <c:if test="${caaersAvail}">
-        <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
-    </c:if>
-    <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
-    <c:if test="${labViewerAvail}">
-        <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${subject.personId}">lab results</a>
-    </c:if>
+    <c:if test="${configuration.externalAppsConfigured}">
+        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+        <c:if test="${caaersAvail || labViewerAvail}">
+            View this subject's
+        </c:if>
+        <c:if test="${caaersAvail}">
+            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
+        </c:if>
+        <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
+        <c:if test="${labViewerAvail}">
+            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${subject.personId}">lab results</a>
+        </c:if>
 
-    <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-        <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-            <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
-            <div class="content" style="display: none">
-                <p>
-                    An adverse event was reported for this subject.  Please consider how
-                    this should impact future scheduling.
-                </p>
-                <h3>Details</h3>
-                <p>${aeNote.adverseEvent.description}</p>
-                <p>
-                    <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                    <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                        View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
-                    </c:if>
-                </p>
+        <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+            <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+                <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+                <div class="content" style="display: none">
+                    <p>
+                        An adverse event was reported for this subject.  Please consider how
+                        this should impact future scheduling.
+                    </p>
+                    <h3>Details</h3>
+                    <p>${aeNote.adverseEvent.description}</p>
+                    <p>
+                        <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                        <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                            View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                        </c:if>
+                    </p>
+                </div>
             </div>
-        </div>
-    </c:forEach>
-</laf:division>
-</laf:box>
-</c:if>
+        </c:forEach>
+    </c:if>
+</div>
 
 <c:if test="${assignment.endDateEpoch == null}">
     <laf:box title="Modify entire schedule">
