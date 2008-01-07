@@ -12,6 +12,8 @@
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="dashboards"/>
 
+    <tags:includeScriptaculous/>
+
     <script type="text/javascript">
         SC.registerCurrentActivitiesUpdaters('<c:url value="/pages/dashboard/subjectCoordinatorSchedule"/>')
     </script>
@@ -62,7 +64,7 @@
         }
 
         .day h3{
-            width:10%;
+            width:30%;
         }
 
         .site h3{
@@ -77,7 +79,19 @@
         .day ul.noMargin {
             margin:0em;
         }
+
+        .h2Inline {
+            width:20%;
+            display:inline;
+            cursor:pointer;
+            /*font-size:0.6em;*/
+        }
+
+ 
     </style>
+    <script type="text/javascript">
+        Event.observe(window, "load", registerHeaderCollapse);
+    </script>    
 </head>
 <body>
     <div class="main">
@@ -90,39 +104,47 @@
             <c:forEach items="${ownedStudies}" var="study" varStatus="status">
 
                 <li class="day autoclear ${commons:parity(status.index)}">
-                    <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary">
-                        ${study.assignedIdentifier}
-                    </a>
 
-                    <ul class="noMargin" >
-                    <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
+                    <div class="section autoclear collapsible">
+                        <a href="<c:url value="/pages/cal/template?study=${study.id}"/>" class="primary myclasstoo">
+                            ${study.assignedIdentifier}
+                        </a>
+                        <h2 class="h2Inline"></h2>
 
-                        <li class="noMargin ">
-                             <h3 class="site">${studySites.site.name} </h3>
+                        <div class="content" style="display: none">
+                            <laf:division>
+                                <ul class="noMargin" >
+                                    <c:forEach items="${study.studySites}" var="studySites" varStatus="studySiteStatus">
 
-                             <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
-                            </ul>
+                                        <li class="noMargin ">
+                                             <h3 class="site">${studySites.site.name} </h3>
 
-                            <c:forEach items="${studySites.studySubjectAssignments}" var="listOfSubjects" varStatus="listOfSubjectsStatus">
-                                <c:choose>
-                                    <c:when test="${not empty listOfSubjects}">
-                                     <li class="subject">
-                                         <a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">
-                                            ${listOfSubjects.subject.firstName}
-                                            ${listOfSubjects.subject.lastName}
-                                         </a>
+                                             <ul class="controls">
+                                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSubject" queryString="study=${study.id}&site=${studySites.site.id}">Assign subject</tags:restrictedListItem>
+                                            </ul>
 
-                                     </li>
-                                </c:when>
-                                <c:otherwise>
-                                    <h3>You have no subjects on this study</h3>
-                                </c:otherwise>
-                                </c:choose>
-                            </c:forEach>
-                        </li>
-                    </c:forEach>
-                        </ul>
+                                            <c:forEach items="${studySites.studySubjectAssignments}" var="listOfSubjects" varStatus="listOfSubjectsStatus">
+                                                <c:choose>
+                                                    <c:when test="${not empty listOfSubjects}">
+                                                     <li class="subject">
+                                                         <a href="<c:url value="/pages/cal/schedule?calendar=${listOfSubjects.scheduledCalendar.id}"/>" class="primary">
+                                                            ${listOfSubjects.subject.firstName}
+                                                            ${listOfSubjects.subject.lastName}
+                                                         </a>
+
+                                                     </li>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <h3>You have no subjects on this study</h3>
+                                                </c:otherwise>
+                                                </c:choose>
+                                            </c:forEach>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </laf:division>
+                        </div>
+                    </div>
                 </li>
             </c:forEach>
         </ul>
