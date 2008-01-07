@@ -97,6 +97,7 @@ public class StudySegmentDaoTest extends DaoTestCase {
         interruptSession();
 
         StudySegment reloaded = dao.getById(-2);
+        assertNotNull("Could not reload segment", reloaded);
         assertNull(reloaded.getEpoch());
     }
 }
