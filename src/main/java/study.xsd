@@ -13,11 +13,11 @@
             <xsd:element name="amendment" type="psc:Amendment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="PlannedCalendar">
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Amendment">
@@ -27,8 +27,8 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="mandatory" type="xsd:boolean" use="required"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
-        <xsd:attribute name="previous-amendment-id" type="xsd:IDREF"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="previous-amendment-id" type="xsd:string"/>
     </xsd:complexType>
 
 
@@ -39,8 +39,8 @@
             <xsd:element name="reorder" type="psc:Reorder" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element name="property-change" type="psc:PropertyChange" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
-        <xsd:attribute name="node-id" type="xsd:IDREF" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="node-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Add">
@@ -51,23 +51,23 @@
             <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="index" type="xsd:integer" use="optional"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Remove">
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
-        <xsd:attribute name="child-id" type="xsd:IDREF" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="child-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Reorder">
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
-        <xsd:attribute name="child-id" type="xsd:IDREF" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="child-id" type="xsd:string" use="required"/>
         <xsd:attribute name="old-index" type="xsd:integer" use="required"/>
         <xsd:attribute name="new-index" type="xsd:integer" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="PropertyChange">
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="property-name" type="xsd:string" use="required"/>
         <xsd:attribute name="old-value" type="xsd:string" use="required"/>
         <xsd:attribute name="new-value" type="xsd:string" use="required"/>
@@ -78,7 +78,7 @@
             <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="StudySegment">
@@ -86,7 +86,7 @@
             <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Period">
@@ -94,7 +94,7 @@
             <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <!-- TODO: add population -->
@@ -102,7 +102,7 @@
         <xsd:sequence>
             <xsd:element name="activity" type="psc:Activity" minOccurs="1" maxOccurs="1"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:ID" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="day" type="xsd:integer" use="required"/>
         <xsd:attribute name="details" type="xsd:string"/>
         <xsd:attribute name="condition" type="xsd:string"/>
@@ -121,7 +121,7 @@
         <xsd:sequence>
             <xsd:element name="activity" type="psc:Activity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
@@ -129,7 +129,7 @@
         <xsd:sequence>
             <xsd:element name="source" type="psc:Source" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:ID"/>
+        <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string"/>
         <xsd:attribute name="type-id" type="xsd:integer" use="required"/>

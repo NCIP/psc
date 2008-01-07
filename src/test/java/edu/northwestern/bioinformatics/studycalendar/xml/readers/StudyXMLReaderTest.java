@@ -12,6 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import static org.easymock.EasyMock.expect;
@@ -19,11 +20,19 @@ import org.easymock.IArgumentMatcher;
 import org.easymock.classextension.EasyMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 
+import javax.xml.validation.SchemaFactory;
+import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import static java.text.MessageFormat.format;
 import java.util.Calendar;
+import java.util.List;
 
 public class StudyXMLReaderTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -691,6 +700,27 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong new value", "Epoch B", actualPropertyChange.getNewValue());
     }
 
+    public void testGetAllNodesAndFindById() throws Exception{
+        StringBuffer buf = new StringBuffer();
+        buf.append("<first id=\"1\"><second id=\"2\"><third id=\"3\"/></second><fourth id=\"4\"/></first>");
+
+        // create a SchemaFactory that conforms to W3C XML Schema
+        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+
+        // get a DOM factory
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+        // create a new parser that validates documents against a schema
+        DocumentBuilder db = dbf.newDocumentBuilder();
+
+        Document doc = db.parse(toInputStream(buf));
+
+        List<Node> nodes = reader.getAllNodes(doc.getFirstChild());
+        assertEquals("Wrong size", 4, nodes.size());
+
+        Node node = reader.findNodeById(nodes, "4");
+        assertEquals("wrong node", "fourth", ((Element) node).getNodeName());
+    }
 
     /* Test Helpers */
     private InputStream toInputStream(StringBuffer buf) throws Exception {

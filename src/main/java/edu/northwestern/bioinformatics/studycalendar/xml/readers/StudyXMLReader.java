@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static java.util.Collections.singletonList;
+
 import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNED_ACTIVITY;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
@@ -191,14 +193,14 @@ public class StudyXMLReader  {
                 } else if(REMOVE.equals(element.getNodeName()) ){
                     change = new Remove();
                     String childGridId = element.getAttribute(CHILD_ID);
-                    Element changeElement = parent.getOwnerDocument().getElementById(childGridId);
+                    Element changeElement = getElementById(parent, childGridId);
                     PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
                     ((Remove)change).setChild(planTreeNode);
                     ((Remove)change).setChildId(planTreeNode.getId());
                 } else if (REORDER.equals(element.getNodeName())) {
                     change = new Reorder();
                     String childGridId = element.getAttribute(CHILD_ID);
-                    Element changeElement = parent.getOwnerDocument().getElementById(childGridId);
+                    Element changeElement = getElementById(parent, childGridId);
                     PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
                     ((Reorder)change).setChild(planTreeNode);
                     ((Reorder)change).setChildId(planTreeNode.getId());
@@ -333,7 +335,7 @@ public class StudyXMLReader  {
 
       private Delta<?> createDelta(Element delta) {
         String nodeGridId = delta.getAttribute(NODE_ID);
-        Element node = delta.getOwnerDocument().getElementById(nodeGridId);
+        Element node = getElementById(delta, nodeGridId);
 
         if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
             return new PlannedCalendarDelta();
@@ -381,7 +383,7 @@ public class StudyXMLReader  {
 
      private PlanTreeNode<?> createPlanTreeNode(Element delta) {
         String nodeGridId = delta.getAttribute(NODE_ID);
-        Element node = delta.getOwnerDocument().getElementById(nodeGridId);
+        Element node = getElementById(delta, nodeGridId);
 
         PlanTreeNode<?> planTreeNode;
         if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
@@ -422,6 +424,38 @@ public class StudyXMLReader  {
 
         delta.setRevision(amendment);
         delta.setGridId(gridId);
+    }
+
+    protected Element getElementById(Node node, String string) {
+        List<Node> nodes = getAllNodes(node.getOwnerDocument().getFirstChild());
+        Node found = findNodeById(nodes, string);
+
+        return (Element) found;
+    }
+
+    protected List<Node> getAllNodes(Node node) {
+        if (!node.hasChildNodes())
+            return singletonList(node);
+
+        List<Node> master = new ArrayList<Node>();
+        master.add(node);
+
+        List<Node> children = new NodeListCollection(node.getChildNodes());
+        for (Node child : children) {
+            master.addAll(getAllNodes(child));
+        }
+        
+        return master ;
+    }
+
+    protected Node findNodeById(List<Node> nodes, String id) {
+        for (Node node : nodes) {
+            Element element = (Element) node;
+            if (element.getAttribute(ID).equals(id)) {
+                return node;
+            }
+        }
+        return null;
     }
 
 
