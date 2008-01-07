@@ -72,7 +72,7 @@ public class Epoch extends PlanTreeOrderedInnerNode<PlannedCalendar, StudySegmen
     @OneToMany
     @JoinColumn(name="epoch_id")
     @IndexColumn(name="list_index")
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade(value = { CascadeType.ALL})
     public List<StudySegment> getStudySegments() {
         return getChildren();
     }
