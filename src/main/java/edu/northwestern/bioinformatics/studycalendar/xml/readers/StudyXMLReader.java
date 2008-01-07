@@ -195,6 +195,15 @@ public class StudyXMLReader  {
                     PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
                     ((Remove)change).setChild(planTreeNode);
                     ((Remove)change).setChildId(planTreeNode.getId());
+                } else if (REORDER.equals(element.getNodeName())) {
+                    change = new Reorder();
+                    String childGridId = element.getAttribute(CHILD_ID);
+                    Element changeElement = parent.getOwnerDocument().getElementById(childGridId);
+                    PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
+                    ((Reorder)change).setChild(planTreeNode);
+                    ((Reorder)change).setChildId(planTreeNode.getId());
+                    ((Reorder)change).setOldIndex(new Integer(element.getAttribute(OLD_INDEX)));
+                    ((Reorder)change).setNewIndex(new Integer(element.getAttribute(NEW_INDEX)));
                 } else {
                     throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
                 }
