@@ -44,6 +44,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     private StudySegmentDao studySegmentDao;
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
+    private ActivityDao activityDao;
 
     @Override
     protected void setUp() throws Exception {
@@ -54,6 +55,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         deltaDao = registerDaoMockFor(DeltaDao.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
+        activityDao = registerDaoMockFor(ActivityDao.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
@@ -67,6 +69,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         reader.setChangeDao(changeDao);
         reader.setAmendmentDao(amendmentDao);
         reader.setStudySegmentDao(studySegmentDao);
+        reader.setActivityDao(activityDao);
         reader.setPlannedActivityDao(plannedActivityDao);
         reader.setTemplateService(new TestingTemplateService());
         reader.setPlannedCalendarDao(plannedCalendarDao);
@@ -230,9 +233,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "        <epoch id=\"grid5\" name=\"Epoch A\">\n")
            .append(       "          <study-segment id=\"grid6\" name=\"Segment A\">\n")
            .append(       "            <period id=\"grid7\" name=\"Period A\">\n")
-//           .append(       "              <planned-activity id=\"grid8\" day=\"1\" details=\"My Details\" condition=\"My Condition\">\n")
-//           .append(       "                <activity id=\"grid9\" name=\"Bone Scan\" description=\"make sure im not broken\" type-id=\"1\" code=\"AA\"/>")
-//           .append(       "              </planned-activity>")
+           .append(       "              <planned-activity id=\"grid8\" day=\"1\" details=\"My Details\" condition=\"My Condition\">\n")
+           .append(       "                <activity id=\"grid9\" name=\"Bone Scan\" description=\"make sure im not broken\" type-id=\"1\" code=\"AA\"/>")
+           .append(       "              </planned-activity>")
            .append(       "            </period>")
            .append(       "          </study-segment>")
            .append(       "        </epoch>")
@@ -257,7 +260,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(epochDao.getByGridId("grid5")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid6")).andReturn(null);
         expect(periodDao.getByGridId("grid7")).andReturn(null);
-//        expect(plannedActivityDao.getByGridId("grid8")).andReturn(null);
+        expect(plannedActivityDao.getByGridId("grid8")).andReturn(null);
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -292,7 +295,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong Child Name", "Period A", period.getName());
 
 
-/*        // PlannedActivity
+        // PlannedActivity
         PlannedActivity plannedActivity = period.getPlannedActivities().get(0);
         assertEquals("Wrong Child GridId", "grid8", plannedActivity.getGridId());
         assertEquals("Wrong Day", 1, (int) plannedActivity.getDay());
@@ -300,12 +303,12 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong condition", "My Condition", plannedActivity.getCondition());
 
         // Activity
-        Activity activity = plannedActivity.getActivity();*/
-//        assertEquals("Wrong GridId", "grid9", activity.getGridId());
-//        assertEquals("Wrong Name", "Bone Scane", activity.getName());
-//        assertEquals("Wrong Description", "make sure im not broken", activity.getDescription());
-//        assertEquals("Wrong Type Id", ActivityType.DISEASE_MEASURE, activity.getType());
-//        assertEquals("Wrong Code", "AA", activity.getCode());
+        Activity activity = plannedActivity.getActivity();
+        assertEquals("Wrong GridId", "grid9", activity.getGridId());
+        assertEquals("Wrong Name", "Bone Scan", activity.getName());
+        assertEquals("Wrong Description", "make sure im not broken", activity.getDescription());
+        assertEquals("Wrong Type Id", ActivityType.DISEASE_MEASURE, activity.getType());
+        assertEquals("Wrong Code", "AA", activity.getCode());
     }
 
     /* Test Helpers */

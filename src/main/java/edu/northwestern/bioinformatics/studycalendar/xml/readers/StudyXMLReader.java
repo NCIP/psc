@@ -214,7 +214,6 @@ public class StudyXMLReader  {
                    child = createChild(element, null);
 
                    ((ChildrenChange) change).setChild(child);
-
                 }
 
                 // TODO: Set Child Parent and Add child to children
@@ -230,6 +229,9 @@ public class StudyXMLReader  {
             Element element = (Element) childNode;
             String childGridId = element.getAttribute(ID);
 
+            if (ACTIVITY.equals(element.getNodeName())) {
+                break;
+            }
 
             PlanTreeNode<?> child = getExistingChild(element, childGridId);
 
@@ -283,21 +285,24 @@ public class StudyXMLReader  {
             plannedActivity.setDay(new Integer(childElement.getAttribute(DAY)));
             plannedActivity.setDetails(childElement.getAttribute(DETAILS));
             plannedActivity.setCondition(childElement.getAttribute(CONDITION));
-            return plannedActivity;
-        } else if (ACTIVITY.equals(childElement.getNodeName())) {
-            Activity activity =  new Activity();
-            activity.setGridId(childElement.getAttribute(ID));
-            activity.setName(childElement.getAttribute(NAME));
-            activity.setDescription(childElement.getAttribute(DESCRIPTION));
-            activity.setType(ActivityType.getById(Integer.parseInt(childElement.getAttribute(TYPE_ID))));
-            activity.setCode(childElement.getAttribute(CODE));
 
-            // TODO: For activity, do own processing
-            return null;
-//
+            addActivity(childElement, plannedActivity);
+            return plannedActivity;
         } else {
             throw new StudyCalendarError("Cannot find Child Node for: %s", childElement.getNodeName());
         }
+    }
+
+    private void addActivity(Element parentElement, PlannedActivity parent ) {
+        Element element = (Element) parentElement.getFirstChild();
+        Activity activity =  new Activity();
+        activity.setGridId(element.getAttribute(ID));
+        activity.setName(element.getAttribute(NAME));
+        activity.setDescription(element.getAttribute(DESCRIPTION));
+        activity.setType(ActivityType.getById(Integer.parseInt(element.getAttribute(TYPE_ID))));
+        activity.setCode(element.getAttribute(CODE));
+
+        parent.setActivity(activity);
     }
 
 
