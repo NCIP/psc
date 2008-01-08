@@ -93,7 +93,7 @@
         <xsd:sequence>
             <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
