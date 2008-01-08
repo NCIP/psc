@@ -13,4 +13,6 @@
     <bean id="activityXMLReader" autowire="byName" lazy-init="true"
           class="edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader"/>
 
+    <bean id="studyXMLReader" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader"/>
 </beans>

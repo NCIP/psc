@@ -110,6 +110,9 @@
     <bean name="/cal/template/display/*.xml" id="displayTemplateXmlController" autowire="byType"
               class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportTemplateXmlController"/>
 
+    <bean name="/cal/template/import" id="importTemplateXmlController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportTemplateXmlController"/>
+
 <!--to separate ManagePeriodCommands to a separate commands-->
     <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">

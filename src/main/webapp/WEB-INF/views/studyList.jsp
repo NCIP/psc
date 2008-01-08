@@ -323,6 +323,7 @@
     <laf:division>
         <security:secureOperation element="/pages/cal/newStudy">
             <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
+            <p><a href="<c:url value="/pages/cal/template/import"/>">Import an existing template</a></p>
         </security:secureOperation>
      </laf:division>
         <c:if test="${not empty inDevelopmentTemplates}">
