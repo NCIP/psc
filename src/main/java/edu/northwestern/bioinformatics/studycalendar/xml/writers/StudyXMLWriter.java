@@ -1,14 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -37,10 +31,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+
 /**
  * @author John Dzak
  */
 public class StudyXMLWriter {
+    private DaoFinder daoFinder;
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
     public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
     public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";
@@ -95,9 +93,14 @@ public class StudyXMLWriter {
     {
       optionalAttributes.put(AMENDMENT, new String[]{PREVIOUS_AMENDMENT_ID});
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
+      optionalAttributes.put(PERIOD, new String[] {NAME});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
     }
 
+
+    public StudyXMLWriter(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
+    }
 
     public String createStudyXML(Study study) throws Exception {
         Document document = createDocument();
@@ -178,11 +181,12 @@ public class StudyXMLWriter {
             setAttrib(element, NODE_ID, delta.getNode().getGridId());
             parent.appendChild(element);
 
-            addChanges(document, delta.getChanges(), element);
+
+            addChanges(document, delta.getChanges(), element, getChildClass(delta.getNode()));
         }
     }
 
-    protected void addChanges(Document document, List<Change> changes, Element parent) {
+    protected void addChanges(Document document, List<Change> changes, Element parent, Class childClass) {
         for (Change change : changes) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
@@ -193,16 +197,16 @@ public class StudyXMLWriter {
                 }
                 parent.appendChild(element);
 
-                addChild(document, ((ChildrenChange) change).getChild(), element);
+                addChild(document, ((PlanTreeNode<?>) getChild(((ChildrenChange) change).getChildId(), childClass)), element);
             } else if ((ChangeAction.REMOVE).equals(change.getAction())) {
                 Element element = document.createElement(REMOVE);
                 setAttrib(element, ID, change.getGridId());
-                setAttrib(element, CHILD_ID, ((Remove) change).getChild().getGridId());
+                setAttrib(element, CHILD_ID, ((PlanTreeNode<?>) getChild((((Remove) change).getChildId()), childClass)).getGridId());
                 parent.appendChild(element);
             } else if (ChangeAction.REORDER.equals(change.getAction())) {
                 Element element = document.createElement(REORDER);
                 setAttrib(element, ID, change.getGridId());
-                setAttrib(element, CHILD_ID, ((Reorder) change).getChild().getGridId());
+                setAttrib(element, CHILD_ID, ((PlanTreeNode<?>) getChild((((Reorder) change).getChildId()), childClass)).getGridId());
                 setAttrib(element, OLD_INDEX, ((Reorder) change).getOldIndex().toString());
                 setAttrib(element, NEW_INDEX, ((Reorder) change).getNewIndex().toString());
                 parent.appendChild(element);
@@ -322,5 +326,18 @@ public class StudyXMLWriter {
 
        throw new StudyCalendarError("Attribute is required and value is null: %s", name);
    }
+
+    public DomainObject getChild(Integer childId, Class childClass) {
+        DomainObjectDao<?> dao = daoFinder.findDao(childClass);
+        return dao.getById(childId);
+    }
+
+     public Class getChildClass(PlanTreeNode<?> node) {
+         Class childClass = null;
+         if (node instanceof PlanTreeInnerNode) {
+             childClass = ((PlanTreeInnerNode) node).childClass();
+         }
+         return childClass;
+     }
 
 }

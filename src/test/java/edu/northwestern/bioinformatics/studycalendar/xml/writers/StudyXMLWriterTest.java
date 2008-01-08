@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static org.easymock.EasyMock.expect;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
@@ -23,8 +24,12 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriterTest.StudyXMLSkeleton.insertXml;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.custommonkey.xmlunit.DetailedDiff;
 import org.custommonkey.xmlunit.Diff;
@@ -34,7 +39,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.BeansException;
 import org.xml.sax.SAXException;
+import org.easymock.EasyMock;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -47,6 +55,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyXMLWriter writer;
+    private DaoFinder daoFinder;
+    DomainObjectDao<?> daoMock;
 
     private Study study;
 
@@ -73,13 +83,16 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Activity activity;
     private Source source;
 
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        daoMock = registerMockFor(DomainObjectDao.class);
+        daoFinder = new TestingSpringDaoFinder(daoMock);
 
         XMLUnit.setIgnoreWhitespace(true);
 
-        writer = new StudyXMLWriter();
+        writer = new StudyXMLWriter(daoFinder);
 
         amendment = createAmendment();
 
@@ -241,6 +254,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     /* Output XML Methods */
     private String calendarDeltaXML() {
         amendment.addDelta(calendarDelta);
+        
+        expect(daoMock.getById(epoch.getId())).andReturn(epoch);
 
         StringBuffer body = new StringBuffer();
         body.append(    format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDelta.getGridId(), calendarDelta.getNode().getGridId()))
@@ -253,6 +268,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private String epochDeltaXML() {
         amendment.addDelta(epochDelta);
+
+        expect(daoMock.getById(segment.getId())).andReturn(segment);
 
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", epochDelta.getGridId(), epochDelta.getNode().getGridId()))
@@ -267,6 +284,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private String segmentDeltaXML() {
         amendment.addDelta(segmentDelta);
 
+        expect(daoMock.getById(period.getId())).andReturn(period);
+
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", segmentDelta.getGridId(), segmentDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\">\n", addPeriod.getGridId()))
@@ -279,6 +298,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private String periodDeltaXML() {
         amendment.addDelta(periodDelta);
+
+        expect(daoMock.getById(plannedActivity.getId())).andReturn(plannedActivity);
 
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
@@ -300,6 +321,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
         amendment.addDelta(periodDelta);
 
+        expect(daoMock.getById(plannedActivity.getId())).andReturn(plannedActivity);
+
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">\n", addActivity.getGridId(), addActivity.getIndex()))
@@ -317,6 +340,8 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private String calendarDeltaRemoveEpochXML() {
         amendment.addDelta(calendarDeltaForRemove);
 
+        expect(daoMock.getById(epoch.getId())).andReturn(epoch);
+
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForRemove.getGridId(), calendarDeltaForRemove.getNode().getGridId()))
             .append(format("  <remove id=\"{0}\" child-id=\"{1}\"/>\n", removeEpoch.getGridId(), removeEpoch.getChild().getGridId()))
@@ -328,6 +353,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private String calendarDeltaReorderEpochXML() {
         amendment.addDelta(calendarDeltaForReorder);
+
+        expect(daoMock.getById(epoch.getId())).andReturn(epoch);
+
 
         StringBuffer body = new StringBuffer();
         body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForReorder.getGridId(), calendarDeltaForReorder.getNode().getGridId()))
@@ -350,7 +378,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     /* Validate methods */
     public String createAndValidateXml() throws Exception{
+        replayMocks();
         String s = writer.createStudyXML(study);
+        verifyMocks();
         log.debug("XML: {}", s);
         
         validate(s.getBytes());
@@ -367,7 +397,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
 
     /* Create Domain Objects with Grid Ids */
-    private <T extends Named & GridIdentifiable> T createNamedInstance(String name, Class<T> clazz) throws Exception {
+    private <T extends Named & GridIdentifiable & DomainObject> T createNamedInstance(String name, Class<T> clazz) throws Exception {
         return setGridId(Fixtures.createNamedInstance(name, clazz));
     }
 
@@ -418,13 +448,15 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
 
     /* Base Grid Id Assignment Methods */
-    private <T extends GridIdentifiable> T setGridId(T object) throws Exception{
-        object.setGridId(valueOf(nextGridId()));
+    private <T extends GridIdentifiable & DomainObject> T setGridId(T object) throws Exception {
+        int nextGridId = nextGridId();
+        object.setGridId('a' + valueOf(nextGridId)); // For some reason, the schema doesn't like integers for ids, so prepend 'a'
+        object.setId((nextGridId));
         return object;
     }
 
-    private String nextGridId() {
-        return 'a' + valueOf(id++); // For some reason, the schema doesn't like integers for ids, so prepend 'a'
+    private int nextGridId() {
+        return id++;
     }
 
 
@@ -447,6 +479,20 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
                .append(       "     </amendment>\n")
                .append(       "</study>\n");
             return buf.toString();
+        }
+    }
+
+    // Needed this class becuase EasyMock has problems with expecting findDao method calls 
+    public class TestingSpringDaoFinder implements DaoFinder {
+        DomainObjectDao<?> mockDao;
+
+        public TestingSpringDaoFinder(DomainObjectDao<?> mockDao) {
+            this.mockDao = mockDao;
+        }
+
+        @SuppressWarnings({"unchecked"})
+        public <T extends DomainObject> DomainObjectDao<?> findDao(Class<T> domainClass) {
+            return mockDao;
         }
     }
 

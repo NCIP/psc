@@ -9,6 +9,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
@@ -26,6 +27,7 @@ public class ExportTemplateXmlController extends AbstractController {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Pattern ID_PATTERN = Pattern.compile("/([^/]+)\\.xml");
     private StudyDao studyDao;
+    private DaoFinder daoFinder;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -39,7 +41,7 @@ public class ExportTemplateXmlController extends AbstractController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        String xml = new StudyXMLWriter().createStudyXML(study);
+        String xml = new StudyXMLWriter(daoFinder).createStudyXML(study);
         response.setContentType("text/xml");
         byte[] content = xml.getBytes();
         response.setContentLength(content.length);
@@ -73,5 +75,10 @@ public class ExportTemplateXmlController extends AbstractController {
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }
