@@ -35,11 +35,13 @@ public class AuditInfoFilter extends FilterAdapter {
 			throws IOException, ServletException {
 		HttpServletRequest httpReq = (HttpServletRequest) request;
 		String username = ApplicationSecurityManager.getUser(); // String username = ApplicationSecurityManager.getUser(httpReq);
-		if (username != null) {
-			DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo(username, request
-					.getRemoteAddr(), new Date(), httpReq.getRequestURI()));
+        if (username == null) {
+            username = "<not logged in>";
+        }
 
-		}
+        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo(username, request
+                .getRemoteAddr(), new Date(), httpReq.getRequestURI()));
+
 		chain.doFilter(request, response);
 		DataAuditInfo.setLocal(null);
 	}

@@ -63,7 +63,7 @@ public class AuditInfoFilterTest extends WebTestCase {
 		filter.doFilter(request, response, new FilterChain() {
 			public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse)
 					throws IOException, ServletException {
-				assertNull(DataAuditInfo.getLocal());
+				assertNotNull(DataAuditInfo.getLocal());
 			}
 		});
 	}
