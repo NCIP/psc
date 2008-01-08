@@ -90,6 +90,7 @@ public class StudyXMLReader  {
             study = new Study();
             study.setGridId(gridId);
             study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
+            studyDao.save(study);
         }
 
         addPlannedCalendar(element, study);
