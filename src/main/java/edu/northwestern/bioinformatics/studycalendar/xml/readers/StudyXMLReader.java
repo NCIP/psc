@@ -108,9 +108,9 @@ public class StudyXMLReader  {
             calendar = new PlannedCalendar();
             calendar.setGridId(gridId);
             calendar.setStudy(parent);
+            parent.setPlannedCalendar(calendar);
+            plannedCalendarDao.save(calendar);
         }
-
-        parent.setPlannedCalendar(calendar);
     }
 
 

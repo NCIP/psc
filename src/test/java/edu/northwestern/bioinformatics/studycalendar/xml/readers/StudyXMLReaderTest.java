@@ -97,6 +97,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         expect(studyDao.getByGridId("grid0")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(null);
+        plannedCalendarDao.save(gridIdEq(calendar));
         replayMocks();
         
         Study actual = reader.read(toInputStream(buf));
