@@ -178,9 +178,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid3")).andReturn(null);
 
-        amendmentDao.save(amendment0);
         amendmentDao.save(gridIdEq(setGridId("grid3", new Amendment())));
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
         deltaService.apply(gridIdEq(study), gridIdEq(setGridId("grid3", new Amendment())));
         studyService.save(gridIdEq(study));
         replayMocks();
@@ -233,12 +231,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment);
 
-        amendmentDao.save(amendment);
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
-        expect(changeDao.getByGridId("grid4")).andReturn(add);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment));
         studyService.save(gridIdEq(study));
         replayMocks();
 
@@ -285,9 +277,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
-        expect(amendmentDao.getByGridId("grid2")).andReturn(amendment);
+        expect(amendmentDao.getByGridId("grid2")).andReturn(null);
 
-        amendmentDao.save(amendment);
+        amendmentDao.save(gridIdEq(amendment));
 
         // PlannedCalendarDelta
         expect(deltaDao.getByGridId("grid3")).andReturn(null);
@@ -396,21 +388,16 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
-        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
-        amendmentDao.save(amendment0);
-        amendmentDao.save(amendment1);
 
-        // PlannedCalendarDelta
-        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
-        expect(changeDao.getByGridId("grid4")).andReturn(add);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
+        expect(amendmentDao.getByGridId("grid6")).andReturn(null);
+        amendmentDao.save(gridIdEq(amendment1));
 
         expect(deltaDao.getByGridId("grid7")).andReturn(null);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid9")).andReturn(null);
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
         deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        
         studyService.save(gridIdEq(study));
         replayMocks();
 
@@ -492,27 +479,14 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
-        expect(amendmentDao.getByGridId("grid10")).andReturn(amendment2);
-        amendmentDao.save(amendment0);
-        amendmentDao.save(amendment1);
-        amendmentDao.save(amendment2);
-
-        // PlannedCalendarDelta
-        expect(deltaDao.getByGridId("grid3")).andReturn(plannedCalendarDelta);
-        expect(changeDao.getByGridId("grid4")).andReturn(addEpoch);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-
-        expect(deltaDao.getByGridId("grid7")).andReturn(epochDelta);
-        expect(changeDao.getByGridId("grid8")).andReturn(addStudySegment);
-        expect(studySegmentDao.getByGridId("grid9")).andReturn(studySegment);
+        expect(amendmentDao.getByGridId("grid10")).andReturn(null);
+        amendmentDao.save(gridIdEq(amendment2));
 
         expect(deltaDao.getByGridId("grid11")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid9")).andReturn(studySegment);
         expect(changeDao.getByGridId("grid12")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid13")).andReturn(null);
 
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
         deltaService.apply(gridIdEq(study), gridIdEq(amendment2));
         studyService.save(gridIdEq(study));
         replayMocks();
@@ -577,20 +551,14 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
 
-        amendmentDao.save(amendment0);
-        amendmentDao.save(amendment1);
+        expect(amendmentDao.getByGridId("grid6")).andReturn(null);
+        amendmentDao.save(gridIdEq(amendment1));
 
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
-        expect(changeDao.getByGridId("grid4")).andReturn(add);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-
-        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
         expect(deltaDao.getByGridId("grid7")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        
         deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
         studyService.save(gridIdEq(study));
         replayMocks();
@@ -645,23 +613,15 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
+        expect(amendmentDao.getByGridId("grid6")).andReturn(null);
 
-        amendmentDao.save(amendment0);
-        amendmentDao.save(amendment1);
+        amendmentDao.save(gridIdEq(amendment1));
 
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
-        expect(changeDao.getByGridId("grid4")).andReturn(add);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch0);
-        expect(epochDao.getByGridId("grid9")).andReturn(epoch1);
-
-        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
         expect(deltaDao.getByGridId("grid7")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch0);
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
-         deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
         studyService.save(gridIdEq(study));
         replayMocks();
 
@@ -714,20 +674,12 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
+        expect(amendmentDao.getByGridId("grid6")).andReturn(null);
+        amendmentDao.save(gridIdEq(amendment1));
 
-        amendmentDao.save(amendment0);
-        amendmentDao.save(amendment1);
-
-
-        expect(deltaDao.getByGridId("grid3")).andReturn(delta);
-        expect(changeDao.getByGridId("grid4")).andReturn(add);
-        expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-
-        expect(amendmentDao.getByGridId("grid6")).andReturn(amendment1);
         expect(deltaDao.getByGridId("grid7")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
-        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
         deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
         studyService.save(gridIdEq(study));
         replayMocks();

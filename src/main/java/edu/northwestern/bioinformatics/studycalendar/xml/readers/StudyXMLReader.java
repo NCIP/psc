@@ -149,12 +149,11 @@ public class StudyXMLReader  {
                         }
                     }
                 }
+                addDeltas(element, amendment, parent);
+                amendmentDao.save(amendment);
+                deltaService.apply(parent, amendment);
             }
             amendments.add(amendment);
-
-            addDeltas(element, amendment, parent);
-            amendmentDao.save(amendment);
-            deltaService.apply(parent, amendment);
         }
 
         Collections.reverse(amendments);
