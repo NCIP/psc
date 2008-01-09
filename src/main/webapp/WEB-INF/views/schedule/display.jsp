@@ -222,6 +222,10 @@
             list-style-type: none;
             padding-bottom: 0.25em;
         }
+        .alignStudySegmentButtonInTheMiddle {
+            text-align:center;
+        }
+
     </style>
     <script type="text/javascript">
         var DEFAULT_DATES = {
@@ -459,8 +463,8 @@
                         <div class="label"><label for="start-date-input">Start date</label></div>
                         <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
                     </div>
-                    <div class="row">
-                        <div class="value"><tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/></div>
+                    <div class="alignStudySegmentButtonInTheMiddle">
+                        <tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" style="margin:auto;" value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/>
                     </div>
                 </div>
                 </form>
