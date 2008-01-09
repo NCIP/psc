@@ -70,6 +70,14 @@
             $('subjects-info').show()
         }
 
+        function selectAllParticipants(studyValues) {
+            var array = document.getElementsByName("subjects");
+            var arrayOfSubject = $(studyValues).immediateDescendants();
+            for (var i=0; i< arrayOfSubject.length; i++) {
+                arrayOfSubject[i].getElementsByTagName("input")[0].checked = !arrayOfSubject[i].getElementsByTagName("input")[0].checked
+            }
+        }
+
         Event.observe(window, "load", registerSelector);
         <c:if test="${fn:length(displayMap) eq 0}">
             Event.observe(window, "load", showSubjectsInfo);
@@ -166,6 +174,8 @@
                                                           There are no subject coordinators for this study site.
                                                       </c:if>
                                                       <c:if test="${fn:length(subjectCoordinatorStudySites[study.key][site.key]) >= 1}">
+                                                          <%--<input type="button" value="Select All" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')"/>--%>
+                                                          <%--<input type="checkbox" name="doesntmatter" value="all" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')">All</input>--%>
                                                           <select name="subjectCoordinator">
                                                               <option></option>
                                                               <c:forEach items="${subjectCoordinatorStudySites[study.key][site.key]}" var="user">
@@ -177,6 +187,7 @@
                                                       </c:if>
                                                   </div>
                                               </div>
+                                              <ul><li><input class="selectAll" type="checkbox" name="doesntmatter" value="all" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')"> All</input></li></ul>
                                               <ul id="${study.key.id}_${site.key.id}" class="subjects">
                                                   <sitecoord:displaySubjects study="${study.key}" site="${site.key}" subjects="${study.value}"/>
                                               </ul>
