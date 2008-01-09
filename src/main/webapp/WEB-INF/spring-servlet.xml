@@ -23,13 +23,6 @@
         <property name="maxUploadSize" value="500000"/>
     </bean>
 
-    <!-- TODO: disabled since it's breaking and it's only here for reference
-    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerProtectionElementCreator" lazy-init="true">
-        <property name="studyCalendarAuthorizationManager"><ref bean="studyCalendarAuthorizationManager"/></property>
-        <property name="urlResolver"><ref local="urlResolver"/></property>
-    </bean>
-    -->
-
     <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerSecureUrlCreator" lazy-init="true">
         <property name="filterInvocationInterceptor"><ref bean="filterInvocationInterceptor"/></property>
         <property name="urlResolver"><ref local="urlResolver"/></property>
