@@ -1,28 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import gov.nih.nci.ccts.grid.common.StudyImportExportI;
-import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
-
-
+import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
+import gov.nih.nci.ccts.grid.common.StudyImportExportI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.math.BigInteger;
 import java.rmi.RemoteException;
 
 /**
- *@author Saurabh Agrawal
+ * @author Saurabh Agrawal
  */
-public class PSCStudyImportExport
-//        implements StudyImportExportI
-{
+public class PSCStudyImportExport implements StudyImportExportI {
 
     private static final Log logger = LogFactory.getLog(PSCStudyImportExport.class);
 
@@ -31,54 +24,44 @@ public class PSCStudyImportExport
     private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
 
-    private StudyDao studyDao;
-
-
-    public Study exportStudyById(BigInteger integer) throws RemoteException {
-
-        edu.northwestern.bioinformatics.studycalendar.domain.Study psc = studyDao.getByGridId("abc");
-
-        StudyXMLWriter studyXMLWriter = new StudyXMLWriter();
-        try {
-            String studyXml = studyXMLWriter.createStudyXML(psc);
-        } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
-
-        return null;
-
-
-    }
-
-//    public Study populateStudyDTO(edu.northwestern.bioinformatics.studycalendar.domain.Study pscStudy) throws Exception {
-//        Study gridStudy = null;
-//        try {
-//            InputStream config = Thread.currentThread().getContextClassLoader().getResourceAsStream(
-//                    "gov/nih/nci/ccts/grid/client/client-config.wsdd");
-//            Reader reader = new FileReader(regFile);
-//            gridStudy = (Study) gov.nih.nci.cagrid.common.Utils.serializeObject(reader, Study.class, config);
-//        }
-//        catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//            throw e;
-//        }
-//        return gridStudy;
-//    }
-
-    //
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
+    private StudyService studyService;
+    private DaoFinder daoFinder;
 
 
     public ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
-    public String exportStudyByCoordinatingCenterIdentifier(String string) throws RemoteException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    public String exportStudyByCoordinatingCenterIdentifier(String coordinatingCenterIdentifier) throws RemoteException {
+        //first fetch the study for the coordinating center identifier
+        Study study = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+
+        if (study == null) {
+            String message = "Exception while exporting study..no study found with given identifier:" + coordinatingCenterIdentifier;
+            throw new RemoteException(message);
+        }
+
+        StudyXMLWriter studyXMLWriter = new StudyXMLWriter(daoFinder);
+        try {
+            String studyXml = studyXMLWriter.createStudyXML(study);
+            logger.info("exporitng study:"+studyXml);
+            return studyXml;
+        } catch (Exception exception) {
+            logger.error("errror while exporting study.grid id:" + study.getGridId() + " message:" + exception.getMessage());
+            throw new RemoteException(exception.getMessage());
+        }
+
+
+    }
+
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }

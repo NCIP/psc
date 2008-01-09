@@ -4,9 +4,10 @@
 
 <beans default-lazy-init="true">
 
-    <bean
-            id="pscStudyImportExport"
-            class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyImportExport"></bean>
+    <bean id="studyImportExport" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyImportExport">
+        <property name="studyService" ref="studyService"/>
+        <property name="daoFinder" ref="daoFinder"/>
+    </bean>
 
     <!--applicationContext = new ClassPathXmlApplicationContext(new String[]{
     // "classpath:applicationContext.xml",
