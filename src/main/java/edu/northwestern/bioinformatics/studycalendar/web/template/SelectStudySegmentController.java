@@ -41,7 +41,14 @@ public class SelectStudySegmentController implements Controller {
             model.put("developmentRevision", study.getDevelopmentAmendment());
         }
         controllerTools.addHierarchyToModel(studySegment, model);
-        Study theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
+
+        Study theRevisedStudy = null;
+        if (study.getDevelopmentAmendment() != null) {
+            theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
+        } else {
+            theRevisedStudy = study;
+        }
+
         List<Epoch> epochs = theRevisedStudy.getPlannedCalendar().getEpochs();
         model.put("epochs", epochs);
         model.put("studySegment", new StudySegmentTemplate(studySegment));
