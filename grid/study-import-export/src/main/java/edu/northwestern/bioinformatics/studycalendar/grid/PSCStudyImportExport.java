@@ -4,8 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
-import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
-import gov.nih.nci.ccts.grid.common.StudyImportExportI;
+import gov.nih.nci.ccts.grid.common.StudyImportExport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -15,7 +14,7 @@ import java.rmi.RemoteException;
 /**
  * @author Saurabh Agrawal
  */
-public class PSCStudyImportExport implements StudyImportExportI {
+public class PSCStudyImportExport implements StudyImportExport {
 
     private static final Log logger = LogFactory.getLog(PSCStudyImportExport.class);
 
@@ -28,9 +27,6 @@ public class PSCStudyImportExport implements StudyImportExportI {
     private DaoFinder daoFinder;
 
 
-    public ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException {
-        return null;
-    }
 
     public String exportStudyByCoordinatingCenterIdentifier(String coordinatingCenterIdentifier) throws RemoteException {
         //first fetch the study for the coordinating center identifier
