@@ -5,6 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +21,16 @@ public class ImportTemplateXmlCommand implements Validatable {
 
     StudyXMLReader studyXMLReader;
     MultipartFile studyXml;
-    private StudyDao studyDao;
+    private StudyService studyService;
+    private DeltaService deltaService;
 
     public void apply() throws Exception {
         Study study = studyXMLReader.read(studyXml.getInputStream());
-        studyDao.save(study);
+        studyService.save(study);
     }
 
     public void validate(Errors errors) {
-        if (studyXml.isEmpty()) {
+        if (studyXml == null || studyXml.isEmpty()) {
             errors.reject("error.template.xml.not.specified");
             return;
         }
@@ -54,7 +57,11 @@ public class ImportTemplateXmlCommand implements Validatable {
         return studyXml;
     }
 
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 }

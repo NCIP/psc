@@ -27,6 +27,8 @@ import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -56,6 +58,9 @@ public class StudyXMLReader  {
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
     private ActivityDao activityDao;
+    private StudyService studyService;
+    private SourceDao sourceDao;
+    private DeltaService deltaService;
 
     public Study read(InputStream dataFile) throws Exception {
 
@@ -98,6 +103,8 @@ public class StudyXMLReader  {
         addPlannedCalendar(element, study);
         addAmendments(element, study);
 
+        studyService.save(study);
+        
         return study;
     }
 
@@ -146,8 +153,8 @@ public class StudyXMLReader  {
             amendments.add(amendment);
 
             addDeltas(element, amendment, parent);
-
             amendmentDao.save(amendment);
+            deltaService.apply(parent, amendment);
         }
 
         Collections.reverse(amendments);
@@ -325,15 +332,40 @@ public class StudyXMLReader  {
 
     private void addActivity(Element parentElement, PlannedActivity parent ) {
         Element element = (Element) parentElement.getFirstChild();
-        Activity activity =  new Activity();
-        activity.setGridId(element.getAttribute(ID));
-        activity.setName(element.getAttribute(NAME));
-        activity.setDescription(element.getAttribute(DESCRIPTION));
-        activity.setType(ActivityType.getById(Integer.parseInt(element.getAttribute(TYPE_ID))));
-        activity.setCode(element.getAttribute(CODE));
 
+        String code = element.getAttribute(CODE);
+        String sourceName = ((Element) element.getFirstChild()).getAttribute(NAME);
+
+        Activity activity = activityDao.getByCodeAndSourceName(code, sourceName);
+        if (activity == null) {
+            activity =  new Activity();
+            activity.setGridId(element.getAttribute(ID));
+            activity.setName(element.getAttribute(NAME));
+            activity.setDescription(element.getAttribute(DESCRIPTION));
+            activity.setType(ActivityType.getById(Integer.parseInt(element.getAttribute(TYPE_ID))));
+            activity.setCode(code);
+
+            addSource(element, activity);
+            activityDao.save(activity);
+        }
         parent.setActivity(activity);
     }
+
+    private void addSource(Element parentElement, Activity parent ) {
+        Element element = (Element) parentElement.getFirstChild();
+
+        String name = element.getAttribute(NAME);
+        Source source = sourceDao.getByName(name);
+        if (source == null) {
+            source =  new Source();
+            source.setName(name);
+            source.setGridId(element.getAttribute(ID));
+            parent.setSource(source);
+            sourceDao.save(source);
+        }
+    }
+
+
 
 
       private Delta<?> createDelta(Element delta) {
@@ -522,5 +554,17 @@ public class StudyXMLReader  {
 
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
+    }
+
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
+    }
+
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 }

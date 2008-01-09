@@ -10,6 +10,8 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
@@ -50,17 +52,24 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     private PeriodDao periodDao;
     private PlannedActivityDao plannedActivityDao;
     private ActivityDao activityDao;
+    private StudyService studyService;
+    private DeltaService deltaService;
+    private SourceDao sourceDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
+        // TODO:  Convert StudyXMLWriter to use template.findEquivelantNode instead of saving with dao's and then calling dao.getById
         epochDao = registerDaoMockFor(EpochDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
+        sourceDao = registerDaoMockFor(SourceDao.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
+        studyService = registerMockFor(StudyService.class);
+        deltaService = registerMockFor(DeltaService.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
@@ -70,9 +79,12 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         reader.setEpochDao(epochDao);
         reader.setStudyDao(studyDao);
         reader.setDeltaDao(deltaDao);
+        reader.setSourceDao(sourceDao);
         reader.setPeriodDao(periodDao);
         reader.setChangeDao(changeDao);
+        reader.setStudyService(studyService);
         reader.setAmendmentDao(amendmentDao);
+        reader.setDeltaService(deltaService);
         reader.setStudySegmentDao(studySegmentDao);
         reader.setActivityDao(activityDao);
         reader.setPlannedActivityDao(plannedActivityDao);
@@ -99,6 +111,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(null);
         studyDao.save(gridIdEq(study));
         plannedCalendarDao.save(gridIdEq(calendar));
+        studyService.save(gridIdEq(study));
         replayMocks();
         
         Study actual = reader.read(toInputStream(buf));
@@ -129,6 +142,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         expect(studyDao.getByGridId("grid0")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -166,6 +180,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         amendmentDao.save(amendment0);
         amendmentDao.save(gridIdEq(setGridId("grid3", new Amendment())));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        deltaService.apply(gridIdEq(study), gridIdEq(setGridId("grid3", new Amendment())));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -221,6 +238,8 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(deltaDao.getByGridId("grid3")).andReturn(delta);
         expect(changeDao.getByGridId("grid4")).andReturn(add);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -247,7 +266,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "          <study-segment id=\"grid6\" name=\"Segment A\">\n")
            .append(       "            <period id=\"grid7\" name=\"Period A\">\n")
            .append(       "              <planned-activity id=\"grid8\" day=\"1\" details=\"My Details\" condition=\"My Condition\">\n")
-           .append(       "                <activity id=\"grid9\" name=\"Bone Scan\" description=\"make sure im not broken\" type-id=\"1\" code=\"AA\"/>")
+           .append(       "                <activity id=\"grid9\" name=\"Bone Scan\" description=\"make sure im not broken\" type-id=\"1\" code=\"AA\">")
+           .append(       "                  <source id=\"grid10\" name=\"Source A\"/>")
+           .append(       "                </activity>")
            .append(       "              </planned-activity>")
            .append(       "            </period>")
            .append(       "          </study-segment>")
@@ -277,6 +298,12 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(studySegmentDao.getByGridId("grid6")).andReturn(null);
         expect(periodDao.getByGridId("grid7")).andReturn(null);
         expect(plannedActivityDao.getByGridId("grid8")).andReturn(null);
+        expect(activityDao.getByCodeAndSourceName("AA", "Source A")).andReturn(null);
+        expect(sourceDao.getByName("Source A")).andReturn(null);
+        sourceDao.save(gridIdEq(setGridId("grid10", new Source())));
+        activityDao.save(gridIdEq(setGridId("grid9", new Activity())));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -382,6 +409,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid9")).andReturn(null);
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -481,7 +511,10 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(changeDao.getByGridId("grid12")).andReturn(null);
         expect(studySegmentDao.getByGridId("grid13")).andReturn(null);
 
-
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment2));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -557,7 +590,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch);
-
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -625,7 +660,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
         expect(epochDao.getByGridId("grid5")).andReturn(epoch0);
-
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+         deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));
@@ -690,7 +727,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(deltaDao.getByGridId("grid7")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(changeDao.getByGridId("grid8")).andReturn(null);
-
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment0));
+        deltaService.apply(gridIdEq(study), gridIdEq(amendment1));
+        studyService.save(gridIdEq(study));
         replayMocks();
 
         Study actual = reader.read(toInputStream(buf));

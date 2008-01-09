@@ -15,7 +15,7 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
 
     public Source getByName(String name) {
         List<Source> sources = getHibernateTemplate().find("from Source where name = ?", name);
-        if (sources != null) {
+        if (!sources.isEmpty()) {
             return sources.get(0);
         }
         return null; 

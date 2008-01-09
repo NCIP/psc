@@ -136,7 +136,9 @@ public class StudyXMLWriter {
         addPlannedCalendar(document, study, element);
 
         List<Amendment> allAmendments = new ArrayList<Amendment>(study.getAmendmentsList());
-        if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
+
+        // Remove since deelopment amendment add/remove/merge logic hasn't been implmented yet
+        //if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());
 
         addAmendments(document, allAmendments, element);
     }

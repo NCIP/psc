@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
@@ -13,7 +15,8 @@ import java.util.Map;
 
 public class ImportTemplateXmlController extends PscSimpleFormController {
      private StudyXMLReader studyXMLReader;
-    private StudyDao studyDao;
+    private StudyService studyService;
+    private DeltaService deltaService;
 
     public ImportTemplateXmlController() {
         setCommandClass(ImportTemplateXmlCommand.class);
@@ -34,7 +37,8 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
     protected ImportTemplateXmlCommand formBackingObject(HttpServletRequest httpServletRequest) throws Exception {
         ImportTemplateXmlCommand command = new ImportTemplateXmlCommand();
         command.setStudyXMLReader(studyXMLReader);
-        command.setStudyDao(studyDao);
+        command.setStudyService(studyService);
+        command.setDeltaService(deltaService);
         return command;
     }
 
@@ -45,7 +49,12 @@ public class ImportTemplateXmlController extends PscSimpleFormController {
     }
 
     @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
+
+    @Required
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 }

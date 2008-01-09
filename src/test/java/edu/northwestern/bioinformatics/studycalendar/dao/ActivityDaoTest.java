@@ -22,6 +22,11 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals("Wrong code", "SA", activity.getCode());
     }
 
+    public void testGetByCodeAndSourceName() throws Exception {
+        Activity activity = dao.getByCodeAndSourceName("CS", "ICD9");
+        assertEquals("Wrong id", -98, (int) activity.getId());
+    }
+
     public void testSaveNewActivity() throws Exception {
         Integer savedId;
         {
