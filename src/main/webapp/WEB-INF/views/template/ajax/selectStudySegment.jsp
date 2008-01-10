@@ -2,6 +2,7 @@
 <%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template"%>
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsgen:replaceHtml targetElement="selected-studySegment">
     <templ:studySegment studySegment="${studySegment}" developmentRevision="${developmentRevision}"/>
 </jsgen:replaceHtml>
@@ -11,4 +12,6 @@ initializeNewStudySegment()
 <jsgen:replaceHtml targetElement="errorMessages">
     <tags:replaceErrorMessagesForTemplate/>
 </jsgen:replaceHtml>
-hideShowReleaseTemplateButton()
+<c:if test="${not empty developmentRevision}">
+    hideShowReleaseTemplateButton()
+</c:if>
