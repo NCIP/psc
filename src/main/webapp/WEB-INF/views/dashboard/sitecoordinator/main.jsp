@@ -26,7 +26,7 @@
 
 <h1>Welcome, ${user.name}</h1>
 
-<c:if test="${not empty notices}">
+<c:if test="${not empty notices['approvals']}">
     <laf:box title="Please note" autopad="true">
         <ul id="notices">
         <c:forEach items="${notices['approvals']}" var="notice">
@@ -48,35 +48,6 @@
     the primary subject coordinator for individual subjects.
 </laf:box>
 
-<laf:box title="Studies" autopad="true">
-    <p>
-        This table contains all the studies that are have been released to the sites of which
-        you are a site coordinator.
-    </p>
-    <table id="studies" class="grid">
-        <tr>
-            <th class="header-of-headers">Studies / Sites</th>
-            <c:forEach items="${sites}" var="site">
-                <th>${site.name}</th>
-            </c:forEach>
-        </tr>
-        <c:forEach items="${studiesAndSites}" var="studyToStudySite" varStatus="status">
-            <tr class="${commons:parity(status.index)}">
-                <th>${studyToStudySite.key.name}</th>
-                <c:forEach items="${studyToStudySite.value}" var="siteToStudySite">
-                    <td>
-                    <c:if test="${not empty siteToStudySite.value}">
-                        <a class="control" href="<c:url value="/pages/cal/template/approve?studySite=${siteToStudySite.value.id}"/>">Approve amendments</a>
-                    </c:if>
-                    <c:if test="${empty siteToStudySite.value}">
-                        <em>Not available at this site</em>
-                    </c:if>
-                    </td>
-                </c:forEach>
-            </tr>
-        </c:forEach>
-    </table>
-</laf:box>
 
 </body>
 </html>
