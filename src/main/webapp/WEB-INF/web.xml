@@ -166,6 +166,17 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>restful-api</servlet-name>
+        <servlet-class>edu.northwestern.bioinformatics.studycalendar.restlets.RestletSpringServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>restful-api</servlet-name>
+        <url-pattern>/api/v1/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ctms-assets</servlet-name>
         <servlet-class>gov.nih.nci.cabig.ctms.lookandfeel.AssetServlet</servlet-class>
     </servlet>

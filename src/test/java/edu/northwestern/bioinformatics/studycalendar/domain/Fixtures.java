@@ -40,15 +40,20 @@ public class Fixtures {
 
     public static void assignIds(Study study) {
         study.getPlannedCalendar().setId(1);
+        study.getPlannedCalendar().setGridId("GRID-1");
         int epochId = 10, studySegmentId = 100, periodId = 1000, plannedActivityId = 10000;
         for (Epoch epoch : study.getPlannedCalendar().getEpochs()) {
             epoch.setId(++epochId);
+            epoch.setGridId("GRID-" + epochId);
             for (StudySegment studySegment : epoch.getStudySegments()) {
                 studySegment.setId(++studySegmentId);
+                studySegment.setGridId("GRID-" + studySegmentId);
                 for (Period period : studySegment.getPeriods()) {
                     period.setId(++periodId);
+                    period.setGridId("GRID-" + periodId);
                     for (PlannedActivity event : period.getPlannedActivities()) {
                         event.setId(++plannedActivityId);
+                        event.setGridId("GRID-" + plannedActivityId);
                     }
                 }
             }
