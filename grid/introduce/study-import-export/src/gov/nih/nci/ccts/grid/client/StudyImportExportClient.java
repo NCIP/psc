@@ -107,6 +107,14 @@ public class StudyImportExportClient extends ServiceSecurityClient implements St
 		}
 	}
 
+	public void importStudy(java.lang.String string) throws RemoteException {
+      synchronized(portTypeMutex){
+        configureStubSecurity((Stub)portType,"importStudy");
+        gov.nih.nci.ccts.grid.stubs.ImportStudyRequest params = new gov.nih.nci.ccts.grid.stubs.ImportStudyRequest();
+        params.setString(string);
+        gov.nih.nci.ccts.grid.stubs.ImportStudyResponse boxedResult = portType.importStudy(params);
+      }
+    }
 	public gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException {
       synchronized(portTypeMutex){
         configureStubSecurity((Stub)portType,"getServiceSecurityMetadata");

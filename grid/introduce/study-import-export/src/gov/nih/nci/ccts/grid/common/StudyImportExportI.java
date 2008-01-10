@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
  */
 public interface StudyImportExportI {
 
+    public void importStudy(java.lang.String string) throws RemoteException ;
+
     public gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata getServiceSecurityMetadata() throws RemoteException ;
 
     public java.lang.String exportStudyByCoordinatingCenterIdentifier(java.lang.String string) throws RemoteException ;

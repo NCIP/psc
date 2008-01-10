@@ -80,6 +80,13 @@
      <ns4:Output qName="xsd:string" isArray="false" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
      <ns4:Exceptions/>
     </ns4:Method>
+    <ns4:Method isImported="false" isProvided="false" name="importStudy" xsi:type="ns4:MethodType">
+     <ns4:Inputs>
+      <ns4:Input qName="xsd:string" isArray="false" name="string" xmlns:xsd="http://www.w3.org/2001/XMLSchema"/>
+     </ns4:Inputs>
+     <ns4:Output qName="void" isArray="false"/>
+     <ns4:Exceptions/>
+    </ns4:Method>
    </ns4:Methods>
    <ns6:ResourcePropertiesList xsi:type="ns6:ResourcePropertiesListType" xmlns:ns6="gme://gov.nih.nci.cagrid.introduce/1/Resources">
     <ns6:ResourceProperty qName="ns7:ServiceMetadata" fileLocation="serviceMetadata.xml" populateFromFile="true" register="true" xsi:type="ns6:ResourcePropertyType" xmlns:ns7="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata"/>

@@ -26,6 +26,13 @@ public class StudyImportExportProviderImpl{
 	}
 	
 
+	public gov.nih.nci.ccts.grid.stubs.ImportStudyResponse importStudy(gov.nih.nci.ccts.grid.stubs.ImportStudyRequest params) throws RemoteException {
+		StudyImportExportAuthorization.authorizeImportStudy();
+		gov.nih.nci.ccts.grid.stubs.ImportStudyResponse boxedResult = new gov.nih.nci.ccts.grid.stubs.ImportStudyResponse();
+		impl.importStudy(params.getString());
+		return boxedResult;
+	}
+
 	public gov.nih.nci.ccts.grid.stubs.ExportStudyByCoordinatingCenterIdentifierResponse exportStudyByCoordinatingCenterIdentifier(gov.nih.nci.ccts.grid.stubs.ExportStudyByCoordinatingCenterIdentifierRequest params) throws RemoteException {
 		StudyImportExportAuthorization.authorizeExportStudyByCoordinatingCenterIdentifier();
 		gov.nih.nci.ccts.grid.stubs.ExportStudyByCoordinatingCenterIdentifierResponse boxedResult = new gov.nih.nci.ccts.grid.stubs.ExportStudyByCoordinatingCenterIdentifierResponse();

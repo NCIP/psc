@@ -34,6 +34,11 @@ public class StudyImportExportAuthorization{
 		
 		
 	}
+					
+	public static void authorizeImportStudy() throws RemoteException {
+		
+		
+	}
 	
 	
 }

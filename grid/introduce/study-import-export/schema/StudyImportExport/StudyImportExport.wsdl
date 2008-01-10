@@ -28,6 +28,18 @@
           </sequence>
         </complexType>
       </element>
+      <element name="ImportStudyRequest">
+        <complexType>
+          <sequence>
+            <element name="string" type="xs:string" minOccurs="1" maxOccurs="1" />
+          </sequence>
+        </complexType>
+      </element>
+      <element name="ImportStudyResponse">
+        <complexType>
+          <sequence />
+        </complexType>
+      </element>
       <element name="StudyImportExportResourceProperties">
         <complexType>
           <sequence>
@@ -44,6 +56,12 @@
   <message name="ExportStudyByCoordinatingCenterIdentifierResponse">
     <part name="parameters" element="tns:ExportStudyByCoordinatingCenterIdentifierResponse" />
   </message>
+  <message name="ImportStudyRequest">
+    <part name="parameters" element="tns:ImportStudyRequest" />
+  </message>
+  <message name="ImportStudyResponse">
+    <part name="parameters" element="tns:ImportStudyResponse" />
+  </message>
   <!--============================================================
 
                        P O R T T Y P E
@@ -53,6 +71,10 @@
     <operation name="exportStudyByCoordinatingCenterIdentifier">
       <input message="tns:ExportStudyByCoordinatingCenterIdentifierRequest" wsa:Action="http://grid.ccts.nci.nih.gov/StudyImportExport/ExportStudyByCoordinatingCenterIdentifierRequest" />
       <output message="tns:ExportStudyByCoordinatingCenterIdentifierResponse" wsa:Action="http://grid.ccts.nci.nih.gov/StudyImportExport/ExportStudyByCoordinatingCenterIdentifierResponse" />
+    </operation>
+    <operation name="importStudy">
+      <input message="tns:ImportStudyRequest" wsa:Action="http://grid.ccts.nci.nih.gov/StudyImportExport/ImportStudyRequest" />
+      <output message="tns:ImportStudyResponse" wsa:Action="http://grid.ccts.nci.nih.gov/StudyImportExport/ImportStudyResponse" />
     </operation>
     <operation name="GetResourceProperty">
       <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />
