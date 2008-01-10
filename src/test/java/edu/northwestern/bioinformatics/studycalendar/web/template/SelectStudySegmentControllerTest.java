@@ -46,8 +46,9 @@ public class SelectStudySegmentControllerTest extends ControllerTestCase {
     
     // TODO: test the inclusion of the plan tree hierarchy
     public void testRequest() throws Exception {
-
-        expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
+        if (study.getDevelopmentAmendment() != null) {
+            expect(deltaService.revise(study, study.getDevelopmentAmendment())).andReturn(study);
+        }
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
