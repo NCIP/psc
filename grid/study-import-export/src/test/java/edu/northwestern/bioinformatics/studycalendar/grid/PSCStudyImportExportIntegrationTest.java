@@ -5,25 +5,27 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import junit.framework.AssertionFailedError;
+import gov.nih.nci.ccts.grid.client.StudyImportExportClient;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.test.AbstractTransactionalSpringContextTests;
 import org.springframework.validation.BindException;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
- * Created by IntelliJ IDEA.
- * User: saurabhagrawal
- * Date: Jan 9, 2008
- * Time: 12:34:18 PM
- * To change this template use File | Settings | File Templates.
+ * @author Saurabh Agrawal
  */
 public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSpringContextTests {
 
@@ -33,12 +35,17 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
 
     private StudyDao studyDao;
 
-    private int id = 1;
 
-    Study study;
+    private Study study;
+    
     private Amendment amendment;
 
     private AmendmentDao amendmentDao;
+
+    private StudyService studyService;
+
+    private String gridServiceUrl;
+    private StudyImportExportClient studyImportExportClient;
 
     protected String[] getConfigLocations() {
 
@@ -49,20 +56,89 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
     }
 
     protected void onSetUpInTransaction() throws Exception {
-        super.onSetUpInTransaction();
         coordinatingCenterIdentifier = "cc";
 
         DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
 
+        gridServiceUrl = "http://localhost:8080/wsrf/services/cagrid/StudyImportExport";
+        studyImportExportClient = new StudyImportExportClient(gridServiceUrl);
 
+        //make sure no study  existis with given identifier
+        deleteStudy();
+
+
+    }
+
+    private void deleteStudy() {
+        Study anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+
+        if (anotherStudy != null) {
+            studyService.delete(anotherStudy);
+            commitAndStartNewTransaction();
+            anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+            assertNull(anotherStudy);
+        }
     }
 
     protected void onTearDownAfterTransaction() throws Exception {
-        super.onTearDownAfterTransaction();
+        //now delete the commited study
+
         DataAuditInfo.setLocal(null);
+
     }
 
-    public void testStudyExportWhenStudyDoesNotExistsForIdentifier() throws Exception {
+
+    public void testGridServiceWsdlRemote() throws Exception {
+        URL url = new URL(gridServiceUrl + "?wsdl");
+        URLConnection urlConnection = url.openConnection();
+        InputStream inputStream = urlConnection.getInputStream();
+        byte[] buffer = new byte[1024];
+        int numRead;
+        long numWritten = 0;
+        DataInputStream dis = new DataInputStream(new BufferedInputStream(inputStream));
+        String s = "";
+        String htmlContent = "";
+
+        while ((s = dis.readLine()) != null) {
+            htmlContent = htmlContent + s;
+
+        }
+        logger.debug("wsdl file content is:" + htmlContent);
+        assertTrue(htmlContent.indexOf("<wsdl:definitions name=\"StudyImportExport\" targetNamespace=\"http://grid.ccts.nci.nih.gov/StudyImportExport/service\"") >= 0);
+        assertTrue(htmlContent.indexOf("xmlns:binding=\"http://grid.ccts.nci.nih.gov/StudyImportExport/bindings\"") >= 0);
+
+    }
+
+    public void testStudyExportLocalAndRemote() throws Exception {
+
+        amendment = createAmendment();
+        amendmentDao.save(amendment);
+
+        study = createStudy("Study A");
+        study.setAmendment(amendment);
+
+        PlannedCalendar plannedCalendar = new PlannedCalendar();
+        plannedCalendar.setStudy(study);
+        study.setPlannedCalendar(plannedCalendar);
+        studyDao.save(study);
+
+        String studyXml = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+        assertNotNull(studyXml);
+
+        validate(studyXml, true);
+
+        //now try remote also
+        //but for remote, we must commit the transaction
+
+        commitAndStartNewTransaction();
+        studyXml = studyImportExportClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+        assertNotNull(studyXml);
+        validate(studyXml, true);
+        deleteStudy();
+
+    }
+
+    public void testStudyExportWhenStudyDoesNotExistsForIdentifierLocalAndRemote() throws Exception {
         try {
             studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
             fail("no study exists with given identifier");
@@ -70,63 +146,40 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
             //expecting this exception
         }
 
-    }
-
-    public void testStudyExportForEmptyStudy() throws Exception {
-        createStudy("Study A");
-
-
-        String studyXml = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        assertNotNull(studyXml);
+        //now try remote
 
         try {
-            validate(studyXml.getBytes());
-            fail("Template xml should be error free");
-        } catch (AssertionFailedError e) {
-            //expecting this
+            studyImportExportClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+            fail("no study exists with given identifier");
+        } catch (RemoteException e) {
+            //expecting this exception
         }
-
-
-        amendment = createAmendment();
-        amendmentDao.save(amendment);
-
-        study = createStudy("Study A");
-        study.setAmendment(amendment);
-
-        PlannedCalendar plannedCalendar = new PlannedCalendar();
-        plannedCalendar.setStudy(study);
-        study.setPlannedCalendar(plannedCalendar);
-        studyDao.save(study);
-
-        studyXml = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        assertNotNull(studyXml);
-
-        validate(studyXml.getBytes());
-
 
     }
 
-
-    public void testStudyExport() throws Exception {
-
-        amendment = createAmendment();
-        amendmentDao.save(amendment);
+    public void testStudyExportForEmptyStudyLocalAndRemote() throws Exception {
 
         study = createStudy("Study A");
-        study.setAmendment(amendment);
 
-        PlannedCalendar plannedCalendar = new PlannedCalendar();
-        plannedCalendar.setStudy(study);
-        study.setPlannedCalendar(plannedCalendar);
-        studyDao.save(study);
 
         String studyXml = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
         assertNotNull(studyXml);
 
-        validate(studyXml.getBytes());
+        validate(studyXml, false);
+
+        //now try remote also
+        //but for remote, we must commit the transaction
+        commitAndStartNewTransaction();
+        studyXml = studyImportExportClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+        assertNotNull(studyXml);
+
+
+        validate(studyXml, false);
+        deleteStudy();
 
 
     }
+
 
     public Amendment createAmendment() throws Exception {
         Amendment newAmendment = new Amendment(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
@@ -135,12 +188,25 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
         return newAmendment;
     }
 
+    private void commitAndStartNewTransaction() {
+        setComplete();
+        endTransaction();
+        startNewTransaction();
 
-    private void validate(byte[] byteOutput) {
+    }
+
+
+    private void validate(String studyXml, Boolean validStdyXmlString) {
+        byte[] byteOutput = studyXml.getBytes();
         BindException errors = new BindException(byteOutput, EMPTY);
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
-        assertFalse("Template xml should be error free", errors.hasErrors());
+        if (validStdyXmlString) {
+            assertFalse("Template xml should be error free", errors.hasErrors());
+        } else {
+            assertTrue("Template xml has errors", errors.hasErrors());
+
+        }
     }
 
 
@@ -166,5 +232,10 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
     @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+    @Required
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
     }
 }
