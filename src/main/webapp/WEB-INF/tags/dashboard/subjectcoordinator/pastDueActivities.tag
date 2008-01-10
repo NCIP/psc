@@ -11,7 +11,7 @@
                 <c:forEach items="${activities}" var="mapOfPastDueActivities" varStatus="keyStatus">
                     <c:forEach items="${mapOfPastDueActivities.key}" var="mapOfPastDueActivitiesKey" varStatus="keyStatus">
                         ${mapOfPastDueActivitiesKey.key.firstName} ${mapOfPastDueActivitiesKey.key.lastName} has <a href=
-                            "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivities.value.id}"/>" > ${mapOfPastDueActivitiesKey.value} past-due activities </a>.  Earliest is
+                            "<c:url value="/pages/cal/schedule?calendar=${mapOfPastDueActivities.value.id}"/>" > ${mapOfPastDueActivitiesKey.value} past-due activities</a>. Earliest is
                             from <tags:formatDate value="${mapOfPastDueActivities.value.startDateEpoch}"/>
                         <br>
                     </c:forEach>

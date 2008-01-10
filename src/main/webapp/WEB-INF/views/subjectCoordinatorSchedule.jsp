@@ -13,7 +13,7 @@
     <tags:javascriptLink name="dashboards"/>
 
     <tags:includeScriptaculous/>
-
+    <title>Subject Coordinator Dashboard</title>
     <script type="text/javascript">
         SC.registerCurrentActivitiesUpdaters('<c:url value="/pages/dashboard/subjectCoordinatorSchedule"/>')
     </script>
@@ -64,7 +64,7 @@
         }
 
         .day h3{
-            width:30%;
+            width:10%;
         }
 
         .site h3{
