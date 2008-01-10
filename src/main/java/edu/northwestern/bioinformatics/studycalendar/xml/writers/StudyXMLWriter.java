@@ -4,15 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,7 +44,11 @@ public class StudyXMLWriter {
     public static final String XML_SCHEMA_ATTRIBUTE       = "xmlns:xsi";
 
     /* Tag Element constants */
-    public static final String DELTA = "delta";
+    public static final String PLANNED_CALENDAR_DELTA = "planned-calendar-delta";
+    public static final String EPOCH_DELTA = "epoch-delta";
+    public static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
+    public static final String PERIOD_DELTA = "period-delta";
+    public static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
     public static final String ADD = "add";
     public static final String REMOVE = "remove";
     public static final String REORDER = "reorder";
@@ -183,7 +179,20 @@ public class StudyXMLWriter {
 
     protected void addDeltas(Document document, List<Delta<?>> deltas, Element parent) {
         for (Delta<?> delta : deltas) {
-            Element element = document.createElement(DELTA);
+            Element element;
+            if (delta instanceof PlannedCalendarDelta) {
+                element = document.createElement(PLANNED_CALENDAR_DELTA);
+            } else if (delta instanceof EpochDelta) {
+                element = document.createElement(EPOCH_DELTA);
+            } else if (delta instanceof StudySegmentDelta) {
+                element = document.createElement(STUDY_SEGMENT_DELTA);
+            } else if (delta instanceof PeriodDelta) {
+                element = document.createElement(PERIOD_DELTA);
+            } else if (delta instanceof PlannedActivityDelta) {
+                element = document.createElement(PLANNED_ACTIVITY_DELTA);
+            } else {
+                throw new StudyCalendarError("Delta is not recognized: %s", delta.getClass());
+            }
 
             setAttrib(element, ID, delta.getGridId());
             setAttrib(element, NODE_ID, delta.getNode().getGridId());

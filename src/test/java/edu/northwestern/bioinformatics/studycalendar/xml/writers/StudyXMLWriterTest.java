@@ -68,7 +68,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     private Delta<Epoch> epochDeltaForPropertyChange;
     private Delta<Epoch> epochDelta;
     private Delta<StudySegment> segmentDelta;
-    private Delta<PlannedActivity> periodDelta;
+    private Delta<Period> periodDelta;
     private Add addEpoch;
     private Add addSegment;
     private Add addPeriod;
@@ -121,7 +121,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         plannedActivity = createPlannedActivity("Bone Scan", 1, "details", "patient is male");
         plannedActivity.setActivity(activity);
         addActivity = createAdd(plannedActivity, 0);
-        periodDelta = createDeltaFor(plannedActivity, addActivity);
+        periodDelta = createDeltaFor(period, addActivity);
 
         /* Planned Calendar Delta for Remove(ing) an Epoch */
         removeEpoch = createRemove(epoch);
@@ -258,11 +258,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(epoch.getId())).andReturn(epoch);
 
         StringBuffer body = new StringBuffer();
-        body.append(    format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDelta.getGridId(), calendarDelta.getNode().getGridId()))
+        body.append(    format("<planned-calendar-delta id=\"{0}\" node-id=\"{1}\">\n", calendarDelta.getGridId(), calendarDelta.getNode().getGridId()))
                 .append(format("  <add id=\"{0}\" index=\"{1}\">\n", addEpoch.getGridId(), addEpoch.getIndex()))
                 .append(format("    <epoch id=\"{0}\" name=\"{1}\"/>\n", epoch.getGridId(), epoch.getName()))
                 .append(       "  </add>\n")
-                .append(       "</delta>\n");
+                .append(       "</planned-calendar-delta>\n");
         return body.toString();
     }
 
@@ -272,11 +272,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(segment.getId())).andReturn(segment);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", epochDelta.getGridId(), epochDelta.getNode().getGridId()))
+        body.append(format("<epoch-delta id=\"{0}\" node-id=\"{1}\">\n", epochDelta.getGridId(), epochDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">\n", addSegment.getGridId(), addSegment.getIndex()))
             .append(format("    <study-segment id=\"{0}\" name=\"{1}\"/>\n", segment.getGridId(), segment.getName()))
             .append(       "  </add>\n")
-            .append(       "</delta>\n");
+            .append(       "</epoch-delta>\n");
 
         return body.toString();
     }
@@ -287,11 +287,11 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(period.getId())).andReturn(period);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", segmentDelta.getGridId(), segmentDelta.getNode().getGridId()))
+        body.append(format("<study-segment-delta id=\"{0}\" node-id=\"{1}\">\n", segmentDelta.getGridId(), segmentDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\">\n", addPeriod.getGridId()))
             .append(format("    <period id=\"{0}\" name=\"{1}\"/>\n", period.getGridId(), period.getName()))
             .append(       "  </add>\n")
-            .append(       "</delta>\n");
+            .append(       "</study-segment-delta>\n");
 
         return body.toString();
     }
@@ -302,7 +302,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(plannedActivity.getId())).andReturn(plannedActivity);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
+        body.append(format("<period-delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">\n", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" details=\"{2}\" condition=\"{3}\" >\n", plannedActivity.getGridId(), plannedActivity.getDay(), plannedActivity.getDetails(), plannedActivity.getCondition()))
             .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\">\n", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
@@ -310,7 +310,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
             .append(       "      </activity>\n")
             .append(       "    </planned-activity>\n")
             .append(       "  </add>\n")
-            .append(       "</delta>\n");
+            .append(       "</period-delta>\n");
 
         return body.toString();
     }
@@ -324,7 +324,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(plannedActivity.getId())).andReturn(plannedActivity);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
+        body.append(format("<period-delta id=\"{0}\" node-id=\"{1}\">\n", periodDelta.getGridId(), periodDelta.getNode().getGridId()))
             .append(format("  <add id=\"{0}\" index=\"{1}\">\n", addActivity.getGridId(), addActivity.getIndex()))
             .append(format("    <planned-activity id=\"{0}\" day=\"{1}\" >\n", plannedActivity.getGridId(), plannedActivity.getDay()))
             .append(format("      <activity id=\"{0}\" name=\"{1}\" description=\"{2}\" type-id=\"{3}\" code=\"{4}\">\n", activity.getGridId(), activity.getName(), activity.getDescription(), activity.getType().getId(), activity.getCode()))
@@ -332,7 +332,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
             .append(       "      </activity>\n")
             .append(       "    </planned-activity>\n")
             .append(       "  </add>\n")
-            .append(       "</delta>\n");
+            .append(       "</period-delta>\n");
 
         return body.toString();
     }
@@ -343,9 +343,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         expect(daoMock.getById(epoch.getId())).andReturn(epoch);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForRemove.getGridId(), calendarDeltaForRemove.getNode().getGridId()))
+        body.append(format("<planned-calendar-delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForRemove.getGridId(), calendarDeltaForRemove.getNode().getGridId()))
             .append(format("  <remove id=\"{0}\" child-id=\"{1}\"/>\n", removeEpoch.getGridId(), removeEpoch.getChild().getGridId()))
-            .append(       "</delta>\n");
+            .append(       "</planned-calendar-delta>\n");
 
         return body.toString();
     }
@@ -358,9 +358,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForReorder.getGridId(), calendarDeltaForReorder.getNode().getGridId()))
+        body.append(format("<planned-calendar-delta id=\"{0}\" node-id=\"{1}\">\n", calendarDeltaForReorder.getGridId(), calendarDeltaForReorder.getNode().getGridId()))
             .append(format("  <reorder id=\"{0}\" child-id=\"{1}\" old-index=\"{2}\" new-index=\"{3}\"  />\n", reorderEpoch.getGridId(), reorderEpoch.getChild().getGridId(), reorderEpoch.getOldIndex(), reorderEpoch.getNewIndex()))
-            .append(       "</delta>\n");
+            .append(       "</planned-calendar-delta>\n");
 
         return body.toString();
     }
@@ -369,9 +369,9 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         amendment.addDelta(epochDeltaForPropertyChange);
 
         StringBuffer body = new StringBuffer();
-        body.append(format("<delta id=\"{0}\" node-id=\"{1}\">\n", epochDeltaForPropertyChange.getGridId(), epochDeltaForPropertyChange.getNode().getGridId()))
+        body.append(format("<epoch-delta id=\"{0}\" node-id=\"{1}\">\n", epochDeltaForPropertyChange.getGridId(), epochDeltaForPropertyChange.getNode().getGridId()))
             .append(format("  <property-change id=\"{0}\" property-name=\"{1}\" old-value=\"{2}\" new-value=\"{3}\" />\n", epochPropertyChange.getGridId(), epochPropertyChange.getPropertyName(), epochPropertyChange.getOldValue(), epochPropertyChange.getNewValue()))
-            .append(       "</delta>\n");
+            .append(       "</epoch-delta>\n");
 
         return body.toString();
     }
