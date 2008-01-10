@@ -180,9 +180,8 @@ public class StudyXMLReader  {
                 assignDeltaAttributes(delta, deltaGridId, amendment, planTreeNode);
                 
                 amendment.addDelta(delta);
+                addChanges(deltaElement, delta, study);
             }
-
-            addChanges(deltaElement, delta, study);
         }
     }
 
@@ -229,9 +228,9 @@ public class StudyXMLReader  {
 
                 delta.addChange(change);
 
+                addChildNode(element, change, study);
             }
 
-            addChildNode(element, change, study);
         }
     }
 
@@ -250,10 +249,9 @@ public class StudyXMLReader  {
                 if (child == null) {
                    child = createChild(element, null);
 
-                   ((ChildrenChange) change).setChild(child);
+                    ((ChildrenChange) change).setChild(child);
+                    addPlanTreeNode(element, child, study);
                 }
-
-                addPlanTreeNode(element, child, study);
             }
         }
     }
@@ -275,9 +273,8 @@ public class StudyXMLReader  {
                 child = createChild(element, null);
 
                 cast(parentTreeNode).addChild(child);
+                addPlanTreeNode(element, child, study);
             }
-
-            addPlanTreeNode(element, child, study);
         }
     }
 
