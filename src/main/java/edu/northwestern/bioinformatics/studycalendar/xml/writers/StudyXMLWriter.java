@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -17,9 +18,11 @@ import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
@@ -102,7 +105,7 @@ public class StudyXMLWriter {
         this.daoFinder = daoFinder;
     }
 
-    public String createStudyXML(Study study) throws Exception {
+    public String createStudyXML(Study study) {
         Document document = createDocument();
 
         addStudy(document, study);
@@ -111,16 +114,19 @@ public class StudyXMLWriter {
 
     }
 
-    protected Document createDocument() throws Exception{
+    protected Document createDocument() {
+        try {
+            //get an instance of factory
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        //get an instance of factory
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            //get an instance of builder
+            DocumentBuilder db = dbf.newDocumentBuilder();
 
-        //get an instance of builder
-        DocumentBuilder db = dbf.newDocumentBuilder();
-
-        //create an instance of DOM
-        return db.newDocument();
+            //create an instance of DOM
+            return db.newDocument();
+        } catch (ParserConfigurationException e) {
+            throw new StudyCalendarSystemException("Could not create XML document for serialization", e);
+        }
     }
 
     // TODO: Break all these add methods into an ElementFactory
@@ -188,7 +194,7 @@ public class StudyXMLWriter {
         }
     }
 
-    protected void addChanges(Document document, List<Change> changes, Element parent, Class childClass) {
+    protected void addChanges(Document document, List<Change> changes, Element parent, Class<?> childClass) {
         for (Change change : changes) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
                 Element element = document.createElement(ADD);
@@ -226,6 +232,7 @@ public class StudyXMLWriter {
     }
 
     protected void addChild(Document document, PlanTreeNode<?> child, Element parent) {
+        // TODO: there's a lot of duplicate code here which could be factored out
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
             Element element = document.createElement(EPOCH);
@@ -297,17 +304,22 @@ public class StudyXMLWriter {
 
 
     /* XML Helpers */
-    protected String convertToString(Document document) throws Exception {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+    protected String convertToString(Document document) {
+        StreamResult result;
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
-        //initialize StreamResult with File object to save to file
-        StreamResult result = new StreamResult(new StringWriter());
-        DOMSource source = new DOMSource(document);
-        transformer.transform(source, result);
+            //initialize StreamResult with File object to save to file
+            result = new StreamResult(new StringWriter());
+            DOMSource source = new DOMSource(document);
+            transformer.transform(source, result);
+        } catch (TransformerException e) {
+            throw new StudyCalendarSystemException("Could not transform XML objects into text", e);
+        }
 
         return result.getWriter().toString();
     }
