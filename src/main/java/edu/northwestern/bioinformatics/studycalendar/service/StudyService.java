@@ -14,6 +14,7 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -105,11 +106,27 @@ public class StudyService {
             Hibernate.initialize(studySite.getCurrentApprovedAmendment());
         }
 
-        plannedCalendarDao.initialize(study.getPlannedCalendar());
+        PlannedCalendar plannedCalendar = study.getPlannedCalendar();
+        if (plannedCalendar != null) {
+            plannedCalendarDao.initialize(plannedCalendar);
+
+        }
+
+        List<Amendment> amendmentList = study.getAmendmentsList();
+        for (Amendment amendment : amendmentList) {
+            initializeAmendment(amendment);
+
+        }
+
         Amendment developmentAmendment = study.getDevelopmentAmendment();
-        Hibernate.initialize(developmentAmendment);
-        if (developmentAmendment != null) {
-            List<Delta<?>> deltas = developmentAmendment.getDeltas();
+        initializeAmendment(developmentAmendment);
+        return study;
+    }
+
+    private void initializeAmendment(Amendment amendment) {
+        Hibernate.initialize(amendment);
+        if (amendment != null) {
+            List<Delta<?>> deltas = amendment.getDeltas();
             Hibernate.initialize(deltas);
             for (Delta delta : deltas) {
                 Hibernate.initialize(delta.getChanges());
@@ -119,16 +136,25 @@ public class StudyService {
                 }
             }
         }
-        return study;
     }
 
     public void delete(Study study) {
-        deltaService.apply(study, study.getDevelopmentAmendment());
-        Amendment amendment = study.getDevelopmentAmendment();
-        amendment.getDeltas().clear();
 
-        amendmentDao.save(amendment);
-        List<Epoch> epochList = study.getPlannedCalendar().getEpochs();
+        Amendment amendment = study.getDevelopmentAmendment();
+
+        if (amendment != null) {
+            deltaService.apply(study, amendment);
+            amendment.getDeltas().clear();
+            amendmentDao.save(amendment);
+        }
+
+        PlannedCalendar plannedCalendar = study.getPlannedCalendar();
+
+        List<Epoch> epochList = new ArrayList<Epoch>();
+        if (plannedCalendar != null) {
+            epochList = plannedCalendar.getEpochs();
+        }
+
         studyDao.delete(study);
 
         for (Epoch epoch : epochList) {
