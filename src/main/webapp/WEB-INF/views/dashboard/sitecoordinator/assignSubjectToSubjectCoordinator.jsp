@@ -70,11 +70,46 @@
             $('subjects-info').show()
         }
 
-        function selectAllParticipants(studyValues) {
-            var array = document.getElementsByName("subjects");
+        function selectAllParticipantsCheckbox(studyValues) {
+            var checkbox = 'checkbox_' + studyValues;
             var arrayOfSubject = $(studyValues).immediateDescendants();
+
+            var areAllButtonsChecked = true;
             for (var i=0; i< arrayOfSubject.length; i++) {
-                arrayOfSubject[i].getElementsByTagName("input")[0].checked = !arrayOfSubject[i].getElementsByTagName("input")[0].checked
+                if (!arrayOfSubject[i].getElementsByTagName("input")[0].checked) {
+                    areAllButtonsChecked = false;
+                    break;
+                }
+            }
+            if (!areAllButtonsChecked) {
+                for (var i=0; i< arrayOfSubject.length; i++) {
+                    arrayOfSubject[i].getElementsByTagName("input")[0].checked = true
+                }
+            } else {
+                for (var i=0; i< arrayOfSubject.length; i++) {
+                    arrayOfSubject[i].getElementsByTagName("input")[0].checked = false
+                }
+            }
+        }
+
+        function deselectOrSelectAllCheckbox(idValue, isSelected) {
+            var checkbox = 'checkbox_' + idValue;
+            if (!isSelected) {
+                $(checkbox).checked = isSelected;
+            } else {
+                var arrayOfSubject = $(idValue).immediateDescendants();
+                var areAllButtonsChecked = true;
+                for (var i=0; i< arrayOfSubject.length; i++) {
+                    if (!arrayOfSubject[i].getElementsByTagName("input")[0].checked) {
+                        areAllButtonsChecked = false;
+                        break;
+                    }
+                }
+                if (areAllButtonsChecked) {
+                    $(checkbox).checked = true;
+                } else {
+                    $(checkbox).checked = false;
+                }
             }
         }
 
@@ -187,7 +222,15 @@
                                                       </c:if>
                                                   </div>
                                               </div>
-                                              <ul><li><input class="selectAll" type="checkbox" name="doesntmatter" value="all" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')"> All</input></li></ul>
+
+                                              <ul>
+                                                  <li>
+                                                      <input class="selectAll" type="checkbox" id="checkbox_${study.key.id}_${site.key.id}" name="doesntmatter" value="all" onclick="selectAllParticipantsCheckbox('${study.key.id}_${site.key.id}')">
+                                                           &nbsp;All
+                                                      </input>
+                                                  </li>
+                                              </ul>
+
                                               <ul id="${study.key.id}_${site.key.id}" class="subjects">
                                                   <sitecoord:displaySubjects study="${study.key}" site="${site.key}" subjects="${study.value}"/>
                                               </ul>
