@@ -209,6 +209,12 @@
 
     <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Change subject coordinator"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/cal/newPeriod" id="newPeriodController" autowire="byName"

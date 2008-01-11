@@ -4,10 +4,11 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="sitecoord" tagdir="/WEB-INF/tags/dashboard/sitecoordinator" %>
+<%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons" %>
                                                     
 <html>
   <head>
-      <title>Site Coordinator Dashboard</title>
+      <title>Change Subject Coordinator</title>
       <tags:stylesheetLink name="main"/>
       <script type="text/javascript">
         function registerSelector() {
@@ -155,97 +156,77 @@
       </style>
   </head>
   <body>
-  <laf:box title="Site Coordinator Dashboard">
+  <laf:box title="Change subject coordinator">
       <laf:division>
           <c:url var="action" value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" />
           <form:form id="PCSelectionForm" action="${action}">
-              <form:errors path="*"/>
-              <div class="links-row">
-                  Assign By:
-                  <span id="study-view" class="site-coord-dash-link" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy"/>'">Study</span>,
-                  Subject Coordinator
-              </div>
-              <br/>
-              <div class="row">
-                  <div class="label">
-                      Subject Coordinator:
-                  </div>
-                  <div class="value">
-                      <select id="selector">
-                          <c:forEach items="${assignableUsers}" var="user">
-                              <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.name}</option>
-                          </c:forEach>
-                      </select>
-                      <input type="button" value="Studies" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByUser"/>?selected=${selectedId}'"/>
-                      <input type="button" value="Subjects" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"/>?selected=${selectedId}'"/>
-                  </div>
-              </div>
-          </form:form>
-          <br/>
-          <label id="subjects-info" style="display:none">No subjects assigned to this subject coordinator.</label>
+            <form:errors path="*"/>
+                <div class="row">
+                     <div class="label">
+                        Subject Coordinator:
+                     </div>
+                     <div class="value">
+                        <select id="selector">
+                            <c:forEach items="${assignableUsers}" var="user">
+                                <option value="${user.id}" <c:if test="${user.id == selectedId}">selected</c:if>>${user.name}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </div>
+            </form:form>
+            <br/>
+            <label id="subjects-info" style="display:none">No subjects assigned to this subject coordinator.</label>
+        </laf:division>
+        <c:if test="${fn:length(displayMap) > 0}">
+            <c:forEach items="${displayMap}" var="site">
+                <h3>${site.key.name}</h3>
+                <laf:division>
+                    <ul class="studies">
+                          <c:forEach items="${site.value}" var="study" varStatus="status">
+                              <li class="autoclear ${commons:parity(status.count)}">
+                                  <form:form action="${action}">
+                                      <input type="hidden" name="study" value="${study.key.id}"/>
+                                      <input type="hidden" name="site" value="${site.key.id}"/>
+                                      <input type="hidden" name="selected" value="${selectedId}"/>
 
-          <c:if test="${fn:length(displayMap) > 0}">
-              <div class="row" id="subjects-table">
-                  <div class="label">
-                      Re-assign Subject:
-                  </div>
-                  <div class="value">
-                      <ul class="sites">
-                          <c:forEach items="${displayMap}" var="site">
-                              <li><label class="site">${site.key.name}</label>
+                                      <div class="row">
+                                          <div class="study">${study.key.name}</div>
+                                          <div class="value">
+                                              <c:if test="${fn:length(subjectCoordinatorStudySites[study.key][site.key]) < 1}">
+                                                  There are no subject coordinators for this study site.
+                                              </c:if>
+                                              <c:if test="${fn:length(subjectCoordinatorStudySites[study.key][site.key]) >= 1}">
+                                                  <select name="subjectCoordinator">
+                                                      <option></option>
+                                                      <c:forEach items="${subjectCoordinatorStudySites[study.key][site.key]}" var="user">
+                                                          <option value="${user.id}">${user.name}</option>
+                                                      </c:forEach>
+                                                  </select>
+                                                  <input type="button" value="Assign to Subject Coordinator" onclick="assignmentButtonClicked(this.form)"/>
+                                                  <tags:activityIndicator id="assign-in-progress-indicator"/>
+                                              </c:if>
+                                          </div>
+                                      </div>
 
-                                  <ul class="studies">
-                                      <c:forEach items="${site.value}" var="study">
-                                      <li class="study">
-                                          <form:form action="${action}">
-                                              <input type="hidden" name="study" value="${study.key.id}"/>
-                                              <input type="hidden" name="site" value="${site.key.id}"/>
-                                              <input type="hidden" name="selected" value="${selectedId}"/>
+                                      <ul>
+                                          <li>
+                                              <input class="selectAll" type="checkbox" id="checkbox_${study.key.id}_${site.key.id}" name="doesntmatter" value="all" onclick="selectAllParticipantsCheckbox('${study.key.id}_${site.key.id}')">
+                                                   &nbsp;All
+                                              </input>
+                                          </li>
+                                      </ul>
 
-                                              <div class="row">
-                                                  <div class="study">${study.key.name}</div>
-                                                  <div class="value">
-                                                      <c:if test="${fn:length(subjectCoordinatorStudySites[study.key][site.key]) < 1}">
-                                                          There are no subject coordinators for this study site.
-                                                      </c:if>
-                                                      <c:if test="${fn:length(subjectCoordinatorStudySites[study.key][site.key]) >= 1}">
-                                                          <%--<input type="button" value="Select All" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')"/>--%>
-                                                          <%--<input type="checkbox" name="doesntmatter" value="all" onclick="selectAllParticipants('${study.key.id}_${site.key.id}')">All</input>--%>
-                                                          <select name="subjectCoordinator">
-                                                              <option></option>
-                                                              <c:forEach items="${subjectCoordinatorStudySites[study.key][site.key]}" var="user">
-                                                                  <option value="${user.id}">${user.name}</option>
-                                                              </c:forEach>
-                                                          </select>
-                                                          <input type="button" value="Assign Subject Coordinator" onclick="assignmentButtonClicked(this.form)"/>
-                                                          <tags:activityIndicator id="assign-in-progress-indicator"/>
-                                                      </c:if>
-                                                  </div>
-                                              </div>
+                                      <ul id="${study.key.id}_${site.key.id}" class="subjects">
+                                          <sitecoord:displaySubjects study="${study.key}" site="${site.key}" subjects="${study.value}"/>
+                                      </ul>
 
-                                              <ul>
-                                                  <li>
-                                                      <input class="selectAll" type="checkbox" id="checkbox_${study.key.id}_${site.key.id}" name="doesntmatter" value="all" onclick="selectAllParticipantsCheckbox('${study.key.id}_${site.key.id}')">
-                                                           &nbsp;All
-                                                      </input>
-                                                  </li>
-                                              </ul>
-
-                                              <ul id="${study.key.id}_${site.key.id}" class="subjects">
-                                                  <sitecoord:displaySubjects study="${study.key}" site="${site.key}" subjects="${study.value}"/>
-                                              </ul>
-
-                                          </form:form>
-                                          </c:forEach>
-                                      </li>
-                                  </ul>
-                              </li>
-                          </c:forEach>
+                                  </form:form>
+                               </li>
+                            </c:forEach>
                       </ul>
-                  </div>
-              </div>
-          </c:if>
-      </laf:division>
+                </laf:division>
+            </c:forEach>
+        </c:if>
   </laf:box>
   </body>
 </html>
