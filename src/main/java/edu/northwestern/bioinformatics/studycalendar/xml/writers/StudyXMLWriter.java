@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -97,6 +98,9 @@ public class StudyXMLWriter {
     }
 
 
+    public StudyXMLWriter() { }
+
+    @Deprecated // use the spring-configured instance
     public StudyXMLWriter(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
     }
@@ -363,4 +367,10 @@ public class StudyXMLWriter {
          return childClass;
      }
 
+    ////// CONFIGURATION
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
+    }
 }

@@ -10,9 +10,12 @@
     http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
     >
 
-    <bean id="activityXMLReader" autowire="byName" lazy-init="true"
+    <bean id="activityXMLReader" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader"/>
 
-    <bean id="studyXMLReader" autowire="byName" lazy-init="true"
+    <bean id="studyXMLReader" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader"/>
+
+    <bean id="studyXMLWriter" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter"/>
 </beans>

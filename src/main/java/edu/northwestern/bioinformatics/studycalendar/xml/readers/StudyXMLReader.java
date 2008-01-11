@@ -13,19 +13,46 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXML
 import static java.lang.Boolean.valueOf;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ASSIGNED_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ID;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
@@ -34,14 +61,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.XMLConstants;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.*;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 @Transactional
 public class StudyXMLReader  {
@@ -62,34 +93,43 @@ public class StudyXMLReader  {
     private SourceDao sourceDao;
     private DeltaService deltaService;
 
-    public Study read(InputStream dataFile) throws Exception {
+    public Study read(InputStream dataFile) {
+        Document doc;
 
-        // create a SchemaFactory that conforms to W3C XML Schema
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        try {
+            // create a SchemaFactory that conforms to W3C XML Schema
+            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-        javax.xml.validation.Schema schema = sf.newSchema(Schema.template.file());
+            javax.xml.validation.Schema schema = sf.newSchema(Schema.template.file());
 
-        // get a DOM factory
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            // get a DOM factory
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-        // configure the factory
-        dbf.setNamespaceAware(true);
+            // configure the factory
+            dbf.setNamespaceAware(true);
 
-        // Ignore whitespace
-        dbf.setIgnoringElementContentWhitespace(true);
+            // Ignore whitespace
+            dbf.setIgnoringElementContentWhitespace(true);
 
-        // set schema on the factory
-        dbf.setSchema(schema);
+            // set schema on the factory
+            dbf.setSchema(schema);
 
-        // create a new parser that validates documents against a schema
-        DocumentBuilder db = dbf.newDocumentBuilder();
+            // create a new parser that validates documents against a schema
+            DocumentBuilder db = dbf.newDocumentBuilder();
 
-        Document doc = db.parse(dataFile);
+            doc = db.parse(dataFile);
+        } catch (SAXException e) {
+            throw new StudyCalendarValidationException("XML parsing failed", e);
+        } catch (ParserConfigurationException e) {
+            throw new StudyCalendarSystemException("XML parser setup failed", e);
+        } catch (IOException e) {
+            throw new StudyCalendarSystemException("Reading XML failed", e);
+        }
 
         return parseStudy(doc);
     }
 
-    protected Study parseStudy(Document doc) throws Exception {
+    protected Study parseStudy(Document doc) {
         Element element = doc.getDocumentElement();
         String gridId = element.getAttribute(ID);
         Study study = studyDao.getByGridId(gridId);
@@ -108,7 +148,7 @@ public class StudyXMLReader  {
         return study;
     }
 
-    protected void addPlannedCalendar(Element parentElement, Study parent) throws Exception {
+    protected void addPlannedCalendar(Element parentElement, Study parent) {
         NodeList nodes = parentElement.getElementsByTagName(PLANNDED_CALENDAR);
 
         Element element = ((Element)nodes.item(0));
@@ -124,7 +164,7 @@ public class StudyXMLReader  {
     }
 
 
-    protected void addAmendments(Element parentElement, Study parent) throws Exception {
+    protected void addAmendments(Element parentElement, Study parent) {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
         NodeList nodes = parentElement.getElementsByTagName(AMENDMENT);
@@ -139,7 +179,12 @@ public class StudyXMLReader  {
                 amendment.setGridId(gridId);
                 amendment.setName(element.getAttribute(NAME));
                 amendment.setMandatory(valueOf(element.getAttribute(MANDATORY)));
-                amendment.setDate(formatter.parse(element.getAttribute(DATE)));
+                String date = element.getAttribute(DATE);
+                try {
+                    amendment.setDate(formatter.parse(date));
+                } catch (ParseException e) {
+                    throw new StudyCalendarValidationException("Could not parse date \"%s\"", date);
+                }
 
                 String prevAmendmentGridId = element.getAttribute(PREVIOUS_AMENDMENT_ID);
                 if (prevAmendmentGridId != null) {
