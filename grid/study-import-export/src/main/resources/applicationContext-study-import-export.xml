@@ -6,7 +6,8 @@
 
     <bean id="studyImportExport" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyImportExport">
         <property name="studyService" ref="studyService"/>
-        <property name="daoFinder" ref="daoFinder"/>
+        <property name="studyXMLReader" ref="studyXMLReader"/>
+        <property name="studyXMLWriter" ref="studyXMLWriter"/>
     </bean>
 
     <!--applicationContext = new ClassPathXmlApplicationContext(new String[]{
@@ -25,5 +26,5 @@
     <import resource="classpath:applicationContext-security.xml"/>
     <import resource="classpath:applicationContext-service.xml"/>
     <import resource="classpath:applicationContext-spring.xml"/>
-
+    <import resource="classpath:applicationContext-representations.xml"/>
 </beans>

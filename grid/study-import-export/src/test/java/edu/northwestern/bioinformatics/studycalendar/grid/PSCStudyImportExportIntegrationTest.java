@@ -37,7 +37,7 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
 
 
     private Study study;
-    
+
     private Amendment amendment;
 
     private AmendmentDao amendmentDao;
@@ -46,6 +46,8 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
 
     private String gridServiceUrl;
     private StudyImportExportClient studyImportExportClient;
+
+    private String studyXmlStringForImport;
 
     protected String[] getConfigLocations() {
 
@@ -69,21 +71,85 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
 
     }
 
-    private void deleteStudy() {
-        Study anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
-
-        if (anotherStudy != null) {
-            studyService.delete(anotherStudy);
-            commitAndStartNewTransaction();
-            anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
-            assertNull(anotherStudy);
-        }
-    }
-
     protected void onTearDownAfterTransaction() throws Exception {
         //now delete the commited study
 
         DataAuditInfo.setLocal(null);
+
+    }
+
+
+    public void testStudyImportForValidStudyXmlLocalAndRemote() throws Exception {
+
+        amendment = createAmendment();
+        amendmentDao.save(amendment);
+
+        study = createStudy("Study A");
+        study.setAmendment(amendment);
+
+        PlannedCalendar plannedCalendar = new PlannedCalendar();
+        plannedCalendar.setStudy(study);
+        study.setPlannedCalendar(plannedCalendar);
+        studyDao.save(study);
+
+        String studyXml = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+        assertNotNull(studyXml);
+
+        validate(studyXml, true);
+
+        studyImportExport.importStudy(studyXml);
+
+        //now try remote also
+
+        studyImportExportClient.importStudy(studyXml);
+
+    }
+
+    public void testStudyImportForNullOrEmptyStudyXmlLocalAndRemote() throws Exception {
+        try {
+            studyImportExport.importStudy("");
+            fail("studyXml string is either empty or null");
+        } catch (RemoteException e) {
+            //expecting this exception
+        }
+
+        //now try remote
+
+        try {
+            studyImportExportClient.importStudy("");
+            fail("studyXml string is either empty or null");
+        } catch (RemoteException e) {
+            //expecting this exception
+        }
+
+    }
+
+
+    public void testStudyImportForInValidStudyXmlStringLocalAndRemote() throws Exception {
+
+        study = createStudy("Study A");
+        studyXmlStringForImport = studyImportExport.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+        validate(studyXmlStringForImport, false);
+
+        //now try importing this study
+
+        try {
+            studyImportExport.importStudy(studyXmlStringForImport);
+            fail("studyXml string is not valid");
+        } catch (RemoteException e) {
+            //expecting this exception
+        }
+
+        //now try remote also
+
+
+        try {
+            studyImportExportClient.importStudy(studyXmlStringForImport);
+            fail("studyXml string is not valid");
+        } catch (RemoteException e) {
+            //expecting this exception
+        }
+
 
     }
 
@@ -196,7 +262,19 @@ public class PSCStudyImportExportIntegrationTest extends AbstractTransactionalSp
     }
 
 
+    private void deleteStudy() {
+        Study anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+
+        if (anotherStudy != null) {
+            studyService.delete(anotherStudy);
+            commitAndStartNewTransaction();
+            anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+            assertNull(anotherStudy);
+        }
+    }
+
     private void validate(String studyXml, Boolean validStdyXmlString) {
+        assertNotNull(studyXml);
         byte[] byteOutput = studyXml.getBytes();
         BindException errors = new BindException(byteOutput, EMPTY);
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
