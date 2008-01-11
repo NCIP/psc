@@ -1,17 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.ContextRetainingFilterAdapter;
+import gov.nih.nci.cabig.ctms.web.filters.ContextRetainingFilterAdapter;
 import org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -26,6 +25,7 @@ import java.io.IOException;
 public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAdapter {
     private String interceptorBeanName;
 
+    @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         super.init(filterConfig);
         setInterceptorBeanName(filterConfig.getInitParameter("interceptorBeanName"));
@@ -35,6 +35,7 @@ public class OpenSessionInViewInterceptorFilter extends ContextRetainingFilterAd
      * @see OpenSessionInViewInterceptor
      * @see org.springframework.web.servlet.HandlerInterceptor#afterCompletion
      */
+    @Override
     public void doFilter(
         ServletRequest request, ServletResponse response, FilterChain chain
     ) throws IOException, ServletException {

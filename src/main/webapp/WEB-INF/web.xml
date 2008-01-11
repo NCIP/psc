@@ -100,7 +100,7 @@
 
     <filter>
         <filter-name>BeansInRequestFilter</filter-name>
-        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.BeansInRequestFilter</filter-class>
+        <filter-class>gov.nih.nci.cabig.ctms.web.filters.BeansInRequestFilter</filter-class>
         <init-param>
             <param-name>beanNames</param-name>
             <param-value>configuration, buildInfo</param-value>
