@@ -1,133 +1,106 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
-import static java.util.Collections.singletonList;
-
-import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNED_ACTIVITY;
-import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.EPOCH;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.ADD;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.NAME;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.NODE_ID;
-
-import static java.lang.Boolean.valueOf;
-
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PLANNDED_CALENDAR;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
+import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.springframework.transaction.annotation.Transactional;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.XMLConstants;
-import java.io.InputStream;
 import java.io.IOException;
-import java.util.*;
-import java.text.SimpleDateFormat;
+import java.io.InputStream;
+import static java.lang.Boolean.valueOf;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import static java.util.Collections.singletonList;
 
 @Transactional
 public class StudyXMLReader  {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     private StudyDao studyDao;
     private DeltaDao deltaDao;
     private AmendmentDao amendmentDao;
-    private PlannedCalendarDao plannedCalendarDao;
     private ChangeDao changeDao;
     private TemplateService templateService;
-
-    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    private EpochDao epochDao;
-    private StudySegmentDao studySegmentDao;
-    private PeriodDao periodDao;
-    private PlannedActivityDao plannedActivityDao;
-    private ActivityDao activityDao;
-    private StudyService studyService;
     private SourceDao sourceDao;
     private DeltaService deltaService;
+    private ActivityDao activityDao;
+    private PlannedCalendarDao plannedCalendarDao;
+
+    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    private Map<String, Class<? extends PlanTreeNode>> elementToPlanTreeNodeMapping = new HashMap<String, Class<? extends PlanTreeNode>>();
+
+    {
+        elementToPlanTreeNodeMapping.put(PLANNDED_CALENDAR, PlannedCalendar.class);
+        elementToPlanTreeNodeMapping.put(EPOCH, Epoch.class);
+        elementToPlanTreeNodeMapping.put(STUDY_SEGMENT, StudySegment.class);
+        elementToPlanTreeNodeMapping.put(PERIOD, Period.class);
+        elementToPlanTreeNodeMapping.put(PLANNED_ACTIVITY, PlannedActivity.class);
+    }
 
     public Study read(InputStream dataFile) {
-        Document doc;
+          Document doc;
 
-        try {
-            // create a SchemaFactory that conforms to W3C XML Schema
-            SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+          try {
+              // create a SchemaFactory that conforms to W3C XML Schema
+              SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
-            javax.xml.validation.Schema schema = sf.newSchema(Schema.template.file());
+              javax.xml.validation.Schema schema = sf.newSchema(Schema.template.file());
 
-            // get a DOM factory
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+              // get a DOM factory
+              DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-            // configure the factory
-            dbf.setNamespaceAware(true);
+              // configure the factory
+              dbf.setNamespaceAware(true);
 
-            // Ignore whitespace
-            dbf.setIgnoringElementContentWhitespace(true);
+              // Ignore whitespace
+              dbf.setIgnoringElementContentWhitespace(true);
 
-            // set schema on the factory
-            dbf.setSchema(schema);
+              // set schema on the factory
+              dbf.setSchema(schema);
 
-            // create a new parser that validates documents against a schema
-            DocumentBuilder db = dbf.newDocumentBuilder();
+              // create a new parser that validates documents against a schema
+              DocumentBuilder db = dbf.newDocumentBuilder();
 
-            doc = db.parse(dataFile);
-        } catch (SAXException e) {
-            throw new StudyCalendarValidationException("XML parsing failed", e);
-        } catch (ParserConfigurationException e) {
-            throw new StudyCalendarSystemException("XML parser setup failed", e);
-        } catch (IOException e) {
-            throw new StudyCalendarSystemException("Reading XML failed", e);
-        }
+              doc = db.parse(dataFile);
+          } catch (SAXException e) {
+              throw new StudyCalendarValidationException("XML parsing failed", e);
+          } catch (ParserConfigurationException e) {
+              throw new StudyCalendarSystemException("XML parser setup failed", e);
+          } catch (IOException e) {
+              throw new StudyCalendarSystemException("Reading XML failed", e);
+          }
 
-        return parseStudy(doc);
-    }
+          return parseStudy(doc);
+      }
+
 
     protected Study parseStudy(Document doc) {
         Element element = doc.getDocumentElement();
@@ -137,14 +110,11 @@ public class StudyXMLReader  {
             study = new Study();
             study.setGridId(gridId);
             study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
-            studyDao.save(study);
         }
 
         addPlannedCalendar(element, study);
         addAmendments(element, study);
 
-        studyService.save(study);
-        
         return study;
     }
 
@@ -159,7 +129,6 @@ public class StudyXMLReader  {
             calendar.setGridId(gridId);
             calendar.setStudy(parent);
             parent.setPlannedCalendar(calendar);
-            plannedCalendarDao.save(calendar);
         }
     }
 
@@ -167,10 +136,8 @@ public class StudyXMLReader  {
     protected void addAmendments(Element parentElement, Study parent) {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
-        NodeList nodes = parentElement.getElementsByTagName(AMENDMENT);
-        for (int i=0; i < nodes.getLength(); i++) {
-
-            Element element = ((Element)nodes.item(i));
+        for (Node node : list(parentElement.getElementsByTagName(AMENDMENT))) {
+            Element element = (Element) node;
 
             String gridId = element.getAttribute(ID);
             Amendment amendment = amendmentDao.getByGridId(gridId);
@@ -179,7 +146,7 @@ public class StudyXMLReader  {
                 amendment.setGridId(gridId);
                 amendment.setName(element.getAttribute(NAME));
                 amendment.setMandatory(valueOf(element.getAttribute(MANDATORY)));
-                String date = element.getAttribute(DATE);
+                 String date = element.getAttribute(DATE);
                 try {
                     amendment.setDate(formatter.parse(date));
                 } catch (ParseException e) {
@@ -195,7 +162,6 @@ public class StudyXMLReader  {
                     }
                 }
                 addDeltas(element, amendment, parent);
-                amendmentDao.save(amendment);
                 deltaService.apply(parent, amendment);
             }
             amendments.add(amendment);
@@ -207,33 +173,104 @@ public class StudyXMLReader  {
 
 
     protected void addDeltas(Element parentElement, Amendment amendment, Study study) {
-        Collection<Node> deltaNodes = new NodeListCollection(parentElement.getChildNodes());
-
-        for (Node deltaNode : deltaNodes) {
+        for (Node deltaNode : list(parentElement.getChildNodes())) {
             Element deltaElement = (Element) deltaNode;
 
             // Get Delta from datastore
             String deltaGridId = deltaElement.getAttribute(ID);
-            Delta<?> delta = deltaDao.getByGridId(deltaGridId);
+            Delta<? extends PlanTreeNode<?>> delta = deltaDao.getByGridId(deltaGridId);
 
             // Create Delta if not in datastore
             if (delta == null) {
-                delta = createDelta(deltaElement);
+                delta = createDelta(deltaElement, study);
 
-                PlanTreeNode<?> planTreeNode = createPlanTreeNode(deltaElement);
-
-                assignDeltaAttributes(delta, deltaGridId, amendment, planTreeNode);
-                
+                delta.setRevision(amendment);
+                delta.setGridId(deltaGridId);
                 amendment.addDelta(delta);
+
                 addChanges(deltaElement, delta, study);
             }
         }
     }
 
-    protected void addChanges(Element parent, Delta<?> delta, Study study) {
-        List<Node> addNodes = new NodeListCollection(parent.getChildNodes());
+    private Delta<? extends PlanTreeNode<?>> createDelta(Element element, Study study) {
+        if (PLANNED_CALENDAR_DELTA.equals(element.getNodeName())) {
+            PlannedCalendarDelta delta = new PlannedCalendarDelta();
 
-        for (Node addNode : addNodes) {
+            String gridId = element.getAttribute(NODE_ID);
+
+            PlannedCalendar calendar = (PlannedCalendar) findPlanTreeNode(PlannedCalendar.class, element.getAttribute(NODE_ID), study);
+
+            if (calendar == null) {
+                throw new StudyCalendarError("Cannot find Node for: %s [%s]", PlannedCalendar.class.getName(), gridId);
+            }
+
+            delta.setNode(calendar);
+
+            return delta;
+        } else if (EPOCH_DELTA.equals(element.getNodeName())) {
+            EpochDelta delta = new EpochDelta();
+
+            String gridId = element.getAttribute(NODE_ID);
+
+            Epoch epoch = (Epoch) findPlanTreeNode(Epoch.class, element.getAttribute(NODE_ID), study);
+
+            if (epoch == null) {
+                throw new StudyCalendarError("Cannot find Node for: %s [%s]", Epoch.class.getName(), gridId);
+            }
+
+            delta.setNode(epoch);
+
+            return delta;
+        } else if (STUDY_SEGMENT_DELTA.equals(element.getNodeName())) {
+            StudySegmentDelta delta = new StudySegmentDelta();
+
+            String gridId = element.getAttribute(NODE_ID);
+
+            StudySegment segment = (StudySegment) findPlanTreeNode(StudySegment.class, element.getAttribute(NODE_ID), study);
+
+            if (segment == null) {
+                throw new StudyCalendarError("Cannot find Node for: %s [%s]", StudySegment.class.getName(), gridId);
+            }
+
+            delta.setNode(segment);
+
+            return delta;
+        } else if (PERIOD_DELTA.equals(element.getNodeName())) {
+            PeriodDelta delta = new PeriodDelta();
+
+            String gridId = element.getAttribute(NODE_ID);
+
+            Period period = (Period) findPlanTreeNode(Period.class, element.getAttribute(NODE_ID), study);
+
+            if (period == null) {
+                throw new StudyCalendarError("Cannot find Node for: %s [%s]", Period.class.getName(), gridId);
+            }
+
+            delta.setNode(period);
+
+            return delta;
+        } else if (PLANNED_ACTIVITY_DELTA.equals(element.getNodeName())) {
+            PlannedActivityDelta delta = new PlannedActivityDelta();
+
+            String gridId = element.getAttribute(NODE_ID);
+
+            PlannedActivity plannedActivity = (PlannedActivity) findPlanTreeNode(PlannedActivity.class, element.getAttribute(NODE_ID), study);
+
+            if (plannedActivity == null) {
+                throw new StudyCalendarError("Cannot find Node for: %s [%s]", PlannedActivity.class.getName(), gridId);
+            }
+
+            delta.setNode(plannedActivity);
+
+            return delta;
+        } else {
+            throw new StudyCalendarError("Cannot find Delta Node for: %s", element.getNodeName());
+        }
+    }
+
+    protected void addChanges(Element parent, Delta<?> delta, Study study) {
+        for (Node addNode : list(parent.getChildNodes())) {
             Element element = (Element) addNode;
 
              // Get Add if Delta Exists
@@ -241,134 +278,119 @@ public class StudyXMLReader  {
             Change change = changeDao.getByGridId(gridId);
 
             if (change == null) {
-                if (ADD.equals(element.getNodeName())) {
-                    change = new Add();
-                } else if(REMOVE.equals(element.getNodeName()) ){
-                    change = new Remove();
-                    String childGridId = element.getAttribute(CHILD_ID);
-                    Element changeElement = getElementById(parent, childGridId);
-                    PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
-                    ((Remove)change).setChild(planTreeNode);
-                    ((Remove)change).setChildId(planTreeNode.getId());
-                } else if (REORDER.equals(element.getNodeName())) {
-                    change = new Reorder();
-                    String childGridId = element.getAttribute(CHILD_ID);
-                    Element changeElement = getElementById(parent, childGridId);
-                    PlanTreeNode<?> planTreeNode = getExistingChild(changeElement, childGridId);
-                    ((Reorder)change).setChild(planTreeNode);
-                    ((Reorder)change).setChildId(planTreeNode.getId());
-                    ((Reorder)change).setOldIndex(new Integer(element.getAttribute(OLD_INDEX)));
-                    ((Reorder)change).setNewIndex(new Integer(element.getAttribute(NEW_INDEX)));
-                } else if (PROPERTY_CHANGE.equals(element.getNodeName())) {
-                    change = new PropertyChange();
-                    change.setGridId(element.getAttribute(CHILD_ID));
-                    ((PropertyChange) change).setPropertyName(element.getAttribute(PROPERTY_NAME));
-                    ((PropertyChange) change).setOldValue(element.getAttribute(OLD_VALUE));
-                    ((PropertyChange) change).setNewValue(element.getAttribute(NEW_VALUE));
-                }else {
-                    throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
-                }
+                change = createChange(element, study);
 
                 change.setGridId(gridId);
-
                 delta.addChange(change);
 
-                addChildNode(element, change, study);
+                addChildToChange(element, change, study);
             }
+        }
+    }
 
+    private Change createChange(Element element, Study study) {
+        if (ADD.equals(element.getNodeName())) {
+            return new Add();
+        } else if(REMOVE.equals(element.getNodeName()) ){
+            Remove remove = new Remove();
+
+            // Find Child Element
+            String childGridId = element.getAttribute(CHILD_ID);
+            Element changeElement = getElementById(element, childGridId);
+            PlanTreeNode<?> planTreeNode = findPlanTreeNode(changeElement, childGridId, study);
+
+            remove.setChild(planTreeNode);
+            remove.setChildId(planTreeNode.getId());
+
+            return remove;
+        } else if (REORDER.equals(element.getNodeName())) {
+            Reorder reorder = new Reorder();
+
+            // Find Child Element
+            String childGridId = element.getAttribute(CHILD_ID);
+            Element changeElement = getElementById(element, childGridId);
+            PlanTreeNode<?> planTreeNode = findPlanTreeNode(changeElement, childGridId, study);
+
+            reorder.setChild(planTreeNode);
+            reorder.setChildId(planTreeNode.getId());
+            reorder.setOldIndex(new Integer(element.getAttribute(OLD_INDEX)));
+            reorder.setNewIndex(new Integer(element.getAttribute(NEW_INDEX)));
+
+            return reorder;
+        } else if (PROPERTY_CHANGE.equals(element.getNodeName())) {
+            PropertyChange propertyChange = new PropertyChange();
+
+            propertyChange.setGridId(element.getAttribute(CHILD_ID));
+            propertyChange.setPropertyName(element.getAttribute(PROPERTY_NAME));
+            propertyChange.setOldValue(element.getAttribute(OLD_VALUE));
+            propertyChange.setNewValue(element.getAttribute(NEW_VALUE));
+
+            return propertyChange;
+        } else {
+            throw new StudyCalendarError("Cannot find Change Node for: %s", element.getNodeName());
         }
     }
 
 
-    protected void addChildNode(Element parent, Change change, Study study) {
-        List<Node> childNodes = new NodeListCollection(parent.getChildNodes());
-
-        for (Node childNode : childNodes) {
+    protected void addChildToChange(Element parent, Change change, Study study) {
+        for (Node childNode : list(parent.getChildNodes())) {
             Element element = (Element) childNode;
-            String childGridId = element.getAttribute(ID);
 
             if (change instanceof ChildrenChange) {
 
-                PlanTreeNode<?> child = getExistingChild(element, childGridId);
+                PlanTreeNode<?> child = findPlanTreeNode(element, element.getAttribute(ID), study);
 
                 if (child == null) {
-                   child = createChild(element, null);
+                    child = createPlanTreeNode(element, null);
 
                     ((ChildrenChange) change).setChild(child);
-                    addPlanTreeNode(element, child, study);
+                    addChildrenToPlanTreeNode(element, child, study);
                 }
             }
         }
     }
 
-    protected void addPlanTreeNode(Element parent, PlanTreeNode<?> parentTreeNode, Study study) {
-        List<Node> childNodes = new NodeListCollection(parent.getChildNodes());
-
-        for (Node childNode : childNodes) {
+    protected void addChildrenToPlanTreeNode(Element parent, PlanTreeNode<?> parentTreeNode, Study study) {
+        for (Node childNode : list(parent.getChildNodes())) {
             Element element = (Element) childNode;
-            String childGridId = element.getAttribute(ID);
 
-            if (ACTIVITY.equals(element.getNodeName())) {
-                break;
-            }
-
-            PlanTreeNode<?> child = getExistingChild(element, childGridId);
+            PlanTreeNode<?> child = findPlanTreeNode(element, element.getAttribute(ID), study);
 
             if (child == null) {
-                child = createChild(element, null);
+                child = createPlanTreeNode(element, null);
 
                 cast(parentTreeNode).addChild(child);
-                addPlanTreeNode(element, child, study);
+
+                if (child instanceof PlanTreeInnerNode) {
+                    addChildrenToPlanTreeNode(element, child, study);
+                }
             }
         }
     }
 
-
-
-    /* Class Helpers */
-
-    private PlanTreeNode<?> getExistingChild(Element childElement, String childGridId) {
-        if (EPOCH.equals(childElement.getNodeName())) {
-            return epochDao.getByGridId(childGridId);
+    private PlanTreeNode<?> createPlanTreeNode(Element childElement, PlanTreeInnerNode parent ) {
+        Class<? extends PlanTreeNode> clazz = getPlanTreeNodeClass(childElement);
+        PlanTreeNode<?> planTreeNode = createInstance(clazz);
+        if (planTreeNode instanceof Epoch) {
+            planTreeNode.setGridId(childElement.getAttribute(ID));
+            ((Epoch)planTreeNode).setName(childElement.getAttribute(NAME));
         } else if (STUDY_SEGMENT.equals(childElement.getNodeName())) {
-            return studySegmentDao.getByGridId(childGridId);
+            planTreeNode.setGridId(childElement.getAttribute(ID));
+            ((StudySegment) planTreeNode).setName(childElement.getAttribute(NAME));
         } else if  (PERIOD.equals(childElement.getNodeName())) {
-            return periodDao.getByGridId(childGridId);
+            planTreeNode.setGridId(childElement.getAttribute(ID));
+            ((Period)planTreeNode).setName(childElement.getAttribute(NAME));
         } else if (PLANNED_ACTIVITY.equals(childElement.getNodeName())) {
-            return plannedActivityDao.getByGridId(childGridId);
-        }  else {
-            throw new StudyCalendarError("Cannot find Child Node for: %s", childElement.getNodeName());
-        }
-    }
+            planTreeNode.setGridId(childElement.getAttribute(ID));
+            ((PlannedActivity)planTreeNode).setDay(new Integer(childElement.getAttribute(DAY)));
+            ((PlannedActivity)planTreeNode).setDetails(childElement.getAttribute(DETAILS));
+            ((PlannedActivity)planTreeNode).setCondition(childElement.getAttribute(CONDITION));
 
-    private PlanTreeNode<?> createChild(Element childElement, PlanTreeInnerNode parent ) {
-        if (EPOCH.equals(childElement.getNodeName())) {
-            Epoch epoch = new Epoch();
-            epoch.setGridId(childElement.getAttribute(ID));
-            epoch.setName(childElement.getAttribute(NAME));
-            return epoch;
-        } else if (STUDY_SEGMENT.equals(childElement.getNodeName())) {
-            StudySegment studySegment = new StudySegment();
-            studySegment.setGridId(childElement.getAttribute(ID));
-            studySegment.setName(childElement.getAttribute(NAME));
-            return studySegment;
-        } else if  (PERIOD.equals(childElement.getNodeName())) {
-            Period period = new Period();
-            period.setGridId(childElement.getAttribute(ID));
-            period.setName(childElement.getAttribute(NAME));
-            return period;
-        } else if (PLANNED_ACTIVITY.equals(childElement.getNodeName())) {
-            PlannedActivity plannedActivity = new PlannedActivity();
-            plannedActivity.setGridId(childElement.getAttribute(ID));
-            plannedActivity.setDay(new Integer(childElement.getAttribute(DAY)));
-            plannedActivity.setDetails(childElement.getAttribute(DETAILS));
-            plannedActivity.setCondition(childElement.getAttribute(CONDITION));
-
-            addActivity(childElement, plannedActivity);
-            return plannedActivity;
+            addActivity(childElement, ((PlannedActivity)planTreeNode));
         } else {
             throw new StudyCalendarError("Cannot find Child Node for: %s", childElement.getNodeName());
         }
+        return planTreeNode;
     }
 
     private void addActivity(Element parentElement, PlannedActivity parent ) {
@@ -387,7 +409,6 @@ public class StudyXMLReader  {
             activity.setCode(code);
 
             addSource(element, activity);
-            activityDao.save(activity);
         }
         parent.setActivity(activity);
     }
@@ -402,105 +423,42 @@ public class StudyXMLReader  {
             source.setName(name);
             source.setGridId(element.getAttribute(ID));
             parent.setSource(source);
-            sourceDao.save(source);
+            source.getActivities().add(parent);
         }
     }
 
+    /* Class Helpers */
 
+    private Class<? extends PlanTreeNode> getPlanTreeNodeClass(Element childElement) {
+        Class<? extends PlanTreeNode> clazz = elementToPlanTreeNodeMapping.get(childElement.getNodeName());
+        if (clazz == null) {
+            throw new StudyCalendarError("Cannot find Child Node for: %s", childElement.getNodeName());
+        }
+        return clazz;
+    }
 
+    private PlanTreeNode<?> findPlanTreeNode(Class<? extends PlanTreeNode> aClass, String gridId, Study study) {
+        PlanTreeNode<?> param = createInstance(aClass);
+        param.setGridId(gridId);
 
-      private Delta<?> createDelta(Element delta) {
-        String nodeGridId = delta.getAttribute(NODE_ID);
-        Element node = getElementById(delta, nodeGridId);
+        return templateService.findEquivalentChild(study, param);
+    }
 
-        if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
-            return new PlannedCalendarDelta();
-        } else if (EPOCH.equals(node.getNodeName())) {
-            return new EpochDelta();
-        } else if (STUDY_SEGMENT.equals(node.getNodeName())) {
-            return new StudySegmentDelta();
-        } else if (PERIOD.equals(node.getNodeName())) {
-            return new PeriodDelta();
-        } else if (PLANNED_ACTIVITY.equals(node.getNodeName())) {
-            return new PlannedActivityDelta();
-        } else {
-            throw new StudyCalendarError("Cannot find PlanTreeNode Type for: %s", node.getNodeName());
+    private <T extends PlanTreeNode> T createInstance(Class<T> clazz) {
+        try {
+            return clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new StudyCalendarError("Could not import from template XML", e);
+        } catch (IllegalAccessException e) {
+            throw new StudyCalendarError("Could not import from template XML", e);
         }
     }
 
-   /* private PlanTreeNode<?> createPlanTreeNodeParam(Element delta, Study study) {
-        String nodeGridId = delta.getAttribute(NODE_ID);
-        Element node = delta.getOwnerDocument().getElementById(nodeGridId);
-
-        PlanTreeNode<?> param;
-        if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
-            param = new PlannedCalendar();
-        } else if (EPOCH.equals(node.getNodeName())) {
-            param = new Epoch();
-        } else if (STUDY_SEGMENT.equals(node.getNodeName())) {
-            param = new StudySegment();
-        } else if (PERIOD.equals(node.getNodeName())) {
-            param = new Period();
-        } else if (PLANNED_ACTIVITY.equals(node.getNodeName())) {
-            param = new PlannedActivity();
-        } else {
-            throw new StudyCalendarError("Cannot find PlanTreeNode Type for: %s", node.getNodeName());
-        }
-
-        param.setGridId(nodeGridId);
-        PlanTreeNode<?> planTreeNode = templateService.findEquivalentChild(study, param);
-
-        if (planTreeNode == null) {
-            throw new StudyCalendarError("Cannot find PlanTreeNode for: %s [%s]", node.getNodeName(), nodeGridId);
-        }
-
-        return planTreeNode;
-    }*/
-
-     private PlanTreeNode<?> createPlanTreeNode(Element delta) {
-        String nodeGridId = delta.getAttribute(NODE_ID);
-        Element node = getElementById(delta, nodeGridId);
-
-        PlanTreeNode<?> planTreeNode;
-        if (PLANNDED_CALENDAR.equals(node.getNodeName())) {
-            planTreeNode = plannedCalendarDao.getByGridId(nodeGridId);
-        } else if (EPOCH.equals(node.getNodeName())) {
-           planTreeNode = epochDao.getByGridId(nodeGridId);
-        } else if (STUDY_SEGMENT.equals(node.getNodeName())) {
-            planTreeNode = studySegmentDao.getByGridId(nodeGridId);
-        } else if (PERIOD.equals(node.getNodeName())) {
-            planTreeNode = periodDao.getByGridId(nodeGridId);
-        } else if (PLANNED_ACTIVITY.equals(node.getNodeName())) {
-            planTreeNode = plannedActivityDao.getByGridId(nodeGridId);
-        } else {
-            throw new StudyCalendarError("Cannot find PlanTreeNode Type for: %s", node.getNodeName());
-        }
-
-        if (planTreeNode == null) {
-            throw new StudyCalendarError("Cannot find PlanTreeNode for: %s [%s]", node.getNodeName(), nodeGridId);
-        }
-
-        return planTreeNode;
+    private PlanTreeNode<?> findPlanTreeNode(Element childElement, String gridId, Study study) {
+        Class<? extends PlanTreeNode> clazz = getPlanTreeNodeClass(childElement);
+        return findPlanTreeNode(clazz, gridId, study);
     }
 
-    private void assignDeltaAttributes(Delta<?> delta, String gridId, Amendment amendment, PlanTreeNode<?> node) {
-        if (delta instanceof PlannedCalendarDelta) {
-            ((PlannedCalendarDelta) delta).setNode((PlannedCalendar) node);
-        } else if (delta instanceof EpochDelta) {
-            ((EpochDelta) delta).setNode((Epoch) node);
-        } else if (delta instanceof StudySegmentDelta) {
-            ((StudySegmentDelta) delta).setNode((StudySegment) node);
-        } else if (delta instanceof PeriodDelta) {
-            ((PeriodDelta) delta).setNode((Period) node);
-        } else if (delta instanceof PlannedActivityDelta) {
-            ((PlannedActivityDelta) delta).setNode((PlannedActivity) node);
-        } else {
-            throw new StudyCalendarError("Cannot find Delta Class for: %s", delta.getClass());
-        }
-
-        delta.setRevision(amendment);
-        delta.setGridId(gridId);
-    }
 
     protected Element getElementById(Node node, String string) {
         List<Node> nodes = getAllNodes(node.getOwnerDocument().getFirstChild());
@@ -520,7 +478,7 @@ public class StudyXMLReader  {
         for (Node child : children) {
             master.addAll(getAllNodes(child));
         }
-        
+
         return master ;
     }
 
@@ -534,6 +492,9 @@ public class StudyXMLReader  {
         return null;
     }
 
+    private List<Node> list(NodeList nodelist) {
+        return new NodeListCollection(nodelist);
+    }
 
     private class NodeListCollection extends AbstractList<Node> {
 
@@ -562,10 +523,6 @@ public class StudyXMLReader  {
         this.amendmentDao = amendmentDao;
     }
 
-    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
-        this.plannedCalendarDao = plannedCalendarDao;
-    }
-
     public void setDeltaDao(DeltaDao deltaDao) {
         this.deltaDao = deltaDao;
     }
@@ -577,30 +534,6 @@ public class StudyXMLReader  {
         this.templateService = templateService;
     }
 
-    public void setEpochDao(EpochDao epochDao) {
-        this.epochDao = epochDao;
-    }
-
-    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
-        this.studySegmentDao = studySegmentDao;
-    }
-
-    public void setPeriodDao(PeriodDao periodDao) {
-        this.periodDao = periodDao;
-    }
-
-    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
-        this.plannedActivityDao = plannedActivityDao;
-    }
-
-    public void setActivityDao(ActivityDao activityDao) {
-        this.activityDao = activityDao;
-    }
-
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
-    }
-
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
     }
@@ -608,4 +541,13 @@ public class StudyXMLReader  {
     public void setDeltaService(DeltaService deltaService) {
         this.deltaService = deltaService;
     }
+
+    public void setActivityDao(ActivityDao activityDao) {
+        this.activityDao = activityDao;
+    }
+
+    public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {
+        this.plannedCalendarDao = plannedCalendarDao;
+    }
+
 }
