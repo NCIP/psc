@@ -16,7 +16,7 @@ import org.springframework.validation.BindException;
 /**
  * @author Rhett Sutphin
  */
-@AccessControl(roles = {Role.STUDY_ADMIN, Role.SYSTEM_ADMINISTRATOR})
+@AccessControl(roles = Role.SYSTEM_ADMINISTRATOR)
 public class ConfigurationController extends PscSimpleFormController {
     private Configuration configuration;
 
@@ -42,7 +42,7 @@ public class ConfigurationController extends PscSimpleFormController {
 
     @Override
     protected ModelAndView onSubmit(Object command, BindException errors) throws Exception {
-        return new ModelAndView("redirectToStudyList");
+        return new ModelAndView("redirectToAdministration");
     }
 
     public void setConfiguration(Configuration configuration) {
