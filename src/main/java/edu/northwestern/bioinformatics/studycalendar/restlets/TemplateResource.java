@@ -78,7 +78,7 @@ public class TemplateResource extends Resource {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             Study read;
             try {
-                read = studyXMLReader.read(entity.getStream());
+                read = studyXMLReader.readAndSave(entity.getStream());
             } catch (IOException e) {
                 log.debug("PUT failed with IOException", e);
                 throw new ResourceException(e);

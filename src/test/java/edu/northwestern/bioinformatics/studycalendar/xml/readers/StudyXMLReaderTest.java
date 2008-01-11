@@ -251,6 +251,9 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         expect(activityDao.getByCodeAndSourceName("AA", "Source A")).andReturn(null);
         expect(sourceDao.getByName("Source A")).andReturn(null);
 
+        activityDao.save(gridIdEq(setGridId("grid9", new Activity())));
+        sourceDao.save(gridIdEq(setGridId("grid10", new Source())));
+
         deltaService.apply(gridIdEq(study), gridIdEq(setGridId("grid2", new Amendment())));
         replayMocks();
 

@@ -15,6 +15,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInner
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
@@ -53,6 +54,7 @@ public class StudyXMLReader  {
     private DeltaService deltaService;
     private ActivityDao activityDao;
     private PlannedCalendarDao plannedCalendarDao;
+    private StudyService studyService;
 
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private Map<String, Class<? extends PlanTreeNode>> elementToPlanTreeNodeMapping = new HashMap<String, Class<? extends PlanTreeNode>>();
@@ -65,7 +67,13 @@ public class StudyXMLReader  {
         elementToPlanTreeNodeMapping.put(PLANNED_ACTIVITY, PlannedActivity.class);
     }
 
-    public Study read(InputStream dataFile) {
+    public Study readAndSave(InputStream inputStream) {
+        Study study = read(inputStream);
+        studyService.save(study);
+        return study;
+    }
+
+    protected Study read(InputStream dataFile) {
           Document doc;
 
           try {
@@ -409,6 +417,7 @@ public class StudyXMLReader  {
             activity.setCode(code);
 
             addSource(element, activity);
+            activityDao.save(activity);
         }
         parent.setActivity(activity);
     }
@@ -424,6 +433,7 @@ public class StudyXMLReader  {
             source.setGridId(element.getAttribute(ID));
             parent.setSource(source);
             source.getActivities().add(parent);
+            sourceDao.save(source);
         }
     }
 
@@ -496,6 +506,8 @@ public class StudyXMLReader  {
         return new NodeListCollection(nodelist);
     }
 
+
+
     private class NodeListCollection extends AbstractList<Node> {
 
         private NodeList nodeList;
@@ -550,4 +562,7 @@ public class StudyXMLReader  {
         this.plannedCalendarDao = plannedCalendarDao;
     }
 
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
 }

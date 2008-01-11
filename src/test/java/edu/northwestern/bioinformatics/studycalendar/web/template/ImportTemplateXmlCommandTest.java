@@ -32,8 +32,7 @@ public class ImportTemplateXmlCommandTest extends StudyCalendarTestCase {
 
     public void testApply() throws Exception {
         expect(file.getInputStream()).andReturn(null);
-        expect(reader.read(null)).andReturn(null);
-        studyService.save(null);
+        expect(reader.readAndSave(null)).andReturn(null);
         replayMocks();
 
         command.apply();

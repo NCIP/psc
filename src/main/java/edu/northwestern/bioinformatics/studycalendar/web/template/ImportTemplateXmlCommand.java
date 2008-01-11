@@ -25,8 +25,8 @@ public class ImportTemplateXmlCommand implements Validatable {
     private DeltaService deltaService;
 
     public void apply() throws Exception {
-        Study study = studyXMLReader.read(studyXml.getInputStream());
-        studyService.save(study);
+        studyXMLReader.readAndSave(studyXml.getInputStream());
+        
     }
 
     public void validate(Errors errors) {

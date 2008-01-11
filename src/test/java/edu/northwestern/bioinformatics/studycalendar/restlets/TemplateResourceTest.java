@@ -100,7 +100,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
             }
         });
 
-        expect(xmlReader.read(inputStream)).andReturn(study);
+        expect(xmlReader.readAndSave(inputStream)).andReturn(study);
     }
 
     private void expectStudyXmlized() {
