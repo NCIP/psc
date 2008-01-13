@@ -15,13 +15,7 @@ public class TemplateResource extends AbstractStorableDomainObjectResource<Study
 
     protected Study loadRequestedObject(Request request) {
         String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
-        Study requestedStudy = studyDao.getStudyByAssignedIdentifier(studyIdent);
-        if (requestedStudy == null) {
-            log.debug("Requested study {} not present", studyIdent);
-        } else {
-            log.debug("Requested study {} is {}", studyIdent, requestedStudy);
-        }
-        return requestedStudy;
+        return studyDao.getStudyByAssignedIdentifier(studyIdent);
     }
 
     ////// CONFIGURATION

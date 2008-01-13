@@ -1,18 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlFactory;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Method;
+import org.restlet.data.MediaType;
 import org.restlet.resource.Resource;
-import org.apache.commons.lang.StringUtils;
+import org.restlet.resource.ReaderRepresentation;
+import org.easymock.EasyMock;
 
-import java.util.List;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.io.Reader;
+import java.io.IOException;
+
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -22,11 +27,15 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     protected Request request;
     protected Response response;
 
+    protected StudyCalendarXmlFactory xmlFactory;
+    private static final String MOCK_XML = "<foo></foo>";
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         request = new Request();
         response = new Response(request);
+        xmlFactory = registerMockFor(StudyCalendarXmlFactory.class);
     }
 
     protected abstract R createResource();
@@ -97,5 +106,22 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         Boolean result = (Boolean) checker.invoke(getResource());
         assertNotNull("Test execution failure", result);
         return result;
+    }
+
+    protected void expectReadXmlFromRequestAs(DomainObject expectedRead) throws Exception {
+        final Reader reader = registerMockFor(Reader.class);
+        request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
+
+        EasyMock.expect(xmlFactory.readDocument(reader)).andReturn(expectedRead);
+    }
+
+    protected void expectObjectXmlized(DomainObject o) {
+        EasyMock.expect(xmlFactory.createDocumentString(o)).andReturn(MOCK_XML);
+    }
+
+    protected void assertResponseIsCreatedXml() throws IOException {
+        assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", MOCK_XML, actualEntityBody);
     }
 }

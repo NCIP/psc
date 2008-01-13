@@ -36,6 +36,11 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
         requestedObject = loadRequestedObject(request);
         setAvailable(requestedObject != null);
+        if (isAvailable()) {
+            log.debug("Request {} does not map to an existing domain object", request.getResourceRef());
+        } else {
+            log.debug("Request {} maps to {}", request.getResourceRef(), requestedObject);
+        }
     }
 
     public Representation represent(Variant variant) throws ResourceException {
@@ -48,7 +53,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     protected Representation createXmlRepresentation(D object) {
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(requestedObject), MediaType.TEXT_XML);
+            studyCalendarXmlFactory.createDocumentString(object), MediaType.TEXT_XML);
     }
 
     ////// CONFIGURATION
