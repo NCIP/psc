@@ -10,7 +10,14 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
@@ -20,21 +27,24 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.authorization.domainobjects.User;
 import gov.nih.nci.security.util.ObjectSetUtil;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
-import org.springframework.web.servlet.ModelAndView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Padmaja Vedula
@@ -362,6 +372,7 @@ public class TemplateService {
         return (idMatch || gridIdMatch);
     }
 
+    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
     public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -393,7 +404,7 @@ public class TemplateService {
                 }
             }
             for (Site site : sites) {
-                if (!isStudyAssignedToSite(releasedTemplateStudy) ||
+                if (!isStudyAssignedToAnySite(releasedTemplateStudy) ||
                     !isStudyApprovedBySite(site, releasedTemplateStudy) ||
                     !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
                     if (!pendingTemplates.contains(releasedTemplate)) {
@@ -406,7 +417,7 @@ public class TemplateService {
         return pendingTemplates;
     }
 
-
+    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
     public List<StudyListController.ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -434,7 +445,7 @@ public class TemplateService {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
             for (Site site: sites) {
-                if (isStudyAssignedToSite(releasedTemplateStudy) &&
+                if (isStudyAssignedToAnySite(releasedTemplateStudy) &&
                     isStudyApprovedBySite(site, releasedTemplateStudy) &&
                     isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)){
                     if (!releasedAndAssignedTemplates.contains(releasedTemplate)) {
@@ -448,8 +459,7 @@ public class TemplateService {
         return releasedAndAssignedTemplates;
     }
 
-
-
+    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
     public List<StudyListController.ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -475,6 +485,7 @@ public class TemplateService {
         return releasedTemplates;
     }
 
+    // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
     public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
@@ -499,20 +510,12 @@ public class TemplateService {
         return new ArrayList<Study>(union);
     }
 
-    private boolean isStudyAssignedToSite(Study study) {
-        if(study.getStudySites() == null || study.getStudySites().size() == 0 ){
-            return false;
-        }
-        return true;
+    private boolean isStudyAssignedToAnySite(Study study) {
+        return !study.getStudySites().isEmpty();
     }
 
     private boolean isStudyApprovedBySite(Site site, Study study) {
-        StudySite studySite = site.getStudySite(study);
-        if (studySite.getUnapprovedAmendments() != null && studySite.getUnapprovedAmendments().size() != 0) {
-            return false;
-        }
-        return true;
-
+        return site.getStudySite(study).getUnapprovedAmendments().isEmpty();
     }
 
 
