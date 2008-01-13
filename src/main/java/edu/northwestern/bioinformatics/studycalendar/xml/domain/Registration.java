@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.xml.entities;
+package edu.northwestern.bioinformatics.studycalendar.xml.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
