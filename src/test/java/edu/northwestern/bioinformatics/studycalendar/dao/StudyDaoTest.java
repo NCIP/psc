@@ -35,6 +35,11 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertIsTestStudy100(actual);
     }
 
+    public void testGetByAssignedIdentifier() throws Exception {
+        Study actual = getDao().getByAssignedIdentifier("NCI-IS-WATCHING");
+        assertIsTestStudy100(actual);
+    }
+
     public void testLoadAmendments() throws Exception {
         Study study = getDao().getById(-100);
         assertNotNull("Missing current amendment", study.getAmendment());

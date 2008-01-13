@@ -34,7 +34,13 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
                 studyId);
     }
 
+    @Deprecated // use getByAssignedIdentifier
     public Study getStudyByAssignedIdentifier(final String assignedIdentifier) {
+        return getByAssignedIdentifier(assignedIdentifier);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public Study getByAssignedIdentifier(String assignedIdentifier) {
         List<Study> results = getHibernateTemplate().find("from Study where assignedIdentifier= ?", assignedIdentifier);
         return CollectionUtils.firstElement(results);
     }
