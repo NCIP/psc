@@ -18,27 +18,27 @@ public interface StudyCalendarXmlFactory {
      * Not all {@link DomainObject}s are supported; if the one passed in is not, this method
      * will throw {@link UnsupportedOperationException}.
      */
-    Document createDocument(DomainObject root);
+    Document createDocument(Object root);
 
     /**
      * Create a document for the given object using the specified serializer.  Directly
      * specifying the serializer should only rarely be required.
      */
-    <R extends DomainObject> Document createDocument(R root, StudyCalendarXmlSerializer<R> serializer);
+    <R> Document createDocument(R root, StudyCalendarXmlSerializer<R> serializer);
 
     /**
      * Create a document for the given object using its default serializer and return it as string
      * of XML.
      */
-    String createDocumentString(DomainObject root);
+    String createDocumentString(Object root);
 
     /**
-     * Parse the given document and store the object(s) it represents appropriately.
+     * Parse the given document and return the object(s) it represents appropriately.
      */
-    DomainObject readDocument(Document document);
+    Object readDocument(Document document);
 
     /**
-     * Parse a document out of the given reader and store the object(s) it represents appropriately.
+     * Parse a document out of the given reader and return the object(s) it represents appropriately.
      */
-    DomainObject readDocument(Reader reader);
+    Object readDocument(Reader reader);
 }
