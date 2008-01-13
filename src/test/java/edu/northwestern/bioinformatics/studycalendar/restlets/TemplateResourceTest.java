@@ -1,18 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
-import static org.easymock.classextension.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlFactory;
+import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.MediaType;
-import org.restlet.resource.StreamRepresentation;
+import org.restlet.resource.ReaderRepresentation;
 
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Reader;
 
 /**
  * @author Rhett Sutphin
@@ -22,15 +20,13 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     private static final String MOCK_XML = "<study></study>";
 
     private StudyDao studyDao;
-    private StudyXMLReader xmlReader;
-    private StudyXMLWriter xmlWriter;
+    private StudyCalendarXmlFactory xmlFactory;
     private Study study;
 
     public void setUp() throws Exception {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
-        xmlReader = registerMockFor(StudyXMLReader.class);
-        xmlWriter = registerMockFor(StudyXMLWriter.class);
+        xmlFactory = registerMockFor(StudyCalendarXmlFactory.class);
 
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
@@ -40,8 +36,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     protected TemplateResource createResource() {
         TemplateResource res = new TemplateResource();
         res.setStudyDao(studyDao);
-        res.setStudyXMLReader(xmlReader);
-        res.setStudyXMLWriter(xmlWriter);
+        res.setStudyCalendarXmlFactory(xmlFactory);
         return res;
     }
     
@@ -51,7 +46,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testGetReturnsXml() throws Exception {
         expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expectStudyXmlized();
+        expectStudyXmlized(study);
 
         doGet();
 
@@ -69,7 +64,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutExistingXml() throws Exception {
         expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expectStudyXmlized();
+        expectStudyXmlized(study);
         expectReadXmlFromRequest();
 
         doPut();
@@ -79,8 +74,9 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testPutNewXml() throws Exception {
-        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
-        expectStudyXmlized();
+        Study newStudy = new Study();
+        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(newStudy);
+        expectStudyXmlized(newStudy);
         expectReadXmlFromRequest();
 
         doPut();
@@ -90,22 +86,14 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     private void expectReadXmlFromRequest() throws Exception {
-        final InputStream inputStream = registerMockFor(InputStream.class);
-        request.setEntity(new StreamRepresentation(MediaType.TEXT_XML) {
-            public InputStream getStream() throws IOException {
-                return inputStream;
-            }
+        final Reader reader = registerMockFor(Reader.class);
+        request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
 
-            public void write(OutputStream outputStream) throws IOException {
-                throw new UnsupportedOperationException("write not implemented");
-            }
-        });
-
-        expect(xmlReader.readAndSave(inputStream)).andReturn(study);
+        expect(xmlFactory.readDocument(reader)).andReturn(study);
     }
 
-    private void expectStudyXmlized() {
-        expect(xmlWriter.createStudyXML(study)).andReturn(MOCK_XML);
+    private void expectStudyXmlized(Study s) {
+        expect(xmlFactory.createDocumentString(s)).andReturn(MOCK_XML);
     }
 
     private void assertResponseIsStudyXml() throws IOException {
@@ -113,5 +101,4 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         String actualEntityBody = response.getEntity().getText();
         assertEquals("Wrong text", MOCK_XML, actualEntityBody);
     }
-
 }
