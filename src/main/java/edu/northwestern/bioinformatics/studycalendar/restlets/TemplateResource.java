@@ -19,6 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 
 import java.io.IOException;
 
@@ -29,8 +30,6 @@ import java.io.IOException;
  */
 public class TemplateResource extends Resource {
     private final Logger log = LoggerFactory.getLogger(getClass());
-
-    protected static final String STUDY_TEMPLATE_PARAMETER = "study_identifier";
 
     private StudyDao studyDao;
     private StudyXMLReader studyXMLReader;
@@ -44,7 +43,7 @@ public class TemplateResource extends Resource {
         setReadable(true);
         getVariants().add(new Variant(MediaType.TEXT_XML));
 
-        String studyIdent = Reference.decode((String) request.getAttributes().get(UriTemplateParameters.STUDY_IDENTIFIER.attributeName()));
+        String studyIdent = STUDY_IDENTIFIER.extractFrom(request);
         requestedStudy = studyDao.getStudyByAssignedIdentifier(studyIdent);
         if (requestedStudy == null) {
             log.debug("Requested study {} not present", studyIdent);

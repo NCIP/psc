@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.resource.StreamRepresentation;
@@ -31,8 +32,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         xmlReader = registerMockFor(StudyXMLReader.class);
         xmlWriter = registerMockFor(StudyXMLWriter.class);
 
-        request.getAttributes().put(TemplateResource.STUDY_TEMPLATE_PARAMETER, TemplateResourceTest.STUDY_IDENT);
-        study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(TemplateResourceTest.STUDY_IDENT, "Treatment")));
+        request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
+        study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
         Fixtures.assignIds(study);
     }
 
