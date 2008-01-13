@@ -77,7 +77,7 @@ SECURITY = [
   "gov.nih.nci.security:clm:jar:3.2.1-ctms00",
   "gov.nih.nci.security:csmapi:jar:3.2.1-ctms00",
   "org.acegisecurity:acegi-security:jar:1.0.3",
-  "cas:casclient:2.0.11"
+  "cas:casclient:jar:2.0.11"
 ]
 
 CAGRID = [
