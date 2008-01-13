@@ -40,12 +40,10 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
     private List<StudySubjectAssignment> studySubjectAssignments;
     private List<UserRole> userRoles;
     private List<AmendmentApproval> amendmentApprovals;
-    private List<Amendment> unapprovedAmendments;
 
     public StudySite() {
         studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
         amendmentApprovals = new ArrayList<AmendmentApproval>();
-        unapprovedAmendments = new ArrayList<Amendment>();
     }
 
     ////// LOGIC
@@ -126,18 +124,15 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
 
     @Transient
     public List<Amendment> getUnapprovedAmendments() {
-//        List<Amendment> unapproved = new LinkedList<Amendment>();
+        List<Amendment> unapproved = new LinkedList<Amendment>();
         Amendment candidate = getStudy().getAmendment();
         while (candidate != null) {
             if (getAmendmentApproval(candidate) == null) {
-//                unapproved.add(0, candidate);
-                unapprovedAmendments.add(0, candidate);
+                unapproved.add(0, candidate);
             }
             candidate = candidate.getPreviousAmendment();
         }
-
-//        return unapproved;
-        return unapprovedAmendments;
+        return unapproved;
     }
 
     @Transient
