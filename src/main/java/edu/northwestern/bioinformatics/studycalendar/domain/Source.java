@@ -19,9 +19,17 @@ import java.util.List;
         @Parameter(name="sequence", value="seq_sources_id")
     }
 )
-public class Source extends AbstractMutableDomainObject implements Named {
+public class Source extends AbstractMutableDomainObject implements Named, NaturallyKeyed {
     private String name;
     private List<Activity> activities = new ArrayList<Activity>();
+
+    ////// LOGIC
+
+    public String getNaturalKey() {
+        return getName();
+    }
+
+    ////// BEAN PROPERTIES
 
     public String getName() {
         return name;

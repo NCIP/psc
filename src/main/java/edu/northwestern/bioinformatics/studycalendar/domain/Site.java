@@ -24,7 +24,7 @@ import java.io.Serializable;
 @GenericGenerator(name = "id-generator", strategy = "native",
     parameters = { @Parameter(name = "sequence", value = "seq_sites_id") }
 )
-public class Site extends AbstractMutableDomainObject implements Named, Serializable {
+public class Site extends AbstractMutableDomainObject implements Named, Serializable, NaturallyKeyed {
     private String name;
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
@@ -54,6 +54,10 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
             }
         }
         return null;
+    }
+
+    public String getNaturalKey() {
+        return getName();
     }
 
     ////// BEAN PROPERTIES

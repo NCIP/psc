@@ -16,8 +16,12 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
+import com.sun.mail.imap.protocol.INTERNALDATE;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
@@ -41,7 +45,7 @@ import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
         @Parameter(name="sequence", value="seq_amendments_id")
     }
 )
-public class Amendment extends AbstractMutableDomainObject implements Revision {
+public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
 
     private Amendment previousAmendment;
@@ -78,6 +82,20 @@ public class Amendment extends AbstractMutableDomainObject implements Revision {
             }
             return n.toString();
         }
+    }
+
+    @Transient
+    public String getNaturalKey() {
+        StringBuilder sb = new StringBuilder()
+            .append(createNaturalKeyDateFormat().format(getDate()));
+        if (getName() != null) {
+            sb.append('~').append(getName());
+        }
+        return sb.toString();
+    }
+
+    public static DateFormat createNaturalKeyDateFormat() {
+        return new SimpleDateFormat("yyyy-MM-dd");
     }
 
     @Transient

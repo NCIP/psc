@@ -29,7 +29,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name="sequence", value="seq_activities_id")
     }
 )
-public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named {
+public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named, NaturallyKeyed {
     private String name;
     private String description;
     private ActivityType type;
@@ -48,6 +48,11 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
     private String toLower(String name) {
         return name == null ? null : name.toLowerCase();
+    }
+
+    @Transient
+    public String getNaturalKey() {
+        return getCode();
     }
 
     ///// BEAN PROPERTIES

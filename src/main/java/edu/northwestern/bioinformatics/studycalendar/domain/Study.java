@@ -23,7 +23,7 @@ import java.util.*;
     }
 )
 @Where(clause = "load_status > 0")
-public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable {
+public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable, NaturallyKeyed {
     private String assignedIdentifier;
     private String longTitle;
     private PlannedCalendar plannedCalendar;
@@ -52,6 +52,11 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
      */
     public void setName(String name) {
         setAssignedIdentifier(name);
+    }
+
+    @Transient
+    public String getNaturalKey() {
+        return getAssignedIdentifier();
     }
 
     @Transient

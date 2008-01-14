@@ -85,4 +85,16 @@ public class AmendmentTest extends StudyCalendarTestCase {
     public void testDefaultsToMandatory() throws Exception {
         assertTrue(new Amendment().isMandatory());
     }
+
+    public void testNaturalKeyWithName() throws Exception {
+        a0.setDate(DateTools.createDate(2005, Calendar.MAY, 4));
+        a0.setName("4");
+        assertEquals("2005-05-04~4", a0.getNaturalKey());
+    }
+
+    public void testNaturalKeyWithoutName() throws Exception {
+        a0.setDate(DateTools.createDate(2009, Calendar.NOVEMBER, 6));
+        a0.setName(null);
+        assertEquals("2009-11-06", a0.getNaturalKey());
+    }
 }
