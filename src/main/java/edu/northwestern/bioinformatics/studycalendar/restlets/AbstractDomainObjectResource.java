@@ -57,7 +57,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     protected Representation createXmlRepresentation(D object) {
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(object), MediaType.TEXT_XML);
+            studyCalendarXmlFactory.createDocumentString(object, null), MediaType.TEXT_XML);
     }
 
     ////// CONFIGURATION

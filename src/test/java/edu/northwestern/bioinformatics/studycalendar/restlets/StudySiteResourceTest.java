@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Status;
@@ -115,7 +116,7 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
         expectRequestHasIgnoredEntity();
         expectResolvedStudyAndSite(study, site);
         studyService.save(study);
-        expect(xmlFactory.createDocumentString(notNull())).andReturn(MOCK_XML);
+        expect(xmlFactory.createDocumentString(notNull(), (StudyCalendarXmlSerializer<Object>) isNull())).andReturn(MOCK_XML);
 
         doPut();
 

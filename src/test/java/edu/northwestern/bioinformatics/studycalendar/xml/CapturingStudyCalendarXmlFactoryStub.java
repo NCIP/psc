@@ -27,27 +27,22 @@ public class CapturingStudyCalendarXmlFactoryStub implements StudyCalendarXmlFac
 
     ////// STUBS
 
-    public Document createDocument(Object root) {
-        lastObjectDocumented = root;
-        return null;
-    }
-
     public <R> Document createDocument(R root, StudyCalendarXmlSerializer<R> serializer) {
         lastObjectDocumented = root;
         lastSpecifiedSerializer = serializer;
         return null;
     }
 
-    public String createDocumentString(Object root) {
+    public <R> String createDocumentString(R root, StudyCalendarXmlSerializer<R> serializer) {
         lastObjectStringified = root;
         return XML_STRING;
     }
 
-    public Object readDocument(Document document) {
+    public <R> R readDocument(Document document, StudyCalendarXmlSerializer<R> serializer) {
         throw new UnsupportedOperationException("readDocument not implemented");
     }
 
-    public Object readDocument(Reader reader) {
+    public <R> R readDocument(Reader reader, StudyCalendarXmlSerializer<R> serializer) {
         throw new UnsupportedOperationException("readDocument not implemented");
     }
 }

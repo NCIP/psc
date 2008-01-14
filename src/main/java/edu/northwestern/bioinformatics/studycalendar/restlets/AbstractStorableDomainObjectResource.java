@@ -25,7 +25,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             D read;
             try {
-                read = (D) studyCalendarXmlFactory.readDocument(entity.getReader());
+                read = (D) studyCalendarXmlFactory.readDocument(entity.getReader(), null);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);

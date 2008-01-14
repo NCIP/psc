@@ -14,13 +14,6 @@ import java.io.Reader;
  */
 public interface StudyCalendarXmlFactory {
     /**
-     * Create a document for the given object using the default serializer for its type.
-     * Not all {@link DomainObject}s are supported; if the one passed in is not, this method
-     * will throw {@link UnsupportedOperationException}.
-     */
-    Document createDocument(Object root);
-
-    /**
      * Create a document for the given object using the specified serializer.  Directly
      * specifying the serializer should only rarely be required.
      */
@@ -30,15 +23,15 @@ public interface StudyCalendarXmlFactory {
      * Create a document for the given object using its default serializer and return it as string
      * of XML.
      */
-    String createDocumentString(Object root);
+    <R> String createDocumentString(R root, StudyCalendarXmlSerializer<R> serializer);
 
     /**
      * Parse the given document and return the object(s) it represents appropriately.
      */
-    Object readDocument(Document document);
+    <R> R readDocument(Document document, StudyCalendarXmlSerializer<R> serializer);
 
     /**
      * Parse a document out of the given reader and return the object(s) it represents appropriately.
      */
-    Object readDocument(Reader reader);
+    <R> R readDocument(Reader reader, StudyCalendarXmlSerializer<R> serializer);
 }

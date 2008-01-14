@@ -93,7 +93,7 @@ public abstract class StudySiteCollectionResource<V> extends Resource {
         if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
             V value;
             try {
-                value = (V) studyCalendarXmlFactory.readDocument(entity.getReader());
+                value = (V) studyCalendarXmlFactory.readDocument(entity.getReader(), null);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException");
                 throw new ResourceException(e);

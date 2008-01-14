@@ -17,7 +17,7 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
 
     protected Representation createXmlRepresentation(StudySite studySite) throws ResourceException {
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(studySite.getAmendmentApprovals()), MediaType.TEXT_XML);
+            studyCalendarXmlFactory.createDocumentString(studySite.getAmendmentApprovals(), null), MediaType.TEXT_XML);
     }
 
     protected String acceptValue(AmendmentApproval value) throws ResourceException {

@@ -122,11 +122,11 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         final Reader reader = registerMockFor(Reader.class);
         request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
 
-        expect(xmlFactory.readDocument(reader)).andReturn(expectedRead);
+        expect(xmlFactory.readDocument(reader, null)).andReturn(expectedRead);
     }
 
     protected void expectObjectXmlized(Object o) {
-        expect(xmlFactory.createDocumentString(o)).andReturn(MOCK_XML);
+        expect(xmlFactory.createDocumentString(o, null)).andReturn(MOCK_XML);
     }
 
     protected void assertResponseIsCreatedXml() throws IOException {

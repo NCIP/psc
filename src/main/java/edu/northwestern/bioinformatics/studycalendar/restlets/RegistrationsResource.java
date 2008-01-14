@@ -26,7 +26,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
             registrations.add(Registration.create(assignment));
         }
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(registrations), MediaType.TEXT_XML);
+            studyCalendarXmlFactory.createDocumentString(registrations, null), MediaType.TEXT_XML);
     }
 
     protected String acceptValue(Registration value) throws ResourceException {
