@@ -8,7 +8,8 @@ import org.restlet.data.Request;
  */
 public enum UriTemplateParameters {
     STUDY_IDENTIFIER,
-    SOURCE_NAME;
+    SOURCE_NAME,
+    SITE_NAME;
 
     public String attributeName() {
         return name().toLowerCase();

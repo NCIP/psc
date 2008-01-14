@@ -6,9 +6,12 @@ import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.data.Reference;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ReaderRepresentation;
 import org.easymock.EasyMock;
+import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -23,17 +26,20 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @author Rhett Sutphin
  */
 public abstract class ResourceTestCase<R extends Resource> extends StudyCalendarTestCase {
+    protected static final String MOCK_XML = "<foo></foo>";
+    protected static final String BASE_URI = "http://trials.etc.edu/studycalendar/";
+
     private R resource;
     protected Request request;
     protected Response response;
 
     protected StudyCalendarXmlFactory xmlFactory;
-    private static final String MOCK_XML = "<foo></foo>";
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         request = new Request();
+        request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
         response = new Response(request);
         xmlFactory = registerMockFor(StudyCalendarXmlFactory.class);
     }
@@ -108,15 +114,19 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         return result;
     }
 
-    protected void expectReadXmlFromRequestAs(DomainObject expectedRead) throws Exception {
+    protected void assertResponseStatus(Status status) {
+        assertEquals("Response should be " + status, status, response.getStatus());
+    }
+
+    protected void expectReadXmlFromRequestAs(Object expectedRead) throws Exception {
         final Reader reader = registerMockFor(Reader.class);
         request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
 
-        EasyMock.expect(xmlFactory.readDocument(reader)).andReturn(expectedRead);
+        expect(xmlFactory.readDocument(reader)).andReturn(expectedRead);
     }
 
-    protected void expectObjectXmlized(DomainObject o) {
-        EasyMock.expect(xmlFactory.createDocumentString(o)).andReturn(MOCK_XML);
+    protected void expectObjectXmlized(Object o) {
+        expect(xmlFactory.createDocumentString(o)).andReturn(MOCK_XML);
     }
 
     protected void assertResponseIsCreatedXml() throws IOException {

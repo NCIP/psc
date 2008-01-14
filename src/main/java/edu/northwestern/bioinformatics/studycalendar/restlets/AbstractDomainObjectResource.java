@@ -43,6 +43,10 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         }
     }
 
+    public D getRequestedObject() {
+        return requestedObject;
+    }
+
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(requestedObject);
