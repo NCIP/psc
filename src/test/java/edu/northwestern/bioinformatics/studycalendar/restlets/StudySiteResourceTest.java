@@ -1,26 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
-import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.*;
 import org.restlet.data.Status;
 import org.restlet.resource.StringRepresentation;
-
-import java.util.Date;
-import static java.util.Calendar.*;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +27,7 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
     private StudySite studySite;
     private StudyService studyService;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         study = createBasicTemplate();
@@ -52,9 +42,11 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
         request.setResourceRef("studies/ETC/sites/Northwestern University");
     }
 
+    @Override
+    @SuppressWarnings({ "unchecked" })
     protected StudySiteResource createResource() {
         StudySiteResource res = new StudySiteResource();
-        res.setStudyCalendarXmlFactory(xmlFactory);
+        res.setXmlSerializer(xmlSerializer);
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setStudyService(studyService);
@@ -112,11 +104,12 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
 
     ////// PUT
 
+    @SuppressWarnings({ "unchecked" })
     public void testPutCreatesStudySiteIfNotExists() throws Exception {
         expectRequestHasIgnoredEntity();
         expectResolvedStudyAndSite(study, site);
         studyService.save(study);
-        expect(xmlFactory.createDocumentString(notNull(), (StudyCalendarXmlSerializer<Object>) isNull())).andReturn(MOCK_XML);
+        expect(xmlSerializer.createDocumentString(notNull())).andReturn(MOCK_XML);
 
         doPut();
 
@@ -156,9 +149,9 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
         expectResolvedStudyAndSite(study, site);
     }
 
-    private void expectResolvedStudyAndSite(Study study, Site site) {
-        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        expect(siteDao.getByName(SITE_NAME)).andReturn(site);
+    private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(expectedStudy);
+        expect(siteDao.getByName(SITE_NAME)).andReturn(expectedSite);
     }
 
     private void expectRequestHasIgnoredEntity() {

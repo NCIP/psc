@@ -20,15 +20,17 @@ import java.util.ArrayList;
 public class RegistrationsResource extends StudySiteCollectionResource<Registration> {
     private SubjectService subjectService;
 
+    @Override
     protected Representation createXmlRepresentation(StudySite studySite) throws ResourceException {
         List<Registration> registrations = new ArrayList<Registration>(studySite.getStudySubjectAssignments().size());
         for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
             registrations.add(Registration.create(assignment));
         }
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(registrations, null), MediaType.TEXT_XML);
+            xmlSerializer.createDocumentString(registrations), MediaType.TEXT_XML);
     }
 
+    @Override
     protected String acceptValue(Registration value) throws ResourceException {
         StudySubjectAssignment assigned = subjectService.assignSubject(
             value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),

@@ -5,7 +5,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 import java.io.IOException;
 
@@ -25,7 +24,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             D read;
             try {
-                read = (D) studyCalendarXmlFactory.readDocument(entity.getReader(), null);
+                read = xmlSerializer.readDocument(entity.getReader());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);

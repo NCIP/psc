@@ -15,11 +15,13 @@ import org.springframework.beans.factory.annotation.Required;
 public class AmendmentApprovalsResource extends StudySiteCollectionResource<AmendmentApproval> {
     private AmendmentService amendmentService;
 
+    @Override
     protected Representation createXmlRepresentation(StudySite studySite) throws ResourceException {
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(studySite.getAmendmentApprovals(), null), MediaType.TEXT_XML);
+            xmlSerializer.createDocumentString(studySite.getAmendmentApprovals()), MediaType.TEXT_XML);
     }
 
+    @Override
     protected String acceptValue(AmendmentApproval value) throws ResourceException {
         amendmentService.approve(getStudySite(), value);
         return String.format("studies/%s/sites/%s/approvals/%s", 

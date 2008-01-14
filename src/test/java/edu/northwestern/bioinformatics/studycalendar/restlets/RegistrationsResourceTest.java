@@ -12,7 +12,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -40,6 +40,7 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
     private SiteDao siteDao;
     private SubjectService subjectService;
 
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         study = createBasicTemplate();
@@ -55,28 +56,31 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         request.getAttributes().put(UriTemplateParameters.SITE_NAME.attributeName(), SITE_NAME);
     }
 
+    @Override
+    @SuppressWarnings({ "unchecked" })
     protected RegistrationsResource createResource() {
         RegistrationsResource res = new RegistrationsResource();
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setSubjectService(subjectService);
-        res.setStudyCalendarXmlFactory(xmlFactory);
+        res.setXmlSerializer(xmlSerializer);
         return res;
     }
 
     ////// GET
 
+    @SuppressWarnings({ "unchecked", "RawUseOfParameterizedType" })
     public void testGetXmlForKnownStudySite() throws Exception {
         studySite.addStudySubjectAssignment(createAssignment());
         studySite.addStudySubjectAssignment(createAssignment());
 
         expectResolvedStudyAndSite(study, site);
-        getResource().setStudyCalendarXmlFactory(xmlFactoryStub);
+        getResource().setXmlSerializer(xmlSerializerStub);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsStubbedXml();
 
-        Object serialized = xmlFactoryStub.getLastObjectStringified();
+        Object serialized = xmlSerializerStub.getLastObjectStringified();
         assertNotNull("Stringified object is null", serialized);
         assertTrue("Serialized object should have been a collection", serialized instanceof Collection);
         assertTrue("Serialized collection contents should be registrations",
@@ -147,8 +151,8 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
             response.getLocationRef().getTargetRef().toString());
     }
 
-    private void expectResolvedStudyAndSite(Study study, Site site) {
-        expect(studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER)).andReturn(study);
-        expect(siteDao.getByName(SITE_NAME)).andReturn(site);
+    private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER)).andReturn(expectedStudy);
+        expect(siteDao.getByName(SITE_NAME)).andReturn(expectedSite);
     }
 }

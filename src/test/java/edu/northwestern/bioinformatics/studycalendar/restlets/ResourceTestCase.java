@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlFactory;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -31,8 +31,8 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     protected Request request;
     protected Response response;
 
-    protected StudyCalendarXmlFactory xmlFactory;
-    protected CapturingStudyCalendarXmlFactoryStub xmlFactoryStub;
+    protected StudyCalendarXmlCollectionSerializer xmlSerializer;
+    protected CapturingStudyCalendarXmlFactoryStub xmlSerializerStub;
 
     @Override
     protected void setUp() throws Exception {
@@ -40,8 +40,8 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         request = new Request();
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
         response = new Response(request);
-        xmlFactory = registerMockFor(StudyCalendarXmlFactory.class);
-        xmlFactoryStub = new CapturingStudyCalendarXmlFactoryStub();
+        xmlSerializer = registerMockFor(StudyCalendarXmlCollectionSerializer.class);
+        xmlSerializerStub = new CapturingStudyCalendarXmlFactoryStub();
     }
 
     protected abstract R createResource();
@@ -122,11 +122,12 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         final Reader reader = registerMockFor(Reader.class);
         request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
 
-        expect(xmlFactory.readDocument(reader, null)).andReturn(expectedRead);
+        expect(xmlSerializer.readDocument(reader)).andReturn(expectedRead);
     }
 
+    @SuppressWarnings({ "unchecked" })
     protected void expectObjectXmlized(Object o) {
-        expect(xmlFactory.createDocumentString(o, null)).andReturn(MOCK_XML);
+        expect(xmlSerializer.createDocumentString(o)).andReturn(MOCK_XML);
     }
 
     protected void assertResponseIsCreatedXml() throws IOException {

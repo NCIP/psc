@@ -28,7 +28,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     protected TemplateResource createResource() {
         TemplateResource res = new TemplateResource();
         res.setStudyDao(studyDao);
-        res.setStudyCalendarXmlFactory(xmlFactory);
+        res.setXmlSerializer(xmlSerializer);
         return res;
     }
     

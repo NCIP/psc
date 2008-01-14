@@ -30,7 +30,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     protected ActivitySourceResource createResource() {
         ActivitySourceResource resource = new ActivitySourceResource();
         resource.setSourceDao(sourceDao);
-        resource.setStudyCalendarXmlFactory(xmlFactory);
+        resource.setXmlSerializer(xmlSerializer);
         return resource;
     }
 

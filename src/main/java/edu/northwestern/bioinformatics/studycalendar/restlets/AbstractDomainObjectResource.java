@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlFactory;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 
 /**
  * Implements GET for a resource backed by a single domain object.
@@ -24,10 +24,11 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private D requestedObject;
-    protected StudyCalendarXmlFactory studyCalendarXmlFactory;
+    protected StudyCalendarXmlSerializer<D> xmlSerializer;
 
     protected abstract D loadRequestedObject(Request request);
 
+    @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setReadable(true);
@@ -47,6 +48,7 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
         return requestedObject;
     }
 
+    @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType() == MediaType.TEXT_XML) {
             return createXmlRepresentation(requestedObject);
@@ -57,13 +59,13 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     protected Representation createXmlRepresentation(D object) {
         return new StringRepresentation(
-            studyCalendarXmlFactory.createDocumentString(object, null), MediaType.TEXT_XML);
+            xmlSerializer.createDocumentString(object), MediaType.TEXT_XML);
     }
 
     ////// CONFIGURATION
 
     @Required
-    public void setStudyCalendarXmlFactory(StudyCalendarXmlFactory studyCalendarXmlFactory) {
-        this.studyCalendarXmlFactory = studyCalendarXmlFactory;
+    public void setXmlSerializer(StudyCalendarXmlSerializer<D> studyCalendarXmlFactory) {
+        this.xmlSerializer = studyCalendarXmlFactory;
     }
 }
