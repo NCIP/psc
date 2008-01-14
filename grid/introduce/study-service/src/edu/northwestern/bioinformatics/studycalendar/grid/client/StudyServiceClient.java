@@ -115,7 +115,7 @@ public class StudyServiceClient extends ServiceSecurityClient implements StudySe
         return boxedResult.getServiceSecurityMetadata();
       }
     }
-	public edu.northwestern.bioinformatics.studycalendar.grid.Study retrieveStudyByAssignedIdentifier(java.lang.String assignedIdentifier) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExists {
+	public edu.northwestern.bioinformatics.studycalendar.grid.Study retrieveStudyByAssignedIdentifier(java.lang.String assignedIdentifier) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException {
       synchronized(portTypeMutex){
         configureStubSecurity((Stub)portType,"retrieveStudyByAssignedIdentifier");
         edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierRequest params = new edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierRequest();
@@ -124,7 +124,7 @@ public class StudyServiceClient extends ServiceSecurityClient implements StudySe
         return boxedResult.getStudy();
       }
     }
-	public edu.northwestern.bioinformatics.studycalendar.grid.Study createStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyException {
+	public edu.northwestern.bioinformatics.studycalendar.grid.Study createStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException {
       synchronized(portTypeMutex){
         configureStubSecurity((Stub)portType,"createStudy");
         edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest params = new edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest();

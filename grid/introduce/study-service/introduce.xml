@@ -56,6 +56,8 @@
    <ns2:SchemaElement type="StudyServiceReference" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="StudyDoesNotExists" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="StudyAlreadyException" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="StudyDoesNotExistsException" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="StudyAlreadyExistsException" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace generateStubs="false" location="./xsd/security.xsd" namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" packageName="gov.nih.nci.cagrid.metadata.security" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement type="ServiceSecurityMetadata" xsi:type="ns2:SchemaElementType"/>
@@ -85,7 +87,7 @@
      </ns4:Inputs>
      <ns4:Output qName="ns6:study" isArray="false" xmlns:ns6="http://bioinformatics.northwestern.edu/ns/psc"/>
      <ns4:Exceptions>
-      <ns4:Exception name="StudyDoesNotExists" qname="ns7:StudyDoesNotExists" xmlns:ns7="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
+      <ns4:Exception name="StudyDoesNotExistsException" qname="ns7:StudyDoesNotExistsException" xmlns:ns7="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
      </ns4:Exceptions>
     </ns4:Method>
     <ns4:Method isImported="false" isProvided="false" name="createStudy" xsi:type="ns4:MethodType">
@@ -94,7 +96,7 @@
      </ns4:Inputs>
      <ns4:Output qName="ns9:study" isArray="false" xmlns:ns9="http://bioinformatics.northwestern.edu/ns/psc"/>
      <ns4:Exceptions>
-      <ns4:Exception name="StudyAlreadyException" qname="ns10:StudyAlreadyException" xmlns:ns10="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
+      <ns4:Exception name="StudyAlreadyExistsException" qname="ns10:StudyAlreadyExistsException" xmlns:ns10="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
      </ns4:Exceptions>
     </ns4:Method>
    </ns4:Methods>

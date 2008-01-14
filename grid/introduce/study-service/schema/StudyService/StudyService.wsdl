@@ -71,11 +71,11 @@
   <message name="CreateStudyResponse">
     <part name="parameters" element="tns:CreateStudyResponse" />
   </message>
-  <message name="StudyDoesNotExistsFaultMessage">
-    <part name="fault" element="ns1:StudyDoesNotExists" />
+  <message name="StudyDoesNotExistsExceptionFaultMessage">
+    <part name="fault" element="ns1:StudyDoesNotExistsException" />
   </message>
-  <message name="StudyAlreadyExceptionFaultMessage">
-    <part name="fault" element="ns1:StudyAlreadyException" />
+  <message name="StudyAlreadyExistsExceptionFaultMessage">
+    <part name="fault" element="ns1:StudyAlreadyExistsException" />
   </message>
   <!--============================================================
 
@@ -86,12 +86,12 @@
     <operation name="retrieveStudyByAssignedIdentifier">
       <input message="tns:RetrieveStudyByAssignedIdentifierRequest" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/RetrieveStudyByAssignedIdentifierRequest" />
       <output message="tns:RetrieveStudyByAssignedIdentifierResponse" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/RetrieveStudyByAssignedIdentifierResponse" />
-      <fault name="StudyDoesNotExists" message="tns:StudyDoesNotExistsFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyDoesNotExistsFaultMessage" />
+      <fault name="StudyDoesNotExistsException" message="tns:StudyDoesNotExistsExceptionFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyDoesNotExistsExceptionFaultMessage" />
     </operation>
     <operation name="createStudy">
       <input message="tns:CreateStudyRequest" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/CreateStudyRequest" />
       <output message="tns:CreateStudyResponse" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/CreateStudyResponse" />
-      <fault name="StudyAlreadyException" message="tns:StudyAlreadyExceptionFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyAlreadyExceptionFaultMessage" />
+      <fault name="StudyAlreadyExistsException" message="tns:StudyAlreadyExistsExceptionFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyAlreadyExistsExceptionFaultMessage" />
     </operation>
     <operation name="GetResourceProperty">
       <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />

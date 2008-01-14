@@ -19,5 +19,17 @@
       <extension base="wsrbf:BaseFaultType" />
     </complexContent>
   </complexType>
+  <element name="StudyDoesNotExistsException" type="tns:StudyDoesNotExistsException" />
+  <complexType name="StudyDoesNotExistsException">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
+    </complexContent>
+  </complexType>
+  <element name="StudyAlreadyExistsException" type="tns:StudyAlreadyExistsException" />
+  <complexType name="StudyAlreadyExistsException">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
+    </complexContent>
+  </complexType>
 </schema>
 

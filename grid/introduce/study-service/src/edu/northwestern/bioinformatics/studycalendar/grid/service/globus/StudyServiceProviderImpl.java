@@ -26,14 +26,14 @@ public class StudyServiceProviderImpl{
 	}
 	
 
-	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierResponse retrieveStudyByAssignedIdentifier(edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExists {
+	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierResponse retrieveStudyByAssignedIdentifier(edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException {
 		StudyServiceAuthorization.authorizeRetrieveStudyByAssignedIdentifier();
 		edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierResponse boxedResult = new edu.northwestern.bioinformatics.studycalendar.grid.stubs.RetrieveStudyByAssignedIdentifierResponse();
 		boxedResult.setStudy(impl.retrieveStudyByAssignedIdentifier(params.getAssignedIdentifier()));
 		return boxedResult;
 	}
 
-	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse createStudy(edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyException {
+	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse createStudy(edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException {
 		StudyServiceAuthorization.authorizeCreateStudy();
 		edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse boxedResult = new edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse();
 		boxedResult.setStudy(impl.createStudy(params.getStudy().getStudy()));

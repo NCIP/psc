@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.grid.common;
 
 import edu.northwestern.bioinformatics.studycalendar.grid.Study;
+import edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException;
 
 import java.rmi.RemoteException;
 
@@ -9,8 +10,8 @@ import java.rmi.RemoteException;
  */
 public interface StudyService {
 
-    Study retrieveStudyByAssignedIdentifier(String assignedIdentifier) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExists;
+    Study retrieveStudyByAssignedIdentifier(String assignedIdentifier) throws RemoteException, StudyDoesNotExistsException;
 
-    Study createStudy(Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyException;
+    Study createStudy(Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException;
 
 }
