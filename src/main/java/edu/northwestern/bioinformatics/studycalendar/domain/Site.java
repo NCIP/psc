@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -56,6 +57,7 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         return null;
     }
 
+    @Transient
     public String getNaturalKey() {
         return getName();
     }
