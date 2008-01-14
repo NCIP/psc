@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import static org.easymock.classextension.EasyMock.*;
+import org.restlet.data.Status;
 
 /**
  * @author Rhett Sutphin
@@ -74,7 +75,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
 
         doPut();
 
-        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
 

@@ -31,6 +31,11 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
                 throw new ResourceException(e);
             }
             getResponse().setEntity(createXmlRepresentation(read));
+            if (getRequestedObject() == null) {
+                getResponse().setStatus(Status.SUCCESS_CREATED);
+            } else {
+                getResponse().setStatus(Status.SUCCESS_OK);
+            }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }

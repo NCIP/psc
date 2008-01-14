@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
 import static org.easymock.classextension.EasyMock.*;
+import org.restlet.data.Status;
 
 /**
  * @author Rhett Sutphin
@@ -72,7 +73,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
         doPut();
 
-        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
 }
