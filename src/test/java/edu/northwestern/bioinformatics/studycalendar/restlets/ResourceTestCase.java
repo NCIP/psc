@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlFactory;
+import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -10,7 +11,6 @@ import org.restlet.data.Status;
 import org.restlet.data.Reference;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ReaderRepresentation;
-import org.easymock.EasyMock;
 import static org.easymock.EasyMock.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,8 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.io.Reader;
 import java.io.IOException;
-
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
@@ -34,6 +32,7 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     protected Response response;
 
     protected StudyCalendarXmlFactory xmlFactory;
+    protected CapturingStudyCalendarXmlFactoryStub xmlFactoryStub;
 
     @Override
     protected void setUp() throws Exception {
@@ -42,6 +41,7 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
         response = new Response(request);
         xmlFactory = registerMockFor(StudyCalendarXmlFactory.class);
+        xmlFactoryStub = new CapturingStudyCalendarXmlFactoryStub();
     }
 
     protected abstract R createResource();
@@ -133,5 +133,11 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
         String actualEntityBody = response.getEntity().getText();
         assertEquals("Wrong text", MOCK_XML, actualEntityBody);
+    }
+
+    protected void assertResponseIsStubbedXml() throws IOException {
+        assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", CapturingStudyCalendarXmlFactoryStub.XML_STRING, actualEntityBody);
     }
 }

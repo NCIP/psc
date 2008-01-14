@@ -27,7 +27,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
             try {
                 read = (D) studyCalendarXmlFactory.readDocument(entity.getReader());
             } catch (IOException e) {
-                log.debug("PUT failed with IOException", e);
+                log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
             }
             getResponse().setEntity(createXmlRepresentation(read));
