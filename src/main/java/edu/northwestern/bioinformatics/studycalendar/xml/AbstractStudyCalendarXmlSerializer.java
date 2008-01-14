@@ -5,24 +5,28 @@ import org.dom4j.Element;
 
 import java.io.Reader;
 
-public abstract class AbstractStudyCalendarXmlSerializer implements StudyCalendarXmlSerializer {
-    public Document createDocument(Object root, StudyCalendarXmlSerializer studyCalendarXmlSerializer) {
+/**
+ * @author Rhett Sutphin
+ * @author John Dzak
+ */
+public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
+    public Document createDocument(Object root) {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public String createDocumentString(Object root, StudyCalendarXmlSerializer studyCalendarXmlSerializer) {
+    public String createDocumentString(Object root) {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public Object readDocument(Document document, StudyCalendarXmlSerializer studyCalendarXmlSerializer) {
+    public R readDocument(Document document) {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public Object readDocument(Reader reader, StudyCalendarXmlSerializer studyCalendarXmlSerializer) {
+    public R readDocument(Reader reader) {
         throw new UnsupportedOperationException("TODO");
     }
 
     public abstract Element createElement(Object object);
 
-    public abstract Object readElement(Element element);
+    public abstract R readElement(Element element);
 }
