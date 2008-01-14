@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import org.w3c.dom.Document;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 import java.io.Reader;
 
@@ -12,6 +11,7 @@ import java.io.Reader;
  *
  * @author Rhett Sutphin
  */
+@Deprecated
 public interface StudyCalendarXmlFactory {
     /**
      * Create a document for the given object using the specified serializer.  Directly
