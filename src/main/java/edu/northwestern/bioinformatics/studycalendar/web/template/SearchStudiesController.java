@@ -4,9 +4,13 @@ import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandContr
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparatorByLetterCase;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,12 +24,19 @@ import static org.apache.commons.lang.StringUtils.EMPTY;
 import java.util.*;
 import static java.util.Collections.EMPTY_LIST;
 
-public class SearchReleasedTemplatesController extends PscAbstractCommandController<SearchReleasedTemplatesCommand> {
+/**
+ * Created by IntelliJ IDEA.
+ * User: nshurupova
+ * Date: Jan 14, 2008
+ * Time: 1:11:58 PM
+ * To change this template use File | Settings | File Templates.
+ */
+public class SearchStudiesController extends PscAbstractCommandController<SearchReleasedTemplatesCommand> {
     private StudyDao studyDao;
     private UserDao userDao;
     private TemplateService templateService;
 
-    public SearchReleasedTemplatesController() {
+    public SearchStudiesController() {
         setCommandClass(SearchReleasedTemplatesCommand.class);
     }
 
@@ -38,16 +49,27 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
             Map<String, Object> model =  new HashMap<String, Object>();
             String searchText = command.getSearchText() != null ? command.getSearchText() : EMPTY;
             List<Study> studies = studyDao.getAll();
+
             log.debug("{} studies found total", studies.size());
             String userName = ApplicationSecurityManager.getUser();
             User user = userDao.getByName(userName);
 
-            List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = templateService.getReleasedAndAssignedTemplates(studies, user);
+            List<Study> ownedStudies
+                = templateService.filterForVisibility(studies, user.getUserRole(Role.SITE_COORDINATOR));
+            log.debug("{} studies visible to {}", ownedStudies.size(), user.getName());
 
-            List<StudyListController.ReleasedTemplate> results = searchStudies(releasedAndAssignedTemplates, searchText);
-            model.put("releasedTemplates", results);
+            List<Study> assignableStudies = new ArrayList<Study>();
+            for (Study ownedStudy : ownedStudies) {
+                if (ownedStudy.isReleased()) {
+                    assignableStudies.add(ownedStudy);
+                }
+            }
+            Collections.sort(assignableStudies, new NamedComparatorByLetterCase());
+            log.debug("{} released studies visible to {}", assignableStudies.size(), user.getName());
 
-            return new ModelAndView("template/ajax/releasedTemplates", model);
+            List<Study> results = searchStudies(assignableStudies, searchText);
+            model.put("searchStudies", results);
+            return new ModelAndView("template/ajax/searchStudies", model);
         } else {
             getControllerTools().sendGetOnlyError(response);
             return null;
@@ -55,14 +77,14 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
     }
 
     // TODO: remove null check for code if find out code is required (Reconsent doesn't have code)
-    private List<StudyListController.ReleasedTemplate> searchStudies(List<StudyListController.ReleasedTemplate> availableStudies, String searchText) {
+    private List<Study> searchStudies(List<Study> availableStudies, String searchText) {
         if (searchText.equals(EMPTY)) return EMPTY_LIST;
 
         String searchTextLower = searchText.toLowerCase();
 
-        List<StudyListController.ReleasedTemplate> results = new ArrayList<StudyListController.ReleasedTemplate>();
-        for (StudyListController.ReleasedTemplate study : availableStudies) {
-            String studyName = study.getStudy().getName().toLowerCase();
+        List<Study> results = new ArrayList<Study>();
+        for (Study study : availableStudies) {
+            String studyName = study.getName().toLowerCase();
             if (studyName.contains(searchTextLower)) {
                 results.add(study);
             }
@@ -88,5 +110,5 @@ public class SearchReleasedTemplatesController extends PscAbstractCommandControl
     @Required
     public void setTemplateService(TemplateService templateService) {
         this.templateService = templateService;
-    }    
+    }
 }

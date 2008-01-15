@@ -9,8 +9,17 @@
 
 <html>
 <head>
+    <tags:includeScriptaculous/>
     <title>Site Coordinator Dashboard</title>
+
+
     <tags:stylesheetLink name="main"/>
+    <style type="text/css">
+        #studies-autocompleter-input {
+            width:40%
+        }
+
+    </style>
     <script type="text/javascript">
         function registerSelector() {
             var aElement = $('selector')
@@ -20,7 +29,31 @@
             })
         }
 
-        Event.observe(window, "load", registerSelector);
+        var activitiesAutocompleter;
+
+        function createAutocompleter() {
+            if (${not empty studies}){
+                activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/searchStudies"/>',
+                {
+                    method: 'get',
+                    paramName: 'searchText',
+                    afterUpdateElement:updateStudy,
+                    revertOnEsc:true
+                });
+            }
+        }
+
+        function updateStudy(input, li) {
+            location.href = "${action}?selected=" + li.id
+        }
+
+
+        if (${isAssignByStudy}) {
+            Event.observe(window, "load", createAutocompleter)
+        } else {
+            Event.observe(window, "load", registerSelector);
+        }
+
     </script>
 
     <style type="text/css">
@@ -41,7 +74,13 @@
 </head>
 <body>
 
-<laf:box title="Site Coordinator Dashboard">
+<c:if test="${isAssignByStudy}">
+    <c:set var="title" value="Assign study to subject coordinators"/>
+</c:if>
+<c:if test="${not isAssignByStudy}">
+    <c:set var="title" value="Assign subject coordinator to studies"/>
+</c:if>
+<laf:box title="${title}">
     <laf:division>
         <form:form method="post" id="assignmentForm" action="${action}">
             <form:errors path="*"/>
@@ -79,11 +118,14 @@
                         </div>
                         <div class="value">
                             <c:if test="${isAssignByStudy}">
-                                <select id="selector">
-                                    <c:forEach items="${studies}" var="study">
-                                        <option value="${study.id}" <c:if test="${study.id == selected.id}">selected</c:if>>${study.assignedIdentifier}</option>
-                                    </c:forEach>
-                                </select>
+                                <c:if test="${not empty selected}">
+                                    <input id="studies-autocompleter-input" type="text" value="${selected.assignedIdentifier}" autocomplete="off"/>
+                                </c:if>
+                                <c:if test="${empty selected}">
+                                    <input id="studies-autocompleter-input" type="text" value="" autocomplete="off"/>
+                                </c:if>
+                                <div id="studies-autocompleter-div" class="autocomplete"></div>
+
                             </c:if>
                             <c:if test="${not isAssignByStudy}">
                                 <select id="selector">
@@ -91,8 +133,6 @@
                                         <option value="${user.id}" <c:if test="${user.id == selected.id}">selected</c:if>>${user.name}</option>
                                     </c:forEach>
                                 </select>
-                                <input type="button" value="Studies" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectCoordinatorByUser"/>?selected=${selected.id}'"/>
-                                <input type="button" value="Subjects" onclick="location.href='<c:url value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser"/>?selected=${selected.id}'"/>
                             </c:if>
 
                         </div>
@@ -110,7 +150,14 @@
                         <div class="value">
                             <table class="grid">
                                 <tr>
-                                    <th></th>
+                                    <c:if test="${isAssignByStudy}">
+                                        <th>PCs / Site</th>
+                                    </c:if>
+                                    <c:if test="${not isAssignByStudy}">
+                                        <th>Studies / Sites</th>
+                                    </c:if>
+                                    
+
 
                                     <c:forEach items="${sites}" var="site">
                                         <th>${site.name}</th>

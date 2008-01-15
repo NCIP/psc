@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordina
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
@@ -22,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
-public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController {
+public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController implements CrumbSource {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyDao studyDao;
@@ -31,6 +33,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private TemplateService templateService;
     private SiteService siteService;
     private UserService userService;
+    private Crumb crumb;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
         Map<String, Object> refdata = new HashMap<String,Object>();
@@ -131,5 +134,13 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
 
     public TemplateService getTemplateService() {
         return templateService;
+    }
+
+    public Crumb getCrumb() {
+        return crumb;
+    }
+
+    public void setCrumb(Crumb crumb) {
+        this.crumb = crumb;
     }
 }

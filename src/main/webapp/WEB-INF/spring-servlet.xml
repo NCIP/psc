@@ -199,17 +199,29 @@
 
     <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByStudyController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Assign study to subject coordinators"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByUserController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Assign subject coordinator to studies"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
     </bean>
 
     <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name" value="Change subject coordinator"/>
+                <property name="name" value="Change ownership of subject schedules"/>
                 <property name="parent" ref="dashboardSiteCoordinatorController"/>
             </bean>
         </property>
@@ -471,6 +483,10 @@
 
     <bean name="/cal/search/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
+
+
+    <bean name="/cal/search/searchStudies" id="searchStudiesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">

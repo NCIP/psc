@@ -4,6 +4,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.fin
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparatorByLetterCase;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class AssignSubjectCoordinatorByUserCommand extends AbstractAssignSubject
 
     public AssignSubjectCoordinatorByUserCommand(TemplateService templateService, User selected, List<Study> assignableStudies, List<Site> assignableSites, List<User> assignableUsers) {
         super(assignableStudies, assignableSites, assignableUsers);
-        grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparator());
+        grid = new TreeMap<Study, Map<Site, GridCell>>(new NamedComparatorByLetterCase());
         this.templateService = templateService;
         this.selected = selected;
 

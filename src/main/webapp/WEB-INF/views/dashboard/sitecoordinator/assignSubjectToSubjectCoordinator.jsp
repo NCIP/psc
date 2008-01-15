@@ -8,7 +8,7 @@
                                                     
 <html>
   <head>
-      <title>Change Subject Coordinator</title>
+      <title>Change ownership of subject schedules</title>
       <tags:stylesheetLink name="main"/>
       <script type="text/javascript">
         function registerSelector() {
@@ -156,7 +156,7 @@
       </style>
   </head>
   <body>
-  <laf:box title="Change subject coordinator">
+  <laf:box title="Change ownership of subject schedules">
       <laf:division>
           <c:url var="action" value="/pages/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" />
           <form:form id="PCSelectionForm" action="${action}">
