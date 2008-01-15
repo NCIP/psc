@@ -4,11 +4,14 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
 import java.io.Reader;
 
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Rhett Sutphin
@@ -41,11 +44,19 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     }
 
     public R readDocument(Document document) {
-        throw new UnsupportedOperationException("TODO");
+        return readElement(document.getRootElement());
     }
 
     public R readDocument(Reader reader) {
-        throw new UnsupportedOperationException("TODO");
+        Document document;
+        try {
+            SAXReader saxReader = new SAXReader();
+            document = saxReader.read(reader);
+        } catch(DocumentException de) {
+            throw new StudyCalendarSystemException("Could not read the XML for deserialization", de);
+        }
+
+        return readElement(document.getRootElement());
     }
 
     public abstract Element createElement(R object);

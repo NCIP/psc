@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import org.dom4j.Element;
 import org.dom4j.Document;
+import org.dom4j.Element;
 
 import java.io.Reader;
 
