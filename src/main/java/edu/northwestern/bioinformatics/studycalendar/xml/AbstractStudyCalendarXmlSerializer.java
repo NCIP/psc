@@ -13,10 +13,6 @@ import java.io.Reader;
  */
 public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
 
-    protected Document createDocumentInstance() {
-        return DocumentHelper.createDocument();
-    }
-    
     public Document createDocument(R root) {
         throw new UnsupportedOperationException("TODO");
     }
@@ -36,4 +32,9 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public abstract Element createElement(R object);
 
     public abstract R readElement(Element element);
+
+    // Create Instance of Document
+    protected Document createDocumentInstance() {
+        return DocumentHelper.createDocument();
+    }
 }

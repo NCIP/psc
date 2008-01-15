@@ -23,9 +23,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     public Document createDocument(Study study) {
         Document document = createDocumentInstance();
         Element element = createElement(document, study);
-        element.addNamespace(EMPTY, PSC_NS);
-        element.addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS);
-        element.addNamespace(SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
+
+        element.addNamespace(EMPTY, PSC_NS)
+               .addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS)
+               .addNamespace(SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
+
         return document;
     }
 
