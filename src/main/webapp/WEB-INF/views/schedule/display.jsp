@@ -410,7 +410,7 @@
         </c:if>
         <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
         <c:if test="${labViewerAvail}">
-            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.protocolAuthorityId}&PatientId=${subject.personId}">lab results</a>
+            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.id}&PatientId=${subject.personId}">lab results</a>
         </c:if>
 
         <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
