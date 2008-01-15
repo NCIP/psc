@@ -4,7 +4,7 @@ import java.net.URL;
 import java.io.File;
 
 public enum Schema {
-    activities("Activities", "study.xsd"), template("Template", "study.xsd");
+    activities("Activities", "psc.xsd"), template("Template", "psc.xsd");
 
     private String title;
     private String fileName;

@@ -56,7 +56,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
 
     private StudyXMLWriter writer;
     private DaoFinder daoFinder;
-    DomainObjectDao<?> daoMock;
+    private DomainObjectDao<?> daoMock;
 
     private Study study;
 

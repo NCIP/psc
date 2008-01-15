@@ -520,7 +520,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "    <planned-calendar-delta id=\"grid3\" node-id=\"grid1\">\n")
            .append(       "      <add id=\"grid4\" index=\"0\">")
            .append(       "        <epoch id=\"grid5\" name=\"Epoch A\"/>")
-           .append(       "        <epoch id=\"grid9\" name=\"Epoch B\"/>")
            .append(       "      </add>")
            .append(       "    </planned-calendar-delta>")
            .append(       "  </amendment>")

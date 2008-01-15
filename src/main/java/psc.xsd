@@ -2,6 +2,7 @@
 <xsd:schema targetNamespace="http://bioinformatics.northwestern.edu/ns/psc"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
+            xmlns="http://bioinformatics.northwestern.edu/ns/psc"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
@@ -9,16 +10,70 @@
 
     <xsd:complexType name="Study">
         <xsd:sequence>
-            <xsd:element name="planned-calendar" type="psc:PlannedCalendar" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="amendment" type="psc:Amendment" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:planned-calendar" minOccurs="1" maxOccurs="1"/>
+            <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <!-- Elements of the template -->
+
+    <xsd:element name="planned-calendar" type="psc:PlannedCalendar"/>
+
     <xsd:complexType name="PlannedCalendar">
+        <xsd:sequence>
+            <xsd:element ref="psc:epoch" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
+
+    <xsd:element name="epoch" type="psc:Epoch"/>
+
+    <xsd:complexType name="Epoch">
+        <xsd:sequence>
+            <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="study-segment" type="psc:StudySegment"/>
+
+    <xsd:complexType name="StudySegment">
+        <xsd:sequence>
+            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="period" type="psc:Period"/>
+
+    <xsd:complexType name="Period">
+        <xsd:sequence>
+            <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="planned-activity" type="psc:PlannedActivity"/> 
+
+    <xsd:complexType name="PlannedActivity">
+        <xsd:sequence>
+            <xsd:element name="activity" type="psc:Activity"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="details" type="xsd:string"/>
+        <xsd:attribute name="condition" type="xsd:string"/>
+        <xsd:attribute name="population" type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- Elements of amendments (deltas & changes) -->
+
+    <xsd:element name="amendment" type="psc:Amendment"/>
 
     <xsd:complexType name="Amendment">
         <xsd:sequence>
@@ -30,11 +85,10 @@
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
-        <xsd:attribute name="mandatory" type="xsd:boolean" use="required"/>
+        <xsd:attribute name="mandatory" type="xsd:boolean" default="true"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="previous-amendment-id" type="xsd:string"/>
     </xsd:complexType>
-
 
     <xsd:complexType name="Delta">
         <xsd:sequence>
@@ -48,12 +102,12 @@
     </xsd:complexType>
 
     <xsd:complexType name="Add">
-        <xsd:sequence>
-            <xsd:element name="epoch" type="psc:Epoch" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
+        <xsd:choice>
+            <xsd:element ref="psc:epoch"/>
+            <xsd:element ref="psc:study-segment"/>
+            <xsd:element ref="psc:period"/>
+            <xsd:element ref="psc:planned-activity"/>
+        </xsd:choice>
         <xsd:attribute name="index" type="xsd:integer" use="optional"/>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
@@ -77,41 +131,7 @@
         <xsd:attribute name="new-value" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:complexType name="Epoch">
-        <xsd:sequence>
-            <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="StudySegment">
-        <xsd:sequence>
-            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-    </xsd:complexType>
-
-    <xsd:complexType name="Period">
-        <xsd:sequence>
-            <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-    </xsd:complexType>
-
-    <!-- TODO: add population -->
-    <xsd:complexType name="PlannedActivity">
-        <xsd:sequence>
-            <xsd:element name="activity" type="psc:Activity" minOccurs="1" maxOccurs="1"/>
-        </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-        <xsd:attribute name="day" type="xsd:integer" use="required"/>
-        <xsd:attribute name="details" type="xsd:string"/>
-        <xsd:attribute name="condition" type="xsd:string"/>
-    </xsd:complexType>
-
+    <!-- Elements of global activities -->
 
     <xsd:element name="sources" type="psc:Sources" />
 
@@ -123,14 +143,17 @@
 
     <xsd:complexType name="Source">
         <xsd:sequence>
-            <xsd:element name="activity" type="psc:Activity" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:activity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
+    <xsd:element name="activity" type="psc:Activity"/>
+
     <xsd:complexType name="Activity">
         <xsd:sequence>
+            <!-- TODO: instead of embedding this, refer to it by name -->
             <xsd:element name="source" type="psc:Source" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string"/>

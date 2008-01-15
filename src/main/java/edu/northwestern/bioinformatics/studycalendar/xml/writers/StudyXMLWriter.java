@@ -38,7 +38,7 @@ public class StudyXMLWriter {
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
     public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
     public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";
-    public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/study.xsd";
+    public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/psc.xsd";
 
     public static final String SCHEMA_NAMESPACE_ATTRIBUTE = "xmlns";
     public static final String SCHEMA_LOCATION_ATTRIBUTE  = "xsi:schemaLocation";
