@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="StudyImportExport" targetNamespace="http://grid.ccts.nci.nih.gov/StudyImportExport/service" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:binding="http://grid.ccts.nci.nih.gov/StudyImportExport/bindings" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
-  <wsdl:import namespace="http://grid.ccts.nci.nih.gov/StudyImportExport/bindings" location="StudyImportExport_bindings.wsdl"/>
-  <wsdl:service name="StudyImportExportService">
-    <wsdl:port name="StudyImportExportPortTypePort" binding="binding:StudyImportExportPortTypeSOAPBinding">
-      <soap:address location="http://localhost:8080/wsrf/services/"/>
-    </wsdl:port>
-  </wsdl:service>
-</wsdl:definitions>
