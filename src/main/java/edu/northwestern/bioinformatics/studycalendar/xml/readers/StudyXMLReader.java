@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
@@ -18,6 +19,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

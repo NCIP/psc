@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
-import org.w3c.dom.Document;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import java.io.Reader;
@@ -10,12 +12,17 @@ import java.io.Reader;
  * @author John Dzak
  */
 public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
-    public Document createDocument(Object root) {
+
+    protected Document createDocumentInstance() {
+        return DocumentHelper.createDocument();
+    }
+    
+    public Document createDocument(R root) {
         throw new UnsupportedOperationException("TODO");
     }
 
-    public String createDocumentString(Object root) {
-        throw new UnsupportedOperationException("TODO");
+    public String createDocumentString(R root) {
+        return createDocument(root).asXML();
     }
 
     public R readDocument(Document document) {
@@ -26,7 +33,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         throw new UnsupportedOperationException("TODO");
     }
 
-    public abstract Element createElement(Object object);
+    public abstract Element createElement(R object);
 
     public abstract R readElement(Element element);
 }

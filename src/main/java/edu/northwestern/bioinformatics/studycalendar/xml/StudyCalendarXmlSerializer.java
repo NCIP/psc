@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.dom4j.Element;
-import org.w3c.dom.Document;
+import org.dom4j.Document;
 
 import java.io.Reader;
 
@@ -20,7 +20,7 @@ public interface StudyCalendarXmlSerializer<R> {
      * Create a document for the given object using the specified serializer.  Directly
      * specifying the serializer should only rarely be required.
      */
-    Document createDocument(R root);
+    org.dom4j.Document createDocument(R root);
 
     /**
      * Create a document for the given object using its default serializer and return it as string
@@ -33,7 +33,7 @@ public interface StudyCalendarXmlSerializer<R> {
      * child elements.  This method may delegate to other StudyCalendarXmlSerializer instances,
      * but it is not necessary that each serialized domain object have a separate serializer.
      */
-    Element createElement(R object);
+    org.dom4j.Element createElement(R object);
 
     /**
      * Parse the given document and return the object(s) it represents appropriately.

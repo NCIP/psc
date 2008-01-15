@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.STUDY;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
@@ -55,7 +57,6 @@ public class StudyXMLWriter {
     public static final String REORDER = "reorder";
     public static final String PROPERTY_CHANGE = "property-change";
 
-    public static final String STUDY = "study";
     public static final String AMENDMENT = "amendment";
     public static final String PLANNDED_CALENDAR = "planned-calendar";
     public static final String EPOCH = "epoch";
@@ -71,7 +72,7 @@ public class StudyXMLWriter {
     public static final String NAME = "name";
     public static final String INDEX = "index";
     public static final String MANDATORY = "mandatory";
-    public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
+    
     public static final String NODE_ID = "node-id";
     public static final String DAY = "day";
     public static final String DETAILS = "details";

@@ -14,7 +14,7 @@ import java.util.Collection;
  * @author Rhett Sutphin
  */
 public interface StudyCalendarXmlCollectionSerializer<R> extends StudyCalendarXmlSerializer<R> {
-    Document createDocument(Collection<R> collection);
+    org.dom4j.Document createDocument(Collection<R> collection);
 
     String createDocumentString(Collection<R> collection);
 }

@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
-import org.w3c.dom.Document;
 import org.dom4j.Element;
+import org.dom4j.Document;
 
 import java.io.Reader;
 import java.util.Collection;
