@@ -12,6 +12,8 @@ import org.restlet.data.Reference;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ReaderRepresentation;
 import static org.easymock.EasyMock.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -25,7 +27,8 @@ import java.io.IOException;
  */
 public abstract class ResourceTestCase<R extends Resource> extends StudyCalendarTestCase {
     protected static final String MOCK_XML = "<foo></foo>";
-    protected static final String BASE_URI = "http://trials.etc.edu/studycalendar/";
+    protected static final String ROOT_URI = "http://trials.etc.edu/studycalendar/api/v1";
+    protected static final String BASE_URI = ROOT_URI + "/the/path/to/the/resource";
 
     private R resource;
     protected Request request;
@@ -38,6 +41,7 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     protected void setUp() throws Exception {
         super.setUp();
         request = new Request();
+        request.setRootRef(new Reference(ROOT_URI));
         request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
         response = new Response(request);
         xmlSerializer = registerMockFor(StudyCalendarXmlCollectionSerializer.class);
@@ -140,5 +144,14 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
         String actualEntityBody = response.getEntity().getText();
         assertEquals("Wrong text", CapturingStudyCalendarXmlFactoryStub.XML_STRING, actualEntityBody);
+    }
+    
+    protected static ApplicationContext getApiServletApplicationContext() {
+        ApplicationContext parent = getDeployedApplicationContext();
+        FileSystemXmlApplicationContext context
+            = new FileSystemXmlApplicationContext("src/main/webapp/WEB-INF/restful-api-servlet.xml");
+        context.setParent(parent);
+        context.refresh();
+        return context;
     }
 }

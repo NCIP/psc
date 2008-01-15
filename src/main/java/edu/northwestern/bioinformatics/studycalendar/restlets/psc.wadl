@@ -1,0 +1,123 @@
+<#--
+    This is actually a freemarker template for the WADL, not the WADL itself.
+    It is used by WadlResource to render out the WADL with the actual deployment
+    base URI in place.
+  -->
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="wadl_documentation.xsl"?>
+<application xmlns="http://research.sun.com/wadl/2006/10" 
+  xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:html="http://www.w3.org/1999/xhtml"
+    >
+  
+  <doc title="Patient Study Calendar API">
+    <html:p>
+      The API allows you to programmatically create and update templates, schedules, and activities
+      using standard XML and the HTTP protocol.
+    </html:p>
+    <html:p>
+      The current machine readable (WADL) description of the API for this PSC instance will
+      always be accessible from <html:a href="${baseUri}/psc.wadl">${baseUri}/psc.wadl</html:a>.
+      The human readable version of that description will be visible at
+      <html:a href="${baseUri}/psc-resources.html">${baseUri}/psc-resources.html</html:a>.
+    </html:p>
+  </doc>
+  
+  <grammars>
+    <include href="psc.xsd"/>
+  </grammars>
+  
+  <resources base="${baseUri}">
+    <resource path="templates/{study_identifier}">
+      <param style="template" name="study_identifier">
+        <doc>The assigned protocol identifier for the study you are referencing</doc>
+      </param>
+      <method name="GET">
+        <doc>
+          Returns the template for the study, decomposed into amendments.
+        </doc>
+        <response>
+          <representation href="#study-xml"/>
+        </response>
+      </method>
+      <method name="PUT">
+        <doc>
+          Creates the study if it does not exist, using the entity provided
+          in the request.  If the study does exist, the development amendment
+          may be updated using this method, but nothing else.  (Released 
+          amendments will not be modified.)
+        </doc>
+        <request>
+          <representation href="#study-xml"/>
+        </request>
+        <response>
+          <doc>
+            The response is the template as it exists after the update (if any).
+            May not exactly match the request XML, if the request tried to update
+            any released amendments.
+          </doc>
+          <representation href="#study-xml"/>
+        </response>
+      </method>
+      
+      <resource path="{amendment_identifier}">
+        <param style="template" name="amendment_identifier">
+          <doc>
+            The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
+            amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
+            an amendment with date April 1, 2001, and named "justkidding", the natural key
+            would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
+            omitting it does not cause ambiguity.
+          </doc>
+        </param>
+        <method name="GET">
+          <doc>Retrieve the realized template as it existed for the given amendment.</doc>
+          <response>
+            <representation href="#planned-calendar-xml"/>
+          </response>
+        </method>
+      </resource>
+      
+      <resource path="amendments/{amendment_identifier}">
+        <param style="template" name="amendment_identifier">
+          <doc>
+            The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
+            amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
+            an amendment with date April 1, 2001, and named "justkidding", the natural key
+            would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
+            omitting it does not cause ambiguity.
+          </doc>
+        </param>
+        <method name="GET">
+          <doc>Get the amendment alone.</doc>
+          <response>
+            <representation href="#amendment-xml"/>
+          </response>
+        </method>
+        <method name="PUT">
+          <doc>
+            Create the amendment (if the study doesn't already have a development amendment)
+            or update the amendment (if it is the current development amendment).
+          </doc>
+          <request>
+            <representation href="#amendment-xml"/>
+          </request>
+          <response>
+            <representation href="#amendment-xml"/>
+          </response>
+        </method>
+        <method name="DELETE">
+          <doc>
+            Delete the amendment, if and only if it isn't released.
+          </doc>
+        </method>
+      </resource>
+    </resource>
+  </resources>
+  
+  <representation id="study-xml" mediaType="text/xml" element="psc:study"/>
+  <representation id="planned-calendar-xml" mediaType="text/xml" element="psc:planned-calendar"/>
+  <representation id="amendment-xml" mediaType="text/xml" element="psc:amendment"/>
+  
+</application>

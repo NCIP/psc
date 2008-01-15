@@ -10,4 +10,25 @@
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
+
+    <bean name="/psc.wadl"
+          id="wadlResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
+          >
+        <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
+    </bean>
+
+  <!-- AUXILIARIES -->
+  
+    <bean id="resourceFreemarkerConfiguration"
+          class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath">
+            <value>classpath:edu/northwestern/bioinformatics/studycalendar</value>
+        </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="number_format">0</prop>
+            </props>
+        </property>
+    </bean>
 </beans>

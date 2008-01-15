@@ -13,6 +13,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
@@ -102,7 +103,10 @@ public abstract class StudySiteCollectionResource<V> extends Resource {
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request");
             } else {
                 String target = acceptValue(value);
-                getResponse().redirectSeeOther(target);
+                // TODO: the URL construction here seems bogus -- see if there's another way
+                getResponse().redirectSeeOther(
+                    new Reference(
+                        new Reference(getRequest().getRootRef().toString() + '/'), target));
             }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");

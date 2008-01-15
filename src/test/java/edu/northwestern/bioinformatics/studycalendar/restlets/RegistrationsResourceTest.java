@@ -12,7 +12,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
@@ -147,7 +146,7 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         doPost();
 
         assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
-        assertEquals(BASE_URI + "studies/EC+golf/schedules/DC",
+        assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
     }
 
