@@ -1,12 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.OrderBy;
 import org.hibernate.annotations.Parameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -19,6 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * @author Rhett Sutphin
@@ -30,6 +36,7 @@ import java.util.TreeMap;
     }
 )
 public class ScheduledStudySegment extends AbstractMutableDomainObject {
+    private final Logger log = LoggerFactory.getLogger(getClass());
     private ScheduledCalendar scheduledCalendar;
     private List<ScheduledActivity> events = new LinkedList<ScheduledActivity>();
     private Integer startDay;
@@ -117,6 +124,13 @@ public class ScheduledStudySegment extends AbstractMutableDomainObject {
         for (ScheduledActivity event : getActivities()) event.unscheduleIfOutstanding(reason);
     }
 
+    public void unschedulePopulationEvents(String reason, Population toRemove) {
+        for (ScheduledActivity event : getActivities()) {
+            if ( (event.getPlannedActivity().getPopulation() != null) && (event.getPlannedActivity().getPopulation().equals(toRemove))) {
+                event.unscheduleIfOutstanding(reason);
+            }
+        }
+    }
     ////// BEAN PROPERTIES
 
     @OneToMany(mappedBy = "scheduledStudySegment")

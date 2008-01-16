@@ -195,7 +195,7 @@ public class SubjectService {
             log.debug("Only adding planned activities for the {} population", restrictToPopulation);
             return;
         }
-        
+
         log.debug("Adding event {} from planned activity {}", repetitionNumber, plannedActivity);
 
         // amount needed to shift the relative days in the period such that
@@ -405,7 +405,7 @@ public class SubjectService {
         log.debug("removing population {} from {}", toRemove.getAbbreviation(), assignment);
         iterator.remove();
         for (ScheduledStudySegment segment : assignment.getScheduledCalendar().getScheduledStudySegments()) {
-            segment.unscheduleOutstandingEvents("Subject removed from population " + toRemove.getName());
+            segment.unschedulePopulationEvents("Subject removed from population " + toRemove.getName(), toRemove);
         }
     }
 
