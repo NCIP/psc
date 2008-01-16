@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
@@ -12,6 +13,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
@@ -25,8 +28,9 @@ public class ChangePopulationsController extends PscSimpleFormController {
     private StudySubjectAssignmentDao assignmentDao;
     private PopulationDao populationDao;
 
+
     protected ChangePopulationsController() {
-        setCrumb(new DefaultCrumb("Populations"));
+        setCrumb(new Crumb());
         setCommandClass(ChangePopulationsCommand.class);
         setFormView("schedule/changePopulations");
     }
@@ -75,4 +79,22 @@ public class ChangePopulationsController extends PscSimpleFormController {
     public void setPopulationDao(PopulationDao populationDao) {
         this.populationDao = populationDao;
     }
+
+    private static class Crumb extends DefaultCrumb {
+        @Override
+        public String getName(BreadcrumbContext context) {
+            return new StringBuilder()
+                .append("Population")
+                .toString();
+        }
+
+        @Override
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+            Map<String, String> params = createParameters(
+                "assignment", context.getStudySubjectAssignment().getId().toString()
+            );
+            return params;
+        }
+    }
+
 }
