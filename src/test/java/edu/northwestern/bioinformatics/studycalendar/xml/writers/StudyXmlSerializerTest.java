@@ -5,30 +5,16 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import edu.nwu.bioinformatics.commons.StringUtils;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import org.custommonkey.xmlunit.XMLAssert;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.BindException;
-import static org.springframework.validation.ValidationUtils.invokeValidator;
-import org.xml.sax.SAXException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
 
-public class StudyXmlSerializerTest extends StudyCalendarTestCase {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
+public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyXmlSerializer serializer;
     private Study study;
     private Element element;
@@ -93,35 +79,15 @@ public class StudyXmlSerializerTest extends StudyCalendarTestCase {
 
     public void testCreateDocumentString() throws Exception {
         StringBuffer expected = new StringBuffer();
-            expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-               .append(format("<study assigned-identifier=\"{0}\"", study.getAssignedIdentifier()))
-               .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
-               .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
-               .append(format("       {0}=\"{1}\">"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
-               .append(format(  "<planned-calendar id=\"{0}\"/>", calendar.getGridId()))
-               .append(       "</study>");
+        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append(format("<study assigned-identifier=\"{0}\"", study.getAssignedIdentifier()))
+                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
+                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
+                .append(format("       {0}=\"{1}\">"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
+                .append(format(  "<planned-calendar id=\"{0}\"/>", calendar.getGridId()))
+                .append(       "</study>");
 
         String actual = serializer.createDocumentString(study);
         assertXMLEqual(expected.toString(), actual);
-    }
-
-    private void assertXMLEqual(String expected, String actual) throws SAXException, IOException {
-        validate(actual.getBytes());
-        XMLUnit.setIgnoreWhitespace(true);
-        XMLUnit.setIgnoreAttributeOrder(true);
-        // XMLUnit's whitespace stripper stopped working at r1976 (of PSC) or so
-        // This is a quick-and-dirty (and not necessarily correct) alternative
-        String expectedNormalized = StringUtils.normalizeWhitespace(expected);
-        String actualNormalized = StringUtils.normalizeWhitespace(actual);
-        log.debug("Expected:\n{}", expectedNormalized);
-        log.debug("Actual:\n{}", actualNormalized);
-        XMLAssert.assertXMLEqual(expectedNormalized, actualNormalized);
-    }
-
-    private void validate(byte[] byteOutput) {
-        BindException errors = new BindException(byteOutput, EMPTY);
-        invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
-
-        assertFalse("Template xml should be error free", errors.hasErrors());
     }
 }
