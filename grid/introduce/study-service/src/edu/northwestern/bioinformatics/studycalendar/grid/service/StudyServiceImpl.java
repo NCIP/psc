@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
  */
 public class StudyServiceImpl extends StudyServiceImplBase {
 
-    private static final String DEFAULT_SPRING_CLASSPATH_EXPRESSION = "classpath:applicationContext-study-import-export.xml";
+    private static final String DEFAULT_SPRING_CLASSPATH_EXPRESSION = "classpath:applicationContext-grid-study-service.xml";
 
     private StudyService studyService;
     private String gridServiceBeanName = "studyService";
@@ -25,11 +25,13 @@ public class StudyServiceImpl extends StudyServiceImplBase {
 
     }
 
-	public edu.northwestern.bioinformatics.studycalendar.grid.Study retrieveStudyByAssignedIdentifier(java.lang.String assignedIdentifier) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException {
+	public edu.northwestern.bioinformatics.studycalendar.grid.Study retrieveStudyByAssignedIdentifier(java.lang.String assignedIdentifier) throws RemoteException
+            , edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException {
         return studyService.retrieveStudyByAssignedIdentifier(assignedIdentifier);
     }
 
-	public edu.northwestern.bioinformatics.studycalendar.grid.Study createStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException {
+	public edu.northwestern.bioinformatics.studycalendar.grid.Study createStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study study) throws RemoteException,
+            edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException {
         return studyService.createStudy(study);
     }
 

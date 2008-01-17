@@ -2,27 +2,26 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.grid.client.StudyServiceClient;
+import edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyDoesNotExistsException;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.test.AbstractTransactionalSpringContextTests;
-import org.springframework.validation.BindException;
-import static org.springframework.validation.ValidationUtils.invokeValidator;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Saurabh Agrawal
@@ -30,7 +29,7 @@ import java.util.Date;
 public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringContextTests {
 
     private PSCStudyService pscStudyService;
-    private String coordinatingCenterIdentifier;
+    private String ASSIGNED_IDENTIFIER;
 
 
     private StudyDao studyDao;
@@ -48,6 +47,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
     private StudyServiceClient studyServiceClient;
 
     private String studyXmlStringForImport;
+    private Epoch epoch;
 
     protected String[] getConfigLocations() {
 
@@ -58,7 +58,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
     }
 
     protected void onSetUpInTransaction() throws Exception {
-        coordinatingCenterIdentifier = "cc";
+        ASSIGNED_IDENTIFIER = "cc";
 
         DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
 
@@ -81,23 +81,12 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
     public void testStudyImportForValidStudyXmlLocalAndRemote() throws Exception {
 
-        amendment = createAmendment();
-        amendmentDao.save(amendment);
-
-        study = createStudy("Study A");
-        study.setAmendment(amendment);
-
-        PlannedCalendar plannedCalendar = new PlannedCalendar();
-        plannedCalendar.setStudy(study);
-        study.setPlannedCalendar(plannedCalendar);
-        studyDao.save(study);
-
-        String studyXml = pscStudyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        assertNotNull(studyXml);
-
-        validate(studyXml, true);
-
-        pscStudyService.importStudy(studyXml);
+//        String studyXml = studyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+//        assertNotNull(studyXml);
+//
+//        validate(studyXml, true);
+//
+//        pscStudyService.importStudy(studyXml);
 
         //now try remote also
 
@@ -128,17 +117,21 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
     public void testStudyImportForInValidStudyXmlStringLocalAndRemote() throws Exception {
 
         study = createStudy("Study A");
-        studyXmlStringForImport = pscStudyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        validate(studyXmlStringForImport, false);
+        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+
+        validateStudy(gridStudy, study);
 
         //now try importing this study
+// study xml:<ns1:study assigned-identifier="cc" id="58d98daa-3e7e-44fa-b687-e85e95845a6b" xmlns:ns1="http://bioinformatics.northwestern.edu/ns/psc">
+// <ns1:planned-calendar id="3062ad9b-d0e2-4cb3-bfec-e33dbf2bea4b"/>
+//</ns1:study>
 
-        try {
-            pscStudyService.importStudy(studyXmlStringForImport);
-            fail("studyXml string is not valid");
-        } catch (RemoteException e) {
-            //expecting this exception
-        }
+
+        pscStudyService.createStudy(gridStudy);
+//            fail("studyXml string is not valid");
+//        } catch (RemoteException e) {
+//            //expecting this exception
+//        }
 
         //now try remote also
 
@@ -177,82 +170,72 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
     public void testStudyExportLocalAndRemote() throws Exception {
 
-        amendment = createAmendment();
-        amendmentDao.save(amendment);
-
         study = createStudy("Study A");
-        study.setAmendment(amendment);
 
-        PlannedCalendar plannedCalendar = new PlannedCalendar();
-        plannedCalendar.setStudy(study);
-        study.setPlannedCalendar(plannedCalendar);
-        studyDao.save(study);
+        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
 
-        String studyXml = pscStudyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        assertNotNull(studyXml);
-
-        validate(studyXml, true);
+        validateStudy(gridStudy, study);
 
         //now try remote also
         //but for remote, we must commit the transaction
 
         commitAndStartNewTransaction();
-//        studyXml = studyServiceClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-//        assertNotNull(studyXml);
-//        validate(studyXml, true);
-//        deleteStudy();
+        gridStudy = studyServiceClient.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+
+        validateStudy(gridStudy, study);
 
     }
+
 
     public void testStudyExportWhenStudyDoesNotExistsForIdentifierLocalAndRemote() throws Exception {
         try {
-            pscStudyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
+            pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
             fail("no study exists with given identifier");
-        } catch (RemoteException e) {
+        } catch (StudyDoesNotExistsException e) {
             //expecting this exception
         }
 
-        //now try remote
+        //  now try remote
 
-//        try {
-//            studyServiceClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-//            fail("no study exists with given identifier");
-//        } catch (RemoteException e) {
-//            //expecting this exception
-//        }
-
-    }
-
-    public void testStudyExportForEmptyStudyLocalAndRemote() throws Exception {
-
-        study = createStudy("Study A");
-
-
-        String studyXml = pscStudyService.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-        assertNotNull(studyXml);
-
-        validate(studyXml, false);
-
-        //now try remote also
-        //but for remote, we must commit the transaction
-        commitAndStartNewTransaction();
-//        studyXml = studyServiceClient.exportStudyByCoordinatingCenterIdentifier(coordinatingCenterIdentifier);
-//        assertNotNull(studyXml);
-//
-//
-//        validate(studyXml, false);
-//        deleteStudy();
-
+        try {
+            studyServiceClient.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+            fail("no study exists with given identifier");
+        } catch (StudyDoesNotExistsException e) {
+            //expecting this exception
+        }
 
     }
 
 
-    public Amendment createAmendment() throws Exception {
-        Amendment newAmendment = new Amendment(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
-        newAmendment.setDate(new Date());
-        //setGridId(newAmendment);
-        return newAmendment;
+    private void validateStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy, Study study) {
+
+        assertNotNull(gridStudy);
+        assertNotNull(study);
+
+        assertEquals(study.getGridId(), gridStudy.getId());
+
+        assertEquals(study.getAssignedIdentifier(), gridStudy.getAssignedIdentifier());
+
+        edu.northwestern.bioinformatics.studycalendar.grid.Amendment[] gridAmendments = gridStudy.getAmendment();
+
+        List<Amendment> amendments = study.getAmendmentsList();
+        if (amendments != null && !amendments.isEmpty()) {
+            assertNotNull(gridAmendments);
+            assertEquals(amendments.size(), gridAmendments.length);
+
+        }
+
+        edu.northwestern.bioinformatics.studycalendar.grid.PlannedCalendar gridPlannedCalendar = gridStudy.getPlannedCalendar();
+
+        PlannedCalendar plannedCalendar = study.getPlannedCalendar();
+
+        if (plannedCalendar != null) {
+            assertNotNull(gridStudy.getPlannedCalendar());
+            assertEquals(plannedCalendar.getGridId(), gridPlannedCalendar.getId());
+        }
+
     }
+
 
     private void commitAndStartNewTransaction() {
         setComplete();
@@ -263,38 +246,32 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
 
     private void deleteStudy() {
-        Study anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+        Study anotherStudy = studyService.getStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
 
         if (anotherStudy != null) {
             studyService.delete(anotherStudy);
             commitAndStartNewTransaction();
-            anotherStudy = studyService.getStudyByAssignedIdentifier(coordinatingCenterIdentifier);
+            anotherStudy = studyService.getStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
             assertNull(anotherStudy);
         }
     }
 
-    private void validate(String studyXml, Boolean validStdyXmlString) {
-        assertNotNull(studyXml);
-        byte[] byteOutput = studyXml.getBytes();
-        BindException errors = new BindException(byteOutput, EMPTY);
-        invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
+    private Study createStudy(String shortTitle) {
+        Study newStudy = TemplateSkeletonCreatorImpl.createBase(shortTitle);
+        newStudy.setAssignedIdentifier(ASSIGNED_IDENTIFIER);
+        newStudy.setLongTitle("long title");
 
-        if (validStdyXmlString) {
-            assertFalse("Template xml should be error free", errors.hasErrors());
-        } else {
-            assertTrue("Template xml has errors", errors.hasErrors());
+        // now add 2 epochs..one with no arm and one with arms to the planned calendar of study
 
-        }
-    }
+        TemplateSkeletonCreatorImpl.addEpoch(newStudy, 0, Epoch.create("epoch with no arms"));
+
+        Epoch epochWithArms = Epoch.create("epoch with 2 arm", new String[]{"Arm A", "Arm B"});
+        TemplateSkeletonCreatorImpl.addEpoch(newStudy, 1, epochWithArms);
 
 
-    private Study createStudy(String longTitle) {
-        Study pscStudy = new Study();
-        pscStudy.setLongTitle("long title");
-        pscStudy.setAssignedIdentifier(coordinatingCenterIdentifier);
-        studyDao.save(pscStudy);
-        assertNotNull(pscStudy.getId());
-        return pscStudy;
+        studyService.save(newStudy);
+        assertNotNull(newStudy.getId());
+        return newStudy;
     }
 
     @Required
