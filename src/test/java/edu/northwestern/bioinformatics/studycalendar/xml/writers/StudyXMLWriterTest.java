@@ -1,48 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static org.easymock.EasyMock.expect;
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Named;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriterTest.StudyXMLSkeleton.insertXml;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder;
 import edu.nwu.bioinformatics.commons.StringUtils;
-import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import static org.apache.commons.lang.StringUtils.EMPTY;
-import org.custommonkey.xmlunit.DetailedDiff;
-import org.custommonkey.xmlunit.Diff;
-import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XMLAssert;
+import org.custommonkey.xmlunit.XMLUnit;
+import static org.easymock.EasyMock.expect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.BeansException;
 import org.xml.sax.SAXException;
-import org.easymock.EasyMock;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -55,7 +32,6 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyXMLWriter writer;
-    private DaoFinder daoFinder;
     private DomainObjectDao<?> daoMock;
 
     private Study study;
@@ -88,7 +64,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         daoMock = registerMockFor(DomainObjectDao.class);
-        daoFinder = new TestingSpringDaoFinder(daoMock);
+        DaoFinder daoFinder = new TestingSpringDaoFinder(daoMock);
 
         XMLUnit.setIgnoreWhitespace(true);
 
@@ -467,7 +443,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         public static String insertXml(Study study, Amendment amendment, StringBuffer xml) {
             StringBuffer buf = new StringBuffer();
             buf.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-               .append(format("<study assigned-identifier=\"{0}\" id=\"{1}\" \n", study.getAssignedIdentifier(), study.getGridId()))
+               .append(format("<study assigned-identifier=\"{0}\" \n", study.getAssignedIdentifier()))
                .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
                .append(format("       {0}=\"{1} {2}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
                .append(format("       {0}=\"{1}\">\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))

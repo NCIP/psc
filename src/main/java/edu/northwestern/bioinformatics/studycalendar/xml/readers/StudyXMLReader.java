@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.readers;
 
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
@@ -15,11 +14,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode.cast;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.ASSIGNED_IDENTIFIER;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.PLANNDED_CALENDAR;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,12 +114,11 @@ public class StudyXMLReader  {
 
     protected Study parseStudy(Document doc) {
         Element element = doc.getDocumentElement();
-        String gridId = element.getAttribute(ID);
-        Study study = studyDao.getByGridId(gridId);
+        String assignedId = element.getAttribute(ASSIGNED_IDENTIFIER);
+        Study study = studyDao.getByAssignedIdentifier(assignedId);
         if (study == null) {
             study = new Study();
-            study.setGridId(gridId);
-            study.setAssignedIdentifier(element.getAttribute(ASSIGNED_IDENTIFIER));
+            study.setAssignedIdentifier(assignedId);
         }
 
         addPlannedCalendar(element, study);

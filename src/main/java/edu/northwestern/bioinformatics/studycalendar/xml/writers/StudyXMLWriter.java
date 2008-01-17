@@ -65,14 +65,14 @@ public class StudyXMLWriter {
     public static final String PLANNED_ACTIVITY = "planned-activity";
     public static final String ACTIVITY = "activity";
     public static final String SOURCE = "source";
-    
+
     /* Tag Attribute constants */
     public static final String ID = "id";
     public static final String DATE = "date";
     public static final String NAME = "name";
     public static final String INDEX = "index";
     public static final String MANDATORY = "mandatory";
-    
+
     public static final String NODE_ID = "node-id";
     public static final String DAY = "day";
     public static final String DETAILS = "details";
@@ -137,7 +137,6 @@ public class StudyXMLWriter {
         element.setAttributeNS(XML_NS, XML_SCHEMA_ATTRIBUTE, XSI_NS);
         element.setAttributeNS(XSI_NS, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
 
-        setAttrib(element, ID, study.getGridId());
         setAttrib(element, ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
         addPlannedCalendar(document, study, element);

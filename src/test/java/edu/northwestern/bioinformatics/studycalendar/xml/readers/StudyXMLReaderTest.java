@@ -22,13 +22,10 @@ import org.easymock.classextension.EasyMock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.validation.SchemaFactory;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import static java.text.MessageFormat.format;
@@ -83,14 +80,14 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadNewStudyAndPlannedCalendar() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-            .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+            .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
            .append(       " <planned-calendar id=\"grid1\" />\n")
            .append(       "</study>");
 
-        expect(studyDao.getByGridId("grid0")).andReturn(null);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(null);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(null);
         replayMocks();
 
@@ -98,7 +95,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertEquals("Wrong Study Identifier", "Study A", actual.getAssignedIdentifier());
-        assertEquals("Wrong Grid Id", "grid0", actual.getGridId());
 
         PlannedCalendar actualCalendar = actual.getPlannedCalendar();
         assertEquals("Wrong Grid Id", "grid1", actualCalendar.getGridId());
@@ -108,7 +104,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadExistingStudyAndPlannedCalendar() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -120,7 +116,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Study study = setGridId("grid0", createNamedInstance("Study A", Study.class));
         study.setPlannedCalendar(calendar);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         replayMocks();
 
@@ -134,7 +130,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadAmendments() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -147,7 +143,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         study.setAmendment(previous);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(previous);
@@ -173,7 +169,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadExistingDelta() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -198,7 +194,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         study.setAmendment(amendment);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment);
 
@@ -216,7 +212,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadNewPlannedCalendarDelta() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
-           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
+           .append(       "<study assigned-identifier=\"Study A\"")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -241,7 +237,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
            .append(       "</study>");
 
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(null);
@@ -318,7 +314,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadNewEpochDelta() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
-           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
+           .append(       "<study assigned-identifier=\"Study A\"")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -346,7 +342,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         calendar.addEpoch(epoch);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
@@ -382,7 +378,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testReadNewStudySegmentDelta() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\"?>\n")
-           .append(       "<study id=\"grid0\" assigned-identifier=\"Study A\"")
+           .append(       "<study assigned-identifier=\"Study A\"")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -425,7 +421,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         Amendment amendment1 = setGridId("grid6", new Amendment());
         amendment1.setPreviousAmendment(amendment0);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
@@ -462,7 +458,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testRemoveChange() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\"\n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -487,7 +483,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         Amendment amendment0 = setGridId("grid2", new Amendment());
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
@@ -511,7 +507,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
      public void testReorderChange() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -538,7 +534,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         Amendment amendment0 = setGridId("grid2", new Amendment());
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
 
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
@@ -564,7 +560,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
     public void testPropertyChange() throws Exception {
         StringBuffer buf = new StringBuffer();
         buf.append(       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-           .append(       "<study assigned-identifier=\"Study A\" id=\"grid0\" \n")
+           .append(       "<study assigned-identifier=\"Study A\" \n")
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
            .append(format("       {0}=\"{1}\" \n"     , SCHEMA_LOCATION_ATTRIBUTE, SCHEMA_LOCATION))
            .append(format("       {0}=\"{1}\" >\n"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
@@ -596,7 +592,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
 
         study.setAmendment(amendment1);
 
-        expect(studyDao.getByGridId("grid0")).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
         expect(plannedCalendarDao.getByGridId("grid1")).andReturn(calendar);
         expect(amendmentDao.getByGridId("grid2")).andReturn(amendment0);
         expect(amendmentDao.getByGridId("grid6")).andReturn(null);
@@ -619,9 +615,6 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         StringBuffer buf = new StringBuffer();
         buf.append("<first id=\"1\"><second id=\"2\"><third id=\"3\"/></second><fourth id=\"4\"/></first>");
 
-        // create a SchemaFactory that conforms to W3C XML Schema
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-
         // get a DOM factory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -634,7 +627,7 @@ public class StudyXMLReaderTest extends StudyCalendarTestCase {
         assertEquals("Wrong size", 4, nodes.size());
 
         Node node = reader.findNodeById(nodes, "4");
-        assertEquals("wrong node", "fourth", ((Element) node).getNodeName());
+        assertEquals("wrong node", "fourth", node.getNodeName());
     }
 
     /* Test Helpers */

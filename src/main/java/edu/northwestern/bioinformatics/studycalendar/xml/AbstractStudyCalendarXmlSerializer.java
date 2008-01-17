@@ -1,17 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.DocumentException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
+import org.dom4j.*;
 import org.dom4j.io.SAXReader;
-import static org.apache.commons.lang.StringUtils.EMPTY;
 
 import java.io.Reader;
-
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Rhett Sutphin
@@ -26,13 +21,15 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public static final String SCHEMA_LOCATION_ATTRIBUTE  = "schemaLocation";
     public static final String XML_SCHEMA_ATTRIBUTE       = "xsi";
 
+    public static final Namespace DEFAULT_NAMESPACE = DocumentHelper.createNamespace("", PSC_NS);
+
     public Document createDocument(R root) {
         Document document = DocumentHelper.createDocument();
         Element element = createElement(root);
-
-        element.addNamespace(EMPTY, PSC_NS)
-                .addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS)
-                .addNamespace(SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
+        
+        element.add(DEFAULT_NAMESPACE);
+        element.addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS)
+                .addAttribute("xsi:"+SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
 
         document.add(element);
         
@@ -62,5 +59,4 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public abstract Element createElement(R object);
 
     public abstract R readElement(Element element);
-
 }
