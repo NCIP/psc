@@ -4,10 +4,12 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTes
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_NAMESPACE_ATTRIBUTE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PSC_NS;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_LOCATION_ATTRIBUTE;
@@ -51,11 +53,12 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testReadElement() {
         expect(element.attributeValue("id")).andReturn("grid0");
+        expect(element.getName()).andReturn("epoch").times(2);
         expect(epochDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("name")).andReturn("Epoch A");
         replayMocks();
 
-        Epoch actual = serializer.readElement(element);
+        Epoch actual = (Epoch) serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
@@ -64,10 +67,11 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testReadElementExists() {
         expect(element.attributeValue("id")).andReturn("grid0");
+        expect(element.getName()).andReturn("epoch").times(2);
         expect(epochDao.getByGridId("grid0")).andReturn(epoch);
         replayMocks();
 
-        Epoch actual = serializer.readElement(element);
+        Epoch actual = (Epoch) serializer.readElement(element);
         verifyMocks();
 
         assertSame("Wrong Epoch", epoch, actual);
