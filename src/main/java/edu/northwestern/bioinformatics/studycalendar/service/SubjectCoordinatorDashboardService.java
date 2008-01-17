@@ -66,7 +66,7 @@ public class SubjectCoordinatorDashboardService {
     }
 
     public Map<String, Object> getMapOfCurrentEventsForSpecificActivity(
-            List<StudySubjectAssignment> studySubjectAssignments, int initialShiftDate, Map<ActivityType, Boolean> activities) {
+        List<StudySubjectAssignment> studySubjectAssignments, int initialShiftDate, Map<ActivityType, Boolean> activities) {
         Date startDate = new Date();
         Collection<ScheduledActivity> collectionOfEvents;
         SortedMap<String, Object> mapOfUserAndCalendar = new TreeMap<String, Object>();
@@ -86,7 +86,12 @@ public class SubjectCoordinatorDashboardService {
                 if (collectionOfEvents.size()>0) {
                     for (ScheduledActivity event : collectionOfEvents) {
                         ActivityType eventActivityType = event.getActivity().getType();
-                        Boolean value = activities.get(eventActivityType);
+                        Boolean value;
+                        if(!activities.containsKey(eventActivityType)) {
+                            value = false;
+                        } else {
+                            value = activities.get(eventActivityType);
+                        }
                         if (value) {
                             events.add(event);
                         }
