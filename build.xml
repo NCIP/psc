@@ -653,32 +653,10 @@ done so already, please perform the following manual actions.
 
     <target name="reports" depends="test.unit.report"/>
 
-
-	<target name="insert-csm-policy" depends="init">
-		<dbunit driver="${datasource.driver}"
-			url="${datasource.url}"
-			userid="${datasource.username}"
-			password="${datasource.password}">
-
-			<classpath refid="cp.unit-test" />
-
-			<operation type="INSERT" src="tools/csm/CSM_policy.xml" />
-			<!--<operation type="CLEAN_INSERT" src="tools/csm/CSM_policy.xml" />-->
-
-		</dbunit>
-	</target>
-
-	<target name="delete-csm-policy" depends="init">
-		<dbunit driver="${datasource.driver}"
-			url="${datasource.url}"
-			userid="${datasource.username}"
-			password="${datasource.password}">
-
-			<classpath refid="cp.unit-test" />
-
-			<operation type="DELETE" src="tools/csm/CSM_policy.xml" />
-
-		</dbunit>
-	</target>
-
+    <target name="deploy-xml-schema">
+        <exec executable="scp">
+            <arg file="${src-dir.main}/psc.xsd"/>
+            <arg value="ligand:/usr/local/share/www/www_bioinformatics_northwestern_edu/ns/psc"/>
+        </exec>
+    </target>
 </project>
