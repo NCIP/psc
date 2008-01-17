@@ -3,9 +3,9 @@
             xmlns:java="http://xml.apache.org/axis/wsdd/providers/java" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             name="defaultServerConfig">
     <handler name="auditInfoRequestHandler"
-             type="java:edu.northwestern.bioinformatics.studycalendar.grid.edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler"/>
+             type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoRequestHandler"/>
     <handler name="auditInfoResponseHandler"
-             type="java:edu.northwestern.bioinformatics.studycalendar.grid.edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler"/>
+             type="java:edu.northwestern.bioinformatics.studycalendar.grid.AuditInfoResponseHandler"/>
     <service name="SERVICE-INSTANCE-PREFIX/StudyService" provider="Handler" use="literal" style="document">
         <parameter name="className"
                    value="edu.northwestern.bioinformatics.studycalendar.grid.service.globus.StudyServiceProviderImpl"/>

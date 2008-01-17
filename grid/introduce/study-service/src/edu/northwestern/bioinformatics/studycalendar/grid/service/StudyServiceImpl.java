@@ -16,7 +16,7 @@ public class StudyServiceImpl extends StudyServiceImplBase {
     private static final String DEFAULT_SPRING_CLASSPATH_EXPRESSION = "classpath:applicationContext-grid-study-service.xml";
 
     private StudyService studyService;
-    private String gridServiceBeanName = "studyService";
+    private String gridServiceBeanName = "studyGridService";
 
     public StudyServiceImpl() throws RemoteException {
         super();
