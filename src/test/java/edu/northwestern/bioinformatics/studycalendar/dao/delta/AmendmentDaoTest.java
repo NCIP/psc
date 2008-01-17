@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 import java.util.List;
 import java.util.Calendar;
@@ -53,8 +54,49 @@ public class AmendmentDaoTest extends DaoTestCase {
     }
 
     public void testGetAll() throws Exception {
-        List<Amendment> listBeforeAdding = amendmentDao.getAll();
-        assertEquals("Amendment wasn't added ", 2 , listBeforeAdding.size());
+        List<Amendment> all = amendmentDao.getAll();
+        assertEquals(6, all.size());
     }
 
+    public void testGetByKeyWithoutNameWhenAmendmentHasNameButUniqueDate() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2006-02-01");
+        assertNotNull("Could not find it", actual);
+        assertEquals(-100, (int) actual.getId());
+    }
+
+    public void testGetByKeyWithoutNameWhenOneHasANameAndOneDoesNot() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-05-17");
+        assertNotNull("Could not find it", actual);
+        assertEquals(-220, (int) actual.getId());
+    }
+
+    public void testGetByKeyWithoutNameAmendmentDoesNotHaveOne() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-07-11");
+        assertNotNull("Could not find it", actual);
+        assertEquals(-221, (int) actual.getId());
+    }
+
+    public void testGetByKeyWithoutNameWhenItIsAmbiguous() throws Exception {
+        try {
+            amendmentDao.getByNaturalKey("2008-11-23");
+            fail("Exception not thrown");
+        } catch (StudyCalendarValidationException scve) {
+            assertEquals("More than one amendment could match 2008-11-23: 2008-11-23~pheasant, 2008-11-23~turkey.  Please be more specific.",
+                scve.getMessage());
+        }
+    }
+
+    public void testGetByKeyWithName() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-11-23~pheasant");
+        assertNotNull("Could not find it", actual);
+        assertEquals(-222, (int) actual.getId());
+    }
+
+    public void testGetByKeyWorksWithGeneratedKeys() throws Exception {
+        for (Amendment original : amendmentDao.getAll()) {
+            Amendment relookedup = amendmentDao.getByNaturalKey(original.getNaturalKey());
+            assertNotNull("Could not find using key " + original.getNaturalKey(), original);
+            assertEquals("Mismatch: " + original + " != " + relookedup, original.getId(), relookedup.getId());
+        }
+    }
 }
