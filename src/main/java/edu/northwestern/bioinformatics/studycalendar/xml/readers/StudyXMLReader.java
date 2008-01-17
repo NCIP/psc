@@ -62,7 +62,7 @@ public class StudyXMLReader  {
     private Map<String, Class<? extends PlanTreeNode>> elementToPlanTreeNodeMapping = new HashMap<String, Class<? extends PlanTreeNode>>();
 
     {
-        elementToPlanTreeNodeMapping.put(PLANNDED_CALENDAR, PlannedCalendar.class);
+        elementToPlanTreeNodeMapping.put(PLANNED_CALENDAR, PlannedCalendar.class);
         elementToPlanTreeNodeMapping.put(EPOCH, Epoch.class);
         elementToPlanTreeNodeMapping.put(STUDY_SEGMENT, StudySegment.class);
         elementToPlanTreeNodeMapping.put(PERIOD, Period.class);
@@ -129,7 +129,7 @@ public class StudyXMLReader  {
     }
 
     protected void addPlannedCalendar(Element parentElement, Study parent) {
-        NodeList nodes = parentElement.getElementsByTagName(PLANNDED_CALENDAR);
+        NodeList nodes = parentElement.getElementsByTagName(PLANNED_CALENDAR);
 
         Element element = ((Element)nodes.item(0));
         String gridId = element.getAttribute(ID);

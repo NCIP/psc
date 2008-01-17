@@ -58,7 +58,7 @@ public class StudyXMLWriter {
     public static final String PROPERTY_CHANGE = "property-change";
 
     public static final String AMENDMENT = "amendment";
-    public static final String PLANNDED_CALENDAR = "planned-calendar";
+    public static final String PLANNED_CALENDAR = "planned-calendar";
     public static final String EPOCH = "epoch";
     public static final String STUDY_SEGMENT = "study-segment";
     public static final String PERIOD = "period";
@@ -132,7 +132,7 @@ public class StudyXMLWriter {
 
     // TODO: Break all these add methods into an ElementFactory
     protected void addStudy(Document document, Study study) {
-        Element element = document.createElement(STUDY);
+        Element element = document.createElementNS(PSC_NS, STUDY);
         element.setAttributeNS(XML_NS, SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS);
         element.setAttributeNS(XML_NS, XML_SCHEMA_ATTRIBUTE, XSI_NS);
         element.setAttributeNS(XSI_NS, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
@@ -152,7 +152,7 @@ public class StudyXMLWriter {
 
     protected void addPlannedCalendar(Document document, Study study, Element parent) {
         if (study.getPlannedCalendar() != null) {
-            Element element = document.createElement(PLANNDED_CALENDAR);
+            Element element = document.createElementNS(PSC_NS, PLANNED_CALENDAR);
             setAttrib(element, ID, study.getPlannedCalendar().getGridId());
 
             document.appendChild(parent);
@@ -162,7 +162,7 @@ public class StudyXMLWriter {
 
     protected void addAmendments(Document document, List<Amendment> amendments, Element parent) {
         for (Amendment amendment : amendments) {
-            Element element = document.createElement(AMENDMENT);
+            Element element = document.createElementNS(PSC_NS, AMENDMENT);
 
             setAttrib(element, NAME, amendment.getName());
             setAttrib(element, MANDATORY, Boolean.toString(amendment.isMandatory()));
@@ -186,15 +186,15 @@ public class StudyXMLWriter {
         for (Delta<?> delta : deltas) {
             Element element;
             if (delta instanceof PlannedCalendarDelta) {
-                element = document.createElement(PLANNED_CALENDAR_DELTA);
+                element = document.createElementNS(PSC_NS, PLANNED_CALENDAR_DELTA);
             } else if (delta instanceof EpochDelta) {
-                element = document.createElement(EPOCH_DELTA);
+                element = document.createElementNS(PSC_NS, EPOCH_DELTA);
             } else if (delta instanceof StudySegmentDelta) {
-                element = document.createElement(STUDY_SEGMENT_DELTA);
+                element = document.createElementNS(PSC_NS, STUDY_SEGMENT_DELTA);
             } else if (delta instanceof PeriodDelta) {
-                element = document.createElement(PERIOD_DELTA);
+                element = document.createElementNS(PSC_NS, PERIOD_DELTA);
             } else if (delta instanceof PlannedActivityDelta) {
-                element = document.createElement(PLANNED_ACTIVITY_DELTA);
+                element = document.createElementNS(PSC_NS, PLANNED_ACTIVITY_DELTA);
             } else {
                 throw new StudyCalendarError("Delta is not recognized: %s", delta.getClass());
             }
@@ -211,7 +211,7 @@ public class StudyXMLWriter {
     protected void addChanges(Document document, List<Change> changes, Element parent, Class<?> childClass) {
         for (Change change : changes) {
             if ((ChangeAction.ADD).equals(change.getAction())) {
-                Element element = document.createElement(ADD);
+                Element element = document.createElementNS(PSC_NS, ADD);
                 setAttrib(element, ID, change.getGridId());
                 Add add = ((Add) change);
                 if (add.getIndex() != null) {
@@ -221,19 +221,19 @@ public class StudyXMLWriter {
 
                 addChild(document, ((PlanTreeNode<?>) getChild(((ChildrenChange) change).getChildId(), childClass)), element);
             } else if ((ChangeAction.REMOVE).equals(change.getAction())) {
-                Element element = document.createElement(REMOVE);
+                Element element = document.createElementNS(PSC_NS, REMOVE);
                 setAttrib(element, ID, change.getGridId());
                 setAttrib(element, CHILD_ID, ((PlanTreeNode<?>) getChild((((Remove) change).getChildId()), childClass)).getGridId());
                 parent.appendChild(element);
             } else if (ChangeAction.REORDER.equals(change.getAction())) {
-                Element element = document.createElement(REORDER);
+                Element element = document.createElementNS(PSC_NS, REORDER);
                 setAttrib(element, ID, change.getGridId());
                 setAttrib(element, CHILD_ID, ((PlanTreeNode<?>) getChild((((Reorder) change).getChildId()), childClass)).getGridId());
                 setAttrib(element, OLD_INDEX, ((Reorder) change).getOldIndex().toString());
                 setAttrib(element, NEW_INDEX, ((Reorder) change).getNewIndex().toString());
                 parent.appendChild(element);
             } else if (ChangeAction.CHANGE_PROPERTY.equals(change.getAction())) {
-                Element element = document.createElement(PROPERTY_CHANGE);
+                Element element = document.createElementNS(PSC_NS, PROPERTY_CHANGE);
                 setAttrib(element, ID, change.getGridId());
                 setAttrib(element, PROPERTY_NAME, ((PropertyChange) change).getPropertyName());
                 setAttrib(element, OLD_VALUE, ((PropertyChange) change).getOldValue());
@@ -249,7 +249,7 @@ public class StudyXMLWriter {
         // TODO: there's a lot of duplicate code here which could be factored out
         if (child instanceof Epoch) {
             Epoch epoch = (Epoch) child;
-            Element element = document.createElement(EPOCH);
+            Element element = document.createElementNS(PSC_NS, EPOCH);
             setAttrib(element, NAME, epoch.getName());
             setAttrib(element, ID, epoch.getGridId());
             parent.appendChild(element);
@@ -257,7 +257,7 @@ public class StudyXMLWriter {
             addChildren(document, epoch.getChildren(), element);
         } else if (child instanceof StudySegment) {
             StudySegment segment = (StudySegment) child;
-            Element element = document.createElement(STUDY_SEGMENT);
+            Element element = document.createElementNS(PSC_NS, STUDY_SEGMENT);
             setAttrib(element, NAME, segment.getName());
             setAttrib(element, ID, segment.getGridId());
             parent.appendChild(element);
@@ -265,7 +265,7 @@ public class StudyXMLWriter {
             addChildren(document, segment.getChildren(), element);
         } else if (child instanceof Period) {
             Period period = (Period) child;
-            Element element = document.createElement(PERIOD);
+            Element element = document.createElementNS(PSC_NS, PERIOD);
             setAttrib(element, NAME, period.getName());
             setAttrib(element, ID, period.getGridId());
             parent.appendChild(element);
@@ -273,7 +273,7 @@ public class StudyXMLWriter {
             addChildren(document, period.getPlannedActivities(), element);
         } else if (child instanceof PlannedActivity) {
             PlannedActivity plannedActivity = (PlannedActivity) child;
-            Element element = document.createElement(PLANNED_ACTIVITY);
+            Element element = document.createElementNS(PSC_NS, PLANNED_ACTIVITY);
             setAttrib(element, ID, plannedActivity.getGridId());
             setAttrib(element, DAY, plannedActivity.getDay().toString());
             setAttrib(element, DETAILS, plannedActivity.getDetails());
@@ -295,7 +295,7 @@ public class StudyXMLWriter {
             throw new StudyCalendarError("Source for activity %s (%s) is required and value is null", activity.getName(), activity.getGridId());
         }
 
-        Element element = document.createElement(ACTIVITY);
+        Element element = document.createElementNS(PSC_NS, ACTIVITY);
 
         setAttrib(element, ID, activity.getGridId());
         setAttrib(element, NAME, activity.getName());
@@ -308,7 +308,7 @@ public class StudyXMLWriter {
     }
 
     protected void addSource(Document document, Source source, Element parent) {
-        Element element = document.createElement(SOURCE);
+        Element element = document.createElementNS(PSC_NS, SOURCE);
 
         setAttrib(element, ID, source.getGridId());
         setAttrib(element, NAME, source.getName());

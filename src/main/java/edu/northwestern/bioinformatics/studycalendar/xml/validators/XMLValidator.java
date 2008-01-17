@@ -39,18 +39,21 @@ public class XMLValidator implements Validator {
         File uncompiledSchema = schema.file();
 
         try {
+            log.debug("Validating against {}", uncompiledSchema.getAbsolutePath());
+            
             // 3. Compile the schema.
             javax.xml.validation.Schema schema = factory.newSchema(uncompiledSchema);
 
             // 4. Get a validator from the schema.
             javax.xml.validation.Validator validator = schema.newValidator();
+            log.debug("Validating with {}", validator.getClass().getName());
 
             // 5. Parse the document you want to check.
             Source source = new StreamSource(input);
 
             // 6. Check the document
             validator.validate(source);
-            log.info("{} file is valid.", getSchemaTitle());
+            log.debug("{} file is valid.", getSchemaTitle());
         }
         catch (SAXException ex) {
             // TODO: get cause of SaxException and display in form other than cryptic SaxException message.

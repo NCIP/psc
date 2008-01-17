@@ -392,7 +392,7 @@ public class StudyXMLWriterTest extends StudyCalendarTestCase {
         BindException errors = new BindException(byteOutput, EMPTY);
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
-        assertFalse("Template xml should be error free", errors.hasErrors());
+        assertFalse("Template xml should be error free: " + errors.getGlobalErrors(), errors.hasErrors());
     }
 
 
