@@ -150,6 +150,7 @@
             <fileset dir="${src-dir.main}">
                 <include name="**/*.xml"/>
                 <include name="**/*.xsd"/>
+                <include name="**/*.xsl"/>
                 <include name="**/*.wadl"/>
                 <include name="**/*.properties"/>
                 <include name="**/*.ftl"/>

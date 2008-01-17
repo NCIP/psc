@@ -18,6 +18,21 @@
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
+    <bean name="/psc-resources.html"
+          id="wadlHtmlResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlHtmlResource"
+          >
+        <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
+    </bean>
+
+    <bean name="/psc.xsd"
+          id="xsdResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ClasspathResource"
+          >
+        <property name="mimeType" value="text/xml"/>
+        <property name="resourcePath" value="psc.xsd"/>
+    </bean>
+
   <!-- AUXILIARIES -->
   
     <bean id="resourceFreemarkerConfiguration"

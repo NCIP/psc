@@ -4,7 +4,6 @@
     base URI in place.
   -->
 <?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="wadl_documentation.xsl"?>
 <application xmlns="http://research.sun.com/wadl/2006/10"
   xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
