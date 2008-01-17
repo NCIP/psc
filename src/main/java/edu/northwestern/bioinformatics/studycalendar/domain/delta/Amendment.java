@@ -18,10 +18,11 @@ import java.util.List;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
-import com.sun.mail.imap.protocol.INTERNALDATE;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
@@ -86,12 +87,11 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     @Transient
     public String getNaturalKey() {
-        StringBuilder sb = new StringBuilder()
-            .append(createNaturalKeyDateFormat().format(getDate()));
-        if (getName() != null) {
-            sb.append('~').append(getName());
-        }
-        return sb.toString();
+        return new Key(getDate(), getName()).toString();
+    }
+
+    public static Key decomposeNaturalKey(String key) {
+        return Key.create(key);
     }
 
     public static DateFormat createNaturalKeyDateFormat() {
@@ -202,5 +202,61 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
             .append("; name=").append(getName())
             .append("; prev=").append(getPreviousAmendment() == null ? null : getPreviousAmendment().getDisplayName())
             .append(']').toString();
+    }
+
+    public static final class Key {
+        private Date date;
+        private String name;
+
+        public Key(Date date, String name) {
+            this.date = date;
+            this.name = name;
+        }
+
+        public static Key create(String keyStr) {
+            if (keyStr == null) throw new NullPointerException("Cannot decompose null");
+            String dateStr, name = null;
+            int tildeLoc = keyStr.indexOf('~');
+            if (tildeLoc >= 0) {
+                name = keyStr.substring(tildeLoc + 1);
+                dateStr = keyStr.substring(0, tildeLoc);
+            } else {
+                dateStr = keyStr;
+            }
+            Date date;
+            try {
+                date = createNaturalKeyDateFormat().parse(dateStr);
+            } catch (ParseException e) {
+                throw new StudyCalendarValidationException(
+                    "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
+            }
+            return new Key(date, name);
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder()
+                .append(createNaturalKeyDateFormat().format(getDate()));
+            if (getName() != null) {
+                sb.append('~').append(getName());
+            }
+            return sb.toString();
+        }
     }
 }

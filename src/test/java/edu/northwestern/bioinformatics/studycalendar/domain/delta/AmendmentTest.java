@@ -97,4 +97,16 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a0.setName(null);
         assertEquals("2009-11-06", a0.getNaturalKey());
     }
+
+    public void testDecomposeNaturalKeyWithName() throws Exception {
+        Amendment.Key actual = Amendment.decomposeNaturalKey("2003-08-11~fred");
+        assertDayOfDate(2003, Calendar.AUGUST,  11, actual.getDate());
+        assertEquals("Wrong name", "fred", actual.getName());
+    }
+    
+    public void testDecomposeNaturalKeyWithoutName() throws Exception {
+        Amendment.Key actual = Amendment.decomposeNaturalKey("2001-01-12");
+        assertDayOfDate(2001, Calendar.JANUARY,  12, actual.getDate());
+        assertNull("Wrong name", actual.getName());
+    }
 }
