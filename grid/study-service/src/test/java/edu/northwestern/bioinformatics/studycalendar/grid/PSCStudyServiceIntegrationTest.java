@@ -1,7 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -28,18 +26,12 @@ import java.util.List;
  */
 public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringContextTests {
 
-    private PSCStudyService pscStudyService;
+    private PSCStudyService studyGridService;
     private String ASSIGNED_IDENTIFIER;
-
-
-    private StudyDao studyDao;
 
 
     private Study study;
 
-    private Amendment amendment;
-
-    private AmendmentDao amendmentDao;
 
     private StudyService studyService;
 
@@ -62,7 +54,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
         DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("test", "localhost", new Date(), "/wsrf/services/cagrid/StudyConsumer"));
 
-        gridServiceUrl = "http://localhost:8080/wsrf/services/cagrid/StudyImportExport";
+        gridServiceUrl = "http://localhost:8080/wsrf/services/cagrid/StudyService";
         studyServiceClient = new StudyServiceClient(gridServiceUrl);
 
         //make sure no study  existis with given identifier
@@ -96,7 +88,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
     public void testStudyImportForNullOrEmptyStudyXmlLocalAndRemote() throws Exception {
         try {
-            pscStudyService.importStudy("");
+            studyGridService.importStudy("");
             fail("studyXml string is either empty or null");
         } catch (RemoteException e) {
             //expecting this exception
@@ -117,7 +109,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
     public void testStudyImportForInValidStudyXmlStringLocalAndRemote() throws Exception {
 
         study = createStudy("Study A");
-        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = studyGridService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
 
         validateStudy(gridStudy, study);
 
@@ -127,7 +119,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 //</ns1:study>
 
 
-        pscStudyService.createStudy(gridStudy);
+        studyGridService.createStudy(gridStudy);
 //            fail("studyXml string is not valid");
 //        } catch (RemoteException e) {
 //            //expecting this exception
@@ -163,8 +155,8 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
         }
         logger.debug("wsdl file content is:" + htmlContent);
-        assertTrue(htmlContent.indexOf("<wsdl:definitions name=\"StudyImportExport\" targetNamespace=\"http://grid.ccts.nci.nih.gov/StudyImportExport/service\"") >= 0);
-        assertTrue(htmlContent.indexOf("xmlns:binding=\"http://grid.ccts.nci.nih.gov/StudyImportExport/bindings\"") >= 0);
+        assertTrue(htmlContent.indexOf("<wsdl:definitions name=\"StudyService\" targetNamespace=\"http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/service\"") >= 0);
+        assertTrue(htmlContent.indexOf("xmlns:binding=\"http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/bindings\"") >= 0);
 
     }
 
@@ -172,7 +164,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
         study = createStudy("Study A");
 
-        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = studyGridService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
 
         validateStudy(gridStudy, study);
 
@@ -189,9 +181,11 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
     public void testStudyExportWhenStudyDoesNotExistsForIdentifierLocalAndRemote() throws Exception {
         try {
-            pscStudyService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
-            fail("no study exists with given identifier");
+            studyGridService.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
+            fail("Exception while exporting study..no study found with given identifier:cc");
+
         } catch (StudyDoesNotExistsException e) {
+
             //expecting this exception
         }
 
@@ -199,7 +193,7 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
 
         try {
             studyServiceClient.retrieveStudyByAssignedIdentifier(ASSIGNED_IDENTIFIER);
-            fail("no study exists with given identifier");
+            fail("Exception while exporting study..no study found with given identifier:cc");
         } catch (StudyDoesNotExistsException e) {
             //expecting this exception
         }
@@ -275,19 +269,10 @@ public class PSCStudyServiceIntegrationTest extends AbstractTransactionalSpringC
     }
 
     @Required
-    public void setPscStudyService(PSCStudyService pscStudyService) {
-        this.pscStudyService = pscStudyService;
+    public void setStudyGridService(PSCStudyService studyGridService) {
+        this.studyGridService = studyGridService;
     }
 
-    @Required
-    public void setStudyDao(StudyDao studyDao) {
-        this.studyDao = studyDao;
-    }
-
-    @Required
-    public void setAmendmentDao(AmendmentDao amendmentDao) {
-        this.amendmentDao = amendmentDao;
-    }
 
     @Required
     public void setStudyService(StudyService studyService) {

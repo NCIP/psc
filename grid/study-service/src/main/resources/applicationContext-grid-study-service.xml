@@ -4,7 +4,7 @@
 
 <beans default-lazy-init="true">
 
-    <bean id="pscStudyService" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyService">
+    <bean id="studyGridService" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyService">
         <property name="studyXMLReader" ref="studyXMLReader"/>
         <property name="studyXMLWriter" ref="studyXMLWriter"/>
         <property name="studyService" ref="studyService"/>

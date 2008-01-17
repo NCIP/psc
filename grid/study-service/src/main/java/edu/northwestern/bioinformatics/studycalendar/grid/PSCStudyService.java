@@ -24,11 +24,8 @@ import java.rmi.RemoteException;
  * @author Saurabh Agrawal
  */
 public class PSCStudyService implements StudyService {
+
     private static final Log logger = LogFactory.getLog(PSCStudyService.class);
-
-    public static final String SERVICE_BEAN_NAME = "scheduledCalendarService";
-
-    private static final String COORDINATING_CENTER_IDENTIFIER_TYPE = "Coordinating Center Identifier";
 
 
     private StudyXMLReader studyXMLReader;
@@ -69,17 +66,17 @@ public class PSCStudyService implements StudyService {
         if (study == null) {
             String message = "Exception while exporting study..no study found with given identifier:" + coordinatingCenterIdentifier;
             logger.debug(message);
-            StudyAlreadyExistsException studyAlreadyExistsException = new StudyAlreadyExistsException();
-            studyAlreadyExistsException.setFaultReason(message);
-            studyAlreadyExistsException.setFaultString(message);
+            StudyDoesNotExistsException studyDoesNotExistsException = new StudyDoesNotExistsException();
+            studyDoesNotExistsException.setFaultReason(message);
+            studyDoesNotExistsException.setFaultString(message);
 
-            throw studyAlreadyExistsException;
+            throw studyDoesNotExistsException;
         }
 
         try {
-            //covertStudyToGridStudy(study);
             String studyXml = studyXMLWriter.createStudyXML(study);
             edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = populateGridStudy(studyXml);
+
             //example of this study xml
 //            <?xml version="1.0" encoding="UTF-8"?>
 //            <study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -99,38 +96,6 @@ public class PSCStudyService implements StudyService {
 
     }
 
-//    private void covertStudyToGridStudy(Study study) {
-//        edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = null;
-//
-//        gridStudy.setId(study.getGridId());
-//
-//        gridStudy.setAssignedIdentifier(study.getAssignedIdentifier());
-//
-//
-//        List<Amendment> amendments = study.getAmendmentsList();
-//        if (amendments != null && !amendments.isEmpty()) {
-//            List<edu.northwestern.bioinformatics.studycalendar.grid.Amendment> gridAmendments = new ArrayList<edu.northwestern.bioinformatics.studycalendar.grid.Amendment>();
-//
-//            for (Amendment amendment : amendments) {
-//                edu.northwestern.bioinformatics.studycalendar.grid.Amendment gridAmendment = new edu.northwestern.bioinformatics.studycalendar.grid.Amendment();
-//                gridAmendment.setId(amendment.getGridId());
-//                gridAmendment.setName(amendment.getName());
-//                gridAmendment.set
-//            }
-//
-//        }
-//
-//        edu.northwestern.bioinformatics.studycalendar.grid.PlannedCalendar gridPlannedCalendar = gridStudy.getPlannedCalendar();
-//
-//        edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar plannedCalendar = study.getPlannedCalendar();
-//
-//        if (plannedCalendar != null) {
-//            assertNotNull(gridStudy.getPlannedCalendar());
-//            assertEquals(plannedCalendar.getGridId(), gridPlannedCalendar.getId());
-//        }
-//
-//
-//    }
 
     private edu.northwestern.bioinformatics.studycalendar.grid.Study populateGridStudy(String studyXML) throws Exception {
         edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy = null;
