@@ -11,7 +11,6 @@ public class EpochXmlSerializer extends AbstractStudyCalendarXmlSerializer<Epoch
 
     // Elements
     public static final String EPOCH = "epoch";
-    public static final String PLANNDED_CALENDAR = "planned-calendar";
 
     private EpochDao epochDao;
 
