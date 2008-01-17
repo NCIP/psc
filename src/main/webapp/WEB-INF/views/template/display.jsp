@@ -174,6 +174,7 @@
                 list-style-type: none;
             }
         </style>
+
         <c:if test="${not empty developmentRevision}">
             <script type="text/javascript" src="<c:url value="/pages/cal/template/edit.js?study=${study.id}&studyName=${study.assignedIdentifier}"/>"></script>
         </c:if>
@@ -587,7 +588,9 @@
                             <li><a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">${population.abbreviation}: ${population.name}</a></li>
                         </c:forEach>
                         <li class="controls">
-                            <a class="control" href="<c:url value="/pages/cal/template/population?study=${study.id}"/>">Add</a>
+                            <c:if test="${study.inInitialDevelopment}">
+                                <a class="control" href="<c:url value="/pages/cal/template/population?study=${study.id}"/>">Add</a>
+                            </c:if>
                         </li>
                     </ul>
                 </div>
@@ -613,54 +616,54 @@
 
                 <ul id="admin-options" style="display:none;">
 
-                <div class="row">
-                    <div class="value" style="margin:0px;">
-                        <c:if test="${not empty developmentRevision}">
-                            <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
-                                Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
-                            </tags:restrictedListItem>
-                        </c:if>
-                        <c:if test="${empty developmentRevision}">
-                            <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-                            <c:if test="${canAssignSubjects}">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${template.id}">
-                                    Schedule reconsent
-                                </tags:restrictedListItem>
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${template.id}">
-                                    Add amendment
+                    <div class="row">
+                        <div class="value" style="margin:0px;">
+                            <c:if test="${not empty developmentRevision}">
+                                <tags:restrictedListItem url="/pages/cal/template/release" queryString="study=${study.id}" cssClass="control">
+                                    Release this ${study.inInitialDevelopment ? 'template' : 'amendment'} for use
                                 </tags:restrictedListItem>
                             </c:if>
-
-                        </div>
-                    </div>
-
-                    <c:forEach items="${study.studySites}" var="studySite" varStatus="studySiteStatus">
-                       <div class="row">
-                            <div class="label" >
-                                ${studySite.site.name}
-                            </div>
-                            <div class="value">
-                                <c:if test="${not empty studySite.unapprovedAmendments}">
-                                     Waiting for approval at site ${studySite.site.name}. A <b>Site Coordinator</b> can do that
+                            <c:if test="${empty developmentRevision}">
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
+                                <c:if test="${canAssignSubjects}">
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${template.id}">
+                                        Schedule reconsent
+                                    </tags:restrictedListItem>
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${template.id}">
+                                        Add amendment
+                                    </tags:restrictedListItem>
                                 </c:if>
-                                <c:if test="${empty studySite.unapprovedAmendments}">
-                                    <c:set var="isSubjectCoordinatorAssigned" value="false"/>
-                                    <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
-                                        <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
-                                            <c:set var="isSubjectCoordinatorAssigned" value="true"/>
+
+                            </div>
+                        </div>
+
+                        <c:forEach items="${study.studySites}" var="studySite" varStatus="studySiteStatus">
+                            <div class="row">
+                                <div class="label" >
+                                    ${studySite.site.name}
+                                </div>
+                                <div class="value">
+                                    <c:if test="${not empty studySite.unapprovedAmendments}">
+                                        Waiting for approval at site ${studySite.site.name}. A <b>Site Coordinator</b> can do that
+                                    </c:if>
+                                    <c:if test="${empty studySite.unapprovedAmendments}">
+                                        <c:set var="isSubjectCoordinatorAssigned" value="false"/>
+                                        <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
+                                            <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
+                                                <c:set var="isSubjectCoordinatorAssigned" value="true"/>
+                                            </c:if>
+                                        </c:forEach>
+                                        <c:if test="${!isSubjectCoordinatorAssigned}">
+                                            Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
                                         </c:if>
-                                    </c:forEach>
-                                    <c:if test="${!isSubjectCoordinatorAssigned}">
-                                        Subject Coordinator has to be assigned to the study. A <b>Site Coordinator</b> can do this.
+                                        <c:if test="${isSubjectCoordinatorAssigned}">
+                                            <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control">
+                                                Assign Subject
+                                            </tags:restrictedListItem>
+                                        </c:if>
                                     </c:if>
-                                    <c:if test="${isSubjectCoordinatorAssigned}">
-                                        <tags:restrictedListItem url="/pages/cal/assignSubject" queryString="study=${study.id}" cssClass="control">
-                                            Assign Subject
-                                        </tags:restrictedListItem>
-                                    </c:if>
-                                </c:if>
+                                </div>
                             </div>
-                        </div>
                         </c:forEach>
 
                         <c:if test="${not empty onStudyAssignments}">
