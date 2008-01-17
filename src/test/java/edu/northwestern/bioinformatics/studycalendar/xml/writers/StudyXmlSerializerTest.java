@@ -67,14 +67,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Study actual = serializer.readElement(element);
         verifyMocks();
 
-        assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
+        assertSame("Wrong Study", study, actual);
     }
 
     public void testCreateDocument() throws Exception {
         Document actual = serializer.createDocument(study);
 
         assertEquals("Wrong assigned identifier", "Study A", actual.getRootElement().attribute("assigned-identifier").getValue());
-        assertEquals("Wrong planned calendar gridid", "grid1", actual.getRootElement().element("planned-calendar").attribute("id").getValue());
+        assertEquals("Wrong planned calendar grid id", "grid1", actual.getRootElement().element("planned-calendar").attribute("id").getValue());
     }
 
     public void testCreateDocumentString() throws Exception {

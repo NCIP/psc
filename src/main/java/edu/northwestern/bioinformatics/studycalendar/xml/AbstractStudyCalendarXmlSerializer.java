@@ -21,6 +21,10 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public static final String SCHEMA_LOCATION_ATTRIBUTE  = "schemaLocation";
     public static final String XML_SCHEMA_ATTRIBUTE       = "xsi";
 
+    // Attributes
+    public static final String ID = "id";
+    public static final String NAME = "name";
+
     public static final Namespace DEFAULT_NAMESPACE = DocumentHelper.createNamespace("", PSC_NS);
 
     public Document createDocument(R root) {

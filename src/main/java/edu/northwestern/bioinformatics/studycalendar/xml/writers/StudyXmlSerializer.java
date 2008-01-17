@@ -15,7 +15,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
     // Attributes
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
-    public static final String ID = "id";
 
     private StudyDao studyDao;
 
