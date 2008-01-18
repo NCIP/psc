@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class Source extends AbstractMutableDomainObject implements Named, Natura
 
     @OneToMany(mappedBy = "source")
     @Cascade(value = { CascadeType.ALL })
+    @OrderBy // ensure consistent ordering
     public List<Activity> getActivities() {
         return activities;
     }
