@@ -6,6 +6,7 @@ import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 
 /**
  * @author Rhett Sutphin
@@ -16,10 +17,17 @@ import javax.persistence.ManyToOne;
         @Parameter(name="sequence", value="seq_populations_id")
     }
 )
-public class Population extends AbstractMutableDomainObject implements Named {
+public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed {
     private Study study;
     private String name;
     private String abbreviation;
+
+    ////// LOGIC
+
+    @Transient
+    public String getNaturalKey() {
+        return getAbbreviation();
+    }
 
     ////// BEAN PROPERTIES
 
