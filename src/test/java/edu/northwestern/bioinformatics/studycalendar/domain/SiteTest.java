@@ -21,6 +21,18 @@ public class SiteTest extends StudyCalendarTestCase {
 
         assertNull(site.getStudySite(s2));
     }
+
+    public void testAssignedIdentifierDefaultsToName() throws Exception {
+        site.setName("arb");
+        site.setAssignedIdentifier(null);
+        assertEquals("arb", site.getAssignedIdentifier());
+    }
+
+    public void testExplicitAssignedIdentifierTrumps() throws Exception {
+        site.setName("foo");
+        site.setAssignedIdentifier("bar");
+        assertEquals("bar", site.getAssignedIdentifier());
+    }
     
     public void testGetStudySiteForAffiliatedStudy() throws Exception {
         Study s3 = Fixtures.createSingleEpochStudy("S3", "E");

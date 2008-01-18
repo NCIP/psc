@@ -59,7 +59,7 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
 
     @Transient
     public String getNaturalKey() {
-        return getName();
+        return getAssignedIdentifier();
     }
 
     ////// BEAN PROPERTIES
@@ -88,7 +88,11 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     }
 
     public String getAssignedIdentifier() {
-        return assignedIdentifier;
+        if (assignedIdentifier == null) {
+            return getName();
+        } else {
+            return assignedIdentifier;
+        }
     }
 
     public void setAssignedIdentifier(final String assignedIdentifier) {
