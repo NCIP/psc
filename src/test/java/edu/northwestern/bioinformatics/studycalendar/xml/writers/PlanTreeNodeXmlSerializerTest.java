@@ -1,22 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_NAMESPACE_ATTRIBUTE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PSC_NS;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_LOCATION_ATTRIBUTE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_LOCATION;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.XML_SCHEMA_ATTRIBUTE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.XSI_NS;
-import org.dom4j.Element;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
@@ -31,6 +27,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PeriodDao periodDao;
     private StudySegmentDao studySegmentDao;
     private PlannedActivityDao plannedActivityDao;
+    private Period period;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -49,6 +46,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
         segment = setGridId("grid1", createNamedInstance("Segment A", StudySegment.class));
+        period = setGridId("grid2", createNamedInstance("Period A", Period.class));
 
     }
 
@@ -138,6 +136,40 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertSame("Wrong Epoch", segment, actual);
+    }
+
+    public void testCreateElementPeriod() {
+        Element actual = serializer.createElement(period);
+
+        assertEquals("Wrong attribute size", 2, actual.attributeCount());
+        assertEquals("Wrong grid id", "grid2", actual.attribute("id").getValue());
+        assertEquals("Wrong period name", "Period A", actual.attribute("name").getValue());
+    }
+
+    public void testReadElementStudyPeriod() {
+        expect(element.attributeValue("id")).andReturn("grid2");
+        expect(element.getName()).andReturn("period").times(2);
+        expect(periodDao.getByGridId("grid2")).andReturn(null);
+        expect(element.attributeValue("name")).andReturn("Period A");
+        replayMocks();
+
+        Period actual = (Period) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong grid id", "grid2", actual.getGridId());
+        assertEquals("Wrong period name", "Period A", actual.getName());
+    }
+
+    public void testReadElementExistsPeriod() {
+        expect(element.attributeValue("id")).andReturn("grid2");
+        expect(element.getName()).andReturn("period");
+        expect(periodDao.getByGridId("grid2")).andReturn(period);
+        replayMocks();
+
+        Period actual = (Period) serializer.readElement(element);
+        verifyMocks();
+
+        assertSame("Wrong Period", period, actual);
     }
 
 
