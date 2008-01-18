@@ -127,8 +127,13 @@ public class StudyXMLReader  {
     }
 
     protected void addPlannedCalendar(Element parentElement, Study parent) {
-        NodeList nodes = parentElement.getElementsByTagName(PLANNED_CALENDAR);
-
+        String namespaceURI = parentElement.getNamespaceURI();
+        NodeList nodes = null;
+        if (namespaceURI != null && !namespaceURI.trim().equalsIgnoreCase("")) {
+            nodes = parentElement.getElementsByTagNameNS(namespaceURI, PLANNED_CALENDAR);
+        } else {
+            nodes = parentElement.getElementsByTagName(PLANNED_CALENDAR);
+        }
         Element element = ((Element)nodes.item(0));
         String gridId = element.getAttribute(ID);
         PlannedCalendar calendar = plannedCalendarDao.getByGridId(gridId);
@@ -144,7 +149,15 @@ public class StudyXMLReader  {
     protected void addAmendments(Element parentElement, Study parent) {
         List<Amendment> amendments = new ArrayList<Amendment>();
 
-        for (Node node : list(parentElement.getElementsByTagName(AMENDMENT))) {
+        String namespaceURI = parentElement.getNamespaceURI();
+        NodeList nodes = null;
+        if (namespaceURI != null && !namespaceURI.trim().equalsIgnoreCase("")) {
+            nodes = parentElement.getElementsByTagNameNS(namespaceURI, AMENDMENT);
+        } else {
+            nodes = parentElement.getElementsByTagName(AMENDMENT);
+        }
+
+        for (Node node : list(nodes)) {
             Element element = (Element) node;
 
             String gridId = element.getAttribute(ID);
