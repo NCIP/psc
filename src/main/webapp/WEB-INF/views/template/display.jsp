@@ -626,10 +626,10 @@
                             <c:if test="${empty developmentRevision}">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
                                 <c:if test="${canAssignSubjects}">
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${template.id}">
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">
                                         Schedule reconsent
                                     </tags:restrictedListItem>
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${template.id}">
+                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
                                         Add amendment
                                     </tags:restrictedListItem>
                                 </c:if>
