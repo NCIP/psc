@@ -6,7 +6,7 @@
 
     <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.BeanNameRouter"/>
 
-    <bean name="/templates/{study_identifier}" 
+    <bean name="/studies/{study-identifier}/template"
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
@@ -18,7 +18,7 @@
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
-    <bean name="/psc-resources.html"
+    <bean name="/docs"
           id="wadlHtmlResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlHtmlResource"
           >
@@ -33,7 +33,7 @@
         <property name="resourcePath" value="psc.xsd"/>
     </bean>
 
-  <!-- AUXILIARIES -->
+    <!-- AUXILIARIES -->
   
     <bean id="resourceFreemarkerConfiguration"
           class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">

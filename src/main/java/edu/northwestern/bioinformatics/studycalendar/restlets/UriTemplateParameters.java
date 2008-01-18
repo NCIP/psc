@@ -12,7 +12,7 @@ public enum UriTemplateParameters {
     SITE_NAME;
 
     public String attributeName() {
-        return name().toLowerCase();
+        return name().replaceAll("_", "-").toLowerCase();
     }
 
     public String extractFrom(Request request) {

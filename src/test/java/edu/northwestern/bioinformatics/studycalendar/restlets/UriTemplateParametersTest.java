@@ -9,7 +9,7 @@ import org.restlet.data.Request;
  */
 public class UriTemplateParametersTest extends StudyCalendarTestCase {
     public void testAttributeName() throws Exception {
-        assertEquals("study_identifier", STUDY_IDENTIFIER.attributeName());
+        assertEquals("study-identifier", STUDY_IDENTIFIER.attributeName());
     }
 
     public void testExtractFromRequest() throws Exception {

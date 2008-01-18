@@ -282,6 +282,15 @@
                         font-weight: normal;
                         opacity: 0.75;
                     }
+
+                    /* PSC customizations */
+                    
+                    .pending {
+                        border: 1px solid #900;
+                        padding: 4px;
+                        color: #900;
+                        background: #fed;
+                    }
                 </style>
             </head>
             <body>
