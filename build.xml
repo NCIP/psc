@@ -84,9 +84,7 @@
 
     <path id="cp.bering">
         <path refid="cp.jdbc"/>
-        <fileset dir="tools/bering">
-            <include name="**/*.jar"/>
-        </fileset>
+        <path refid="cp.main"/>
     </path>
 
     <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
