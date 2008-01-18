@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.grid;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import gov.nih.nci.cagrid.common.Utils;
@@ -14,6 +15,7 @@ import org.globus.wsrf.utils.StringBufferReader;
 import org.springframework.validation.BindException;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 
+import javax.xml.XMLConstants;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Reader;
@@ -61,6 +63,19 @@ public class PSCStudyServiceTest extends TestCase {
     }
 
     public void testCopy() throws Exception {
+//        InputStream config = Thread.currentThread().getContextClassLoader().
+//                          getResourceAsStream("edu/northwestern/bioinformatics/studycalendar/grid/client/client-config.wsdd");
+
+                    //example of this study xml
+//            <?xml version="1.0" encoding="UTF-8"?>
+//            <study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+//          assigned-identifier="cc" id="96507ff5-06e7-4f45-bfc5-179b888e69f6"
+//              xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc
+// http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+//            <planned-calendar id="9a2ec400-ef49-4d7d-9917-5766193c8181"/>
+//            </study>
+//        String studyDocumentXml= studyXmlSerializer.createDocumentString(gridStudy);
+//        logger.debug("study doc xml"+studyDocumentXml);
 
         String studyXML = studyXMLWriter.createStudyXML(study);
         validate(studyXML, true);
@@ -70,14 +85,17 @@ public class PSCStudyServiceTest extends TestCase {
         //now serialize back this grid study to study xml
         StringWriter studyXml = new StringWriter();
 
-        Utils.serializeObject(gridStudy, new javax.xml.namespace.QName("http://bioinformatics.northwestern.edu/ns/psc", "study","")
+        Utils.serializeObject(gridStudy,
+                new javax.xml.namespace.QName("http://bioinformatics.northwestern.edu/ns/psc","study",XMLConstants.W3C_XML_SCHEMA_NS_URI)
                 , studyXml);
 
-        logger.info("study xml:" + studyXml.toString());
+        //logger.info("study xml:" + studyXml.toString());
 
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(studyXml.getBuffer().toString().getBytes());
 
-        //            studyXMLReader.readAndSave(byteArrayInputStream);
+        StudyXMLReader studyXMLReader=new StudyXMLReader();
+       
+        studyXMLReader.readAndSave(byteArrayInputStream);
 
 
     }
