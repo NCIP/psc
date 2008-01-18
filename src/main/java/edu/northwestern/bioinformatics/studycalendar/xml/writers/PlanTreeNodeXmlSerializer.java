@@ -1,9 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
@@ -39,10 +43,10 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
 
     public PlanTreeNode<?> readElement(Element element) {
         String key = element.attributeValue(ID);
-        Class<?> nodeClass = findElementClass(element.getName());
         PlanTreeNode<?> node = getPlanTreeNode(key, element.getName());
         if (node == null) {
-            node = createInstance((Class<PlanTreeNode<?>>) nodeClass);
+            node = createPlanTreeNode(element);
+
             node.setGridId(key);
             if (node instanceof Named) {
                 ((Named) node).setName(element.attributeValue(NAME));
@@ -65,30 +69,6 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
         }
     }
 
-    private Class findElementClass(String elementName) {
-        if (elementName.equals(EPOCH)) {
-            return Epoch.class;
-        } else if (elementName.equals(STUDY_SEGMENT)) {
-            return StudySegment.class;
-        } else if (elementName.equals(PERIOD)) {
-            return Period.class;
-        } else if (elementName.equals(PLANNED_ACTIVITY)) {
-            return PlannedActivity.class;
-        } else {
-            throw new StudyCalendarError("Cannot find Node for: %s", elementName);
-        }
-    }
-
-    private <T extends PlanTreeNode> T createInstance(Class<T> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new StudyCalendarError("Could not import from template XML", e);
-        } catch (IllegalAccessException e) {
-            throw new StudyCalendarError("Could not import from template XML", e);
-        }
-    }
-
     public PlanTreeNode<?> getPlanTreeNode(String gridId, String nodeName) {
        if (nodeName.equals(EPOCH)) {
             return epochDao.getByGridId(gridId);
@@ -102,6 +82,29 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
             throw new StudyCalendarError("Cannot find Node for: %s", nodeName);
         }
     }
+
+
+    private PlanTreeNode<?> createPlanTreeNode(Element element) {
+        String elementName = element.getName();
+        if (elementName.equals(EPOCH)) {
+            return new Epoch();
+        } else if (elementName.equals(STUDY_SEGMENT)) {
+            return new StudySegment();
+        } else if (elementName.equals(PERIOD)) {
+            return new Period();
+        } else if (elementName.equals(PLANNED_ACTIVITY)) {
+            PlannedActivity activity = new PlannedActivity();
+            activity.setGridId(element.attributeValue(ID));
+            activity.setDay(new Integer(element.attributeValue(DAY)));
+            activity.setDetails(element.attributeValue(DETAILS));
+            activity.setCondition(element.attributeValue(CONDITION));
+            return activity;
+        } else {
+            throw new StudyCalendarError("Cannot find Node for: %s", elementName);
+        }
+    }
+
+
 
     // Dao setters
     @Required

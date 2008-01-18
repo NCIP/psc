@@ -61,7 +61,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testReadElementExists() {
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(element.getName()).andReturn("epoch").times(2);
+        expect(element.getName()).andReturn("epoch");
         expect(epochDao.getByGridId("grid0")).andReturn(epoch);
         replayMocks();
 
