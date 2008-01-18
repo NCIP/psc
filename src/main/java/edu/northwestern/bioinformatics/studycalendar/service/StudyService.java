@@ -86,7 +86,19 @@ public class StudyService {
 		}
 	}
 
-	public Study saveStudyFor(final PlanTreeNode<?> node) {
+    public void saveAll(final Study study) {
+        studyDao.save(study);
+        if (study.getAmendment() != null) {
+            for (Amendment amendment : study.getAmendmentsList()) {
+                deltaService.saveRevision(amendment);
+            }
+        }
+        if (study.getDevelopmentAmendment() != null) {
+            deltaService.saveRevision(study.getDevelopmentAmendment());
+        }
+    }
+
+    public Study saveStudyFor(final PlanTreeNode<?> node) {
 		Study study = templateService.findStudy(node);
 		save(study);
 		return study;

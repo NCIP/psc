@@ -4,7 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -24,14 +26,20 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     StudySubjectAssignment subjectAssignment;
     ScheduledCalendar calendar;
     StaticNowFactory staticNowFactory;
+    private DeltaService deltaService;
 
     protected void setUp() throws Exception {
         super.setUp();
+
         studyDao = registerMockFor(StudyDao.class);
+        deltaService = deltaService = registerMockFor(DeltaService.class);
         activityDao = registerMockFor(ActivityDao.class);
+
         service = new StudyService();
         service.setStudyDao(studyDao);
         service.setActivityDao(activityDao);
+        service.setDeltaService(deltaService);
+
         study = setId(1 , new Study());
 
         calendar = new ScheduledCalendar();
@@ -112,5 +120,21 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of events on August 8th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
         assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
+    }
+
+    public void testSaveAll() {
+        Study study = createNamedInstance("Study A", Study.class);
+        Amendment amend0 = Fixtures.createAmendments("Amendment A");
+        Amendment amend1 = Fixtures.createAmendments("Amendment B");
+        amend1.setPreviousAmendment(amend0);
+        study.setAmendment(amend1);
+
+        studyDao.save(study);
+        deltaService.saveRevision(amend1);
+        deltaService.saveRevision(amend0);
+        replayMocks();
+
+        service.saveAll(study);
+        verifyMocks();
     }
 }

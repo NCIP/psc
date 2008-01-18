@@ -23,11 +23,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import static java.lang.String.valueOf;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -96,6 +92,7 @@ public class StudyXMLWriter {
       optionalAttributes.put(PLANNED_ACTIVITY, new String[] {DETAILS, CONDITION});
       optionalAttributes.put(PERIOD, new String[] {NAME});
       optionalAttributes.put(ACTIVITY, new String[] {DESCRIPTION, SOURCE_ID});
+      optionalAttributes.put(SOURCE, new String[] {ID});
     }
 
 
@@ -142,6 +139,8 @@ public class StudyXMLWriter {
         addPlannedCalendar(document, study, element);
 
         List<Amendment> allAmendments = new ArrayList<Amendment>(study.getAmendmentsList());
+        Collections.reverse(allAmendments);
+
 
         // Remove since deelopment amendment add/remove/merge logic hasn't been implmented yet
         //if (study.getDevelopmentAmendment() != null) allAmendments.add(study.getDevelopmentAmendment());

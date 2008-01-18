@@ -19,7 +19,6 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.validators.Schema;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.ASSIGNED_IDENTIFIER;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer.PLANNDED_CALENDAR;
 import static edu.nwu.bioinformatics.commons.CollectionUtils.firstElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +70,7 @@ public class StudyXMLReader  {
 
     public Study readAndSave(InputStream inputStream) {
         Study study = read(inputStream);
-        studyService.save(study);
+        studyService.saveAll(study);
         return study;
     }
 
