@@ -30,10 +30,10 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             = (StudySegmentDao) getApplicationContext().getBean("studySegmentDao");
     private AmendmentDao amendmentDao
         = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+    private StudySubjectAssignmentDao assignmentDao
+        = (StudySubjectAssignmentDao) getApplicationContext().getBean("studySubjectAssignmentDao");
     private StudyDao studyDao
         = (StudyDao) getApplicationContext().getBean("studyDao");
-    private SiteDao siteDao
-        = (SiteDao) getApplicationContext().getBean("siteDao");
 
     public void testGetById() throws Exception {
         ScheduledCalendar cal = getDao().getById(-20);
@@ -118,8 +118,7 @@ public class ScheduledCalendarDaoTest extends ContextDaoTestCase<ScheduledCalend
             Subject subject = subjectDao.getById(-1);
 
             ScheduledCalendar calendar = new ScheduledCalendar();
-            calendar.setAssignment(subject.getAssignments().get(0));
-            assertEquals(-2, (int) calendar.getAssignment().getId());
+            calendar.setAssignment(assignmentDao.getById(-2));
             StudySegment studySegment4 = studySegmentDao.getById(-4);
             StudySegment studySegment3 = studySegmentDao.getById(-3);
             calendar.addStudySegment(Fixtures.createScheduledStudySegment(studySegment4));

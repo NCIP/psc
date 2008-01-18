@@ -38,10 +38,10 @@
     <ACTIVITIES
         id="-96"
         version="0"
-        name="Administer Drug Z"
+        name="Administer Drug L"
         description="Description of treatment activity"
         activity_type_id="1"
-        code="ADZ"
+        code="ADL"
         source_id="-200"/>
 
     <SOURCES
