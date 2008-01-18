@@ -363,73 +363,73 @@
                     </method>
                 </resource>
             </resource>
+        </resource>
 
-            <resource path="sites">
+        <resource path="sites">
+            <doc>
+                <html:em class="pending">Pending</html:em>
+                <html:p>A list of the sites in the system.</html:p>
+            </doc>
+            <method name="GET">
+                <response>
+                    <representation href="#site-list-xml"/>
+                </response>
+            </method>
+
+            <resource path="{site-identifier}">
                 <doc>
                     <html:em class="pending">Pending</html:em>
-                    <html:p>A list of the sites in the system.</html:p>
+                    <html:p>A single site.</html:p>
                 </doc>
+                <param style="template" name="site-identifier">
+                    <doc>
+                        The assigned identifier for the site.  If none was specified when the
+                        site was created, the default is the site's name.
+                    </doc>
+                </param>
                 <method name="GET">
                     <response>
-                        <representation href="#site-list-xml"/>
+                        <representation href="#site-xml"/>
                     </response>
                 </method>
+                <method name="PUT">
+                    <doc>Create or update the site.</doc>
+                    <request>
+                        <representation href="#site-xml"/>
+                    </request>
+                </method>
+                <method name="DELETE">
+                    <doc>Delete the site, but only if there are no assignments.</doc>
+                </method>
 
-                <resource path="{site-identifier}">
+                <resource path="blackout-dates">
                     <doc>
                         <html:em class="pending">Pending</html:em>
-                        <html:p>A single site.</html:p>
+                        <html:p>The blackout dates for the selected site.</html:p>
                     </doc>
-                    <param style="template" name="site-identifier">
-                        <doc>
-                            The assigned identifier for the site.  If none was specified when the
-                            site was created, the default is the site's name.
-                        </doc>
-                    </param>
                     <method name="GET">
                         <response>
-                            <representation href="#site-xml"/>
+                            <representation href="#blackout-dates-xml"/>
                         </response>
                     </method>
-                    <method name="PUT">
-                        <doc>Create or update the site.</doc>
+                    <method name="POST">
+                        <doc>Add another blackout date to this site.</doc>
                         <request>
-                            <representation href="#site-xml"/>
+                            <representation href="#blackout-date-xml"/>
                         </request>
                     </method>
-                    <method name="DELETE">
-                        <doc>Delete the site, but only if there are no assignments.</doc>
-                    </method>
 
-                    <resource path="blackout-dates">
+                    <resource path="{blackout-date-identifier}">
                         <doc>
                             <html:em class="pending">Pending</html:em>
-                            <html:p>The blackout dates for the selected site.</html:p>
+                            <html:p>A single blackout date</html:p>
                         </doc>
-                        <method name="GET">
-                            <response>
-                                <representation href="#blackout-dates-xml"/>
-                            </response>
+                        <param style="template" name="blackout-date-identifier">
+                            <doc>The generated identifier for the blackout date.</doc>
+                        </param>
+                        <method name="DELETE">
+                            <doc>Delete the blackout date.</doc>
                         </method>
-                        <method name="POST">
-                            <doc>Add another blackout date to this site.</doc>
-                            <request>
-                                <representation href="#blackout-date-xml"/>
-                            </request>
-                        </method>
-
-                        <resource path="{blackout-date-identifier}">
-                            <doc>
-                                <html:em class="pending">Pending</html:em>
-                                <html:p>A single blackout date</html:p>
-                            </doc>
-                            <param style="template" name="blackout-date-identifier">
-                                <doc>The generated identifier for the blackout date.</doc>
-                            </param>
-                            <method name="DELETE">
-                                <doc>Delete the blackout date.</doc>
-                            </method>
-                        </resource>
                     </resource>
                 </resource>
             </resource>
