@@ -2,9 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_NAMESPACE_ATTRIBUTE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PSC_NS;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_LOCATION_ATTRIBUTE;
@@ -23,21 +27,32 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private Epoch epoch;
     private EpochDao epochDao;
+    private StudySegment segment;
+    private PeriodDao periodDao;
+    private StudySegmentDao studySegmentDao;
+    private PlannedActivityDao plannedActivityDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         epochDao = registerDaoMockFor(EpochDao.class);
+        periodDao = registerDaoMockFor(PeriodDao.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
 
         serializer = new PlanTreeNodeXmlSerializer();
         serializer.setEpochDao(epochDao);
+        serializer.setPeriodDao(periodDao);
+        serializer.setStudySegmentDao(studySegmentDao);
+        serializer.setPlannedActivityDao(plannedActivityDao);
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
+        segment = setGridId("grid1", createNamedInstance("Segment A", StudySegment.class));
 
     }
 
-    public void testCreateElement() {
+    public void testCreateElementEpoch() {
         Element actual = serializer.createElement(epoch);
 
         assertEquals("Wrong attribute size", 2, actual.attributeCount());
@@ -45,7 +60,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong epoch name", "Epoch A", actual.attribute("name").getValue());
     }
 
-    public void testReadElement() {
+    public void testReadElementEpoch() {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.getName()).andReturn("epoch").times(2);
         expect(epochDao.getByGridId("grid0")).andReturn(null);
@@ -59,7 +74,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong epoch name", "Epoch A", actual.getName());
     }
 
-    public void testReadElementExists() {
+    public void testReadElementExistsEpoch() {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.getName()).andReturn("epoch");
         expect(epochDao.getByGridId("grid0")).andReturn(epoch);
@@ -71,14 +86,15 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertSame("Wrong Epoch", epoch, actual);
     }
 
-    public void testCreateDocument() throws Exception {
+    public void testCreateDocumentEpoch() throws Exception {
         Document actual = serializer.createDocument(epoch);
 
+        assertEquals("Element should be an epoch", "epoch", actual.getRootElement().getName());
         assertEquals("Wrong epoch grid id", "grid0", actual.getRootElement().attributeValue("id"));
         assertEquals("Wrong epoch name", "Epoch A", actual.getRootElement().attributeValue("name"));
     }
 
-    public void testCreateDocumentString() throws Exception {
+    public void testCreateDocumentStringEpoch() throws Exception {
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
                 .append(format("<epoch id=\"{0}\" name=\"{1}\"", epoch.getGridId(), epoch.getName()))
@@ -89,6 +105,41 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         String actual = serializer.createDocumentString(epoch);
         assertXMLEqual(expected.toString(), actual);
     }
+
+    public void testCreateElementStudySegment() {
+        Element actual = serializer.createElement(segment);
+
+        assertEquals("Wrong attribute size", 2, actual.attributeCount());
+        assertEquals("Wrong grid id", "grid1", actual.attribute("id").getValue());
+        assertEquals("Wrong segment name", "Segment A", actual.attribute("name").getValue());
+    }
+
+    public void testReadElementStudySegment() {
+        expect(element.attributeValue("id")).andReturn("grid1");
+        expect(element.getName()).andReturn("study-segment").times(2);
+        expect(studySegmentDao.getByGridId("grid1")).andReturn(null);
+        expect(element.attributeValue("name")).andReturn("Segment A");
+        replayMocks();
+
+        StudySegment actual = (StudySegment) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong grid id", "grid1", actual.getGridId());
+        assertEquals("Wrong segment name", "Segment A", actual.getName());
+    }
+
+    public void testReadElementExistsStudySegment() {
+        expect(element.attributeValue("id")).andReturn("grid1");
+        expect(element.getName()).andReturn("study-segment");
+        expect(studySegmentDao.getByGridId("grid1")).andReturn(segment);
+        replayMocks();
+
+        StudySegment actual = (StudySegment) serializer.readElement(element);
+        verifyMocks();
+
+        assertSame("Wrong Epoch", segment, actual);
+    }
+
 
 
 }
