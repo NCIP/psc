@@ -25,7 +25,7 @@
        </ns2:inputParameterCollection>
        <ns2:Output qName="ns6:study" dimensionality="1" isArray="false" xmlns:ns6="http://bioinformatics.northwestern.edu/ns/psc"/>
        <ns2:faultCollection>
-        <ns2:Fault description="" name="StudyAlreadyExistsException"/>
+        <ns2:Fault description="" name="StudyCreationException"/>
        </ns2:faultCollection>
       </ns2:Operation>
      </ns2:operationCollection>

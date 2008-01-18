@@ -1,8 +1,15 @@
 <ns1:ServiceDescription introduceVersion="1.0" xmlns:ns1="gme://gov.nih.nci.cagrid/1/Introduce">
  <ns2:Namespaces xsi:type="ns2:NamespacesType" xmlns:ns2="gme://gov.nih.nci.cagrid.introduce/1/Namespace" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <ns2:Namespace location="./study.xsd" namespace="http://bioinformatics.northwestern.edu/ns/psc" packageName="edu.northwestern.bioinformatics.studycalendar.grid" xsi:type="ns2:NamespaceType">
+  <ns2:Namespace location="./psc.xsd" namespace="http://bioinformatics.northwestern.edu/ns/psc" packageName="edu.northwestern.bioinformatics.studycalendar.grid" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement type="study" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="planned-calendar" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="epoch" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="study-segment" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="period" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="planned-activity" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="amendment" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="sources" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="activity" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace namespace="http://www.w3.org/2001/XMLSchema" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement type="anyType" xsi:type="ns2:SchemaElementType"/>
@@ -58,6 +65,7 @@
    <ns2:SchemaElement type="StudyAlreadyException" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="StudyDoesNotExistsException" xsi:type="ns2:SchemaElementType"/>
    <ns2:SchemaElement type="StudyAlreadyExistsException" xsi:type="ns2:SchemaElementType"/>
+   <ns2:SchemaElement type="StudyCreationException" xsi:type="ns2:SchemaElementType"/>
   </ns2:Namespace>
   <ns2:Namespace generateStubs="false" location="./xsd/security.xsd" namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" packageName="gov.nih.nci.cagrid.metadata.security" xsi:type="ns2:NamespaceType">
    <ns2:SchemaElement type="ServiceSecurityMetadata" xsi:type="ns2:SchemaElementType"/>
@@ -96,7 +104,7 @@
      </ns4:Inputs>
      <ns4:Output qName="ns9:study" isArray="false" xmlns:ns9="http://bioinformatics.northwestern.edu/ns/psc"/>
      <ns4:Exceptions>
-      <ns4:Exception name="StudyAlreadyExistsException" qname="ns10:StudyAlreadyExistsException" xmlns:ns10="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
+      <ns4:Exception name="StudyCreationException" qname="ns10:StudyCreationException" xmlns:ns10="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types"/>
      </ns4:Exceptions>
     </ns4:Method>
    </ns4:Methods>

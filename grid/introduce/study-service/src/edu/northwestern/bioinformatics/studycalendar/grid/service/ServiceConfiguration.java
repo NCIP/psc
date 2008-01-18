@@ -2,7 +2,6 @@ package edu.northwestern.bioinformatics.studycalendar.grid.service;
 
 import org.apache.axis.MessageContext;
 import org.globus.wsrf.Constants;
-import org.globus.wsrf.config.ContainerConfig;
 
 import javax.naming.InitialContext;
 

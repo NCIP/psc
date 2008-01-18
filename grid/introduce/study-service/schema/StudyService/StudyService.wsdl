@@ -13,7 +13,7 @@
       <import namespace="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-BaseFaults-1.2-draft-01.xsd" schemaLocation="../wsrf/faults/WS-BaseFaults.xsd" />
       <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./cagrid/types/caGridMetadata.xsd" />
       <import namespace="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types" schemaLocation="./StudyServiceTypes.xsd" />
-      <import namespace="http://bioinformatics.northwestern.edu/ns/psc" schemaLocation="./study.xsd" />
+      <import namespace="http://bioinformatics.northwestern.edu/ns/psc" schemaLocation="./psc.xsd" />
       <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./xsd/security.xsd" />
       <element name="RetrieveStudyByAssignedIdentifierRequest">
         <complexType>
@@ -74,8 +74,8 @@
   <message name="StudyDoesNotExistsExceptionFaultMessage">
     <part name="fault" element="ns1:StudyDoesNotExistsException" />
   </message>
-  <message name="StudyAlreadyExistsExceptionFaultMessage">
-    <part name="fault" element="ns1:StudyAlreadyExistsException" />
+  <message name="StudyCreationExceptionFaultMessage">
+    <part name="fault" element="ns1:StudyCreationException" />
   </message>
   <!--============================================================
 
@@ -91,7 +91,7 @@
     <operation name="createStudy">
       <input message="tns:CreateStudyRequest" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/CreateStudyRequest" />
       <output message="tns:CreateStudyResponse" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/CreateStudyResponse" />
-      <fault name="StudyAlreadyExistsException" message="tns:StudyAlreadyExistsExceptionFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyAlreadyExistsExceptionFaultMessage" />
+      <fault name="StudyCreationException" message="tns:StudyCreationExceptionFaultMessage" wsa:Action="http://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/StudyCreationExceptionFaultMessage" />
     </operation>
     <operation name="GetResourceProperty">
       <input name="GetResourcePropertyRequest" message="wsrpw:GetResourcePropertyRequest" wsa:Action="http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties/GetResourceProperty" />

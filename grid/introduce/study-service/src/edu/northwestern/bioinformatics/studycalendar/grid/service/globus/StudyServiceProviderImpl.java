@@ -33,7 +33,7 @@ public class StudyServiceProviderImpl{
 		return boxedResult;
 	}
 
-	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse createStudy(edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException {
+	public edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse createStudy(edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyRequest params) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyCreationException {
 		StudyServiceAuthorization.authorizeCreateStudy();
 		edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse boxedResult = new edu.northwestern.bioinformatics.studycalendar.grid.stubs.CreateStudyResponse();
 		boxedResult.setStudy(impl.createStudy(params.getStudy().getStudy()));

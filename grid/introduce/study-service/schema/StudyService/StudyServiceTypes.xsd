@@ -31,5 +31,11 @@
       <extension base="wsrbf:BaseFaultType" />
     </complexContent>
   </complexType>
+  <element name="StudyCreationException" type="tns:StudyCreationException" />
+  <complexType name="StudyCreationException">
+    <complexContent>
+      <extension base="wsrbf:BaseFaultType" />
+    </complexContent>
+  </complexType>
 </schema>
 

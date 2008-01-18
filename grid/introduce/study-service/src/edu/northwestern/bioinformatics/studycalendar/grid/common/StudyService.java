@@ -12,6 +12,6 @@ public interface StudyService {
 
     Study retrieveStudyByAssignedIdentifier(String assignedIdentifier) throws RemoteException, StudyDoesNotExistsException;
 
-    Study createStudy(Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyAlreadyExistsException;
+    Study createStudy(Study study) throws RemoteException, edu.northwestern.bioinformatics.studycalendar.grid.stubs.types.StudyCreationException;
 
 }
