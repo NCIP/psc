@@ -30,276 +30,292 @@
     </grammars>
 
     <resources base="${baseUri}">
-        <resource path="studies/{study-identifier}/template">
-            <doc>A full study template</doc>
-            <param style="template" name="study-identifier">
-                <doc>The assigned protocol identifier for the study</doc>
-            </param>
+        <resource path="studies">
+            <doc>
+                <html:em class="pending">Pending</html:em>
+                <html:p>All the studies in the system.</html:p>
+            </doc>
             <method name="GET">
-                <doc>
-                    Returns the template for the study, decomposed into amendments.
-                </doc>
                 <response>
-                    <representation href="#study-xml"/>
-                </response>
-            </method>
-            <method name="PUT">
-                <doc>
-                    Creates the study if it does not exist, using the entity provided
-                    in the request.  If the study does exist, the development amendment
-                    may be updated using this method, but nothing else.  (Released
-                    amendments will not be modified.)
-                </doc>
-                <request>
-                    <representation href="#study-xml"/>
-                </request>
-                <response>
-                    <doc>
-                        The response is the template as it exists after the update (if any).
-                        May not exactly match the request XML, if the request tried to update
-                        any released amendments.
-                    </doc>
-                    <representation href="#study-xml"/>
+                    <representation href="#studies-xml"/>
                 </response>
             </method>
 
-            <resource path="{amendment-identifier}">
-                <doc>
-                    <html:em class="pending">Pending</html:em>
-                    <html:p>
-                        A realized template, containing all epochs, study segments, etc., as it
-                        existed at a particular amendment.
-                    </html:p>
-                </doc>
-                <param style="template" name="amendment-identifier">
+            <resource path="{study-identifier}/template">
+                <doc>A full study template.</doc>
+                <param style="template" name="study-identifier">
                     <doc>
-                        The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
-                        amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
-                        an amendment with date April 1, 2001, and named "justkidding", the natural key
-                        would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
-                        omitting it does not cause ambiguity.
+                        <html:p>
+                            The assigned protocol identifier for the study.
+                        </html:p>
                     </doc>
                 </param>
                 <method name="GET">
-                    <doc>Retrieve the realized template as it existed for the given amendment.</doc>
-                    <response>
-                        <representation href="#planned-calendar-xml"/>
-                    </response>
-                </method>
-            </resource>
-
-            <resource path="amendments/{amendment-identifier}">
-                <doc>
-                    <html:em class="pending">Pending</html:em>
-                    <html:p>A single amendment.</html:p>
-                </doc>
-                <param style="template" name="amendment-identifier">
                     <doc>
-                        The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
-                        amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
-                        an amendment with date April 1, 2001, and named "justkidding", the natural key
-                        would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
-                        omitting it does not cause ambiguity.
+                        Returns the template for the study, decomposed into amendments.
                     </doc>
-                </param>
-                <method name="GET">
-                    <doc>Get the amendment alone.</doc>
                     <response>
-                        <representation href="#amendment-xml"/>
+                        <representation href="#study-xml"/>
                     </response>
                 </method>
                 <method name="PUT">
                     <doc>
-                        Create the amendment (if the study doesn't already have a development amendment)
-                        or update the amendment (if it is the current development amendment).
+                        Creates the study if it does not exist, using the entity provided
+                        in the request.  If the study does exist, the development amendment
+                        may be updated using this method, but nothing else.  (Released
+                        amendments will not be modified.)
                     </doc>
                     <request>
-                        <representation href="#amendment-xml"/>
+                        <representation href="#study-xml"/>
                     </request>
                     <response>
-                        <representation href="#amendment-xml"/>
+                        <doc>
+                            The response is the template as it exists after the update (if any).
+                            May not exactly match the request XML, if the request tried to update
+                            any released amendments.
+                        </doc>
+                        <representation href="#study-xml"/>
                     </response>
                 </method>
-                <method name="DELETE">
+
+                <resource path="{amendment-identifier}">
                     <doc>
-                        Delete the amendment, if and only if it isn't released.
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>
+                            A realized template, containing all epochs, study segments, etc., as it
+                            existed at a particular amendment.
+                        </html:p>
                     </doc>
-                </method>
-            </resource>
-        </resource>
+                    <param style="template" name="amendment-identifier">
+                        <doc>
+                            The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
+                            amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
+                            an amendment with date April 1, 2001, and named "justkidding", the natural key
+                            would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
+                            omitting it does not cause ambiguity.
+                        </doc>
+                    </param>
+                    <method name="GET">
+                        <doc>Retrieve the realized template as it existed for the given amendment.</doc>
+                        <response>
+                            <representation href="#planned-calendar-xml"/>
+                        </response>
+                    </method>
+                </resource>
 
-        <resource path="studies/{study-identifier}/sites/{site-name}">
-            <doc>
-                <html:em class="pending">Pending</html:em>
-                <html:p>The link between a study and a site.</html:p>
-            </doc>
-            <param style="template" name="study-identifier">
-                <doc>The assigned protocol identifier for the study</doc>
-            </param>
-            <param style="template" name="site-name">
-                <doc>The name of the site</doc>
-            </param>
-            <method name="GET">
-                <doc>If successful, the link exists.  Otherwise it doesn't.</doc>
-                <response>
-                    <representation href="#study-site-link-xml"/>
-                </response>
-            </method>
-            <method name="PUT">
-                <doc>Associate the site and the study.</doc>
-                <request>
-                    <representation href="#study-site-link-xml"/>
-                </request>
-            </method>
-            <method name="DELETE">
-                <doc>
-                    Unassociate the site and the study.  Only possible if there are no subjects
-                    on the study from the site.
-                </doc>
-                <request>
-                    <representation href="#study-site-link-xml"/>
-                </request>
-            </method>
-
-            <resource path="subject-assignments">
-                <doc>
-                    <html:em class="pending">Pending</html:em>
-                    <html:p>The collection of subjects on the study at the named site.</html:p>
-                </doc>
-                <method name="GET">
-                    <response>
-                        <representation href="#subject-assignments-xml"/>
-                    </response>
-                </method>
-                <method name="POST">
+                <resource path="amendments/{amendment-identifier}">
                     <doc>
-                        Accepts a document describing the registration information
-                        for a subject (including the subject information) and assigns
-                        the subject to the the study.
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>A single amendment.</html:p>
                     </doc>
-                    <request>
-                        <representation href="#registration-xml"/>
-                    </request>
-                    <response>
-                        <param type="header" name="Location">
-                            <doc>
-                                If successful, the response will be a 303 redirect to the
-                                newly generated schedule for the subject.
-                            </doc>
-                        </param>
-                    </response>
-                </method>
+                    <param style="template" name="amendment-identifier">
+                        <doc>
+                            The natural key for the amendment.  The format is yyyy-mm-dd[~name].  E.g., for an
+                            amendment with date March 9, 2015 and no name, the natural key is 2015-03-09.  For
+                            an amendment with date April 1, 2001, and named "justkidding", the natural key
+                            would be 2001-04-01~justkidding.  The name portion may be omitted if so long as
+                            omitting it does not cause ambiguity.
+                        </doc>
+                    </param>
+                    <method name="GET">
+                        <doc>Get the amendment alone.</doc>
+                        <response>
+                            <representation href="#amendment-xml"/>
+                        </response>
+                    </method>
+                    <method name="PUT">
+                        <doc>
+                            Create the amendment (if the study doesn't already have a development amendment)
+                            or update the amendment (if it is the current development amendment).
+                        </doc>
+                        <request>
+                            <representation href="#amendment-xml"/>
+                        </request>
+                        <response>
+                            <representation href="#amendment-xml"/>
+                        </response>
+                    </method>
+                    <method name="DELETE">
+                        <doc>
+                            Delete the amendment, if and only if it isn't released.
+                        </doc>
+                    </method>
+                </resource>
             </resource>
 
-            <resource path="approvals">
+            <resource path="{study-identifier}/sites/{site-identifier}">
                 <doc>
                     <html:em class="pending">Pending</html:em>
-                    <html:p>The history of approvals for the amendments of a study at a site.</html:p>
+                    <html:p>The link between a study and a site.</html:p>
                 </doc>
-                <method name="GET">
-                    <response>
-                        <representation href="#approvals-xml"/>
-                    </response>
-                </method>
-                <method name="POST">
+                <param style="template" name="study-identifier">
+                    <doc>The assigned protocol identifier for the study.</doc>
+                </param>
+                <param style="template" name="site-identifier">
                     <doc>
-                        Accepts a document naming the amendment and the approval date
-                        in order to mark an amendment approved.  This process is not
-                        reversible.
-                    </doc>
-                    <request>
-                        <representation href="#approval-xml"/>
-                    </request>
-                </method>
-            </resource>
-        </resource>
-
-        <resource path="studies/{study-identifier}/schedules/{assignment-identifier}">
-            <doc>
-                <html:em class="pending">Pending</html:em>
-                <html:p>The schedule for a single subject</html:p>
-            </doc>
-            <param style="template" name="study-identifier">
-                <doc>The assigned protocol identifier for the study</doc>
-            </param>
-            <param style="template" name="assignment-identifier">
-                <doc>
-                    A shared identifier for the subject's schedule.  You can specify
-                    the identifier to use when registering the subject (it's an optional
-                    attribute in the <html:tt>registration</html:tt> element),
-                    or you can use a random one that PSC provides.  In either case, you can
-                    find the valid assignment identifiers with a GET to
-                    <tt>studies/{study-identifier}/sites/{site-name}/subject-assigments</tt>.
-                </doc>
-            </param>
-            <method name="GET">
-                <doc>Retrieve the full schedule for the assignment.</doc>
-                <response>
-                    <representation href="#schedule-xml"/>
-                </response>
-            </method>
-            <method name="POST">
-                <doc>
-                    Accepts a document describing a scheduled study segment and adds it to
-                    the subject's schedule.  Any activities included in the POSTed scheduled
-                    segment will be ignored (i.e., only activities from the study template
-                    will be scheduled using this method).
-                </doc>
-                <request>
-                    <representation href="#scheduled-study-segment-xml"/>
-                </request>
-            </method>
-
-            <resource path="activities/{year}/{month}/{day}">
-                <doc>
-                    <html:em class="pending">Pending</html:em>
-                    <html:p>A list of activities for the selected day.</html:p>
-                </doc>
-                <param style="template" name="year"/>
-                <param style="template" name="month"/>
-                <param style="template" name="day"/>
-                <method name="GET">
-                    <response>
-                        <representation href="#scheduled-activities-xml"/>
-                    </response>
-                </method>
-            </resource>
-
-            <resource path="activities/{scheduled-activity-identifier}">
-                <doc>
-                    <html:em class="pending">Pending</html:em>
-                    <html:p>A single scheduled activity.</html:p>
-                </doc>
-                <param style="template" name="scheduled-activity-identifier">
-                    <doc>
-                        PSC's generated identifier for the scheduled activity.  You can use
-                        <tt>studies/{study-identifier}/schedules/{assignment-identifier}</tt>
-                        or <tt>studies/{study-identifier}/schedules/{assignment-identifier}/{year}/{month}/{day}</tt>
-                        to find valid values.
+                        The assigned identifier for the site.  If none was specified when the
+                        site was created, the default is the site's name.
                     </doc>
                 </param>
                 <method name="GET">
-                    <doc>
-                        Returns the details for the scheduled activity, including the source planned
-                        activity and its modification history.
-                    </doc>
+                    <doc>If successful, the link exists.  Otherwise it doesn't.</doc>
                     <response>
-                        <representation href="#scheduled-activity-xml"/>
+                        <representation href="#study-site-link-xml"/>
+                    </response>
+                </method>
+                <method name="PUT">
+                    <doc>Associate the site and the study.</doc>
+                    <request>
+                        <representation href="#study-site-link-xml"/>
+                    </request>
+                </method>
+                <method name="DELETE">
+                    <doc>
+                        Unassociate the site and the study.  Only possible if there are no subjects
+                        on the study from the site.
+                    </doc>
+                </method>
+
+                <resource path="subject-assignments">
+                    <doc>
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>The collection of subjects on the study at the named site.</html:p>
+                    </doc>
+                    <method name="GET">
+                        <response>
+                            <representation href="#subject-assignments-xml"/>
+                        </response>
+                    </method>
+                    <method name="POST">
+                        <doc>
+                            Accepts a document describing the registration information
+                            for a subject (including the subject information) and assigns
+                            the subject to the the study.
+                        </doc>
+                        <request>
+                            <representation href="#registration-xml"/>
+                        </request>
+                        <response>
+                            <param type="header" name="Location">
+                                <doc>
+                                    If successful, the response will be a 303 redirect to the
+                                    newly generated schedule for the subject.
+                                </doc>
+                            </param>
+                        </response>
+                    </method>
+                </resource>
+
+                <resource path="approvals">
+                    <doc>
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>The history of approvals for the amendments of a study at a site.</html:p>
+                    </doc>
+                    <method name="GET">
+                        <response>
+                            <representation href="#approvals-xml"/>
+                        </response>
+                    </method>
+                    <method name="POST">
+                        <doc>
+                            Accepts a document naming the amendment and the approval date
+                            in order to mark an amendment approved.  This process is not
+                            reversible.
+                        </doc>
+                        <request>
+                            <representation href="#approval-xml"/>
+                        </request>
+                    </method>
+                </resource>
+            </resource>
+
+            <resource path="{study-identifier}/schedules/{assignment-identifier}">
+                <doc>
+                    <html:em class="pending">Pending</html:em>
+                    <html:p>The schedule for a single subject</html:p>
+                </doc>
+                <param style="template" name="study-identifier">
+                    <doc>The assigned protocol identifier for the study</doc>
+                </param>
+                <param style="template" name="assignment-identifier">
+                    <doc>
+                        A shared identifier for the subject's schedule.  You can specify
+                        the identifier to use when registering the subject (it's an optional
+                        attribute in the <html:tt>registration</html:tt> element),
+                        or you can use a random one that PSC provides.  In either case, you can
+                        find the valid assignment identifiers with a GET to
+                        <tt>studies/{study-identifier}/sites/{site-name}/subject-assigments</tt>.
+                    </doc>
+                </param>
+                <method name="GET">
+                    <doc>Retrieve the full schedule for the assignment.</doc>
+                    <response>
+                        <representation href="#schedule-xml"/>
                     </response>
                 </method>
                 <method name="POST">
                     <doc>
-                        Accepts a new scheduled activity state (date, status, and reason) to
-                        update the scheduled activity.
+                        Accepts a document describing a scheduled study segment and adds it to
+                        the subject's schedule.  Any activities included in the POSTed scheduled
+                        segment will be ignored (i.e., only activities from the study template
+                        will be scheduled using this method).
                     </doc>
                     <request>
-                        <representation href="#scheduled-activity-state-xml"/>
+                        <representation href="#scheduled-study-segment-xml"/>
                     </request>
                 </method>
+
+                <resource path="activities/{year}/{month}/{day}">
+                    <doc>
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>A list of activities for the selected day.</html:p>
+                    </doc>
+                    <param style="template" name="year"/>
+                    <param style="template" name="month"/>
+                    <param style="template" name="day"/>
+                    <method name="GET">
+                        <response>
+                            <representation href="#scheduled-activities-xml"/>
+                        </response>
+                    </method>
+                </resource>
+
+                <resource path="activities/{scheduled-activity-identifier}">
+                    <doc>
+                        <html:em class="pending">Pending</html:em>
+                        <html:p>A single scheduled activity.</html:p>
+                    </doc>
+                    <param style="template" name="scheduled-activity-identifier">
+                        <doc>
+                            PSC's generated identifier for the scheduled activity.  You can use
+                            <tt>studies/{study-identifier}/schedules/{assignment-identifier}</tt>
+                            or <tt>studies/{study-identifier}/schedules/{assignment-identifier}/{year}/{month}/{day}</tt>
+                            to find valid values.
+                        </doc>
+                    </param>
+                    <method name="GET">
+                        <doc>
+                            Returns the details for the scheduled activity, including the source planned
+                            activity and its modification history.
+                        </doc>
+                        <response>
+                            <representation href="#scheduled-activity-xml"/>
+                        </response>
+                    </method>
+                    <method name="POST">
+                        <doc>
+                            Accepts a new scheduled activity state (date, status, and reason) to
+                            update the scheduled activity.
+                        </doc>
+                        <request>
+                            <representation href="#scheduled-activity-state-xml"/>
+                        </request>
+                    </method>
+                </resource>
             </resource>
         </resource>
 
-        <resource path="activities/sources">
+        <resource path="activities">
             <doc>
                 <html:em class="pending">Pending</html:em>
                 <html:p>All of the activity sources in the system.</html:p>
@@ -436,6 +452,7 @@
         </resource>
     </resources>
 
+    <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
     <representation mediaType="text/xml" id="study-xml"                    element="psc:study"/>
     <representation mediaType="text/xml" id="planned-calendar-xml"         element="psc:planned-calendar"/>
     <representation mediaType="text/xml" id="amendment-xml"                element="psc:amendment"/>
