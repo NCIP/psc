@@ -434,28 +434,27 @@
                 </resource>
             </resource>
         </resource>
-
     </resources>
 
-    <representation id="study-xml"                    mediaType="text/xml" element="psc:study"                   />
-    <representation id="planned-calendar-xml"         mediaType="text/xml" element="psc:planned-calendar"        />
-    <representation id="amendment-xml"                mediaType="text/xml" element="psc:amendment"               />
-    <representation id="study-site-link-xml"          mediaType="text/xml" element="psc:study-site-link"         />
-    <representation id="subject-assignments-xml"      mediaType="text/xml" element="psc:subject-assignments"    />
-    <representation id="registration-xml"             mediaType="text/xml" element="psc:registration"            />
-    <representation id="approvals-xml"                mediaType="text/xml" element="psc:approvals"               />
-    <representation id="approval-xml"                 mediaType="text/xml" element="psc:approval"                />
-    <representation id="schedule-xml"                 mediaType="text/xml" element="psc:schedule"                />
-    <representation id="scheduled-study-segment-xml"  mediaType="text/xml" element="psc:scheduled-study-segment" />
-    <representation id="scheduled-activities-xml"     mediaType="text/xml" element="psc:scheduled-activities"    />
-    <representation id="scheduled-activity-xml"       mediaType="text/xml" element="psc:scheduled-activity"      />
-    <representation id="scheduled-activity-state-xml" mediaType="text/xml" element="psc:scheduled-activity-state"/>
-    <representation id="activity-source-list-xml"     mediaType="text/xml" element="psc:sources"/>
-    <representation id="activity-source-xml"          mediaType="text/xml" element="psc:source"/>
-    <representation id="activity-xml"                 mediaType="text/xml" element="psc:activity"/>
-    <representation id="site-list-xml"                mediaType="text/xml" element="psc:sites"/>
-    <representation id="site-xml"                     mediaType="text/xml" element="psc:site"/>
-    <representation id="blackout-dates-xml"           mediaType="text/xml" element="psc:blackout-dates"/>
-    <representation id="blackout-date-xml"            mediaType="text/xml" element="psc:blackout-date"/>
+    <representation mediaType="text/xml" id="study-xml"                    element="psc:study"/>
+    <representation mediaType="text/xml" id="planned-calendar-xml"         element="psc:planned-calendar"/>
+    <representation mediaType="text/xml" id="amendment-xml"                element="psc:amendment"/>
+    <representation mediaType="text/xml" id="study-site-link-xml"          element="psc:study-site-link"/>
+    <representation mediaType="text/xml" id="subject-assignments-xml"      element="psc:subject-assignments"/>
+    <representation mediaType="text/xml" id="registration-xml"             element="psc:registration"/>
+    <representation mediaType="text/xml" id="approvals-xml"                element="psc:approvals"/>
+    <representation mediaType="text/xml" id="approval-xml"                 element="psc:approval"/>
+    <representation mediaType="text/xml" id="schedule-xml"                 element="psc:schedule"/>
+    <representation mediaType="text/xml" id="scheduled-study-segment-xml"  element="psc:scheduled-study-segment"/>
+    <representation mediaType="text/xml" id="scheduled-activities-xml"     element="psc:scheduled-activities"/>
+    <representation mediaType="text/xml" id="scheduled-activity-xml"       element="psc:scheduled-activity"/>
+    <representation mediaType="text/xml" id="scheduled-activity-state-xml" element="psc:scheduled-activity-state"/>
+    <representation mediaType="text/xml" id="activity-source-list-xml"     element="psc:sources"/>
+    <representation mediaType="text/xml" id="activity-source-xml"          element="psc:source"/>
+    <representation mediaType="text/xml" id="activity-xml"                 element="psc:activity"/>
+    <representation mediaType="text/xml" id="site-list-xml"                element="psc:sites"/>
+    <representation mediaType="text/xml" id="site-xml"                     element="psc:site"/>
+    <representation mediaType="text/xml" id="blackout-dates-xml"           element="psc:blackout-dates"/>
+    <representation mediaType="text/xml" id="blackout-date-xml"            element="psc:blackout-date"/>
 
 </application>
