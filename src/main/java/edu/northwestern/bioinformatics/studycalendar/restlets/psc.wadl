@@ -10,16 +10,26 @@
              xmlns:html="http://www.w3.org/1999/xhtml"
              >
 
-    <doc title="Patient Study Calendar API">
-        <html:p>
-            The API allows you to programmatically create and update templates, schedules, and
-            activities using standard XML and the HTTP protocol.
+    <doc title="Patient Study Calendar RESTful API">
+        <html:p class="main">
+            The <html:acronym title="Representational State Transfer">REST</html:acronym> API allows
+            you to programmatically create and update templates, schedules, and activities using
+            PSC's XML format and the standard HTTP protocol.  For more information about the
+            resource-oriented model, see
+            <html:a href="http://en.wikipedia.org/wiki/REST">Wikipedia</html:a> (don't miss the
+            list of links at the end of the article).  The book
+            <html:a href="http://www.oreilly.com/catalog/9780596529260/">RESTful Web Services</html:a>
+            also provides an excellent introduction.
         </html:p>
         
-        <html:p>
-            The current machine readable (WADL) description of the API for this PSC instance will
-            always be accessible from <html:a href="${baseUri}/psc.wadl">${baseUri}/psc.wadl</html:a>.
-        </html:p><html:p>
+        <html:p class="main">
+            The current machine readable
+            (<html:acronym title="Web Application Description Language">WADL</html:acronym>)
+            description of the API for this PSC instance will always be accessible from
+            <html:a href="${baseUri}/psc.wadl">${baseUri}/psc.wadl</html:a>.
+        </html:p>
+
+        <html:p class="main">
             The human readable version of that description will be visible at
             <html:a href="${baseUri}/docs">${baseUri}/docs</html:a>.
         </html:p>

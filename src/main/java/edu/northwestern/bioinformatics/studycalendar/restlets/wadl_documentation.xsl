@@ -291,6 +291,12 @@
                         color: #900;
                         background: #fed;
                     }
+                    li {
+                        line-height: 1.4em;
+                    }
+                    p.main {
+                        line-height: 1.4em;
+                    }
                 </style>
             </head>
             <body>
