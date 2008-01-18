@@ -1,15 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_NAMESPACE_ATTRIBUTE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.PSC_NS;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.SCHEMA_LOCATION_ATTRIBUTE;
@@ -20,12 +15,11 @@ import org.dom4j.Element;
 import org.dom4j.Document;
 import static org.easymock.EasyMock.expect;
 
-import static java.util.Collections.singletonList;
 import static java.text.MessageFormat.format;
 
-public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
+public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
 
-    private EpochXmlSerializer serializer;
+    private PlanTreeNodeXmlSerializer serializer;
     private Element element;
     private Epoch epoch;
     private EpochDao epochDao;
@@ -36,7 +30,7 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         epochDao = registerDaoMockFor(EpochDao.class);
 
-        serializer = new EpochXmlSerializer();
+        serializer = new PlanTreeNodeXmlSerializer();
         serializer.setEpochDao(epochDao);
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));

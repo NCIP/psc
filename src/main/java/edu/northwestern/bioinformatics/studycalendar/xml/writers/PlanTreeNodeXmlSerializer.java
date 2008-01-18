@@ -9,7 +9,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import org.springframework.beans.factory.annotation.Required;
 
-public class EpochXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
+public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
 
     // Elements
     public static final String EPOCH = "epoch";
