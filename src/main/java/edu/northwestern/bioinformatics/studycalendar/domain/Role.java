@@ -3,32 +3,29 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import gov.nih.nci.cabig.ctms.domain.CodedEnum;
 import gov.nih.nci.cabig.ctms.domain.EnumHelper;
 import static gov.nih.nci.cabig.ctms.domain.CodedEnumHelper.*;
+import org.acegisecurity.GrantedAuthority;
 
+public enum Role implements CodedEnum<String>, GrantedAuthority {
+    STUDY_COORDINATOR   (false),
+    STUDY_ADMIN         (false),
+    SYSTEM_ADMINISTRATOR(false),
+    SUBJECT_COORDINATOR ,
+    RESEARCH_ASSOCIATE  ,
+    SITE_COORDINATOR    ;
 
-public enum Role implements CodedEnum<String> {
-    STUDY_COORDINATOR       ("STUDY_COORDINATOR"   , false),
-    STUDY_ADMIN             ("STUDY_ADMIN"         , false),
-    SYSTEM_ADMINISTRATOR    ("SYSTEM_ADMINISTRATOR", false),
-    SUBJECT_COORDINATOR     ("SUBJECT_COORDINATOR"),
-    RESEARCH_ASSOCIATE      ("RESEARCH_ASSOCIATE" ),
-    SITE_COORDINATOR        ("SITE_COORDINATOR"   );
-
-    private String csmName;
     private boolean siteSpecific;
 
-    private Role(String name, boolean siteSpecific) {
-        this.csmName = name;
+    private Role(boolean siteSpecific) {
         this.siteSpecific = siteSpecific;
         register(this);
     }
 
-    private Role(String name) {
-        this(name, true);
+    private Role() {
+        this(true);
     }
 
-
     public String getCode(){
-        return csmName;
+        return name();
     }
 
     public String getDisplayName(){
@@ -39,28 +36,15 @@ public enum Role implements CodedEnum<String> {
           return getByClassAndCode(Role.class, code);
     }
 
-    public String toString() {
-        return csmName;
+    public String getAuthority() {
+        return name();
     }
 
     public String csmGroup() {
-        return csmName;
+        return name();
     }
 
     public boolean isSiteSpecific() {
         return siteSpecific;
-    }
-
-    public String csmRole() {
-        return csmName;
-    }
-
-    public static final String[] strValues() {
-        Role[] roles = Role.values();
-        String[] strRoles= new String[roles.length];
-        for(int i=0; i < roles.length; i++) {
-            strRoles[i] = roles[i].toString();
-        }
-        return strRoles;
     }
 }

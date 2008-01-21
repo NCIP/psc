@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
-import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.loadFromExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import org.springframework.beans.factory.annotation.Required;
@@ -37,7 +36,7 @@ public class SiteService {
 
     public void assignProtectionGroup(Site site, User user, Role role) throws Exception {
         ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmRole());
+    	authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmGroup());
     }
 
     public void removeProtectionGroup(Site site, User user) throws Exception {

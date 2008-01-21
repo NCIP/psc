@@ -11,7 +11,6 @@ import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.authorization.domainobjects.Group;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionElement;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
-import gov.nih.nci.security.dao.GroupSearchCriteria;
 import gov.nih.nci.security.dao.RoleSearchCriteria;
 import gov.nih.nci.security.dao.SearchCriteria;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
@@ -111,10 +110,10 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
 
     public void testAssignProtectionGroupsToUsers() throws Exception {
         gov.nih.nci.security.authorization.domainobjects.Role role0 = new gov.nih.nci.security.authorization.domainobjects.Role();
-        role0.setName(Role.SITE_COORDINATOR.csmRole());
+        role0.setName(Role.SITE_COORDINATOR.csmGroup());
         role0.setId(7L);
         gov.nih.nci.security.authorization.domainobjects.Role role1 = new gov.nih.nci.security.authorization.domainobjects.Role();
-        role1.setName(Role.SUBJECT_COORDINATOR.csmRole());
+        role1.setName(Role.SUBJECT_COORDINATOR.csmGroup());
         role1.setId(4L);
 
         String userId = "1";

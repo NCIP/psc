@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
@@ -125,7 +124,7 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         ProtectionGroup pg = createProtectionGroup((long) mayo.getId(), DomainObjectTools.createExternalObjectId(mayo));
 
         expect(authorizationManager.getPGByName(pg.getProtectionGroupName())).andReturn(pg);
-        authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), pg, role.csmRole());
+        authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), pg, role.csmGroup());
         replayMocks();
         service.assignProtectionGroup(mayo, user, role);
         verifyMocks();
