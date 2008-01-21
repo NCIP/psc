@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
@@ -14,6 +15,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     // Attributes
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
 
+    private PopulationXmlSerializer populationXmlSerializer;
     private StudyDao studyDao;
 
     public Element createElement(Study study) {
@@ -24,7 +26,12 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 .addAttribute(ID, study.getPlannedCalendar().getGridId());
 
         eStudy.add(eCalendar);
-                
+
+        for (Population population : study.getPopulations()) {
+            Element ePopulation = populationXmlSerializer.createElement(population);
+            eStudy.add(ePopulation);
+        }
+
         return eStudy;
     }
 
@@ -37,11 +44,23 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             study.setPlannedCalendar(new PlannedCalendar());
             Element calendar = (Element) element.elements(PLANNDED_CALENDAR).get(0);
             study.getPlannedCalendar().setGridId(calendar.attributeValue(ID));
+
+//            PopulationXmlSerializer populationXmlSerializer = new PopulationXmlSerializer(study);
+//            for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
+//                Element ePopulation = (Element) oPopulation;
+//                Population population = populationXmlSerializer.readElement(ePopulation);
+//                study.addPopulation(population);
+//            }
+
         }
         return study;
     }
 
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
+    }
+
+    public void setPopulationXmlSerializer(PopulationXmlSerializer populationXmlSerializer) {
+        this.populationXmlSerializer = populationXmlSerializer;
     }
 }

@@ -23,10 +23,10 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
 
-        serializer = new PopulationXmlSerializer();
-        serializer.setPopulationDao(populationDao);
-
         study = createNamedInstance("Study A", Study.class);
+
+        serializer = new PopulationXmlSerializer(study);
+        serializer.setPopulationDao(populationDao);
 
         population = new Population();
         population.setAbbreviation("MP");
@@ -48,7 +48,7 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(populationDao.getByAbbreviation(study, "MP")).andReturn(population);
         replayMocks();
 
-        Population actual = serializer.readElement(study, element);
+        Population actual = serializer.readElement(element);
         verifyMocks();
 
         assertSame("Population should be the same", population, actual);
@@ -60,7 +60,7 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("name")).andReturn("A Population");
         replayMocks();
 
-        Population actual = serializer.readElement(study, element);
+        Population actual = serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong name", "A Population", actual.getName());
