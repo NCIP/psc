@@ -1,27 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.text.DateFormat;
-import java.util.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.springframework.beans.factory.annotation.Required;
 
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarProtectionGroup;
-import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ReportRowDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.DateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Yufang Wang
