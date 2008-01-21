@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.userdetails.UserDetails;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -13,7 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +26,7 @@ import java.util.Set;
         @Parameter(name="sequence", value="seq_users_id")
     }
 )
-public class User extends AbstractMutableDomainObject implements Named, Serializable {
+public class User extends AbstractMutableDomainObject implements Named, Serializable, UserDetails {
     private String name;
     private Long csmUserId;
     private Set<UserRole> userRoles;
@@ -32,7 +34,7 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
     private List<StudySubjectAssignment> studySubjectAssignments;
 
     public User() {
-        this.userRoles = new HashSet<UserRole>();
+        this.userRoles = new LinkedHashSet<UserRole>();
         this.studySubjectAssignments = new ArrayList<StudySubjectAssignment>();
         this.activeFlag = true;
     }
@@ -67,8 +69,8 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         userRoles.clear();
     }
 
-    public void addAllUserRoles(Set<UserRole> userRoles) {
-        this.userRoles.addAll(userRoles);
+    public void addAllUserRoles(Set<UserRole> srcRoles) {
+        this.userRoles.addAll(srcRoles);
     }
 
     public boolean hasAssignment(Site site) {
@@ -83,6 +85,42 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
             if (assignment.getStudySite().equals(ss)) return true;
         }
         return false;
+    }
+
+    ////// IMPLEMENTATION OF UserDetails
+
+    public GrantedAuthority[] getAuthorities() {
+        Role[] authorities = new Role[getUserRoles().size()];
+        int i = 0;
+        for (UserRole userRole : getUserRoles()) {
+            authorities[i] = userRole.getRole();
+            i++;
+        }
+        return authorities;
+    }
+
+    public String getPassword() {
+        return "PASSWORD NOT AVAILABLE FOR " + getClass().getName();
+    }
+
+    public String getUsername() {
+        return getName();
+    }
+
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    public boolean isEnabled() {
+        return getActiveFlag();
     }
 
     ////// BEAN PROPERTIES

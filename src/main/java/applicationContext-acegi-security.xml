@@ -82,20 +82,13 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
             </bean>
         </property>
 
-        <property name="userDetailsService" ref="pscUserDetailsService">
-
-        </property>
+        <property name="userDetailsService" ref="pscUserDetailsService"/>
 
         <property name="userCache" ref="userCache"/>
     </bean>
 
     <bean id="pscUserDetailsService"
           class="edu.northwestern.bioinformatics.studycalendar.security.PscUserDetailsService">
-        <property name="csmUserProvisioningManager"
-                  ref="userProvisioningManager"/>
-        <property name="rolePrefix">
-            <value></value>
-        </property>
         <property name="userDao" ref="userDao"/>
     </bean>
 

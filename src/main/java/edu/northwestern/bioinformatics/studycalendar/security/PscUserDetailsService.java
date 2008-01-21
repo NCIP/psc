@@ -4,25 +4,15 @@ import gov.nih.nci.security.acegi.csm.authorization.CSMUserDetailsService;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
 import org.acegisecurity.userdetails.User;
+import org.acegisecurity.userdetails.UserDetailsService;
 import org.springframework.dao.DataAccessException;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 
-public class PscUserDetailsService extends CSMUserDetailsService {
+public class PscUserDetailsService implements UserDetailsService {
     private UserDao userDao;
 
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException, DataAccessException {
-        UserDetails userDetails =  super.loadUserByUsername(userName);
-
-        edu.northwestern.bioinformatics.studycalendar.domain.User pscUser = userDao.getByName(userName);
-
-        if (pscUser != null) {
-            userDetails =
-                    new User(userDetails.getUsername(), userDetails.getPassword(), pscUser.getActiveFlag(),
-                            userDetails.isAccountNonExpired(), userDetails.isCredentialsNonExpired(),
-                            pscUser.getActiveFlag(), userDetails.getAuthorities());
-        }
-
-        return userDetails;
+        return userDao.getByName(userName);
     }
 
     public void setUserDao(UserDao userDao) {
