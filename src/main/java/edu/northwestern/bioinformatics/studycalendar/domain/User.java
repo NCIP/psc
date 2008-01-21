@@ -89,6 +89,7 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
 
     ////// IMPLEMENTATION OF UserDetails
 
+    @Transient
     public GrantedAuthority[] getAuthorities() {
         Role[] authorities = new Role[getUserRoles().size()];
         int i = 0;
@@ -99,26 +100,32 @@ public class User extends AbstractMutableDomainObject implements Named, Serializ
         return authorities;
     }
 
+    @Transient
     public String getPassword() {
         return "PASSWORD NOT AVAILABLE FOR " + getClass().getName();
     }
 
+    @Transient
     public String getUsername() {
         return getName();
     }
 
+    @Transient
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    @Transient
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    @Transient
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    @Transient
     public boolean isEnabled() {
         return getActiveFlag();
     }
