@@ -11,7 +11,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
 
-    <bean name="/psc.wadl"
+    <bean name="/docs/psc.wadl"
           id="wadlResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
           >

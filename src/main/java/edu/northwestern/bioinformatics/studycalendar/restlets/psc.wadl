@@ -26,7 +26,7 @@
             The current machine readable
             (<html:acronym title="Web Application Description Language">WADL</html:acronym>)
             description of the API for this PSC instance will always be accessible from
-            <html:a href="${baseUri}/psc.wadl">${baseUri}/psc.wadl</html:a>.
+            <html:a href="${baseUri}/docs/psc.wadl">${baseUri}/docs/psc.wadl</html:a>.
         </html:p>
 
         <html:p class="main">
