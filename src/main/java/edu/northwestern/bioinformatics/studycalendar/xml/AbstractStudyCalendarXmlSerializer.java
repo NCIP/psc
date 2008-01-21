@@ -63,4 +63,13 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public abstract Element createElement(R object);
 
     public abstract R readElement(Element element);
+
+    //// Helper Methods
+    
+    protected Element element(String elementName) {
+        // Using QName is the only way to attach the namespace to the element
+        QName qNode = DocumentHelper.createQName(elementName, DEFAULT_NAMESPACE);
+        return DocumentHelper.createElement(qNode);
+    }
+
 }

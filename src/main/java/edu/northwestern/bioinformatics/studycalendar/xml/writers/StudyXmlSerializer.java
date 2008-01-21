@@ -4,9 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
 
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
     // Elements
@@ -19,13 +17,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     private StudyDao studyDao;
 
     public Element createElement(Study study) {
-        // Using QName is the only way to attach the namespace to the element
-        QName qStudy = DocumentHelper.createQName(STUDY, DEFAULT_NAMESPACE);
-        Element eStudy = DocumentHelper.createElement(qStudy)
+        Element eStudy = element(STUDY)
                 .addAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
-        QName qCalendar = DocumentHelper.createQName(PLANNDED_CALENDAR, DEFAULT_NAMESPACE);
-        Element eCalendar = DocumentHelper.createElement(qCalendar)
+        Element eCalendar = element(PLANNDED_CALENDAR)
                 .addAttribute(ID, study.getPlannedCalendar().getGridId());
 
         eStudy.add(eCalendar);

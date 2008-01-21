@@ -4,11 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import org.dom4j.Document;
@@ -28,6 +26,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudySegmentDao studySegmentDao;
     private PlannedActivityDao plannedActivityDao;
     private Period period;
+    private PlannedActivity plannedActivity;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -47,6 +46,13 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
         segment = setGridId("grid1", createNamedInstance("Segment A", StudySegment.class));
         period = setGridId("grid2", createNamedInstance("Period A", Period.class));
+
+        Population population = new Population();
+        population.setAbbreviation("PP");
+        plannedActivity = setGridId("grid3", Fixtures.createPlannedActivity("bone scan", 2, "scan details", "no mice"));
+        plannedActivity.setPopulation(population);
+
+
 
     }
 
@@ -172,6 +178,44 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertSame("Wrong Period", period, actual);
     }
 
+    public void testCreateElementPlannedActivity() {
+        Element actual = serializer.createElement(plannedActivity);
 
+        assertEquals("Wrong attribute size", 5, actual.attributeCount());
+        assertEquals("Wrong grid id", "grid3", actual.attribute("id").getValue());
+        assertEquals("Wrong day", "2", actual.attributeValue("day"));
+        assertEquals("Wrong details", "scan details", actual.attributeValue("details"));
+        assertEquals("Wrong condition", "no mice", actual.attributeValue("condition"));
+        assertEquals("Wrong population", "PP", actual.attributeValue("population"));
+    }
 
+    public void testReadElementStudyPlannedActivity() {
+        expect(element.getName()).andReturn("planned-activity").times(2);
+        expect(element.attributeValue("id")).andReturn("grid3");
+        expect(plannedActivityDao.getByGridId("grid3")).andReturn(null);
+        expect(element.attributeValue("day")).andReturn("2");
+        expect(element.attributeValue("details")).andReturn("scan details");
+        expect(element.attributeValue("condition")).andReturn("no mice");
+        replayMocks();
+
+        PlannedActivity actual = (PlannedActivity) serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong grid id", "grid3", actual.getGridId());
+        assertEquals("Wrong day", 2, (int) actual.getDay());
+        assertEquals("Wrong details", "scan details", actual.getDetails());
+        assertEquals("Wrong condition", "no mice", actual.getCondition());
+    }
+
+    public void testReadElementExistsPlannedActivity() {
+        expect(element.attributeValue("id")).andReturn("grid3");
+        expect(element.getName()).andReturn("planned-activity");
+        expect(plannedActivityDao.getByGridId("grid3")).andReturn(plannedActivity);
+        replayMocks();
+
+        PlannedActivity actual = (PlannedActivity) serializer.readElement(element);
+        verifyMocks();
+
+        assertSame("Wrong Planned Activity", plannedActivity, actual);
+    }
 }

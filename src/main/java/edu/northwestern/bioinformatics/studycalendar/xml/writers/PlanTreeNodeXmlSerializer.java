@@ -8,9 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.QName;
 import org.springframework.beans.factory.annotation.Required;
 
 public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
@@ -21,6 +19,9 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
     public static final String PERIOD = "period";
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
+    // Attributes
+    public static final String POPULATION = "population";
+
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
     private PeriodDao periodDao;
@@ -29,16 +30,24 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
     public Element createElement(PlanTreeNode<?> node) {
         String elementName = findElementName(node);
 
-        // Using QName is the only way to attach the namespace to the element
-        QName qNode = DocumentHelper.createQName(elementName, DEFAULT_NAMESPACE);
-        Element eNode = DocumentHelper.createElement(qNode)
+        Element element = element(elementName)
                 .addAttribute(ID, node.getGridId());
 
         if (node instanceof Named) {
-            eNode.addAttribute(NAME, ((Named)node).getName());
+            element.addAttribute(NAME, ((Named)node).getName());
         }
 
-        return eNode;
+        if (node instanceof PlannedActivity) {
+            element.addAttribute(DAY, ((PlannedActivity)node).getDay().toString());
+            element.addAttribute(DETAILS, ((PlannedActivity) node).getDetails());
+            element.addAttribute(CONDITION, ((PlannedActivity) node).getCondition());
+            Population population = ((PlannedActivity) node).getPopulation();
+            if (population != null) {
+                element.addAttribute(POPULATION, ((PlannedActivity) node).getPopulation().getAbbreviation());
+            }
+        }
+
+        return element;
     }
 
     public PlanTreeNode<?> readElement(Element element) {
@@ -94,10 +103,10 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
             return new Period();
         } else if (elementName.equals(PLANNED_ACTIVITY)) {
             PlannedActivity activity = new PlannedActivity();
-            activity.setGridId(element.attributeValue(ID));
             activity.setDay(new Integer(element.attributeValue(DAY)));
             activity.setDetails(element.attributeValue(DETAILS));
             activity.setCondition(element.attributeValue(CONDITION));
+            // TODO: Add Population
             return activity;
         } else {
             throw new StudyCalendarError("Cannot find Node for: %s", elementName);
