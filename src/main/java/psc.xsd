@@ -12,6 +12,7 @@
         <xsd:sequence>
             <xsd:element ref="psc:planned-calendar" minOccurs="1" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
     </xsd:complexType>
@@ -160,6 +161,13 @@
         <xsd:attribute name="description" type="xsd:string"/>
         <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
         <xsd:attribute name="code" type="xsd:string"  use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="population" type="psc:Population"/>
+
+    <xsd:complexType name="Population">
+        <xsd:attribute name="abbreviation" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
 </xsd:schema>
