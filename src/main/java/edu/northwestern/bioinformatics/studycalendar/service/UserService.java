@@ -57,8 +57,9 @@ public class UserService implements Serializable {
                 new gov.nih.nci.security.authorization.domainobjects.User();
         csmUser.setLoginName(user.getName());
         csmUser.setPassword(password);
-        csmUser.setFirstName("");   // Attribute can't be null
-        csmUser.setLastName("");    // Attribute can't be null
+        // These attributes can't be null. Oracle treats an empty string as NULL.
+        csmUser.setFirstName(" ");
+        csmUser.setLastName(" ");
         userProvisioningManager.createUser(csmUser);
         return csmUser;
     }
