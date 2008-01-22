@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.Date;
 
 /**
@@ -266,6 +265,13 @@ public class Fixtures {
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Creating domain obj of class " + clazz.getName() + " failed", e);
         }
+    }
+
+    public static Population createPopulation(String abbreviation, String name) {
+        Population population = new Population();
+        population.setAbbreviation(abbreviation);
+        population.setName(name);
+        return population;
     }
 
     /**

@@ -9,11 +9,11 @@
     <xsd:element name="study" type="psc:Study" />
 
     <xsd:complexType name="Study">
-        <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
             <xsd:element ref="psc:planned-calendar" minOccurs="1" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
+        </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
     </xsd:complexType>
 

@@ -113,6 +113,14 @@ public class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerialize
         }
     }
 
+     protected void addAdditionalAttributes(Element element, PlanTreeNode node) {
+    }
+
+//    protected abstract Class<?> nodeClass();
+//    protected abstract String elementName();
+//    protected PlanTreeNode<?> getFromId(String id);
+//    protected PlanTreeNodeXmlSerializer getChildSerializer();
+
 
 
     // Dao setters
