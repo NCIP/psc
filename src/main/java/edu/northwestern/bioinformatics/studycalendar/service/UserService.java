@@ -58,8 +58,8 @@ public class UserService implements Serializable {
         csmUser.setLoginName(user.getName());
         csmUser.setPassword(password);
         // These attributes can't be null. Oracle treats an empty string as NULL.
-        csmUser.setFirstName(" ");
-        csmUser.setLastName(" ");
+        csmUser.setFirstName(".");
+        csmUser.setLastName(".");
         userProvisioningManager.createUser(csmUser);
         return csmUser;
     }
