@@ -122,7 +122,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
     }
 
-    public void testSaveAll() {
+    public void testSave() {
         Study study = createNamedInstance("Study A", Study.class);
         Amendment amend0 = Fixtures.createAmendments("Amendment A");
         Amendment amend1 = Fixtures.createAmendments("Amendment B");
@@ -134,7 +134,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         deltaService.saveRevision(amend0);
         replayMocks();
 
-        service.saveAll(study);
+        service.save(study);
         verifyMocks();
     }
 }

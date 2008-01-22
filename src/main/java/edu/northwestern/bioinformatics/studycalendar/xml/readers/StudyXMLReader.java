@@ -70,7 +70,7 @@ public class StudyXMLReader  {
 
     public Study readAndSave(InputStream inputStream) {
         Study study = read(inputStream);
-        studyService.saveAll(study);
+        studyService.save(study);
         return study;
     }
 
