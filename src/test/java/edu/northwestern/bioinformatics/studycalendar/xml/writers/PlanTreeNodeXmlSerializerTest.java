@@ -15,9 +15,11 @@ import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 
-public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
+// TODO: Delete me when PlanTreeNodeXmlSerializer refactoring is done
+public abstract class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     private PlanTreeNodeXmlSerializer serializer;
+    private EpochXmlSerializer epochSerializer;
     private Element element;
     private Epoch epoch;
     private EpochDao epochDao;
@@ -37,11 +39,14 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
 
-        serializer = new PlanTreeNodeXmlSerializer();
-        serializer.setEpochDao(epochDao);
-        serializer.setPeriodDao(periodDao);
-        serializer.setStudySegmentDao(studySegmentDao);
-        serializer.setPlannedActivityDao(plannedActivityDao);
+//        serializer = new PlanTreeNodeXmlSerializer();
+//        serializer.setEpochDao(epochDao);
+//        serializer.setPeriodDao(periodDao);
+//        serializer.setStudySegmentDao(studySegmentDao);
+//        serializer.setPlannedActivityDao(plannedActivityDao);
+        epochSerializer = new EpochXmlSerializer();
+        epochSerializer.setEpochDao(epochDao);
+        serializer = null;
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
         segment = setGridId("grid1", createNamedInstance("Segment A", StudySegment.class));
@@ -57,7 +62,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testCreateElementEpoch() {
-        Element actual = serializer.createElement(epoch);
+        Element actual = epochSerializer.createElement(epoch);
 
         assertEquals("Wrong attribute size", 2, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
@@ -65,13 +70,13 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementEpoch() {
+        expect(element.getName()).andReturn("epoch");
         expect(element.attributeValue("id")).andReturn("grid0");
-        expect(element.getName()).andReturn("epoch").times(2);
         expect(epochDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("name")).andReturn("Epoch A");
         replayMocks();
 
-        Epoch actual = (Epoch) serializer.readElement(element);
+        Epoch actual = (Epoch) epochSerializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
@@ -79,19 +84,19 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadElementExistsEpoch() {
-        expect(element.attributeValue("id")).andReturn("grid0");
         expect(element.getName()).andReturn("epoch");
+        expect(element.attributeValue("id")).andReturn("grid0");
         expect(epochDao.getByGridId("grid0")).andReturn(epoch);
         replayMocks();
 
-        Epoch actual = (Epoch) serializer.readElement(element);
+        Epoch actual = (Epoch) epochSerializer.readElement(element);
         verifyMocks();
 
         assertSame("Wrong Epoch", epoch, actual);
     }
 
     public void testCreateDocumentEpoch() throws Exception {
-        Document actual = serializer.createDocument(epoch);
+        Document actual = epochSerializer.createDocument(epoch);
 
         assertEquals("Element should be an epoch", "epoch", actual.getRootElement().getName());
         assertEquals("Wrong epoch grid id", "grid0", actual.getRootElement().attributeValue("id"));
@@ -106,7 +111,7 @@ public class PlanTreeNodeXmlSerializerTest extends StudyCalendarXmlTestCase {
                 .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
                 .append(format("       {0}=\"{1}\"/>"    , XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        String actual = serializer.createDocumentString(epoch);
+        String actual = epochSerializer.createDocumentString(epoch);
         assertXMLEqual(expected.toString(), actual);
     }
 
