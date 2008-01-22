@@ -6,11 +6,25 @@
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
+    <xsd:element name="studies">
+        <xsd:annotation>
+            <xsd:documentation>
+                A collection of study elements.  Generally, none of the elements that may be
+                embedded in a study will occur in the elements nested in studies.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="psc:study"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:element name="study" type="psc:Study" />
 
     <xsd:complexType name="Study">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            <xsd:element ref="psc:planned-calendar" minOccurs="1" maxOccurs="1"/>
+            <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>

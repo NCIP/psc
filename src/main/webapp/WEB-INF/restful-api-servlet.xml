@@ -15,11 +15,6 @@
 
     <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.BeanNameRouter"/>
 
-    <bean name="/studies/{study-identifier}/template"
-          id="templateResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
-          />
-
     <bean name="/docs/psc.wadl"
           id="wadlResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
@@ -41,6 +36,20 @@
         <property name="mimeType" value="text/xml"/>
         <property name="resourcePath" value="psc.xsd"/>
     </bean>
+
+    <bean name="/studies"
+          id="studiesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
+          >
+        <property name="xmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
+        </property>
+    </bean>
+
+    <bean name="/studies/{study-identifier}/template"
+          id="templateResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
+          />
 
     <!-- AUXILIARIES -->
   

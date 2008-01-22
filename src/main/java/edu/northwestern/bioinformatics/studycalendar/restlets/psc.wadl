@@ -47,7 +47,6 @@
     <resources base="${baseUri}">
         <resource path="studies">
             <doc>
-                <html:em class="pending">Pending</html:em>
                 <html:p>All the studies in the system.</html:p>
             </doc>
             <method name="GET">

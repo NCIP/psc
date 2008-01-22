@@ -1,26 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
-import org.restlet.data.Method;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
-import org.restlet.data.Status;
-import org.restlet.data.Reference;
-import org.restlet.resource.Resource;
+import org.restlet.data.Method;
 import org.restlet.resource.ReaderRepresentation;
-import static org.easymock.EasyMock.*;
+import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.io.Reader;
-import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
