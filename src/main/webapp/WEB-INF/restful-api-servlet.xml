@@ -4,6 +4,15 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
         ">
 
+    <!-- TODO: reenable after xml serializers are ready -->
+    <!--<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>-->
+
+    <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
+        <property name="except" value="docs.*"/>
+        <property name="next" ref="router"/>
+        <property name="authenticationProvider" ref="localAuthenticationProvider"/>
+    </bean>
+
     <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.BeanNameRouter"/>
 
     <bean name="/studies/{study-identifier}/template"
@@ -25,7 +34,7 @@
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
-    <bean name="/psc.xsd"
+    <bean name="/docs/psc.xsd"
           id="xsdResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ClasspathResource"
           >

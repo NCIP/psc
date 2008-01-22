@@ -178,6 +178,10 @@
     <servlet>
         <servlet-name>restful-api</servlet-name>
         <servlet-class>edu.northwestern.bioinformatics.studycalendar.restlets.RestletSpringServlet</servlet-class>
+        <init-param>
+            <param-name>targetRestletBeanName</param-name>
+            <param-value>guard</param-value>
+        </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

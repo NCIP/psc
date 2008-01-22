@@ -25,14 +25,10 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public abstract class ResourceTestCase<R extends Resource> extends StudyCalendarTestCase {
+public abstract class ResourceTestCase<R extends Resource> extends RestletTestCase {
     protected static final String MOCK_XML = "<foo></foo>";
-    protected static final String ROOT_URI = "http://trials.etc.edu/studycalendar/api/v1";
-    protected static final String BASE_URI = ROOT_URI + "/the/path/to/the/resource";
 
     private R resource;
-    protected Request request;
-    protected Response response;
 
     protected StudyCalendarXmlCollectionSerializer xmlSerializer;
     protected CapturingStudyCalendarXmlFactoryStub xmlSerializerStub;
@@ -40,10 +36,6 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        request = new Request();
-        request.setRootRef(new Reference(ROOT_URI));
-        request.setResourceRef(new Reference(new Reference(BASE_URI), ""));
-        response = new Response(request);
         xmlSerializer = registerMockFor(StudyCalendarXmlCollectionSerializer.class);
         xmlSerializerStub = new CapturingStudyCalendarXmlFactoryStub();
     }
@@ -118,10 +110,6 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
         return result;
     }
 
-    protected void assertResponseStatus(Status status) {
-        assertEquals("Response should be " + status, status, response.getStatus());
-    }
-
     protected void expectReadXmlFromRequestAs(Object expectedRead) throws Exception {
         final Reader reader = registerMockFor(Reader.class);
         request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
@@ -148,10 +136,7 @@ public abstract class ResourceTestCase<R extends Resource> extends StudyCalendar
     
     protected static ApplicationContext getApiServletApplicationContext() {
         ApplicationContext parent = getDeployedApplicationContext();
-        FileSystemXmlApplicationContext context
-            = new FileSystemXmlApplicationContext("src/main/webapp/WEB-INF/restful-api-servlet.xml");
-        context.setParent(parent);
-        context.refresh();
-        return context;
+        return new FileSystemXmlApplicationContext(
+            new String[] { "src/main/webapp/WEB-INF/restful-api-servlet.xml" }, parent);
     }
 }

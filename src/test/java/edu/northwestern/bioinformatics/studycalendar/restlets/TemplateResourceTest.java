@@ -37,7 +37,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testGetReturnsXml() throws Exception {
-        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
         expectObjectXmlized(study);
 
         doGet();
@@ -47,7 +47,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testGet404sWhenStudyNotFound() throws Exception {
-        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
 
         doGet();
 
@@ -56,7 +56,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutExistingXml() throws Exception {
         Study newStudy = new Study();
-        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
         expectReadXmlFromRequestAs(newStudy);
         expectObjectXmlized(newStudy);
 
@@ -67,7 +67,7 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testPutNewXml() throws Exception {
-        expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
+        expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expectReadXmlFromRequestAs(study);
         expectObjectXmlized(study);
 

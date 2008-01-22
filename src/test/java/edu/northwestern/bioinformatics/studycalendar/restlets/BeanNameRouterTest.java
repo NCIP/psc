@@ -63,6 +63,16 @@ public class BeanNameRouterTest extends TestCase {
         assertFinderForBean("ore", oreRoute.getNext());
         assertFinderForBean("fish", fishRoute.getNext());
     }
+    
+    public void testRoutingSkipsResourcesWithoutAppropriateAliases() throws Exception {
+        factory.registerBeanDefinition("timber", new RootBeanDefinition(Resource.class, false));
+        factory.registerAlias("timber", "no-slash");
+
+        router.postProcessBeanFactory(factory);
+
+        RouteList actualRoutes = router.getRoutes();
+        assertEquals("Timber resource should have been skipped", 2, actualRoutes.size());
+    }
 
     private void assertFinderForBean(String expectedBeanName, Restlet restlet) {
         assertTrue("Restlet is not a bean finder restlet", restlet instanceof SpringBeanFinder);

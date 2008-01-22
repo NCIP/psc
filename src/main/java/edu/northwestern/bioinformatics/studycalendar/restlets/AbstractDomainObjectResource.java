@@ -20,7 +20,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSeriali
  *
  * @author Rhett Sutphin
  */
-public abstract class AbstractDomainObjectResource<D extends DomainObject> extends Resource {
+public abstract class AbstractDomainObjectResource<D extends DomainObject> extends AbstractPscResource {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private D requestedObject;

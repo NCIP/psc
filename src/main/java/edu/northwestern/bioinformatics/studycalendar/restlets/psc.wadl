@@ -33,10 +33,15 @@
             The human readable version of that description will be visible at
             <html:a href="${baseUri}/docs">${baseUri}/docs</html:a>.
         </html:p>
+
+        <html:p class="main">
+            Resources marked <html:em class="pending">Pending</html:em> are planned
+            for release 2.0 of PSC, but are not yet implemented.
+        </html:p>
     </doc>
 
     <grammars>
-        <include href="${baseUri}/psc.xsd"/>
+        <include href="${baseUri}/docs/psc.xsd"/>
     </grammars>
 
     <resources base="${baseUri}">
