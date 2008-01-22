@@ -11,20 +11,21 @@ import java.io.Reader;
  * the objects will be {@link DomainObject}s.  However, some serialized
  * representations do not map directly on to the domain.  Those objects
  * should live in {@link edu.northwestern.bioinformatics.studycalendar.xml.domain}.
+ * <p>
+ * Some domain objects may have more than one XML representation, so there might be
+ * multiple serializers with the same type parameter.
  *
  * @author Rhett Sutphin
  * @author John Dzak
  */
 public interface StudyCalendarXmlSerializer<R> {
     /**
-     * Create a document for the given object using the specified serializer.  Directly
-     * specifying the serializer should only rarely be required.
+     * Create a document for the given object.
      */
     org.dom4j.Document createDocument(R root);
 
     /**
-     * Create a document for the given object using its default serializer and return it as string
-     * of XML.
+     * Create a document for the given object and return it as string of XML.
      */
     String createDocumentString(R root);
 
@@ -37,16 +38,25 @@ public interface StudyCalendarXmlSerializer<R> {
 
     /**
      * Parse the given document and return the object(s) it represents appropriately.
+     * <p>
+     * Serializers may not need to implement this method.  In that case, they should throw
+     * {@link UnsupportedOperationException} with an appropriate message.
      */
     R readDocument(Document document);
 
     /**
      * Parse a document out of the given reader and return the object(s) it represents appropriately.
+     * <p>
+     * Serializers may not need to implement this method.  In that case, they should throw
+     * {@link UnsupportedOperationException} with an appropriate message.
      */
     R readDocument(Reader reader);
 
     /**
      * Read the given XML element and its children, creating objects as appropriate.
+     * <p>
+     * Serializers may not need to implement this method.  In that case, they should throw
+     * {@link UnsupportedOperationException} with an appropriate message.
      */
     R readElement(Element element);
 }
