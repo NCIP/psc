@@ -9,6 +9,7 @@ import gov.nih.nci.security.exceptions.CSTransactionException;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
+import org.hibernate.Hibernate;
 
 import java.util.*;
 import java.io.Serializable;
@@ -90,6 +91,17 @@ public class UserService implements Serializable {
         }
 
         return assignableUsers;
+    }
+
+    /**
+     * Returns the user, fully initialized.
+     * @param username
+     */
+    public User getUserByName(String username) {
+        User user = userDao.getByName(username);
+        Hibernate.initialize(user);
+        Hibernate.initialize(user.getUserRoles());
+        return user;
     }
 
     ////// CONFIGURATION

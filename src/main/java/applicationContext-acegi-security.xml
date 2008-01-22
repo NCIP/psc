@@ -89,7 +89,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
     <bean id="pscUserDetailsService"
           class="edu.northwestern.bioinformatics.studycalendar.security.PscUserDetailsService">
-        <property name="userDao" ref="userDao"/>
+        <property name="userService" ref="userService"/>
     </bean>
 
     <bean id="userCache"

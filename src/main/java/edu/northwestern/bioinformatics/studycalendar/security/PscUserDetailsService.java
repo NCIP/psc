@@ -1,21 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
-import gov.nih.nci.security.acegi.csm.authorization.CSMUserDetailsService;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UsernameNotFoundException;
-import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetailsService;
 import org.springframework.dao.DataAccessException;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 
 public class PscUserDetailsService implements UserDetailsService {
-    private UserDao userDao;
+    private UserService userService;
 
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException, DataAccessException {
-        return userDao.getByName(userName);
+        return userService.getUserByName(userName);
     }
 
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 }
