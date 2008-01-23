@@ -28,7 +28,7 @@ public class UserServiceIntegratedTest extends AbstractTransactionalDataSourceSp
     @Override
     protected void onSetUpBeforeTransaction() throws Exception {
         super.onSetUpBeforeTransaction();
-        DataAuditInfo.setLocal(new DataAuditInfo("admin", "127.0.0.8", new Date()));
+        DataAuditInfo.setLocal(new DataAuditInfo("admin", "127.0.0.8", new Date(), "/etc/etc"));
     }
 
     @Override

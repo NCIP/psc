@@ -18,7 +18,7 @@ import org.springframework.dao.DataAccessException;
 
 import edu.nwu.bioinformatics.commons.testing.DbTestCase;
 import edu.nwu.bioinformatics.commons.testing.HsqlDataTypeFactory;
-import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 
 /**
  * @author Rhett Sutphin
@@ -30,7 +30,7 @@ public abstract class StudyCalendarDbTestCase extends DbTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        DataAuditInfo.setLocal(new gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo("jo", "127.0.0.8", new Date(),
+        DataAuditInfo.setLocal(new DataAuditInfo("jo", "127.0.0.8", new Date(),
             "/the/url"));
     }
 

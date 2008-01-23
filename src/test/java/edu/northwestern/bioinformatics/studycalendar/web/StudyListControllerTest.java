@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
+import gov.nih.nci.cabig.ctms.audit.domain.DataAuditInfo;
 
 /**
  * @author Rhett Sutphin
