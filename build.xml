@@ -336,11 +336,6 @@
                         <include name="**/*Integrat*Test.java"    if="test.unit.database-only"/>
                         <include name="**/ConfigurationTest.java" if="test.unit.database-only"/>
                     </patternset>
-                    <!--
-                        Exclude this test because it wipes out lookup data in the CSM tables.
-                        It can still be run by hand if necessary.
-                     -->
-                    <exclude name="**/*UserProvisioningManagerTest*"/>
                 </fileset>
             </batchtest>
         </junit>
