@@ -14,9 +14,9 @@ datasource.password=
 #### Oracle
 # datasource.driver=oracle.jdbc.OracleDriver
 
-## mode can be local or webSSO  
-#authenticationMode=local
-authenticationMode=webSSO
-webSSO.server.baseUrl=https://cbvapp-d1017.nci.nih.gov:48443/cas
-webSSO.server.trustCert=C:\\a\\cacerts
-webSSO.cas.acegi.security.url=http://localhost:8080/psc/j_acegi_cas_security_check
+## Uncomment these and set correct values for CCTS SSO authentication
+## (not needed for standalone mode)
+#authenticationMode=webSSO
+#webSSO.server.baseUrl=https://cbvapp-d1017.nci.nih.gov:48443/cas
+#webSSO.server.trustCert=C:\\a\\cacerts
+#webSSO.cas.acegi.security.url=http://localhost:8080/psc/j_acegi_cas_security_check
