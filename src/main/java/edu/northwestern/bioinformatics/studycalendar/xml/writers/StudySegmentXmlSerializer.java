@@ -6,13 +6,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
-public class StudySegmentSerializer extends PlanTreeNodeXmlSerializer{
+public class StudySegmentXmlSerializer extends PlanTreeNodeXmlSerializer{
   
     public static final String STUDY_SEGMENT = "study-segment";
 
     private StudySegmentDao studySegmentDao;
 
-    public StudySegmentSerializer(Study study) {
+    public StudySegmentXmlSerializer(Study study) {
         super(study);
     }
 

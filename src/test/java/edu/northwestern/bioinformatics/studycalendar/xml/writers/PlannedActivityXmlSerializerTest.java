@@ -31,8 +31,6 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         study.addPopulation(population);
         serializer = new PlannedActivityXmlSerializer(study);
         serializer.setPlannedActivityDao(plannedActivityDao);
-
-
     }
 
     public void testCreateElementPlannedActivity() {

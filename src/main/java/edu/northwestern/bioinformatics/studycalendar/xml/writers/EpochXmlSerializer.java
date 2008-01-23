@@ -28,7 +28,7 @@ public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
     }
 
     protected PlanTreeNodeXmlSerializer getChildSerializer() {
-        return new StudySegmentSerializer(study);
+        return new StudySegmentXmlSerializer(study);
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {

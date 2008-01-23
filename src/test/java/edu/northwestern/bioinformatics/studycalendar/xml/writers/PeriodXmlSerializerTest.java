@@ -6,16 +6,13 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setG
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
 import static java.util.Collections.emptyList;
 
 public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
-    private PeriodXmlSerializer periodXmlSerializer;
+    private PeriodXmlSerializer serializer;
     private PeriodDao periodDao;
     private Element element;
     private Period period;
@@ -27,14 +24,14 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         periodDao = registerDaoMockFor(PeriodDao.class);
 
         Study study = createNamedInstance("Study A", Study.class);
-        periodXmlSerializer = new PeriodXmlSerializer(study);
-        periodXmlSerializer.setPeriodDao(periodDao);
+        serializer = new PeriodXmlSerializer(study);
+        serializer.setPeriodDao(periodDao);
 
         period = setGridId("grid0", createNamedInstance("Period A", Period.class));
     }
 
     public void testCreateElementEpoch() {
-        Element actual = periodXmlSerializer.createElement(period);
+        Element actual = serializer.createElement(period);
 
         assertEquals("Wrong attribute size", 2, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
@@ -49,7 +46,7 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
 
-        Period actual = (Period) periodXmlSerializer.readElement(element);
+        Period actual = (Period) serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
@@ -62,29 +59,9 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(periodDao.getByGridId("grid0")).andReturn(period);
         replayMocks();
 
-        Period actual = (Period) periodXmlSerializer.readElement(element);
+        Period actual = (Period) serializer.readElement(element);
         verifyMocks();
 
         assertSame("Wrong Period", period, actual);
-    }
-
-    public void testCreateDocumentEpoch() throws Exception {
-        Document actual = periodXmlSerializer.createDocument(period);
-
-        assertEquals("Element should be an period", "period", actual.getRootElement().getName());
-        assertEquals("Wrong period grid id", "grid0", actual.getRootElement().attributeValue("id"));
-        assertEquals("Wrong period name", "Period A", actual.getRootElement().attributeValue("name"));
-    }
-
-    public void testCreateDocumentStringEpoch() throws Exception {
-        StringBuffer expected = new StringBuffer();
-        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                .append(format("<period id=\"{0}\" name=\"{1}\"", period.getGridId(), period.getName()))
-                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
-                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
-                .append(format("       {0}=\"{1}\"/>"    , XML_SCHEMA_ATTRIBUTE, XSI_NS));
-
-        String actual = periodXmlSerializer.createDocumentString(period);
-        assertXMLEqual(expected.toString(), actual);
     }
 }

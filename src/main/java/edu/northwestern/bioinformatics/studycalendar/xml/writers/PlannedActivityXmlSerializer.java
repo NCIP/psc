@@ -10,11 +10,12 @@ import org.dom4j.Element;
 public class PlannedActivityXmlSerializer extends PlanTreeNodeXmlSerializer {
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
-    private PlannedActivityDao plannedActivityDao;
     public static final String POPULATION = "population";
     private static final String DETAILS = "details";
     private static final String DAY = "day";
     private static final String CONDITION = "condition";
+
+    private PlannedActivityDao plannedActivityDao;
 
     public PlannedActivityXmlSerializer(Study study) {
         super(study);

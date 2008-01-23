@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
-     public static final String PERIOD = "period";
+    public static final String PERIOD = "period";
 
     private PeriodDao periodDao;
 

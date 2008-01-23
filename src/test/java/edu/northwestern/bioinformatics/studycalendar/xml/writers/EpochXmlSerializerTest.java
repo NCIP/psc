@@ -2,16 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
 import static java.util.Collections.emptyList;
 
 public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
@@ -66,25 +63,5 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertSame("Wrong Epoch", epoch, actual);
-    }
-
-    public void testCreateDocumentEpoch() throws Exception {
-        Document actual = epochSerializer.createDocument(epoch);
-
-        assertEquals("Element should be an epoch", "epoch", actual.getRootElement().getName());
-        assertEquals("Wrong epoch grid id", "grid0", actual.getRootElement().attributeValue("id"));
-        assertEquals("Wrong epoch name", "Epoch A", actual.getRootElement().attributeValue("name"));
-    }
-
-    public void testCreateDocumentStringEpoch() throws Exception {
-        StringBuffer expected = new StringBuffer();
-        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                .append(format("<epoch id=\"{0}\" name=\"{1}\"", epoch.getGridId(), epoch.getName()))
-                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
-                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
-                .append(format("       {0}=\"{1}\"/>"    , XML_SCHEMA_ATTRIBUTE, XSI_NS));
-
-        String actual = epochSerializer.createDocumentString(epoch);
-        assertXMLEqual(expected.toString(), actual);
     }
 }
