@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import org.dom4j.Document;
@@ -25,7 +26,8 @@ public class StudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
 
-        studySegmentSerializer = new StudySegmentSerializer();
+        Study study = createNamedInstance("Study A", Study.class);
+        studySegmentSerializer = new StudySegmentSerializer(study);
         studySegmentSerializer.setStudySegmentDao(studySegmentDao);
 
         segment = setGridId("grid0", createNamedInstance("Segment A", StudySegment.class));

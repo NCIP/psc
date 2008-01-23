@@ -5,6 +5,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
@@ -25,7 +26,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyDao studyDao;
     private PopulationXmlSerializer populationSerializer;
     private Population population;
-    private Element ePopulation;
+    private Element eCalendar, ePopulation;
+    private PlannedCalendarXmlSerializer plannedCalendarSerializer;
 
 
     protected void setUp() throws Exception {
@@ -34,11 +36,18 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
+        plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
 
-        serializer = new MockableStudyXmlSerializer();
+        serializer = new StudyXmlSerializer() {
+            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {return plannedCalendarSerializer;}
+            protected PopulationXmlSerializer getPopulationSerializer(Study study) {return populationSerializer;}
+        };
         serializer.setStudyDao(studyDao);
 
         calendar = setGridId("grid1", new PlannedCalendar());
+        QName qCalendar = DocumentHelper.createQName("planned-calendar", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        eCalendar = DocumentHelper.createElement(qCalendar);
+        eCalendar.addAttribute("id", calendar.getGridId());
 
         population = createPopulation("MP", "My Population");
 
@@ -54,6 +63,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateElement() {
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
+        expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         replayMocks();
 
         Element actual = serializer.createElement(study);
@@ -70,17 +80,21 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWhereElementIsNew() {
         expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
         expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(null);
-        expect(element.elements("planned-calendar")).andReturn(singletonList(element));
-        expect(element.attributeValue("id")).andReturn("grid1");
+
         expect(element.elements("population")).andReturn(singletonList(element));
         expect(populationSerializer.readElement(element)).andReturn(population);
+
+        expect(element.element("planned-calendar")).andReturn(element);
+        
+        // Need to cast calendar to PlanTreeNode because of EasyMockBug
+        expect(plannedCalendarSerializer.readElement(element)).andReturn((PlanTreeNode) calendar);
         replayMocks();
 
         Study actual = serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
-        assertEquals("Wrong planned calendar id", "grid1", actual.getPlannedCalendar().getGridId());
+        assertSame("PlannedCalendar should be the same", calendar, actual.getPlannedCalendar());
         assertSame("Populations should be the same", population, actual.getPopulations().iterator().next());
     }
 
@@ -97,6 +111,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateDocument() throws Exception {
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
+        expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         replayMocks();
 
         Document actual = serializer.createDocument(study);
@@ -119,18 +134,12 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
                 .append(       "</study>");
 
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
+        expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         replayMocks();
 
         String actual = serializer.createDocumentString(study);
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
-    }
-
-    private class MockableStudyXmlSerializer extends StudyXmlSerializer {
-
-        public PopulationXmlSerializer getPopulationSerializer(Study study) {
-            return populationSerializer;
-        }
     }
 }

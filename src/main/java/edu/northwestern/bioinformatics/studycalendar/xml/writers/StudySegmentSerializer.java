@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class StudySegmentSerializer extends PlanTreeNodeXmlSerializer{
@@ -10,7 +11,10 @@ public class StudySegmentSerializer extends PlanTreeNodeXmlSerializer{
     public static final String STUDY_SEGMENT = "study-segment";
 
     private StudySegmentDao studySegmentDao;
-    private PlanTreeNodeXmlSerializer periodXmlSerializer;
+
+    public StudySegmentSerializer(Study study) {
+        super(study);
+    }
 
     protected Class<?> nodeClass() {
         return StudySegment.class;
@@ -25,7 +29,7 @@ public class StudySegmentSerializer extends PlanTreeNodeXmlSerializer{
     }
 
     protected PlanTreeNodeXmlSerializer getChildSerializer() {
-        return periodXmlSerializer;
+        return new PeriodXmlSerializer(study);
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -38,9 +42,5 @@ public class StudySegmentSerializer extends PlanTreeNodeXmlSerializer{
 
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
-    }
-
-    public void setPeriodXmlSerializer(PlanTreeNodeXmlSerializer periodXmlSerializer) {
-        this.periodXmlSerializer = periodXmlSerializer;
     }
 }

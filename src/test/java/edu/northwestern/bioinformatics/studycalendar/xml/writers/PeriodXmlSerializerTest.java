@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import org.dom4j.Document;
@@ -25,7 +26,8 @@ public class PeriodXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
 
-        periodXmlSerializer = new PeriodXmlSerializer();
+        Study study = createNamedInstance("Study A", Study.class);
+        periodXmlSerializer = new PeriodXmlSerializer(study);
         periodXmlSerializer.setPeriodDao(periodDao);
 
         period = setGridId("grid0", createNamedInstance("Period A", Period.class));

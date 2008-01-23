@@ -3,13 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
     public static final String EPOCH = "epoch";
 
     private EpochDao epochDao;
-    private PlanTreeNodeXmlSerializer studySegmentXmlSerializer;
+
+    public EpochXmlSerializer(Study study) {
+        super(study);
+    }
 
     protected Class<?> nodeClass() {
         return Epoch.class;
@@ -24,7 +28,7 @@ public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
     }
 
     protected PlanTreeNodeXmlSerializer getChildSerializer() {
-        return studySegmentXmlSerializer;
+        return new StudySegmentSerializer(study);
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -37,9 +41,5 @@ public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
 
     public void setEpochDao(EpochDao epochDao) {
         this.epochDao = epochDao;
-    }
-
-    public void setStudySegmentXmlSerializer(PlanTreeNodeXmlSerializer studySegmentXmlSerializer) {
-        this.studySegmentXmlSerializer = studySegmentXmlSerializer;
     }
 }

@@ -10,7 +10,6 @@ import org.dom4j.Element;
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
     // Elements
     public static final String STUDY = "study";
-    public static final String PLANNDED_CALENDAR = "planned-calendar";
 
     // Attributes
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
@@ -21,8 +20,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         Element eStudy = element(STUDY)
                 .addAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
 
-        Element eCalendar = element(PLANNDED_CALENDAR)
-                .addAttribute(ID, study.getPlannedCalendar().getGridId());
+        Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
         eStudy.add(eCalendar);
 
@@ -40,9 +38,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (study == null) {
             study = new Study();
             study.setAssignedIdentifier(key);
-            study.setPlannedCalendar(new PlannedCalendar());
-            Element calendar = (Element) element.elements(PLANNDED_CALENDAR).get(0);
-            study.getPlannedCalendar().setGridId(calendar.attributeValue(ID));
 
             PopulationXmlSerializer populationXmlSerializer = getPopulationSerializer(study);
             for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
@@ -50,11 +45,19 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 Population population = populationXmlSerializer.readElement(ePopulation);
                 study.addPopulation(population);
             }
+
+            Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
+            PlannedCalendar calendar = (PlannedCalendar) getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+            study.setPlannedCalendar(calendar);
         }
         return study;
     }
 
-    public PopulationXmlSerializer getPopulationSerializer(Study study) {
+    protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
+        return new PlannedCalendarXmlSerializer(study);
+    }
+
+    protected PopulationXmlSerializer getPopulationSerializer(Study study) {
         return new PopulationXmlSerializer(study);
     }
 

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -25,7 +26,8 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         epochDao = registerDaoMockFor(EpochDao.class);
 
-        epochSerializer = new EpochXmlSerializer();
+        Study study = createNamedInstance("Study A", Study.class);
+        epochSerializer = new EpochXmlSerializer(study);
         epochSerializer.setEpochDao(epochDao);
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));

@@ -3,13 +3,17 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
      public static final String PERIOD = "period";
 
     private PeriodDao periodDao;
-    private PlanTreeNodeXmlSerializer plannedActivityXmlSerializer;
+
+    public PeriodXmlSerializer(Study study) {
+        super(study);
+    }
 
     protected Class<?> nodeClass() {
         return Period.class;
@@ -24,7 +28,7 @@ public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
     }
 
     protected PlanTreeNodeXmlSerializer getChildSerializer() {
-        return plannedActivityXmlSerializer;
+        return new PlannedActivityXmlSerializer(study);
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -37,9 +41,5 @@ public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
 
     public void setPeriodDao(PeriodDao periodDao) {
         this.periodDao = periodDao;
-    }
-
-    public void setPlannedActivityXmlSerializer(PlanTreeNodeXmlSerializer plannedActivityXmlSerializer) {
-        this.plannedActivityXmlSerializer = plannedActivityXmlSerializer;
     }
 }

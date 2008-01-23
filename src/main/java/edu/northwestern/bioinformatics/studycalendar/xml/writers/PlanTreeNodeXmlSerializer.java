@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
@@ -10,15 +11,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
+    Study study;
 
     // Elements
-
     public static final String STUDY_SEGMENT = "study-segment";
     public static final String PERIOD = "period";
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
     // Attributes
-    public static final String POPULATION = "population";
+
 //
 //    private EpochDao epochDao;
 //    private StudySegmentDao studySegmentDao;
@@ -111,6 +112,10 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
 //        }
 //    }
 
+    protected PlanTreeNodeXmlSerializer(Study study) {
+        this.study = study;
+    }
+
     protected abstract Class<?> nodeClass();
     protected abstract String elementName();
     protected abstract PlanTreeNode<?> getFromId(String id);
@@ -140,8 +145,10 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
             node.setGridId(key);
             addAdditionalNodeAttributes(element, node);
 
-            List<PlanTreeNode<?>> children = readChildren(element);
-            addChildren(children, node);
+            if (getChildSerializer() != null) {
+                List<PlanTreeNode<?>> children = readChildren(element);
+                addChildren(children, node);
+            }
         }
         return node;
     }
@@ -150,11 +157,8 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
         List<PlanTreeNode<?>> nodeList = new ArrayList<PlanTreeNode<?>>();
         for (Object oChild : element.elements()) {
             Element child = (Element) oChild;
-            PlanTreeNodeXmlSerializer childSerializer = getChildSerializer();
-            if (childSerializer != null) {
-                PlanTreeNode<?> childNode = childSerializer.readElement(child);
-                nodeList.add(childNode);
-            }
+            PlanTreeNode<?> childNode = getChildSerializer().readElement(child);
+            nodeList.add(childNode);
         }
         return nodeList;
     }
