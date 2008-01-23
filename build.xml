@@ -431,7 +431,14 @@
         <mkdir dir="${install-samples.dir}"/>
         <copy file="dist/${war-name}" tofile="${install.dir}/psc.war" failonerror="true"/>
         <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
-        <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config"/>
+        <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config" filtering="true">
+            <filterset>
+                <filter token="datasource.driver" value="REPLACE with your database driver classname (e.g., org.postgresql.Driver)"/>
+                <filter token="datasource.url" value="REPLACE with your database URL (e.g., jdbc:postgresql:psc)"/>
+                <filter token="datasource.username" value="REPLACE with your database username"/>
+                <filter token="datasource.password" value="REPLACE with your database password"/>
+            </filterset>
+        </copy>
         <exec executable="${svn-executable}" taskname="svn">
             <arg value="export"/>
             <arg value="https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc"/>
