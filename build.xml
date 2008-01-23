@@ -332,8 +332,9 @@
                 <fileset dir="${src-dir.unit-test}">
                     <patternset>
                         <include name="${pattern}" unless="test.unit.database-only"/>
-                        <include name="**/dao/**/*Test.java"   if="test.unit.database-only"/>
-                        <include name="**/*Integrat*Test.java" if="test.unit.database-only"/>
+                        <include name="**/dao/**/*Test.java"      if="test.unit.database-only"/>
+                        <include name="**/*Integrat*Test.java"    if="test.unit.database-only"/>
+                        <include name="**/ConfigurationTest.java" if="test.unit.database-only"/>
                     </patternset>
                     <!--
                         Exclude this test because it wipes out lookup data in the CSM tables.
