@@ -71,21 +71,20 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
         }
     }
 
-    //// PlanTreeNodes root nodes aren't currently implemented, so throw UnsupportedOperationException when root node methods called
     public Document createDocument(PlanTreeNode<?> root) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
     public String createDocumentString(PlanTreeNode<?> root) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
     public PlanTreeNode<?> readDocument(Document document) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
     public PlanTreeNode<?> readDocument(Reader reader) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
 
