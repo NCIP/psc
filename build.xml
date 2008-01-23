@@ -204,6 +204,12 @@
                 <include name="**/*"/>
             </fileset>
         </copy>
+        <!-- copy in the Oracle driver if it's present -->
+        <copy todir="${build-dir.webapp}/WEB-INF/lib">
+            <fileset dir="db/lib">
+                <include name="ojdbc14.jar"/>
+            </fileset>
+        </copy>
     </target>
 
     <target name="webapp.selenium" if="include-test-infrastructure">
@@ -416,7 +422,6 @@
                 <include name="context.xml"/>
             </metainf>
         </war>
-        <!--delete file="${webapp.context-file}"/-->
     </target>
 
     <target name="dist" description="creates the distribution package" depends="war">
