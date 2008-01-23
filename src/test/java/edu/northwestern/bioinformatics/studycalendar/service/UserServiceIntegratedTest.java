@@ -34,6 +34,8 @@ public class UserServiceIntegratedTest extends AbstractTransactionalDataSourceSp
     @Override
     protected void onTearDownAfterTransaction() throws Exception {
         DataAuditInfo.setLocal(null);
+        // CSM seems to do its own COMMIT, so we need to clean up after it 
+        deleteFromTables(new String[] { "csm_user" });
         super.onTearDownAfterTransaction();
     }
 
