@@ -293,17 +293,25 @@
 
     <!-- TEST SETUP & EXECUTION -->
 
-    <target name="test.unit.select-all">
-        <property name="unit-test.pattern" value="**/*Test.java"/>
+    <target name="test.unit" description="Run unit tests.  Use -Dpattern= to select a subset.">
+        <property name="pattern" value="**/*Test.java"/>
+        <patternset id="unit-test.pattern">
+            <include name="${pattern}"/>
+        </patternset>
+        <echo>Running tests matching pattern=${pattern}</echo>
+        <antcall target="test.unit.exec"/>
     </target>
 
-    <target name="test.unit.select-database">
-        <property name="unit-test.pattern" value="**/dao/**/*Test.java"/>
+    <target name="test.unit.database-only">
+        <patternset id="unit-test.pattern">
+            <include name="**/dao/**/*Test.java"/>
+            <include name="**/*Integrat*Test.java"/>
+        </patternset>
+        <echo>Running database-sensitive tests</echo>
+        <antcall target="test.unit.exec"/>
     </target>
 
-    <target name="test.unit" description="Run unit tests" depends="compile, test.unit.select-all">
-        <echo>Executing unit tests: ${unit-test.pattern}</echo>
-
+    <target name="test.unit.exec" depends="compile">
         <emma enabled="${emma.enabled}">
 <!-- Hibernate (I think because of a Spring classloader issue (TODO: we should check that this is still true))
      can't find hbm files from another part of the classpath, so we must use fullcopy to the instrumentation dir -->
@@ -328,7 +336,7 @@
             <formatter type="xml" usefile="true"/>
             <batchtest todir="${build-dir.unit-test}/junit">
                 <fileset dir="${src-dir.unit-test}">
-                    <include name="${unit-test.pattern}"/>
+                    <patternset refid="unit-test.pattern"/>
                     <!--
                         Exclude this test because it wipes out lookup data in the CSM tables.
                         It can still be run by hand if necessary.
@@ -460,7 +468,7 @@
 
     <target name="autobuild.exec" depends="clean, test.unit"/>
 
-    <target name="autobuild.exec.db" depends="migrate, test.unit.select-database, autobuild.exec"/>
+    <target name="autobuild.exec.db" depends="migrate, clean, test.unit.database-only"/>
 
     <target name="autobuild.artifacts">
         <property name="autobuild.artifacts-dir" value="target/artifacts"/>
@@ -634,7 +642,7 @@ done so already, please perform the following manual actions.
         </taskdef>
 
         <echo>Load junit results from ${build-dir.unit-test}/junit</echo>
-        <echo>Load junit tests from ${src-dir.unit-test} with pattern ${unit-test.pattern}</echo>
+        <echo>Load junit tests from ${src-dir.unit-test}</echo>
         <junitDocReport format="html" useTestType="true" destfile="${build-dir.unit-test}/junit/summary/junitDocReport.html">
             <junitResults>
                 <fileset dir="${build-dir.unit-test}/junit">
@@ -643,7 +651,7 @@ done so already, please perform the following manual actions.
             </junitResults>
             <junitDocs>
                 <fileset dir="${src-dir.unit-test}">
-                    <include name="${unit-test.pattern}"/>
+                    <patternset refid="unit-test.pattern"/>
                 </fileset>
             </junitDocs>
         </junitDocReport>
