@@ -1,7 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -22,7 +24,8 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
 
-        serializer = new AmendmentXmlSerializer();
+        Study study = createNamedInstance("Study A", Study.class);
+        serializer = new AmendmentXmlSerializer(study);
         serializer.setAmendmentDao(amendmentDao);
 
         Amendment amendment0 = setGridId("grid0", new Amendment());
@@ -42,7 +45,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong name", "Amendment 1", actual.attributeValue("name"));
         assertEquals("Wrong date", "2008-01-02", actual.attributeValue("date"));
         assertEquals("Wrong date", "true", actual.attributeValue("mandatory"));
-        assertEquals("Wrong previous amenmdnet id", "grid0", actual.attributeValue("previous-amendment-id"));
+        assertEquals("Wrong previous amdendment id", "2008-01-02~Amendment 1", actual.attributeValue("previous-amendment-key"));
     }
 
     public void testReadElementWithExistingAmendment() {
@@ -53,6 +56,20 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         
         Amendment actual = serializer.readElement(element);
         verifyMocks();
+
         assertSame("Amendments should be the same", amendment1, actual);
+    }
+
+    public void testReadElementWithNewAmendment() {
+        expect(element.attributeValue("name")).andReturn("Amendment 1");
+        expect(element.attributeValue("date")).andReturn("2008-01-02");
+        expect(element.attributeValue("mandatory")).andReturn("true");
+        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(null);
+        replayMocks();
+
+        Amendment actual = serializer.readElement(element);
+        verifyMocks();
+
+        assertEquals("Wrong name", "Amendment 1", actual.getName());
     }
 }
