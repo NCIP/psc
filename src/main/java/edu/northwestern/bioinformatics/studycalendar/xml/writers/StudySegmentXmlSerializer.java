@@ -16,8 +16,8 @@ public class StudySegmentXmlSerializer extends PlanTreeNodeXmlSerializer{
         super(study);
     }
 
-    protected Class<?> nodeClass() {
-        return StudySegment.class;
+    protected PlanTreeNode<?> nodeInstance() {
+        return new StudySegment();
     }
 
     protected String elementName() {

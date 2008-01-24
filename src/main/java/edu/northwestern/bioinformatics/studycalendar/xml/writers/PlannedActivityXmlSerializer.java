@@ -21,8 +21,8 @@ public class PlannedActivityXmlSerializer extends PlanTreeNodeXmlSerializer {
         super(study);
     }
 
-    protected Class<?> nodeClass() {
-        return PlannedActivity.class;
+    protected PlanTreeNode<?> nodeInstance() {
+        return new PlannedActivity();
     }
 
     protected String elementName() {

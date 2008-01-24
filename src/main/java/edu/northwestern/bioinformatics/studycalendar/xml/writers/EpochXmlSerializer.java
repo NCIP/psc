@@ -15,8 +15,8 @@ public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
         super(study);
     }
 
-    protected Class<?> nodeClass() {
-        return Epoch.class;
+    protected PlanTreeNode<?> nodeInstance() {
+        return new Epoch();
     }
 
     protected String elementName() {

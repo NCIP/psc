@@ -8,6 +8,9 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
+import java.util.List;
+import java.util.Collections;
+
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
     // Elements
     public static final String STUDY = "study";
@@ -30,7 +33,9 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             eStudy.add(ePopulation);
         }
 
-        for (Amendment amendment : study.getAmendmentsList()) {
+        List<Amendment> amendments = study.getAmendmentsList();
+        Collections.reverse(amendments);
+        for (Amendment amendment : amendments) {
             Element eAmendment = getAmendmentSerializer(study).createElement(amendment);
             eStudy.add(eAmendment);
         }

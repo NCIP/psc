@@ -19,7 +19,7 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
         this.study = study;
     }
 
-    protected abstract Class<?> nodeClass();
+    protected abstract PlanTreeNode<?> nodeInstance();
     protected abstract String elementName();
     protected abstract PlanTreeNode<?> getFromId(String id);
     protected abstract PlanTreeNodeXmlSerializer getChildSerializer();
@@ -42,8 +42,7 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
         String key = element.attributeValue(ID);
         PlanTreeNode<?> node = getFromId(key);
         if (node == null) {
-            Class<?> clazz = nodeClass();
-            node = createInstance(clazz);
+            node = nodeInstance();
             node.setGridId(key);
             addAdditionalNodeAttributes(element, node);
 

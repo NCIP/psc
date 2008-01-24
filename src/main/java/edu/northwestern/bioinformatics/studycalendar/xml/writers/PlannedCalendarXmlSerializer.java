@@ -13,8 +13,8 @@ public class PlannedCalendarXmlSerializer extends PlanTreeNodeXmlSerializer {
         super(study);
     }
 
-    protected Class<?> nodeClass() {
-        return PlannedCalendar.class;
+    protected PlanTreeNode<?> nodeInstance() {
+        return new PlannedCalendar();
     }
 
     protected String elementName() {

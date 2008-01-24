@@ -15,8 +15,8 @@ public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
         super(study);
     }
 
-    protected Class<?> nodeClass() {
-        return Period.class;
+    protected PlanTreeNode<?> nodeInstance() {
+        return new Period();
     }
 
     protected String elementName() {
