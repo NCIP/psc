@@ -625,12 +625,12 @@
                             </c:if>
                             <c:if test="${empty developmentRevision}">
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${study.id}">Assign sites</tags:restrictedListItem>
-                                <c:if test="${canAssignSubjects}">
+                                <%--<c:if test="${canAssignSubjects}">--%>
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">
                                         Schedule reconsent
                                     </tags:restrictedListItem>
 
-                                </c:if>
+                                <%--</c:if>--%>
                                 <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
                                     Add amendment
                                 </tags:restrictedListItem>
