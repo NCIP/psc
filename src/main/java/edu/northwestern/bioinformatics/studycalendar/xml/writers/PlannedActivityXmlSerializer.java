@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
-public class PlannedActivityXmlSerializer extends PlanTreeNodeXmlSerializer {
+public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String PLANNED_ACTIVITY = "planned-activity";
 
     public static final String POPULATION = "population";
@@ -33,7 +33,7 @@ public class PlannedActivityXmlSerializer extends PlanTreeNodeXmlSerializer {
         return plannedActivityDao.getByGridId(id);
     }
 
-    protected PlanTreeNodeXmlSerializer getChildSerializer() {
+    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         return null;
     }
 

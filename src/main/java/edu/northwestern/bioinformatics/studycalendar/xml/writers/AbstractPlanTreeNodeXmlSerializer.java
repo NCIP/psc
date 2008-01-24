@@ -1,28 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import org.dom4j.Element;
 import org.dom4j.Document;
+import org.dom4j.Element;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
-public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
+public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
     Study study;
 
-    protected PlanTreeNodeXmlSerializer(Study study) {
+    protected AbstractPlanTreeNodeXmlSerializer(Study study) {
         this.study = study;
     }
 
     protected abstract PlanTreeNode<?> nodeInstance();
     protected abstract String elementName();
     protected abstract PlanTreeNode<?> getFromId(String id);
-    protected abstract PlanTreeNodeXmlSerializer getChildSerializer();
+    protected abstract AbstractPlanTreeNodeXmlSerializer getChildSerializer();
 
     protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {}
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {}
@@ -84,17 +83,5 @@ public abstract class PlanTreeNodeXmlSerializer extends AbstractStudyCalendarXml
 
     public PlanTreeNode<?> readDocument(Reader reader) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
-    }
-
-
-    //// Helper methods
-    private PlanTreeNode<?> createInstance(Class<?> clazz) {
-        try {
-            return (PlanTreeNode<?>) clazz.newInstance();
-        } catch (IllegalAccessException iae) {
-            throw new StudyCalendarSystemException("Problem importing template", iae);
-        } catch (InstantiationException ie) {
-            throw new StudyCalendarSystemException("Problem importing template", ie);
-        }
     }
 }

@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
-public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
+public class EpochXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String EPOCH = "epoch";
 
     private EpochDao epochDao;
@@ -27,7 +27,7 @@ public class EpochXmlSerializer extends PlanTreeNodeXmlSerializer {
         return epochDao.getByGridId(id);
     }
 
-    protected PlanTreeNodeXmlSerializer getChildSerializer() {
+    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         return new StudySegmentXmlSerializer(study);
     }
 

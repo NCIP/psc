@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
-public class PlannedCalendarXmlSerializer extends PlanTreeNodeXmlSerializer {
+public class PlannedCalendarXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String PLANNED_CALENDAR = "planned-calendar";
     private PlannedCalendarDao plannedCalendarDao;
 
@@ -25,7 +25,7 @@ public class PlannedCalendarXmlSerializer extends PlanTreeNodeXmlSerializer {
         return plannedCalendarDao.getByGridId(id);
     }
 
-    protected PlanTreeNodeXmlSerializer getChildSerializer() {
+    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         return new EpochXmlSerializer(study);
     }
 

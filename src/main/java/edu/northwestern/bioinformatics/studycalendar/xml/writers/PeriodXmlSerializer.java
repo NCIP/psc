@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
-public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
+public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     public static final String PERIOD = "period";
 
     private PeriodDao periodDao;
@@ -27,7 +27,7 @@ public class PeriodXmlSerializer extends PlanTreeNodeXmlSerializer {
         return periodDao.getByGridId(id);
     }
 
-    protected PlanTreeNodeXmlSerializer getChildSerializer() {
+    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         return new PlannedActivityXmlSerializer(study);
     }
 

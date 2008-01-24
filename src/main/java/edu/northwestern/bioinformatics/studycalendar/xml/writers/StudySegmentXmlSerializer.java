@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
-public class StudySegmentXmlSerializer extends PlanTreeNodeXmlSerializer{
+public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
   
     public static final String STUDY_SEGMENT = "study-segment";
 
@@ -28,7 +28,7 @@ public class StudySegmentXmlSerializer extends PlanTreeNodeXmlSerializer{
         return studySegmentDao.getByGridId(id);
     }
 
-    protected PlanTreeNodeXmlSerializer getChildSerializer() {
+    protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
         return new PeriodXmlSerializer(study);
     }
 
