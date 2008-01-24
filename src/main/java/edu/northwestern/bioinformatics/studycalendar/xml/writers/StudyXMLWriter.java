@@ -31,6 +31,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author John Dzak
  */
+@Deprecated
 public class StudyXMLWriter {
     private DaoFinder daoFinder;
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";

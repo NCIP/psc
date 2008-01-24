@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import static java.util.Collections.singletonList;
 
+@Deprecated
 @Transactional
 public class StudyXMLReader  {
     protected final Logger log = LoggerFactory.getLogger(getClass());

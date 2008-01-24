@@ -100,8 +100,7 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="mandatory" type="xsd:boolean" default="true"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
-        <xsd:attribute name="previous-amendment-id" type="xsd:string"/>
+        <xsd:attribute name="previous-amendment-key" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:complexType name="Delta">

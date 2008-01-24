@@ -10,6 +10,7 @@ import org.dom4j.Element;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
     public static final String DATE = "date";
@@ -27,14 +28,12 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
     public Element createElement(Amendment amendment) {
         Element element = element(AMENDMENT);
-        element.addAttribute(ID, amendment.getGridId());
         element.addAttribute(NAME, amendment.getName());
+        element.addAttribute(DATE, formatter.format(amendment.getDate()));
         element.addAttribute(MANDATORY, Boolean.toString(amendment.isMandatory()));
 
-        element.addAttribute(DATE, formatter.format(amendment.getDate()));
-
         if (amendment.getPreviousAmendment() != null) {
-            element.addAttribute(PREVIOUS_AMENDMENT_KEY, amendment.getNaturalKey());
+            element.addAttribute(PREVIOUS_AMENDMENT_KEY, amendment.getPreviousAmendment().getNaturalKey());
         }
 
         return element;
@@ -55,9 +54,23 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             amendment.setName(name);
             amendment.setDate(date);
             amendment.setMandatory(Boolean.parseBoolean(element.attributeValue(MANDATORY)));
-            // TODO: find previous amendment from study and set on amendment
+
+            String previousAmendmentKey = element.attributeValue(PREVIOUS_AMENDMENT_KEY);
+            if (previousAmendmentKey != null) {
+                Amendment previousAmendment = findAmendment(study.getAmendmentsList(), previousAmendmentKey);
+                amendment.setPreviousAmendment(previousAmendment);
+            }
         }
         return amendment;
+    }
+
+    protected Amendment findAmendment(final List<Amendment> amendments, final String amendmentKey) {
+        for (Amendment amendment : amendments) {
+            if (amendmentKey.equals(amendment.getNaturalKey())) {
+                return amendment;
+            }
+        }
+        return null;
     }
 
     public void setAmendmentDao(AmendmentDao amendmentDao) {

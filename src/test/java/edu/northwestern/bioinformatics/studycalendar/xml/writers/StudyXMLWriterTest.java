@@ -27,8 +27,7 @@ import static java.lang.String.valueOf;
 import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-public class StudyXMLWriterTest extends StudyCalendarTestCase {
+public abstract class StudyXMLWriterTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyXMLWriter writer;

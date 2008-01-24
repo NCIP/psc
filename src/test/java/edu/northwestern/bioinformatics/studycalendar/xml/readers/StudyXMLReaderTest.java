@@ -32,7 +32,7 @@ import static java.text.MessageFormat.format;
 import java.util.Calendar;
 import java.util.List;
 
-public class StudyXMLReaderTest extends StudyCalendarTestCase {
+public abstract class StudyXMLReaderTest extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private StudyXMLReader reader;
