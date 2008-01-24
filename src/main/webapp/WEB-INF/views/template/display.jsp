@@ -629,10 +629,11 @@
                                     <tags:restrictedListItem cssClass="control" url="/pages/cal/scheduleReconsent" queryString="study=${study.id}">
                                         Schedule reconsent
                                     </tags:restrictedListItem>
-                                    <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
-                                        Add amendment
-                                    </tags:restrictedListItem>
+
                                 </c:if>
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/amendment" queryString="study=${study.id}">
+                                    Add amendment
+                                </tags:restrictedListItem>
 
                             </div>
                         </div>
@@ -665,6 +666,8 @@
                                 </div>
                             </div>
                         </c:forEach>
+
+
 
                         <c:if test="${not empty onStudyAssignments}">
                             <security:secureOperation element="/pages/cal/schedule">
