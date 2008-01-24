@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
@@ -25,8 +26,13 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         eStudy.add(eCalendar);
 
         for (Population population : study.getPopulations()) {
-            Element ePopulation = getPopulationSerializer(study).createElement(population);
+            Element ePopulation = getPopulationXmlSerializer(study).createElement(population);
             eStudy.add(ePopulation);
+        }
+
+        for (Amendment amendment : study.getAmendmentsList()) {
+            Element eAmendment = getAmendmentSerializer(study).createElement(amendment);
+            eStudy.add(eAmendment);
         }
 
         return eStudy;
@@ -39,7 +45,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             study = new Study();
             study.setAssignedIdentifier(key);
 
-            PopulationXmlSerializer populationXmlSerializer = getPopulationSerializer(study);
+            PopulationXmlSerializer populationXmlSerializer = getPopulationXmlSerializer(study);
             for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
                 Element ePopulation = (Element) oPopulation;
                 Population population = populationXmlSerializer.readElement(ePopulation);
@@ -57,8 +63,12 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return new PlannedCalendarXmlSerializer(study);
     }
 
-    protected PopulationXmlSerializer getPopulationSerializer(Study study) {
+    protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
         return new PopulationXmlSerializer(study);
+    }
+
+    protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
+        return new AmendmentXmlSerializer(study);
     }
 
     public void setStudyDao(StudyDao studyDao) {

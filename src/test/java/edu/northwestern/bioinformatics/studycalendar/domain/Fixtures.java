@@ -274,6 +274,14 @@ public class Fixtures {
         return population;
     }
 
+    public static Amendment createAmendment(String name, Date date, boolean mandatory) {
+        Amendment amendment =  new Amendment();
+        amendment.setMandatory(mandatory);
+        amendment.setName(name);
+        amendment.setDate(date);
+        return amendment;
+    }
+
     /**
      * Creates a chain of amendments with the given names, returning the one at the end of the
      * chain (the most recent one).
