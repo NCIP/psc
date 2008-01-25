@@ -33,6 +33,7 @@ public class FirstAdministratorFormAction extends FormAction {
     protected Object createFormObject(RequestContext context) throws Exception {
         CreateUserCommand command = new CreateUserCommand(null, siteDao, userService, userDao, userRoleService);
         command.setUserActiveFlag(true);
+        command.setPasswordModified(true);
         // set sys admin role for all sites, just to be safe (there should only be one site at this point)
         for (Map<Role, CreateUserCommand.RoleCell> map : command.getRolesGrid().values()) {
             map.get(Role.SYSTEM_ADMINISTRATOR).setSelected(true);

@@ -26,6 +26,7 @@
     <h3>Enter sysadmin info</h3>
     <laf:division>
         <form:form commandName="adminCommand">
+            <tags:errors path="*"/>
             <input type="hidden" name="_eventId" value="save"/>
             <div class="row">
                 <div class="label"><form:label path="user.name">Username</form:label></div>

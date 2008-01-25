@@ -7,6 +7,10 @@
                            http://www.springframework.org/schema/webflow-config
                            http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.0.xsd">
 
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename"><value>messages</value></property>
+    </bean>
+
     <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
         <property name="servletName"><value>setup</value></property>
     </bean>
