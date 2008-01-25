@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.EpochDelta;
 
 public class EpochDeltaXmlSerializer extends AbstractDeltaXmlSerializer {
-    private static final String EPOCH_DELTA = "epoch-delta";
+    public static final String EPOCH_DELTA = "epoch-delta";
 
     public EpochDeltaXmlSerializer(Study study) {
         super(study);

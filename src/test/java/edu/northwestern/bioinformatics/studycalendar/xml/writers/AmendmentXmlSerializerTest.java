@@ -6,7 +6,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setG
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
@@ -19,6 +18,7 @@ import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 import java.util.Calendar;
+import java.util.Collections;
 
 public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AmendmentDao amendmentDao;
@@ -30,6 +30,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AbstractDeltaXmlSerializer deltaSerializer;
     private Element eDelta;
     private PlannedCalendarDelta delta;
+    private AmendmentXmlSerializer.DeltaXmlSerializerFactory deltaSerializerFatory;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -37,6 +38,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         deltaSerializer = registerMockFor(AbstractDeltaXmlSerializer.class);
+        deltaSerializerFatory = registerMockFor(AmendmentXmlSerializer.DeltaXmlSerializerFactory.class);
 
         amendment0 = setGridId("grid0", new Amendment());
         amendment0.setName("Amendment 0");
@@ -64,15 +66,13 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Study study = createNamedInstance("Study A", Study.class);
         study.setAmendment(amendment0);
-        serializer = new AmendmentXmlSerializer(study) {
-            protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Delta delta) {
-                return deltaSerializer;
-            }
-        };
+        serializer = new AmendmentXmlSerializer(study);
         serializer.setAmendmentDao(amendmentDao);
+        serializer.setDeltaSerializerFactory(deltaSerializerFatory);
     }
 
     public void testCreateElement() {
+        expect(deltaSerializerFatory.createDeltaXmlSerializer(delta)).andReturn(deltaSerializer);
         expect(deltaSerializer.createElement(delta)).andReturn(eDelta);
         replayMocks();
 
@@ -105,6 +105,10 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("mandatory")).andReturn("true");
         expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(null);
         expect(element.attributeValue("previous-amendment-key")).andReturn("2008-01-01~Amendment 0");
+
+        expect(element.elements()).andReturn(Collections.singletonList(eDelta));
+        expect(deltaSerializerFatory.createDeltaXmlSerializer(eDelta)).andReturn(deltaSerializer);
+        expect(deltaSerializer.readElement(eDelta)).andReturn(delta);
         replayMocks();
 
         Amendment actual = serializer.readElement(element);
@@ -127,6 +131,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append("<planned-calendar-delta id=\"grid1\" node-id=\"grid2\"/>");
         expected.append("</amendment>");
 
+        expect(deltaSerializerFatory.createDeltaXmlSerializer(delta)).andReturn(deltaSerializer);
         expect(deltaSerializer.createElement(delta)).andReturn(eDelta);
         replayMocks();
 

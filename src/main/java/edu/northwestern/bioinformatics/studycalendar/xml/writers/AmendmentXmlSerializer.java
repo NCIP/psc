@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 
 public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
+    private DeltaXmlSerializerFactory deltaSerializerFactory = new DeltaXmlSerializerFactory();
+
     public static final String DATE = "date";
     public static final String AMENDMENT = "amendment";
     public static final String MANDATORY = "mandatory";
@@ -64,7 +66,7 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
                 amendment.setPreviousAmendment(previousAmendment);
             }
 
-            //TODO: Add Deltas
+            addDeltas(element, amendment);
         }
         return amendment;
     }
@@ -80,29 +82,65 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
     private void addDeltas(final Amendment amendment, Element element) {
         for (Delta delta : amendment.getDeltas()) {
-            AbstractDeltaXmlSerializer serializer = findDeltaXmlSerializer(delta);
+            AbstractDeltaXmlSerializer serializer = deltaSerializerFactory.createDeltaXmlSerializer(delta);
             Element eDelta = serializer.createElement(delta);
             element.add(eDelta);
         }
     }
     
-    protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Delta delta) {
-        if (delta instanceof PlannedCalendarDelta) {
-            return new PlannedCalendarDeltaXmlSerializer(study);
-        } else if (delta instanceof EpochDelta) {
-            return new EpochDeltaXmlSerializer(study);
-        } else if (delta instanceof StudySegmentDelta) {
-            return new StudySegmentDeltaXmlSerializer(study);
-        } else if (delta instanceof PeriodDelta) {
-            return new PeriodDeltaXmlSerializer(study);
-        } else if (delta instanceof PlannedActivityDelta) {
-            return new PlannedActivityDeltaXmlSerializer(study);
-        } else {
-            throw new StudyCalendarError("Could not find delta type");
+
+
+    private void addDeltas(final Element element, Amendment amendment) {
+        for (Object oDelta : element.elements()) {
+            Element eDelta = (Element) oDelta;
+            AbstractDeltaXmlSerializer serializer = deltaSerializerFactory.createDeltaXmlSerializer(eDelta);
+            Delta delta = serializer.readElement(eDelta);
+            amendment.addDelta(delta);
         }
     }
 
+
+
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+
+    public void setDeltaSerializerFactory(DeltaXmlSerializerFactory deltaSerializerFactory) {
+        this.deltaSerializerFactory = deltaSerializerFactory;
+    }
+
+    public class DeltaXmlSerializerFactory {
+        public AbstractDeltaXmlSerializer createDeltaXmlSerializer(final Delta delta) {
+            if (delta instanceof PlannedCalendarDelta) {
+                return new PlannedCalendarDeltaXmlSerializer(study);
+            } else if (delta instanceof EpochDelta) {
+                return new EpochDeltaXmlSerializer(study);
+            } else if (delta instanceof StudySegmentDelta) {
+                return new StudySegmentDeltaXmlSerializer(study);
+            } else if (delta instanceof PeriodDelta) {
+                return new PeriodDeltaXmlSerializer(study);
+            } else if (delta instanceof PlannedActivityDelta) {
+                return new PlannedActivityDeltaXmlSerializer(study);
+            } else {
+                throw new StudyCalendarError("Problem importing template. Could not find delta type");
+            }
+        }
+
+        public AbstractDeltaXmlSerializer createDeltaXmlSerializer(final Element delta) {
+            if (PlannedCalendarDeltaXmlSerializer.PLANNED_CALENDAR_DELTA.equals(delta.getName())) {
+                return new PlannedCalendarDeltaXmlSerializer(study);
+            } else if (EpochDeltaXmlSerializer.EPOCH_DELTA.equals(delta.getName())) {
+                return new EpochDeltaXmlSerializer(study);
+            } else if (StudySegmentDeltaXmlSerializer.STUDY_SEGMENT_DELTA.equals(delta.getName())) {
+                return new StudySegmentDeltaXmlSerializer(study);
+            } else if (PeriodDeltaXmlSerializer.PERIOD_DELTA.equals(delta.getName())) {
+                return new PeriodDeltaXmlSerializer(study);
+            } else if(PlannedActivityDeltaXmlSerializer.PLANNED_ACTIVITY_DELTA.equals(delta.getName())) {
+                return new PlannedActivityDeltaXmlSerializer(study);
+            } else {
+                throw new StudyCalendarError("Problem importing template. Could not find delta type %s", delta.getName());
+            }
+        }
     }
 }

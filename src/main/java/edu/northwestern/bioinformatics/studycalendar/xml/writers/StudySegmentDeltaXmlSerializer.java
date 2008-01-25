@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.StudySegmentDelta;
 
 public class StudySegmentDeltaXmlSerializer  extends AbstractDeltaXmlSerializer {
-    private static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
+    public static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
 
     public StudySegmentDeltaXmlSerializer(Study study) {
         super(study);

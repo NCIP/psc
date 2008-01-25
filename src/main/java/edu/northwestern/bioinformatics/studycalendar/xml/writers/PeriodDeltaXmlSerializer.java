@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta;
 
 public class PeriodDeltaXmlSerializer extends AbstractDeltaXmlSerializer {
-    private static final String PERIOD_DELTA = "period-delta";
+    public static final String PERIOD_DELTA = "period-delta";
 
     public PeriodDeltaXmlSerializer(Study study) {
         super(study);

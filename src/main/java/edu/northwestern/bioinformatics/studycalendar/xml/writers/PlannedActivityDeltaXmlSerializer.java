@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta;
 
 public class PlannedActivityDeltaXmlSerializer extends AbstractDeltaXmlSerializer {
-    private static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
+    public static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
 
     public PlannedActivityDeltaXmlSerializer(Study study) {
         super(study);
