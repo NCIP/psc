@@ -12,8 +12,6 @@ import org.dom4j.Element;
 public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXmlSerializer<Delta> {
     private Study study;
 
-    private static final String EPOCH_DELTA = "epoch-delta";
-
     private static final String PERIOD_DELTA = "period-delta";
     private static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
     private static final String NODE_ID = "node-id";
