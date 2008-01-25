@@ -23,6 +23,10 @@
     </context-param>
 
     <listener>
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.CsmStaticConfigurator</listener-class>
+    </listener>
+
+    <listener>
         <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
     </listener>
 
