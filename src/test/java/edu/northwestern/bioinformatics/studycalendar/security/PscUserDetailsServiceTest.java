@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import org.acegisecurity.userdetails.UserDetails;
+import org.acegisecurity.userdetails.UsernameNotFoundException;
 import static org.easymock.EasyMock.expect;
 
 public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
@@ -33,5 +34,18 @@ public class PscUserDetailsServiceTest extends StudyCalendarTestCase {
         verifyMocks();
 
         assertSame(user, actualUserDetails);
+    }
+
+    public void testLoadUnknownUserThrowsException() throws Exception {
+        expect(userService.getUserByName(user.getName())).andReturn(null);
+        replayMocks();
+
+        try {
+            service.loadUserByUsername(user.getName());
+            fail("Exception not thrown");
+        } catch (UsernameNotFoundException unfe) {
+            // good
+        }
+        verifyMocks();
     }
 }
