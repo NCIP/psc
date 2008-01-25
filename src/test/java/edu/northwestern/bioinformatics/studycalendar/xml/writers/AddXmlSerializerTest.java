@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
@@ -20,7 +21,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         changeDao = registerMockFor(ChangeDao.class);
 
-        serializer = new AddXmlSerializer();
+        serializer = new AddXmlSerializer(new Study());
         serializer.setChangeDao(changeDao);
 
         add = setGridId("grid0", Add.create(new PlannedCalendar(), 0));
