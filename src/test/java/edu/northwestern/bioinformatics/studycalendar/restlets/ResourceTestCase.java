@@ -5,13 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollect
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.resource.ReaderRepresentation;
+import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Resource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.IOException;
-import java.io.Reader;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -106,10 +106,10 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
     }
 
     protected void expectReadXmlFromRequestAs(Object expectedRead) throws Exception {
-        final Reader reader = registerMockFor(Reader.class);
-        request.setEntity(new ReaderRepresentation(reader, MediaType.TEXT_XML));
+        final InputStream in = registerMockFor(InputStream.class);
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
 
-        expect(xmlSerializer.readDocument(reader)).andReturn(expectedRead);
+        expect(xmlSerializer.readDocument(in)).andReturn(expectedRead);
     }
 
     @SuppressWarnings({ "unchecked" })

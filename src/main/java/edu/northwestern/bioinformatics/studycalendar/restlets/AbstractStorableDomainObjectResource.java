@@ -24,7 +24,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             D read;
             try {
-                read = xmlSerializer.readDocument(entity.getReader());
+                read = xmlSerializer.readDocument(entity.getStream());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);

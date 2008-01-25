@@ -1,23 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.StringUtils;
+import org.apache.commons.io.IOUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.custommonkey.xmlunit.XMLAssert;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.easymock.EasyMock;
+import org.easymock.IArgumentMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindException;
 import static org.springframework.validation.ValidationUtils.invokeValidator;
 import org.xml.sax.SAXException;
-import org.easymock.EasyMock;
-import org.easymock.IArgumentMatcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 
 public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -43,14 +43,16 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     }
 
     public static <R> R parseDocumentString(StudyCalendarXmlSerializer<R> serializer, String doc) {
-        return serializer.readDocument(new StringReader(doc));
+        return serializer.readDocument(IOUtils.toInputStream(doc));
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public static PlanTreeNode eqGridId(PlanTreeNode in) {
         EasyMock.reportMatcher(new GridIdMatcher(in));
         return null;
     }
 
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public static class GridIdMatcher implements IArgumentMatcher {
         private PlanTreeNode expected;
 
@@ -69,8 +71,7 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         public void appendTo(StringBuffer buffer) {
             buffer.append("eqGridId(");
             buffer.append(expected.getGridId());
-            buffer.append(")");
-
+            buffer.append(')');
         }
     }
 }

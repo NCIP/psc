@@ -94,7 +94,7 @@ public abstract class StudySiteCollectionResource<V> extends Resource {
         if (entity.getMediaType().equals(MediaType.TEXT_XML)) {
             V value;
             try {
-                value = xmlSerializer.readDocument(entity.getReader());
+                value = xmlSerializer.readDocument(entity.getStream());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException");
                 throw new ResourceException(e);
