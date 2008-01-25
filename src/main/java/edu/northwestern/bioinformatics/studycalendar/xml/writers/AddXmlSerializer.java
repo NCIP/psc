@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import org.dom4j.Element;
 
+import java.util.List;
+
 public class AddXmlSerializer extends AbstractChangeXmlSerializer {
     private static final String ADD = "add";
     private static final String INDEX = "index";
@@ -30,8 +32,12 @@ public class AddXmlSerializer extends AbstractChangeXmlSerializer {
         element.add(ePlanTreeNode);
     }
 
-    protected void setAdditionalProperties(final Element element, Change change) {
-        ((Add)change).setIndex(new Integer(element.attributeValue(INDEX)));
-        // TODO: Call PlanTreeNodeXmlSerializer
+    protected void setAdditionalProperties(final Element element, Change add) {
+        ((Add)add).setIndex(new Integer(element.attributeValue(INDEX)));
+        List<Element> ePlanTreeNodes = element.elements();
+        Element ePlanTreeNode = ePlanTreeNodes.get(0);
+        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createPlanTreeNodeXmlSerializer(ePlanTreeNode);
+        PlanTreeNode<?> planTreeNode = serializer.readElement(ePlanTreeNode);
+        ((Add)add).setChild(planTreeNode);
     }
 }
