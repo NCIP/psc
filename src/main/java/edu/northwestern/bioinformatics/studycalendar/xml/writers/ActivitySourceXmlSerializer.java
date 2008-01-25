@@ -3,8 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttributes;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElements;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 import java.util.List;
@@ -20,14 +20,19 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
     }
 
     @Override
-    protected Element createCollectionRootElement() {
-        return XsdElements.ACTIVITY_SOURCES.create();
+    protected XsdElement collectionRootElement() {
+        return XsdElement.ACTIVITY_SOURCES;
+    }
+
+    @Override
+    protected XsdElement rootElement() {
+        return XsdElement.ACTIVITY_SOURCE;
     }
 
     @Override
     protected Element createElement(Source source, boolean inCollection) {
-        Element elt = XsdElements.ACTIVITY_SOURCE.create();
-        XsdAttributes.ACTIVITY_NAME.addTo(elt, source.getName());
+        Element elt = XsdElement.ACTIVITY_SOURCE.create();
+        XsdAttribute.ACTIVITY_NAME.addTo(elt, source.getName());
         for (Activity a : source.getActivities()) {
             elt.add(activitySerializer.createElement(a));
         }
@@ -37,7 +42,7 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
     @Override
     public Source readElement(Element element) {
         Source source = new Source();
-        source.setName(XsdAttributes.ACTIVITY_NAME.from(element));
+        source.setName(XsdAttribute.ACTIVITY_NAME.from(element));
         for (Element aElt : (List<Element>) element.elements("activity")) {
             source.addActivity(activitySerializer.readElement(aElt));
         }

@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttributes.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElements;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 /**
@@ -49,7 +49,7 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private static void assertBasicActivityElement(Activity expectedActivity, Element actualElement) {
-        assertEquals("Wrong element name", XsdElements.ACTIVITY.xmlName(), actualElement.getName());
+        assertEquals("Wrong element name", XsdElement.ACTIVITY.xmlName(), actualElement.getName());
         assertEquals("Should have no children", 0, actualElement.elements().size());
         assertEquals("Wrong code", expectedActivity.getCode(),
             ACTIVITY_CODE.from(actualElement));
@@ -62,7 +62,7 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
     
     public void testReadEmbeddedElement() throws Exception {
-        Element param = XsdElements.ACTIVITY.create();
+        Element param = XsdElement.ACTIVITY.create();
         ACTIVITY_NAME.addTo(param, "Aleph");
         ACTIVITY_CODE.addTo(param, "A");
         ACTIVITY_DESC.addTo(param, "Infinite");
@@ -80,7 +80,7 @@ public class ActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     public void testReadStandaloneElement() throws Exception {
-        Element param = XsdElements.ACTIVITY.create();
+        Element param = XsdElement.ACTIVITY.create();
         ACTIVITY_NAME.addTo(param, "Prime");
         ACTIVITY_CODE.addTo(param, "P");
         ACTIVITY_DESC.addTo(param, "Single");

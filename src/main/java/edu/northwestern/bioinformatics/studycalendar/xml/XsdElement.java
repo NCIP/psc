@@ -9,7 +9,7 @@ import org.dom4j.DocumentHelper;
  *
  * @author Rhett Sutphin
  */
-public enum XsdElements {
+public enum XsdElement {
     ACTIVITY,
     ACTIVITY_SOURCES("sources"),
     ACTIVITY_SOURCE("source")
@@ -17,11 +17,11 @@ public enum XsdElements {
 
     private String elementName;
 
-    XsdElements() {
+    XsdElement() {
         this(null);
     }
 
-    XsdElements(String elementName) {
+    XsdElement(String elementName) {
         this.elementName = elementName == null ? name().toLowerCase() : elementName;
     }
 

@@ -1,20 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
-import org.w3c.dom.Document;
+import org.dom4j.Document;
+import org.dom4j.Element;
 
 import java.util.Collection;
+import java.io.InputStream;
 
 /**
  * This interface is for serializers which support creating a document out of
  * a collection of their target representations.
- * <p>
- * These collections are typically used in a read-only way, so no deserialization
- * is required.
  *
  * @author Rhett Sutphin
  */
 public interface StudyCalendarXmlCollectionSerializer<R> extends StudyCalendarXmlSerializer<R> {
-    org.dom4j.Document createDocument(Collection<R> collection);
+    Document createDocument(Collection<R> collection);
 
     String createDocumentString(Collection<R> collection);
+
+    Collection<R> readCollectionDocument(InputStream in);
+
+    Collection<R> readCollectionElement(Element element);
 }

@@ -4,7 +4,6 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import java.io.Reader;
 import java.io.InputStream;
 
 /**
@@ -23,7 +22,7 @@ public interface StudyCalendarXmlSerializer<R> {
     /**
      * Create a document for the given object.
      */
-    org.dom4j.Document createDocument(R root);
+    Document createDocument(R root);
 
     /**
      * Create a document for the given object and return it as string of XML.
@@ -35,7 +34,7 @@ public interface StudyCalendarXmlSerializer<R> {
      * child elements.  This method may delegate to other StudyCalendarXmlSerializer instances,
      * but it is not necessary that each serialized domain object have a separate serializer.
      */
-    org.dom4j.Element createElement(R object);
+    Element createElement(R object);
 
     /**
      * Parse the given document and return the object(s) it represents appropriately.
@@ -52,7 +51,6 @@ public interface StudyCalendarXmlSerializer<R> {
      * {@link UnsupportedOperationException} with an appropriate message.
      * @param in
      */
-    // TODO: this should be InputStream, not Reader
     R readDocument(InputStream in);
 
     /**

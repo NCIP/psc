@@ -56,6 +56,11 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     }
 
     public R readDocument(InputStream in) {
+        Document document = deserializeDocument(in);
+        return readElement(document.getRootElement());
+    }
+
+    protected Document deserializeDocument(InputStream in) {
         Document document;
         try {
             SAXReader saxReader = new SAXReader();
@@ -63,8 +68,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         } catch(DocumentException de) {
             throw new StudyCalendarSystemException("Could not read the XML for deserialization", de);
         }
-
-        return readElement(document.getRootElement());
+        return document;
     }
 
     public abstract Element createElement(R object);

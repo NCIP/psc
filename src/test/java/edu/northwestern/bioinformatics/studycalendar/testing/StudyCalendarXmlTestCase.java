@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import org.apache.commons.io.IOUtils;
@@ -18,6 +19,7 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Collection;
 
 public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -44,6 +46,12 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
 
     public static <R> R parseDocumentString(StudyCalendarXmlSerializer<R> serializer, String doc) {
         return serializer.readDocument(IOUtils.toInputStream(doc));
+    }
+
+    public static <R> Collection<R> parseCollectionDocumentString(
+        StudyCalendarXmlCollectionSerializer<R> serializer, String doc
+    ) {
+        return serializer.readCollectionDocument(IOUtils.toInputStream(doc));
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

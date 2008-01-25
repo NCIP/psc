@@ -5,13 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElements;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializerTest.assertEmbeddedActivityElement;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Rhett Sutphin
@@ -34,7 +36,7 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateSingleElement() throws Exception {
         Element actual = serializer.createElement(source);
-        assertEquals("Wrong element name", XsdElements.ACTIVITY_SOURCE.xmlName(), actual.getName());
+        assertEquals("Wrong element name", XsdElement.ACTIVITY_SOURCE.xmlName(), actual.getName());
         assertEquals("Wrong name attr", SOURCE_NAME, actual.attributeValue("name"));
         assertEquals("Wrong number of children", 3, actual.elements().size());
         assertEmbeddedActivityElement(actWalk, (Element) actual.elements().get(0));
@@ -46,12 +48,12 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         Document actual = serializer.createDocument(
             Arrays.asList(source, createNamedInstance("Other", Source.class)));
         Element root = actual.getRootElement();
-        assertEquals("Wrong root element name", XsdElements.ACTIVITY_SOURCES.xmlName(), root.getName());
+        assertEquals("Wrong root element name", XsdElement.ACTIVITY_SOURCES.xmlName(), root.getName());
         assertEquals("Wrong number of children", 2, root.elements().size());
         assertEquals("Children are not source elements",
-            XsdElements.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(0)).getName());
+            XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(0)).getName());
         assertEquals("Children are not source elements",
-            XsdElements.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(1)).getName());
+            XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(1)).getName());
         assertEquals("Activities not included", 3,
             ((Element) root.elements().get(0)).elements().size());
     }
@@ -80,5 +82,27 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong code for second activity", "2", activity2.getCode());
         assertEquals("Wrong code for second activity", ActivityType.getById(2), activity2.getType());
         assertEquals("Wrong desc for second activity", "optional", activity2.getDescription());
+    }
+
+    public void testReadSourceCollection() throws Exception {
+        Collection<Source> read = parseCollectionDocumentString(serializer, String.format(
+            "<sources xmlns='%s'>\n" +
+            "  <source name='test-o'>\n" +
+            "    <activity name='one' code='1' type-id='1'/>\n" +
+            "    <activity name='two' code='2' type-id='2' description='optional'/>\n" +
+            "  </source>\n" +
+            "  <source name='rutabaga'/>" +
+            "</sources>"
+            , AbstractStudyCalendarXmlSerializer.PSC_NS
+        ));
+        assertEquals("Wrong number of sources", 2, read.size());
+        Iterator<Source> it = read.iterator();
+
+        Source s1 = it.next();
+        assertEquals("Wrong source name for first source", "test-o", s1.getName());
+        assertEquals("Wrong number of activities in first source", 2, s1.getActivities().size());
+        Source s2 = it.next();
+        assertEquals("Wrong source name for second source", "rutabaga", s2.getName());
+        assertEquals("Wrong number of activities in second source", 0, s2.getActivities().size());
     }
 }

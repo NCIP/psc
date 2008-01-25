@@ -10,7 +10,7 @@ import org.dom4j.Element;
  *
  * @author Rhett Sutphin
  */
-public enum XsdAttributes {
+public enum XsdAttribute {
     ACTIVITY_NAME("name"),
     ACTIVITY_CODE("code"),
     ACTIVITY_DESC("description"),
@@ -22,7 +22,7 @@ public enum XsdAttributes {
 
     private String attributeName;
 
-    private XsdAttributes(String attrname) {
+    private XsdAttribute(String attrname) {
         this.attributeName = attrname;
     }
 

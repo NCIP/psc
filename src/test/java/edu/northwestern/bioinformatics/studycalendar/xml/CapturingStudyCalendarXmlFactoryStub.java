@@ -67,4 +67,12 @@ public class CapturingStudyCalendarXmlFactoryStub implements StudyCalendarXmlCol
     public Object readElement(Element element) {
         throw new UnsupportedOperationException("readElement not implemented");
     }
+
+    public Collection readCollectionDocument(InputStream in) {
+        throw new UnsupportedOperationException("readCollectionDocument not implemented");
+    }
+
+    public Collection readCollectionElement(Element element) {
+        throw new UnsupportedOperationException("readCollectionElement not implemented");
+    }
 }
