@@ -3,8 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
@@ -17,6 +21,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/psc.xsd";
 
     public static final Namespace DEFAULT_NAMESPACE = DocumentHelper.createNamespace("", PSC_NS);
+    protected static final OutputFormat OUTPUT_FORMAT = new OutputFormat("  ", true);
 
     public static final String SCHEMA_NAMESPACE_ATTRIBUTE = "xmlns";
     public static final String SCHEMA_LOCATION_ATTRIBUTE  = "schemaLocation";
@@ -48,7 +53,13 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     }
 
     protected String createDocumentString(Document doc) {
-        return doc.asXML();
+        StringWriter capture = new StringWriter();
+        try {
+            new XMLWriter(capture, OUTPUT_FORMAT).write(doc);
+        } catch (IOException e) {
+            throw new StudyCalendarSystemException("Unexpected error when serializing XML", e);
+        }
+        return capture.toString();
     }
 
     public R readDocument(Document document) {
