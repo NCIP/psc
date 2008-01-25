@@ -13,7 +13,7 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
     private Study study;
 
     private static final String EPOCH_DELTA = "epoch-delta";
-    private static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
+
     private static final String PERIOD_DELTA = "period-delta";
     private static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
     private static final String NODE_ID = "node-id";
