@@ -50,6 +50,7 @@ public interface StudyCalendarXmlSerializer<R> {
      * Serializers may not need to implement this method.  In that case, they should throw
      * {@link UnsupportedOperationException} with an appropriate message.
      */
+    // TODO: this should be InputStream, not Reader
     R readDocument(Reader reader);
 
     /**

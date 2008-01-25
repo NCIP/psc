@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
-
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import org.dom4j.*;
@@ -29,18 +28,26 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     public Document createDocument(R root) {
         Document document = DocumentHelper.createDocument();
         Element element = createElement(root);
-        
-        element.add(DEFAULT_NAMESPACE);
-        element.addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS)
-                .addAttribute("xsi:"+ SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
+
+        configureRootElement(element);
 
         document.add(element);
         
         return document;
     }
 
+    protected void configureRootElement(Element element) {
+        element.add(DEFAULT_NAMESPACE);
+        element.addNamespace(XML_SCHEMA_ATTRIBUTE, XSI_NS)
+                .addAttribute("xsi:"+ SCHEMA_LOCATION_ATTRIBUTE, PSC_NS + ' ' + SCHEMA_LOCATION);
+    }
+
     public String createDocumentString(R root) {
-        return createDocument(root).asXML();
+        return createDocumentString(createDocument(root));
+    }
+
+    protected String createDocumentString(Document doc) {
+        return doc.asXML();
     }
 
     public R readDocument(Document document) {

@@ -202,8 +202,10 @@ public class Fixtures {
     public static Activity createActivity(String name, String code, Source source, ActivityType type) {
         Activity activity = createActivity(name);
         activity.setCode(code);
-        activity.setSource(source);
         activity.setType(type);
+        if (source != null) {
+            source.addActivity(activity);
+        }
         return activity;
     }
 

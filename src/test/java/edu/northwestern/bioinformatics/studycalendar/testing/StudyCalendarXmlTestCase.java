@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -16,6 +17,7 @@ import org.easymock.IArgumentMatcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 
 public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -38,6 +40,10 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
         assertFalse("Template xml should be error free", errors.hasErrors());
+    }
+
+    public static <R> R parseDocumentString(StudyCalendarXmlSerializer<R> serializer, String doc) {
+        return serializer.readDocument(new StringReader(doc));
     }
 
     public static PlanTreeNode eqGridId(PlanTreeNode in) {

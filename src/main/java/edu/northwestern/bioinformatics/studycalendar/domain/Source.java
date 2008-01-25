@@ -32,6 +32,11 @@ public class Source extends AbstractMutableDomainObject implements Named, Natura
         return getName();
     }
 
+    public void addActivity(Activity activity) {
+        getActivities().add(activity);
+        activity.setSource(this);
+    }
+
     ////// BEAN PROPERTIES
 
     public String getName() {
