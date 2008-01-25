@@ -12,11 +12,12 @@ import java.io.InputStream;
 public class ActivityXMLValidatorTest extends StudyCalendarTestCase {
     private InputStream valid, invalid;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/readers/data/ActivityXMLReaderTest.xml");
-        invalid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/readers/data/ActivityXMLReaderTest-Invalid.xml");
+        valid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data/ActivityXMLReaderTest.xml");
+        invalid = new FileInputStream("src/test/java/edu/northwestern/bioinformatics/studycalendar/xml/validators/data/ActivityXMLReaderTest-Invalid.xml");
     }
 
     public void testValidate() {

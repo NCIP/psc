@@ -5,9 +5,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
 import static org.easymock.EasyMock.expect;
 
+import java.io.InputStream;
 import static java.util.Arrays.asList;
 import java.util.List;
 
@@ -17,19 +18,20 @@ import java.util.List;
 public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     private ImportActivitiesService service;
     private SourceDao sourceDao;
-    private ActivityXMLReader activityXMLReader;
+    private ActivitySourceXmlSerializer serializer;
     private Source source0, source1;
     private List<Source> sources;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
-        activityXMLReader = registerMockFor(ActivityXMLReader.class);
+        serializer = registerMockFor(ActivitySourceXmlSerializer.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
 
         service = new ImportActivitiesService();
         service.setSourceDao(sourceDao);
-        service.setActivityXMLReader(activityXMLReader);
+        service.setXmlSerializer(serializer);
 
         source0 = createNamedInstance("ICD-9", Source.class);
         source1 = createNamedInstance("Loink", Source.class);
@@ -46,9 +48,10 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
     }
 
     public void testRead() throws Exception {
-        expect(activityXMLReader.read(null)).andReturn(sources);
+        InputStream target = registerMockFor(InputStream.class);
+        expect(serializer.readCollectionDocument(target)).andReturn(sources);
         replayMocks();
-        service.readData(null);
+        service.readData(target);
         verifyMocks();
     }
 

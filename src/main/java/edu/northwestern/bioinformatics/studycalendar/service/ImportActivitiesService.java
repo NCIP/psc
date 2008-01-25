@@ -3,28 +3,30 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.ActivityXMLReader;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ImportActivitiesService {
     private SourceDao sourceDao;
-    private ActivityXMLReader activityXMLReader;
+    private ActivitySourceXmlSerializer xmlSerializer;
 
     public void loadAndSave(InputStream sourcesXml) throws Exception {
-        List<Source> sources = readData(sourcesXml);
+        Collection<Source> sources = readData(sourcesXml);
         List<Source> validSources = replaceCollidingSources(sources);
         
         save(validSources);
     }
 
-    protected List<Source> readData(InputStream dataFile) throws Exception{
-        return activityXMLReader.read(dataFile);
+    protected Collection<Source> readData(InputStream dataFile) throws Exception{
+        return xmlSerializer.readCollectionDocument(dataFile);
     }
 
-    protected List<Source> replaceCollidingSources(List<Source> sources) throws Exception {
+    protected List<Source> replaceCollidingSources(Collection<Source> sources) throws Exception {
         List<Source> validSources = new ArrayList<Source>();
         List<Source> existingSources = sourceDao.getAll();
 
@@ -55,11 +57,14 @@ public class ImportActivitiesService {
     }
 
     //// Field Setters
+
+    @Required
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
     }
 
-    public void setActivityXMLReader(ActivityXMLReader activityXMLReader) {
-        this.activityXMLReader = activityXMLReader;
+    @Required
+    public void setXmlSerializer(ActivitySourceXmlSerializer serializer) {
+        xmlSerializer = serializer;
     }
 }
