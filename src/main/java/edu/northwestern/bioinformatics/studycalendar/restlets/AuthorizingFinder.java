@@ -23,6 +23,7 @@ public class AuthorizingFinder extends SpringBeanFinder {
         super(beanFactory, beanName);
     }
 
+    @Override
     protected Handler findTarget(Request request, Response response) {
         Handler found = super.findTarget(request, response);
         if (found == null) {

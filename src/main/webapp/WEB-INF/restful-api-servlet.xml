@@ -13,7 +13,7 @@
         <property name="authenticationProvider" ref="localAuthenticationProvider"/>
     </bean>
 
-    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.BeanNameRouter"/>
+    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>
 
     <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
 

@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Method;
@@ -22,6 +23,8 @@ public class TemplateResource extends AbstractStorableDomainObjectResource<Study
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.STUDY_ADMIN);
+        // TODO: temporary
+        setXmlSerializer(new StudyXmlSerializer());
     }
 
     @Override
