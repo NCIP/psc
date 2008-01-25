@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 import org.dom4j.Element;
 import org.dom4j.Document;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.Collection;
 
 /**
@@ -60,7 +60,7 @@ public class CapturingStudyCalendarXmlFactoryStub implements StudyCalendarXmlCol
         throw new UnsupportedOperationException("readDocument not implemented");
     }
 
-    public Object readDocument(Reader reader) {
+    public Object readDocument(InputStream in) {
         throw new UnsupportedOperationException("readDocument not implemented");
     }
 

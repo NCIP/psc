@@ -5,6 +5,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import java.io.Reader;
+import java.io.InputStream;
 
 /**
  * Serializes & deserializes some object to XML.  Where possible,
@@ -49,9 +50,10 @@ public interface StudyCalendarXmlSerializer<R> {
      * <p>
      * Serializers may not need to implement this method.  In that case, they should throw
      * {@link UnsupportedOperationException} with an appropriate message.
+     * @param in
      */
     // TODO: this should be InputStream, not Reader
-    R readDocument(Reader reader);
+    R readDocument(InputStream in);
 
     /**
      * Read the given XML element and its children, creating objects as appropriate.

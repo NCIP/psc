@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +85,7 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 
-    public PlanTreeNode<?> readDocument(Reader reader) {
+    public PlanTreeNode<?> readDocument(InputStream in) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
     }
 }

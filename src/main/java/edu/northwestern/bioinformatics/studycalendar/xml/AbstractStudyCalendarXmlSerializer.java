@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemExceptio
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
-import java.io.Reader;
+import java.io.InputStream;
 
 /**
  * @author Rhett Sutphin
@@ -55,11 +55,11 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         return readElement(document.getRootElement());
     }
 
-    public R readDocument(Reader reader) {
+    public R readDocument(InputStream in) {
         Document document;
         try {
             SAXReader saxReader = new SAXReader();
-            document = saxReader.read(reader);
+            document = saxReader.read(in);
         } catch(DocumentException de) {
             throw new StudyCalendarSystemException("Could not read the XML for deserialization", de);
         }
