@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -24,7 +24,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new AddXmlSerializer(new Study());
         serializer.setChangeDao(changeDao);
 
-        add = setGridId("grid0", Add.create(new PlannedCalendar(), 0));
+        add = setGridId("grid0", Add.create(setGridId("grid1", new Epoch()), 0));
     }
 
     public void testCreateElement() {
@@ -32,6 +32,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         
         assertEquals("Wrong grid id", "grid0", element.attributeValue("id"));
         assertEquals("Wrong index", "0", element.attributeValue("index"));
+        assertFalse("Wrong child id", element.elements("epoch").isEmpty());
     }
 
     public void testReadElementWhenAddExists() {

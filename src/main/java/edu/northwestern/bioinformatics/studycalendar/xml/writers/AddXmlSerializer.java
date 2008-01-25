@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import org.dom4j.Element;
 
 public class AddXmlSerializer extends AbstractChangeXmlSerializer {
@@ -23,7 +24,10 @@ public class AddXmlSerializer extends AbstractChangeXmlSerializer {
 
     protected void addAdditionalAttributes(final Change change, Element element) {
         element.addAttribute(INDEX, ((Add)change).getIndex().toString());
-//        for ()
+        PlanTreeNode<?> planTreeNode = ((Add)change).getChild();
+        AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createPlanTreeNodeXmlSerializer(planTreeNode);
+        Element ePlanTreeNode = serializer.createElement(planTreeNode);
+        element.add(ePlanTreeNode);
     }
 
     protected void setAdditionalProperties(final Element element, Change change) {
