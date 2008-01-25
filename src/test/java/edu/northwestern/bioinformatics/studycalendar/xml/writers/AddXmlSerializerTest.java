@@ -4,27 +4,41 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
 import static org.easymock.EasyMock.expect;
+
+import java.util.Collections;
 
 public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AddXmlSerializer serializer;
     private Add add;
     private Element element;
     private ChangeDao changeDao;
+    private AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
+    private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
+    private Epoch epoch;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         changeDao = registerMockFor(ChangeDao.class);
+        planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
+        planTreeNodeSerializerFactory = registerMockFor(AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory.class);
 
-        serializer = new AddXmlSerializer(new Study());
+        serializer = new AddXmlSerializer(new Study()) {
+
+            protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
+                return planTreeNodeSerializerFactory;
+            }
+        };
         serializer.setChangeDao(changeDao);
 
-        add = setGridId("grid0", Add.create(setGridId("grid1", new Epoch()), 0));
+        epoch = setGridId("grid1", new Epoch());
+        add = setGridId("grid0", Add.create(epoch, 0));
     }
 
     public void testCreateElement() {
@@ -50,6 +64,9 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(changeDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("index")).andReturn("0");
+        expect(element.elements()).andReturn(Collections.singletonList(element));
+        expect(planTreeNodeSerializerFactory.createPlanTreeNodeXmlSerializer(element)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.readElement(element)).andReturn((PlanTreeNode) epoch);
         replayMocks();
 
         Add actual = (Add) serializer.readElement(element);
