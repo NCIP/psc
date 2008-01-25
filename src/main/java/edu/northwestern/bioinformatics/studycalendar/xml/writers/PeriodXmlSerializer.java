@@ -28,7 +28,7 @@ public class PeriodXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        return new PlannedActivityXmlSerializer(study);
+        return new PlannedActivityXmlSerializer(getStudy());
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {

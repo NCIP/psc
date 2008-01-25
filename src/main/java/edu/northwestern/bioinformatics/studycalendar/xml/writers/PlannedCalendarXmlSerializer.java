@@ -26,7 +26,7 @@ public class PlannedCalendarXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        return new EpochXmlSerializer(study);
+        return new EpochXmlSerializer(getStudy());
     }
 
     public void setPlannedCalendarDao(PlannedCalendarDao plannedCalendarDao) {

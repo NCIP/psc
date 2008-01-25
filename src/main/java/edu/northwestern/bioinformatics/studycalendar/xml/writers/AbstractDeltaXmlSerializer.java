@@ -1,19 +1,32 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
 
 public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXmlSerializer<Delta> {
-    
+    private Study study;
+
     private static final String EPOCH_DELTA = "epoch-delta";
     private static final String STUDY_SEGMENT_DELTA = "study-segment-delta";
     private static final String PERIOD_DELTA = "period-delta";
     private static final String PLANNED_ACTIVITY_DELTA = "planned-activity-delta";
     private static final String NODE_ID = "node-id";
+    private DeltaDao deltaDao;
+    private TemplateService templateService;
 
 
-    protected abstract Class<?> nodeClass();
+    public AbstractDeltaXmlSerializer(Study study) {
+        this.study = study;
+    }
+
+    protected abstract Delta deltaInstance();
+    protected abstract PlanTreeNode<?> nodeInstance();
     protected abstract String elementName();
 
     public Element createElement(Delta delta) {
@@ -40,6 +53,29 @@ public abstract class AbstractDeltaXmlSerializer extends AbstractStudyCalendarXm
     }
 
     public Delta readElement(Element element) {
-        throw new UnsupportedOperationException();
+        String gridId = element.attributeValue(ID);
+        Delta delta = deltaDao.getByGridId(gridId);
+        if (delta == null) {
+            delta = deltaInstance();
+            delta.setGridId(gridId);
+
+            PlanTreeNode<?> node = nodeInstance();
+            node.setGridId(element.attributeValue(NODE_ID));
+            node = templateService.findEquivalentChild(study, node);
+            if (node == null) {
+                throw new StudyCalendarError("Problem importing template. Cannot find Node for grid id: %s", gridId);
+            }
+
+            delta.setNode(node);
+        }
+        return delta;
+    }
+
+    public void setDeltaDao(DeltaDao deltaDao) {
+        this.deltaDao = deltaDao;
+    }
+
+    public void setTemplateService(TemplateService templateService) {
+        this.templateService = templateService;
     }
 }

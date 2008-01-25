@@ -29,7 +29,7 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        return new PeriodXmlSerializer(study);
+        return new PeriodXmlSerializer(getStudy());
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {

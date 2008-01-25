@@ -44,7 +44,7 @@ public class PlannedActivityXmlSerializer extends AbstractPlanTreeNodeXmlSeriali
 
         String populationAbbreviation = element.attributeValue(POPULATION);
         if (populationAbbreviation != null) {
-            for (Population population : study.getPopulations()) {
+            for (Population population : getStudy().getPopulations()) {
                 if (populationAbbreviation.equals(population.getAbbreviation())) {
                     ((PlannedActivity) node).setPopulation(population);
                 }

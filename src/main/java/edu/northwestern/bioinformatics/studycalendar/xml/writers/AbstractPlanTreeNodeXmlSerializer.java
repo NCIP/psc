@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
-    Study study;
+    private Study study;
 
-    protected AbstractPlanTreeNodeXmlSerializer(Study study) {
+    public AbstractPlanTreeNodeXmlSerializer(Study study) {
         this.study = study;
     }
 
@@ -67,6 +67,10 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         for (PlanTreeNode<?> child : children) {
             ((PlanTreeInnerNode) parent).addChild(child);
         }
+    }
+
+    public Study getStudy() {
+        return study;
     }
 
     public Document createDocument(PlanTreeNode<?> root) {
