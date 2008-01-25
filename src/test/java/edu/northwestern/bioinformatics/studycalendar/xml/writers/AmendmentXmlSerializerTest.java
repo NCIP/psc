@@ -1,13 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.PSC_NS;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.XSI_NS;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.XML_SCHEMA_ATTRIBUTE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION_ATTRIBUTE;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.SCHEMA_NAMESPACE_ATTRIBUTE;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -24,22 +30,35 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element element;
     private Amendment amendment0;
     private Element eAmendment;
+    private AbstractDeltaXmlSerializer deltaSerializer;
+    private Element eDelta;
+    private PlannedCalendarDelta delta;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
+        deltaSerializer = registerMockFor(AbstractDeltaXmlSerializer.class);
 
         amendment0 = setGridId("grid0", new Amendment());
         amendment0.setName("Amendment 0");
         amendment0.setDate(createDate(2008, Calendar.JANUARY, 1));
+
+        delta = setGridId("grid1", new PlannedCalendarDelta());
+        delta.setNode(setGridId("grid2", new PlannedCalendar()));
 
         amendment1 =  new Amendment();
         amendment1.setMandatory(true);
         amendment1.setName("Amendment 1");
         amendment1.setPreviousAmendment(amendment0);
         amendment1.setDate(createDate(2008, Calendar.JANUARY, 2));
+        amendment1.addDelta(delta);
+
+        QName qDelta = DocumentHelper.createQName("planned-calendar-delta", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        eDelta = DocumentHelper.createElement(qDelta);
+        eDelta.addAttribute("id", delta.getGridId());
+        eDelta.addAttribute("node-id", "grid2");
 
         QName qAmendment = DocumentHelper.createQName("amendment", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
         eAmendment = DocumentHelper.createElement(qAmendment);
@@ -48,18 +67,27 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Study study = createNamedInstance("Study A", Study.class);
         study.setAmendment(amendment0);
-        serializer = new AmendmentXmlSerializer(study);
+        serializer = new AmendmentXmlSerializer(study) {
+            protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
+                return deltaSerializer;
+            }
+        };
         serializer.setAmendmentDao(amendmentDao);
     }
 
     public void testCreateElement() {
+        expect(deltaSerializer.createElement(delta)).andReturn(eDelta);
+        replayMocks();
+
         Element actual = serializer.createElement(amendment1);
+        verifyMocks();
 
         assertEquals("Wrong attribute size", 4, actual.attributeCount());
         assertEquals("Wrong name", "Amendment 1", actual.attributeValue("name"));
         assertEquals("Wrong date", "2008-01-02", actual.attributeValue("date"));
         assertEquals("Wrong mandatory value", "true", actual.attributeValue("mandatory"));
         assertEquals("Wrong previous amdendment id", "2008-01-01~Amendment 0", actual.attributeValue("previous-amendment-key"));
+        assertEquals("Should be more than one element", 1, actual.elements("planned-calendar-delta").size());
     }
 
     public void testReadElementWithExistingAmendment() {
@@ -93,15 +121,20 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateDocumentString() throws Exception {
         StringBuffer expected = new StringBuffer();
-        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-                .append(format("<amendment name=\"{0}\" date=\"2008-01-02\"", amendment1.getName()))
-                .append(format("           mandatory=\"true\" previous-amendment-key=\"{0}\"", amendment1.getPreviousAmendment().getNaturalKey()))
-                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
-                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
-                .append(format("       {0}=\"{1}\">"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
-                .append(       "</amendment>");
+        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        expected.append(format("<amendment name=\"{0}\" date=\"2008-01-02\"", amendment1.getName()));
+        expected.append(format("           mandatory=\"true\" previous-amendment-key=\"{0}\"", amendment1.getPreviousAmendment().getNaturalKey()));
+        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append("<planned-calendar-delta id=\"grid1\" node-id=\"grid2\"/>");
+        expected.append("</amendment>");
+
+        expect(deltaSerializer.createElement(delta)).andReturn(eDelta);
+        replayMocks();
 
         String actual = serializer.createDocumentString(amendment1);
+        verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
     }

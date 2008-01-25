@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
 import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 
@@ -12,12 +11,14 @@ import java.io.Reader;
  * @author John Dzak
  */
 public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
-    public static final String XML_NS = StudyXMLWriter.XML_NS;
-    public static final String PSC_NS = StudyXMLWriter.PSC_NS;
-    public static final String XSI_NS = StudyXMLWriter.XSI_NS;
-    public static final String SCHEMA_LOCATION  = StudyXMLWriter.SCHEMA_LOCATION;
+    public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
+    public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
+    public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";
+    public static final String SCHEMA_LOCATION  = "http://bioinformatics.northwestern.edu/ns/psc/psc.xsd";
+
     public static final Namespace DEFAULT_NAMESPACE = DocumentHelper.createNamespace("", PSC_NS);
 
+    public static final String SCHEMA_NAMESPACE_ATTRIBUTE = "xmlns";
     public static final String SCHEMA_LOCATION_ATTRIBUTE  = "schemaLocation";
     public static final String XML_SCHEMA_ATTRIBUTE       = "xsi";
 

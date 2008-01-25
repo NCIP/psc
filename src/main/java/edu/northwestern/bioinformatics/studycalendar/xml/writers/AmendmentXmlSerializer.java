@@ -85,7 +85,8 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             element.add(eDelta);
         }
     }
-    private AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
+    
+    protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
         for (Delta delta : amendment.getDeltas()) {
             if (delta instanceof PlannedCalendarDelta) {
                 return new PlannedCalendarDeltaXmlSerializer(study);
