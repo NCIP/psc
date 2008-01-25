@@ -100,8 +100,10 @@ public class UserService implements Serializable {
      */
     public User getUserByName(String username) {
         User user = userDao.getByName(username);
-        Hibernate.initialize(user);
-        Hibernate.initialize(user.getUserRoles());
+        if (user != null) {
+            Hibernate.initialize(user);
+            Hibernate.initialize(user.getUserRoles());
+        }
         return user;
     }
 
