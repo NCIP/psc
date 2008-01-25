@@ -1,8 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
@@ -36,6 +37,8 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             element.addAttribute(PREVIOUS_AMENDMENT_KEY, amendment.getPreviousAmendment().getNaturalKey());
         }
 
+        addDeltas(amendment, element);
+
         return element;
     }
 
@@ -60,6 +63,8 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
                 Amendment previousAmendment = findAmendment(study.getAmendmentsList(), previousAmendmentKey);
                 amendment.setPreviousAmendment(previousAmendment);
             }
+
+            //TODO: Add Deltas
         }
         return amendment;
     }
@@ -71,6 +76,30 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             }
         }
         return null;
+    }
+
+    private void addDeltas(final Amendment amendment, Element element) {
+        for (Delta delta : amendment.getDeltas()) {
+            AbstractDeltaXmlSerializer serializer = findDeltaXmlSerializer(amendment);
+            Element eDelta = serializer.createElement(delta);
+            element.add(eDelta);
+        }
+    }
+    private AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
+        for (Delta delta : amendment.getDeltas()) {
+            if (delta instanceof PlannedCalendarDelta) {
+                return new PlannedCalendarDeltaXmlSerializer(study);
+            } else if (delta instanceof EpochDelta) {
+                return new EpochDeltaXmlSerializer(study);
+            } else if (delta instanceof StudySegmentDelta) {
+                return new StudySegmentDeltaXmlSerializer(study);
+            } else if (delta instanceof PeriodDelta) {
+                return new PeriodDeltaXmlSerializer(study);
+            } else if (delta instanceof PlannedActivityDelta) {
+                return new PlannedActivityDeltaXmlSerializer(study);
+            }
+        }
+        throw new StudyCalendarError("Could not find delta type");
     }
 
     public void setAmendmentDao(AmendmentDao amendmentDao) {

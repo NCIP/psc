@@ -18,5 +18,11 @@ public class AddXmlSerializer extends AbstractChangeXmlSerializer {
 
     protected void addAdditionalAttributes(final Change change, Element element) {
         element.addAttribute(INDEX, ((Add)change).getIndex().toString());
+        // TODO: Call PlanTreeNodeXmlSerializer
+    }
+
+    protected void setAdditionalProperties(final Element element, Change change) {
+        ((Add)change).setIndex(new Integer(element.attributeValue(INDEX)));
+        // TODO: Call PlanTreeNodeXmlSerializer
     }
 }
