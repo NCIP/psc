@@ -5,6 +5,8 @@ import org.dom4j.QName;
 import org.dom4j.DocumentHelper;
 
 /**
+ * Enum for the names of elements defined in psc.xsd.
+ *
  * @author Rhett Sutphin
  */
 public enum XsdElements {

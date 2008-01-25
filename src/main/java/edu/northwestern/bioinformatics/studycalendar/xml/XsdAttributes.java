@@ -3,6 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 import org.dom4j.Element;
 
 /**
+ * Enum for the names of attributes defined in psc.xsd.  Enum values should
+ * be added for distinct attributes -- i.e., there should be two separate enum
+ * values for two attributes named "name" if they are defined separately in the
+ * XSD.
+ *
  * @author Rhett Sutphin
  */
 public enum XsdAttributes {
