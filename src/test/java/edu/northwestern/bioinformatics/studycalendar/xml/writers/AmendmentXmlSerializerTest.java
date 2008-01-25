@@ -1,19 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.PSC_NS;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.XSI_NS;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.XML_SCHEMA_ATTRIBUTE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION_ATTRIBUTE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.SCHEMA_NAMESPACE_ATTRIBUTE;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -68,7 +65,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         Study study = createNamedInstance("Study A", Study.class);
         study.setAmendment(amendment0);
         serializer = new AmendmentXmlSerializer(study) {
-            protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
+            protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Delta delta) {
                 return deltaSerializer;
             }
         };

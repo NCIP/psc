@@ -80,27 +80,26 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
     private void addDeltas(final Amendment amendment, Element element) {
         for (Delta delta : amendment.getDeltas()) {
-            AbstractDeltaXmlSerializer serializer = findDeltaXmlSerializer(amendment);
+            AbstractDeltaXmlSerializer serializer = findDeltaXmlSerializer(delta);
             Element eDelta = serializer.createElement(delta);
             element.add(eDelta);
         }
     }
     
-    protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Amendment amendment) {
-        for (Delta delta : amendment.getDeltas()) {
-            if (delta instanceof PlannedCalendarDelta) {
-                return new PlannedCalendarDeltaXmlSerializer(study);
-            } else if (delta instanceof EpochDelta) {
-                return new EpochDeltaXmlSerializer(study);
-            } else if (delta instanceof StudySegmentDelta) {
-                return new StudySegmentDeltaXmlSerializer(study);
-            } else if (delta instanceof PeriodDelta) {
-                return new PeriodDeltaXmlSerializer(study);
-            } else if (delta instanceof PlannedActivityDelta) {
-                return new PlannedActivityDeltaXmlSerializer(study);
-            }
+    protected AbstractDeltaXmlSerializer findDeltaXmlSerializer(final Delta delta) {
+        if (delta instanceof PlannedCalendarDelta) {
+            return new PlannedCalendarDeltaXmlSerializer(study);
+        } else if (delta instanceof EpochDelta) {
+            return new EpochDeltaXmlSerializer(study);
+        } else if (delta instanceof StudySegmentDelta) {
+            return new StudySegmentDeltaXmlSerializer(study);
+        } else if (delta instanceof PeriodDelta) {
+            return new PeriodDeltaXmlSerializer(study);
+        } else if (delta instanceof PlannedActivityDelta) {
+            return new PlannedActivityDeltaXmlSerializer(study);
+        } else {
+            throw new StudyCalendarError("Could not find delta type");
         }
-        throw new StudyCalendarError("Could not find delta type");
     }
 
     public void setAmendmentDao(AmendmentDao amendmentDao) {
