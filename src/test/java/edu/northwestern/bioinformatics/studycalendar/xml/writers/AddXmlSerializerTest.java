@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
 import static org.easymock.EasyMock.expect;
 
 import java.util.Collections;
@@ -20,6 +21,7 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
     private Epoch epoch;
+    private Element eEpoch;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -30,7 +32,6 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
         planTreeNodeSerializerFactory = registerMockFor(AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory.class);
 
         serializer = new AddXmlSerializer(new Study()) {
-
             protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
                 return planTreeNodeSerializerFactory;
             }
@@ -39,10 +40,17 @@ public class AddXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         epoch = setGridId("grid1", new Epoch());
         add = setGridId("grid0", Add.create(epoch, 0));
+
+        eEpoch = DocumentHelper.createElement("epoch");
     }
 
     public void testCreateElement() {
+        expect(planTreeNodeSerializerFactory.createPlanTreeNodeXmlSerializer(epoch)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializer.createElement(epoch)).andReturn(eEpoch);
+        replayMocks();
+
         Element element = serializer.createElement(add);
+        verifyMocks();
         
         assertEquals("Wrong grid id", "grid0", element.attributeValue("id"));
         assertEquals("Wrong index", "0", element.attributeValue("index"));
