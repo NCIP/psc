@@ -151,7 +151,7 @@
                             <table class="grid">
                                 <tr>
                                     <c:if test="${isAssignByStudy}">
-                                        <th>PCs / Site</th>
+                                        <th>SCs / Site</th>
                                     </c:if>
                                     <c:if test="${not isAssignByStudy}">
                                         <th>Studies / Sites</th>
