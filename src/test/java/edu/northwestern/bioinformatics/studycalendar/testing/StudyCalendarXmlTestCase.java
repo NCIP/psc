@@ -32,6 +32,12 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         // This is a quick-and-dirty (and not necessarily correct) alternative
         String expectedNormalized = StringUtils.normalizeWhitespace(expected);
         String actualNormalized = StringUtils.normalizeWhitespace(actual);
+
+        // XMLUnit interprets witespace between angle brackets as a child node.
+        // There is no way to turn this off, so we have to remove it.
+        expectedNormalized = expectedNormalized.replaceAll(".*> <.*", "><");
+        actualNormalized = actualNormalized.replaceAll("> <", "><");
+
         log.debug("Expected:\n{}", expectedNormalized);
         log.debug("Actual:\n{}", actualNormalized);
         XMLAssert.assertXMLEqual(expectedNormalized, actualNormalized);
