@@ -23,8 +23,6 @@ public class TemplateResource extends AbstractStorableDomainObjectResource<Study
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.PUT, Role.STUDY_ADMIN);
-        // TODO: temporary
-        setXmlSerializer(new StudyXmlSerializer());
     }
 
     @Override
