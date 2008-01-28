@@ -454,10 +454,6 @@
         </property>
      </bean>
 
-
-    <bean name="/api" id="apiController" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
-
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename"><value>messages</value></property>
     </bean>
