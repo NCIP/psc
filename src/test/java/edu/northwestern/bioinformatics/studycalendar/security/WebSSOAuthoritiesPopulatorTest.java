@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import org.acegisecurity.userdetails.UserDetailsService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import org.acegisecurity.userdetails.User;
 import org.acegisecurity.userdetails.UserDetails;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
+import org.acegisecurity.userdetails.UserDetailsService;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
