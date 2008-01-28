@@ -35,7 +35,7 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
 
         // XMLUnit interprets witespace between angle brackets as a child node.
         // There is no way to turn this off, so we have to remove it.
-        expectedNormalized = expectedNormalized.replaceAll(".*> <.*", "><");
+        expectedNormalized = expectedNormalized.replaceAll("> <", "><");
         actualNormalized = actualNormalized.replaceAll("> <", "><");
 
         log.debug("Expected:\n{}", expectedNormalized);
