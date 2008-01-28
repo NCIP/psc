@@ -142,14 +142,6 @@ public class StudyCalendarAuthorizationManagerTest extends StudyCalendarTestCase
         assertTrue(manager.isTemplateVisible(coord, studyAB));
     }
 
-    public void testStudyVisibilityForResearchAssociate() throws Exception {
-        UserRole coord = Fixtures.createUserRole(user, Role.RESEARCH_ASSOCIATE, siteA);
-        coord.addStudySite(studyA.getStudySite(siteA));
-        assertTrue(manager.isTemplateVisible(coord, studyA));
-        assertFalse(manager.isTemplateVisible(coord, studyB));
-        assertFalse(manager.isTemplateVisible(coord, studyAB));
-    }
-
     public void testStudyVisibilityForSiteCoordinator() throws Exception {
         UserRole coord = Fixtures.createUserRole(user, Role.SITE_COORDINATOR, siteA);
         assertTrue(manager.isTemplateVisible(coord, studyA));

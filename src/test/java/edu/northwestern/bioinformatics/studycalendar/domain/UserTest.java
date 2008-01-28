@@ -36,7 +36,6 @@ public class UserTest extends StudyCalendarTestCase {
 
         assertTrue(user.hasRole(Role.SUBJECT_COORDINATOR));
         assertTrue(user.hasRole(Role.SITE_COORDINATOR));
-        assertFalse(user.hasRole(Role.RESEARCH_ASSOCIATE));
         assertFalse(user.hasRole(Role.STUDY_ADMIN));
         assertFalse(user.hasRole(Role.STUDY_COORDINATOR));
         assertFalse(user.hasRole(Role.SYSTEM_ADMINISTRATOR));

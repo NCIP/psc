@@ -58,7 +58,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
     public void testBuildRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true, STUDY_ADMIN);
-        expectedUser.addUserRole(createUserRole(expectedUser, RESEARCH_ASSOCIATE, mayo, nu));
 
         CreateUserCommand command = createCommand(expectedUser);
 
@@ -68,8 +67,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         assertTrue("Role should be true for all sites", rolesGrid.get(mayo).get(STUDY_ADMIN).isSelected());
         assertTrue("Role should be true for all sites", rolesGrid.get(nu).get(STUDY_ADMIN).isSelected());
         assertFalse("Role should not be true for this site", rolesGrid.get(mayo).get(SUBJECT_COORDINATOR).isSelected());
-        assertTrue("Role should not be true for this site",  rolesGrid.get(mayo).get(RESEARCH_ASSOCIATE).isSelected());
-        assertTrue("Role should not be true for this site",  rolesGrid.get(nu).get(RESEARCH_ASSOCIATE).isSelected());
     }
 
     public void testInterpretRolesGrid() throws Exception {
@@ -86,9 +83,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, mayo);
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, nu);
-
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, mayo);
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, nu);
 
         userRoleService.assignUserRole(expectedUser, STUDY_ADMIN);
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_COORDINATOR);
@@ -117,9 +111,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, mayo);
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, nu);
 
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, mayo);
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, nu);
-
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_ADMIN);
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_COORDINATOR);
         userRoleService.removeUserRoleAssignment(expectedUser, SYSTEM_ADMINISTRATOR);
@@ -145,9 +136,6 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, mayo);
         userRoleService.removeUserRoleAssignment(expectedUser, SITE_COORDINATOR, nu);
-
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, mayo);
-        userRoleService.removeUserRoleAssignment(expectedUser, RESEARCH_ASSOCIATE, nu);
 
         userRoleService.assignUserRole(expectedUser, STUDY_ADMIN);
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_COORDINATOR);

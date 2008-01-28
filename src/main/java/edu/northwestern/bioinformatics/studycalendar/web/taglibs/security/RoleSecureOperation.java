@@ -30,7 +30,6 @@ public class RoleSecureOperation extends TagSupport {
     private final String STUDY_COORDINATOR_STRING = "Study Coordinator";
     private final String SITE_COORDINATOR_STRING = "Site Coordinator";
     private final String STUDY_ADMIN_STRING = "Study Admin";
-    private final String RESEARCH_ASSOCIATE_STRING = "Research Associate";
     private final String SYSTEM_ADMIN_STRING = "System Admin";
 
     public void setElement(String val) {
@@ -87,8 +86,6 @@ public class RoleSecureOperation extends TagSupport {
             return Role.STUDY_COORDINATOR;
         } else if (STUDY_ADMIN_STRING.equals(role)) {
             return Role.STUDY_ADMIN;
-        } else if (RESEARCH_ASSOCIATE_STRING.equals(role)) {
-            return Role.RESEARCH_ASSOCIATE;
         } else if (SYSTEM_ADMIN_STRING.equals(role)) {
             return Role.SYSTEM_ADMINISTRATOR;
         }

@@ -22,7 +22,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_CO
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.RESEARCH_ASSOCIATE;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
@@ -382,8 +381,7 @@ public class TemplateService {
         List<Study> visibleStudies = union(
             devableStudies,
             filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies,
-            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+            subjectAssignableStudies
         );
 
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
@@ -428,8 +426,7 @@ public class TemplateService {
         List<Study> visibleStudies = union(
             devableStudies,
             filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies,
-            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+            subjectAssignableStudies
         );
 
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
@@ -470,8 +467,7 @@ public class TemplateService {
         List<Study> visibleStudies = union(
             devableStudies,
             filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies,
-            filterForVisibility(studies, user.getUserRole(RESEARCH_ASSOCIATE))
+            subjectAssignableStudies
         );
 
 

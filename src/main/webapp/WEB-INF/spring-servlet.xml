@@ -159,13 +159,6 @@
         <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
     </bean>
 
-    <bean name="/dashboard/researchAssociate" id="dashboardResearchAssociateController" autowire="byName"
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-       <property name="viewName">
-           <value>redirectToStudyList</value>
-       </property>
-    </bean>
-
     <bean name="/dashboard/studyCoordinator" id="dashboardStudyCoordinatorController" autowire="byName"
           class="org.springframework.web.servlet.mvc.ParameterizableViewController">
        <property name="viewName">
@@ -518,11 +511,6 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Study Admin</value></property>
                                 <property name="linkName"><value>dashboardStudyAdminController</value></property>
-                                <property name="urlResolver"><ref bean="urlResolver"/></property>
-                            </bean>
-                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Research Associate</value></property>
-                                <property name="linkName"><value>dashboardResearchAssociateController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">

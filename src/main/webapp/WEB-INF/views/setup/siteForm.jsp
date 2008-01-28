@@ -18,7 +18,7 @@
 <laf:box title="Create the first site" id="setup-input">
     <laf:division>
         <p class="instructions">
-            One of the elements of PSC's security model is the site which subject coordinators, research associates
+            One of the elements of PSC's security model is the site which subject coordinators
             and site coordinators hail from.  Some installations might have more than one site, but every installation
             needs at least one.  Please enter your first site here.  If you need to enter more, you'll have the
             opportunity once this initial setup is complete.

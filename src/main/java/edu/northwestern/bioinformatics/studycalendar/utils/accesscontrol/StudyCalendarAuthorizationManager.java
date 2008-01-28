@@ -297,7 +297,7 @@ public class StudyCalendarAuthorizationManager implements Serializable {
             return true;
         } else if (userRole.getRole() == SITE_COORDINATOR) {
             return isTemplateVisibleToSiteCoordinator(userRole, study);
-        } else if (userRole.getRole() == SUBJECT_COORDINATOR || userRole.getRole() == RESEARCH_ASSOCIATE) {
+        } else if (userRole.getRole() == SUBJECT_COORDINATOR ) {
             return isTemplateVisibleToStudySpecificRole(userRole, study);
         } else {
             throw new UnsupportedOperationException("Unexpected role in userRole: " + userRole.getRole());

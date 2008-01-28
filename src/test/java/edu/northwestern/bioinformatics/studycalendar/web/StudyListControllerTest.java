@@ -101,11 +101,6 @@ public class StudyListControllerTest extends ControllerTestCase {
         expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
         expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
 
-//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.STUDY_COORDINATOR)))
-//            .andReturn(Arrays.asList(incomplete, complete, both));
-//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
-//            .andReturn(Arrays.asList(complete, both));
-
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
@@ -116,7 +111,7 @@ public class StudyListControllerTest extends ControllerTestCase {
     }
 
     public void testModelForSubjectCoordinatorAndResearchAssociate() throws Exception {
-        setUserRoles(user, Role.SUBJECT_COORDINATOR, Role.RESEARCH_ASSOCIATE);
+        setUserRoles(user, Role.SUBJECT_COORDINATOR);
 
         List<StudyListController.DevelopmentTemplate> inDevelopment = new ArrayList<StudyListController.DevelopmentTemplate>();
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
@@ -129,11 +124,6 @@ public class StudyListControllerTest extends ControllerTestCase {
         expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
         expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
         expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
-//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SUBJECT_COORDINATOR)))
-//            .andReturn(Arrays.asList(complete));
-//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.RESEARCH_ASSOCIATE)))
-//            .andReturn(Arrays.asList(complete, both));
-
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
@@ -158,11 +148,6 @@ public class StudyListControllerTest extends ControllerTestCase {
         expect(templateService.getPendingTemplates(allStudies, user)).andReturn(pendingTemplates);
         expect(templateService.getReleasedAndAssignedTemplates(allStudies, user)).andReturn(releasedAndAssignedTemplates);
         expect(templateService.getReleasedTemplates(allStudies, user)).andReturn(releasedTemplates);
-        
-
-
-//        expect(templateService.filterForVisibility(allStudies, user.getUserRole(Role.SITE_COORDINATOR)))
-//            .andReturn(Arrays.asList(incomplete, complete, both));
 
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);

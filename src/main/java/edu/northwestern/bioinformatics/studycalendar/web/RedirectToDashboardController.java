@@ -38,8 +38,6 @@ public class RedirectToDashboardController extends PscAbstractController {
            return new ModelAndView(new RedirectView("dashboard/systemAdmin"));
         } else if (authorityList.contains(Role.STUDY_ADMIN.toString())){
            return new ModelAndView(new RedirectView("dashboard/studyAdmin"));
-        } else if (authorityList.contains(Role.RESEARCH_ASSOCIATE.toString())){
-           return new ModelAndView(new RedirectView("dashboard/researchAssociate"));
         } else if (authorityList.contains(Role.STUDY_COORDINATOR.toString())){
            return new ModelAndView(new RedirectView("dashboard/studyCoordinator"));
         }

@@ -78,14 +78,13 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         doProcess();
 
         ConfigAttributeDefinition defs = lookupConfigAttributeDefinitions("zero");
-        assertEquals("Wrong Protection Group Size", 6, defs.size());
+        assertEquals("Wrong Protection Group Size", 5, defs.size());
 
         Iterator configAttribIter = defs.getConfigAttributes();
         assertEquals("Wrong Role", "STUDY_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "STUDY_ADMIN", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SYSTEM_ADMINISTRATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SUBJECT_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
-        assertEquals("Wrong Role", "RESEARCH_ASSOCIATE", ((ConfigAttribute)configAttribIter.next()).getAttribute());
         assertEquals("Wrong Role", "SITE_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
     }
 

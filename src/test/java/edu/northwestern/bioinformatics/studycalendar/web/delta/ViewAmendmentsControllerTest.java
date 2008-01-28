@@ -106,7 +106,6 @@ public class ViewAmendmentsControllerTest extends WebTestCase {
     public void testSelectedAmendmentDefaultsToFirstReleased() throws Exception {
         Amendment dev = new Amendment();
         study.setDevelopmentAmendment(dev);
-        setUserRoles(user, RESEARCH_ASSOCIATE);
         assertSame(aC, handleAndReturnModel("amendment"));
     }
 

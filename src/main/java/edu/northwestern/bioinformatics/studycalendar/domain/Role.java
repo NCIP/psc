@@ -10,7 +10,6 @@ public enum Role implements CodedEnum<String>, GrantedAuthority {
     STUDY_ADMIN         (false),
     SYSTEM_ADMINISTRATOR(false),
     SUBJECT_COORDINATOR ,
-    RESEARCH_ASSOCIATE  ,
     SITE_COORDINATOR    ;
 
     private boolean siteSpecific;
