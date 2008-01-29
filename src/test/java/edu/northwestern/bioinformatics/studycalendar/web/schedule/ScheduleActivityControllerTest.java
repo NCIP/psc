@@ -1,16 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createScheduledActivity;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Calendar;
@@ -71,7 +72,7 @@ public class ScheduleActivityControllerTest extends ControllerTestCase {
     }
 
     public void testBindDate() throws Exception {
-        request.addParameter("newDate", "11/2/2003");
+        request.addParameter("newDate", "11/02/2003");
 
         expectShowFormWithNoErrors();
 
