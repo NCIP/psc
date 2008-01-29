@@ -27,6 +27,8 @@
         <%--<h1>${action} Subject</h1>--%>
         <c:url value="/pages/cal/createSubject?id=${studyId}" var="formAction"/>
         <form:form action="${formAction}" method="post">
+            <form:errors path="*"/>
+                          
             <div class="row">
                 <div class="label">
                     <form:label path="firstName">First Name</form:label>

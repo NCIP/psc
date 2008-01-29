@@ -1,19 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
@@ -37,7 +25,29 @@ public class ControllerTools {
     // TODO: make date format externally configurable
     public PropertyEditor getDateEditor(boolean required) {
         // note that date formats are not threadsafe, so we have to create a new one each time
-        return new CustomDateEditor(FormatTools.createDateFormat(), !required);
+        //return new CustomDateEditor(FormatTools.createDateFormat(), !required);
+        int exactDateLength = 10;       //ex: String validDate = "01/01/2005";
+
+        return getDateEditor(required,exactDateLength);
+    }
+
+    /**
+     * Create a new CustomDateEditor instance, using the given DateFormat
+     * for parsing and rendering.
+     * <p>The "required" parameter states if an empty String should not
+     * be allowed for parsing, i.e. get interpreted as null value.
+     * Otherwise, an IllegalArgumentException gets thrown in that case.
+     * <p>The "exactDateLength" parameter states that IllegalArgumentException gets
+     * thrown if the String does not exactly match the length specified. This is useful
+     * because SimpleDateFormat does not enforce strict parsing of the year part,
+     * not even with <code>setLenient(false)</code>. Without an "exactDateLength"
+     * specified, the "01/01/05" would get parsed to "01/01/0005".
+     *
+     * @param exactDateLength the exact expected length of the date String
+     */
+    private PropertyEditor getDateEditor(boolean required, int exactDateLength) {
+        // note that date formats are not threadsafe, so we have to create a new one each time
+        return new CustomDateEditor(FormatTools.createDateFormat(), !required, exactDateLength);
     }
 
     public void registerDomainObjectEditor(ServletRequestDataBinder binder, String field, StudyCalendarDao<?> dao) {
