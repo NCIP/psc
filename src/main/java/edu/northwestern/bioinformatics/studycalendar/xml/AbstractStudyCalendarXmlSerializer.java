@@ -5,6 +5,9 @@ import org.dom4j.*;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.BeansException;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -14,7 +17,7 @@ import java.io.IOException;
  * @author Rhett Sutphin
  * @author John Dzak
  */
-public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R> {
+public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R>, BeanFactoryAware {
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
     public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
     public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";
@@ -30,6 +33,7 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
     // Attributes
     public static final String ID = "id";
     public static final String NAME = "name";
+    private BeanFactory beanFactory;
 
     public Document createDocument(R root) {
         Document document = DocumentHelper.createDocument();
@@ -91,5 +95,14 @@ public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCale
         // Using QName is the only way to attach the namespace to the element
         QName qNode = DocumentHelper.createQName(elementName, DEFAULT_NAMESPACE);
         return DocumentHelper.createElement(qNode);
+    }
+
+    // Bean Getter and Setter methods
+    public BeanFactory getBeanFactory() {
+        return beanFactory;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
     }
 }

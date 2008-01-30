@@ -2,13 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
+import org.dom4j.DocumentHelper;
 import static org.easymock.EasyMock.expect;
 
 public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
@@ -16,12 +14,15 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedActivityDao plannedActivityDao;
     private Element element;
     private PlannedActivity plannedActivity;
+    private ActivityXmlSerializer activitySerializer;
+    private Element eActivity;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
+        activitySerializer = registerMockFor(ActivityXmlSerializer.class);
 
         Population population = Fixtures.createPopulation("MP", "My Populaiton");
         plannedActivity = setGridId("grid0", Fixtures.createPlannedActivity("Bone Scan", 2, "scan details", "no mice"));
@@ -29,12 +30,21 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         Study study = createNamedInstance("Study A", Study.class);
         study.addPopulation(population);
-        serializer = new PlannedActivityXmlSerializer(study);
+
+        eActivity = DocumentHelper.createElement("activity");
+
+        serializer = new PlannedActivityXmlSerializer();
         serializer.setPlannedActivityDao(plannedActivityDao);
+        serializer.setStudy(study);
+        serializer.setActivityXmlSerializer(activitySerializer);
     }
 
     public void testCreateElementPlannedActivity() {
+        expect(activitySerializer.createElement(plannedActivity.getActivity())).andReturn(eActivity);
+        replayMocks();
+
         Element actual = serializer.createElement(plannedActivity);
+        verifyMocks();
 
         assertEquals("Wrong attribute size", 5, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
@@ -52,6 +62,8 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("details")).andReturn("scan details");
         expect(element.attributeValue("condition")).andReturn("no mice");
         expect(element.attributeValue("population")).andReturn("MP");
+        expect(element.element("activity")).andReturn(eActivity);
+        expect(activitySerializer.readElement(eActivity)).andReturn(new Activity());
 
         replayMocks();
 
@@ -63,6 +75,7 @@ public class PlannedActivityXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong details", "scan details", actual.getDetails());
         assertEquals("Wrong condition", "no mice", actual.getCondition());
         assertEquals("Wrong population", "MP", actual.getPopulation().getAbbreviation());
+        assertNotNull("Activity should exist", actual.getActivity());
     }
 
     public void testReadElementExistsPlannedActivity() {

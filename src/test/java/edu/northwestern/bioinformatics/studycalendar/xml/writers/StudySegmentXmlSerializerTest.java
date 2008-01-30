@@ -18,16 +18,24 @@ public class StudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudySegmentDao studySegmentDao;
     private Element element;
     private StudySegment segment;
+    private PeriodXmlSerializer periodSerializer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
+        periodSerializer = registerMockFor(PeriodXmlSerializer.class);
 
         Study study = createNamedInstance("Study A", Study.class);
-        serializer = new StudySegmentXmlSerializer(study);
+
+        serializer = new StudySegmentXmlSerializer(){
+            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
+                return periodSerializer;
+            }
+        };
         serializer.setStudySegmentDao(studySegmentDao);
+        serializer.setStudy(study);
 
         segment = setGridId("grid0", createNamedInstance("Segment A", StudySegment.class));
     }

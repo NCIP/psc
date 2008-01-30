@@ -1,10 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendment;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter.*;
@@ -13,12 +16,14 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
-import static java.util.Collections.singletonList;
 import java.util.Calendar;
+import java.util.Collections;
+import static java.util.Collections.singletonList;
 
 public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyXmlSerializer serializer;
@@ -33,6 +38,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AmendmentXmlSerializer amendmentSerializer;
     private Amendment amendment;
     private Element eAmendment;
+    private DeltaService deltaService;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 
@@ -44,6 +50,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
+        deltaService = registerMockFor(DeltaService.class);
 
         serializer = new StudyXmlSerializer() {
             protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {return plannedCalendarSerializer;}
@@ -51,6 +58,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
             protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {return amendmentSerializer;}
         };
         serializer.setStudyDao(studyDao);
+        serializer.setDeltaService(deltaService);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
@@ -85,7 +93,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(populationSerializer.readElement(element)).andReturn(population);
 
         expect(element.element("planned-calendar")).andReturn(element);
-        
+
+        expect(element.elements("amendment")).andReturn(Collections.singletonList(element));
+        expect(amendmentSerializer.readElement(element)).andReturn(amendment);
+
         // Need to cast calendar to PlanTreeNode because of EasyMockBug
         expect(plannedCalendarSerializer.readElement(element)).andReturn((PlanTreeNode) calendar);
         replayMocks();
@@ -96,6 +107,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
         assertSame("PlannedCalendar should be the same", calendar, actual.getPlannedCalendar());
         assertSame("Populations should be the same", population, actual.getPopulations().iterator().next());
+        assertSame("Amendment should be the same", amendment,  actual.getAmendment());
     }
 
     public void testReadElementWhereElementExists() {

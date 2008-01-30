@@ -1,9 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer {
@@ -11,10 +11,6 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
     public static final String STUDY_SEGMENT = "study-segment";
 
     private StudySegmentDao studySegmentDao;
-
-    public StudySegmentXmlSerializer(Study study) {
-        super(study);
-    }
 
     protected PlanTreeNode<?> nodeInstance() {
         return new StudySegment();
@@ -29,7 +25,9 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
     }
 
     protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
-        return new PeriodXmlSerializer(getStudy());
+        PeriodXmlSerializer serializer = (PeriodXmlSerializer) getBeanFactory().getBean("periodXmlSerializer");
+        serializer.setStudy(study);
+        return serializer;
     }
 
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {
@@ -38,6 +36,15 @@ public class StudySegmentXmlSerializer extends AbstractPlanTreeNodeXmlSerializer
 
     protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {
         element.addAttribute(NAME, ((StudySegment) node).getName());
+    }
+
+    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment) {
+        if (getChildSerializer() != null) {
+            for (PlanTreeNode<?> oChildNode : node.getChildren()) {
+                Element childElement = getChildSerializer().createElement(oChildNode);
+                eStudySegment.add(childElement);
+            }
+        }
     }
 
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {

@@ -35,15 +35,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Padmaja Vedula
@@ -315,6 +307,24 @@ public class TemplateService {
         } else {
             throw new StudyCalendarSystemException("%s is not a descendant of %s",
                 node.getClass().getSimpleName(), klass.getSimpleName());
+        }
+    }
+
+    public <T extends PlanTreeNode<?>> Collection<T> findChildren(PlanTreeInnerNode node, Class<T> childClass) {
+        List<T> children = new LinkedList<T>();
+        findChildren(node, childClass, children);
+        return children;
+    }
+
+    private <T extends PlanTreeNode<?>> void findChildren(PlanTreeInnerNode node, Class<T> childClass, Collection<T> target) {
+        if (childClass.isAssignableFrom(node.childClass())) {
+            target.addAll(node.getChildren());
+        } else {
+            for (Object o : node.getChildren()) {
+                if (o instanceof PlanTreeInnerNode) {
+                    findChildren((PlanTreeInnerNode) o, childClass, target);
+                }
+            }
         }
     }
 

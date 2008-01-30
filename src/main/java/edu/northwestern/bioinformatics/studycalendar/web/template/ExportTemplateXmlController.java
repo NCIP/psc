@@ -1,22 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
-import org.springframework.web.servlet.mvc.Controller;
-import org.springframework.web.servlet.mvc.AbstractController;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.beans.factory.annotation.Required;
-import org.apache.commons.logging.Log;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TODO: this is temporary -- will be replaced with the RESTful API's GET for the template
@@ -27,7 +24,7 @@ public class ExportTemplateXmlController extends AbstractController {
     private final Logger log = LoggerFactory.getLogger(getClass());
     private static final Pattern ID_PATTERN = Pattern.compile("/([^/]+)\\.xml");
     private StudyDao studyDao;
-    private DaoFinder daoFinder;
+    private StudyXmlSerializer studyXmlSerializer;
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -41,7 +38,8 @@ public class ExportTemplateXmlController extends AbstractController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        String xml = new StudyXMLWriter(daoFinder).createStudyXML(study);
+
+        String xml = studyXmlSerializer.createDocumentString(study);
         response.setContentType("text/xml");
         byte[] content = xml.getBytes();
         response.setContentLength(content.length);
@@ -78,7 +76,7 @@ public class ExportTemplateXmlController extends AbstractController {
     }
 
     @Required
-    public void setDaoFinder(DaoFinder daoFinder) {
-        this.daoFinder = daoFinder;
+    public void setStudyXmlSerializer(StudyXmlSerializer studyXmlSerializer) {
+        this.studyXmlSerializer = studyXmlSerializer;
     }
 }

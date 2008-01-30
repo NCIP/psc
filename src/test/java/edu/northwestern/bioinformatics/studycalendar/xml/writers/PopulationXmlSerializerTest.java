@@ -25,8 +25,9 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         study = createNamedInstance("Study A", Study.class);
 
-        serializer = new PopulationXmlSerializer(study);
+        serializer = new PopulationXmlSerializer();
         serializer.setPopulationDao(populationDao);
+        serializer.setStudy(study);
 
         population = new Population();
         population.setAbbreviation("MP");

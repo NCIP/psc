@@ -14,11 +14,6 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
     private PopulationDao populationDao;
     private Study study;
 
-
-    public PopulationXmlSerializer(Study study) {
-        this.study = study;
-    }
-
     public Element createElement(Population child) {
         return element(POPULATION)
                 .addAttribute(ABBREVIATION, child.getAbbreviation())
@@ -39,5 +34,9 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
 
     public void setPopulationDao(PopulationDao populationDao) {
         this.populationDao = populationDao;
+    }
+
+    public void setStudy(Study study) {
+        this.study = study;
     }
 }

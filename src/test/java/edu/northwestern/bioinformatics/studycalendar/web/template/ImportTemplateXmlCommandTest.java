@@ -1,38 +1,38 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.validation.BindException;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
+
 public class ImportTemplateXmlCommandTest extends StudyCalendarTestCase {
 
-    private StudyXMLReader reader;
-    private StudyService studyService;
     private ImportTemplateXmlCommand command;
     private MultipartFile file;
+    private InputStream stream;
+    private ImportTemplateService importTemplateService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        studyService = registerMockFor(StudyService.class);
-        reader = registerMockFor(StudyXMLReader.class);
         file = registerMockFor(MockMultipartFile.class);
+        stream = registerMockFor(InputStream.class);
+        importTemplateService = registerMockFor(ImportTemplateService.class);
 
         command = new ImportTemplateXmlCommand();
-        command.setStudyXMLReader(reader);
-        command.setStudyService(studyService);
         command.setStudyXml(file);
+        command.setImportTemplateService(importTemplateService);
     }
 
     public void testApply() throws Exception {
-        expect(file.getInputStream()).andReturn(null);
-        expect(reader.readAndSave(null)).andReturn(null);
+        expect(file.getInputStream()).andReturn(stream);
+        importTemplateService.importTemplate(stream);
         replayMocks();
 
         command.apply();

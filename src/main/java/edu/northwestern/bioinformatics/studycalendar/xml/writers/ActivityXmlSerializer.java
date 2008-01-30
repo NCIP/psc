@@ -7,6 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import org.dom4j.Element;
 
 /**
@@ -14,6 +16,8 @@ import org.dom4j.Element;
  */
 public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Activity> {
     private boolean embeddedInSource;
+    private ActivityDao activityDao;
+    private SourceDao sourceDao;
 
     public ActivityXmlSerializer() {
         this(false);
@@ -61,6 +65,15 @@ public class ActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<Ac
             sourceTemplate.setName(XsdAttribute.ACTIVITY_SOURCE.from(element));
             activity.setSource(sourceTemplate);
         }
+
         return activity;
+    }
+
+    public void setActivityDao(ActivityDao activityDao) {
+        this.activityDao = activityDao;
+    }
+
+    public void setSourceDao(SourceDao sourceDao) {
+        this.sourceDao = sourceDao;
     }
 }

@@ -12,26 +12,35 @@ import static org.easymock.EasyMock.expect;
 import static java.util.Collections.emptyList;
 
 public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
-    private EpochXmlSerializer epochSerializer;
+    private EpochXmlSerializer serializer;
     private EpochDao epochDao;
     private Element element;
     private Epoch epoch;
+    private StudySegmentXmlSerializer studySegmentSerializer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
         epochDao = registerDaoMockFor(EpochDao.class);
+        studySegmentSerializer = registerMockFor(StudySegmentXmlSerializer.class);
 
         Study study = createNamedInstance("Study A", Study.class);
-        epochSerializer = new EpochXmlSerializer(study);
-        epochSerializer.setEpochDao(epochDao);
+
+        serializer = new EpochXmlSerializer() {
+
+            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
+                return studySegmentSerializer;
+            }
+        };
+        serializer.setEpochDao(epochDao);
+        serializer.setStudy(study);
 
         epoch = setGridId("grid0", createNamedInstance("Epoch A", Epoch.class));
     }
 
     public void testCreateElementEpoch() {
-        Element actual = epochSerializer.createElement(epoch);
+        Element actual = serializer.createElement(epoch);
 
         assertEquals("Wrong attribute size", 2, actual.attributeCount());
         assertEquals("Wrong grid id", "grid0", actual.attribute("id").getValue());
@@ -46,7 +55,7 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
 
-        Epoch actual = (Epoch) epochSerializer.readElement(element);
+        Epoch actual = (Epoch) serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
@@ -59,7 +68,7 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(epochDao.getByGridId("grid0")).andReturn(epoch);
         replayMocks();
 
-        Epoch actual = (Epoch) epochSerializer.readElement(element);
+        Epoch actual = (Epoch) serializer.readElement(element);
         verifyMocks();
 
         assertSame("Wrong Epoch", epoch, actual);

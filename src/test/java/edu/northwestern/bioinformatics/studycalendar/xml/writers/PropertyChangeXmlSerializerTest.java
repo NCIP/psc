@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
@@ -19,7 +18,7 @@ public class PropertyChangeXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
 
-        serializer = new PropertyChangeXmlSerializer(new Study());
+        serializer = new PropertyChangeXmlSerializer();
         serializer.setChangeDao(changeDao);
 
         propertyChange = PropertyChange.create("name", "Epoch X", "Epoch A");

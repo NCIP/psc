@@ -1,13 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import static org.easymock.classextension.EasyMock.*;
-
-import java.io.UnsupportedEncodingException;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -18,6 +16,7 @@ public class ExportTemplateXmlControllerTest extends ControllerTestCase {
     private StudyDao studyDao;
 
     private Study study;
+    private StudyXmlSerializer studyXmlSerializer;
 
     @Override
     protected void setUp() throws Exception {
@@ -32,30 +31,24 @@ public class ExportTemplateXmlControllerTest extends ControllerTestCase {
         study.getPlannedCalendar().setGridId("63");
 
         studyDao = registerDaoMockFor(StudyDao.class);
+        studyXmlSerializer = registerMockFor(StudyXmlSerializer.class);
 
         controller = new ExportTemplateXmlController();
         controller.setStudyDao(studyDao);
+        controller.setStudyXmlSerializer(studyXmlSerializer);
     }
 
     public void testTreatIdentAsGridIdFirst() throws Exception {
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(study);
+        expect(studyXmlSerializer.createDocumentString(study)).andReturn("<study/>");
         handle(200);
-        assertXmlResponse();
     }
 
     public void testTreatIdentAsAssignedIdentifierSecond() throws Exception {
         expect(studyDao.getByGridId(STUDY_IDENT)).andReturn(null);
         expect(studyDao.getStudyByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        expect(studyXmlSerializer.createDocumentString(study)).andReturn("<study/>");
         handle(200);
-        assertXmlResponse();
-    }
-
-    private void assertXmlResponse() throws UnsupportedEncodingException {
-        assertEquals("text/xml", response.getContentType());
-        String content = response.getContentAsString();
-        System.out.println(content);
-        assertContains(content, "<study");
-        assertContains(content, String.format("assigned-identifier=\"%s\"", STUDY_IDENT));
     }
 
     public void testHttp400ForMissingIdentifier() throws Exception {

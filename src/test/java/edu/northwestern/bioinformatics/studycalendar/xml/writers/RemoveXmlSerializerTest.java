@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Document;
@@ -20,7 +19,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ChangeDao changeDao;
     private Epoch epoch;
     private Document document;
-    private AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
+    private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
     private AbstractPlanTreeNodeXmlSerializer planTreeNodeSerializer;
 
     protected void setUp() throws Exception {
@@ -30,9 +29,9 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         document = registerMockFor(Document.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
         planTreeNodeSerializer = registerMockFor(AbstractPlanTreeNodeXmlSerializer.class);
-        planTreeNodeSerializerFactory = registerMockFor(AbstractChangeXmlSerializer.PlanTreeNodeXmlSerializerFactory.class);
+        planTreeNodeSerializerFactory = registerMockFor(PlanTreeNodeXmlSerializerFactory.class);
 
-        serializer = new RemoveXmlSerializer(new Study()){
+        serializer = new RemoveXmlSerializer(){
             protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
                 return planTreeNodeSerializerFactory;
             }
@@ -47,7 +46,7 @@ public class RemoveXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(changeDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("child-id")).andReturn("grid1");
         expectGetElementByIdCalls();
-        expect(planTreeNodeSerializerFactory.createPlanTreeNodeXmlSerializer(element)).andReturn(planTreeNodeSerializer);
+        expect(planTreeNodeSerializerFactory.createXmlSerializer(element)).andReturn(planTreeNodeSerializer);
         expect(planTreeNodeSerializer.readElement(element)).andReturn((PlanTreeNode)epoch);
         replayMocks();
 

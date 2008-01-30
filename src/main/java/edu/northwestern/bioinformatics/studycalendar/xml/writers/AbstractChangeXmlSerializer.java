@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import org.dom4j.Element;
@@ -12,17 +11,13 @@ import static java.util.Collections.singletonList;
 import java.util.List;
 
 public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarXmlSerializer<Change> {
-    private PlanTreeNodeXmlSerializerFactory planTreeNodeSerializerFactory;
+    private Study study;
     protected ChangeDao changeDao;
 
     protected abstract Change changeInstance();
     protected abstract String elementName();
     protected void addAdditionalAttributes(final Change change, Element element) {}
     protected void setAdditionalProperties(final Element element, Change change){}
-
-    protected AbstractChangeXmlSerializer(Study study) {
-        planTreeNodeSerializerFactory = new PlanTreeNodeXmlSerializerFactory(study);
-    }
 
     public Element createElement(Change change) {
         Element element = element(elementName());
@@ -78,46 +73,12 @@ public abstract class AbstractChangeXmlSerializer extends AbstractStudyCalendarX
 
 
     protected PlanTreeNodeXmlSerializerFactory getPlanTreeNodeSerializerFactory() {
-        return planTreeNodeSerializerFactory;
+        PlanTreeNodeXmlSerializerFactory factory = (PlanTreeNodeXmlSerializerFactory) getBeanFactory().getBean("planTreeNodeXmlSerializerFactory");
+        factory.setStudy(study);
+        return factory;
     }
 
-    public class PlanTreeNodeXmlSerializerFactory {
-        private Study study;
-
-        public PlanTreeNodeXmlSerializerFactory(Study study) {
-            this.study = study;
-        }
-
-        public AbstractPlanTreeNodeXmlSerializer createPlanTreeNodeXmlSerializer(final Element node) {
-            if (PlannedCalendarXmlSerializer.PLANNED_CALENDAR.equals(node.getName())) {
-                return new PlannedCalendarXmlSerializer(study);
-            } else if (EpochXmlSerializer.EPOCH.equals(node.getName())) {
-                return new EpochXmlSerializer(study);
-            } else if (StudySegmentXmlSerializer.STUDY_SEGMENT.equals(node.getName())) {
-                return new StudySegmentXmlSerializer(study);
-            } else if (PeriodXmlSerializer.PERIOD.equals(node.getName())) {
-                return new PeriodXmlSerializer(study);
-            } else if(PlannedActivityXmlSerializer.PLANNED_ACTIVITY.equals(node.getName())) {
-                return new PlannedActivityXmlSerializer(study);
-            } else {
-                throw new StudyCalendarError("Problem importing template. Could not find node type %s", node.getName());
-            }
-        }
-
-        public AbstractPlanTreeNodeXmlSerializer createPlanTreeNodeXmlSerializer(final PlanTreeNode<?> node) {
-            if (node instanceof PlannedCalendar) {
-                return new PlannedCalendarXmlSerializer(study);
-            } else if (node instanceof Epoch) {
-                return new EpochXmlSerializer(study);
-            } else if (node instanceof StudySegment) {
-                return new StudySegmentXmlSerializer(study);
-            } else if (node instanceof Period) {
-                return new PeriodXmlSerializer(study);
-            } else if (node instanceof PlannedActivity) {
-                return new PlannedActivityXmlSerializer(study);
-            } else {
-                throw new StudyCalendarError("Problem importing template. Cannot find Child Node for Change");
-            }
-        }
+    public void setStudy(Study study) {
+        this.study = study;
     }
 }

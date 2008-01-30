@@ -16,16 +16,24 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedCalendarDao plannedCalendarDao;
     private Element element;
     private PlannedCalendar plannedCalendar;
+    private EpochXmlSerializer epochSerializer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
+        epochSerializer = registerMockFor(EpochXmlSerializer.class);
         plannedCalendarDao = registerDaoMockFor(PlannedCalendarDao.class);
 
         Study study = createNamedInstance("Study A", Study.class);
-        serializer = new PlannedCalendarXmlSerializer(study);
+
+        serializer = new PlannedCalendarXmlSerializer(){
+            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
+                return epochSerializer;
+            }
+        };
         serializer.setPlannedCalendarDao(plannedCalendarDao);
+        serializer.setStudy(study);
 
         plannedCalendar = setGridId("grid0", new PlannedCalendar());
     }

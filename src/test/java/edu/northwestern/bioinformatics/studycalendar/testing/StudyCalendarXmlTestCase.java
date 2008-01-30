@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.testing;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.StringUtils;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.apache.commons.io.IOUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -61,30 +62,55 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public static PlanTreeNode eqGridId(PlanTreeNode in) {
+    public static<T extends AbstractMutableDomainObject> T eqGridId(T in) {
         EasyMock.reportMatcher(new GridIdMatcher(in));
         return null;
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public static class GridIdMatcher implements IArgumentMatcher {
-        private PlanTreeNode expected;
+    public static class GridIdMatcher<T extends AbstractMutableDomainObject> implements IArgumentMatcher {
+        private T expected;
 
-        public GridIdMatcher(PlanTreeNode expected) {
+        public GridIdMatcher(T expected) {
             this.expected = expected;
         }
 
-        public boolean matches(Object actual) {
-            if (!(actual instanceof PlanTreeNode)) {
-                return false;
-            }
-            String actualGridId = ((PlanTreeNode) actual).getGridId();
+        public boolean matches(Object o) {
+            T actual = (T) o;
+            String actualGridId = actual.getGridId();
             return expected.getGridId().equals(actualGridId);
         }
 
         public void appendTo(StringBuffer buffer) {
             buffer.append("eqGridId(");
             buffer.append(expected.getGridId());
+            buffer.append(')');
+        }
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public static<T extends Named> T eqName(T in) {
+        EasyMock.reportMatcher(new NameMatcher(in));
+        return null;
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    public static class NameMatcher<T extends Named> implements IArgumentMatcher {
+        private T expected;
+
+        public NameMatcher(T expected) {
+            this.expected = expected;
+        }
+
+        public boolean matches(Object o) {
+            T actual = (T) o;
+            String actualGridId = actual.getName();
+            return expected.getName().equals(actualGridId);
+        }
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append("eqName(");
+            buffer.append(expected.getName());
             buffer.append(')');
         }
     }

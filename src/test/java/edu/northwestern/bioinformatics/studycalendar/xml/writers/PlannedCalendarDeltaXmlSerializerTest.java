@@ -10,9 +10,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.easymock.EasyMock;
+import static org.easymock.EasyMock.eq;
 import static org.easymock.EasyMock.expect;
+
+import java.util.Collections;
 
 public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AbstractDeltaXmlSerializer serializer;
@@ -22,6 +25,9 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
     private Study study;
     private PlannedCalendar calendar;
     private TemplateService templateService;
+    private ChangeXmlSerializerFactory changeSerializerFactory;
+    private Add add;
+    private AbstractChangeXmlSerializer changeSerializer;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -29,22 +35,35 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         element = registerMockFor(Element.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         templateService = registerMockFor(TemplateService.class);
+        changeSerializerFactory = registerMockFor(ChangeXmlSerializerFactory.class);
+        changeSerializer = registerMockFor(AbstractChangeXmlSerializer.class);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         study = createNamedInstance("Study A", Study.class);
         study.setPlannedCalendar(calendar);
 
-        serializer = new PlannedCalendarDeltaXmlSerializer(study);
+        serializer = new PlannedCalendarDeltaXmlSerializer(){
+            public ChangeXmlSerializerFactory getChangeXmlSerializerFactory() {
+                return changeSerializerFactory;
+            }
+        };
         serializer.setDeltaDao(deltaDao);
         serializer.setTemplateService(templateService);
+        serializer.setStudy(study);
 
 
-        plannedCalendarDelta = Delta.createDeltaFor(calendar, new Add());
+        add = new Add();
+        plannedCalendarDelta = Delta.createDeltaFor(calendar, add);
         plannedCalendarDelta.setGridId("grid0");
     }
 
     public void testCreateElement() {
+        expect(changeSerializerFactory.createXmlSerializer(add, calendar)).andReturn(changeSerializer);
+        expect(changeSerializer.createElement(add)).andReturn(DocumentHelper.createElement("add"));
+        replayMocks();
+
         Element element = serializer.createElement(plannedCalendarDelta);
+        verifyMocks();
 
         assertEquals("Wrong element name", "planned-calendar-delta", element.getName());
         assertEquals("Wrong node id", "grid1", element.attributeValue("node-id"));
@@ -66,7 +85,7 @@ public class PlannedCalendarDeltaXmlSerializerTest extends StudyCalendarXmlTestC
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(deltaDao.getByGridId("grid0")).andReturn(null);
         expect(element.attributeValue("node-id")).andReturn("grid1");
-        expect(templateService.findEquivalentChild(EasyMock.eq(study), eqGridId(calendar))).andReturn((PlanTreeNode)calendar);
+        expect(element.elements()).andReturn(Collections.emptyList());
         replayMocks();
 
         Delta actual = serializer.readElement(element);

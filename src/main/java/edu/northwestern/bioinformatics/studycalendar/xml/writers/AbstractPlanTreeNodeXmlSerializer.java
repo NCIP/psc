@@ -12,11 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCalendarXmlSerializer<PlanTreeNode<?>> {
-    private Study study;
-
-    public AbstractPlanTreeNodeXmlSerializer(Study study) {
-        this.study = study;
-    }
+    protected Study study;
 
     protected abstract PlanTreeNode<?> nodeInstance();
     protected abstract String elementName();
@@ -25,11 +21,17 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
     protected void addAdditionalElementAttributes(final PlanTreeNode<?> node, Element element) {}
     protected void addAdditionalNodeAttributes(final Element element, PlanTreeNode<?> node) {}
+    protected void addChildrenElements(PlanTreeInnerNode<?, PlanTreeNode<?>, ?> node, Element eStudySegment){}
 
-    public Element createElement(PlanTreeNode<?> object) {
+    public Element createElement(PlanTreeNode<?> node) {
         Element element = element(elementName());
-        element.addAttribute(ID, object.getGridId());
-        addAdditionalElementAttributes(object, element);
+        element.addAttribute(ID, node.getGridId());
+        addAdditionalElementAttributes(node, element);
+
+        if (getChildSerializer() != null) {
+            addChildrenElements(PlanTreeInnerNode.cast(node), element);
+        }
+        
         return element;
     }
 
@@ -46,14 +48,14 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
             addAdditionalNodeAttributes(element, node);
 
             if (getChildSerializer() != null) {
-                List<PlanTreeNode<?>> children = readChildren(element);
+                List<PlanTreeNode<?>> children = readChildElements(element);
                 addChildren(children, node);
             }
         }
         return node;
     }
 
-    private List<PlanTreeNode<?>> readChildren(Element element) {
+    private List<PlanTreeNode<?>> readChildElements(Element element) {
         List<PlanTreeNode<?>> nodeList = new ArrayList<PlanTreeNode<?>>();
         for (Object oChild : element.elements()) {
             Element child = (Element) oChild;
@@ -67,10 +69,6 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
         for (PlanTreeNode<?> child : children) {
             ((PlanTreeInnerNode) parent).addChild(child);
         }
-    }
-
-    public Study getStudy() {
-        return study;
     }
 
     public Document createDocument(PlanTreeNode<?> root) {
@@ -87,5 +85,9 @@ public abstract class AbstractPlanTreeNodeXmlSerializer extends AbstractStudyCal
 
     public PlanTreeNode<?> readDocument(InputStream in) {
         throw new UnsupportedOperationException("PlanTreeNodes aren't root nodes");
+    }
+
+    public void setStudy(Study study) {
+        this.study = study;
     }
 }

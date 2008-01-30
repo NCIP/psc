@@ -2,17 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Reorder;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.dom4j.Element;
 
 public class ReorderXmlSerializer extends AbstractChildrenChangeXmlSerializer {
-    private static final String REORDER = "reorder";
+    public static final String REORDER = "reorder";
     private static final String OLD_INDEX = "old-index";
     private static final String NEW_INDEX = "new-index";
-
-    public ReorderXmlSerializer(Study study) {
-        super(study);
-    }
 
     protected Change changeInstance() {
         return new Reorder();

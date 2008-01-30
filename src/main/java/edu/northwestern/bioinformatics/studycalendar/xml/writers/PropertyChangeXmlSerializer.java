@@ -1,19 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import org.dom4j.Element;
 
 public class PropertyChangeXmlSerializer extends AbstractChangeXmlSerializer {
-    private static final String PROPERTY_CHANGE = "property-change";
+    public static final String PROPERTY_CHANGE = "property-change";
     private static final String OLD_VALUE = "old-value";
     private static final String NEW_VALUE = "new-value";
     private static final String PROPERTY_NAME="property-name";
-
-    public PropertyChangeXmlSerializer(Study study) {
-        super(study);
-    }
 
     protected Change changeInstance() {
         return new PropertyChange();
