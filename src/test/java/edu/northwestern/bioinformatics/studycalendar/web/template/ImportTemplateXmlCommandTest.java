@@ -1,7 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;
@@ -32,7 +31,7 @@ public class ImportTemplateXmlCommandTest extends StudyCalendarTestCase {
 
     public void testApply() throws Exception {
         expect(file.getInputStream()).andReturn(stream);
-        importTemplateService.importTemplate(stream);
+        importTemplateService.readAndSaveTemplate(stream);
         replayMocks();
 
         command.apply();

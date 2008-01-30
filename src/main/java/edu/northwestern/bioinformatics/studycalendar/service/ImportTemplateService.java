@@ -1,37 +1,75 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.*;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
-
-import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
+import java.util.List;
 
 @Transactional
 public class ImportTemplateService {
     private StudyXmlSerializer studyXmlSerializer;
     private ActivityDao activityDao;
-    private StudyService studyService;
     private SourceDao sourceDao;
-    private DeltaService deltaService;
     private StudyDao studyDao;
     private DaoFinder daoFinder;
     private AmendmentService amendmentService;
     private TemplateService templateService;
 
-    public void importTemplate (InputStream stream) {
+    public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
 
         resolveExistingActivitiesAndSources(study);
+        resolveChangeChildrenFromPlanTreeNodeTree(study);
+    }
+
+    protected void resolveExistingActivitiesAndSources(Study study) {
+        List<PlannedActivity> all = new LinkedList<PlannedActivity>();
+
+        for (Amendment amendment : study.getAmendmentsList()) {
+            for (Delta<?> delta : amendment.getDeltas()) {
+                for (Change change : delta.getChanges()) {
+                    if (change.getAction() == ChangeAction.ADD) {
+                        PlanTreeNode<?> child = ((Add) change).getChild();
+                        if (child instanceof PlannedActivity) {
+                            all.add((PlannedActivity) child);
+                        } else {
+                            all.addAll(templateService.findChildren((PlanTreeInnerNode) child, PlannedActivity.class));
+                        }
+                    }
+                }
+            }
+        }
+
+        for (PlannedActivity plannedActivity : all) {
+            Activity activity = plannedActivity.getActivity();
+
+            Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
+            if (existingActivity != null) {
+                plannedActivity.setActivity(existingActivity);
+            } else {
+                Source existingSource = sourceDao.getByName(activity.getSource().getName());
+                if (existingSource != null) {
+                    activity.setSource(existingSource);
+                }
+            }
+
+            sourceDao.save(plannedActivity.getActivity().getSource());
+            activityDao.save(plannedActivity.getActivity());
+        }
+    }
+
+    protected void resolveChangeChildrenFromPlanTreeNodeTree(Study study) {
         List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
         Collections.reverse(amendments);
         study.setAmendment(null);
@@ -71,43 +109,6 @@ public class ImportTemplateService {
         return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
     }
 
-    private void resolveExistingActivitiesAndSources(Study study) {
-        List<PlannedActivity> all = new LinkedList<PlannedActivity>();
-
-        for (Amendment amendment : study.getAmendmentsList()) {
-            for (Delta<?> delta : amendment.getDeltas()) {
-                for (Change change : delta.getChanges()) {
-                    if (change.getAction() == ChangeAction.ADD) {
-                        PlanTreeNode<?> child = ((Add) change).getChild();
-                        if (child instanceof PlannedActivity) {
-                            all.add((PlannedActivity) child);
-                        } else {
-                            all.addAll(templateService.findChildren((PlanTreeInnerNode) child, PlannedActivity.class));
-                        }
-                    }
-                }
-            }
-        }
-
-        for (PlannedActivity plannedActivity : all) {
-            Activity activity = plannedActivity.getActivity();
-
-            Activity existingActivity = activityDao.getByCodeAndSourceName(activity.getCode(), activity.getSource().getName());
-            if (existingActivity != null) {
-                plannedActivity.setActivity(existingActivity);
-            } else {
-                Source existingSource = sourceDao.getByName(activity.getSource().getName());
-                if (existingSource != null) {
-                    activity.setSource(existingSource);
-                }
-            }
-
-            sourceDao.save(plannedActivity.getActivity().getSource());
-            activityDao.save(plannedActivity.getActivity());
-        }
-    }
-
-
 
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
@@ -117,16 +118,8 @@ public class ImportTemplateService {
         this.studyXmlSerializer = studyXmlSerializer;
     }
 
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
-    }
-
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
-    }
-
-    public void setDeltaService(DeltaService deltaService) {
-        this.deltaService = deltaService;
     }
 
     public void setStudyDao(StudyDao studyDao) {

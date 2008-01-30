@@ -19,7 +19,7 @@ public class ImportTemplateXmlCommand implements Validatable {
     private ImportTemplateService service;
 
     public void apply() throws Exception {
-        service.importTemplate(studyXml.getInputStream());
+        service.readAndSaveTemplate(studyXml.getInputStream());
     }
 
     public void validate(Errors errors) {
