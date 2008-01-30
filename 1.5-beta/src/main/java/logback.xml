@@ -1,0 +1,85 @@
+<configuration debug="true">
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d [%thread] %logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.home}/logs/studycalendar.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                ${catalina.home}/logs/studycalendar.%d{yyyy-MM-dd}.log.gz
+            </FileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %date{HH:mm:ss} %36logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator name="warn-only-for-libs">
+                <expression>
+                    (level &lt; WARN)
+                        &amp;&amp; !(
+                            logger.getName().startsWith("edu.northwestern.bioinformatics")
+                            || logger.getName().endsWith("DispatcherServlet")
+                        )
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator name="cglib-fake-warnings">
+                <expression>
+                    (level == WARN)
+                        &amp;&amp; logger.getName().endsWith("Cglib2AopProxy")
+                        &amp;&amp; message.contains("Unable to proxy method")
+                        &amp;&amp; message.contains("because it is final")
+                </expression>
+            </evaluator>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+    </appender>
+
+    <appender name="DEBUGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.home}/logs/studycalendar-debug.log</file>
+        <append>false</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <FileNamePattern>${catalina.home}/logs/studycalendar-debug.%i.log</FileNamePattern>
+            <MinIndex>1</MinIndex>
+            <MaxIndex>1</MaxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>32MB</MaxFileSize>
+        </triggeringPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %date{HH:mm:ss.SSS} [%thread] %36logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <root>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="DEBUGFILE"/>
+    </root>
+
+    <logger name="edu.northwestern.bioinformatics"><level value="trace"/></logger>
+    <logger name="org.hibernate.type">             <level value="trace"/></logger>
+
+    <logger name="org.apache.commons.digester"><level value="info"/></logger>
+    <logger name="org.apache.catalina">        <level value="info"/></logger>
+    <logger name="org.apache.jasper">          <level value="info"/></logger>
+    <logger name="org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap"><level value="info"/></logger>
+</configuration>

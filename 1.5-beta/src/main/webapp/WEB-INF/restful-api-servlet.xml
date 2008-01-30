@@ -1,0 +1,69 @@
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        ">
+
+    <!-- TODO: reenable after xml serializers are ready -->
+    <!--<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>-->
+
+    <bean name="guard" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscGuard">
+        <property name="except" value="docs.*"/>
+        <property name="next" ref="router"/>
+        <property name="authenticationProvider" ref="localAuthenticationProvider"/>
+    </bean>
+
+    <bean name="router" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscBeanNameRouter"/>
+
+    <!-- TODO: figure out a clean way to have both the WADL-backed resources representations of the same underlying resource -->
+
+    <bean name="/docs/psc.wadl"
+          id="wadlResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
+          >
+        <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
+    </bean>
+
+    <bean name="/docs"
+          id="wadlHtmlResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlHtmlResource"
+          >
+        <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
+    </bean>
+
+    <bean name="/docs/psc.xsd"
+          id="xsdResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ClasspathResource"
+          >
+        <property name="mimeType" value="text/xml"/>
+        <property name="resourcePath" value="psc.xsd"/>
+    </bean>
+
+    <bean name="/studies"
+          id="studiesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
+          >
+        <property name="xmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
+        </property>
+    </bean>
+
+    <bean name="/studies/{study-identifier}/template"
+          id="templateResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
+          />
+
+    <!-- AUXILIARIES -->
+  
+    <bean id="resourceFreemarkerConfiguration"
+          class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath">
+            <value>classpath:edu/northwestern/bioinformatics/studycalendar</value>
+        </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="number_format">0</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

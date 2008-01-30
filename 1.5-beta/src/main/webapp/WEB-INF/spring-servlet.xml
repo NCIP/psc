@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+
+<beans  xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:p="http://www.springframework.org/schema/p"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+    <bean id="controllerTools" class="edu.northwestern.bioinformatics.studycalendar.web.ControllerTools"
+        autowire="byType"/>
+
+    <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+        <!-- one of the properties available; the maximum file size in bytes -->
+        <property name="maxUploadSize" value="500000"/>
+    </bean>
+
+    <bean class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ControllerSecureUrlCreator" lazy-init="true">
+        <property name="filterInvocationInterceptor"><ref bean="filterInvocationInterceptor"/></property>
+        <property name="urlResolver"><ref local="urlResolver"/></property>
+    </bean>
+
+    <!-- TODO: renable or remove when the report system is fixed
+    <bean name="/generateReport" id="generateReportController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.GenerateReportController"/>
+      -->
+
+    <bean id="irViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass">
+            <value>org.springframework.web.servlet.view.InternalResourceView</value>
+        </property>
+        <property name="prefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+
+    <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
+        <property name="servletName"><value>pages</value></property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
+        <property name="interceptors">
+            <list>
+                <ref bean="breadcrumbInterceptor"/>
+                <ref bean="sectionInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="breadcrumbInterceptor" autowire="byType"
+        class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbInterceptor"/>
+
+    <bean id="breadcrumbCreator" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbCreator"/>
+
+    <bean id="noCacheTemplate" abstract="true">
+        <property name="cacheSeconds"><value>0</value></property>
+    </bean>
+
+    <bean name="/cal/studyList" id="studyListController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.StudyListController"/>
+
+    <bean name="/cal/template" id="displayTemplateController" autowire="byName" parent="noCacheTemplate"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DisplayTemplateController">
+        <property name="crumb.parent"><ref local="studyListController"/></property>
+    </bean>
+    <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudySegmentController"/>
+
+    <bean name="/cal/template/rename" id="renameController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>renameCommand</value></property>
+    </bean>
+    <bean name="/cal/template/addTo" id="addToController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addToTemplateCommand</value></property>
+    </bean>
+
+    <bean name="/cal/template/delete" id="deleteController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>deleteCommand</value></property>
+    </bean>
+    <bean name="/cal/template/move" id="moveController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>moveCommand</value></property>
+    </bean>
+
+    <bean name="/cal/template/display/*.xml" id="displayTemplateXmlController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.ExportTemplateXmlController"/>
+
+    <bean name="/cal/template/import" id="importTemplateXmlController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportTemplateXmlController"/>
+
+<!--to separate ManagePeriodCommands to a separate commands-->
+    <bean name="/cal/managePeriod/addTo" id="addToPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addToPeriodCommand</value></property>
+    </bean>
+
+    <bean name="/cal/managePeriod/remove" id="deleteFromPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>deleteFromPeriodCommand</value></property>                        
+    </bean>
+
+    <bean name="/cal/managePeriod/update" id="updatePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>updatePeriodCommand</value></property>
+    </bean>
+
+    <bean name="/cal/managePeriod/move" id="moveEventController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>moveEventCommand</value></property>
+    </bean>
+
+
+
+    <bean name="/cal/template/edit.js" id="editJsController"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
+        <property name="viewName"><value>template/edit.js</value></property>
+    </bean>
+
+    <bean name="/cal/newStudy" id="newStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
+
+    <bean name="/dashboard" id="dashboardController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.RedirectToDashboardController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Dashboards</value></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/dashboard/subjectCoordinatorSchedule" id="dashboardSubjectCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ScheduleController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Subject coordinator</value></property>
+                <property name="parent"><ref local="dashboardController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/dashboard/colleagueSubjectCoordinator" id="colleagueSubjectCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.subjectcoordinator.ColleagueSubjectCoordinatorController">
+        <property name="crumb.parent"><ref local="dashboardSubjectCoordinatorController"/></property>
+    </bean>
+
+    <bean name="/dashboard/researchAssociate" id="dashboardResearchAssociateController" autowire="byName"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+       <property name="viewName">
+           <value>redirectToStudyList</value>
+       </property>
+    </bean>
+
+    <bean name="/dashboard/studyCoordinator" id="dashboardStudyCoordinatorController" autowire="byName"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+       <property name="viewName">
+           <value>redirectToStudyList</value>
+       </property>
+    </bean>
+
+    <bean name="/dashboard/studyAdmin" id="dashboardStudyAdminController" autowire="byName"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController" >
+       <property name="viewName">
+           <value>redirectToStudyList</value>
+       </property>
+    </bean>
+
+    <bean name="/dashboard/systemAdmin" id="dashboardSystemAdminController" autowire="byName"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+       <property name="viewName">
+           <value>redirectToAdministration</value>
+       </property>
+    </bean>
+
+    <bean name="/dashboard/siteCoordinator" id="dashboardSiteCoordinatorController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.SiteCoordinatorController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Site coordinator"/>
+                <property name="parent" ref="dashboardController"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByStudy" id="dashboardSiteCoordinatorControllerByStudy" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByStudyController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Assign study to subject coordinators"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/dashboard/siteCoordinator/assignSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerByUser" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectCoordinatorByUserController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Assign subject coordinator to studies"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/dashboard/siteCoordinator/assignSubjectToSubjectCoordinatorByUser" id="dashboardSiteCoordinatorControllerReassignSubjects" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.AssignSubjectToSubjectCoordinatorByUserController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name" value="Change ownership of subject schedules"/>
+                <property name="parent" ref="dashboardSiteCoordinatorController"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/cal/newPeriod" id="newPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewPeriodController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/editPeriod" id="editPeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPeriodController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/deletePeriod" id="deletePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeletePeriodController">
+    </bean>
+
+    <bean name="/cal/deleteStudy" id="deleteStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteStudyController">
+    </bean>
+
+    <bean name="/newActivity" id="newActivityController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New Activity</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSubjectController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New Subject</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/cal/assignSubject" id="assignSubjectController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSubjectController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/cal/template/release" id="releaseAmendmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ReleaseAmendmentController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/cal/template/approve" id="approveAmendmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.delta.ApproveAmendmentsController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/cal/template/amendments" id="viewAmendmentsController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.delta.ViewAmendmentsController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/cal/template/population" id="editPopulationController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPopulationController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+    <bean name="/cal/template/population/suggest" id="suggestPopulationAbbreviationController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.SuggestPopulationAbbreviationController"/>
+
+    <bean name="/cal/managePeriod" id="managePeriodController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.ManagePeriodEventsController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+
+    <bean name="/cal/schedule" id="displayScheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayScheduleController">
+        <property name="crumb.parent"><ref local="displayTemplateController"/></property>
+    </bean>
+    <bean name="/cal/schedule/select" id="selectScheduledStudySegmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ReturnSingleObjectController">
+        <property name="parameterName"><value>studySegment</value></property>
+        <property name="viewName"><value>schedule/ajax/selectScheduledStudySegment</value></property>
+        <property name="dao"><ref bean="scheduledStudySegmentDao"/></property>
+    </bean>
+    <bean name="/cal/schedule/nextStudySegment" id="scheduleNextStudySegmentController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleNextStudySegmentController"/>
+    <bean name="/cal/schedule/batch" id="batchRescheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.BatchRescheduleController"/>
+    <bean name="/cal/schedule/dismissAe" id="dismissAeController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DismissAeController"/>
+
+    <bean name="/cal/schedule/amend" id="changeAmendmentController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangeAmendmentController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
+    <bean name="/cal/schedule/populations" id="changePopulationsController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ChangePopulationsController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
+    <bean name="/cal/schedule/rescheduleArms" id="eventsRescheduleController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.schedule.EventsRescheduleController">
+    </bean>
+
+    <bean name="/cal/schedule/display/*.ics" id="displayICSCalendarController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.schedule.DisplayICSCalendarController"/>
+
+    <bean name="/cal/scheduleActivity" id="scheduleActivityController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleActivityController">
+        <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
+    <bean name="/cal/assignSite" id="assignSiteController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.AssignSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Assign Site</value></property>
+                <property name="parent"><ref local="displayTemplateController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- TODO: reenable when report system works better
+    <bean name="/report/builder" id="reportBuilderController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Report Builder</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
+    -->
+
+    <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
+
+    <bean name="/cal/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Schedule Reconsent</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
+
+
+    <bean name="/cal/amendment" id="amendmentLoginController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.delta.CreateAmendmentController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>Amendment</value></property>
+                 <property name="parent"><ref local="studyListController"/></property>
+             </bean>
+         </property>
+    </bean>
+
+    <!-- TODO: renable or remove when the report system is fixed
+    <bean name="/report/builder/selectSites" id="reportBuilderSelectSitesController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSitesController"/>
+    <bean name="/report/builder/selectStudies" id="reportBuilderSelectStudiesController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectStudiesController"/>
+    <bean name="/report/builder/selectSubjects" id="reportBuilderSelectSubjectsController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectSubjectsController"/>
+    <bean name="/report/builder/selectDateRange" id="reportBuilderSelectDateRangeController" autowire="byName"
+      class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ReportBuilderSelectDateRangeController"/>
+    <bean name="/simpleReport" id="simpleReportController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.reporting.SimpleReportController"/>
+     -->
+
+    <bean name="/admin" id="administrationController" autowire="byType"
+        class="edu.northwestern.bioinformatics.studycalendar.web.AdministrationController">
+        <property name="viewName"><value>administration</value></property>
+    </bean>
+
+    <bean name="/admin/configure" id="configurationController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.admin.ConfigurationController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Configuration</value></property>
+                <property name="parent"><ref local="administrationController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/admin/manage/createUser" id="createUserController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
+        <property name="crumb.parent"><ref local="listUsersController"/></property>
+    </bean>
+
+    <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
+           class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
+           <property name="crumb">
+             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                 <property name="name"><value>List Users</value></property>
+                 <property name="parent"><ref local="administrationController"/></property>
+             </bean>
+         </property>
+    </bean>
+
+    <bean name="/admin/manage/sites" id="manageSitesController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ManageSitesController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Manage sites</value></property>
+                <property name="parent"><ref local="administrationController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/admin/manage/newSite" id="newSiteController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.NewSiteController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>New site</value></property>
+                <property name="parent"><ref local="manageSitesController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/admin/manage/holidays" id="holidaysController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.HolidaysController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Manage Holidays</value></property>
+                <property name="parent"><ref local="manageSitesController"/></property>
+            </bean>
+        </property>
+     </bean>
+
+
+    <bean name="/api" id="apiController" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ApiController"/>
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename"><value>messages</value></property>
+    </bean>
+
+    <bean name="/cal/takeSubjectOffStudy" id="subjectOffStudyController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.SubjectOffStudyController">
+         <property name="crumb.parent"><ref local="displayScheduleController"/></property>
+    </bean>
+
+    <bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
+        <property name="crumb">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
+                <property name="name"><value>Import Activities</value></property>
+                <property name="parent"><ref local="studyListController"/></property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean name="/fragment/search/activities" id="searchActivitiesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
+
+
+    <bean name="/cal/search/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
+
+
+    <bean name="/cal/search/searchStudies" id="searchStudiesController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
+
+    <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
+          abstract="true">
+        <property name="urlResolver">
+            <ref bean="urlResolver"/>
+        </property>
+    </bean>
+
+    <bean id="sectionInterceptor" class="gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor">
+        <property name="sections">
+            <list>
+                <bean parent="sectionTemplate" >
+                    <property name="displayName"><value>Dashboard</value></property>
+                    <property name="mainController"><value>dashboardController</value></property>
+                    <property name="pathMapping"><value>/dashboard/**</value></property>
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Subject Coordinator</value></property>
+                                <property name="linkName"><value>dashboardSubjectCoordinatorController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Study Coordinator</value></property>
+                                <property name="linkName"><value>dashboardStudyCoordinatorController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Site Coordinator</value></property>
+                                <property name="linkName"><value>dashboardSiteCoordinatorController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Study Admin</value></property>
+                                <property name="linkName"><value>dashboardStudyAdminController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Research Associate</value></property>
+                                <property name="linkName"><value>dashboardResearchAssociateController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>System Admin</value></property>
+                                <property name="linkName"><value>dashboardSystemAdminController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+
+
+                <bean parent="sectionTemplate" >
+                    <property name="displayName"><value>Calendars</value></property>
+                    <property name="mainController"><value>studyListController</value></property>
+                    <property name="pathMapping"><value>/cal/**</value></property>
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Existing templates</value></property>
+                                <property name="linkName"><value>studyListController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>New template</value></property>
+                                <property name="linkName"><value>newStudyController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>                    
+                </bean>
+                <!-- TODO: reenable when report builder works better
+                <bean parent="sectionTemplate">
+                    <property name="displayName"><value>Report</value></property>
+                    <property name="mainController"><value>reportBuilderController</value></property>
+                    <property name="pathMapping"><value>/report/**</value></property>
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Report</value></property>
+                                <property name="linkName"><value>reportBuilderController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                -->
+                <bean parent="sectionTemplate">
+                    <property name="displayName"><value>Administration</value></property>
+                    <property name="mainController"><value>administrationController</value></property>
+                    <property name="pathMapping"><value>/admin/**</value></property>
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Manage sites</value></property>
+                                <property name="linkName"><value>manageSitesController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Manage users</value></property>
+                                <property name="linkName"><value>listUsersController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Configure PSC</value></property>
+                                <property name="linkName"><value>configurationController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+
+        </property>
+</bean>
+</beans>

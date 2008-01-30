@@ -1,0 +1,505 @@
+package edu.northwestern.bioinformatics.studycalendar.service;
+
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import gov.nih.nci.security.UserProvisioningManager;
+import gov.nih.nci.security.authorization.domainobjects.*;
+import gov.nih.nci.security.authorization.jaas.AccessPermission;
+import gov.nih.nci.security.dao.GroupSearchCriteria;
+import gov.nih.nci.security.dao.SearchCriteria;
+import gov.nih.nci.security.exceptions.CSException;
+import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
+import gov.nih.nci.security.exceptions.CSTransactionException;
+import org.easymock.IArgumentMatcher;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.reportMatcher;
+import org.easymock.internal.matchers.ArrayEquals;
+
+import javax.security.auth.Subject;
+import java.security.Principal;
+import java.util.*;
+import static java.util.Arrays.asList;
+
+public class UserServiceTest extends StudyCalendarTestCase {
+    private UserDao userDao;
+    private UserProvisioningManager userProvisioningManager;
+    private UserProvisioningManagerStub userProvisioningManagerStub;
+    private UserService service;
+    private List<Site> sites;
+    private User user0, user1, user2;
+    private Site site0, site1;
+    private UserRole userRole0, userRole1, userRole2;
+    private List<User> users;
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+        userDao = registerMockFor(UserDao.class);
+        userProvisioningManager = registerMockFor(UserProvisioningManager.class);
+        userProvisioningManagerStub = new UserProvisioningManagerStub();
+
+        service = new UserService();
+        service.setUserDao(userDao);
+        service.setUserProvisioningManager(userProvisioningManager);
+        
+        user0 = createNamedInstance("Adam", User.class);
+        user1 = createNamedInstance("Steve", User.class);
+        user2 = createNamedInstance("Site Coordinator", User.class);
+        users = asList(user0, user1, user2);
+
+        site0 = createNamedInstance("Northwestern", Site.class);
+        site1 = createNamedInstance("Mayo Clinic", Site.class);
+        sites = asList(site0, site1);
+
+        userRole0 = createUserRole(user0, Role.SUBJECT_COORDINATOR, site0, site1);
+        userRole1 = createUserRole(user1, Role.SUBJECT_COORDINATOR, site1);
+        userRole2 = createUserRole(user2, Role.SITE_COORDINATOR, site0);
+    }
+
+    public void testSaveNewUser() throws Exception {
+        service.setUserProvisioningManager(userProvisioningManagerStub);
+        User expectedUser = createUser(null, "john", null, true, Role.STUDY_ADMIN, Role.STUDY_COORDINATOR);
+
+        userDao.save(expectedUser);
+        replayMocks();
+
+        User actual = service.saveUser(expectedUser, "flan");
+        verifyMocks();
+
+        assertSame("Input user not returned", expectedUser, actual);
+        assertEquals("CSM ID not propagated to PSC user", (Long) UserProvisioningManagerStub.USER_ID,
+            actual.getCsmUserId());
+        assertEquals("CSM user not given correct login name", expectedUser.getName(),
+            userProvisioningManagerStub.getCreatedUser().getLoginName());
+        assertEquals("CSM user not given correct password", "flan",
+            userProvisioningManagerStub.getCreatedUser().getPassword());
+    }
+
+    public void testGetSubjectCoordinatorsForSites() throws Exception {
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
+        replayMocks();
+        List<User> actualSubjectCoordinators = service.getSubjectCoordinatorsForSites(asList(site0));
+        verifyMocks();
+        assertEquals("Wrong number of users", 1, actualSubjectCoordinators.size());
+        assertEquals("Wrong user", user0.getName(), actualSubjectCoordinators.get(0).getName());
+    }
+
+    public void testGetAssignableUsers() throws Exception {
+        expect(userDao.getAllSubjectCoordinators()).andReturn(asList(user0, user1));
+        replayMocks();
+
+        List<User> actualAssignableUsers = service.getSiteCoordinatorsAssignableUsers(user2);
+        verifyMocks();
+
+        assertEquals("Wrong Number of Users", 1, actualAssignableUsers.size());
+    }
+
+    public static GroupSearchCriteria eqCsmGroupSearchCriteria(GroupSearchCriteria group) {
+        reportMatcher(new CsmGroupSearchCriteriaMatcher(group));
+        return null;
+    }
+
+    private static class CsmGroupSearchCriteriaMatcher implements IArgumentMatcher {
+        private GroupSearchCriteria expectedGroup;
+
+        public CsmGroupSearchCriteriaMatcher(GroupSearchCriteria expectedGroup) {
+            this.expectedGroup = expectedGroup;
+        }
+
+        public boolean matches(Object object) {
+            if(!(object instanceof GroupSearchCriteria)) {
+                return false;
+            }
+
+            GroupSearchCriteria actual = (GroupSearchCriteria) object;
+
+            if (expectedGroup.getMessage() != null ? !expectedGroup.getMessage().equals(actual.getMessage()) : actual.getMessage() != null)
+                return false;
+
+            return true;
+        }
+
+        public void appendTo(StringBuffer sb) {
+            sb.append("Group with message =").append(expectedGroup.getMessage());
+        }
+    }
+
+    public static <T> T unsortedAryEq(T t) {
+        reportMatcher(new UnsortedArrayEquals(t));
+        return null;
+    }
+
+    private static class UnsortedArrayEquals extends ArrayEquals {
+        public UnsortedArrayEquals(Object expected) {
+            super(expected);
+            Arrays.sort((Object[])expected);
+        }
+
+        @Override
+        public boolean matches(Object actual) {
+            Arrays.sort((Object[])actual);
+            return super.matches(actual);
+        }
+    }
+
+    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    private class UserProvisioningManagerStub implements UserProvisioningManager {
+        public static final long USER_ID = 100L;
+        private gov.nih.nci.security.authorization.domainobjects.User createdUser;
+
+        public gov.nih.nci.security.authorization.domainobjects.User getCreatedUser() {
+            return createdUser;
+        }
+
+        ////// IMPLEMENTATION
+
+        public void createUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
+            createdUser = user;
+            user.setUserId(USER_ID);
+        }
+
+        public Application getApplicationById(String string) throws CSObjectNotFoundException {
+            return new Application();
+        }
+
+        public void assignGroupsToUser(String string, String[] strings) throws CSTransactionException {}
+
+        ////// All remaining methods are unsupported
+
+        public void assignUsersToGroup(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getUsers(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeOwnerForProtectionElement(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermissionForGroup(String string, String string1, String string2, String string3) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermissionForGroup(String string, String string1, String string2) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getAccessibleGroups(String string, String string1) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getAccessibleGroups(String string, String string1, String string2) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeOwnerForProtectionElement(String string, String string1, String string2) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setEncryptionEnabled(boolean b) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Application getApplication(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getObjects(SearchCriteria searchCriteria) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createProtectionGroup(ProtectionGroup protectionGroup) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyProtectionGroup(ProtectionGroup protectionGroup) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeProtectionGroup(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeProtectionElement(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignUserRoleToProtectionGroup(String string, String[] strings, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeUserRoleFromProtectionGroup(String string, String string1, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createRole(gov.nih.nci.security.authorization.domainobjects.Role role) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyRole(gov.nih.nci.security.authorization.domainobjects.Role role) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeRole(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createPrivilege(Privilege privilege) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyPrivilege(Privilege privilege) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removePrivilege(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignPrivilegesToRole(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createGroup(Group group) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeGroup(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyGroup(Group group) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignUserToGroup(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeUserFromGroup(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignGroupRoleToProtectionGroup(String string, String string1, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Privilege getPrivilegeById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeUserFromProtectionGroup(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeGroupRoleFromProtectionGroup(String string, String string1, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeGroupFromProtectionGroup(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public gov.nih.nci.security.authorization.domainobjects.Role getRoleById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getPrivileges(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public ProtectionGroup getProtectionGroupById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignProtectionElements(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeProtectionElementsFromProtectionGroup(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionGroupRoleContextForUser(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionGroupRoleContextForGroup(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionElementPrivilegeContextForUser(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionElementPrivilegeContextForGroup(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Group getGroupById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyProtectionElement(ProtectionElement protectionElement) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public gov.nih.nci.security.authorization.domainobjects.User getUserById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyUser(gov.nih.nci.security.authorization.domainobjects.User user) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeUser(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getGroups(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionElements(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignToProtectionGroups(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignParentProtectionGroup(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createApplication(Application application) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void modifyApplication(Application application) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void removeApplication(String string) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignOwners(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getOwners(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public gov.nih.nci.security.authorization.domainobjects.User getUser(String string) {
+            throw new UnsupportedOperationException();
+        }
+
+        public ApplicationContext getApplicationContext() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignProtectionElement(String string, String string1, String string2) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setOwnerForProtectionElement(String string, String[] strings) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void deAssignProtectionElements(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void createProtectionElement(ProtectionElement protectionElement) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermission(AccessPermission accessPermission, Subject subject) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermission(AccessPermission accessPermission, String string) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermission(String string, String string1, String string2, String string3) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkPermission(String string, String string1, String string2) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Principal[] getPrincipals(String string) {
+            throw new UnsupportedOperationException();
+        }
+
+        public ProtectionElement getProtectionElement(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public ProtectionElement getProtectionElementById(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void assignProtectionElement(String string, String string1) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setOwnerForProtectionElement(String string, String string1, String string2) throws CSTransactionException {
+            throw new UnsupportedOperationException();
+        }
+
+        public void initialize(String string) {
+            throw new UnsupportedOperationException();
+        }
+
+        public List getProtectionGroups() {
+            throw new UnsupportedOperationException();
+        }
+
+        public ProtectionElement getProtectionElement(String string, String string1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Object secureObject(String string, Object object) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Collection secureCollection(String string, Collection collection) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Set getProtectionGroups(String string) throws CSObjectNotFoundException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Collection getPrivilegeMap(String string, Collection collection) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public Object secureUpdate(String string, Object object, Object object1) throws CSException {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean checkOwnership(String string, String string1) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setAuditUserInfo(String string, String string1) {
+            throw new UnsupportedOperationException();
+        }
+
+    }
+
+}

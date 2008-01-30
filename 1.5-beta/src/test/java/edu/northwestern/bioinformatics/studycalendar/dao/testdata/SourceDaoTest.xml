@@ -1,0 +1,29 @@
+<dataset>
+    <SOURCES
+        id="-1"
+        version="0"
+        name="ICD-9"/>
+
+    <SOURCES
+        id="-2"
+        version="0"
+        name="Empty"/>
+
+    <ACTIVITIES
+        id="-100"
+        version="0"
+        name="Screening Activity"
+        description="Description of screening activity"
+        activity_type_id="2"
+        code="SA"
+        source_id="-1"/>
+
+    <ACTIVITIES
+        id="-99"
+        version="0"
+        name="Administer Drug Z"
+        description="Description of treatment activity"
+        activity_type_id="3"
+        code="ADZ"
+        source_id="-1"/>
+</dataset>

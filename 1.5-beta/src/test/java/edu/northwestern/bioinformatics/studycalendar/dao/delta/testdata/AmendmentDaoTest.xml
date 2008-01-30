@@ -1,0 +1,62 @@
+<dataset>
+    <!-- with name and date -->
+    <AMENDMENTS
+        id="-100"
+        name="abc"
+        amendment_date="2006-02-01"
+        mandatory="1"
+        />
+    <!-- same date, one with name & one without -->
+    <AMENDMENTS
+        id="-200"
+        name="def"
+        amendment_date="2008-05-17"
+        previous_amendment='-100'
+        mandatory="0"
+        />
+    <AMENDMENTS
+        id="-220"
+        amendment_date="2008-05-17"
+        previous_amendment="-200"
+        mandatory="0"
+        />
+    <!-- no name -->
+    <AMENDMENTS
+        id="-221"
+        amendment_date="2008-07-11"
+        previous_amendment="-220"
+        mandatory="0"
+        />
+    <!-- same date, different names -->
+    <AMENDMENTS
+        id="-222"
+        amendment_date="2008-11-23"
+        name="pheasant"
+        previous_amendment="-221"
+        mandatory="0"
+        />
+    <AMENDMENTS
+        id="-223"
+        name="turkey"
+        amendment_date="2008-11-23"
+        previous_amendment="-222"
+        mandatory="0"
+        />
+
+    <DELTAS
+        id="-102"
+        node_id="-22"
+        node_type="cal"
+        amendment_id="-100"
+        />
+    <STUDIES
+        id="-20"
+        assigned_identifier="You need it"
+        long_title="You need it"    
+        amendment_id="-100"
+        />
+    <PLANNED_CALENDARS
+        id="-22"
+        study_id="-20"
+        />
+</dataset>
