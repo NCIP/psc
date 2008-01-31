@@ -461,10 +461,17 @@
 
                     <div class="row">
                         <div class="label"><label for="start-date-input">Start date</label></div>
-                        <div class="value"><input type="text" name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" size="10"/></div>
+                        <div class="value"><input type="text"  name="startDate" id="start-date-input" value="<tags:formatDate value="${dates['PER_PROTOCOL']}" />" class="date" size="10"/>
+                            <a href="#" id="start-date-input-calbutton">
+                                <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
+                                     height="16" border="0" align="absmiddle"/>
+                            </a>
+
+                        </div>
                     </div>
                     <div class="alignStudySegmentButtonInTheMiddle">
-                        <tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" style="margin:auto;" value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/>
+                        <tags:activityIndicator id="next-studySegment-indicator"/><input type="submit" style="margin:auto;"
+                                                                                         value="Schedule next study segment" disabled="disabled" id="next-studySegment-button"/>
                     </div>
                 </div>
                 </form>
@@ -478,7 +485,16 @@
                     <laf:division>
                             Shift the scheduled or conditional activities by
                                 <input id="toDate" size="5" path="toDate" value="7"/>
-                            day(s) as of date: <input id="currentDate" path="currentDate" size="15" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>"/>. Reason: <input type="text" id="reason" name="reason" value="" size="50"/>
+                            day(s) as of date:
+                        <input id="currentDate" path="currentDate" size="15" value="<tags:formatDate value="${dates['PER_PROTOCOL']}"/>" class="date"/>
+
+                        <a href="#" id="currentDate-calbutton">
+                            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
+                                 height="16" border="0" align="absmiddle"/>
+                        </a>
+
+
+                        . Reason: <input type="text" id="reason" name="reason" value="" size="50"/>
                         <input type="submit" value="Submit" onclick="ajaxform();" />
                     </laf:division>
                 </div>
