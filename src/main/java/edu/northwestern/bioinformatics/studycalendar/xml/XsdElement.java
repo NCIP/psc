@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
-import org.dom4j.DocumentHelper;
 
 /**
  * Enum for the names of elements defined in psc.xsd.
@@ -12,7 +12,8 @@ import org.dom4j.DocumentHelper;
 public enum XsdElement {
     ACTIVITY,
     ACTIVITY_SOURCES("sources"),
-    ACTIVITY_SOURCE("source")
+    ACTIVITY_SOURCE("source"),
+    REGISTRATION
     ;
 
     private String elementName;

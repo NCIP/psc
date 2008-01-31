@@ -17,7 +17,10 @@ public enum XsdAttribute {
     ACTIVITY_TYPE("type-id"),
     ACTIVITY_SOURCE("source"),
 
-    ACTIVITY_SOURCE_NAME("name")
+    ACTIVITY_SOURCE_NAME("name"),
+
+    REGISTRATION_FIRST_STUDY_SEGMENT("first-study-segment"),
+    REGISTRATION_DATE("date")
     ;
 
     private String attributeName;
