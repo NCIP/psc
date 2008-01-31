@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Transactional
-public class ImportTemplateService {
+public class    ImportTemplateService {
     private StudyXmlSerializer studyXmlSerializer;
     private ActivityDao activityDao;
     private SourceDao sourceDao;
@@ -36,7 +36,9 @@ public class ImportTemplateService {
     protected void resolveExistingActivitiesAndSources(Study study) {
         List<PlannedActivity> all = new LinkedList<PlannedActivity>();
 
-        for (Amendment amendment : study.getAmendmentsList()) {
+        List<Amendment> reverse = new LinkedList<Amendment>(study.getAmendmentsList());
+        Collections.reverse(reverse);
+        for (Amendment amendment : reverse) {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
                     if (change.getAction() == ChangeAction.ADD) {
