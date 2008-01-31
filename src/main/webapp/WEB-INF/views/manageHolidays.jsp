@@ -268,6 +268,15 @@ Event.observe(window, "load", selectedHoliday)
     <form:form name="nonOcurringHoliday" method="post">
         <h5 id="nonRecurringDateText">Please enter month, day and year in the format mm/dd/yyyy</h5>
         <form:input path="holidayDate" id="nonOcurringDate" size="25"/>
+
+        <div class="label">
+            <form:label path="holidayDate" id="nonOcurringDate">Start date of first epoch</form:label>
+        </div>
+        <div class="value">
+            <laf:dateInput path="startDate"/>
+        </div>
+
+
         <h5 id="nonRecurringDescriptionText">Please enter the holiday Description</h5>
         <form:input path="holidayDescription" id="nonOcurringDescription" size="25" />
         <br> <br>

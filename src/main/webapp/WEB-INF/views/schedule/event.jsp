@@ -120,7 +120,7 @@
                             <form:options items="${modes}" itemValue="id" itemLabel="name"/>
                         </form:select>
                     </label>
-                    <label id="new-date-input-group">Date <form:input path="newDate"/></label>
+                    <label id="new-date-input-group">Date <laf:dateInput path="newDate"/></label>
                     <label id="move_date_by_new-date-input-group"/>
                     <label id="new-reason-input-group">Why? <form:input path="newReason"/></label>
                 </div>

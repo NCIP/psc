@@ -45,8 +45,9 @@
                     (mm/dd/yyyy)
                 </div>
                 <div class="value">
-                    <form:input path="startDate"/>
+                    <laf:dateInput path="startDate"/>
                 </div>
+
             </div>
             <div class="row" id="buttons">
                 <div class="label">&nbsp;</div>

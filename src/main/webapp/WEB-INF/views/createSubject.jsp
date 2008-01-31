@@ -50,7 +50,7 @@
                     <form:label path="dateOfBirth">Date of Birth (mm/dd/yyyy)</form:label>
                 </div>
                 <div class="value">
-                    <form:input path="dateOfBirth"/>
+                    <laf:dateInput path="dateOfBirth"/>
                 </div>
             </div>
             <div class="row">

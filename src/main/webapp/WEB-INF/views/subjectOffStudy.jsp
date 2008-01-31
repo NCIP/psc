@@ -22,7 +22,7 @@
                     Off Study Date: (mm/dd/yyyy)
                 </div>
                 <div class="value">
-                    <form:input path="expectedEndDate"/>
+                    <laf:dateInput path="expectedEndDate"/>
                 </div>
             </div>
             <div class="row">
