@@ -199,7 +199,7 @@
     </bean>
 
     <bean id="configuration" parent="daoTemplate"
-          class="edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration"/>
+          class="edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration"/>
 
     <bean id="daoFinder" class="edu.northwestern.bioinformatics.studycalendar.dao.SpringDaoFinder"/>
 

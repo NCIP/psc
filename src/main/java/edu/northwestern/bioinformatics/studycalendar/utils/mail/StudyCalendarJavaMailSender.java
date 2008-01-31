@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
 
 /**
  * @author Rhett Sutphin

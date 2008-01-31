@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.web.admin;
 
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.MockConfiguration;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
 
 import java.util.List;
 

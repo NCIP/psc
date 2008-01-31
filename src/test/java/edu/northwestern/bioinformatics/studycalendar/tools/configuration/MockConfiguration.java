@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
+package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 
@@ -17,10 +17,12 @@ public class MockConfiguration extends Configuration {
         this.configuration = new HashMap<String, Object>();
     }
 
+    @Override
     public <V> V get(ConfigurationProperty<V> property) {
         return (V) configuration.get(property.getKey());
     }
 
+    @Override
     public <V> void set(ConfigurationProperty<V> property, V value) {
         configuration.put(property.getKey(), value);
     }

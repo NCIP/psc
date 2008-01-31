@@ -1,8 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.MockConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mock.web.MockServletContext;
 

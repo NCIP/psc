@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
+package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.Transactional;

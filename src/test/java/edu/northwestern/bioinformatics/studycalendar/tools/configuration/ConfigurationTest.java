@@ -1,7 +1,7 @@
-package edu.northwestern.bioinformatics.studycalendar.utils.configuration;
+package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
-import static edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration.*;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
 
 import java.util.List;
 import java.util.Arrays;

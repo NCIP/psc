@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.configuration.Configuration;
+import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
