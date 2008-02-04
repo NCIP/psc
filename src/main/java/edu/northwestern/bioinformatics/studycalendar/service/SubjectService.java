@@ -459,6 +459,25 @@ public class SubjectService {
 
     }
 
+    @SuppressWarnings("unchecked")
+    public List<Subject> findSubjectByFirstNameLastNameAndDateOfBirth(final String firstName, final String lastName, Date dateOfBirth) {
+        List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(firstName, lastName, dateOfBirth);
+        if (subjects != null) {
+            for (Subject subject : subjects) {
+                Hibernate.initialize(subject.getAssignments());
+                List<StudySubjectAssignment> studySubjectAssignments = subject.getAssignments();
+                for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
+                    Hibernate.initialize(studySubjectAssignment.getScheduledCalendar());
+                    if (studySubjectAssignment.getScheduledCalendar() != null) {
+                        Hibernate.initialize(studySubjectAssignment.getScheduledCalendar().getScheduledStudySegments());
+                    }
+                }
+            }
+        }
+        return subjects;
+    }
+
+
     private static class DatabaseEventOrderComparator implements Comparator<ScheduledActivity> {
         public static final Comparator<? super ScheduledActivity> INSTANCE = new DatabaseEventOrderComparator();
 

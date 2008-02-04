@@ -13,6 +13,8 @@ import static org.easymock.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.validation.Errors;
+import org.springframework.validation.MapBindingResult;
+import org.springframework.validation.BindException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -40,6 +42,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
     private User user;
     private Site seattle, tacoma, olympia;
     private StudySite seattleSS, tacomaSS, olympiaSS;
+//    private Errors errors;
 
     @Override
     protected void setUp() throws Exception {
@@ -61,6 +64,9 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         controller.setStudySegmentDao(studySegmentDao);
         controller.setPopulationDao(populationDao);
         controller.setControllerTools(controllerTools);
+
+//        // Stop controller from calling validation
+        controller.setValidateOnBinding(false);
 
         commandForRefdata = new AssignSubjectCommand();
 
@@ -248,6 +254,7 @@ public class AssignSubjectControllerTest extends ControllerTestCase {
         public MockableCommandController(AssignSubjectCommand command) {
             this.command = command;
             setStudySegmentDao(studySegmentDao);
+            setValidateOnBinding(false);
         }
 
         @Override

@@ -38,36 +38,68 @@
             <c:url value="/pages/cal/assignSubject" var="action"/>
             <form:form method="post" action="${action}">
                 <form:errors path="*"/>
+
                 <input type="hidden" name="study" value="${study.id}"/>
                 <div class="row">
                     <div class="label">
-                        <form:label path="subject">Subject</form:label>
+                        <form:label path="site">Site</form:label>
                     </div>
                     <div class="value">
-                        <form:select path="subject">
-                            <form:options items="${subjects}" itemLabel="fullName" itemValue="id"/>
-                        </form:select>
-                        <a href="<c:url value="/pages/cal/createSubject?id=${study.id}"/>">Create new subject</a>
+                        <c:if test="${fn:length(sites) gt 1}">
+                            <form:select path="site">
+                                <form:options items="${sites}"/>
+                            </form:select>
+                        </c:if>
+                        <c:if test="${fn:length(sites) eq 1}">
+                            <c:forEach items="${sites}" var="pair">
+                                ${pair.value}
+                                <input type="hidden" name="site" value="${pair.key.id}"/>
+                            </c:forEach>
+                        </c:if>
                     </div>
                 </div>
-                    <div class="row">
-                        <div class="label">
-                            <form:label path="site">Site</form:label>
-                        </div>
-                        <div class="value">
-                            <c:if test="${fn:length(sites) gt 1}">
-                                <form:select path="site">
-                                    <form:options items="${sites}"/>
-                                </form:select>
-                            </c:if>
-                            <c:if test="${fn:length(sites) eq 1}">
-                                <c:forEach items="${sites}" var="pair">
-                                    ${pair.value}
-                                    <input type="hidden" name="site" value="${pair.key.id}"/>
-                                </c:forEach>
-                            </c:if>
-                        </div>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="firstName">First Name</form:label>
                     </div>
+                    <div class="value">
+                        <form:input path="firstName"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="lastName">Last Name</form:label>
+                    </div>
+                    <div class="value">
+                        <form:input path="lastName"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="dateOfBirth">Date of Birth (mm/dd/yyyy)</form:label>
+                    </div>
+                    <div class="value">
+                        <form:input path="dateOfBirth"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="gender">Gender</form:label>
+                    </div>
+                    <div class="value">
+                        <form:select path="gender">
+                            <form:options items="${genders}"/>
+                        </form:select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="label">
+                        <form:label path="personId">Person Id</form:label>
+                    </div>
+                    <div class="value">
+                        <form:input path="personId"/>
+                    </div>
+                </div>
 
                 <c:if test="${not empty studySegments}">
                     <div class="row">

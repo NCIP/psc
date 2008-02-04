@@ -5,8 +5,11 @@ import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
@@ -43,16 +46,19 @@ public class BreadcrumbContext {
     public static BreadcrumbContext create(DomainObject basis, TemplateService templateService) {
         BreadcrumbContext context = new BreadcrumbContext(templateService);
         if (basis != null) {
-            StringBuilder propertyName = new StringBuilder(basis.getClass().getSimpleName());
-            propertyName.setCharAt(0, Character.toLowerCase(propertyName.charAt(0)));
-            try {
-                PropertyUtils.setProperty(context, propertyName.toString(), basis);
-            } catch (NoSuchMethodException e) {
-                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
-            } catch (IllegalAccessException e) {
-                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
-            } catch (InvocationTargetException e) {
-                throw new StudyCalendarSystemException("No setter for " + propertyName.toString() + " of type " + basis.getClass().getName(), e);
+            Method[] methods = BreadcrumbContext.class.getMethods();
+            for (Method method : methods) {
+                if (method.getParameterTypes().length == 1) {
+                    if (method.getParameterTypes()[0].isAssignableFrom(basis.getClass())) {
+                        try {
+                            method.invoke(context, basis);
+                        } catch (IllegalAccessException e) {
+                            throw new StudyCalendarSystemException("Can not invoke method with context " + context.toString() + " with parametere " + basis.getClass().getName(), e);
+                        } catch (InvocationTargetException e) {
+                            throw new StudyCalendarSystemException("Can not invoke method with context " + context.toString() + " with parametere " + basis.getClass().getName(), e);
+                        }
+                    }
+                }
             }
         }
         return context;

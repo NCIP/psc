@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Date;
 
 public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
     @Override
@@ -36,6 +37,18 @@ public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
             return subject;
         }
         String message = "No subject exist with the given mrn :" + mrn;
+        logger.info(message);
+
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Subject> findSubjectByFirstNameLastNameAndDoB(final String firstName, final String lastName, Date dateOfBirth) {
+        List<Subject> results = getHibernateTemplate().find("from Subject s left join fetch s.assignments where s.firstName= ? and s.lastName= ? and s.dateOfBirth= ?", new Object[] {firstName, lastName, dateOfBirth});
+        if (!results.isEmpty()) {
+            return results;
+        }
+        String message = "No subject exist with the given firstName : " + firstName + " , lastName : " + lastName + " ,dateOfBirth : " + dateOfBirth;
         logger.info(message);
 
         return null;

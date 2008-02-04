@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -47,9 +48,12 @@ public class AssignSubjectController extends PscSimpleFormController {
 
     public AssignSubjectController() {
         setCommandClass(AssignSubjectCommand.class);
+        setSuccessView("redirectToSchedule");
         setFormView("assignSubject");
+
         setBindOnNewForm(true);
         setCrumb(new Crumb());
+        setValidator(new ValidatableValidator());
     }
 
     @Override
@@ -84,6 +88,12 @@ public class AssignSubjectController extends PscSimpleFormController {
             refdata.put("studySegments", Collections.emptyList());
         }
         refdata.put("populations", study.getPopulations());
+
+        Map<String, String> genders = new HashMap<String, String>();
+        genders.put("Female", "Female");
+        genders.put("Male", "Male");
+        refdata.put("genders", genders);  
+        refdata.put("action", "New");
         return refdata;
     }
 
@@ -94,13 +104,14 @@ public class AssignSubjectController extends PscSimpleFormController {
         User user = userDao.getByName(userName);
         command.setSubjectCoordinator(user);
         StudySubjectAssignment assignment = command.assignSubject();
-        return new ModelAndView("redirectToSchedule", "assignment", assignment.getId());
+        return new ModelAndView(getSuccessView(), "assignment", assignment.getId());
     }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         AssignSubjectCommand command = new AssignSubjectCommand();
         command.setSubjectService(subjectService);
+        command.setSubjectDao(subjectDao);
         return command;
     }
 
