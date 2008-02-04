@@ -14,15 +14,15 @@ public class UriTemplateParametersTest extends StudyCalendarTestCase {
 
     public void testExtractFromRequest() throws Exception {
         Request request = new Request();
-        request.getAttributes().put(SOURCE_NAME.attributeName(), "Ear");
+        request.getAttributes().put(ACTIVITY_SOURCE_NAME.attributeName(), "Ear");
 
-        assertEquals("Ear", SOURCE_NAME.extractFrom(request));
+        assertEquals("Ear", ACTIVITY_SOURCE_NAME.extractFrom(request));
     }
     
     public void testExtractFromRequestUrlDecodes() throws Exception {
         Request request = new Request();
-        request.getAttributes().put(SOURCE_NAME.attributeName(), "Sinus%20cavity");
+        request.getAttributes().put(ACTIVITY_SOURCE_NAME.attributeName(), "Sinus%20cavity");
 
-        assertEquals("Sinus cavity", SOURCE_NAME.extractFrom(request));
+        assertEquals("Sinus cavity", ACTIVITY_SOURCE_NAME.extractFrom(request));
     }
 }

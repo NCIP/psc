@@ -26,7 +26,7 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
 
     @Override
     protected Source loadRequestedObject(Request request) {
-        String sourceName = UriTemplateParameters.SOURCE_NAME.extractFrom(request);
+        String sourceName = UriTemplateParameters.ACTIVITY_SOURCE_NAME.extractFrom(request);
         return sourceDao.getByName(sourceName);
     }
 

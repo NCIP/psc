@@ -54,6 +54,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertEquals("Result should be not found", 404, response.getStatus().getCode());
     }
 
+    /*
+    // These tests should be corrected and uncommented when PUT is implemented.
     public void testPutExistingXml() throws Exception {
         Study newStudy = new Study();
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
@@ -76,4 +78,5 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
+    */
 }

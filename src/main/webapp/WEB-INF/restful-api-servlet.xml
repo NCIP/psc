@@ -53,7 +53,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
 
-    <bean name="/activities/{source-name}"
+    <bean name="/activities/{activity-source-name}"
           id="activitySourceResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourceResource"
           >
