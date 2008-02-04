@@ -22,13 +22,18 @@ public class TemplateResource extends AbstractStorableDomainObjectResource<Study
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
-        setAuthorizedFor(Method.PUT, Role.STUDY_ADMIN);
+        setAuthorizedFor(Method.PUT, Role.STUDY_COORDINATOR);
     }
 
     @Override
     protected Study loadRequestedObject(Request request) {
         String studyIdent = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         return studyDao.getByAssignedIdentifier(studyIdent);
+    }
+
+    @Override
+    public void store(Study instance) {
+        throw new UnsupportedOperationException("store not implemented");
     }
 
     ////// CONFIGURATION

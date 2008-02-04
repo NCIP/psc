@@ -25,6 +25,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
             D read;
             try {
                 read = xmlSerializer.readDocument(entity.getStream());
+                store(read);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
@@ -39,4 +40,6 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }
     }
+
+    public abstract void store(D instance);
 }

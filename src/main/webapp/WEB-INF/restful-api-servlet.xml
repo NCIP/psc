@@ -53,6 +53,15 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
 
+    <bean name="/activities/{source-name}"
+          id="activitySourceResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourceResource"
+          >
+        <property name="xmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
+        </property>
+    </bean>
+
     <!-- AUXILIARIES -->
   
     <bean id="resourceFreemarkerConfiguration"
