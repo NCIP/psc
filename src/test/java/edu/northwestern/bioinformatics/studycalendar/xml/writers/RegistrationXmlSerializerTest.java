@@ -1,8 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createUser;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -19,37 +22,49 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudySegment segment;
     private Date date;
     private StudySegmentDao studySegmentDao;
+    private User subjCoord;
+    private UserDao userDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         element = registerMockFor(Element.class);
+        userDao = registerDaoMockFor(UserDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
 
         serializer = new RegistrationXmlSerializer();
         serializer.setStudySegmentDao(studySegmentDao);
+        serializer.setUserDao(userDao);
 
         segment = setGridId("grid0", new StudySegment());
         date = DateUtils.createDate(2008, JANUARY, 15);
+        subjCoord = createUser("Sam the Subject Coord");
 
         registration = new Registration();
         registration.setFirstStudySegment(segment);
         registration.setDate(date);
+        registration.setSubjectCoordinator(subjCoord);
+        registration.setDesiredStudySubjectAssignmentId("12345");
     }
 
     public void testCreateElement() {
-        Element actual = serializer.createElement(registration);
+        Element actual = serializer.createElement(registration, false);
 
         assertEquals("Element name should be registration", "registration", actual.getName());
         assertEquals("Wrong first study segment id", "grid0", actual.attributeValue("first-study-segment"));
         assertEquals("Wrong registration date", "2008-01-15", actual.attributeValue("date"));
+        assertEquals("Wrong subject coordinator name", "Sam the Subject Coord", actual.attributeValue("subject-coordinator-name"));
+        assertEquals("Wrong desired subject assignment id", "12345", actual.attributeValue("desired-assignment-id"));
     }
 
     public void testReadElement() {
         expect(element.attributeValue("first-study-segment")).andReturn("grid0");
         expect(element.attributeValue("date")).andReturn("2008-01-15");
+        expect(element.attributeValue("subject-coordinator-name")).andReturn("Sam the Subject Coord");
+        expect(element.attributeValue("desired-assignment-id")).andReturn("12345");
 
         expect(studySegmentDao.getByGridId("grid0")).andReturn(segment);
+        expect(userDao.getByName("Sam the Subject Coord")).andReturn(subjCoord);
         replayMocks();
 
         Registration actual = serializer.readElement(element);
@@ -57,5 +72,7 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         assertSame("Wrong first study segment", segment, actual.getFirstStudySegment());
         assertSameDay("Dates should be the same", date, actual.getDate());
+        assertSame("Subject Coordinators should be the same", subjCoord, actual.getSubjectCoordinator());
+        assertEquals("Wrong desired subject assignment id", "12345", actual.getDesiredStudySubjectAssignmentId());
     }
 }

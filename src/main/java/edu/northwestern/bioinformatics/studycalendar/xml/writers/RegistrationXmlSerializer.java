@@ -2,53 +2,68 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.REGISTRATION_DATE;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.REGISTRATION_FIRST_STUDY_SEGMENT;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.REGISTRATION;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import org.dom4j.Element;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlSerializer<Registration> {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Registration> {
     private StudySegmentDao studySegmentDao;
+    private UserDao userDao;
 
-    public Element createElement(Registration registration) {
-        Element element = REGISTRATION.create();
+    protected XsdElement rootElement() { return XsdElement.REGISTRATION; }
+    protected XsdElement collectionRootElement() { return XsdElement.REGISTRATIONS; }
 
-        REGISTRATION_FIRST_STUDY_SEGMENT.addTo(element, registration.getFirstStudySegment().getGridId());
-        REGISTRATION_DATE.addTo(element, formatter.format(registration.getDate()));
+    public Element createElement(Registration reg, boolean inCollection) {
+        Element elt = REGISTRATION.create();
 
-        return element;
+        REGISTRATION_FIRST_STUDY_SEGMENT.addTo(elt, reg.getFirstStudySegment().getGridId());
+        REGISTRATION_DATE.addTo(elt, reg.getDate());
+        if (reg.getSubjectCoordinator() != null) {
+            REGISTRATION_SUBJECT_COORDINATOR_NAME.addTo(elt, reg.getSubjectCoordinator().getName());
+        }
+        
+        REGISTRATION_DESIRED_ASSIGNMENT_ID.addTo(elt, reg.getDesiredStudySubjectAssignmentId());
+
+        return elt;
     }
 
-    public Registration readElement(Element element) {
-        Registration registration = new Registration();
+    public Registration readElement(Element elt) {
+        Registration reg = new Registration();
 
-        String segmentGridId = REGISTRATION_FIRST_STUDY_SEGMENT.from(element);
-        StudySegment segment = studySegmentDao.getByGridId(segmentGridId);
-        if (segment == null) throw new StudyCalendarValidationException("Study Segment with grid id %s not found.", segmentGridId);
+        String segmentId = REGISTRATION_FIRST_STUDY_SEGMENT.from(elt);
+        StudySegment segment = studySegmentDao.getByGridId(segmentId);
+        if (segment == null) throw new StudyCalendarValidationException("Study Segment with grid id %s not found.", segmentId);
 
-        String dateString = REGISTRATION_DATE.from(element);
-        Date date;
-        try {
-            date = formatter.parse(dateString);
-        } catch(ParseException pe) {
-            throw new StudyCalendarValidationException("Problem parsing date %s", dateString);
+        Date date = REGISTRATION_DATE.fromDate(elt);
+
+        String subjCoordName = REGISTRATION_SUBJECT_COORDINATOR_NAME.from(elt);
+        if (subjCoordName != null) {
+            User subjCoord = userDao.getByName(subjCoordName);
+            reg.setSubjectCoordinator(subjCoord);
         }
 
-        registration.setFirstStudySegment(segment);
-        registration.setDate(date);
+        String desiredAssignId = REGISTRATION_DESIRED_ASSIGNMENT_ID.from(elt);
 
-        return registration;
+        reg.setFirstStudySegment(segment);
+        reg.setDate(date);
+        reg.setDesiredStudySubjectAssignmentId(desiredAssignId);
+
+        return reg;
     }
 
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

@@ -1,6 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.dom4j.Element;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Enum for the names of attributes defined in psc.xsd.  Enum values should
@@ -20,9 +25,12 @@ public enum XsdAttribute {
     ACTIVITY_SOURCE_NAME("name"),
 
     REGISTRATION_FIRST_STUDY_SEGMENT("first-study-segment"),
-    REGISTRATION_DATE("date")
+    REGISTRATION_DATE("date"),
+    REGISTRATION_SUBJECT_COORDINATOR_NAME("subject-coordinator-name"),
+    REGISTRATION_DESIRED_ASSIGNMENT_ID("desired-assignment-id")
     ;
 
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;
 
     private XsdAttribute(String attrname) {
@@ -33,7 +41,20 @@ public enum XsdAttribute {
         return elt.attributeValue(attributeName);
     }
 
+    public Date fromDate(Element elt) {
+        String dateString = from(elt);
+        try {
+            return formatter.parse(dateString);
+        } catch(ParseException pe) {
+            throw new StudyCalendarValidationException("Problem parsing date %s", dateString);
+        }
+    }
+
     public void addTo(Element elt, Object value) {
         elt.addAttribute(attributeName, value == null ? null : value.toString());
+    }
+
+    public void addTo(Element elt, Date value) {
+        elt.addAttribute(attributeName, value == null ? null : formatter.format(value));
     }
 }

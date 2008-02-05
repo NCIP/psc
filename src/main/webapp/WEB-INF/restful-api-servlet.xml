@@ -53,6 +53,14 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           />
 
+    <bean name="/studies/{study-identifier}/sites/{site-name}/subject-assignments"
+          id="subjectAssignmentResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.RegistrationsResource">
+        <property name="xmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
+        </property>
+    </bean>
+
     <bean name="/activities/{activity-source-name}"
           id="activitySourceResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourceResource"

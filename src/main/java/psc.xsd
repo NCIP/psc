@@ -184,4 +184,16 @@
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
+    <!--<xsd:element name="registration" type="psc:Registration"/>-->
+    <!---->
+    <!--<xsd:complexType name="Registration">-->
+        <!--<xsd:sequence>-->
+            <!--<xsd:element name="subject" type="psc:Subject"/>-->
+        <!--</xsd:sequence>-->
+        <!--<xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>-->
+        <!--<xsd:attribute name="date" type="xsd:date" use="required"/>-->
+        <!--<xsd:attribute name="subject-coordinator-name" type="xsd:string"/>-->
+        <!--<xsd:attribute name="desired-assignment-id" type="xsd:string"/>-->
+    <!--</xsd:complexType>-->
+
 </xsd:schema>

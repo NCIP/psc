@@ -13,8 +13,8 @@ public enum XsdElement {
     ACTIVITY,
     ACTIVITY_SOURCES("sources"),
     ACTIVITY_SOURCE("source"),
-    REGISTRATION
-    ;
+    REGISTRATION,
+    REGISTRATIONS;
 
     private String elementName;
 
