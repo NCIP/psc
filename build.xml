@@ -655,6 +655,38 @@ done so already, please perform the following manual actions.
         </junitDocReport>
     </target>
 
+    <!--
+        Current version of spring-beandoc (0.8.1) chokes on <tx:annotation-driven/>,
+        so it is not capable of reading much of the application context.
+        This target generates graphs for the security contexts only.
+        RMS20080204
+        -->
+    <target name="beandoc">
+        <property name="build-dir.beandoc" value="target/beandoc"/>
+        <path id="cp.beandoc">
+            <!--<path refid="cp.main"/>-->
+            <fileset dir="tools/spring-beandoc/lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+
+        <taskdef
+            name="beandoc"
+            classname="org.springframework.beandoc.client.AntTask"
+            classpathref="cp.beandoc"/>
+
+        <beandoc outputDir="${build-dir.beandoc}"
+            beandocProps="${basedir}/tools/spring-beandoc/beandoc.properties">
+            <fileset dir="${basedir}/src/main">
+                <include name="java/**/applicationContext*security.xml"/>
+                <!--
+                <include name="java/**/applicationContext*.xml"/>
+                <include name="webapp/**/*-servlet.xml"/>
+                -->
+            </fileset>
+        </beandoc>
+    </target>
+
     <target name="reports" depends="test.unit.report"/>
 
     <target name="deploy-xml-schema">
