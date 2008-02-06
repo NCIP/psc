@@ -60,6 +60,14 @@
             <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
         </property>
     </bean>
+    <bean name="/activities"
+          id="activitiesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourcesResource"
+            >
+        <property name="xmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourcesXmlSerializer"/>
+        </property>
+    </bean>
 
     <bean name="/activities/{activity-source-name}"
           id="activitySourceResource" autowire="byName" scope="prototype"

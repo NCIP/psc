@@ -331,7 +331,6 @@
 
         <resource path="activities">
             <doc>
-                <html:em class="pending">Pending</html:em>
                 <html:p>All of the activity sources in the system.</html:p>
             </doc>
             <method name="GET">

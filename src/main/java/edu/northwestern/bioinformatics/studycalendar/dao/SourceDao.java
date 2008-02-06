@@ -9,7 +9,7 @@ public class SourceDao extends StudyCalendarMutableDomainObjectDao<Source> {
         return Source.class;
     }
 
-    public List<Source> getAll() throws Exception {
+    public List<Source> getAll()  {
         return getHibernateTemplate().find("from Source order by name");
     }
 
