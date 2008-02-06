@@ -68,7 +68,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourcesResource"
             >
         <property name="xmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourcesXmlSerializer"/>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
         </property>
     </bean>
 
