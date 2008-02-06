@@ -80,14 +80,14 @@
                     </c:if>
                     <c:if test="${not empty entry.value.events}">
                         <td class="showDay control">
-                            <a href="#" class="showArrow control" id="showArrow">&#65291</a></td>
+                            <a href="#" class="showArrow control" id="showArrow">&#43;</a></td>
                     </c:if>
                 </c:forEach>
             </tr>
         </table>
 
-        <a href="#" class="control showMonth">&#65291</a>
-        <a href="#" class="control hideMonth" style="visibility: hidden;"><b>&#8212;</b></a>
+        <a href="#" class="control showMonth">&#43;</a>
+        <a href="#" class="control hideMonth" style="visibility: hidden;"><b>&#45;</b></a>
 
         <div class="days">
             <c:forEach items="${month.days}" var="entry">

@@ -135,7 +135,7 @@ Event.observe(window, "load", function() {
 function registerHeaderCollapse() {
     $$(".collapsible").each(function(section) {
         var header = section.getElementsByTagName("H2")[0]
-        header.innerHTML += " <span class='collapse-icon'>&#65291;</span>"
+        header.innerHTML += " <span class='collapse-icon'>&#43;</span>"
         header.title = "Click to reveal"
         Event.observe(header, 'click', function() {
             var content = section.getElementsByClassName("content")[0]
@@ -144,14 +144,14 @@ function registerHeaderCollapse() {
                 SC.slideAndHide(content, {
                     afterFinish: function() {
                         header.title = "Click to reveal form"
-                        Element.update(icon, '&#65291;')
+                        Element.update(icon, '&#43;')
                     }
                 });
             } else {
                 SC.slideAndShow(content, {
                     afterFinish: function() {
                         header.title = "Click to conceal form"
-                        Element.update(icon, '&#8212;')
+                        Element.update(icon, '&#45;')
                     }
                 });
             }

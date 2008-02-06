@@ -412,7 +412,7 @@
 					showButton.conceal()
 					hideButton.reveal()
 
-					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>');});
+					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
 
 				}
 				);
@@ -433,7 +433,7 @@
 					showButton.conceal()
 					hideButton.reveal()
 
-					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#65291;</a>');});
+					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
 				}
 				);
 
@@ -448,13 +448,13 @@
 				Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
 					if ($('showArrow').innerHTML == '<b>—</b>'){
-                		Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#65291;</a>')
+                		Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#43;</a>')
 						SC.slideAndHide(day[counter], {afterFinish: check})
 
 
 					}
                 	else{
-						Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#8212;</b></a>')
+						Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>')
 						SC.slideAndShow(day[counter], {afterFinish: check})
 					}
                 })
