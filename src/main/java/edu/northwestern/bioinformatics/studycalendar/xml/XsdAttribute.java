@@ -37,7 +37,9 @@ public enum XsdAttribute {
     ASSIGNMENT_CURRENT_AMENDMENT("current-amendment-key"),
     ASSIGNMENT_SUBJECT_COORD("subject-coordinator-name"),
     ASSIGNMENT_START_DATE("start-date"),
-    ASSIGNMENT_END_DATE("end-date");
+    ASSIGNMENT_END_DATE("end-date"),
+    STUDY_SITE_STUDY_NM("study-name"),
+    STUDY_SITE_SITE_NM("site-name");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

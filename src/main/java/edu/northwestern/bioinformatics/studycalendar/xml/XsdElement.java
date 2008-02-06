@@ -16,7 +16,9 @@ public enum XsdElement {
     REGISTRATION,
     REGISTRATIONS,
     SUBJECT_ASSIGNMENTS("subject-assignments"),
-    SUBJECT_ASSIGNMENT("subject-assignment"), SUBJECT;
+    SUBJECT_ASSIGNMENT("subject-assignment"),
+    SUBJECT,
+    STUDY_SITE_LINK;
 
     private String elementName;
 

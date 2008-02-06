@@ -226,4 +226,10 @@
         <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
     </xsd:complexType>
 
+    <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
+
+    <xsd:complexType name="StudySiteLink">
+        <xsd:attribute name="study-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>    
+    </xsd:complexType>
 </xsd:schema>
