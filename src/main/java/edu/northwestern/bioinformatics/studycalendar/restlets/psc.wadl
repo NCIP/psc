@@ -192,7 +192,6 @@
 
                 <resource path="subject-assignments">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
                         <html:p>The collection of subjects on the study at the named site.</html:p>
                     </doc>
                     <method name="GET">
