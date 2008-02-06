@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import org.restlet.Context;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Method;
-import org.restlet.Context;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -31,8 +31,14 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
     }
 
     @Override
-    public void store(Source instance) {
-        throw new UnsupportedOperationException("store not implemented");
+    public void store(Source source) {
+
+        if (getRequestedObject() == null) {
+            sourceDao.save(source);
+        } else {
+            ///FIXME:Saurabh...implement the logic for updating the source
+            source = getRequestedObject();
+        }
     }
 
     ////// CONFIGURATION

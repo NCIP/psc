@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
 /**
@@ -57,9 +57,6 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
     }
 
 
-    /*
-    // These tests should be corrected and uncommented when PUT is implemented
-
     public void testPutExistingSource() throws Exception {
         Source newSource = new Source();
         expectFoundSource(source);
@@ -77,12 +74,13 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         expectObjectXmlized(source);
         expectReadXmlFromRequestAs(source);
 
+        sourceDao.save(source);
         doPut();
 
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
-    */
+
 
     private void expectFoundSource(Source expectedSource) {
         expect(sourceDao.getByName(SOURCE_NAME)).andReturn(expectedSource);
