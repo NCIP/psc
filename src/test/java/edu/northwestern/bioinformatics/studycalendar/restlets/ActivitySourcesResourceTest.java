@@ -16,7 +16,6 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
 
     private SourceDao sourceDao;
 
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -35,21 +34,14 @@ public class ActivitySourcesResourceTest extends ResourceTestCase<ActivitySource
         assertAllowedMethods("GET");
     }
 
-    public void testPutNotAllowed() throws Exception {
-        try {
-            assertAllowedMethods("PUT");
-            fail("PUT should be allowed");
-
-        }
-        catch (junit.framework.AssertionFailedError error) {
-            // this is the expected error.
-        }
-    }
 
     public void testGetXmlForAllActivities() throws Exception {
-        List<Source> activities = new ArrayList<Source>();
-        expect(sourceDao.getAll()).andReturn(activities);
-        expectObjectXmlized(activities);
+        List<Source> sources = new ArrayList<Source>();
+        Source source = new Source();
+        sources.add(source);
+        expect(sourceDao.getAll()).andReturn(sources);
+
+        expect(xmlSerializer.createDocumentString(sources)).andReturn(MOCK_XML);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);

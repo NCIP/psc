@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -14,8 +13,6 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.Collection;
-
 /**
  * @author Saurabh Agrawal
  */
@@ -24,7 +21,7 @@ public class ActivitySourcesResource extends AbstractPscResource {
 
     private SourceDao sourceDao;
 
-    private StudyCalendarXmlSerializer<Collection<Source>> xmlSerializer;
+    private StudyCalendarXmlCollectionSerializer xmlSerializer;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -53,7 +50,7 @@ public class ActivitySourcesResource extends AbstractPscResource {
 
 
     @Required
-    public void setXmlSerializer(StudyCalendarXmlSerializer<Collection<Source>> xmlSerializer) {
+    public void setXmlSerializer(StudyCalendarXmlCollectionSerializer xmlSerializer) {
         this.xmlSerializer = xmlSerializer;
     }
 }
