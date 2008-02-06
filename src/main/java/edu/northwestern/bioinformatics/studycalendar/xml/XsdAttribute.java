@@ -27,8 +27,17 @@ public enum XsdAttribute {
     REGISTRATION_FIRST_STUDY_SEGMENT("first-study-segment"),
     REGISTRATION_DATE("date"),
     REGISTRATION_SUBJECT_COORDINATOR_NAME("subject-coordinator-name"),
-    REGISTRATION_DESIRED_ASSIGNMENT_ID("desired-assignment-id")
-    ;
+    REGISTRATION_DESIRED_ASSIGNMENT_ID("desired-assignment-id"),
+    ASSIGNMENT_STUDY_NAME("study-name"),
+    ASSIGNMENT_SITE_NAME("site-name"),
+    SUBJECT_FIRST_NM("first-name"),
+    SUBJECT_LAST_NM("last-name"),
+    SUBJECT_DATE_OF_BIRTH("date-of-birth"),
+    SUBJECT_PERSON_ID("person-id"),
+    ASSIGNMENT_CURRENT_AMENDMENT("current-amendment-key"),
+    ASSIGNMENT_SUBJECT_COORD("subject-coordinator-name"),
+    ASSIGNMENT_START_DATE("start-date"),
+    ASSIGNMENT_END_DATE("end-date");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

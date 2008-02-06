@@ -1,33 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.data.Reference;
-import org.restlet.data.MediaType;
 import org.springframework.beans.factory.annotation.Required;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * @author Rhett Sutphin
  */
 public class RegistrationsResource extends StudySiteCollectionResource<Registration> {
     private SubjectService subjectService;
+    private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer;
 
     @Override
     protected Representation createXmlRepresentation(StudySite studySite) throws ResourceException {
-        List<Registration> registrations = new ArrayList<Registration>(studySite.getStudySubjectAssignments().size());
-        for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
-            registrations.add(Registration.create(assignment));
-        }
         return new StringRepresentation(
-            xmlSerializer.createDocumentString(registrations), MediaType.TEXT_XML);
+            assignmentXmlSerializer.createDocumentString(studySite.getStudySubjectAssignments()), MediaType.TEXT_XML);
     }
 
     @Override
@@ -45,5 +40,10 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     @Required
     public void setSubjectService(SubjectService subjectService) {
         this.subjectService = subjectService;
+    }
+
+    @Required
+    public void setAssignmentXmlSerializer(StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer) {
+        this.assignmentXmlSerializer = assignmentXmlSerializer;
     }
 }

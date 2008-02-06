@@ -59,6 +59,9 @@
         <property name="xmlSerializer">
             <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
         </property>
+        <property name="assignmentXmlSerializer">
+            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
+        </property>
     </bean>
     <bean name="/activities"
           id="activitiesResource" autowire="byName" scope="prototype"

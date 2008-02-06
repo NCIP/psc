@@ -184,16 +184,46 @@
         <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
 
-    <!--<xsd:element name="registration" type="psc:Registration"/>-->
-    <!---->
-    <!--<xsd:complexType name="Registration">-->
-        <!--<xsd:sequence>-->
-            <!--<xsd:element name="subject" type="psc:Subject"/>-->
-        <!--</xsd:sequence>-->
-        <!--<xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>-->
-        <!--<xsd:attribute name="date" type="xsd:date" use="required"/>-->
-        <!--<xsd:attribute name="subject-coordinator-name" type="xsd:string"/>-->
-        <!--<xsd:attribute name="desired-assignment-id" type="xsd:string"/>-->
-    <!--</xsd:complexType>-->
+    <!-- Elements of Subject Assignments -->
+
+    <xsd:element name="subject-assignments" type="SubjectAssignments"/>
+
+    <xsd:complexType name="SubjectAssignments">
+        <xsd:sequence>
+            <xsd:element name="subject-assignment" type="psc:SubjectAssignment" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SubjectAssignment">
+        <xsd:sequence>
+            <xsd:element name="subject" type="psc:Subject" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="study-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="start-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="end-date" type="xsd:date"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="current-amendment-key" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Subject">
+        <xsd:attribute name="first-name" type="xsd:string"/>
+        <xsd:attribute name="last-name" type="xsd:string"/>
+        <xsd:attribute name="date-of-birth" type="xsd:date"/>
+        <xsd:attribute name="gender" type="xsd:string"/>
+        <xsd:attribute name="person-id" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="registration" type="psc:Registration"/>
+
+    <xsd:complexType name="Registration">
+        <xsd:sequence>
+            <xsd:element name="subject" type="psc:Subject"/>
+        </xsd:sequence>
+        <xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="date" type="xsd:date" use="required"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
+        <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
+    </xsd:complexType>
 
 </xsd:schema>

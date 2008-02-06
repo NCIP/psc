@@ -18,7 +18,6 @@ import java.util.Date;
 public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
     private RegistrationXmlSerializer serializer;
     private Element element;
-    private Registration registration;
     private StudySegment segment;
     private Date date;
     private StudySegmentDao studySegmentDao;
@@ -39,22 +38,6 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         segment = setGridId("grid0", new StudySegment());
         date = DateUtils.createDate(2008, JANUARY, 15);
         subjCoord = createUser("Sam the Subject Coord");
-
-        registration = new Registration();
-        registration.setFirstStudySegment(segment);
-        registration.setDate(date);
-        registration.setSubjectCoordinator(subjCoord);
-        registration.setDesiredStudySubjectAssignmentId("12345");
-    }
-
-    public void testCreateElement() {
-        Element actual = serializer.createElement(registration, false);
-
-        assertEquals("Element name should be registration", "registration", actual.getName());
-        assertEquals("Wrong first study segment id", "grid0", actual.attributeValue("first-study-segment"));
-        assertEquals("Wrong registration date", "2008-01-15", actual.attributeValue("date"));
-        assertEquals("Wrong subject coordinator name", "Sam the Subject Coord", actual.attributeValue("subject-coordinator-name"));
-        assertEquals("Wrong desired subject assignment id", "12345", actual.attributeValue("desired-assignment-id"));
     }
 
     public void testReadElement() {

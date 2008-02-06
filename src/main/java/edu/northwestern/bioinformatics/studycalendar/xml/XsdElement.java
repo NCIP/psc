@@ -14,7 +14,9 @@ public enum XsdElement {
     ACTIVITY_SOURCES("sources"),
     ACTIVITY_SOURCE("source"),
     REGISTRATION,
-    REGISTRATIONS;
+    REGISTRATIONS,
+    SUBJECT_ASSIGNMENTS("subject-assignments"),
+    SUBJECT_ASSIGNMENT("subject-assignment"), SUBJECT;
 
     private String elementName;
 

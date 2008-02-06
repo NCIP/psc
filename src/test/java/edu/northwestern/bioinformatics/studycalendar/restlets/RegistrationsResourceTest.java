@@ -1,27 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-
-import java.util.Date;
-import java.util.Collection;
-import static java.util.Calendar.APRIL;
-
+import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
+
+import static java.util.Calendar.APRIL;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -38,6 +30,7 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
     private StudyDao studyDao;
     private SiteDao siteDao;
     private SubjectService subjectService;
+    private CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment> assignmentSerializerStub;
 
     @Override
     public void setUp() throws Exception {
@@ -50,6 +43,7 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         subjectService = registerMockFor(SubjectService.class);
+        assignmentSerializerStub = new CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment>();
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
         request.getAttributes().put(UriTemplateParameters.SITE_NAME.attributeName(), SITE_NAME);
@@ -74,16 +68,16 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         studySite.addStudySubjectAssignment(createAssignment());
 
         expectResolvedStudyAndSite(study, site);
-        getResource().setXmlSerializer(xmlSerializerStub);
+        getResource().setAssignmentXmlSerializer(assignmentSerializerStub);
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);
         assertResponseIsStubbedXml();
 
-        Object serialized = xmlSerializerStub.getLastObjectStringified();
+        Object serialized = assignmentSerializerStub.getLastObjectStringified();
         assertNotNull("Stringified object is null", serialized);
         assertTrue("Serialized object should have been a collection", serialized instanceof Collection);
         assertTrue("Serialized collection contents should be registrations",
-            ((Collection) serialized).iterator().next() instanceof Registration);
+            ((Collection) serialized).iterator().next() instanceof StudySubjectAssignment);
         assertEquals("Wrong number of entries in serialized collection", 2, ((Collection) serialized).size());
     }
 

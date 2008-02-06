@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.REGISTRATION;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import org.dom4j.Element;
 
@@ -22,17 +21,7 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
     protected XsdElement collectionRootElement() { return XsdElement.REGISTRATIONS; }
 
     public Element createElement(Registration reg, boolean inCollection) {
-        Element elt = REGISTRATION.create();
-
-        REGISTRATION_FIRST_STUDY_SEGMENT.addTo(elt, reg.getFirstStudySegment().getGridId());
-        REGISTRATION_DATE.addTo(elt, reg.getDate());
-        if (reg.getSubjectCoordinator() != null) {
-            REGISTRATION_SUBJECT_COORDINATOR_NAME.addTo(elt, reg.getSubjectCoordinator().getName());
-        }
-        
-        REGISTRATION_DESIRED_ASSIGNMENT_ID.addTo(elt, reg.getDesiredStudySubjectAssignmentId());
-
-        return elt;
+        throw new UnsupportedOperationException("Creating Registration element not allowed");
     }
 
     public Registration readElement(Element elt) {
