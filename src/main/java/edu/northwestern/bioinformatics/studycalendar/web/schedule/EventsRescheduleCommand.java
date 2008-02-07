@@ -1,23 +1,24 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-
-import java.util.*;
-import java.text.SimpleDateFormat;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 
 public class EventsRescheduleCommand {
     private Integer toDate;
-    private String currentDate;
+    private Date currentDate;
     private String reason;
     private ScheduledCalendar scheduledCalendar;
 
@@ -51,14 +52,8 @@ public class EventsRescheduleCommand {
     private List<ScheduledActivity> filterEventsByDateAndState (List<ScheduledActivity> events) {
         List<ScheduledActivity> filteredEvents = new ArrayList<ScheduledActivity>();
 
-        Date startDate=null;
-    	try {
-    		SimpleDateFormat df=new SimpleDateFormat("MM/dd/yyyy");
-    		startDate=df.parse(currentDate);
-	    } catch (Exception err) {
-	    }
-        for (ScheduledActivity event : events) {
-            if (event.getActualDate().getTime() >= startDate.getTime() && ((event.getCurrentState().getMode() == ScheduledActivityMode.SCHEDULED) ||
+           for (ScheduledActivity event : events) {
+            if (event.getActualDate().getTime() >= currentDate.getTime() && ((event.getCurrentState().getMode() == ScheduledActivityMode.SCHEDULED) ||
                         (event.getCurrentState().getMode() == ScheduledActivityMode.CONDITIONAL))) {
                 filteredEvents.add(event);
             }
@@ -118,11 +113,11 @@ public class EventsRescheduleCommand {
         this.toDate = toDate;
     }
 
-    public String getCurrentDate() {
+    public Date getCurrentDate() {
         return currentDate;
     }
 
-    public void setCurrentDate(String currentDate) {
+    public void setCurrentDate(Date currentDate) {
         this.currentDate = currentDate;
     }
 }
