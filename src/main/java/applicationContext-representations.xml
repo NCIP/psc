@@ -33,6 +33,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
     <bean id="activitySourceXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
+    <bean id="studySiteXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySiteXmlSerializer"/>
 
 
     <!-- PlanTreeNode Serializers -->

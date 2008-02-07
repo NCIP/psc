@@ -73,6 +73,12 @@
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
     </bean>
 
+    <bean name="/studies/{study-identifier}/sites/{site-name}"
+          id="studySiteResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.StudySiteResource">
+        <property name="xmlSerializer" ref="studySiteXmlSerializer"/>
+    </bean>
+
     <bean name="/activities/{activity-source-name}/{activity-code}"
           id="activityResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivityResource"

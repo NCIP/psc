@@ -1,17 +1,19 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import org.restlet.Context;
+import org.restlet.data.Method;
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
@@ -25,9 +27,16 @@ public class StudySiteResource extends AbstractDomainObjectResource<StudySite> {
     private Study study;
     private Site site;
 
+
+    public void init(Context context, Request request, Response response) {
+        super.init(context, request, response);
+        setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR);
+        setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
+    }
+
     protected StudySite loadRequestedObject(Request request) {
         study = studyDao.getByAssignedIdentifier(UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByName(UriTemplateParameters.SITE_NAME.extractFrom(request));
+        site = siteDao.getByAssignedIdentifier(UriTemplateParameters.SITE_NAME.extractFrom(request));
         if (study == null || site == null) {
             return null;
         } else {

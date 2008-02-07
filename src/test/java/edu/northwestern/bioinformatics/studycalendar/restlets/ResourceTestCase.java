@@ -42,7 +42,7 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         return resource;
     }
 
-    private void doInit() {
+    protected void doInit() {
         getResource().init(null, request, response);
     }
 

@@ -3,18 +3,21 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.notNull;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 import org.restlet.resource.StringRepresentation;
 
 /**
  * @author Rhett Sutphin
  */
-public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
+public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteResource> {
     private static final String STUDY_IDENT = "ETC";
     private static final String SITE_NAME = "Northwestern University";
     private static final String SITE_NAME_ENCODED = "Northwestern%20University";
@@ -102,6 +105,11 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
         assertResponseIsCreatedXml();
     }
 
+    public void testGetWithAuthorizedRole() {
+        doInit();
+        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.GET);
+    }
+
     ////// PUT
 
     @SuppressWarnings({ "unchecked" })
@@ -142,6 +150,11 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
+    public void testPutWithAuthorizedRole() {
+        doInit();
+        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.PUT);
+    }
+
     ////// HELPERS
 
     private void expectLinked() {
@@ -151,7 +164,7 @@ public class StudySiteResourceTest extends ResourceTestCase<StudySiteResource> {
 
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(expectedStudy);
-        expect(siteDao.getByName(SITE_NAME)).andReturn(expectedSite);
+        expect(siteDao.getByAssignedIdentifier(SITE_NAME)).andReturn(expectedSite);
     }
 
     private void expectRequestHasIgnoredEntity() {
