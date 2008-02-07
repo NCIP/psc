@@ -18,7 +18,6 @@ import static org.easymock.EasyMock.expect;
  */
 public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudySiteXmlSerializer serializer;
-    private StudySite studySite;
     private Element element;
     private Study study;
     private Site site;
@@ -37,12 +36,13 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         study = createNamedInstance("Cancer Study", Study.class);
         site = createNamedInstance("Northwestern University", Site.class);
-        studySite = Fixtures.createStudySite(study, site);
 
         element = createElement(study, site);
     }
 
     public void testCreateElement() {
+        StudySite studySite = Fixtures.createStudySite(study, site);
+
         Element actual = serializer.createElement(studySite);
 
         assertEquals("Wrong element name", "study-site-link", actual.getName());
@@ -50,19 +50,18 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong site name", "Northwestern University", actual.attributeValue("site-name"));
     }
 
-    public void testReadElementWhereStudySiteExists() {
+    public void testReadElementWhereStudySiteLinkExists() {
+        StudySite studySite = Fixtures.createStudySite(study, site);
+
         StudySite actual = expectStudySiteLookup(study, site, element);
 
         assertSame("StudySite should be the same", studySite, actual);
     }
 
-     public void testReadElementWhereStudySiteIsNew() {
-        Study polioStudy = createNamedInstance("Polio Study", Study.class);
-        Element newStudySiteElement = createElement(polioStudy, site);
+     public void testReadElementWhereStudySiteLinkIsNew() {
+        StudySite actual = expectStudySiteLookup(study, site,  element);
 
-        StudySite actual = expectStudySiteLookup(polioStudy, site,  newStudySiteElement);
-
-        assertSame("Study should be the same", polioStudy, actual.getStudy());
+        assertSame("Study should be the same", study, actual.getStudy());
         assertEquals("Site should be the same", site, actual.getSite());
     }
 
@@ -77,6 +76,7 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
             serializer.readElement(invalidElement);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
+            verifyMocks();
             assertEquals("Study 'Invalid Study' not found. Please define a study that exists.",
                 scve.getMessage());
         }
@@ -94,13 +94,13 @@ public class StudySiteXmlSerializerTest extends StudyCalendarXmlTestCase {
             serializer.readElement(invalidElement);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
+            verifyMocks();
             assertEquals("Site 'Invalid Site' not found. Please define a site that exists.",
                 scve.getMessage());
         }
     }
 
-
-
+    //// Test Helper Methods
     private Element createElement(Study aStudy, Site aSite) {
         Element elt = new BaseElement("study-site-link");
         elt.addAttribute("study-name", aStudy.getName());
