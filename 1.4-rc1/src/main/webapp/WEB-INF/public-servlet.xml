@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="xmlViewResolver" class="org.springframework.web.servlet.view.XmlViewResolver">
+        <property name="location"><value>/WEB-INF/special-views.xml</value></property>
+    </bean>
+    
+   <bean id="loginViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass">
+            <value>org.springframework.web.servlet.view.InternalResourceView</value>
+        </property>
+        <property name="prefix">
+            <value>/WEB-INF/views/</value>
+        </property>
+        <property name="suffix">
+            <value>.jsp</value>
+        </property>
+    </bean>
+    
+    <bean id="publicHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+   
+    <bean name="/login" id="loginController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
+
+    <!-- Retained to preserve URL compatibility in case anyone bookmarked this page on vera -->
+    <bean name="/welcome" id="welcomeController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>redirectToRoot</value></property>
+    </bean>
+
+    <bean name="/error" id="errorController"
+          class="edu.northwestern.bioinformatics.studycalendar.web.ErrorController" autowire="byType"/>
+
+    <bean name="/accessDenied" id="accessDeniedController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>accessDenied</value></property>
+    </bean>
+          
+</beans>

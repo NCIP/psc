@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="mailSender"
+          class="edu.northwestern.bioinformatics.studycalendar.utils.mail.StudyCalendarJavaMailSender">
+        <property name="configuration"><ref bean="configuration"/></property>
+    </bean>
+
+    <bean id="freemarkerConfiguration"
+          class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath">
+            <value>classpath:edu/northwestern/bioinformatics/studycalendar/utils/mail/templates</value>
+        </property>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="number_format">0</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="mailMessageFactory" autowire="byType"
+          class="edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory"/>
+</beans>

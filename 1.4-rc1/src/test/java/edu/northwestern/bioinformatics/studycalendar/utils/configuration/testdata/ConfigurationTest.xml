@@ -1,0 +1,8 @@
+<dataset>
+    <configuration
+        key="mailExceptionsTo"
+        value="r-sutphin@northwestern.edu, joe@example.com"/>
+    <configuration
+        key="smtpPort"
+        value="28"/>
+</dataset>

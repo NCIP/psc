@@ -1,0 +1,113 @@
+<dataset>
+    <AMENDMENTS id="-1" amendment_date="2525-01-02"/>
+    <AMENDMENTS id="-2" amendment_date="2525-01-07"/>
+    <DELTAS
+        id="-100"
+        node_type="epoch"
+        node_id="-1"
+        amendment_id="-1"
+        />
+    <DELTAS
+        id="-103"
+        node_type="epoch"
+        node_id="-1"
+        amendment_id="-2"
+        />
+    <DELTAS
+         id="-200"
+         node_type="epoch"
+         node_id="-1"
+         amendment_id="-1"
+        />
+    <DELTAS
+         id="-210"
+         node_type="event"
+         node_id="-4"
+         amendment_id="-1"
+        />
+    <DELTAS
+         id="-220"
+         node_type="segmnt"
+         node_id="-3"
+         amendment_id="-1"
+        />
+    <!-- note that this declaration needs to go first due to dbunit's odd
+        ignore-columns-not-present-in-first-row behavior -->
+    <CHANGES id="-10"
+        action="property"
+        old_value="7"
+        new_value="4"
+        attribute="day"
+        delta_id="-210"
+        />
+    <CHANGES id="-11"
+        action="remove"
+        old_value="-3"
+        delta_id="-200"
+        />
+    <CHANGES id="-12"
+        action="reorder"
+        attribute="-2"
+        old_value="1"
+        new_value="0"
+        delta_id="-200"
+        />
+    <CHANGES
+        id="-6"
+        action="add"
+        new_value="-3"
+        attribute="1"
+        delta_id="-100"
+    />
+    <CHANGES
+        id="-4"
+        action="add"
+        new_value="-2"
+        attribute="0"
+        delta_id="-100"
+    />
+    <CHANGES
+        id="-5"
+        action="add"
+        new_value="-3"
+        attribute="0"
+        delta_id="-220"
+    />
+    <CHANGES
+        id="-13"
+        action="remove"
+        old_value="-3"
+        delta_id="-103"
+    />
+    <STUDIES id="-2" assigned_identifier="Protocol" long_title="Protocol"/>
+    <PLANNED_CALENDARS id="-2" study_id="-2"/>    
+    <EPOCHS
+        id="-1"
+        planned_calendar_id="-2"
+        name="Treatment"
+        />    
+    <STUDY_SEGMENTS
+        id="-2"
+        epoch_id="-1"
+        list_index="0"
+        name="A"
+        />
+    <STUDY_SEGMENTS
+        id="-3"
+        epoch_id="-1"
+        list_index="1"
+        name="B"
+        />
+    <PERIODS
+        id="-3"
+        study_segment_id="-2"
+        duration_quantity="14"
+        />
+    <ACTIVITIES id="12" name="Twelve" activity_type_id="1"/>
+    <PLANNED_ACTIVITIES
+        id="-4"
+        period_id="-3"
+        activity_id="12"
+        day="4"
+        />
+</dataset>

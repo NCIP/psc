@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sources xmlns="http://bioinformatics.northwestern.edu/ns/psc"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc/study.xsd">
+    
+<source name="NU Sample Activities">
+    <!-- Type 1 Activities -->
+    <activity
+        name="CT"
+        code="CT"
+        type-id="1"/>
+
+    <activity
+        name="X-Ray"
+        code="X-Ray"
+        type-id="1"/>
+
+    <activity
+        name="Bone Scan"
+        code="BoneScan"
+        type-id="1"/>
+
+    <activity
+        name="Mammogram"
+        code="Mammogram"
+        type-id="1"/>
+
+    <activity
+        name="Ultrasound"
+        code="Ultrasound"
+        type-id="1"/>
+
+    <activity
+        name="CXR"
+        code="CXR"
+        type-id="1"/>
+
+    <activity
+        name="CSF cytology"
+        code="CSFCytology"
+        type-id="1"/>
+
+    <activity
+        name="Tumor Measurement"
+        code="TumorMeasurement"
+        type-id="1"/>
+
+    <!-- type-id 2 Activities -->
+    <activity
+        name="Infusion"
+        code="Infusion"
+        type-id="2"/>
+
+    <activity
+        name="Capecitabine"
+        code="Capecitabine"
+        type-id="2"/>
+
+    <activity
+        name="Docetaxel"
+        code="Docetaxel"
+        type-id="2"/>
+
+    <activity
+        name="Peptide Vaccine"
+        code=""
+        type-id="2"/>
+
+    <activity
+        name="Cytoxan Infusion"
+        code="CytoxanInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Adriamycin Infusion"
+        code="AdriamycinInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Taxol Infusion"
+        code="TaxolInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Infusion CPT-11"
+        code="InfusionCPT-11"
+        type-id="2"/>
+
+    <activity
+        name="PBSCT"
+        code="PBSCT"
+        type-id="2"/>
+
+    <activity
+        name="IL-2"
+        code="IL-2"
+        type-id="2"/>
+
+    <activity
+        name="Thalidomide daily"
+        code="ThalidomideDaily"
+        type-id="2"/>
+
+    <activity
+        name="Cyclosphosphamide Tablets"
+        code="CyclosphosphamideTablets"
+        type-id="2"/>
+
+    <activity
+        name="Methotrexate Infusion"
+        code="MethotrexateInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Fluorouracil Infusion"
+        code="FluorouracilInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Cyclosphosphamide Infusion"
+        code="CyclosphosphamideInfusion"
+        type-id="2"/>
+
+    <activity
+        name="Capecitabine Tablets"
+        code="CapecitabineTablets"
+        type-id="2"/>
+
+    <!-- type-id 3 Activities -->
+    <activity
+        name="CBC"
+        code="CBC"
+        type-id="3"/>
+
+    <activity
+        name="CK"
+        code="CK"
+        type-id="3"/>
+
+    <activity
+        name="CMP"
+        code="CMP"
+        type-id="3"/>
+
+    <activity
+        name="Plates"
+        code="Plates"
+        type-id="3"/>
+
+    <activity
+        name="PT/PTT"
+        code="PT/PTT"
+        type-id="3"/>
+
+    <activity
+        name="ANA"
+        code="ANA"
+        type-id="3"/>
+
+    <activity
+        name="calcium"
+        code="calcium"
+        type-id="3"/>
+
+    <activity
+        name="Rheumatoid factor"
+        code="RheumatoidFactor"
+        type-id="3"/>
+
+    <activity
+        name="BhCG"
+        code="BhCG"
+        type-id="3"/>
+
+    <activity
+        name="Creatinine kinase"
+        code="CreatinineKinase"
+        type-id="3"/>
+
+    <activity
+        name="Urinalysis"
+        code="Urinalysis"
+        type-id="3"/>
+
+    <activity
+        name="Albumin"
+        code="Albumin"
+        type-id="3"/>
+
+    <activity
+        name="uric acid"
+        code="UricAcid"
+        type-id="3"/>
+
+    <!-- type-id 4 Activities -->
+    <activity
+        name="EKG"
+        code="EKG"
+        type-id="4"/>
+
+    <activity
+        name="DTH skin test"
+        code="DTHSkinTest"
+        type-id="4"/>
+
+    <activity
+        name="Physical Exam"
+        code="PhysicalExam"
+        type-id="4"/>
+
+    <activity
+        name="Bone Marrow Biopsy"
+        code="BoneMarrowBiopsy"
+        type-id="4"/>
+
+    <activity
+        name="MUGA or ECHO"
+        code="MUGAorECHO"
+        type-id="4"/>
+
+    <activity
+        name="Height, Weight, Perf Status"
+        code="Height,Weight,Perf Status"
+        type-id="4"/>
+
+    <activity
+        name="Vital signs"
+        code="VitalSigns"
+        type-id="4"/>
+
+    <activity
+        name="LVEF"
+        code="LVEF"
+        type-id="4"/>
+
+    <activity
+        name="Eye Exam"
+        code="EyeExam"
+        type-id="4"/>
+
+    <!-- type-id 5 Activities -->
+    <activity
+        name="Quality of Life (QOL)"
+        code="QOL"
+        type-id="5"/>
+
+    <activity
+        name="Mini Mental State Exam (MMSE)"
+        code="MMSE"
+        type-id="5"/>
+
+    <activity
+        name="Diary Entry"
+        code="DiaryEntry"
+        type-id="5"/>
+
+    <activity
+        name="Brief Pain Inventory"
+        code="BriefPainInventory"
+        type-id="5"/>
+
+    <activity
+        name="12 minute walk"
+        code="12MinuteWalk"
+        type-id="5"/>
+
+    <activity
+        name="Rest 14 days"
+        code="Rest14Days"
+        type-id="5"/>
+
+    <activity
+        name="Rest 4 weeks"
+        code="Rest4Weeks"
+        type-id="5"/>
+
+    <activity
+        name="Electronic Telephone Diary"
+        code="ElectronicTelephoneDiary"
+        type-id="5"/>
+    
+</source>
+
+</sources>
