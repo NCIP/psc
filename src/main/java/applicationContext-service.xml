@@ -37,7 +37,11 @@
     <bean id="studySiteService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.StudySiteService"/>
     <bean id="importActivitiesService" autowire="byType"
-          class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService"/>
+          class="edu.northwestern.bioinformatics.studycalendar.service.ImportActivitiesService">
+        <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
+        <property name="sourceDao" ref="sourceDao"/>
+    </bean>
+
     <bean id="populationService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.PopulationService"/>
     <bean id="importTemplateService" autowire="byName"
