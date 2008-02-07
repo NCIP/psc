@@ -211,7 +211,7 @@
 				 allDaysArePresent = false;
 				 allDaysAreHidden = true;
 				 init = true;
-			}
+            }
 			function check()
 			{
 
@@ -272,8 +272,12 @@
 
 				}
 
-				if (allDaysAreHidden) hideButton.conceal()
-				else hideButton.reveal()
+				if (allDaysAreHidden) {
+                    hideButton.conceal()
+                }
+				else {
+                    hideButton.reveal()
+                }
 
 			}
 
@@ -412,14 +416,16 @@
 					showButton.conceal()
 					hideButton.reveal()
 
-					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
+                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
 
 				}
 				);
 			}
 
 			function showSetup(){
-				if (init == null) initialize_arrows();
+                if (init == null) {
+                    initialize_arrows();
+                }
 				registerShowHandler()
 			}
 
@@ -430,36 +436,43 @@
 				    day.each(SC.slideAndHide);
 					showMonth.each(function(e){e.reveal();});
   					hideMonth.each(function(e){e.conceal();});
-					showButton.conceal()
-					hideButton.reveal()
+					showButton.reveal()
+					hideButton.conceal()
 
-					showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
+                    if ($('showArrow') != null && $('showArrow').innerHTML.toLowerCase() == '<b>-</b>'){
+                        $('showArrow').innerHTML = "";
+                    }
+
+                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
 				}
 				);
 
 			}
 			function hideSetup(){
-				registerHideHandler()
+                if (init == null) {
+                    initialize_arrows();
+                }                
+                registerHideHandler()
 			}
 
 			function registerArrowHandler(a, counter){
-				var aElement = $(a)
-
-				Event.observe(aElement, "click", function(e) {
+                var aElement = $(a)
+                Event.observe(aElement, "click", function(e) {
                     Event.stop(e)
-					if ($('showArrow').innerHTML == '<b>—</b>'){
-                		Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#43;</a>')
+                    var specificElement = document.getElementsByClassName('control showArrow')[counter];
+                    //need to cast to LowerCase, as IE7 converts tags to upper case
+                    if (specificElement != null && specificElement.innerHTML.toLowerCase() == '<b>-</b>'){
+                        Element.update(this, '<a href="#" class="control showArrow" id="showArrow">&#43;</a>')
 						SC.slideAndHide(day[counter], {afterFinish: check})
 
-
-					}
-                	else{
-						Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>')
+					} else{
+                        Element.update(this, '<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>')
 						SC.slideAndShow(day[counter], {afterFinish: check})
 					}
                 })
 			}
-			function registerArrowHandlers(){
+
+            function registerArrowHandlers(){
 				var counter = 0;
                 showDay.each(function(num) {registerArrowHandler(num, counter); counter++;});
             }
@@ -468,15 +481,18 @@
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
 		            Event.stop(e)
-						quickSlideAndShow(days[counter].getElementsByClassName('day'), {afterFinish: check})
-				})
+					quickSlideAndShow(days[counter].getElementsByClassName('day'), {afterFinish: check})
+                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow"><b>&#45;</b></a>');});
+                });
 			}
-			function registerHideMonthHandler(a, counter){
+
+            function registerHideMonthHandler(a, counter){
 				var aElement = $(a)
 				Event.observe(aElement, "click", function(e) {
 		            Event.stop(e)
-						quickSlideAndHide(days[counter].getElementsByClassName('day'), {afterFinish: check})
-				})
+				    quickSlideAndHide(days[counter].getElementsByClassName('day'), {afterFinish: check})
+                    showDay.each(function (e){$(e).update('<a href="#" class="control showArrow" id="showArrow">&#43;</a>');});
+                });
 			}
 
             function epochsAreaSetup() {
@@ -487,7 +503,10 @@
                 </c:if>
             }
 			function arrowSetup(){
-				registerArrowHandlers()
+                if (init == null) {
+                    initialize_arrows();
+                }
+                registerArrowHandlers()
 			}
 			function showMonthSetup(){
 				var counter = 0;
@@ -499,7 +518,10 @@
 
 			}
 			function initializeNewStudySegment(){
-			    if ($$(".day").length != 0){
+                if (init == null) {
+                    initialize_arrows();
+                }
+                if ($$(".day").length != 0){
 			    	initialize_arrows()
 					showSetup()
 					hideSetup()
