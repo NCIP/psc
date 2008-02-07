@@ -9,7 +9,8 @@ import org.restlet.data.Request;
 public enum UriTemplateParameters {
     STUDY_IDENTIFIER,
     ACTIVITY_SOURCE_NAME,
-    SITE_NAME;
+    SITE_NAME,
+    ACTIVITY_CODE;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
