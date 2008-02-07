@@ -43,9 +43,8 @@
           id="studiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
           >
-        <property name="xmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
-        </property>
+        <property name="xmlSerializer" ref="studiesXmlSerializer"/>
+
     </bean>
 
     <bean name="/studies/{study-identifier}/template"
@@ -56,29 +55,22 @@
     <bean name="/studies/{study-identifier}/sites/{site-name}/subject-assignments"
           id="subjectAssignmentResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.RegistrationsResource">
-        <property name="xmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
-        </property>
-        <property name="assignmentXmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
-        </property>
+        <property name="xmlSerializer" ref="registrationXmlSerializer"/>
+        <property name="assignmentXmlSerializer" ref="studySubjectAssignmentXmlSerializer"/>
     </bean>
+
     <bean name="/activities"
           id="activitiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourcesResource"
             >
-        <property name="xmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
-        </property>
+        <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
     </bean>
 
     <bean name="/activities/{activity-source-name}"
           id="activitySourceResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourceResource"
-          >
-        <property name="xmlSerializer">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
-        </property>
+            >
+        <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
     </bean>
 
     <!-- AUXILIARIES -->
