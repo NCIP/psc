@@ -155,6 +155,17 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.PUT);
     }
 
+    ////// DELETE
+
+//    public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
+//        expectRequestHasIgnoredEntity();
+//        expectResolvedStudyAndSite(study, site);
+//        studyService.save(study);
+//
+//        doDelete();
+//        assertResponseStatus(Status.);
+//    }
+
     ////// HELPERS
 
     private void expectLinked() {
