@@ -73,6 +73,13 @@
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
     </bean>
 
+    <bean name="/activities/{activity-source-name}/{activity-code}"
+          id="activityResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivityResource"
+            >
+        <property name="xmlSerializer" ref="activityXmlSerializer"/>
+    </bean>
+
     <!-- AUXILIARIES -->
   
     <bean id="resourceFreemarkerConfiguration"
