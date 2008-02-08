@@ -1,17 +1,23 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.ArrayList;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_roles")
@@ -20,7 +26,7 @@ import java.util.ArrayList;
         @Parameter(name="sequence", value="seq_user_roles_id")
     }
 )
-public class UserRole  extends AbstractMutableDomainObject {
+public class UserRole  extends AbstractMutableDomainObject implements Serializable {
     private User user;
     private Role role;
     // TODO: why is one of these a set and the other a list?
