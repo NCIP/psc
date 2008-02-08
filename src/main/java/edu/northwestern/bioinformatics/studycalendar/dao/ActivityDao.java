@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Jaron Sampson
@@ -39,4 +37,10 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
         }
         return activities.get(0);
     }
+
+    public void delete(Activity activity) {
+        getHibernateTemplate().delete(activity);
+    }
+
+
 }

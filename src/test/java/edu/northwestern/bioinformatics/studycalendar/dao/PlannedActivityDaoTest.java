@@ -2,6 +2,8 @@ package edu.northwestern.bioinformatics.studycalendar.dao;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 
+import java.util.List;
+
 /**
  * Created by IntelliJ IDEA.
  * User: nshurupova
@@ -21,6 +23,15 @@ public class PlannedActivityDaoTest extends ContextDaoTestCase<PlannedActivityDa
         assertEquals("Wrong activity", -200, (int) loaded.getActivity().getId());
         assertEquals("Wrong condition", "At least 37", loaded.getCondition());
         assertEquals("Wrong population", -45, (int) loaded.getPopulation().getId());
+    }
+
+    public void testGetPlannedActivitiesForAcivity() throws Exception {
+        List<PlannedActivity> plannedActivities = getDao().getPlannedActivitiesForAcivity(-300);
+        assertNotNull(plannedActivities);
+        assertTrue(plannedActivities.size() > 0);
+
+        PlannedActivity loaded = plannedActivities.get(0);
+        assertEquals("Wrong id", -12, (int) loaded.getId());
     }
 
     public void testPeriodBidirectional() throws Exception {

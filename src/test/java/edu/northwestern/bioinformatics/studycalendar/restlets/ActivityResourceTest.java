@@ -1,10 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Saurabh Agrarwal
@@ -19,10 +24,13 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
 
     private Activity activity;
 
+    private PlannedActivityDao plannedActivityDao;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         activityDao = registerDaoMockFor(ActivityDao.class);
+        plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_CODE.attributeName(), ACTIVITY_NAME);
 
@@ -34,11 +42,12 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         ActivityResource resource = new ActivityResource();
         resource.setActivityDao(activityDao);
         resource.setXmlSerializer(xmlSerializer);
+        resource.setPlannedActivityDao(plannedActivityDao);
         return resource;
     }
 
-    public void testGetAndPutAllowed() throws Exception {
-        assertAllowedMethods("PUT", "GET");
+    public void testGetAndPutAndDeleteAllowed() throws Exception {
+        assertAllowedMethods("PUT", "GET", "DELETE");
     }
 
     public void testGetXmlForExistingActivity() throws Exception {
@@ -66,10 +75,30 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         expectReadXmlFromRequestAs(newActivity);
         expectObjectXmlized(newActivity);
 
+        activityDao.save(newActivity);
         doPut();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
         assertResponseIsCreatedXml();
+    }
+
+    public void testDeleteExistingActivityWhichIsNotusedAnyWhere() throws Exception {
+        expectFoundActivity(activity);
+        expectActivityUsedByPlannedCalendar(activity, false);
+        activityDao.delete(activity);
+        doDelete();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+//        assertResponseIsCreatedXml();
+    }
+
+    public void testDeleteExistingActivityWhichIsused() throws Exception {
+        expectFoundActivity(activity);
+        expectActivityUsedByPlannedCalendar(activity, true);
+        doDelete();
+
+        assertEquals("Result is success", 400, response.getStatus().getCode());
+//        assertResponseIsCreatedXml();
     }
 
     public void testPutNewXml() throws Exception {
@@ -86,6 +115,18 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
 
 
     private void expectFoundActivity(Activity expectedActivity) {
-        expect(activityDao.getByCodeAndSourceName(ACTIVITY_NAME,SOURCE_NAME)).andReturn(expectedActivity);
+        expect(activityDao.getByCodeAndSourceName(ACTIVITY_NAME, SOURCE_NAME)).andReturn(expectedActivity);
     }
+
+    private void expectActivityUsedByPlannedCalendar(Activity expectedActivity, boolean isExcepted) {
+        if (isExcepted) {
+            List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();
+            plannedActivities.add(new PlannedActivity());
+            expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(plannedActivities);
+        } else {
+            expect(plannedActivityDao.getPlannedActivitiesForAcivity(expectedActivity.getId())).andReturn(null);
+
+        }
+    }
+
 }

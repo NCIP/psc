@@ -84,6 +84,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivityResource"
             >
         <property name="xmlSerializer" ref="activityXmlSerializer"/>
+        <property name="plannedActivityDao" ref="plannedActivityDao"/>
     </bean>
 
     <!-- AUXILIARIES -->
