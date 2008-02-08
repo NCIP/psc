@@ -6,10 +6,13 @@ import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.StringRepresentation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -22,6 +25,7 @@ import java.util.List;
  */
 public abstract class ResourceTestCase<R extends Resource> extends RestletTestCase {
     protected static final String MOCK_XML = "<foo></foo>";
+    protected static final Representation MOCK_XML_REP = new MockXmlRepresentation(MOCK_XML, MediaType.TEXT_XML);
 
     private R resource;
 
@@ -133,5 +137,18 @@ public abstract class ResourceTestCase<R extends Resource> extends RestletTestCa
         ApplicationContext parent = getDeployedApplicationContext();
         return new FileSystemXmlApplicationContext(
             new String[] { "src/main/webapp/WEB-INF/restful-api-servlet.xml" }, parent);
+    }
+
+    private static class MockXmlRepresentation extends StringRepresentation {
+        private static final InputStream stream = new ByteArrayInputStream(MOCK_XML.getBytes());
+
+        public MockXmlRepresentation(CharSequence text, MediaType mediaType) {
+            super(text, mediaType);
+        }
+
+        @Override
+        public InputStream getStream() throws IOException {
+            return stream;
+        }
     }
 }

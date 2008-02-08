@@ -9,10 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static org.easymock.classextension.EasyMock.expect;
-import static org.easymock.classextension.EasyMock.notNull;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
-import org.restlet.resource.StringRepresentation;
 
 /**
  * @author Rhett Sutphin
@@ -114,10 +112,13 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
     @SuppressWarnings({ "unchecked" })
     public void testPutCreatesStudySiteIfNotExists() throws Exception {
+        StudySite unlinkedSS = createUnlinkedStudySite();
+
         expectRequestHasIgnoredEntity();
         expectResolvedStudyAndSite(study, site);
-        studyService.save(study);
-        expect(xmlSerializer.createDocumentString(notNull())).andReturn(MOCK_XML);
+        expectDeserializeEntity(unlinkedSS);
+        expectSaveNewStudySite();
+        expectObjectXmlized(unlinkedSS);
 
         doPut();
 
@@ -126,8 +127,11 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     public void testPutDoesNothingIfStudySiteAlreadyExists() throws Exception {
+        StudySite unlinkedSS = createUnlinkedStudySite();
+
         expectLinked();
         expectRequestHasIgnoredEntity();
+        expectDeserializeEntity(unlinkedSS);
         expectObjectXmlized(studySite);
 
         doPut();
@@ -156,14 +160,14 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     ////// DELETE
-
+//
 //    public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
 //        expectRequestHasIgnoredEntity();
 //        expectResolvedStudyAndSite(study, site);
 //        studyService.save(study);
 //
 //        doDelete();
-//        assertResponseStatus(Status.);
+//        assertResponseStatus(Status.SUCCESS_OK);
 //    }
 
     ////// HELPERS
@@ -179,6 +183,21 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     private void expectRequestHasIgnoredEntity() {
-        request.setEntity(new StringRepresentation(MOCK_XML));
+        request.setEntity(MOCK_XML_REP);
+    }
+
+    private void expectDeserializeEntity(StudySite studySite) throws Exception {
+        expect(xmlSerializer.readDocument(MOCK_XML_REP.getStream())).andReturn(studySite);
+    }
+
+    private void expectSaveNewStudySite() {
+        studyService.save(study);
+    }
+
+    private StudySite createUnlinkedStudySite() {
+        StudySite unlinkedSS = new StudySite();
+        unlinkedSS.setStudy(study);
+        unlinkedSS.setSite(site);
+        return unlinkedSS;
     }
 }

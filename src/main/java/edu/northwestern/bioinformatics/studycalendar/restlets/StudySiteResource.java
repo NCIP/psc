@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author Rhett Sutphin
  */
-public class StudySiteResource extends AbstractDomainObjectResource<StudySite> {
+public class StudySiteResource extends AbstractStorableDomainObjectResource<StudySite> {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudyService studyService;
@@ -44,11 +44,7 @@ public class StudySiteResource extends AbstractDomainObjectResource<StudySite> {
         }
     }
 
-    @Override public boolean allowPut()    { return true;  }
 
-    /**
-     * PUT for this resource ignores the entity.
-     */
     public void storeRepresentation(Representation entity) throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
@@ -57,21 +53,17 @@ public class StudySiteResource extends AbstractDomainObjectResource<StudySite> {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
                 "No site named " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
         }
+        super.storeRepresentation(entity);
+    }
 
-        StudySite studySite;
+    public void store(StudySite studySite) {
         if (getRequestedObject() == null) {
             StudySite newSS = new StudySite();
             newSS.setStudy(study);
             newSS.setSite(site);
             study.addStudySite(newSS);
             studyService.save(study);
-            getResponse().setStatus(Status.SUCCESS_CREATED);
-            studySite = newSS;
-        } else {
-            getResponse().setStatus(Status.SUCCESS_OK);
-            studySite = getRequestedObject();
         }
-        getResponse().setEntity(createXmlRepresentation(studySite));
     }
 
     ////// CONFIGURATION
