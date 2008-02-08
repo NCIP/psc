@@ -44,16 +44,14 @@ public class StudySiteResource extends AbstractStorableDomainObjectResource<Stud
         }
     }
 
-
-    public void storeRepresentation(Representation entity) throws ResourceException {
+    protected void validateEntity(Representation entity) throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                "No study matching " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()));
+                    "No study matching " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()));
         } else if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                "No site named " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
+                    "No site named " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
         }
-        super.storeRepresentation(entity);
     }
 
     public void store(StudySite studySite) {

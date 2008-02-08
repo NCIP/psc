@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import org.restlet.resource.Representation;
-import org.restlet.resource.ResourceException;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 
 import java.io.IOException;
 
@@ -22,6 +22,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
     @SuppressWarnings({"unchecked"})
     public void storeRepresentation(Representation entity) throws ResourceException {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
+            validateEntity(entity);
             D read;
             try {
                 read = xmlSerializer.readDocument(entity.getStream());
@@ -42,4 +43,5 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
     }
 
     public abstract void store(D instance);
+    protected void validateEntity(Representation entity) throws ResourceException {}
 }
