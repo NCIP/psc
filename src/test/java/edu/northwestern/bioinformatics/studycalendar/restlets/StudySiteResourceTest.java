@@ -3,10 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Method;
@@ -164,11 +161,20 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
         expectRequestHasIgnoredEntity();
         expectLinked();
-        studyDao.save(study);
+        expectStudySiteDeleted();
 
         doDelete();
         
         assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testDelete400sIfStudyHasSubjectsAssigned() {
+        expectRequestHasIgnoredEntity();
+        expectLinkedWithSubjects();
+        
+        doDelete();
+
+        assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
     }
 
     ////// HELPERS
@@ -193,6 +199,19 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
     private void expectSaveNewStudySite() {
         studyService.save(study);
+    }
+
+    private void expectStudySiteDeleted() {
+        studyDao.save(study);
+    }
+
+    private void expectLinkedWithSubjects() {
+        expectLinked();
+
+        StudySubjectAssignment assignment = new StudySubjectAssignment();
+        assignment.setSubject(createSubject("Frank", "Drebin"));
+
+        studySite.addStudySubjectAssignment(assignment);
     }
 
     private StudySite createUnlinkedStudySite() {
