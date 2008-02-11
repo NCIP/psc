@@ -6,7 +6,11 @@ var toDelete = $('epoch-${command.epoch.id}')
 toDelete.remove()
 
 var epochDivs = $$('div.epoch');
-epochDivs.each( function(elt) { elt.style.width = '<tags:epochWidth epoch="${command.epoch}"/>'; Element.removeClassName(elt, "last") } )
+epochDivs.each( function(elt)
+{
+    elt.style.width = '<tags:epochWidth epoch="${epoch}"/>';
+    Element.removeClassName(elt, "last")
+} )
 Element.addClassName(epochDivs.last(), "last")
 
 //changing the selected studySegment to the very first one on the first epoch

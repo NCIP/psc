@@ -1,3 +1,4 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@page contentType="text/html;charset=UTF-8" language="java"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -154,6 +155,15 @@
                 display:inline;
                 width:auto;
                 margin-right:10px;
+            }
+
+            #populations{
+                padding: 0; margin: 0;
+                text-align:left;
+                display:inline;
+                width:auto;
+                margin-right:10px;
+                padding-right:10px;
             }
 
             div.row {
@@ -564,24 +574,37 @@
 
                 return true;
             }
-            Event.observe(window, "load", epochsAreaSetup)
-            Event.observe(window, "load", studyManipulationSetup)
+
+            function generalSetup() {
+                epochsAreaSetup();
+                studyManipulationSetup();
+            }
+
+            function loadFunctionsForDevelopmentRevision() {
+                generalSetup();
+                createStudyControls();
+                createAddEpochControl();
+                addToBeginSentence();
+                addToBeginSentence();
+            }
+
+            function loadFunctionsForStudySegment() {
+                generalSetup();
+                showSetup();
+                hideSetup();
+                arrowSetup();
+                showMonthSetup();
+                hideMonthSetup();
+            }
+
 
             <c:if test="${not empty developmentRevision}">
-                Event.observe(window, "load", createStudyControls)
-                Event.observe(window, "load", createAddEpochControl)
-
-                Event.observe(window, "load", addToBeginSentence)
-                Event.observe(window, "load", hideShowReleaseTemplateButton)
+                Event.observe(window, "load", loadFunctionsForDevelopmentRevision)
             </c:if>
 
 
             <c:if test="${not empty studySegment.months}">
-				Event.observe(window, "load", showSetup)
-				Event.observe(window, "load", hideSetup)
-				Event.observe(window, "load", arrowSetup)
-				Event.observe(window, "load", showMonthSetup)
-				Event.observe(window, "load", hideMonthSetup)
+                Event.observe(window, "load", loadFunctionsForStudySegment)
 
             </c:if>
 
@@ -598,7 +621,7 @@
                     <span class="controls"><a class="control" href="<c:url value="/pages/cal/template/amendments?study=${study.id}"/>">view all</a></span>
                 </div>
             </div>
-            <div class="row even">
+            <div class="row even" style="width:100%">
                 <div class="label">Long title</div>
                 <div class="value">${study.longTitle}</div>
             </div>

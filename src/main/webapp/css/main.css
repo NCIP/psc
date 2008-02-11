@@ -121,7 +121,7 @@
     margin: 4px 0;
     padding: 3px;
     /* for IE */
-    height: 1%;
+    height: 15%;
 }
 .studySegments li:hover {
     background-color: #ccc !important;
@@ -143,6 +143,7 @@ a.control {
     color: #444 !important;
     border: 1px solid #999;
     background-color: #ccc;
+    /*height: 10%;*/
 }
 a.control:hover {
     border-color: #444;
