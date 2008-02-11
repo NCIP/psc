@@ -151,9 +151,9 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testPutWithAuthorizedRole() {
+    public void testDeleteWithAuthorizedRole() {
         doInit();
-        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.PUT);
+        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.DELETE);
     }
 
     ////// DELETE
@@ -175,6 +175,11 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         doDelete();
 
         assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+    }
+
+    public void testPutWithAuthorizedRole() {
+        doInit();
+        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.PUT);
     }
 
     ////// HELPERS

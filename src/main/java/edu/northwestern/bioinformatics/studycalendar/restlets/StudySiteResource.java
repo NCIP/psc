@@ -32,6 +32,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SITE_COORDINATOR);
         setAuthorizedFor(Method.PUT, Role.SITE_COORDINATOR);
+        setAuthorizedFor(Method.DELETE, Role.SITE_COORDINATOR);
     }
 
     protected StudySite loadRequestedObject(Request request) {
