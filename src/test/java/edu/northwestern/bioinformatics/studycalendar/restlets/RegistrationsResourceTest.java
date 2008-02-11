@@ -157,6 +157,6 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
 
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER)).andReturn(expectedStudy);
-        expect(siteDao.getByName(SITE_NAME)).andReturn(expectedSite);
+        expect(siteDao.getByAssignedIdentifier(SITE_NAME)).andReturn(expectedSite);
     }
 }

@@ -38,7 +38,7 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
         super.init(context, request, response);
         setReadable(true);
         study = studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByName(SITE_NAME.extractFrom(request));
+        site = siteDao.getByAssignedIdentifier(SITE_NAME.extractFrom(request));
         if (study != null && site != null) {
             studySite = study.getStudySite(site);
         }
