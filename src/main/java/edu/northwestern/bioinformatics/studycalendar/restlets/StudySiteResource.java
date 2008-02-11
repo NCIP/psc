@@ -75,7 +75,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     public void remove(StudySite studySite) {
         Study study = studySite.getStudy();
         study.getStudySites().remove(studySite);
-        studyDao.save(study);
+        studyService.save(study);
     }
 
     ////// CONFIGURATION

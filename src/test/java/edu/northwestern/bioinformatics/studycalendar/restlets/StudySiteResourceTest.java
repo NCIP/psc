@@ -202,7 +202,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     private void expectStudySiteDeleted() {
-        studyDao.save(study);
+        studyService.save(study);
     }
 
     private void expectLinkedWithSubjects() {
