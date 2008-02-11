@@ -56,7 +56,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
     public void testAllMethodsAllowed() throws Exception {
         expectResolvedStudyAndSite(null, null);
-        assertAllowedMethods("GET", "PUT");
+        assertAllowedMethods("GET", "PUT", "DELETE");
     }
 
     ////// GET
@@ -160,15 +160,16 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     ////// DELETE
-//
-//    public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
-//        expectRequestHasIgnoredEntity();
-//        expectResolvedStudyAndSite(study, site);
-//        studyService.save(study);
-//
-//        doDelete();
-//        assertResponseStatus(Status.SUCCESS_OK);
-//    }
+
+    public void testDeleteRemovesStudyIfExistsAndNoSubjects() {
+        expectRequestHasIgnoredEntity();
+        expectLinked();
+        studyDao.save(study);
+
+        doDelete();
+        
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
 
     ////// HELPERS
 

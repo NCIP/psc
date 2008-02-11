@@ -14,14 +14,12 @@ public abstract class AbstractRemovableStorableDomainObjectResource<D extends Do
     @Override
     public void removeRepresentations() throws ResourceException {
         D retreived = getRequestedObject();
+        verifyRemovable(retreived);
         remove(retreived);
-
-        if (getRequestedObject() == null) {
-            getResponse().setStatus(Status.SUCCESS_OK);
-        } else {
-            getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        }
+        
+        getResponse().setStatus(Status.SUCCESS_OK);
     }
 
     public abstract void remove(D instance);
+    public void verifyRemovable(D instance) throws ResourceException {}
 }

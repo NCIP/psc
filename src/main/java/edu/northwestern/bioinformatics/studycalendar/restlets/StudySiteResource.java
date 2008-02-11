@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author Rhett Sutphin
  */
-public class StudySiteResource extends AbstractStorableDomainObjectResource<StudySite> {
+public class StudySiteResource extends AbstractRemovableStorableDomainObjectResource<StudySite> {
     private StudyDao studyDao;
     private SiteDao siteDao;
     private StudyService studyService;
@@ -62,6 +62,20 @@ public class StudySiteResource extends AbstractStorableDomainObjectResource<Stud
             study.addStudySite(newSS);
             studyService.save(study);
         }
+    }
+
+    public void verifyRemovable(StudySite studySite) throws ResourceException {
+        if (!studySite.getStudySubjectAssignments().isEmpty()) {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+                    "There are still subjects assigned to " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()) +
+                            " at the site " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
+        }
+    }
+
+    public void remove(StudySite studySite) {
+        Study study = studySite.getStudy();
+        study.getStudySites().remove(studySite);
+        studyDao.save(study);
     }
 
     ////// CONFIGURATION
