@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
-import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
+import org.restlet.Context;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
@@ -14,10 +15,19 @@ import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Rhett Sutphin
+ * @author John Dzak
  */
 public class RegistrationsResource extends StudySiteCollectionResource<Registration> {
     private SubjectService subjectService;
     private StudyCalendarXmlCollectionSerializer<StudySubjectAssignment> assignmentXmlSerializer;
+
+
+    @Override
+    public void init(Context context, Request request, Response response) {
+        super.init(context, request, response);
+        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
+        setAuthorizedFor(Method.PUT, Role.SUBJECT_COORDINATOR);
+    }
 
     @Override
     protected Representation createXmlRepresentation(StudySite studySite) throws ResourceException {

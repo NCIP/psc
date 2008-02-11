@@ -101,8 +101,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     public void testGetWithAuthorizedRole() {
-        doInit();
-        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.GET);
+        assertRolesAllowedForMethod(Method.GET, Role.SITE_COORDINATOR);
     }
 
     ////// PUT
@@ -152,8 +151,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     public void testDeleteWithAuthorizedRole() {
-        doInit();
-        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.DELETE);
+        assertRolesAllowedForMethod(Method.DELETE, Role.SITE_COORDINATOR);
     }
 
     ////// DELETE
@@ -178,8 +176,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     public void testPutWithAuthorizedRole() {
-        doInit();
-        assertRoleIsAllowedForMethod(Role.SITE_COORDINATOR, Method.PUT);
+        assertRolesAllowedForMethod(Method.PUT, Role.SITE_COORDINATOR);
     }
 
     ////// HELPERS

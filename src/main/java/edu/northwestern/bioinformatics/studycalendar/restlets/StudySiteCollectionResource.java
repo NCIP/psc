@@ -5,17 +5,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.SITE_NAME;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.data.Reference;
+import org.restlet.data.*;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.slf4j.Logger;
@@ -27,7 +22,7 @@ import java.io.IOException;
 /**
  * @author Rhett Sutphin
  */
-public abstract class StudySiteCollectionResource<V> extends Resource {
+public abstract class StudySiteCollectionResource<V> extends AbstractPscResource {
     protected Logger log = LoggerFactory.getLogger(getClass());
 
     private SiteDao siteDao;

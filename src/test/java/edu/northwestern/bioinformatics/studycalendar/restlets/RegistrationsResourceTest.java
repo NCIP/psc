@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarX
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
+import org.restlet.data.Method;
 import org.restlet.data.Status;
 
 import static java.util.Calendar.APRIL;
@@ -18,7 +19,7 @@ import java.util.Date;
 /**
  * @author Rhett Sutphin
  */
-public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsResource> {
+public class RegistrationsResourceTest extends AuthorizedResourceTestCase<RegistrationsResource> {
     private static final String STUDY_IDENTIFIER = "EC golf";
     private static final String STUDY_IDENTIFIER_ENCODED = "EC+golf";
     private static final String SITE_NAME = "AgU";
@@ -112,6 +113,10 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
+    public void testGetWithAuthorizedRole() {
+        assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
+    }
+
     ////// POST
 
     public void testPost404sOnMissingStudySite() throws Exception {
@@ -143,6 +148,12 @@ public class RegistrationsResourceTest extends ResourceTestCase<RegistrationsRes
         assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
             response.getLocationRef().getTargetRef().toString());
     }
+
+    public void testPutWithAuthorizedRole() {
+        assertRolesAllowedForMethod(Method.PUT, Role.SUBJECT_COORDINATOR);
+    }
+
+    ////// Helper Methods
 
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER)).andReturn(expectedStudy);
