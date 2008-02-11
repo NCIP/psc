@@ -1,4 +1,5 @@
 <#--
+<#--
     This is actually a freemarker template for the WADL, not the WADL itself.
     It is used by WadlResource to render out the WADL with the actual deployment
     base URI in place.
@@ -340,7 +341,6 @@
 
             <resource path="{activity-source-name}">
                 <doc>
-                    <html:em class="pending">Pending</html:em>
                     <html:p>An activity source.</html:p>
                 </doc>
                 <param style="template" name="activity-source-name"/>
@@ -365,7 +365,6 @@
 
                 <resource path="{activity-code}">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
                         <html:p>A single activity.</html:p>
                     </doc>
                     <param style="template" name="activity-code"/>
