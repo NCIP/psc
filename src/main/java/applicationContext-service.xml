@@ -46,4 +46,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.service.PopulationService"/>
     <bean id="importTemplateService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService"/>
+    <bean id="sourceService" class="edu.northwestern.bioinformatics.studycalendar.service.SourceService">
+        <property name="plannedActivityDao" ref="plannedActivityDao"></property>
+        <property name="sourceDao" ref="sourceDao"></property>
+    </bean>
 </beans>

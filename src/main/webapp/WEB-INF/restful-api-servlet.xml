@@ -71,6 +71,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivitySourceResource"
             >
         <property name="xmlSerializer" ref="activitySourceXmlSerializer"/>
+        <property name="sourceService" ref="sourceService"/>
     </bean>
 
     <bean name="/studies/{study-identifier}/sites/{site-name}"

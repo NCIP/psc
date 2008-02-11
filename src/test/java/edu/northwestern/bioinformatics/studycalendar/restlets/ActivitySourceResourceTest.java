@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
@@ -17,10 +18,13 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
 
     private Source source;
 
+    private SourceService sourceService;
+
     @Override
     public void setUp() throws Exception {
         super.setUp();
         sourceDao = registerDaoMockFor(SourceDao.class);
+        sourceService = registerMockFor(SourceService.class);
         request.getAttributes().put(UriTemplateParameters.ACTIVITY_SOURCE_NAME.attributeName(), SOURCE_NAME_ENCODED);
 
         source = Fixtures.createNamedInstance(SOURCE_NAME, Source.class);
@@ -31,6 +35,7 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         ActivitySourceResource resource = new ActivitySourceResource();
         resource.setSourceDao(sourceDao);
         resource.setXmlSerializer(xmlSerializer);
+        resource.setSourceService(sourceService);
         return resource;
     }
 
@@ -62,6 +67,8 @@ public class ActivitySourceResourceTest extends ResourceTestCase<ActivitySourceR
         expectFoundSource(source);
         expectReadXmlFromRequestAs(newSource);
         expectObjectXmlized(newSource);
+
+        sourceService.updateSource(newSource, source);
 
         doPut();
 

@@ -1,33 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
+import org.springframework.beans.BeanUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.Transient;
-import javax.persistence.Basic;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Jaron Sampson
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "activities")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_activities_id")
-    }
+@Table(name = "activities")
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_activities_id")
+                }
 )
 public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named, NaturallyKeyed {
     private String name;
@@ -105,10 +97,40 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
-            .append("[id=").append(getId())
-            .append("; name=").append(getName())
-            .append("; type=").append(getType())
-            .append(']')
-            .toString();
+                .append("[id=").append(getId())
+                .append("; name=").append(getName())
+                .append("; type=").append(getType())
+                .append(']')
+                .toString();
     }
+
+    /**
+     * finds the activity in collection which has the same code.
+     *
+     * @param activities collection of activities to match
+     * @return activity if finds any activity in collection matching the same code. null if no match found
+     */
+    @Transient
+    public Activity findActivityInCollectionWhichHasSameCode(List<Activity> activities) {
+        for (Activity activitytoFind : activities) {
+
+            if (this.getCode()!=null && this.getCode().equals(activitytoFind.getCode())) {
+                return activitytoFind;
+            }
+
+        }
+
+        return null;
+    }
+
+    /**
+     * updates the properties of activity.
+     *
+     * @param activity source activity
+     */
+    @Transient
+    public void updateActivity(final Activity activity) {
+        BeanUtils.copyProperties(activity, this, new String[]{"source", "id"});
+    }
+
 }

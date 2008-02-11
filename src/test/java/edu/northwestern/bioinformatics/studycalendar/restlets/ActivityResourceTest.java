@@ -75,7 +75,7 @@ public class ActivityResourceTest extends ResourceTestCase<ActivityResource> {
         expectReadXmlFromRequestAs(newActivity);
         expectObjectXmlized(newActivity);
 
-        activityDao.save(newActivity);
+        activityDao.save(activity);
         doPut();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());

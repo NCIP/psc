@@ -331,4 +331,10 @@ public class Fixtures {
 
     // static class
     private Fixtures() { }
+
+    public static Source createSource(final String name) {
+        Source source=new Source();
+        source.setName(name);
+        return source;
+    }
 }

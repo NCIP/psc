@@ -6,20 +6,16 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.OrderBy;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "sources")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_sources_id")
-    }
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_sources_id")
+                }
 )
 public class Source extends AbstractMutableDomainObject implements Named, NaturallyKeyed {
     private String name;
@@ -48,8 +44,9 @@ public class Source extends AbstractMutableDomainObject implements Named, Natura
     }
 
     @OneToMany(mappedBy = "source")
-    @Cascade(value = { CascadeType.ALL })
-    @OrderBy // ensure consistent ordering
+    @Cascade(value = {CascadeType.ALL})
+    @OrderBy
+    // ensure consistent ordering
     public List<Activity> getActivities() {
         return activities;
     }
@@ -70,5 +67,32 @@ public class Source extends AbstractMutableDomainObject implements Named, Natura
 
     public int hashCode() {
         return (name != null ? name.hashCode() : 0);
+    }
+
+
+    /**
+     * <p>  add new activities  to the source. It does  update/delete any activitiy.
+     * <li>
+     * Add any activities that do not already exist.   </li>
+     * </p>
+     *
+     * @param activities activities which may be added
+     */
+    @Transient
+    public void addNewActivities(final List<Activity> activities) {
+        List<Activity> existingActivities = getActivities();
+
+        for (Activity activity : activities) {
+
+            // check for new activity
+            Activity existingActivity = activity.findActivityInCollectionWhichHasSameCode(existingActivities);
+
+
+            if (existingActivity == null) {
+                existingActivities.add(activity);
+
+            }
+
+        }
     }
 }

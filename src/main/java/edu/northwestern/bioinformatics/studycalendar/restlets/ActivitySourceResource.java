@@ -1,8 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.service.SourceService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -16,6 +18,8 @@ import org.springframework.beans.factory.annotation.Required;
  */
 public class ActivitySourceResource extends AbstractStorableDomainObjectResource<Source> {
     private SourceDao sourceDao;
+    private static PlannedActivityDao plannedActivityDao;
+    private SourceService sourceService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -36,15 +40,26 @@ public class ActivitySourceResource extends AbstractStorableDomainObjectResource
         if (getRequestedObject() == null) {
             sourceDao.save(source);
         } else {
-            ///FIXME:Saurabh...implement the logic for updating the source
-            source = getRequestedObject();
+            Source existingSource = getRequestedObject();
+            sourceService.updateSource(source,existingSource);
+
+
         }
     }
 
-    ////// CONFIGURATION
 
     @Required
     public void setSourceDao(SourceDao sourceDao) {
         this.sourceDao = sourceDao;
+    }
+
+    @Required
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
+    }
+
+
+    public void setSourceService(SourceService sourceService) {
+        this.sourceService = sourceService;
     }
 }

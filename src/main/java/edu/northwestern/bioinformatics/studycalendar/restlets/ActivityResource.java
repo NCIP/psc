@@ -9,6 +9,8 @@ import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
@@ -18,7 +20,7 @@ import java.util.List;
  *
  * @author Saurabh Agrawal
  */
-public class ActivityResource extends AbstractRemovableDomainObjectResource<Activity> {
+public class ActivityResource extends AbstractRemovableStorableDomainObjectResource<Activity> {
 
     private ActivityDao activityDao;
     private PlannedActivityDao plannedActivityDao;
@@ -41,28 +43,41 @@ public class ActivityResource extends AbstractRemovableDomainObjectResource<Acti
 
     @Override
     public void store(Activity activity) {
-        activityDao.save(activity);
-        activity = getRequestedObject();
+        if (getRequestedObject() == null) {
+            activityDao.save(activity);
+        } else {
+            Activity existingActivity = getRequestedObject();
+            existingActivity.updateActivity(activity);
+            activityDao.save(existingActivity);
+
+        }
+
+    }
+
+
+    @Override
+    public void remove(Activity activity) {
+        //delete only if activity is not used any where
+        log.info("Deleting the activity" + activity.getId());
+        activityDao.delete(activity);
 
     }
 
     @Override
-    public void remove(Activity activity) throws Exception {
-        ///FIXME: Saurabh : move following logic to ActivityRepository
+    public void verifyRemovable(final Activity activity) throws ResourceException {
         List<PlannedActivity> plannedActivities = plannedActivityDao.getPlannedActivitiesForAcivity(activity.getId());
-        if (plannedActivities == null || plannedActivities.size() == 0) {
-            //delete only if activity is not used any where
-            log.info("Deleting the activity"+activity.getId());
-            activityDao.delete(activity);
+        if (plannedActivities != null && plannedActivities.size() > 0) {
 
-        } else {
-            String message = "can not delete the activity because activity is used by other planned activity-"
-                    + plannedActivities.get(0).getDetails();
+            String message = "Can not delete the activity" + UriTemplateParameters.ACTIVITY_CODE.extractFrom(getRequest()) +
+                    " because activity is used by other planned activity " + plannedActivities.get(0).getDetails();
             log.error(message);
-            throw new Exception(message);
-        }
 
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+                    message);
+
+        }
     }
+
 
     @Required
     public void setActivityDao(ActivityDao activityDao) {
