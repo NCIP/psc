@@ -163,6 +163,7 @@
         <copy todir="${build-dir.unit-test}">
             <fileset dir="${src-dir.unit-test}">
                 <include name="**/*.xml"/>
+                <include name="**/*.properties"/>
             </fileset>
         </copy>
         <!-- Create valid CSM configuration for testing -->
