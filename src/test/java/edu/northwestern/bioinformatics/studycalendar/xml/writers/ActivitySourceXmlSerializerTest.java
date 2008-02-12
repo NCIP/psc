@@ -2,11 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createActivity;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Source;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializerTest.assertEmbeddedActivityElement;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -36,34 +37,36 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateSingleElement() throws Exception {
         Element actual = serializer.createElement(source);
-        assertEquals("Wrong element name", XsdElement.ACTIVITY_SOURCE.xmlName(), actual.getName());
-        assertEquals("Wrong name attr", SOURCE_NAME, actual.attributeValue("name"));
-        assertEquals("Wrong number of children", 3, actual.elements().size());
-        assertEmbeddedActivityElement(actWalk, (Element) actual.elements().get(0));
-        assertEmbeddedActivityElement(actRun, (Element) actual.elements().get(1));
-        assertEmbeddedActivityElement(actSleep, (Element) actual.elements().get(2));
+        assertEquals("Wrong element name", XsdElement.ACTIVITY_SOURCES.xmlName(), actual.getName());
+        Element sourceElement = (Element) actual.elements().get(0);
+
+        assertEquals("Wrong name attr", SOURCE_NAME, sourceElement.attributeValue("name"));
+        assertEquals("Wrong number of children", 3, sourceElement.elements().size());
+        assertEmbeddedActivityElement(actWalk, (Element) sourceElement.elements().get(0));
+        assertEmbeddedActivityElement(actRun, (Element) sourceElement.elements().get(1));
+        assertEmbeddedActivityElement(actSleep, (Element) sourceElement.elements().get(2));
     }
 
     public void testCreateCollectionDoc() throws Exception {
         Document actual = serializer.createDocument(
-            Arrays.asList(source, createNamedInstance("Other", Source.class)));
+                Arrays.asList(source, createNamedInstance("Other", Source.class)));
         Element root = actual.getRootElement();
         assertEquals("Wrong root element name", XsdElement.ACTIVITY_SOURCES.xmlName(), root.getName());
         assertEquals("Wrong number of children", 2, root.elements().size());
         assertEquals("Children are not source elements",
-            XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(0)).getName());
+                XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(0)).getName());
         assertEquals("Children are not source elements",
-            XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(1)).getName());
+                XsdElement.ACTIVITY_SOURCE.xmlName(), ((Element) root.elements().get(1)).getName());
         assertEquals("Activities not included", 3,
-            ((Element) root.elements().get(0)).elements().size());
+                ((Element) root.elements().get(0)).elements().size());
     }
 
     public void testReadSingleSource() throws Exception {
         Source read = parseDocumentString(serializer, String.format(
-            "<source xmlns='%s' name='test-o'>\n" +
-            "  <activity name='one' code='1' type-id='1'/>\n" +
-            "  <activity name='two' code='2' type-id='2' description='optional'/>\n" +
-            "</source>", AbstractStudyCalendarXmlSerializer.PSC_NS
+                "<source xmlns='%s' name='test-o'>\n" +
+                        "  <activity name='one' code='1' type-id='1'/>\n" +
+                        "  <activity name='two' code='2' type-id='2' description='optional'/>\n" +
+                        "</source>", AbstractStudyCalendarXmlSerializer.PSC_NS
         ));
         assertNotNull(read);
         assertEquals("Wrong name", "test-o", read.getName());
@@ -86,14 +89,14 @@ public class ActivitySourceXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testReadSourceCollection() throws Exception {
         Collection<Source> read = parseCollectionDocumentString(serializer, String.format(
-            "<sources xmlns='%s'>\n" +
-            "  <source name='test-o'>\n" +
-            "    <activity name='one' code='1' type-id='1'/>\n" +
-            "    <activity name='two' code='2' type-id='2' description='optional'/>\n" +
-            "  </source>\n" +
-            "  <source name='rutabaga'/>" +
-            "</sources>"
-            , AbstractStudyCalendarXmlSerializer.PSC_NS
+                "<sources xmlns='%s'>\n" +
+                        "  <source name='test-o'>\n" +
+                        "    <activity name='one' code='1' type-id='1'/>\n" +
+                        "    <activity name='two' code='2' type-id='2' description='optional'/>\n" +
+                        "  </source>\n" +
+                        "  <source name='rutabaga'/>" +
+                        "</sources>"
+                , AbstractStudyCalendarXmlSerializer.PSC_NS
         ));
         assertEquals("Wrong number of sources", 2, read.size());
         Iterator<Source> it = read.iterator();

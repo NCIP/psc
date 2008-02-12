@@ -148,15 +148,15 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testCreateDocumentString() throws Exception {
         StringBuffer expected = new StringBuffer();
-//        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-//                .append(format("<study assigned-identifier=\"{0}\"", study.getAssignedIdentifier()))
-//                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
-//                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
-//                .append(format("       {0}=\"{1}\">"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
-//                .append(format(  "<planned-calendar id=\"{0}\"/>", calendar.getGridId()))
-//                .append(format(  "<population abbreviation=\"{0}\" name=\"{1}\"/>", population.getAbbreviation(), population.getName()))
-//                .append(format(  "<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>", eAmendment.attributeValue("name"), eAmendment.attributeValue("date"), eAmendment.attributeValue("mandatory")))
-//                .append(       "</study>");
+        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+                .append(format("<study assigned-identifier=\"{0}\"", study.getAssignedIdentifier()))
+                .append(format("       {0}=\"{1}\""     , SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS))
+                .append(format("       {0}=\"{1} {2}\""     , SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, SCHEMA_LOCATION))
+                .append(format("       {0}=\"{1}\">"    , XML_SCHEMA_ATTRIBUTE, XSI_NS))
+                .append(format(  "<planned-calendar id=\"{0}\"/>", calendar.getGridId()))
+                .append(format(  "<population abbreviation=\"{0}\" name=\"{1}\"/>", population.getAbbreviation(), population.getName()))
+                .append(format(  "<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>", eAmendment.attributeValue("name"), eAmendment.attributeValue("date"), eAmendment.attributeValue("mandatory")))
+                .append(       "</study>");
 
         expectChildrenSerializers();
         replayMocks();
