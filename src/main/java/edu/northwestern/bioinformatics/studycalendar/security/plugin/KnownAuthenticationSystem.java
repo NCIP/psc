@@ -11,7 +11,8 @@ import org.slf4j.LoggerFactory;
  */
 public enum KnownAuthenticationSystem {
     LOCAL("local", LocalAuthenticationSystem.class, "uses passwords stored in PSC's own database"),
-    CAS("CAS", CasAuthenticationSystem.class, "delegates authentication decisions to an enterprise-wide CAS server")
+    CAS("CAS", CasAuthenticationSystem.class, "delegates authentication decisions to an enterprise-wide CAS server"),
+    WEBSSO("caGrid WebSSO", WebSSOAuthenticationSystem.class, "delegates authentication to a caGrid WebSSO server (use this option for CCTS)")
     ;
 
     private static final Logger log = LoggerFactory.getLogger(KnownAuthenticationSystem.class);

@@ -21,9 +21,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     </bean>
 
     <bean id="casAuthenticationProvider" class="org.acegisecurity.providers.cas.CasAuthenticationProvider">
-        <property name="casAuthoritiesPopulator">
-            <ref local="casAuthoritiesPopulator"/>
-        </property>
+        <property name="casAuthoritiesPopulator" ref="${populatorBeanName}"/>
         <property name="casProxyDecider">
             <bean class="org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy"/>
         </property>

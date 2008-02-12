@@ -76,6 +76,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         nullSafeSetProperty(template, "cas.local.url",
             urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
         nullSafeSetProperty(template, "psc.defaultTarget",       DEFAULT_TARGET_PATH);
+        nullSafeSetProperty(template, "populatorBeanName", getPopulatorBeanName());
 
         StringBuilder propString = new StringBuilder();
         for (Map.Entry<Object, Object> entry : template.entrySet()) {
@@ -125,7 +126,12 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         return SpringBeanConfigurationTools.prepareBean(casContext, filter);
     }
 
+    @Override
     public Filter logoutFilter() {
         return (Filter) casContext.getBean("casLogoutFilter");
+    }
+
+    protected String getPopulatorBeanName() {
+        return "casAuthoritiesPopulator";
     }
 }
