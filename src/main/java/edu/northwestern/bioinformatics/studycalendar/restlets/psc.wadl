@@ -394,7 +394,6 @@
 
         <resource path="sites">
             <doc>
-                <html:em class="pending">Pending</html:em>
                 <html:p>A list of the sites in the system.</html:p>
             </doc>
             <method name="GET">

@@ -18,7 +18,9 @@ public enum XsdElement {
     SUBJECT_ASSIGNMENTS("subject-assignments"),
     SUBJECT_ASSIGNMENT("subject-assignment"),
     SUBJECT,
-    STUDY_SITE_LINK("study-site-link");
+    SITE,
+    SITES,
+    STUDY_SITE_LINK("study-site-link"), STUDIES, STUDY;
 
     private String elementName;
 
@@ -38,4 +40,5 @@ public enum XsdElement {
         QName qNode = QName.get(xmlName(), AbstractStudyCalendarXmlSerializer.PSC_NS);
         return DocumentHelper.createElement(qNode);
     }
+
 }

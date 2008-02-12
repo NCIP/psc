@@ -35,7 +35,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
     <bean id="studySiteXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySiteXmlSerializer"/>
-
+    <bean id="siteXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SiteXmlSerializer"/>
 
     <!-- PlanTreeNode Serializers -->
     <bean id="plannedCalendarXmlSerializer" autowire="byName" scope="prototype"

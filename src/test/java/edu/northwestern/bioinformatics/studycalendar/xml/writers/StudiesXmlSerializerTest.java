@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.dom4j.Element;
 
 import java.util.Arrays;
-
-import org.dom4j.Element;
 
 /**
  * @author Rhett Sutphin
@@ -24,7 +23,7 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
         Study sA = Fixtures.createNamedInstance("A", Study.class);
         Study sB = Fixtures.createNamedInstance("B", Study.class);
 
-        Element actual = serializer.createElement(Arrays.asList(sA, sB));
+        Element actual = serializer.createDocument(Arrays.asList(sA, sB)).getRootElement();
         assertEquals("studies", actual.getName());
         assertEquals(2, actual.elements().size());
         assertEmbeddedStudyElement("A", (Element) actual.elements().get(0));

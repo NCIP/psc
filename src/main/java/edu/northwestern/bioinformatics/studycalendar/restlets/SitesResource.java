@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -13,9 +13,8 @@ import java.util.Collection;
 /**
  * @author Saurabh Agrawal
  */
-public class ActivitySourcesResource extends AbstractCollectionResource<Source> {
-
-    private SourceDao sourceDao;
+public class SitesResource extends AbstractCollectionResource<Site> {
+    private SiteDao siteDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -24,14 +23,14 @@ public class ActivitySourcesResource extends AbstractCollectionResource<Source> 
     }
 
     @Override
-    public Collection<Source> getAllObjects() {
-        return sourceDao.getAll();
+    public Collection<Site> getAllObjects() {
+        return siteDao.getAll();
     }
 
 
     @Required
-    public void setSourceDao(SourceDao sourceDao) {
-        this.sourceDao = sourceDao;
+    public void setSiteDao(SiteDao siteDao) {
+        this.siteDao = siteDao;
     }
 
 

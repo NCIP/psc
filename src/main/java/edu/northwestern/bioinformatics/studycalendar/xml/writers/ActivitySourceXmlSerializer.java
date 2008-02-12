@@ -31,12 +31,23 @@ public class ActivitySourceXmlSerializer extends AbstractStudyCalendarXmlCollect
 
     @Override
     protected Element createElement(Source source, boolean inCollection) {
-        Element elt = XsdElement.ACTIVITY_SOURCE.create();
-        XsdAttribute.ACTIVITY_NAME.addTo(elt, source.getName());
+
+        Element activityElement = rootElement().create();
+        XsdAttribute.ACTIVITY_NAME.addTo(activityElement, source.getName());
         for (Activity a : source.getActivities()) {
-            elt.add(activitySerializer.createElement(a));
+            activityElement.add(activitySerializer.createElement(a));
         }
-        return elt;
+        if (inCollection) {
+            return activityElement;
+
+        } else {
+            Element root = collectionRootElement().create();
+            root.add(activityElement);
+
+            return root;
+        }
+
+
     }
 
     @Override

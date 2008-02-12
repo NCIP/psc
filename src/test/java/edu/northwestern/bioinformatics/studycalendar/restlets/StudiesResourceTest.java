@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static org.easymock.classextension.EasyMock.*;
+import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
 import java.util.Arrays;
@@ -37,7 +37,7 @@ public class StudiesResourceTest extends ResourceTestCase<StudiesResource> {
     public void testAllRenderedOut() throws Exception {
         List<Study> expectedStudies = Arrays.asList(Fixtures.createBasicTemplate());
         expect(studyDao.getAll()).andReturn(expectedStudies);
-        expectObjectXmlized(expectedStudies);
+        expect(xmlSerializer.createDocumentString(expectedStudies)).andReturn(MOCK_XML);
 
         doGet();
         assertResponseStatus(Status.SUCCESS_OK);

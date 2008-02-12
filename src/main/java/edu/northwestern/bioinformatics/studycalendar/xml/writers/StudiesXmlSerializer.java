@@ -1,33 +1,47 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
-import java.util.Collection;
-
 /**
- * TODO: eventually this will be merged into StudyXmlSerializer so it can implement
- * {@link edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer}
- *
  * @author Rhett Sutphin
  */
-public class StudiesXmlSerializer extends AbstractStudyCalendarXmlSerializer<Collection<Study>> {
-    private static final String STUDIES_ELT_NAME = "studies";
+public class StudiesXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<Study> {
+
 
     @Override
-    public Element createElement(Collection<Study> studies) {
-        Element root = element(STUDIES_ELT_NAME);
-        for (Study study : studies) {
-            Element sElt = element("study");
-            sElt.addAttribute(StudyXmlSerializer.ASSIGNED_IDENTIFIER, study.getNaturalKey());
-            root.add(sElt);
-        }
-        return root;
-    }
-
-    @Override
-    public Collection<Study> readElement(Element element) {
+    public Study readElement(Element element) {
         throw new UnsupportedOperationException("This serializer is write-only");
     }
+
+    @Override
+    protected XsdElement collectionRootElement() {
+        return XsdElement.STUDIES;
+    }
+
+    @Override
+    protected XsdElement rootElement() {
+        return XsdElement.STUDY;
+    }
+
+    @Override
+    protected Element createElement(final Study study, final boolean inCollection) {
+        Element studyElement = rootElement().create();
+        studyElement.addAttribute(StudyXmlSerializer.ASSIGNED_IDENTIFIER, study.getNaturalKey());
+
+        if (inCollection) {
+            return studyElement;
+
+        } else {
+            Element root = collectionRootElement().create();
+            root.add(studyElement);
+
+            return root;
+        }
+
+    }
+
+
 }
