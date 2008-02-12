@@ -1,3 +1,3 @@
 <dataset>
-    <authentication_system_configuration key="for cleanup" value="only"/>
+    <authentication_system_conf key="for cleanup" value="only"/>
 </dataset>

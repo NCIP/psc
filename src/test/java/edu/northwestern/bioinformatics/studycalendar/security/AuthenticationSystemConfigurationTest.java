@@ -115,6 +115,5 @@ public class AuthenticationSystemConfigurationTest extends DaoTestCase {
     private void selectAuthenticationSystem(String requested) {
         configuration.set(AuthenticationSystemConfiguration.AUTHENTICATION_SYSTEM, requested);
         interruptSession();
-        dumpResults("SELECT * FROM authentication_system_configuration");
     }
 }

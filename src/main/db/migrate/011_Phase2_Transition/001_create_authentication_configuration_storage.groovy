@@ -1,6 +1,6 @@
 class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        createTable("authentication_system_configuration") { t ->
+        createTable("authentication_system_conf") { t ->
             t.includePrimaryKey = false
             t.addColumn("key", "string", primaryKey: true)
             t.addColumn("value", "string")
@@ -9,6 +9,6 @@ class PersistentConfiguration extends edu.northwestern.bioinformatics.bering.Mig
     }
 
     void down() {
-        dropTable("authentication_system_configuration", primaryKey: false)
+        dropTable("authentication_system_conf", primaryKey: false)
     }
 }

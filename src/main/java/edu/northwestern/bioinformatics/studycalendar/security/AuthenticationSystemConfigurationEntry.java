@@ -9,5 +9,5 @@ import javax.persistence.Table;
  * @author Rhett Sutphin
  */
 @Entity
-@Table(name = "authentication_system_configuration")
+@Table(name = "authentication_system_conf")
 public class AuthenticationSystemConfigurationEntry extends ConfigurationEntry { }
