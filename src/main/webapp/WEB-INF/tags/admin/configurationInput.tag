@@ -12,7 +12,7 @@
         </div>
     </c:when>
     <c:when test="${configEntry.property.controlType == 'text'}">
-        <div><form:input path="${configEntryPath}"/></div>
+        <div><form:input path="${configEntryPath}" size="40"/></div>
     </c:when>
     <c:otherwise>
         <div>Unimplemented control type ${configEntry.property.controlType} for ${configEntryPath}</div>
