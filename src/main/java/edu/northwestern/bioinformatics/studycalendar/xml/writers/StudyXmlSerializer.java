@@ -2,16 +2,17 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
-import java.util.List;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study>{
     // Elements
@@ -44,6 +45,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             eStudy.add(eAmendment);
         }
 
+        Amendment developmentAmendment = study.getDevelopmentAmendment();
+        Element developmentAmendmentElement = getDevelopmentAmendmentSerializer(study).createElement(developmentAmendment);
+        eStudy.add(developmentAmendmentElement);
+
         return eStudy;
     }
 
@@ -54,6 +59,16 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             study = new Study();
             study.setAssignedIdentifier(key);
 
+
+            Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
+            PlannedCalendar calendar = (PlannedCalendar) getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+            study.setPlannedCalendar(calendar);
+
+            List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
+            for (Element eAmendment : eAmendments) {
+                Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
+                study.pushAmendment(amendment);
+            }
             PopulationXmlSerializer populationXmlSerializer = getPopulationXmlSerializer(study);
             for (Object oPopulation : element.elements(PopulationXmlSerializer.POPULATION)) {
                 Element ePopulation = (Element) oPopulation;
@@ -61,15 +76,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 study.addPopulation(population);
             }
 
-            Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
-            PlannedCalendar calendar = (PlannedCalendar) getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
-            study.setPlannedCalendar(calendar);
+            Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
 
-            List<Element> eAmendments = element.elements(AmendmentXmlSerializer.AMENDMENT);
-            for (Element eAmendment : eAmendments) {
-                Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
-                study.pushAmendment(amendment);
-            }
+            Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
+            study.setDevelopmentAmendment(developmentAmendment);
         }
         return study;
     }
@@ -89,6 +99,14 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
         AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer ) getBeanFactory().getBean("amendmentXmlSerializer");
         amendmentSerializer.setStudy(study);
+        amendmentSerializer.setDevelopmentAmendment(false);
+        return amendmentSerializer;
+    }
+
+    protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
+        AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer) getBeanFactory().getBean("amendmentXmlSerializer");
+        amendmentSerializer.setStudy(study);
+        amendmentSerializer.setDevelopmentAmendment(true);
         return amendmentSerializer;
     }
 

@@ -20,7 +20,11 @@ public enum XsdElement {
     SUBJECT,
     SITE,
     SITES,
-    STUDY_SITE_LINK("study-site-link"), STUDIES, STUDY;
+    STUDY_SITE_LINK("study-site-link"),
+    STUDIES,
+    STUDY,
+    DEVELOPMENT_AMENDMENT("development-amendment"),
+    AMENDMENT;
 
     private String elementName;
 

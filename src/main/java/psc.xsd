@@ -27,6 +27,7 @@
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
         </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
     </xsd:complexType>
@@ -90,6 +91,7 @@
     </xsd:complexType>
 
     <!-- Elements of amendments (deltas & changes) -->
+    <xsd:element name="development-amendment" type="psc:Amendment"/>
 
     <xsd:element name="amendment" type="psc:Amendment"/>
 

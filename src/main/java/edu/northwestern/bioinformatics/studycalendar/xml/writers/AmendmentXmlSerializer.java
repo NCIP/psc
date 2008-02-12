@@ -2,9 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 
 import java.text.ParseException;
@@ -14,17 +16,24 @@ import java.util.List;
 
 public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
     public static final String DATE = "date";
-    public static final String AMENDMENT = "amendment";
+
     public static final String MANDATORY = "mandatory";
     private static final String PREVIOUS_AMENDMENT_KEY = "previous-amendment-key";
 
     private Study study;
     private AmendmentDao amendmentDao;
 
+    private boolean isDevelopmentAmendment = false;
+
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public Element createElement(Amendment amendment) {
-        Element element = element(AMENDMENT);
+        Element element = null;
+        if (!isDevelopmentAmendment) {
+            element = XsdElement.AMENDMENT.create();
+        } else {
+            element = XsdElement.DEVELOPMENT_AMENDMENT.create();
+        }
         element.addAttribute(NAME, amendment.getName());
         element.addAttribute(DATE, formatter.format(amendment.getDate()));
         element.addAttribute(MANDATORY, Boolean.toString(amendment.isMandatory()));
@@ -81,7 +90,6 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             element.add(eDelta);
         }
     }
-    
 
 
     private void addDeltas(final Element element, Amendment amendment) {
@@ -106,5 +114,13 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
 
     public void setStudy(Study study) {
         this.study = study;
+    }
+
+    public boolean isDevelopmentAmendment() {
+        return isDevelopmentAmendment;
+    }
+
+    public void setDevelopmentAmendment(final boolean developmentAmendment) {
+        isDevelopmentAmendment = developmentAmendment;
     }
 }
