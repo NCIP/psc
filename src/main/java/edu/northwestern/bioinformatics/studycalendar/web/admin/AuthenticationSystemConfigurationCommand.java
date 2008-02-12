@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 import org.springframework.validation.Errors;
 import org.springframework.context.ApplicationContext;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 
@@ -15,6 +17,8 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
  * @author Rhett Sutphin
  */
 public class AuthenticationSystemConfigurationCommand implements Validatable {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private AuthenticationSystemConfiguration liveConfiguration;
     private AuthenticationSystemConfiguration workConfiguration;
     private BindableConfiguration conf;
@@ -22,14 +26,19 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
     public AuthenticationSystemConfigurationCommand(String newAuthenticationSystem, AuthenticationSystemConfiguration liveConfiguration, ApplicationContext applicationContext) {
         this.liveConfiguration = liveConfiguration;
         workConfiguration = new AuthenticationSystemConfiguration();
+        workConfiguration.setApplicationContext(applicationContext);
         workConfiguration.setDelegate(
             TransientConfiguration.create(liveConfiguration));
-        workConfiguration.setApplicationContext(applicationContext);
 
         String oldAuthenticationSystem = workConfiguration.get(AUTHENTICATION_SYSTEM);
         try {
             if (newAuthenticationSystem != null) {
                 workConfiguration.set(AUTHENTICATION_SYSTEM, newAuthenticationSystem);
+                log.debug("Updated properties: {}", workConfiguration.getProperties().getAll());
+                // update delegate with new properties
+                workConfiguration.setDelegate(
+                    TransientConfiguration.create(liveConfiguration, workConfiguration.getProperties()));
+
                 workConfiguration.getAuthenticationSystem(); // attempt to load
             }
         } catch (AuthenticationSystemLoadingFailure failure) {
