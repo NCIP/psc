@@ -20,18 +20,27 @@ import org.apache.commons.beanutils.PropertyUtils;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 
 /**
  * @author Rhett Sutphin
  */
 public abstract class StudyCalendarTestCase extends CoreTestCase {
     private static ApplicationContext applicationContext = null;
+    private static Throwable acLoadingFailure = null;
     protected Set<Object> mocks = new HashSet<Object>();
 
     public static ApplicationContext getDeployedApplicationContext() {
         synchronized (StudyCalendarTestCase.class) {
-            if (applicationContext == null) {
-                applicationContext = ContextTools.createDeployedApplicationContext();
+            if (applicationContext == null && acLoadingFailure == null) {
+                try {
+                    applicationContext = ContextTools.createDeployedApplicationContext();
+                } catch (RuntimeException e) {
+                    acLoadingFailure = e;
+                    throw e;
+                }
+            } else if (acLoadingFailure != null) {
+                throw new StudyCalendarSystemException("Application context loading already failed; will not retry.", acLoadingFailure);
             }
             return applicationContext;
         }

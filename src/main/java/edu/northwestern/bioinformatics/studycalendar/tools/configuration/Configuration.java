@@ -15,7 +15,7 @@ import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
  * @author Rhett Sutphin
  */
 public class Configuration extends DatabaseBackedConfiguration {
-    private static final ConfigurationProperties PROPERTIES
+    public static final ConfigurationProperties PROPERTIES
         = new ConfigurationProperties(new ClassPathResource("details.properties", Configuration.class));
 
     public static final ConfigurationProperty<String>
@@ -44,14 +44,12 @@ public class Configuration extends DatabaseBackedConfiguration {
         return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null;
     }
 
-    @Override
     public ConfigurationProperties getProperties() {
         return PROPERTIES;
     }
 
-
     @Override
-    @Transactional (propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Map<String, Object> getMap() {
         return super.getMap();
     }

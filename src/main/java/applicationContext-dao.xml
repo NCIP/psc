@@ -18,7 +18,6 @@
         <property name="mappingLocations">
             <list>
                 <value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/typedefs.hbm.xml</value>
-                <!--<value>classpath:edu/northwestern/bioinformatics/studycalendar/domain/hibernate/overrides.xml</value>-->
             </list>
         </property>
         <property name="namingStrategy">
@@ -75,6 +74,8 @@
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PeriodDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedActivityDelta</value>
                 <value>edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval</value>
+
+                <value>edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfigurationEntry</value>
             </list>
         </property>
        

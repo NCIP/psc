@@ -1,8 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ServletContextAware;
@@ -10,6 +7,9 @@ import org.springframework.web.context.ServletContextAware;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
 
 /**
  * @author Rhett Sutphin
@@ -25,7 +25,7 @@ public class MailMessageFactory implements ServletContextAware {
     ////// FACTORY
 
     public ExceptionMailMessage createExceptionMailMessage(Throwable exception, HttpServletRequest request) {
-        List<String> to = configuration.get(Configuration.MAIL_EXCEPTIONS_TO);
+        List<String> to = configuration.get(MAIL_EXCEPTIONS_TO);
         if (to == null) {
             log.error("Uncaught exception encountered, but report e-mail messages not configured.  To turn them on, set at least one address for the mailExceptionsTo property.");
             return null;
@@ -42,7 +42,7 @@ public class MailMessageFactory implements ServletContextAware {
     private <T extends StudyCalendarMailMessage> T configureMessage(T message) {
         message.setFreemarkerConfiguration(freemarkerConfiguration);
         message.setConfiguration(configuration);
-        message.setReplyTo(configuration.get(Configuration.MAIL_REPLY_TO));
+        message.setReplyTo(configuration.get(MAIL_REPLY_TO));
         message.onInitialization();
         return message;
     }

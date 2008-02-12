@@ -19,6 +19,6 @@
         </property>
     </bean>
 
-    <bean id="mailMessageFactory" autowire="byType"
+    <bean id="mailMessageFactory" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory"/>
 </beans>

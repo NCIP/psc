@@ -7,16 +7,12 @@ import static java.lang.String.format;
 /**
  * @author Rhett Sutphin
  */
-public class StudyCalendarValidationException extends RuntimeException {
+public class StudyCalendarValidationException extends StudyCalendarUserException {
     public StudyCalendarValidationException(String message, Object... messageParameters) {
-        super(format(message, messageParameters));
+        super(message, messageParameters);
     }
 
     public StudyCalendarValidationException(String message, Throwable cause, Object... messageParameters) {
-        super(format(message, messageParameters), cause);
-    }
-
-    public void rejectInto(Errors errors) {
-        errors.reject("error.literal", getMessage());
+        super(message, cause, messageParameters);
     }
 }

@@ -6,10 +6,10 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Reference;
-import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
+import org.acegisecurity.AuthenticationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -34,7 +34,7 @@ public class PscGuard extends Guard {
     public static final String AUTH_TOKEN_ATTRIBUTE_KEY = "pscAuthenticationToken";
 
     private Pattern except;
-    private AuthenticationProvider authenticationProvider;
+    private AuthenticationManager authenticationManager;
 
     public PscGuard() {
         super(null, ChallengeScheme.HTTP_BASIC, "PSC");
@@ -93,7 +93,7 @@ public class PscGuard extends Guard {
     protected Authentication authenticate(String identifier, String secret) {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(identifier, secret);
         try {
-            return authenticationProvider.authenticate(token);
+            return authenticationManager.authenticate(token);
         } catch (AuthenticationException ae) {
             log.debug("Authentication using injected authentication provider failed", ae);
             return null;
@@ -110,12 +110,12 @@ public class PscGuard extends Guard {
         this.except = except;
     }
 
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authenticationProvider;
+    public AuthenticationManager getAuthenticationManager() {
+        return authenticationManager;
     }
 
     @Required
-    public void setAuthenticationProvider(AuthenticationProvider authenticationProvider) {
-        this.authenticationProvider = authenticationProvider;
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
     }
 }

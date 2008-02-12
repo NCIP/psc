@@ -1,19 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Restlet;
-import org.restlet.data.Status;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.ChallengeResponse;
-import org.acegisecurity.providers.AuthenticationProvider;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.BadCredentialsException;
 import org.acegisecurity.GrantedAuthority;
-import static org.easymock.classextension.EasyMock.*;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import static org.easymock.classextension.EasyMock.expect;
+import org.restlet.Restlet;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Status;
 
 import java.util.regex.Pattern;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 
 /**
  * @author Rhett Sutphin
@@ -25,7 +24,7 @@ public class PscGuardTest extends RestletTestCase {
     private User user;
 
     private Restlet nextRestlet;
-    private AuthenticationProvider authenticationProvider;
+    private AuthenticationManager authenticationManager;
 
     @Override
     protected void setUp() throws Exception {
@@ -33,11 +32,11 @@ public class PscGuardTest extends RestletTestCase {
         user = Fixtures.createNamedInstance(USERNAME, User.class);
         
         nextRestlet = registerMockFor(Restlet.class);
-        authenticationProvider = registerMockFor(AuthenticationProvider.class);
+        authenticationManager = registerMockFor(AuthenticationManager.class);
 
         guard = new PscGuard();
         guard.setNext(nextRestlet);
-        guard.setAuthenticationProvider(authenticationProvider);
+        guard.setAuthenticationManager(authenticationManager);
 
         request.setResourceRef(BASE_URI);
     }
@@ -78,12 +77,12 @@ public class PscGuardTest extends RestletTestCase {
         assertResponseStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
     }
 
-    public void testAuthenticationWorksIfAuthenticationProviderPasses() throws Exception {
+    public void testAuthenticationWorksIfAuthenticationManagerPasses() throws Exception {
         expectBasicAuthChallengeResponse(USERNAME, "pass");
 
         UsernamePasswordAuthenticationToken authenticated
             = new UsernamePasswordAuthenticationToken(user, "pass", new GrantedAuthority[0]);
-        expect(authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "pass")))
+        expect(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "pass")))
             .andReturn(authenticated);
         expectNextInvoked();
 
@@ -91,9 +90,9 @@ public class PscGuardTest extends RestletTestCase {
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
-    public void testAuthenticationFailsIfAuthenticationProviderThrowsException() throws Exception {
+    public void testAuthenticationFailsIfAuthenticationManagerThrowsException() throws Exception {
         expectBasicAuthChallengeResponse(USERNAME, "wrongpass");
-        expect(authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "wrongpass")))
+        expect(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "wrongpass")))
             .andThrow(new BadCredentialsException("That's not the right thing"));
 
         doHandle();
@@ -105,7 +104,7 @@ public class PscGuardTest extends RestletTestCase {
 
         UsernamePasswordAuthenticationToken authenticated
             = new UsernamePasswordAuthenticationToken(user, "pass", new GrantedAuthority[0]);
-        expect(authenticationProvider.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "pass")))
+        expect(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(USERNAME, "pass")))
             .andReturn(authenticated);
         expectNextInvoked();
 

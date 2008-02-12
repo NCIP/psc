@@ -1,29 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+import gov.nih.nci.cabig.ctms.tools.configuration.TransientConfiguration;
 
 import java.util.Map;
 import java.util.HashMap;
 
 /**
- * An in-memory-only version of {@link gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration}, suitable for testing
+ * An in-memory-only version of {@link Configuration}, suitable for testing
  *
  * @author Rhett Sutphin
  */
-public class MockConfiguration extends Configuration {
-    private Map<String, Object> configuration;
-
+public class MockConfiguration extends TransientConfiguration {
     public MockConfiguration() {
-        this.configuration = new HashMap<String, Object>();
-    }
-
-    @Override
-    public <V> V get(ConfigurationProperty<V> property) {
-        return (V) configuration.get(property.getKey());
-    }
-
-    @Override
-    public <V> void set(ConfigurationProperty<V> property, V value) {
-        configuration.put(property.getKey(), value);
+        super(Configuration.PROPERTIES);
     }
 }

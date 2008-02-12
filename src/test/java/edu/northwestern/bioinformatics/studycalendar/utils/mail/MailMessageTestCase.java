@@ -1,10 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.tools.configuration.MockConfiguration;
+import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mock.web.MockServletContext;
+import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 
 /**
  * @author rsutphin
@@ -15,6 +16,7 @@ public abstract class MailMessageTestCase<M extends SimpleMailMessage> extends S
     private MailMessageFactory mailMessageFactory;
     private MockConfiguration configuration;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         mailMessageFactory = (MailMessageFactory) getDeployedApplicationContext().getBean("mailMessageFactory");
@@ -31,7 +33,7 @@ public abstract class MailMessageTestCase<M extends SimpleMailMessage> extends S
 
     public void testReplyTo() {
         String expected = "John Q. Developer";
-        getConfiguration().set(Configuration.MAIL_REPLY_TO, expected);
+        getConfiguration().set(MAIL_REPLY_TO, expected);
         assertEquals(expected, createMessage().getReplyTo());
     }
 
