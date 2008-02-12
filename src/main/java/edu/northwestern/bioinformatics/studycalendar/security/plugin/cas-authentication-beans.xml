@@ -46,6 +46,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="trustStore" value="${cas.server.trustStore}"/>
     </bean>
 
+    <bean id="casLogoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
+        <constructor-arg value="${cas.server.url.logout}"/>
+        <constructor-arg>
+            <list>
+                <bean class="org.acegisecurity.ui.logout.SecurityContextLogoutHandler"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
     <bean id="serviceProperties" class="org.acegisecurity.ui.cas.ServiceProperties">
         <property name="service" value="${cas.local.url}"></property>
         <property name="sendRenew">

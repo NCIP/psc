@@ -87,6 +87,16 @@ public interface AuthenticationSystem {
      */
     AuthenticationEntryPoint entryPoint();
 
+    /**
+     * Returns a filter which handles <code>/j_acegi_logout</code> and performs whatever
+     * actions are required to log out in this system.  At a minimum, this will include
+     * the behavior implemented in {@link org.acegisecurity.ui.logout.SecurityContextLogoutHandler}.
+     * <p>
+     * Many implementations will find the filter defined as <code>defaultLogoutFilter</code>
+     * in the application context passed to {@link #initialize} sufficient.
+     */
+    Filter logoutFilter();
+
     //////
     // TODO: custom HTTP authentication methods
     //////

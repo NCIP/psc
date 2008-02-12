@@ -11,6 +11,7 @@ import org.acegisecurity.providers.cas.proxy.AcceptAnyCasProxy;
 import org.acegisecurity.providers.cas.ticketvalidator.CasProxyTicketValidator;
 import org.acegisecurity.ui.cas.CasProcessingFilterEntryPoint;
 import org.acegisecurity.ui.cas.ServiceProperties;
+import org.acegisecurity.ui.logout.LogoutFilter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.ApplicationContext;
 
@@ -72,7 +73,7 @@ public class CasAuthenticationSystemTest extends StudyCalendarTestCase {
 
     public void testInitializeAuthManager() throws Exception {
         doValidInitialize();
-        assertTrue("Wrong filter type", system.authenticationManager() instanceof ProviderManager);
+        assertTrue("Wrong type", system.authenticationManager() instanceof ProviderManager);
         ProviderManager manager = (ProviderManager) system.authenticationManager();
         assertEquals("Wrong number of providers", 2, manager.getProviders().size());
         assertTrue("First provider is not CAS provider",
@@ -87,6 +88,12 @@ public class CasAuthenticationSystemTest extends StudyCalendarTestCase {
         assertCorrectServiceProperties(validator.getServiceProperties());
         assertTrue("Proxy tickets should be allowed",
             provider.getCasProxyDecider() instanceof AcceptAnyCasProxy);
+    }
+
+    public void testInitializeLogoutFilter() throws Exception {
+        doValidInitialize();
+        assertTrue("Wrong filter type", system.logoutFilter() instanceof LogoutFilter);
+        // can't really test anything else because no properties are exposed.
     }
 
     private void doValidInitialize() {

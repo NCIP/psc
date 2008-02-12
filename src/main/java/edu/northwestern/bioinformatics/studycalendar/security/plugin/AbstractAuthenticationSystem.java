@@ -24,7 +24,7 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
 
     private AuthenticationManager authenticationManager;
     private AuthenticationEntryPoint entryPoint;
-    private Filter filter;
+    private Filter filter, logoutFilter;
 
     protected ApplicationContext getApplicationContext() {
         return applicationContext;
@@ -44,6 +44,7 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
         this.authenticationManager = createAuthenticationManager();
         this.entryPoint = createEntryPoint();
         this.filter = createFilter();
+        this.logoutFilter = createLogoutFilter();
         initAfterCreate();
     }
 
@@ -93,6 +94,18 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     }
 
     /**
+     * Template method for initializing the value returned by {@link #filter()}.
+     * Alternatively, you could use {@link #initAfterCreate()}.  If you take the latter
+     * route, be sure to override {@link #logoutFilter()}, too.
+     * <p>
+     * Defaults to the bean <code>defaultLogoutFilter</code> from the application context
+     * provided to {@link #initialize}.
+     */
+    protected Filter createLogoutFilter() {
+        return (Filter) getApplicationContext().getBean("defaultLogoutFilter");
+    }
+
+    /**
      * Template method for initialization.  {@link #getApplicationContext()} and
      * {@link #getConfiguration()} will be available.  All the <code>create*</code>
      * template methods will be called before this one.
@@ -102,6 +115,7 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     public AuthenticationManager authenticationManager() { return authenticationManager; }
     public AuthenticationEntryPoint entryPoint() { return entryPoint; }
     public Filter filter() { return filter; }
+    public Filter logoutFilter() { return logoutFilter; }
 
     private void validateRequiredConfigurationProperties() {
         if (requiredConfigurationProperties() != null) {

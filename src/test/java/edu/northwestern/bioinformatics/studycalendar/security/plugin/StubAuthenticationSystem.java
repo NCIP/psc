@@ -59,4 +59,8 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
     public AuthenticationEntryPoint entryPoint() {
         throw new UnsupportedOperationException("entryPoint not implemented");
     }
+
+    public Filter logoutFilter() {
+        throw new UnsupportedOperationException("logoutFilter not implemented");
+    }
 }

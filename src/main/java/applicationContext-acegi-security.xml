@@ -12,7 +12,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
             <value>
                 CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
                 PATTERN_TYPE_APACHE_ANT
-                /**=httpSessionContextIntegrationFilter,logoutFilter,authenticationSystemSocket,securityContextHolderAwareRequestFilter,exceptionTranslationFilter,filterInvocationInterceptor
+                /**=httpSessionContextIntegrationFilter,authenticationSystemLogoutFilter,authenticationSystemSocket,securityContextHolderAwareRequestFilter,exceptionTranslationFilter,filterInvocationInterceptor
             </value>
 
         </property>
@@ -21,7 +21,12 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
     <bean id="httpSessionContextIntegrationFilter"
           class="org.acegisecurity.context.HttpSessionContextIntegrationFilter"/>
 
-    <bean id="logoutFilter"
+    <bean id="authenticationSystemLogoutFilter"
+          class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemLogoutFilter">
+        <property name="authenticationSystemConfiguration" ref="authenticationSystemConfiguration"/>
+    </bean>
+
+    <bean id="defaultLogoutFilter"
           class="org.acegisecurity.ui.logout.LogoutFilter">
         <constructor-arg value="/pages/dashboard"/>
         <!-- URL redirected to after logout -->

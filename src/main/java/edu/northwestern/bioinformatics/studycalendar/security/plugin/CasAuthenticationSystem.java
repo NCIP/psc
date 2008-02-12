@@ -70,6 +70,8 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         nullSafeSetProperty(template, "cas.server.url.base",     getConfiguration().get(SERVICE_URL));
         nullSafeSetProperty(template, "cas.server.url.validate",
             urlJoin(getConfiguration().get(SERVICE_URL), "proxyValidate"));
+        nullSafeSetProperty(template, "cas.server.url.logout",
+            urlJoin(getConfiguration().get(SERVICE_URL), "logout"));
         nullSafeSetProperty(template, "cas.local.filterPath",    urlJoin("", CAS_FILTER_PATH));
         nullSafeSetProperty(template, "cas.local.url",
             urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
@@ -121,5 +123,9 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         filter.setFilterProcessesUrl(CAS_FILTER_PATH);
         filter.setAuthenticationFailureUrl("/accessDenied.jsp");
         return SpringBeanConfigurationTools.prepareBean(casContext, filter);
+    }
+
+    public Filter logoutFilter() {
+        return (Filter) casContext.getBean("casLogoutFilter");
     }
 }
