@@ -119,7 +119,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
         filter.setAuthenticationManager(authenticationManager());
         filter.setDefaultTargetUrl(DEFAULT_TARGET_PATH);
         filter.setFilterProcessesUrl(CAS_FILTER_PATH);
-        filter.setAuthenticationFailureUrl("/public/loginFailed");
+        filter.setAuthenticationFailureUrl("/accessDenied.jsp");
         return SpringBeanConfigurationTools.prepareBean(casContext, filter);
     }
 }
