@@ -70,6 +70,10 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
         }
     }
 
+    public AuthenticationSystemConfiguration getWorkConfiguration() {
+        return workConfiguration;
+    }
+
     ////// BOUND PROPERTIES
 
     public BindableConfiguration getConf() {
@@ -92,10 +96,11 @@ public class AuthenticationSystemConfigurationCommand implements Validatable {
 
     ////// OBJECT METHODS
 
+    @Override
     public String toString() {
         return new StringBuilder(getClass().getSimpleName()).append("[conf=").append(getConf())
             .append(", customAuthenticationSystemClass=")
             .append(getCustomAuthenticationSystemClass())
-            .append("]").toString();
+            .append(']').toString();
     }
 }

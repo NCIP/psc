@@ -48,8 +48,8 @@ public class AuthenticationSystemConfigurationController extends PscAbstractComm
         AuthenticationSystemConfigurationCommand command, BindException errors,
         HttpServletRequest request, HttpServletResponse response
     ) throws Exception {
-        boolean isCustom = authenticationSystemConfiguration.isCustomAuthenticationSystem();
-        String system = authenticationSystemConfiguration.get(AUTHENTICATION_SYSTEM);
+        boolean isCustom = command.getWorkConfiguration().isCustomAuthenticationSystem();
+        String system = command.getWorkConfiguration().get(AUTHENTICATION_SYSTEM);
 
         Map<String, Object> model = new HashMap<String, Object>(errors.getModel());
         model.put("knownAuthenticationSystems", KnownAuthenticationSystem.values());
