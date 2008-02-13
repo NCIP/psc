@@ -89,13 +89,19 @@
     </bean>
 
     <!-- SITE -->
-    <bean name="/sites"
-          id="sitesResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.SitesResource"
+    <bean name="/sites/{site-identifier}"
+          id="siteResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SiteResource"
             >
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
     </bean>
-    
+    <bean name="/sites"
+              id="sitesResource" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.restlets.SitesResource"
+                >
+            <property name="xmlSerializer" ref="siteXmlSerializer"/>
+        </bean>
+
 
     <!-- AUXILIARIES -->
   

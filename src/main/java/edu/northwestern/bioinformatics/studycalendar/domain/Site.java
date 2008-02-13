@@ -5,17 +5,12 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.springframework.beans.BeanUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 /**
  * @author Padmaja Vedula
@@ -23,7 +18,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "sites")
 @GenericGenerator(name = "id-generator", strategy = "native",
-    parameters = { @Parameter(name = "sequence", value = "seq_sites_id") }
+        parameters = {@Parameter(name = "sequence", value = "seq_sites_id")}
 )
 public class Site extends AbstractMutableDomainObject implements Named, Serializable, NaturallyKeyed {
     private String name;
@@ -77,8 +72,9 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     }
 
     @OneToMany(mappedBy = "site", fetch = FetchType.EAGER)
-    @OrderBy // order by ID for testing consistency
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OrderBy
+    // order by ID for testing consistency
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<StudySite> getStudySites() {
         return studySites;
     }
@@ -101,8 +97,9 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
 
     @OneToMany
     @JoinColumn(name = "site_id", nullable = false)
-    @OrderBy // order by ID for testing consistency
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OrderBy
+    // order by ID for testing consistency
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<Holiday> getHolidaysAndWeekends() {
         return holidaysAndWeekends;
     }
@@ -131,4 +128,15 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
     }
+
+    /**
+     * updates the properties of site.
+     *
+     * @param site source site
+     */
+    @Transient
+    public void updateSite(final Site site) {
+        BeanUtils.copyProperties(site, this, new String[]{"studySites", "id","holidaysAndWeekends"});
+    }
+
 }

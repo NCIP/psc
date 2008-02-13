@@ -404,7 +404,6 @@
 
             <resource path="{site-identifier}">
                 <doc>
-                    <html:em class="pending">Pending</html:em>
                     <html:p>A single site.</html:p>
                 </doc>
                 <param style="template" name="site-identifier">

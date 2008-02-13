@@ -24,30 +24,36 @@ public class SiteService {
     private StudySiteDao studySiteDao;
     private StudyCalendarAuthorizationManager authorizationManager;
 
-    public Site createSite(Site site) throws Exception {
+    public Site createOrUpdateSite(Site site) throws Exception {
+
         siteDao.save(site);
-        saveSiteProtectionGroup(createExternalObjectId(site));
+        if (site.getId() == null
+                || authorizationManager.getPGByName(createExternalObjectId(site)) == null) {
+            //no need to updat the protection group when you update the site because the protection group are created by class name+id which never changes.
+            saveSiteProtectionGroup(site);
+        }
         return site;
+
     }
-    
-    protected void saveSiteProtectionGroup(String siteName) throws Exception {
-    	authorizationManager.createProtectionGroup(siteName);
+
+    protected void saveSiteProtectionGroup(final Site site) throws Exception {
+        authorizationManager.createProtectionGroup(createExternalObjectId(site));
     }
 
     public void assignProtectionGroup(Site site, User user, Role role) throws Exception {
         ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmGroup());
+        authorizationManager.assignProtectionGroupsToUsers(user.getCsmUserId().toString(), sitePG, role.csmGroup());
     }
 
     public void removeProtectionGroup(Site site, User user) throws Exception {
         ProtectionGroup sitePG = authorizationManager.getPGByName(createExternalObjectId(site));
-    	authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
+        authorizationManager.removeProtectionGroupUsers(asList(user.getCsmUserId().toString()), sitePG);
     }
 
     /**
      * This method is incomplete.  It should probably be replaced with calls like
      * {@link User}.getUserRole(desiredRole).getSites().
-     * 
+     *
      * @param userName
      * @return
      */
@@ -93,6 +99,30 @@ public class SiteService {
         return sitesForStudy;
     }
 
+    public void removeSite(final Site site) throws Exception {
+        boolean siteCanBeDeleted = checkIfSiteCanBeDeleted(site);
+        if (siteCanBeDeleted) {//first remove the protection group
+            authorizationManager.removeProtectionGroup(createExternalObjectId(site));
+
+            //it should also delete the study sites and holidays
+            siteDao.delete(site);
+        }
+    }
+
+    public boolean checkIfSiteCanBeDeleted(final Site site) {
+
+        //site can be deleted only if it has not assignments
+
+        List<StudySite> studySiteList = site.getStudySites();
+        for (StudySite studySite : studySiteList) {
+            List<StudySubjectAssignment> studySubjectAssignmentList = studySite.getStudySubjectAssignments();
+            if (studySubjectAssignmentList != null && !studySubjectAssignmentList.isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -113,5 +143,9 @@ public class SiteService {
     @Required
     public void setStudyCalendarAuthorizationManager(StudyCalendarAuthorizationManager authorizationManager) {
         this.authorizationManager = authorizationManager;
+    }
+
+    public Site getByAssignedIdentifier(final String assignedIdentifier) {
+        return siteDao.getByAssignedIdentifier(assignedIdentifier);
     }
 }

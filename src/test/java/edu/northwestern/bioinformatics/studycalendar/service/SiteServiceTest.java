@@ -3,25 +3,18 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import static org.easymock.classextension.EasyMock.expect;
 
+import java.util.*;
 import static java.util.Arrays.asList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Arrays;
 
 
 /**
@@ -60,20 +53,25 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
     public void testCreateSite() throws Exception {
         siteDao.save(nu);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
         authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
         replayMocks();
 
-        Site siteCreated = service.createSite(nu);
+        Site siteCreated = service.createOrUpdateSite(nu);
         verifyMocks();
 
         assertNotNull("site not returned", siteCreated);
     }
 
     public void testSaveSiteProtectionGroup() throws Exception {
-        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        Site site = new Site();
+        site.setId(1);
+        String groupName = "edu.northwestern.bioinformatics.studycalendar.domain.Site.1";
+        authorizationManager.createProtectionGroup(groupName);
         replayMocks();
 
-        service.saveSiteProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+
+        service.saveSiteProtectionGroup(site);
         verifyMocks();
     }
 
@@ -128,5 +126,38 @@ public class SiteServiceTest extends StudyCalendarTestCase {
         replayMocks();
         service.assignProtectionGroup(mayo, user, role);
         verifyMocks();
+    }
+
+    public void testCheckIfSiteCanBeDeleted() throws Exception {
+        Site site = new Site();
+        site.setId(1);
+        assertTrue("site can not be deleted", service.checkIfSiteCanBeDeleted(site));
+
+        StudySite studySite = new StudySite();
+
+        studySite.getStudySubjectAssignments().add(new StudySubjectAssignment());
+        site.addStudySite(studySite);
+
+        assertFalse("site can  be deleted", service.checkIfSiteCanBeDeleted(site));
+
+    }
+
+    public void testRemoveSite() throws Exception {
+        Site site = new Site();
+        site.setId(1);
+
+        authorizationManager.removeProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        siteDao.delete(site);
+        replayMocks();
+        service.removeSite(site);
+        verifyMocks();
+        StudySite studySite = new StudySite();
+
+        studySite.getStudySubjectAssignments().add(new StudySubjectAssignment());
+        site.addStudySite(studySite);
+
+        service.removeSite(site);
+
+
     }
 }

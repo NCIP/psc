@@ -12,7 +12,7 @@ public class NewSiteCommand {
     public Site createSite() throws Exception {
     	Site site = new Site();
     	site.setName(name);
-        return siteService.createSite(site);
+        return siteService.createOrUpdateSite(site);
     }
 
     ////// CONFIGURATION
