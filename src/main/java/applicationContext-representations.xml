@@ -27,7 +27,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer"/>
     <bean id="studiesXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
-    <bean id="registrationXmlSerializer"
+    <bean id="registrationXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
     <bean id="studySubjectAssignmentXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
@@ -35,6 +35,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
     <bean id="studySiteXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySiteXmlSerializer"/>
+    <bean id="subjectXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SubjectXmlSerializer"/>
     <bean id="siteXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SiteXmlSerializer"/>
 

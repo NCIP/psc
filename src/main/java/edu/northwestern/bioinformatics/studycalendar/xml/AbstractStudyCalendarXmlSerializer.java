@@ -2,22 +2,26 @@ package edu.northwestern.bioinformatics.studycalendar.xml;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import org.dom4j.*;
-import org.dom4j.io.SAXReader;
 import org.dom4j.io.OutputFormat;
+import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.BeansException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.IOException;
 
 /**
  * @author Rhett Sutphin
  * @author John Dzak
  */
 public abstract class AbstractStudyCalendarXmlSerializer<R> implements StudyCalendarXmlSerializer<R>, BeanFactoryAware {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+    
     public static final String XML_NS = "http://www.w3.org/2000/xmlns/";
     public static final String XSI_NS = "http://www.w3.org/2001/XMLSchema-instance";
     public static final String PSC_NS = "http://bioinformatics.northwestern.edu/ns/psc";

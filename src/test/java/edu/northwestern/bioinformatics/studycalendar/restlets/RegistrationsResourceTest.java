@@ -150,7 +150,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
     }
 
     public void testPutWithAuthorizedRole() {
-        assertRolesAllowedForMethod(Method.PUT, Role.SUBJECT_COORDINATOR);
+        assertRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
     ////// Helper Methods

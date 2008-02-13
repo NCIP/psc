@@ -26,7 +26,7 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
-        setAuthorizedFor(Method.PUT, Role.SUBJECT_COORDINATOR);
+        setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
     @Override

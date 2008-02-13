@@ -212,8 +212,15 @@
         <xsd:attribute name="first-name" type="xsd:string"/>
         <xsd:attribute name="last-name" type="xsd:string"/>
         <xsd:attribute name="date-of-birth" type="xsd:date"/>
-        <xsd:attribute name="gender" type="xsd:string"/>
         <xsd:attribute name="person-id" type="xsd:string"/>
+        <xsd:attribute name="gender">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="male"/>
+                    <xsd:enumeration value="female"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
     </xsd:complexType>
 
     <xsd:element name="registration" type="psc:Registration"/>
@@ -224,7 +231,7 @@
         </xsd:sequence>
         <xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
-        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string" use="required"/>
         <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
     </xsd:complexType>
 

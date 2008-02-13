@@ -98,6 +98,7 @@ public class Subject extends AbstractMutableDomainObject {
         this.dateOfBirth = dateOfBirth;
     }
 
+    // TODO: Create enum for gender
     public String getGender() {
         return gender;
     }

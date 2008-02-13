@@ -24,7 +24,7 @@ public enum XsdAttribute {
 
     ACTIVITY_SOURCE_NAME("name"),
 
-    REGISTRATION_FIRST_STUDY_SEGMENT("first-study-segment"),
+    REGISTRATION_FIRST_STUDY_SEGMENT_ID("first-study-segment-id"),
     REGISTRATION_DATE("date"),
     REGISTRATION_SUBJECT_COORDINATOR_NAME("subject-coordinator-name"),
     REGISTRATION_DESIRED_ASSIGNMENT_ID("desired-assignment-id"),
@@ -41,7 +41,8 @@ public enum XsdAttribute {
     STUDY_SITE_STUDY_NM("study-name"),
     STUDY_SITE_SITE_NM("site-name"),
     SITE_SITE_NM("site-name"),
-    SITE_ASSIGNED_IDENTIFIER("assigned-identifier");
+    SITE_ASSIGNED_IDENTIFIER("assigned-identifier"),
+    SUBJECT_GENDER("gender");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;
@@ -56,6 +57,8 @@ public enum XsdAttribute {
 
     public Date fromDate(Element elt) {
         String dateString = from(elt);
+        if (dateString == null) { return null; }
+
         try {
             return formatter.parse(dateString);
         } catch(ParseException pe) {
