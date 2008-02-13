@@ -211,9 +211,9 @@
     <xsd:complexType name="Subject">
         <xsd:attribute name="first-name" type="xsd:string"/>
         <xsd:attribute name="last-name" type="xsd:string"/>
-        <xsd:attribute name="date-of-birth" type="xsd:date"/>
+        <xsd:attribute name="birth-date" type="xsd:date"/>
         <xsd:attribute name="person-id" type="xsd:string"/>
-        <xsd:attribute name="gender">
+        <xsd:attribute name="gender" use="required">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="male"/>

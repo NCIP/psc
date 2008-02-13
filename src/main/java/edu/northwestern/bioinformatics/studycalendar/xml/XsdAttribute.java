@@ -32,7 +32,7 @@ public enum XsdAttribute {
     ASSIGNMENT_SITE_NAME("site-name"),
     SUBJECT_FIRST_NM("first-name"),
     SUBJECT_LAST_NM("last-name"),
-    SUBJECT_DATE_OF_BIRTH("date-of-birth"),
+    SUBJECT_BIRTH_DATE("birth-date"),
     SUBJECT_PERSON_ID("person-id"),
     ASSIGNMENT_CURRENT_AMENDMENT("current-amendment-key"),
     ASSIGNMENT_SUBJECT_COORD("subject-coordinator-name"),

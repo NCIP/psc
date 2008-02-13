@@ -31,6 +31,7 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
 
     @Override
     public Registration readElement(Element elt) {
+        if (elt == null) return null;
         validateElement(elt);
 
         Date date = REGISTRATION_DATE.fromDate(elt);
