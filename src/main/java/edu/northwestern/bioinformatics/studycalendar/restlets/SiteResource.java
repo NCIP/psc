@@ -47,13 +47,9 @@ public class SiteResource extends AbstractRemovableStorableDomainObjectResource<
     public void store(final Site site) {
         try {
 
-            if (getRequestedObject() == null) {
-                siteService.createOrUpdateSite(site);
-            } else {
-                Site existingSite = getRequestedObject();
-                existingSite.updateSite(site);
-                siteService.createOrUpdateSite(existingSite);
-            }
+            Site existingSite = getRequestedObject();
+            siteService.createOrMergeSites(existingSite, site);
+
         } catch (Exception e) {
             String message = "Can not update the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);

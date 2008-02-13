@@ -160,4 +160,37 @@ public class SiteServiceTest extends StudyCalendarTestCase {
 
 
     }
+
+    public void testCreateOrMergeSiteForCreateSite() throws Exception {
+
+        siteDao.save(nu);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(null);
+        authorizationManager.createProtectionGroup("edu.northwestern.bioinformatics.studycalendar.domain.Site.1");
+        replayMocks();
+
+
+        Site newSite = service.createOrMergeSites(null, nu);
+        assertEquals(newSite.getName(), nu.getName());
+        verifyMocks();
+
+    }
+
+    public void testCreateOrMergeSiteForMergeSite() throws Exception {
+
+        nu.setId(1);
+        Site newSite = new Site();
+        newSite.setName("new Name");
+        siteDao.save(nu);
+        expect(authorizationManager.getPGByName("edu.northwestern.bioinformatics.studycalendar.domain.Site.1")).andReturn(new ProtectionGroup());
+
+        replayMocks();
+
+
+        Site mergedSite = service.createOrMergeSites(nu, newSite);
+        verifyMocks();
+        assertEquals("new Name", mergedSite.getName());
+        assertEquals(mergedSite, nu);
+
+    }
+
 }

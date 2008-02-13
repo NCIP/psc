@@ -5,7 +5,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.springframework.beans.BeanUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -129,14 +128,5 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         return name != null ? name.hashCode() : 0;
     }
 
-    /**
-     * updates the properties of site.
-     *
-     * @param site source site
-     */
-    @Transient
-    public void updateSite(final Site site) {
-        BeanUtils.copyProperties(site, this, new String[]{"studySites", "id","holidaysAndWeekends"});
-    }
 
 }

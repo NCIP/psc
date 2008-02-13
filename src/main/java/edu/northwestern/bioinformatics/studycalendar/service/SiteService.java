@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools.createExternalObjectId;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -123,6 +124,24 @@ public class SiteService {
         return true;
     }
 
+    /**
+     * Creates a new site if existing site is null. Or merge exisisting site with new site if existing site is not null
+     *
+     * @param existingSite existing    site
+     * @param newSite      new site
+     * @throws Exception
+     */
+    public Site createOrMergeSites(final Site existingSite, final Site newSite) throws Exception {
+        if (existingSite == null) {
+            return createOrUpdateSite(newSite);
+        } else {
+            BeanUtils.copyProperties(newSite, existingSite, new String[]{"studySites", "id", "holidaysAndWeekends"});
+            return createOrUpdateSite(existingSite);
+        }
+
+
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -148,4 +167,6 @@ public class SiteService {
     public Site getByAssignedIdentifier(final String assignedIdentifier) {
         return siteDao.getByAssignedIdentifier(assignedIdentifier);
     }
+
+
 }

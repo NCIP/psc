@@ -67,7 +67,7 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
         expectReadXmlFromRequestAs(newSite);
         expectObjectXmlized(newSite);
 
-        expectCreateOrUpdateSite(site);
+        expectCreateOrMergeSite(site, newSite, site);
         doPut();
 
         assertEquals("Result not success", 200, response.getStatus().getCode());
@@ -100,15 +100,15 @@ public class SiteResourceTest extends ResourceTestCase<SiteResource> {
         expectObjectXmlized(site);
         expectReadXmlFromRequestAs(site);
 
-        expectCreateOrUpdateSite(site);
+        expectCreateOrMergeSite(null, site, site);
         doPut();
 
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
 
-    private void expectCreateOrUpdateSite(final Site site) throws Exception {
-        expect(siteService.createOrUpdateSite(site)).andReturn(site);
+    private void expectCreateOrMergeSite(final Site existingSite, final Site newSite, final Site expectedSite) throws Exception {
+        expect(siteService.createOrMergeSites(existingSite, newSite)).andReturn(expectedSite);
 
     }
 
