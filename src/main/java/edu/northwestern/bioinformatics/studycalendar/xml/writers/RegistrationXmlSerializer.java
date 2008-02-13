@@ -65,9 +65,6 @@ public class RegistrationXmlSerializer extends AbstractStudyCalendarXmlCollectio
         } else if (REGISTRATION_DATE.from(elt) == null) {
             throw new StudyCalendarValidationException(
                     "Registration date is required");
-        } else if (REGISTRATION_SUBJECT_COORDINATOR_NAME.from(elt) == null) {
-            throw new StudyCalendarValidationException(
-                    "Registration subject coordinator name is required");
         }
     }
 

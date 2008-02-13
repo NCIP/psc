@@ -8,6 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
 import edu.nwu.bioinformatics.commons.DateUtils;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.providers.TestingAuthenticationToken;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -141,6 +143,28 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         expectReadXmlFromRequestAs(posted);
         expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
             expectedAssignmentId, posted.getSubjectCoordinator())).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
+
+        doPost();
+
+        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertEquals(ROOT_URI + "/studies/EC+golf/schedules/DC",
+            response.getLocationRef().getTargetRef().toString());
+    }
+
+    public void testPostAddsAssignmentWithoutSubjectCoordinator() throws Exception {
+        Date expectedDate = DateUtils.createDate(2005, APRIL, 5);
+        StudySegment expectedSegment = study.getPlannedCalendar().getEpochs().get(0).getStudySegments().get(0);
+        Subject expectedSubject = new Subject();
+        String expectedAssignmentId = "DC";
+        Registration posted = Registration.create(expectedSegment, expectedDate, expectedSubject, expectedAssignmentId);
+        User subjCoord = createNamedInstance("Subject Coord", User.class);
+        Authentication auth = new TestingAuthenticationToken(subjCoord, null, null);
+        request.getAttributes().put(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+
+        expectResolvedStudyAndSite(study, site);
+        expectReadXmlFromRequestAs(posted);
+        expect(subjectService.assignSubject(expectedSubject, studySite, expectedSegment, expectedDate,
+            expectedAssignmentId, subjCoord)).andReturn(setGridId(expectedAssignmentId, new StudySubjectAssignment()));
 
         doPost();
 

@@ -88,16 +88,6 @@ public class RegistrationXmlSerializerTest extends StudyCalendarXmlTestCase {
         }
     }
 
-    public void testReadElementWhenSubjectCoordIsNull() {
-        Element elt = createElement(segment, dateString, null, desiredAssignmentId);
-        try {
-            serializer.readElement(elt);
-            fail("An exception should be thrown");
-        } catch(StudyCalendarValidationException success) {
-            assertEquals("Registration subject coordinator name is required", success.getMessage());
-        }
-    }
-
     //// Test Helper Methods
     private void expectReadSubjectElement() {
         expect(subjectSerializer.readElement(null)).andReturn(subject);

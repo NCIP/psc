@@ -204,7 +204,7 @@
         <xsd:attribute name="site-name" type="xsd:string" use="required"/>
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
         <xsd:attribute name="end-date" type="xsd:date"/>
-        <xsd:attribute name="subject-coordinator-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
         <xsd:attribute name="current-amendment-key" type="xsd:string" use="required"/>
     </xsd:complexType>
 
@@ -231,7 +231,7 @@
         </xsd:sequence>
         <xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
-        <xsd:attribute name="subject-coordinator-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
         <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
     </xsd:complexType>
 

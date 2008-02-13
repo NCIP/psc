@@ -3,9 +3,11 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.domain.Registration;
+import org.acegisecurity.Authentication;
 import org.restlet.Context;
 import org.restlet.data.*;
 import org.restlet.resource.Representation;
@@ -37,6 +39,10 @@ public class RegistrationsResource extends StudySiteCollectionResource<Registrat
 
     @Override
     protected String acceptValue(Registration value) throws ResourceException {
+        if (value.getSubjectCoordinator() == null) {
+            Authentication auth = (Authentication) getRequest().getAttributes().get(PscGuard.AUTH_TOKEN_ATTRIBUTE_KEY);
+            value.setSubjectCoordinator((User) auth.getPrincipal());
+        }      
         StudySubjectAssignment assigned = subjectService.assignSubject(
             value.getSubject(), getStudySite(), value.getFirstStudySegment(), value.getDate(),
             value.getDesiredStudySubjectAssignmentId(), value.getSubjectCoordinator());
