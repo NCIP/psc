@@ -31,8 +31,12 @@
             }
             var params = { }
             params[authSystemField] = selectedSystem
+            $("auth-enum-indicator").reveal()
             new Ajax.Request("<c:url value="/pages/admin/configureAuthentication"/>", {
-                parameters: params
+                parameters: params,
+                onComplete: function() {
+                    $("auth-enum-indicator").conceal()
+                }
             })
         }
 
@@ -52,6 +56,7 @@
                 Select the authentication system you want to use.
             </p>
             <p id="system-select">
+                <tags:activityIndicator id="auth-enum-indicator"/>
                 <form:select path="conf[${authenticationSystemKey}].value">
                     <form:options items="${knownAuthenticationSystems}" itemLabel="displayName"/>
                     <option value="" <c:if test="${isCustomAuthenticationSystem}">selected="selected"</c:if>>custom</option>
