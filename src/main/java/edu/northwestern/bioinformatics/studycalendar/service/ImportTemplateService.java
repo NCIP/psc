@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Transactional
-public class    ImportTemplateService {
+public class ImportTemplateService {
     private StudyXmlSerializer studyXmlSerializer;
     private ActivityDao activityDao;
     private SourceDao sourceDao;
@@ -28,7 +28,10 @@ public class    ImportTemplateService {
 
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
+        importTemplate(study);
+    }
 
+    public void importTemplate(Study study) {
         resolveExistingActivitiesAndSources(study);
         resolveChangeChildrenFromPlanTreeNodeTree(study);
     }
