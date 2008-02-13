@@ -2,7 +2,9 @@ var EC = { }
 
 EC.AjaxResponders = {
     onException: function(request, exception) {
-        new Insertion.Top('error-console-errors', "<li>" + exception + "</li>")
+        // since IE doesn't have a reasonable toString
+        var msg = exception.description ? exception.description : exception; 
+        new Insertion.Top('error-console-errors', "<li>" + msg + "</li>")
         $('error-console').show()
     },
     onComplete: function(request, transport, json) {
