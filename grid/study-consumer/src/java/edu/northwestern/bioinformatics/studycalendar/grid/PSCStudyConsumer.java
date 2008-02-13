@@ -137,7 +137,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         Calendar calendar = Calendar.getInstance();
 
         boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime =auditHistoryRepository.
-                checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 100);
+                checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 1);
         try {
             if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
