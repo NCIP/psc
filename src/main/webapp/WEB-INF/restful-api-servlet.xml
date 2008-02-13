@@ -50,7 +50,9 @@
     <bean name="/studies/{study-identifier}/template"
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
-          />
+          >
+        <property name="importTemplateService" ref="importTemplateService"/>
+    </bean>
 
     <bean name="/studies/{study-identifier}/sites/{site-name}/subject-assignments"
           id="subjectAssignmentResource" autowire="byName" scope="prototype"

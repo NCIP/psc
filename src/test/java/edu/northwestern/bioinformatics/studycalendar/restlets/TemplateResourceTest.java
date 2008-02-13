@@ -3,8 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.*;
-import static org.easymock.classextension.EasyMock.*;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
+import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Status;
 
 /**
@@ -15,10 +16,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     private StudyDao studyDao;
     private Study study;
+    private ImportTemplateService importTemplateService;
 
     public void setUp() throws Exception {
         super.setUp();
         studyDao = registerDaoMockFor(StudyDao.class);
+        importTemplateService = registerMockFor(ImportTemplateService.class);
 
         request.getAttributes().put(STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         study = Fixtures.setGridId("44", Fixtures.setId(44, Fixtures.createSingleEpochStudy(STUDY_IDENT, "Treatment")));
@@ -26,12 +29,13 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     protected TemplateResource createResource() {
-        TemplateResource res = new TemplateResource();
-        res.setStudyDao(studyDao);
-        res.setXmlSerializer(xmlSerializer);
-        return res;
+        TemplateResource templateResource = new TemplateResource();
+        templateResource.setStudyDao(studyDao);
+        templateResource.setXmlSerializer(xmlSerializer);
+        templateResource.setImportTemplateService(importTemplateService);
+        return templateResource;
     }
-    
+
     public void testGetAndPutAllowed() throws Exception {
         assertAllowedMethods("GET", "PUT");
     }
@@ -54,11 +58,10 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         assertEquals("Result should be not found", 404, response.getStatus().getCode());
     }
 
-    /*
-    // These tests should be corrected and uncommented when PUT is implemented.
     public void testPutExistingXml() throws Exception {
         Study newStudy = new Study();
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
+        importTemplateService.mergeTemplate(study, newStudy);
         expectReadXmlFromRequestAs(newStudy);
         expectObjectXmlized(newStudy);
 
@@ -72,11 +75,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
         expectReadXmlFromRequestAs(study);
         expectObjectXmlized(study);
+        importTemplateService.mergeTemplate(null, study);
 
         doPut();
 
         assertResponseStatus(Status.SUCCESS_CREATED);
         assertResponseIsCreatedXml();
     }
-    */
+
 }
