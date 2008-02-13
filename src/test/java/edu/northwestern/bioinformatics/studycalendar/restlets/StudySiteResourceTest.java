@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
@@ -24,6 +25,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     private Site site;
     private StudySite studySite;
     private StudyService studyService;
+    private StudySiteDao studySiteDao;
 
     @Override
     public void setUp() throws Exception {
@@ -33,6 +35,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
+        studySiteDao = registerDaoMockFor(StudySiteDao.class);
         studyService = registerMockFor(StudyService.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
@@ -47,6 +50,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         res.setXmlSerializer(xmlSerializer);
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
+        res.setStudySiteDao(studySiteDao);
         res.setStudyService(studyService);
         return res;
     }
@@ -204,7 +208,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     }
 
     private void expectStudySiteDeleted() {
-        studyService.save(study);
+        studySiteDao.delete(studySite);
     }
 
     private void expectLinkedWithSubjects() {

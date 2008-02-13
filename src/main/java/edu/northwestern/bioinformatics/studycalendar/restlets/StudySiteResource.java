@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -26,6 +27,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
 
     private Study study;
     private Site site;
+    private StudySiteDao studySiteDao;
 
 
     public void init(Context context, Request request, Response response) {
@@ -74,9 +76,9 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     }
 
     public void remove(StudySite studySite) {
-        Study study = studySite.getStudy();
-        study.getStudySites().remove(studySite);
-        studyService.save(study);
+        studySite.getStudy().getStudySites().remove(studySite);
+        studySite.getSite().getStudySites().remove(studySite);
+        studySiteDao.delete(studySite);
     }
 
     ////// CONFIGURATION
@@ -96,4 +98,8 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         this.studyService = studyService;
     }
 
+    @Required
+    public void setStudySiteDao(StudySiteDao studySiteDao) {
+        this.studySiteDao = studySiteDao;
+    }
 }
