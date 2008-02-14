@@ -27,6 +27,6 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlColl
     }
 
     public ScheduledCalendar readElement(Element element) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Functionality to read a schedule element does not exist");
     }
 }

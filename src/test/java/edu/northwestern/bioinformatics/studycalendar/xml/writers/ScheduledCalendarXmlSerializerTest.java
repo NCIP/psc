@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
+import org.dom4j.tree.BaseElement;
 
 /**
  * @author John Dzak
@@ -33,6 +34,11 @@ public class ScheduledCalendarXmlSerializerTest extends StudyCalendarXmlTestCase
     }
 
     public void testReadElement() {
-        assertTrue(true);
+        try {
+            serializer.readElement(new BaseElement("schedule"));
+            fail("Exception should be thrown, method not implemented");
+        } catch(UnsupportedOperationException success) {
+            assertEquals("Functionality to read a schedule element does not exist", success.getMessage());
+        }
     }
 }
