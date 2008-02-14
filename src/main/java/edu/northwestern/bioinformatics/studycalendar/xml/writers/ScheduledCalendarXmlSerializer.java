@@ -17,6 +17,7 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlColl
     protected XsdElement rootElement() { return SCHEDULED_CALENDAR; }
     protected XsdElement collectionRootElement() { return SCHEDULED_CALENDARS; }
 
+    @Override
     protected Element createElement(ScheduledCalendar scheduledCalendar, boolean inCollection) {
         Element elt = SCHEDULED_CALENDAR.create();
         SCHEDULED_CALENDAR_ID.addTo(elt, scheduledCalendar.getGridId());
@@ -26,6 +27,7 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlColl
         return elt;
     }
 
+    @Override
     public ScheduledCalendar readElement(Element element) {
         throw new UnsupportedOperationException("Functionality to read a schedule element does not exist");
     }
