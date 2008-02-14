@@ -478,7 +478,7 @@
     <representation mediaType="text/xml" id="activity-source-xml"          element="psc:source"/>
     <representation mediaType="text/xml" id="activity-xml"                 element="psc:activity"/>
     <representation mediaType="text/xml" id="site-list-xml"                element="psc:sites"/>
-    <representation mediaType="text/xml" id="site-xml"                     element="psc:site"/>
+    <representation mediaType="text/xml" id="site-xml"                     element="psc:Site"/>
     <representation mediaType="text/xml" id="blackout-dates-xml"           element="psc:blackout-dates"/>
     <representation mediaType="text/xml" id="blackout-date-xml"            element="psc:blackout-date"/>
 

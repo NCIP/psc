@@ -45,7 +45,15 @@ public enum XsdAttribute {
     SUBJECT_GENDER("gender"),
     ASSIGNMENT_ID("id"),
     SCHEDULED_CALENDAR_ASSIGNMENT_ID("assignment-id"),
-    SCHEDULED_CALENDAR_ID("id");
+    SCHEDULED_CALENDAR_ID("id"),
+    BLACKOUT_DATE_DESC("description"),
+    BLACKOUT_DATE_DAY("day"),
+    BLACKOUT_DATE_MONTH("month"),
+    BLACKOUT_DATE_SITE_ID("site_id"),
+    BLACKOUT_DATE_YEAR("year"),
+    BLACKOUT_DATE_DAY_OF_WEEK("day-of-the-week"),
+    BLACKOUT_DATE_WEEK_NUMBER("week-number"),
+    BLACKOUT_DATE_ID("id");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

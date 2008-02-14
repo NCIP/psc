@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -19,6 +20,8 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
 
     private StudyDao studyDao;
 
+    private StudyCalendarXmlCollectionSerializer<Study> xmlSerializer;
+
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
@@ -31,6 +34,10 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         return studyDao.getAll();
     }
 
+    public StudyCalendarXmlCollectionSerializer<Study> getXmlSerializer() {
+        return xmlSerializer;
+    }
+
     ////// CONFIGURATION
 
     @Required
@@ -38,5 +45,8 @@ public class StudiesResource extends AbstractCollectionResource<Study> {
         this.studyDao = studyDao;
     }
 
-
+    @Required
+    public void setXmlSerializer(StudyCalendarXmlCollectionSerializer<Study> xmlSerializer) {
+        this.xmlSerializer = xmlSerializer;
+    }
 }

@@ -109,7 +109,11 @@
                 >
             <property name="xmlSerializer" ref="siteXmlSerializer"/>
         </bean>
-
+    <bean name="/sites/{site-identifier}/blackout-dates"
+          id="blackoutDatesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDatesResource"
+            >
+    </bean>
 
     <!-- AUXILIARIES -->
   

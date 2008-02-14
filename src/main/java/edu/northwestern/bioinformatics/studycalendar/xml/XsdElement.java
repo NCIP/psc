@@ -25,6 +25,8 @@ public enum XsdElement {
     STUDY,
     DEVELOPMENT_AMENDMENT("development-amendment"),
     AMENDMENT,
+    BLACKOUT_DATE("blackout-date"),
+    BLACKOUT_DATES("blackout-dates"),
     SCHEDULED_CALENDARS("scheduled-calendars"),
     SCHEDULED_CALENDAR("scheduled-calendar");
 

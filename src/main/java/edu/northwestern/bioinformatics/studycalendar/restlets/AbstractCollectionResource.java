@@ -10,7 +10,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
-import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 
@@ -19,7 +18,6 @@ import java.util.Collection;
  */
 public abstract class AbstractCollectionResource<D extends DomainObject> extends AbstractPscResource {
 
-    private StudyCalendarXmlCollectionSerializer<D> xmlSerializer;
 
     @Override
     public boolean allowGet() {
@@ -36,7 +34,7 @@ public abstract class AbstractCollectionResource<D extends DomainObject> extends
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-            return new StringRepresentation(xmlSerializer.createDocumentString(getAllObjects()), MediaType.TEXT_XML);
+            return new StringRepresentation(getXmlSerializer().createDocumentString(getAllObjects()), MediaType.TEXT_XML);
         } else {
             return null;
         }
@@ -44,9 +42,7 @@ public abstract class AbstractCollectionResource<D extends DomainObject> extends
 
     public abstract Collection<D> getAllObjects();
 
+    public abstract StudyCalendarXmlCollectionSerializer<D> getXmlSerializer();
 
-    @Required
-    public void setXmlSerializer(StudyCalendarXmlCollectionSerializer<D> xmlSerializer) {
-        this.xmlSerializer = xmlSerializer;
-    }
+
 }
