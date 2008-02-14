@@ -254,5 +254,11 @@
         <xsd:attribute name="site-name" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:element name="schedule" type="psc:Schedule"/>
+
+    <xsd:complexType name="Schedule">
+        <xsd:attribute name="start-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
+    </xsd:complexType>
 
 </xsd:schema>
