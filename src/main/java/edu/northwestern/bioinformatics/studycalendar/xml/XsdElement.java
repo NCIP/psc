@@ -24,7 +24,9 @@ public enum XsdElement {
     STUDIES,
     STUDY,
     DEVELOPMENT_AMENDMENT("development-amendment"),
-    AMENDMENT;
+    AMENDMENT,
+    SCHEDULED_CALENDARS("scheduled-calendars"),
+    SCHEDULED_CALENDAR("scheduled-calendar");
 
     private String elementName;
 
