@@ -44,7 +44,8 @@ public enum XsdAttribute {
     SITE_ASSIGNED_IDENTIFIER("assigned-identifier"),
     SUBJECT_GENDER("gender"),
     ASSIGNMENT_ID("id"),
-    SCHEDULED_CALENDAR_ASSIGNMENT_ID("assignment-id");
+    SCHEDULED_CALENDAR_ASSIGNMENT_ID("assignment-id"),
+    SCHEDULED_CALENDAR_ID("id");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

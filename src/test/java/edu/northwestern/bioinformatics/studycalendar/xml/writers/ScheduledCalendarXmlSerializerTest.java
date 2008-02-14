@@ -20,7 +20,7 @@ public class ScheduledCalendarXmlSerializerTest extends StudyCalendarXmlTestCase
 
         StudySubjectAssignment assignment = setGridId("assignment-grid-0", new StudySubjectAssignment());
 
-        schedule = new ScheduledCalendar();
+        schedule = setGridId("schedule-grid-0", new ScheduledCalendar());
         schedule.setAssignment(assignment);
     }
 
@@ -28,6 +28,7 @@ public class ScheduledCalendarXmlSerializerTest extends StudyCalendarXmlTestCase
         Element actual = serializer.createElement(schedule);
         
         assertEquals("Wrong element name", "scheduled-calendar", actual.getName());
+        assertEquals("Wrong id", "schedule-grid-0", actual.attributeValue("id"));
         assertEquals("Wrong assignment id", "assignment-grid-0", actual.attributeValue("assignment-id"));
     }
 
