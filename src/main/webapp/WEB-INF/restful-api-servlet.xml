@@ -90,6 +90,12 @@
         <property name="plannedActivityDao" ref="plannedActivityDao"/>
     </bean>
 
+    <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}"
+          id="scheduledCalendarResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledCalendarResource">
+        <property name="xmlSerializer" ref="scheduledCalendarSerializer"/>
+    </bean>
+
     <!-- SITE -->
     <bean name="/sites/{site-identifier}"
           id="siteResource" autowire="byName" scope="prototype"
