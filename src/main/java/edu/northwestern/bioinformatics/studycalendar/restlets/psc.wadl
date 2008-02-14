@@ -160,7 +160,6 @@
 
             <resource path="{study-identifier}/sites/{site-identifier}">
                 <doc>
-                    <html:em class="pending">Pending</html:em>
                     <html:p>The link between a study and a site.</html:p>
                 </doc>
                 <param style="template" name="study-identifier">
