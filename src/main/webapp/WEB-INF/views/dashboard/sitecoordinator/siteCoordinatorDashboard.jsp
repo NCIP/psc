@@ -33,7 +33,7 @@
 
         function createAutocompleter() {
             if (${not empty studies}){
-                activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/searchStudies"/>',
+                activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/fragment/searchStudies"/>',
                 {
                     method: 'get',
                     paramName: 'searchText',

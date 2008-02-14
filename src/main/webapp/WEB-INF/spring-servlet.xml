@@ -480,11 +480,11 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
 
 
-    <bean name="/cal/search/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
+    <bean name="/cal/search/fragment/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
 
 
-    <bean name="/cal/search/searchStudies" id="searchStudiesController" autowire="byName"
+    <bean name="/cal/search/fragment/searchStudies" id="searchStudiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
 
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
