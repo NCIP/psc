@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SCHEDULED_CALENDAR_ASSIGNMENT_ID;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SCHEDULED_CALENDAR_ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
@@ -12,13 +12,13 @@ import org.dom4j.Element;
 /**
  * @author John Dzak
  */
-public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<ScheduledCalendar> {
+public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledCalendar> {
 
     protected XsdElement rootElement() { return SCHEDULED_CALENDAR; }
     protected XsdElement collectionRootElement() { return SCHEDULED_CALENDARS; }
 
     @Override
-    protected Element createElement(ScheduledCalendar scheduledCalendar, boolean inCollection) {
+    public Element createElement(ScheduledCalendar scheduledCalendar) {
         Element elt = SCHEDULED_CALENDAR.create();
         SCHEDULED_CALENDAR_ID.addTo(elt, scheduledCalendar.getGridId());
         SCHEDULED_CALENDAR_ASSIGNMENT_ID.addTo(elt, scheduledCalendar.getAssignment().getGridId());

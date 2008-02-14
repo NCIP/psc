@@ -10,7 +10,9 @@ public enum UriTemplateParameters {
     STUDY_IDENTIFIER,
     ACTIVITY_SOURCE_NAME,
     SITE_NAME,
-    ACTIVITY_CODE, SITE_IDENTIFIER;
+    ACTIVITY_CODE,
+    SITE_IDENTIFIER,
+    ASSIGNMENT_IDENTIFIER;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
