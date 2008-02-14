@@ -206,6 +206,7 @@
         <xsd:attribute name="end-date" type="xsd:date"/>
         <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
         <xsd:attribute name="current-amendment-key" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="Subject">
@@ -257,7 +258,7 @@
     <xsd:element name="schedule" type="psc:Schedule"/>
 
     <xsd:complexType name="Schedule">
-        
+        <xsd:attribute name="assignment-id" type="xsd:string" use="required"/>        
     </xsd:complexType>
 
     <!--<xsd:complexType name="ScheduledStudySegment">-->

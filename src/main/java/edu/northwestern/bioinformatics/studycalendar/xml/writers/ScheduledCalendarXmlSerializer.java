@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.SCHEDULED_CALENDAR_ASSIGNMENT_ID;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_CALENDAR;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_CALENDARS;
@@ -17,6 +18,9 @@ public class ScheduledCalendarXmlSerializer extends AbstractStudyCalendarXmlColl
 
     protected Element createElement(ScheduledCalendar scheduledCalendar, boolean inCollection) {
         Element elt = SCHEDULED_CALENDAR.create();
+        SCHEDULED_CALENDAR_ASSIGNMENT_ID.addTo(elt, scheduledCalendar.getAssignment().getGridId());
+
+        // TODO: Call scheculed segment serializer
         return elt;
     }
 

@@ -40,7 +40,7 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
 
         subject = createSubject("john", "Doe");
 
-        assignment = createSubjectAssignment(studySite, subject, amend, subjCoord);
+        assignment = setGridId("grid0", createSubjectAssignment(studySite, subject, amend, subjCoord));
     }
 
     public void testCreateElementNewSubject() {
@@ -57,6 +57,7 @@ public class StudySubjectAssignmentXmlSerializerTest extends StudyCalendarXmlTes
         assertEquals("Wrong subject coordinator name", "Sam the subject coord", actual.attributeValue("subject-coordinator-name"));
         assertEquals("Wrong start date", "2008-01-01", actual.attributeValue("start-date"));
         assertEquals("Wrong end date", "2008-03-01", actual.attributeValue("end-date"));
+        assertEquals("Wrong assignment identifier", "grid0", actual.attributeValue("id"));
 
         assertNotNull("Subject element should exist", actual.element("subject"));
     }

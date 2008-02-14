@@ -42,7 +42,9 @@ public enum XsdAttribute {
     STUDY_SITE_SITE_NM("site-name"),
     SITE_SITE_NM("site-name"),
     SITE_ASSIGNED_IDENTIFIER("assigned-identifier"),
-    SUBJECT_GENDER("gender");
+    SUBJECT_GENDER("gender"),
+    ASSIGNMENT_ID("id"),
+    SCHEDULED_CALENDAR_ASSIGNMENT_ID("assignment-id");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

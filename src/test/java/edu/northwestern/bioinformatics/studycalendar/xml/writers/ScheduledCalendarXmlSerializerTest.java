@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import org.dom4j.Element;
 
@@ -16,13 +18,17 @@ public class ScheduledCalendarXmlSerializerTest extends StudyCalendarXmlTestCase
 
         serializer = new ScheduledCalendarXmlSerializer();
 
+        StudySubjectAssignment assignment = setGridId("assignment-grid-0", new StudySubjectAssignment());
+
         schedule = new ScheduledCalendar();
+        schedule.setAssignment(assignment);
     }
 
     public void testCreateElement() {
         Element actual = serializer.createElement(schedule);
         
         assertEquals("Wrong element name", "scheduled-calendar", actual.getName());
+        assertEquals("Wrong assignment id", "assignment-grid-0", actual.attributeValue("assignment-id"));
     }
 
     public void testReadElement() {
