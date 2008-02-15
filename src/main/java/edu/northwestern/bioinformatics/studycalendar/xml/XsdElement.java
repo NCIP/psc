@@ -29,7 +29,8 @@ public enum XsdElement {
     BLACKOUT_DATES("blackout-dates"),
     SCHEDULED_CALENDARS("scheduled-calendars"),
     SCHEDULED_CALENDAR("scheduled-calendar"),
-    SCHEDULED_STUDY_SEGMENT("scheduled-study-segment");
+    SCHEDULED_STUDY_SEGMENT("scheduled-study-segment"),
+    SCHEDULED_ACTIVITY("scheduled-activity");
 
     private String elementName;
 

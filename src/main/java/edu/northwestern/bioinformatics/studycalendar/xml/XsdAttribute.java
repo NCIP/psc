@@ -55,7 +55,12 @@ public enum XsdAttribute {
     BLACKOUT_DATE_WEEK_NUMBER("week-number"),
     BLACKOUT_DATE_ID("id"),
     SCHEDULED_STUDY_SEGMENT_START_DATE("start-date"),
-    SCHEDULED_STUDY_SEGMENT_START_DAY("start-day");
+    SCHEDULED_STUDY_SEGMENT_START_DAY("start-day"),
+    SCHEDULED_ACTIVITY_IDEAL_DATE("ideal-date"),
+    SCHEDULED_ACTIVITY_NOTES("notes"),
+    SCHEDULED_ACTIVITY_DETAILS("details"),
+    SCHEDULED_ACTIVITY_REPITITION_NUMBER("repitition-number"),
+    SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID("planned-activity-id");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

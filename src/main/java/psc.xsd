@@ -278,8 +278,7 @@
         <xsd:attribute name="notes" type="xsd:string"/>
         <xsd:attribute name="details" type="xsd:string"/>
         <xsd:attribute name="repitition-number" type="xsd:integer"/>
-        <xsd:attribute name="planned-activity-name" type="xsd:string"/>
-        <xsd:attribute name="planned-activity-source-code" type="xsd:string"/>
+        <xsd:attribute name="planned-activity-id" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="blackout-dates" type="psc:blackout-dates"/>
