@@ -258,6 +258,9 @@
     <xsd:element name="schedule" type="psc:Schedule"/>
 
     <xsd:complexType name="Schedule">
+        <xsd:sequence>
+            <xsd:element name="scheduled-study-segment" type="psc:ScheduledStudySegment"/>
+        </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="assignment-id" type="xsd:string" use="required"/>
     </xsd:complexType>
