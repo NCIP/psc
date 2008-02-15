@@ -30,7 +30,8 @@ public enum XsdElement {
     SCHEDULED_CALENDARS("scheduled-calendars"),
     SCHEDULED_CALENDAR("scheduled-calendar"),
     SCHEDULED_STUDY_SEGMENT("scheduled-study-segment"),
-    SCHEDULED_ACTIVITY("scheduled-activity");
+    SCHEDULED_ACTIVITY("scheduled-activity"),
+    SCHEDULED_ACTIVITY_STATE("scheduled-activity-state");
 
     private String elementName;
 

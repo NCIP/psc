@@ -60,7 +60,9 @@ public enum XsdAttribute {
     SCHEDULED_ACTIVITY_NOTES("notes"),
     SCHEDULED_ACTIVITY_DETAILS("details"),
     SCHEDULED_ACTIVITY_REPITITION_NUMBER("repitition-number"),
-    SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID("planned-activity-id");
+    SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID("planned-activity-id"),
+    SCHEDULED_ACTIVITY_STATE_REASON("reason"),
+    SCHEDULED_ACTIVITY_STATE_DATE("date");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

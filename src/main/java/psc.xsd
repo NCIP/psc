@@ -285,9 +285,7 @@
     </xsd:complexType>
 
     <xsd:complexType name="ScheduledActivityState">
-        <xsd:attribute name="current-state-date" type="xsd:date" use="required"/>
-        <xsd:attribute name="current-state-reason" type="xsd:string"/>
-        <xsd:attribute name="current-state" use="required">
+        <xsd:attribute name="state" use="required">
             <xsd:simpleType>
                 <xsd:restriction base="xsd:string">
                     <xsd:enumeration value="canceled"/>
@@ -299,6 +297,8 @@
                 </xsd:restriction>
             </xsd:simpleType>
         </xsd:attribute>
+        <xsd:attribute name="date" type="xsd:date"/>
+        <xsd:attribute name="reason" type="xsd:string"/>
     </xsd:complexType>
 
     <xsd:element name="blackout-dates" type="psc:blackout-dates"/>
