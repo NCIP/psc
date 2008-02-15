@@ -93,7 +93,7 @@
     <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}"
           id="scheduledCalendarResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledCalendarResource">
-        <property name="xmlSerializer" ref="scheduledCalendarSerializer"/>
+        <property name="xmlSerializer" ref="scheduledCalendarXmlSerializer"/>
     </bean>
 
     <!-- SITE -->

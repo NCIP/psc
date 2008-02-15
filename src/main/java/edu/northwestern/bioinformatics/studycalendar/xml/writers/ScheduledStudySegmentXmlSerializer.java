@@ -15,6 +15,8 @@ public class ScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXml
         Element elt = SCHEDULED_STUDY_SEGMENT.create();
         SCHEDULED_STUDY_SEGMENT_START_DATE.addTo(elt, segment.getStartDate());
         SCHEDULED_STUDY_SEGMENT_START_DAY.addTo(elt, segment.getStartDay());
+
+        // TODO: Call scheduled activity serializer
         return elt;
     }
 
