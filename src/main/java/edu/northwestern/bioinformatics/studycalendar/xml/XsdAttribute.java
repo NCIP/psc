@@ -53,7 +53,9 @@ public enum XsdAttribute {
     BLACKOUT_DATE_YEAR("year"),
     BLACKOUT_DATE_DAY_OF_WEEK("day-of-the-week"),
     BLACKOUT_DATE_WEEK_NUMBER("week-number"),
-    BLACKOUT_DATE_ID("id");
+    BLACKOUT_DATE_ID("id"),
+    SCHEDULED_STUDY_SEGMENT_START_DATE("start-date"),
+    SCHEDULED_STUDY_SEGMENT_START_DAY("start-day");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;
