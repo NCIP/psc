@@ -114,7 +114,12 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDatesResource"
             >
     </bean>
-
+    <bean name="/sites/{site-identifier}/blackout-dates/{blackout-date-identifier}"
+              id="blackoutDateResource" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDateResource"
+                >
+        </bean>
+    
     <!-- AUXILIARIES -->
   
     <bean id="resourceFreemarkerConfiguration"

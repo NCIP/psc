@@ -128,5 +128,30 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         return name != null ? name.hashCode() : 0;
     }
 
+    @Transient
+    public boolean checkIfHolidayExists(final Holiday holiday) {
 
+        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
+            if (existingHoliday.getId() != null && holiday != null && existingHoliday.getId().equals(holiday.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Transient
+    public void removeHoliday(final Holiday holiday) {
+        Holiday holidayToRemove = null;
+        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
+            if (existingHoliday.getId() != null && existingHoliday.getId().equals(holiday.getId())) {
+                holidayToRemove = existingHoliday;
+                break;
+            }
+        }
+
+        if (holidayToRemove != null) {
+            getHolidaysAndWeekends().remove(holidayToRemove);
+        }
+
+    }
 }
