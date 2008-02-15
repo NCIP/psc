@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegmen
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
+import org.dom4j.tree.BaseElement;
 
 import java.util.Calendar;
 
@@ -32,6 +33,11 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
     }
 
     public void testReadElement() {
-        assertTrue(true);
+        try {
+            serializer.readElement(new BaseElement("scheduled-study-segment"));
+            fail("Exception should be thrown, method not implemented");
+        } catch(UnsupportedOperationException success) {
+            assertEquals("Functionality to read a scheduled study segment element does not exist", success.getMessage());
+        }
     }
 }

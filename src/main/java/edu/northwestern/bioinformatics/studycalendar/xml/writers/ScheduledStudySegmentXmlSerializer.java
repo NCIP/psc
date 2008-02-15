@@ -19,6 +19,6 @@ public class ScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXml
     }
 
     public ScheduledStudySegment readElement(Element element) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Functionality to read a scheduled study segment element does not exist");
     }
 }
