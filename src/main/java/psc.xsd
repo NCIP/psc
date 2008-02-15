@@ -258,7 +258,7 @@
     <xsd:element name="schedule" type="psc:Schedule"/>
 
     <xsd:complexType name="Schedule">
-        <xsd:sequence>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="scheduled-study-segment" type="psc:ScheduledStudySegment"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
@@ -266,7 +266,7 @@
     </xsd:complexType>
 
     <xsd:complexType name="ScheduledStudySegment">
-        <xsd:sequence>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>
         </xsd:sequence>
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
@@ -274,11 +274,31 @@
     </xsd:complexType>
 
     <xsd:complexType name="ScheduledActivity">
+        <xsd:sequence minOccurs="1" maxOccurs="1">
+            <xsd:element name="scheduled-activity-state" type="psc:ScheduledActivityState"/>
+        </xsd:sequence>
         <xsd:attribute name="ideal-date" type="xsd:date" use="required"/>
         <xsd:attribute name="notes" type="xsd:string"/>
         <xsd:attribute name="details" type="xsd:string"/>
         <xsd:attribute name="repitition-number" type="xsd:integer"/>
         <xsd:attribute name="planned-activity-id" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ScheduledActivityState">
+        <xsd:attribute name="current-state-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="current-state-reason" type="xsd:string"/>
+        <xsd:attribute name="current-state" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="canceled"/>
+                    <xsd:enumeration value="conditional"/>
+                    <xsd:enumeration value="missing"/>
+                    <xsd:enumeration value="not-applicable"/>
+                    <xsd:enumeration value="occurred"/>
+                    <xsd:enumeration value="scheduled"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
     </xsd:complexType>
 
     <xsd:element name="blackout-dates" type="psc:blackout-dates"/>
