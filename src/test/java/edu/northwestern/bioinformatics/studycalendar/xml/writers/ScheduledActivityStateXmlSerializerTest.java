@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
+import org.dom4j.tree.BaseElement;
 
 import static java.util.Calendar.JANUARY;
 
@@ -33,6 +34,11 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
     }
 
     public void testReadElement() {
-        assertTrue(true);
+        try {
+            serializer.readElement(new BaseElement("scheduled-activity-state"));
+            fail("Exception should be thrown, method not implemented");
+        } catch(UnsupportedOperationException success) {
+            assertEquals("Functionality to read a scheduled activity state element does not exist", success.getMessage());
+        }
     }
 }

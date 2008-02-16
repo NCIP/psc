@@ -21,6 +21,6 @@ public class ScheduledActivityStateXmlSerializer extends AbstractStudyCalendarXm
     }
 
     public ScheduledActivityState readElement(Element element) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Functionality to read a scheduled activity state element does not exist");
     }
 }
