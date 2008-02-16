@@ -5,12 +5,15 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_ACTIVITY;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author John Dzak
  */
 public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledActivity> {
+    private ScheduledActivityStateXmlSerializer scheduledActivityStateSerializer;
 
+    @Override
     public Element createElement(ScheduledActivity activity) {
         Element elt = SCHEDULED_ACTIVITY.create();
         SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(elt, activity.getIdealDate());
@@ -21,10 +24,20 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSeri
             SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID.addTo(elt, activity.getPlannedActivity().getGridId());
         }
 
+        elt.add(scheduledActivityStateSerializer.createElement(activity.getCurrentState()));
+
         return elt;
     }
 
+    @Override
     public ScheduledActivity readElement(Element element) {
         throw new UnsupportedOperationException("Functionality to read a scheduled activity element does not exist");
+    }
+
+    ////// Bean Setters
+
+    @Required
+    public void setScheduledActivityStateXmlSerializer(ScheduledActivityStateXmlSerializer scheduledActivityStateSerializer) {
+        this.scheduledActivityStateSerializer = scheduledActivityStateSerializer;
     }
 }

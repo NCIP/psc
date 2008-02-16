@@ -30,7 +30,7 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
         assertEquals("Wrong element name", "scheduled-activity-state", actual.getName());
         assertEquals("Wrong reason", "some reason", actual.attributeValue("reason"));
         assertEquals("Wrong date", "2008-01-05", actual.attributeValue("date"));
-
+        assertEquals("Wrong state", "scheduled", actual.attributeValue("state"));
     }
 
     public void testReadElement() {
