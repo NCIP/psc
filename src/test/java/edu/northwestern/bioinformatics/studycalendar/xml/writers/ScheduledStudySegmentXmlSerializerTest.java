@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -30,7 +31,7 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
         activity0 = new ScheduledActivity();
         activity1 = new ScheduledActivity();
 
-        segment = new ScheduledStudySegment();
+        segment = setGridId("segment-grid0", new ScheduledStudySegment());
         segment.setStartDate(DateUtils.createDate(2008, Calendar.JANUARY, 1));
         segment.setStartDay(5);
         segment.addEvent(activity0);
@@ -45,6 +46,7 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
         verifyMocks();
 
         assertEquals("Wrong element name", "scheduled-study-segment", actual.getName());
+        assertEquals("Wrong id", "segment-grid0", actual.attributeValue("id"));
         assertEquals("Wrong start date", "2008-01-01", actual.attributeValue("start-date"));
         assertEquals("Wrong start date", "5", actual.attributeValue("start-day"));
         assertEquals("Wrong scheduled activity element size", 2, actual.elements().size());

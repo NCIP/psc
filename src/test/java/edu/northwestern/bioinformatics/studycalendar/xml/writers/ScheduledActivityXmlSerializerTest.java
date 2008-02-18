@@ -34,7 +34,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
 
         state = new Scheduled();
 
-        activity = new ScheduledActivity();
+        activity = setGridId("activity-grid0", new ScheduledActivity());
         activity.setIdealDate(DateUtils.createDate(2008, Calendar.JANUARY, 15));
         activity.setNotes("some notes");
         activity.setDetails("some details");
@@ -51,6 +51,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         verifyMocks();
 
         assertEquals("Wrong element name", "scheduled-activity", actual.getName());
+        assertEquals("Wrong id", "activity-grid0", actual.attributeValue("id"));
         assertEquals("Wrong ideal date", "2008-01-15", actual.attributeValue("ideal-date"));
         assertEquals("Wrong notes", "some notes", actual.attributeValue("notes"));
         assertEquals("Wrong details", "some details", actual.attributeValue("details"));

@@ -16,6 +16,7 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSeri
     @Override
     public Element createElement(ScheduledActivity activity) {
         Element elt = SCHEDULED_ACTIVITY.create();
+        SCHEDULED_ACTIVITY_ID.addTo(elt, activity.getGridId());
         SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(elt, activity.getIdealDate());
         SCHEDULED_ACTIVITY_NOTES.addTo(elt, activity.getNotes());
         SCHEDULED_ACTIVITY_DETAILS.addTo(elt, activity.getDetails());
