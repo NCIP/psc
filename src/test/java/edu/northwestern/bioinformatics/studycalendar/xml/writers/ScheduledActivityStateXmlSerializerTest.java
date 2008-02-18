@@ -58,9 +58,15 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
         assertStateAttributesEquals("not-applicable", "some reason", null, actual);
     }
 
+    public void testCreateElementForPreviousScheduledActivityState() {
+        PreviousScheduledActivityStateXmlSerializer prevStateSerializer = new PreviousScheduledActivityStateXmlSerializer();
+        Element actual = prevStateSerializer.createElement(scheduled);
+        assertEquals("Wrong element name", "previous-scheduled-activity-state", actual.getName());
+    }
+
     public void testReadElement() {
         try {
-            serializer.readElement(new BaseElement("scheduled-activity-state"));
+            serializer.readElement(new BaseElement("current-scheduled-activity-state"));
             fail("Exception should be thrown, method not implemented");
         } catch(UnsupportedOperationException success) {
             assertEquals("Functionality to read a scheduled activity state element does not exist", success.getMessage());
