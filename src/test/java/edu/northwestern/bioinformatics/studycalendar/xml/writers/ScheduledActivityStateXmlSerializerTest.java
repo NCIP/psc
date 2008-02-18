@@ -12,13 +12,13 @@ import static java.util.Calendar.JANUARY;
  * @author John Dzak
  */
 public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTestCase {
-    private ScheduledActivityStateXmlSerializer serializer;
+    private CurrentScheduledActivityStateXmlSerializer serializer;
     private ScheduledActivityState missed, scheduled, occurred, canceled, conditional, notApplicable;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        serializer = new ScheduledActivityStateXmlSerializer();
+        serializer = new CurrentScheduledActivityStateXmlSerializer();
 
         missed = missed();
         occurred = occurred();
@@ -69,7 +69,7 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
 
     ////// Helper Asserts
     public void assertStateAttributesEquals(String expectedState, String expectedReason, String expectedDate, Element actual) {
-        assertEquals("Wrong element name", "scheduled-activity-state", actual.getName());
+        assertEquals("Wrong element name", "current-scheduled-activity-state", actual.getName());
         assertEquals("Wrong state", expectedState, actual.attributeValue("state"));
         assertEquals("Wrong reason", expectedReason, actual.attributeValue("reason"));
         assertEquals("Wrong date", expectedDate, actual.attributeValue("date"));

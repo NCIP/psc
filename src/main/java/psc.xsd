@@ -274,9 +274,10 @@
     </xsd:complexType>
 
     <xsd:complexType name="ScheduledActivity">
-        <xsd:sequence minOccurs="1" maxOccurs="1">
-            <xsd:element name="scheduled-activity-state" type="psc:ScheduledActivityState"/>
-        </xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="current-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="previous-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
         <xsd:attribute name="ideal-date" type="xsd:date" use="required"/>
         <xsd:attribute name="notes" type="xsd:string"/>
         <xsd:attribute name="details" type="xsd:string"/>

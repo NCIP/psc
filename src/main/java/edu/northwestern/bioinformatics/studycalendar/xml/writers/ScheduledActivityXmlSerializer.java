@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_ACTIVITY;
@@ -11,7 +12,8 @@ import org.springframework.beans.factory.annotation.Required;
  * @author John Dzak
  */
 public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledActivity> {
-    private ScheduledActivityStateXmlSerializer scheduledActivityStateSerializer;
+    private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateSerializer;
+    private PreviousScheduledActivityStateXmlSerializer previousScheduledActivityStateSerializer;
 
     @Override
     public Element createElement(ScheduledActivity activity) {
@@ -25,7 +27,11 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSeri
             SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID.addTo(elt, activity.getPlannedActivity().getGridId());
         }
 
-        elt.add(scheduledActivityStateSerializer.createElement(activity.getCurrentState()));
+        elt.add(currentScheduledActivityStateSerializer.createElement(activity.getCurrentState()));
+
+        for (ScheduledActivityState state : activity.getPreviousStates()) {
+            elt.add(previousScheduledActivityStateSerializer.createElement(state));
+        }
 
         return elt;
     }
@@ -38,7 +44,12 @@ public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSeri
     ////// Bean Setters
 
     @Required
-    public void setScheduledActivityStateXmlSerializer(ScheduledActivityStateXmlSerializer scheduledActivityStateSerializer) {
-        this.scheduledActivityStateSerializer = scheduledActivityStateSerializer;
+    public void setCurrentScheduledActivityStateXmlSerializer(CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateSerializer) {
+        this.currentScheduledActivityStateSerializer = currentScheduledActivityStateSerializer;
+    }
+
+    @Required
+    public void setPreviousScheduledActivityStateXmlSerializer(PreviousScheduledActivityStateXmlSerializer previousScheduledActivityStateSerializer) {
+        this.previousScheduledActivityStateSerializer = previousScheduledActivityStateSerializer;
     }
 }

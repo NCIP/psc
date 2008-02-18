@@ -3,13 +3,14 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
-import org.easymock.EasyMock;
+import static org.easymock.EasyMock.expect;
 
 import java.util.Calendar;
 
@@ -20,18 +21,24 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
     private ScheduledActivity activity;
     private ScheduledActivityXmlSerializer serializer;
     private ScheduledActivityState state;
-    private ScheduledActivityStateXmlSerializer scheduledActivityStateSerializer;
+    private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateSerializer;
+    private PreviousScheduledActivityStateXmlSerializer previousScheduledActivityStateSerializer;
+    private ScheduledActivityState prevState0, prevState1;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        scheduledActivityStateSerializer = registerMockFor(ScheduledActivityStateXmlSerializer.class);
+        currentScheduledActivityStateSerializer = registerMockFor(CurrentScheduledActivityStateXmlSerializer.class);
+        previousScheduledActivityStateSerializer = registerMockFor(PreviousScheduledActivityStateXmlSerializer.class);
 
         serializer = new ScheduledActivityXmlSerializer();
-        serializer.setScheduledActivityStateXmlSerializer(scheduledActivityStateSerializer);
+        serializer.setCurrentScheduledActivityStateXmlSerializer(currentScheduledActivityStateSerializer);
+        serializer.setPreviousScheduledActivityStateXmlSerializer(previousScheduledActivityStateSerializer);
 
         PlannedActivity plannedActivity = setGridId("planned-activity-grid0", new PlannedActivity());
 
+        prevState0 = new Scheduled();
+        prevState1 = new Canceled();
         state = new Scheduled();
 
         activity = setGridId("activity-grid0", new ScheduledActivity());
@@ -40,11 +47,14 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         activity.setDetails("some details");
         activity.setRepetitionNumber(3);
         activity.setPlannedActivity(plannedActivity);
+        activity.changeState(prevState0);
+        activity.changeState(prevState1);
         activity.changeState(state);
     }
 
     public void testCreateElement() {
-        expectSerializeScheduledActivityState();
+        expectSerializePreviousScheduledActivityStates();
+        expectSerializeCurrentScheduledActivityState();
         replayMocks();
         
         Element actual = serializer.createElement(activity);
@@ -57,7 +67,7 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong details", "some details", actual.attributeValue("details"));
         assertEquals("Wrong repitition number", "3", actual.attributeValue("repitition-number"));
         assertEquals("Wrong planned activity id", "planned-activity-grid0", actual.attributeValue("planned-activity-id"));
-        assertNotNull("Scheduled activity state is null", actual.element("scheduled-activity-state"));
+        assertNotNull("Scheduled activity state is null", actual.element("current-scheduled-activity-state"));
     }
 
     public void testReadElement() {
@@ -70,7 +80,12 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
     }
 
     ////// Expect methods
-    private void expectSerializeScheduledActivityState() {
-        EasyMock.expect(scheduledActivityStateSerializer.createElement(state)).andReturn(new BaseElement("scheduled-activity-state"));
+    private void expectSerializeCurrentScheduledActivityState() {
+        expect(currentScheduledActivityStateSerializer.createElement(state)).andReturn(new BaseElement("current-scheduled-activity-state"));
+    }
+
+    private void expectSerializePreviousScheduledActivityStates() {
+        expect(previousScheduledActivityStateSerializer.createElement(prevState0)).andReturn(new BaseElement("previous-scheduled-activity-state"));
+        expect(previousScheduledActivityStateSerializer.createElement(prevState1)).andReturn(new BaseElement("previous-scheduled-activity-state"));
     }
 }
