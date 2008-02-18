@@ -109,7 +109,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    public void testReadElementForNonExistantHoliday() {
+    public void testReadElementForNonExistingHoliday() {
         site.getHolidaysAndWeekends().remove(monthDayHoliday);
         try {
             monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
@@ -125,15 +125,12 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementForNullHolidayId() {
         monthDayHoliday.setId(null);
 
-        try {
-            monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
+        monthDayHolidayElement = serializer.createElement(monthDayHoliday, true);
 
-            serializer.readElement(monthDayHolidayElement);
-            fail("Exception not thrown");
-        } catch (StudyCalendarValidationException scve) {
-            assertEquals("Element must have id attribute",
-                    scve.getMessage());
-        }
+        final Holiday actualHoliday = serializer.readElement(monthDayHolidayElement);
+        assertEquals(monthDayHoliday.getDescription(),actualHoliday.getDescription());
+        assertTrue(actualHoliday instanceof MonthDayHoliday);
+
     }
 
     public void testCreateOrReadElementForNullSiteOrElement() {
