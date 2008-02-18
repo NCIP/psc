@@ -428,7 +428,6 @@
 
                 <resource path="blackout-dates">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
                         <html:p>The blackout dates for the selected site.</html:p>
                     </doc>
                     <method name="GET">
