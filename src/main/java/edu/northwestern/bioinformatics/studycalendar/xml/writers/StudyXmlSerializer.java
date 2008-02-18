@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
@@ -22,7 +21,6 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
 
     private StudyDao studyDao;
-    private DeltaService deltaService;
 
     public Element createElement(Study study) {
         Element eStudy = element(STUDY)
@@ -38,7 +36,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         }
 
         //TODO: make independent of order
-        List<Amendment> amendments = new ArrayList(study.getAmendmentsList());
+        List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
         Collections.reverse(amendments);
         for (Amendment amendment : amendments) {
             Element eAmendment = getAmendmentSerializer(study).createElement(amendment);
@@ -112,9 +110,5 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
-    }
-
-    public void setDeltaService(DeltaService deltaService) {
-        this.deltaService = deltaService;
     }
 }

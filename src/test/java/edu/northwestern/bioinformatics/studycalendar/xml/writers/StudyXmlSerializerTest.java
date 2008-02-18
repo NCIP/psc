@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
@@ -42,7 +41,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Amendment developmentAmendment;
     private Element eAmendment;
     private Element eDevelopmentAmendment;
-    private DeltaService deltaService;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
 
@@ -54,7 +52,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
-        deltaService = registerMockFor(DeltaService.class);
         developmentAmendmentSerializer=registerMockFor(AmendmentXmlSerializer.class);
 
         serializer = new StudyXmlSerializer() {
@@ -64,7 +61,6 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
             protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {return developmentAmendmentSerializer; }
         };
         serializer.setStudyDao(studyDao);
-        serializer.setDeltaService(deltaService);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
