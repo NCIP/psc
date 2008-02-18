@@ -154,4 +154,30 @@ public class Site extends AbstractMutableDomainObject implements Named, Serializ
         }
 
     }
+
+    /**
+     * Adds the holiday if holiday does not exists. Or updates the holiday if holiday already exists
+     *
+     * @param holiday
+     */
+    @Transient
+    public void addOrMergeExistingHoliday(final Holiday holiday) {
+
+        Holiday holidayToAddOrMerge = null;
+        for (Holiday existingHoliday : this.getHolidaysAndWeekends()) {
+            if (existingHoliday.getId() != null && existingHoliday.getId().equals(holiday.getId())) {
+                holidayToAddOrMerge = existingHoliday;
+                break;
+            }
+        }
+
+        if (holidayToAddOrMerge != null) {
+            holidayToAddOrMerge.mergeAnotherHoliday(holiday);
+
+        } else {
+            getHolidaysAndWeekends().add(holiday);
+
+        }
+
+    }
 }

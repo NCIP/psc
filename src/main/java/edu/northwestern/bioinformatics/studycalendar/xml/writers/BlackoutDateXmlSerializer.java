@@ -87,7 +87,52 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         String holidayId = XsdAttribute.BLACKOUT_DATE_ID.from(element);
 
         if (holidayId == null) {
-            throw new StudyCalendarValidationException("Element must have id attribute");
+            //create a new holiday
+            Holiday holiday = null;
+            final String blackOutDateId = XsdAttribute.BLACKOUT_DATE_ID.from(element);
+
+            final String dayOfWeek = XsdAttribute.BLACKOUT_DATE_DAY_OF_WEEK.from(element);
+            final String day = XsdAttribute.BLACKOUT_DATE_DAY.from(element);
+
+            final String month = XsdAttribute.BLACKOUT_DATE_MONTH.from(element);
+            final String year = XsdAttribute.BLACKOUT_DATE_YEAR.from(element);
+            final String weekNumber = XsdAttribute.BLACKOUT_DATE_WEEK_NUMBER.from(element);
+            final String dateDesc = XsdAttribute.BLACKOUT_DATE_DESC.from(element);
+
+            if (dayOfWeek != null && !dayOfWeek.trim().equals("")) {
+                holiday = new DayOfTheWeek();
+                ((DayOfTheWeek) holiday).setDayOfTheWeek(dayOfWeek);
+
+            } else if (month != null || day != null || year != null) {
+                holiday = new MonthDayHoliday();
+                if (day != null && !day.trim().equalsIgnoreCase("")) {
+
+                    ((MonthDayHoliday) holiday).setDay(Integer.parseInt(day));
+                }
+                if (month != null && !month.trim().equalsIgnoreCase("")) {
+
+                    ((MonthDayHoliday) holiday).setMonth(Integer.parseInt(month));
+                }
+                if (year != null && !year.trim().equalsIgnoreCase("")) {
+
+                    ((MonthDayHoliday) holiday).setYear(Integer.parseInt(year));
+                }
+            } else if (weekNumber != null || dayOfWeek != null || month != null) {
+                holiday = new RelativeRecurringHoliday();
+                ((RelativeRecurringHoliday) holiday).setDayOfTheWeek(dayOfWeek);
+                if (month != null && !month.trim().equalsIgnoreCase("")) {
+                    ((RelativeRecurringHoliday) holiday).setMonth(Integer.parseInt(month));
+                }
+                if (weekNumber != null && !weekNumber.trim().equalsIgnoreCase("")) {
+
+                    ((RelativeRecurringHoliday) holiday).setWeekNumber(Integer.parseInt(weekNumber));
+                }
+
+            }
+            if (holiday != null) {
+                holiday.setDescription(dateDesc);
+            }
+            return holiday;
         }
 
         List<Holiday> holidays = site.getHolidaysAndWeekends();
@@ -96,6 +141,7 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
                 return holiday;
             }
         }
+
 
         throw new StudyCalendarValidationException("No Holday existis with id:" + holidayId + " at the site:" + site.getId());
 

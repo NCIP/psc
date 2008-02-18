@@ -10,14 +10,18 @@ import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Collection;
 
 /**
+ *
  * @author Saurabh Agrawal
  */
-public class BlackoutDatesResource extends AbstractCollectionResource<Holiday> {
+public class BlackoutDatesResource extends AbstractStorableCollectionResource<Holiday> {
 
     private SiteService siteService;
 
@@ -34,24 +38,38 @@ public class BlackoutDatesResource extends AbstractCollectionResource<Holiday> {
     }
 
     public Collection<Holiday> getAllObjects() {
-
-        return site.getHolidaysAndWeekends();
+        if (site != null) {
+            return site.getHolidaysAndWeekends();
+        }
+        return null;
     }
 
-//    @Override
-//    public void store(final Holiday site) {
-//        try {
-//
-//            Holiday existingSite = getRequestedObject();
-//            siteService.createOrMergeSites(existingSite, site);
-//
-//        } catch (Exception e) {
-//            String message = "Can not update the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
-//            log.error(message, e);
-//
-//        }
-//
-//    }
+    @Override
+    public void store(final Collection<Holiday> holidays) {
+        try {
+
+            for (Holiday holiday : holidays) {
+                site.addOrMergeExistingHoliday(holiday);
+            }
+
+
+            siteService.createOrUpdateSite(site);
+
+        } catch (Exception e) {
+            String message = "Can not POST the holiday on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
+            log.error(message, e);
+
+        }
+
+    }
+
+    protected void validateEntity(final Representation entity) throws ResourceException {
+        super.validateEntity(entity);
+        if (site == null) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+                    "No site with identifier " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
+        }
+    }
 
     public StudyCalendarXmlCollectionSerializer<Holiday> getXmlSerializer() {
         BlackoutDateXmlSerializer xmlSerializer = new BlackoutDateXmlSerializer(site);

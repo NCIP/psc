@@ -7,6 +7,10 @@ import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 /**
  * @author Saurabh Agrawal
@@ -48,14 +52,89 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         return resource;
     }
 
-    public void testGetAllowed() throws Exception {
-        assertAllowedMethods("GET");
+    public void testGetAndPostAllowed() throws Exception {
+        assertAllowedMethods("GET", "POST");
     }
 
 
-    public void testGetXmlForAllBlackoutDates() throws Exception {
-        expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(site);
+    public void testPostExistingXml() throws Exception {
+        expectFoundSite(site);
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "\n" +
+                "<blackout-dates xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\">\n" +
+                "  <blackout-date id=\"3\" description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n" +
+                "</blackout-dates>\n";
 
+
+        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
+
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expectCreateOrUpdateSite(site);
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", expectedXml, actualEntityBody);
+    }
+
+    public void testPostNewXml() throws Exception {
+        expectFoundSite(site);
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "\n" +
+                "<blackout-dates xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\">\n" +
+                "  <blackout-date description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n" +
+                "</blackout-dates>\n";
+
+
+        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
+
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expectCreateOrUpdateSite(site);
+        doPost();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", expectedXml, actualEntityBody);
+    }
+
+    public void testPostInvalidXml() throws Exception {
+        expectFoundSite(site);
+        String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "\n" +
+                "<blackout-dates xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\">\n" +
+                "  <blackout-date id=\"4\" description=\"month day holiday\" day=\"2\" month=\"1\" year=\"2008\"/>\n" +
+                "</blackout-dates>\n";
+
+
+        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
+
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        try {
+            doPost();
+        } catch (Exception e) {
+            //expecting this
+            fail("No Holday existis with id:" + 4 + " at the site:" + site.getId());
+            assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+
+        }
+
+    }
+
+    private void expectFoundSite(final Site expectedSite) {
+        expect(siteService.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
+
+    }
+
+    private void expectCreateOrUpdateSite(final Site existingSite) throws Exception {
+        expect(siteService.createOrUpdateSite(existingSite)).andReturn(existingSite);
+
+    }
+
+    public void testGetXmlForAllBlackoutDates() throws Exception {
+        expectFoundSite(site);
         String expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "\n" +
                 "<blackout-dates xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\">\n" +

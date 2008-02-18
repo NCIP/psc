@@ -10,6 +10,8 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -18,6 +20,7 @@ import java.util.Collection;
  */
 public abstract class AbstractCollectionResource<D extends DomainObject> extends AbstractPscResource {
 
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     @Override
     public boolean allowGet() {
@@ -34,10 +37,15 @@ public abstract class AbstractCollectionResource<D extends DomainObject> extends
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         if (variant.getMediaType().includes(MediaType.TEXT_XML)) {
-            return new StringRepresentation(getXmlSerializer().createDocumentString(getAllObjects()), MediaType.TEXT_XML);
+            return createXmlRepresentation(getAllObjects());
         } else {
             return null;
         }
+    }
+
+    protected Representation createXmlRepresentation(Collection<D> instances) {
+        return new StringRepresentation(
+                getXmlSerializer().createDocumentString(instances), MediaType.TEXT_XML);
     }
 
     public abstract Collection<D> getAllObjects();

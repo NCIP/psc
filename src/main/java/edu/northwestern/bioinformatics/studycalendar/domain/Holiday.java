@@ -1,14 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
+import org.springframework.beans.BeanUtils;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-
-import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import javax.persistence.*;
 
 
 /**
@@ -16,13 +13,13 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
  */
 
 @Entity
-@Table (name = "holidays")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_holidays_id")
-    }
+@Table(name = "holidays")
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_holidays_id")
+                }
 )
-@DiscriminatorColumn(name="discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
+@DiscriminatorColumn(name = "discriminator_id", discriminatorType = DiscriminatorType.INTEGER)
 public abstract class Holiday extends AbstractMutableDomainObject {
     private String description;
 
@@ -39,6 +36,12 @@ public abstract class Holiday extends AbstractMutableDomainObject {
         return match == null ? -1 : match.ordinal() + 1;
     }
 
+    @Transient
+    public void mergeAnotherHoliday(final Holiday anotherHoliday) {
+        BeanUtils.copyProperties(anotherHoliday, this, new String[]{"id"});
+
+    }
+
     private static enum Weekday {
         SUNDAY,
         MONDAY,
@@ -46,8 +49,7 @@ public abstract class Holiday extends AbstractMutableDomainObject {
         WEDNESDAY,
         THURSDAY,
         FRIDAY,
-        SATURDAY
-        ;
+        SATURDAY;
 
         static Weekday findByName(String name) {
             for (Weekday weekday : values()) {
@@ -58,7 +60,7 @@ public abstract class Holiday extends AbstractMutableDomainObject {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         StringBuffer sb = new StringBuffer();
         sb.append(" Description = ");
         sb.append(getDescription());
