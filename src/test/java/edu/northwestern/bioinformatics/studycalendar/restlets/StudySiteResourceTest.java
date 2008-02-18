@@ -5,7 +5,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static org.easymock.classextension.EasyMock.expect;
 import org.restlet.data.Method;
 import org.restlet.data.Status;
@@ -24,7 +23,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     private Study study;
     private Site site;
     private StudySite studySite;
-    private StudyService studyService;
     private StudySiteDao studySiteDao;
 
     @Override
@@ -36,7 +34,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
-        studyService = registerMockFor(StudyService.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
         request.getAttributes().put(UriTemplateParameters.SITE_NAME.attributeName(), SITE_NAME_ENCODED);
@@ -51,7 +48,6 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         res.setStudyDao(studyDao);
         res.setSiteDao(siteDao);
         res.setStudySiteDao(studySiteDao);
-        res.setStudyService(studyService);
         return res;
     }
 
@@ -117,7 +113,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         expectRequestHasIgnoredEntity();
         expectResolvedStudyAndSite(study, site);
         expectDeserializeEntity(unlinkedSS);
-        expectSaveNewStudySite();
+        expectSaveNewStudySite(unlinkedSS);
         expectObjectXmlized(unlinkedSS);
 
         doPut();
@@ -203,8 +199,8 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
         expect(xmlSerializer.readDocument(MOCK_XML_REP.getStream())).andReturn(studySite);
     }
 
-    private void expectSaveNewStudySite() {
-        studyService.save(study);
+    private void expectSaveNewStudySite(StudySite unlinkedSS) {
+        studySiteDao.save(unlinkedSS);
     }
 
     private void expectStudySiteDeleted() {

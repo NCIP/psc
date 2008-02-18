@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -23,7 +22,6 @@ import org.springframework.beans.factory.annotation.Required;
 public class StudySiteResource extends AbstractRemovableStorableDomainObjectResource<StudySite> {
     private StudyDao studyDao;
     private SiteDao siteDao;
-    private StudyService studyService;
 
     private Study study;
     private Site site;
@@ -59,11 +57,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
 
     public void store(StudySite studySite) {
         if (getRequestedObject() == null) {
-            StudySite newSS = new StudySite();
-            newSS.setStudy(study);
-            newSS.setSite(site);
-            study.addStudySite(newSS);
-            studyService.save(study);
+            studySiteDao.save(studySite);
         }
     }
 
@@ -91,11 +85,6 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
-    }
-
-    @Required
-    public void setStudyService(StudyService studyService) {
-        this.studyService = studyService;
     }
 
     @Required
