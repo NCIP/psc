@@ -12,7 +12,12 @@ import org.dom4j.Element;
  * @author John Dzak
  */
 public class ScheduledActivityStateXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledActivityState> {
-    private final String SCHEDULED = "scheduled";
+    private static final String MISSED = "missed";
+    private static final String SCHEDULED = "scheduled";
+    private static final String OCCURRED = "occurred";
+    private static final String CANCELED = "canceled";
+    private static final String CONDITIONAL = "conditional";
+    private static final String NOT_APPLICABLE = "not-applicable";
 
     @Override
     public Element createElement(ScheduledActivityState state) {
@@ -22,8 +27,18 @@ public class ScheduledActivityStateXmlSerializer extends AbstractStudyCalendarXm
             SCHEDULED_ACTIVITY_STATE_DATE.addTo(elt, ((DatedScheduledActivityState)state).getDate());
         }
 
-        if(state.getMode().equals(ScheduledActivityMode.SCHEDULED)) {
+        if (ScheduledActivityMode.SCHEDULED.equals(state.getMode())) {
             SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, SCHEDULED);
+        } else if (ScheduledActivityMode.OCCURRED.equals(state.getMode())) {
+            SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, OCCURRED);
+        } else if (ScheduledActivityMode.CANCELED.equals(state.getMode())) {
+            SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, CANCELED);
+        } else if (ScheduledActivityMode.CONDITIONAL.equals(state.getMode())) {
+            SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, CONDITIONAL);
+        } else if (ScheduledActivityMode.NOT_APPLICABLE.equals(state.getMode())) {
+            SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, NOT_APPLICABLE);
+        } else if (ScheduledActivityMode.MISSED.equals(state.getMode())) {
+            SCHEDULED_ACTIVITY_STATE_STATE.addTo(elt, MISSED);
         }
         return elt;
     }
