@@ -16,8 +16,8 @@ import org.dom4j.Element;
  * @author John Dzak
  */
 public class StudySiteXmlSerializer extends AbstractStudyCalendarXmlSerializer<StudySite> {
-    private final String STUDY_NOT_FOUND_MESSAGE = "Study '%s' not found. Please define a study that exists.";
-    private final String SITE_NOT_FOUND_MESSAGE = "Site '%s' not found. Please define a site that exists.";
+    private static final String STUDY_NOT_FOUND_MESSAGE = "Study '%s' not found. Please define a study that exists.";
+    private static final String SITE_NOT_FOUND_MESSAGE = "Site '%s' not found. Please define a site that exists.";
 
     private StudyDao studyDao;
     private SiteDao siteDao;
