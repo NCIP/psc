@@ -585,7 +585,7 @@
                 createStudyControls();
                 createAddEpochControl();
                 addToBeginSentence();
-                addToBeginSentence();
+                hideShowReleaseTemplateButton();
             }
 
             function loadFunctionsForStudySegment() {
@@ -601,11 +601,8 @@
             <c:if test="${not empty developmentRevision}">
                 Event.observe(window, "load", loadFunctionsForDevelopmentRevision)
             </c:if>
-
-
-            <c:if test="${not empty studySegment.months}">
+            <c:if test="${empty developmentRevision && not empty studySegment.months}">
                 Event.observe(window, "load", loadFunctionsForStudySegment)
-
             </c:if>
 
         </script>
