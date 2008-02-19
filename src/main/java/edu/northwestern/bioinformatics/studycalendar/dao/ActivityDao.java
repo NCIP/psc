@@ -4,6 +4,10 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
+import static java.util.Collections.EMPTY_LIST;
+
+import static org.apache.commons.lang.StringUtils.EMPTY;
 
 /**
  * @author Jaron Sampson
@@ -37,6 +41,13 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
         }
         return activities.get(0);
     }
+
+    public List<Activity> getActivitiesBySearchText(String searchText) {
+        String search = "%" + searchText.toLowerCase() +"%";
+        List<Activity> activities = getHibernateTemplate().find("from Activity where lower(name || code) LIKE ?", search);
+        return activities;
+    }
+
 
     public void delete(Activity activity) {
         getHibernateTemplate().delete(activity);

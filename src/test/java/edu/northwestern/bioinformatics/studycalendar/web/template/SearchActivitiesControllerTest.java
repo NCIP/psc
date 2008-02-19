@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import static java.util.Arrays.asList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author John Dzak
@@ -25,6 +26,7 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
     private ActivityDao activityDao;
     private Source source0, source1;
     private SourceDao sourceDao;
+    private List<Activity> activityResult;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -51,12 +53,15 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
                 createActivity("Activity B", "BB", source1, ActivityType.DISEASE_MEASURE)
         );
 
+        activityResult = new ArrayList<Activity>();
+
         request.setMethod("GET");
     }
 
     public void testHandle() throws Exception {
-        expectSearch("", null, null);
-        expectRefDataCalls();
+        String searchText = "";
+        expectSearch(searchText, null, null);
+        expectRefDataCalls("activities", searchText);
         replayMocks();
 
         ModelAndView mv = controller.handleRequest(request, response);
@@ -66,27 +71,32 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
     }
 
     public void testHandleSearchByFullName() throws Exception {
-        expectSearch("Activity B", null, null);
+        String searchText = "Activity B";
+        expectSearch(searchText, null, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = new ArrayList<Activity>();
+        actual.add(activities.get(1));
 
+        expect(activityDao.getActivitiesBySearchText(searchText)).andReturn(actual);
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "Activity B", actual.get(0).getName());
     }
 
     public void testHandleSearchByFullNameLowerCase() throws Exception {
-        expectSearch("activity b", null, null);
+        String searchText = "activity b";
+        expectSearch(searchText, null, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText );
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "Activity B", actual.get(0).getName());
     }
 
     public void testHandleSearchByPartialName() throws Exception {
-        expectSearch("Activity", null, null);
+        String searchText = "Activity";
+        expectSearch(searchText, null, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 
         assertEquals("Wrong search results size", 2, actual.size());
         assertEquals("Wrong search results", "Activity A", actual.get(0).getName());
@@ -94,36 +104,40 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
     }
 
     public void testHandleSearchByCode() throws Exception {
-        expectSearch("AA", null, null);
+        String searchText = "AA";
+        expectSearch(searchText, null, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "AA", actual.get(0).getCode());
     }
 
     public void testHandleSearchByCodeLowerCase() throws Exception {
-        expectSearch("bb", null, null);
+        String searchText = "bb";
+        expectSearch(searchText, null, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "BB", actual.get(0).getCode());
     }
 
     public void testHandleFilterBySource() throws Exception {
-        expectSearch("Activity", source0, null);
+        String searchText = "Activity";
+        expectSearch(searchText, source0, null);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "Activity A", actual.get(0).getName());
     }
 
     public void testHandleFilterByActivityType() throws Exception {
-        expectSearch("Activity", null, ActivityType.DISEASE_MEASURE);
+        String searchText = "Activity";
+        expectSearch(searchText, null, ActivityType.DISEASE_MEASURE);
 
-        List<Activity> actual = (List<Activity>) getRefData("activities");
+        List<Activity> actual = (List<Activity>) getRefData("activities", searchText);
 
         assertEquals("Wrong search results size", 1, actual.size());
         assertEquals("Wrong search results", "Activity B", actual.get(0).getName());
@@ -146,12 +160,17 @@ public class SearchActivitiesControllerTest extends ControllerTestCase {
         expect(command.getActivityType()).andReturn(activityType);
     }
 
-    public void expectRefDataCalls() {
-        expect(activityDao.getAll()).andReturn(activities);
+    public void expectRefDataCalls(String searchText, String searchActivityText) {
+        for (Activity activity: activities) {
+            if (activity.getName().toLowerCase().contains(searchActivityText.toLowerCase()) || activity.getCode().toLowerCase().contains(searchActivityText.toLowerCase())) {
+                activityResult.add(activity);
+            }
+        }
+        expect(activityDao.getActivitiesBySearchText(searchActivityText)).andReturn(activityResult);
     }
 
-    public Object getRefData(String refdataKey) throws Exception{
-        expectRefDataCalls();
+    public Object getRefData(String refdataKey, String searchActivityText) throws Exception{
+        expectRefDataCalls(refdataKey, searchActivityText);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();

@@ -46,15 +46,12 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
             ActivityType activityType = command.getActivityType();
             Source source = command.getSource();
 
-            List<Activity> activities = activityDao.getAll();
-
-            List<Activity> results = searchActivities(activities, searchText);
+            List<Activity> results = activityDao.getActivitiesBySearchText(searchText);
 
             results = filterBySource(results, source);
             results = filterByActivityType(results, activityType);
 
             model.put("activities", results);
-
             return new ModelAndView("template/ajax/activities", model);
         } else {
             getControllerTools().sendGetOnlyError(response);
@@ -62,25 +59,6 @@ public class SearchActivitiesController extends PscAbstractCommandController<Sea
         }
     }
 
-    // TODO: search in database (i.e., in a DAO method) not in code
-    // TODO: remove null check for code if find out code is required (Reconsent doesn't have code)
-    private List<Activity> searchActivities(List<Activity>activities, String searchText) {
-        if (searchText.equals(EMPTY)) return EMPTY_LIST;
-
-        String searchTextLower = searchText.toLowerCase();
-
-        List<Activity> results = new ArrayList<Activity>();
-        for (Activity activity : activities) {
-
-            String activityName = activity.getName().toLowerCase();
-            String activityCode = activity.getCode() != null ? activity.getCode().toLowerCase() : EMPTY;
-            
-            if (activityName.contains(searchTextLower)
-                    || activityCode.contains(searchTextLower))
-                results.add(activity);
-        }
-        return results;
-    }
 
     // TODO: remove null check for source if find out code is required (Reconsent doesn't have source)
     private List<Activity> filterBySource(List<Activity> activities, Source source) {

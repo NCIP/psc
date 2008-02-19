@@ -56,6 +56,11 @@ public class ActivityDaoTest extends DaoTestCase {
         assertEquals(5, actual.size());
     }
 
+    public void testGetActivitiesBySearchText() throws Exception {
+        List<Activity> actual = dao.getActivitiesBySearchText("A");
+        assertEquals(4, actual.size());
+    }
+
     public void testGetAllSortOrder() throws Exception {
         List<Activity> actual = dao.getAll();
         assertEquals("Wrong order", -96, (int) actual.get(0).getId());
