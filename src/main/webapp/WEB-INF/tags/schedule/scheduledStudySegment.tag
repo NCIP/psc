@@ -72,10 +72,7 @@
                         <ul>
                             <c:forEach items="${entry.value}" var="event">
                                 <li>
-                                    <input type="checkbox" value="${event.id}" name="events" class="event
-                                        <c:if test="${event.conditionalState}">conditional-event</c:if>
-                                        <c:if test="${entry.key < studySegment.todayDate}">past-due-event</c:if>"
-                                    />
+                                    <input type="checkbox" value="${event.id}" name="events" class="event <c:if test="${event.conditionalState}">conditional-event</c:if><c:if test="${entry.key < studySegment.todayDate}">past-due-event</c:if>"/>
                                     <img src="<c:url value="/images/${event.currentState.mode.name}.png"/>" alt="Status: ${event.currentState.mode.name}"/>
                                     
                                     <a href="<c:url value="/pages/cal/scheduleActivity?event=${event.id}"/>" title="Activity ${event.currentState.mode.name}; click to change">${event.activity.name}</a>
