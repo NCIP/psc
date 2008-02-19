@@ -61,8 +61,10 @@ public class ImportTemplateService {
     protected void resolveExistingActivitiesAndSources(Study study) {
         List<PlannedActivity> all = new LinkedList<PlannedActivity>();
 
+
         List<Amendment> reverse = new LinkedList<Amendment>(study.getAmendmentsList());
         Collections.reverse(reverse);
+        reverse.add(study.getDevelopmentAmendment());
         for (Amendment amendment : reverse) {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
@@ -98,6 +100,7 @@ public class ImportTemplateService {
 
     protected void resolveChangeChildrenFromPlanTreeNodeTree(Study study) {
         List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
+        Amendment development = study.getDevelopmentAmendment();
         Collections.reverse(amendments);
         study.setAmendment(null);
 
@@ -129,6 +132,31 @@ public class ImportTemplateService {
             study.setDevelopmentAmendment(amendment);
             amendmentService.amend(study);
         }
+
+        // Resolve delta nodes and child nodes for development amendment
+        for (Delta delta : development.getDeltas()) {
+            // resolve node
+            PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
+            if (deltaNode != null) {
+                delta.setNode(deltaNode);
+            } else {
+                throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
+            }
+
+            // resolve child nodes
+            for (Object oChange : delta.getChanges()) {
+                if (oChange instanceof ChildrenChange) {
+                    ChildrenChange change = (ChildrenChange) oChange;
+                    PlanTreeNode<?> nodeTemplate = change.getChild();
+                    PlanTreeNode<?> node = findRealNode(nodeTemplate);
+                    if (node != null) {
+                        change.setChild(node);
+                    }
+                }
+            }
+        }
+        study.setDevelopmentAmendment(development);
+
     }
 
     private PlanTreeNode<?> findRealNode(PlanTreeNode<?> nodeTemplate) {
