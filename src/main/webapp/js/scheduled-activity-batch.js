@@ -83,12 +83,15 @@ function registerHideDaysButton() {
     })
 }
 
-Event.observe(window, "load", registerBatchRescheduleHandlers)
-Event.observe(window, "load", registerSubheaderCollapse)
-Event.observe(window, "load", registerCheckAllEvents)
-Event.observe(window, "load", registerUncheckAllEvents)
-Event.observe(window, "load", registerCheckAllConditionalEvents)
-Event.observe(window, "load", registerCheckAllPastDueEvents)
-
-Event.observe(window, "load", registerShowDaysButton)
-Event.observe(window, "load", registerHideDaysButton)
+//for IE7 we need to implement loading the function in this way. IE7 otherwise doesn't preserve the order
+function registerAllFunctions() {
+    registerBatchRescheduleHandlers();
+    registerSubheaderCollapse();
+    registerCheckAllEvents();
+    registerUncheckAllEvents();
+    registerCheckAllConditionalEvents();
+    registerCheckAllPastDueEvents();
+    registerShowDaysButton();
+    registerHideDaysButton();
+}
+Event.observe(window, "load", registerAllFunctions);
