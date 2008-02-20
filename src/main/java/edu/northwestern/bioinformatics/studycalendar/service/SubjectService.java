@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.NotApplicable;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -478,7 +479,7 @@ public class SubjectService {
         return subjects;
     }
 
-    public Subject findSubject(Subject searchCriteria) {
+    public List<Subject> findSubjects(Subject searchCriteria) {
         if (searchCriteria == null) return null;
 
         validateSubjectAttributes(searchCriteria.getPersonId(), searchCriteria.getFirstName(), searchCriteria.getLastName(), searchCriteria.getDateOfBirth(), searchCriteria.getGender());
@@ -486,30 +487,38 @@ public class SubjectService {
         if (searchCriteria.getPersonId() != null) {
             Subject subject = subjectDao.findSubjectByPersonId(searchCriteria.getPersonId());
             if (subject == null) {
-                return null;
+                return Collections.emptyList();
             }
-            return subject;
+            return Collections.singletonList(subject);
         } else {
             List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(searchCriteria.getFirstName(), searchCriteria.getLastName(), searchCriteria.getDateOfBirth());
 
             if (subjects.isEmpty()) {
-                return null;
-            } else if (subjects.size() == 1) {
-                return subjects.get(0);
+                return Collections.EMPTY_LIST;
             } else {
-                throw new StudyCalendarValidationException(
-                        "Multiple subjects found for %s, %s.  With a birth date of %s",
-                        searchCriteria.getLastName(), searchCriteria.getFirstName(), searchCriteria.getDateOfBirth());
+                return subjects;
             }
+        }
+    }
+    public Subject findSubject(Subject searchCriteria) {
+        List<Subject> subjects = findSubjects(searchCriteria);
+        if (subjects.isEmpty()) {
+            return null;
+        } else if (subjects.size() == 1) {
+            return subjects.get(0);
+        } else {
+            throw new StudyCalendarValidationException(
+                    "Multiple subjects found for %s, %s.  With a birth date of %s",
+                    searchCriteria.getLastName(), searchCriteria.getFirstName(), searchCriteria.getDateOfBirth());
         }
     }
 
     private void validateSubjectAttributes(String personId, String firstName, String lastName, Date birthDate, String gender) {
-        if (personId == null) {
-            if (firstName == null) {
+        if (StringUtils.isEmpty(personId)) {
+            if (StringUtils.isEmpty(firstName)) {
                 throw new StudyCalendarValidationException(
                         "Subject first name is required if person id is empty");
-            } else if (lastName == null) {
+            } else if (StringUtils.isEmpty(lastName)) {
                 throw new StudyCalendarValidationException(
                         "Subject last name is required if person id is empty");
             } else if (birthDate == null) {
@@ -517,7 +526,7 @@ public class SubjectService {
                         "Subject birth date is required if person id is empty");
             }
         }
-        if (gender == null) {
+        if (StringUtils.isEmpty(gender)) {
             throw new StudyCalendarValidationException(
                     "Subject gender is required");
         }

@@ -1,35 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import org.springframework.validation.Errors;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.validation.Errors;
-import org.apache.commons.lang.StringUtils;
+import java.util.Set;
 
 
 /**
  * @author Padmaja Vedula
  */
 public class AssignSubjectCommand implements Validatable {
-    private Subject subject;
     private StudySegment studySegment;
     private Date startDate;
 
@@ -47,48 +34,51 @@ public class AssignSubjectCommand implements Validatable {
     private String gender;
     private String personId;
 
-    private static final Logger log = LoggerFactory.getLogger(AssignSubjectCommand.class.getName());
-
     public AssignSubjectCommand() {
         populations = new HashSet<Population>();
     }
 
 
     public void validate(Errors errors){
-        if (getPersonId()!= null && getPersonId().length() > 0) {
-            Subject subject = subjectService.findSubjectByPersonId(getPersonId());
-            if (subject != null) {
-                StudySubjectAssignment assignment = subjectDao.getAssignment(subject, getStudy(), getSite());
-                if (assignment != null) {
-                    errors.rejectValue("personId", "error.person.id.already.exists");
-                }
-            }
+        Subject subject = createSubject();
+
+        if (isEmpty(personId) && (isEmpty(firstName) || isEmpty(lastName) || dateOfBirth == null)) {
+            errors.rejectValue("personId", "error.subject.assignment.please.enter.person.id.and.or.first.last.birthdate");
+        } else if (startDate == null) {
+            errors.rejectValue("startDate", "error.subject.assignment.please.enter.a.start.date");
         } else {
-            List <Subject> subjects = subjectService.findSubjectByFirstNameLastNameAndDateOfBirth(getFirstName(), getLastName(), getDateOfBirth());
-            if (subjects != null && !subjects.isEmpty()) {
-                errors.rejectValue("lastName", "error.person.last.name.already.exists");
+            List<Subject> results = subjectService.findSubjects(subject);
+            if (results.size() > 1) {
+                if (subject.getPersonId() != null) {
+                    errors.rejectValue("personId", "error.person.id.already.exists");
+                } else {
+                    errors.rejectValue("lastName", "error.person.last.name.already.exists");
+                }
             }
         }
     }
 
 
-
     public StudySubjectAssignment assignSubject() {
-		Subject subject = createSubject();
+		Subject subject = createAndSaveSubject();
         StudySubjectAssignment assignment = subjectService.assignSubject(
             subject, getStudySite(), getEffectiveStudySegment(), getStartDate(), getSubjectCoordinator());
         subjectService.updatePopulations(assignment, getPopulations());
         return assignment;
     }
 
-
-	public Subject createSubject() {
-		Subject subject = new Subject();
+    public Subject createSubject() {
+        Subject subject = new Subject();
 		subject.setFirstName(getFirstName());
 		subject.setLastName(getLastName());
 		subject.setDateOfBirth(getDateOfBirth());
 		subject.setGender(getGender());
 		subject.setPersonId(getPersonId());
+        return subject;
+    }
+
+    public Subject createAndSaveSubject() {
+		Subject subject = createSubject();
         subjectDao.save(subject);
         return subject;
     }
@@ -123,14 +113,6 @@ public class AssignSubjectCommand implements Validatable {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
-    }
-
-    public Subject getSubject() {
-        return subject;
-    }
-
-    public void setSubject(Subject subject) {
-        this.subject = subject;
     }
 
     public StudySegment getStudySegment() {
