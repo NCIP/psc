@@ -126,14 +126,14 @@
 
         function createAutocompleter() {
             if (${not empty releasedAndAssignedTemplate}){
-            activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/fragment/releasedTemplates"/>',
-            {
-                method: 'get',
-                paramName: 'searchText',
-                afterUpdateElement:updateActivity,
-                revertOnEsc:true
-            });
-                }
+                activitiesAutocompleter = new Ajax.RevertableAutocompleter('studies-autocompleter-input','studies-autocompleter-div','<c:url value="/pages/cal/search/fragment/releasedTemplates"/>',
+                {
+                    method: 'get',
+                    paramName: 'searchText',
+                    afterUpdateElement:updateActivity,
+                    revertOnEsc:true
+                });
+            }
         }
 
         function updateActivity(input, li) {

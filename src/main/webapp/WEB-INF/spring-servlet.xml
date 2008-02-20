@@ -476,7 +476,7 @@
         </property>
     </bean>
 
-    <bean name="/fragment/search/activities" id="searchActivitiesController" autowire="byName"
+    <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
 
 

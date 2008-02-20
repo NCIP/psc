@@ -29,8 +29,8 @@ function selectedValue(selectorName) {
 }
 
 function addActivityRow() {
-    var activity = selectedActivity()
-    if (!activity.id || !activity.name) return
+    var activity = selectedActivity();
+    if ((activity.id == null) || (activity.name == null)) return
     var cells = []
     var dayCount = ${period.dayRanges[0].days}.length
     var rowCount = $$("#input-body tr").length - 1
@@ -68,7 +68,7 @@ function addActivityRow() {
         id: conditionDetailsName,
         name: conditionDetailsName,
         type: 'text',
-        class: 'no-condition',
+        className: 'no-condition',
         value: 'Click to add condition'
     });
     cells.push(Builder.node('td', {}, [conditionDetailsInput]))
@@ -212,7 +212,8 @@ function executeManagePeriodPost(href, data, row) {
 }
 
 function registerRowEventHandlers(rowElt) {
-    rowElt.select('input[name*=conditionalDetails]').each(function(input) {
+    var elt = $(rowElt).select('input[name*=conditionalDetails]');
+    elt.each(function(input) {
         input.observe('focus', focusConditionInput)
         input.observe('blur', changedConditionInput)
     })
@@ -224,10 +225,14 @@ function registerRowEventHandlers(rowElt) {
     })
 }
 
+function updateAddActivityButton() {
+    addActivityRow();
+    resetActivitiesAutocompleter();
+}
+
 function registerHandlers() {
     $$('.input-row').each(registerRowEventHandlers)
-    Event.observe('add-activity-button', 'click', addActivityRow)
-    Event.observe('add-activity-button', 'click', resetActivitiesAutocompleter)
+    Event.observe('add-activity-button', 'click', updateAddActivityButton)
     Event.observe('return-to-template', 'click', function() {
         location.href = '<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
     })
@@ -309,7 +314,7 @@ function updateAddedMarker(draggedMarker, dropZone) {
             registerNewMarkerHoverTip(clone)
             draggedMarkerParent.appendChild(clone);
             new Effect.Opacity(clone, {
-                duration: 0.8,
+                duration: 0.8
             })
         }
     }
@@ -329,14 +334,20 @@ function deleteMarker(draggedMarker, dropZone) {
     draggedMarker.innerHTML = '';
 }
 
-Event.observe(window, "load", registerHandlers)
-Event.observe(window, "load", showEmptyMessage)
-Event.observe(window, "load", registerDraggablesAndDroppables)
+function initMethods() {
+    registerHandlers();
+    showEmptyMessage();
+    registerHoverTips();
+    registerDraggablesAndDroppables();
+    createAutocompleter();
 
-</script>
+}
 
-<!-- ////// ACTIVITIES AUTOCOMPLETER -->
-<script type="text/javascript">
+Event.observe(window, "load", initMethods)
+<%--</script>-->
+
+<!--<!-- ////// ACTIVITIES AUTOCOMPLETER -->
+<!--<script type="text/javascript">--%>
 var activitiesAutocompleter;
 
 function resetActivitiesAutocompleter() {
@@ -346,8 +357,14 @@ function resetActivitiesAutocompleter() {
 }
 
 function createAutocompleter() {
-    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/fragment/search/activities"/>',
-    { method: 'get', paramName: 'searchText', callback: addAdditionalParameters, afterUpdateElement:updateActivity, revertOnEsc:true});
+    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/search/fragment/activities"/>',
+    {
+        method: 'get',
+        paramName: 'searchText',
+        callback: addAdditionalParameters,
+        afterUpdateElement:updateActivity, 
+        revertOnEsc:true
+    });
 }
 
 function addAdditionalParameters(inputField, queryString) {
@@ -359,14 +376,9 @@ function addAdditionalParameters(inputField, queryString) {
 function updateActivity(input, li) {
     $('add-activity').name = li.innerHTML;
     $('add-activity').value= li.id;
-    $('add-activity-button').focus()
+//    $('add-activity-button').focus()
 }
 
-
-Event.observe(window, "load", createAutocompleter)
-</script>
-
-<script type="text/javascript">
 function clearHoverTip() {
     $('palette-tip').innerHTML = '&nbsp;'
 }
@@ -392,7 +404,8 @@ function registerHoverTips() {
     registerHoverTip($('delete-drop'), "Drag an activity from the grid to delete it")
 }
 
-Event.observe(window, "dom:loaded", registerHoverTips)
+//Event.observe(window, "dom:loaded", registerHoverTips)
+
 </script>
 
 <style type="text/css">
