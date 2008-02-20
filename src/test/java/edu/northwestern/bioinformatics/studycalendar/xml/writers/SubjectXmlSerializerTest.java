@@ -1,17 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
+import org.easymock.EasyMock;
 import static org.easymock.EasyMock.expect;
+import org.easymock.IArgumentMatcher;
 
+import java.text.ParseException;
 import java.util.Calendar;
-import static java.util.Collections.singletonList;
-import java.util.Date;
 
 /**
  * @author John Dzak
@@ -19,33 +20,17 @@ import java.util.Date;
 public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
     private SubjectXmlSerializer serializer;
     private Subject subject;
-    private Element element;
-    private SubjectDao subjectDao;
-    private Date birthDate;
-    private String birthDateString;
-    private String lastName;
-    private String firstName;
-    private String personId;
-    private String gender;
+    private SubjectService subjectService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        subjectDao = registerDaoMockFor(SubjectDao.class);
+        subjectService = registerMockFor(SubjectService.class);
 
         serializer = new SubjectXmlSerializer();
-        serializer.setSubjectDao(subjectDao);
+        serializer.setSubjectService(subjectService);
 
-        firstName = "john";
-        lastName = "doe";
-        personId = "1111";
-        gender = "Male";
-        birthDateString = "1990-01-15";
-        birthDate = createDate(1990, Calendar.JANUARY, 15, 0, 0, 0);
-
-        subject = createSubject(firstName, lastName, birthDate, personId, gender);
-
-        element = createElement(subject);
+        subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
     }
 
     public void testCreateElement() {
@@ -57,65 +42,61 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong subject birth date", "1990-01-15", actual.attributeValue("birth-date"));
     }
 
-    public void testReadElementWithAllAttributes() {
-        expectFindSubjectByPersonId();
+    public void testReadElement() throws ParseException {
+        Subject searchCriteria = createSubject("1111", null, null, null, "Male");
+        Element element = createElement(searchCriteria);
+
+        expectSubjectFoundFromSearchCriteria(searchCriteria);
         replayMocks();
 
         Subject actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Subjects should be the same", subject,  actual);
-    }
-
-    public void testReadElementByPersonId() {
-        Element element = createElement(createSubject(null, null, null, personId, gender));
-        
-        expectFindSubjectByPersonId();
-        replayMocks();
-
-        Subject actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Subjects should be the same", subject,  actual);
-    }
-
-    public void testReadElementByFirstNameLastNameAndBirthDate() {
-        Element element = createElement(createSubject(firstName, lastName, birthDate, null, gender));
-
-        expectFindSubjectByFirstNameLastNameAndBirthDate();
-        replayMocks();
-
-        Subject actual = serializer.readElement(element);
-        verifyMocks();
-
-        assertSame("Subjects should be the same", subject,  actual);
+        assertSame("Subjects should be the same", subject, actual);
     }
 
     ////// Expect Methods
-    private void expectFindSubjectByPersonId() {
-        expect(subjectDao.findSubjectByPersonId("1111")).andReturn(subject);
-    }
-
-    private void expectFindSubjectByFirstNameLastNameAndBirthDate() {
-        expect(subjectDao.findSubjectByFirstNameLastNameAndDoB("john", "doe", birthDate)).andReturn(singletonList(subject));
+    private void expectSubjectFoundFromSearchCriteria(Subject searchCriteria) {
+        expect(subjectService.findSubject(eqSubject(searchCriteria))).andReturn(subject);
     }
 
     ////// Helper Methods
-    private Subject createSubject(String firstNm, String lastNm, Date birthDate, String personId, String gender) {
-        Subject subject = Fixtures.createSubject(firstNm, lastNm);
-        subject.setDateOfBirth(birthDate);
-        subject.setPersonId(personId);
-        subject.setGender(gender);
-        return subject;
-    }
-
-    private Element createElement(Subject subj) {
+    private Element createElement(Subject subj) throws ParseException {
         Element elt = new BaseElement("subject");
         elt.addAttribute("gender", subj.getGender());
-        elt.addAttribute("birth-date", birthDateString);
         elt.addAttribute("last-name", subj.getLastName());
         elt.addAttribute("person-id", subj.getPersonId());
         elt.addAttribute("first-name", subj.getFirstName());
+        elt.addAttribute("birth-date", toDateString(subj.getDateOfBirth()));
         return elt;
+    }
+
+    ////// Custom Matchers
+    public static Subject eqSubject(Subject in) {
+        EasyMock.reportMatcher(new SubjectMatcher(in));
+        return null;
+    }
+
+    public static class SubjectMatcher implements IArgumentMatcher {
+        private Subject expected;
+
+        public SubjectMatcher(Subject expected) {
+            this.expected = expected;
+        }
+
+        public boolean matches(Object actual) {
+            if (!(actual instanceof Subject)) {
+                return false;
+            }
+            String personId = ((Subject) actual).getPersonId();
+            return expected.getPersonId().equals(personId);
+        }
+
+        public void appendTo(StringBuffer buffer) {
+            buffer.append("eqSubject(");
+            buffer.append(expected.getClass().getName());
+            buffer.append(" with person id \"");
+            buffer.append(expected.getPersonId());
+            buffer.append("\")");
+
+        }
     }
 }

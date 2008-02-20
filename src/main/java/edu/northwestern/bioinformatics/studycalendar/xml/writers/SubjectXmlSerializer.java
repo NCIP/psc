@@ -1,8 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SUBJECT;
@@ -10,13 +9,12 @@ import org.dom4j.Element;
 import static org.springframework.util.StringUtils.capitalize;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author John Dzak
  */
 public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Subject> {
-    private SubjectDao subjectDao;
+    private SubjectService subjectService;
 
     public Element createElement(Subject subject) {
         Element elt = SUBJECT.create();
@@ -35,47 +33,14 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
         Date birthDate   = SUBJECT_BIRTH_DATE.fromDate(element);
         String gender    = capitalize(SUBJECT_GENDER.from(element));
 
-        validateAttributes(personId, firstName, lastName, birthDate, gender);
+        Subject searchCriteria = createSubject(personId, firstName,  lastName, birthDate, gender);
+        Subject searchResult = subjectService.findSubject(searchCriteria);
 
-        if (personId != null) {
-            Subject subject = subjectDao.findSubjectByPersonId(personId);
-            if (subject == null) {
-                subject = createSubject(personId, firstName,  lastName, birthDate, gender);
-            }
-            return subject;
-        } else {
-            List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(firstName, lastName, birthDate);
+        return (searchResult != null) ? searchResult : searchCriteria;
 
-            if (subjects.isEmpty()) {
-                return createSubject(personId, firstName,  lastName, birthDate, gender);
-            } else if (subjects.size() == 1) {
-                return subjects.get(0);
-            } else {
-                throw new StudyCalendarValidationException(
-                        "Multiple subjects found for %s, %s, and %s.",
-                        lastName, firstName, SUBJECT_BIRTH_DATE.from(element));
-            }
-        }
     }
 
-    private void validateAttributes(String personId, String firstName, String lastName, Date birthDate, String gender) {
-        if (personId == null) {
-            if (firstName == null) {
-                throw new StudyCalendarValidationException(
-                        "Subject first name is required if person id is empty");
-            } else if (lastName == null) {
-                throw new StudyCalendarValidationException(
-                        "Subject last name is required if person id is empty");
-            } else if (birthDate == null) {
-                throw new StudyCalendarValidationException(
-                        "Subject birth date is required if person id is empty");
-            }
-        }
-        if (gender == null) {
-            throw new StudyCalendarValidationException(
-                    "Subject gender is required");
-        }
-    }
+
 
     private Subject createSubject(String personId, String firstName, String lastName, Date birthDate, String gender) {
         Subject subject = new Subject();
@@ -87,7 +52,8 @@ public class SubjectXmlSerializer extends AbstractStudyCalendarXmlSerializer<Sub
         return subject;
     }
 
-    public void setSubjectDao(SubjectDao subjectDao) {
-        this.subjectDao = subjectDao;
+    ////// Bean Setters
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 }

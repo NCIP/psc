@@ -20,10 +20,15 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 
 public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
+
+    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
     public void assertXMLEqual(String expected, String actual) throws SAXException, IOException {
         validate(actual.getBytes());
@@ -59,6 +64,18 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         StudyCalendarXmlCollectionSerializer<R> serializer, String doc
     ) {
         return serializer.readCollectionDocument(IOUtils.toInputStream(doc));
+    }
+
+    public static String toDateString(Date date) {
+        return (date != null) ? formatter.format(date) : null;
+    }
+
+    public static Date fromDateString(String dateStr) {
+        try {
+            return (dateStr != null) ? formatter.parse(dateStr) : null;
+        } catch(ParseException pe) {
+            throw new RuntimeException("Problem parsing date from string");
+        }
     }
 
     @SuppressWarnings({ "RawUseOfParameterizedType" })

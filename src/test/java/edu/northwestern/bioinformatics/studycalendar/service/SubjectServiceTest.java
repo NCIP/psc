@@ -1,25 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
-
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.expectLastCall;
 
-import java.util.*;
-import static java.util.Calendar.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-
-import static org.easymock.classextension.EasyMock.*;
-import gov.nih.nci.cabig.ctms.lang.DateTools;
+import java.util.*;
+import static java.util.Calendar.*;
+import static java.util.Collections.singletonList;
 
 /**
  * @author Rhett Sutphin
@@ -578,5 +579,49 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         service.schedulePlannedActivity(plannedActivity, period, new Amendment(), "DC", segment);
 
         assertEquals("No activites should have been scheduled", 0, segment.getActivities().size());
+    }
+
+    public void testFindSubjectWithAllAttributes() {
+        Subject subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+        expectFindSubjectByPersonId("1111", subject);
+        replayMocks();
+
+        Subject actual = service.findSubject(subject);
+        verifyMocks();
+
+        assertSame("Subjects should be the same", subject,  actual);
+    }
+
+    public void testReadElementByPersonId() {
+        Subject subject = createSubject("1111", null, null, null, "Male");
+
+        expectFindSubjectByPersonId("1111", subject);
+        replayMocks();
+
+        Subject actual = service.findSubject(subject);
+        verifyMocks();
+
+        assertSame("Subjects should be the same", subject,  actual);
+    }
+
+    public void testReadElementByFirstNameLastNameAndBirthDate() {
+        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+
+        expectFindSubjectByFirstNameLastNameAndBirthDate("john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), subject);
+        replayMocks();
+
+        Subject actual = service.findSubject(subject);
+        verifyMocks();
+
+        assertSame("Subjects should be the same", subject,  actual);
+    }
+
+    ////// Expect Methods
+    private void expectFindSubjectByPersonId(String id, Subject returned) {
+        expect(subjectDao.findSubjectByPersonId(id)).andReturn(returned);
+    }
+
+    private void expectFindSubjectByFirstNameLastNameAndBirthDate(String firstName, String lastName, Date birthDate, Subject returned) {
+        expect(subjectDao.findSubjectByFirstNameLastNameAndDoB(firstName, lastName, birthDate)).andReturn(singletonList(returned));
     }
 }

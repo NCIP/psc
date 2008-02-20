@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -477,6 +478,50 @@ public class SubjectService {
         return subjects;
     }
 
+    public Subject findSubject(Subject searchCriteria) {
+        if (searchCriteria == null) return null;
+
+        validateSubjectAttributes(searchCriteria.getPersonId(), searchCriteria.getFirstName(), searchCriteria.getLastName(), searchCriteria.getDateOfBirth(), searchCriteria.getGender());
+
+        if (searchCriteria.getPersonId() != null) {
+            Subject subject = subjectDao.findSubjectByPersonId(searchCriteria.getPersonId());
+            if (subject == null) {
+                return null;
+            }
+            return subject;
+        } else {
+            List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(searchCriteria.getFirstName(), searchCriteria.getLastName(), searchCriteria.getDateOfBirth());
+
+            if (subjects.isEmpty()) {
+                return null;
+            } else if (subjects.size() == 1) {
+                return subjects.get(0);
+            } else {
+                throw new StudyCalendarValidationException(
+                        "Multiple subjects found for %s, %s.  With a birth date of %s",
+                        searchCriteria.getLastName(), searchCriteria.getFirstName(), searchCriteria.getDateOfBirth());
+            }
+        }
+    }
+
+    private void validateSubjectAttributes(String personId, String firstName, String lastName, Date birthDate, String gender) {
+        if (personId == null) {
+            if (firstName == null) {
+                throw new StudyCalendarValidationException(
+                        "Subject first name is required if person id is empty");
+            } else if (lastName == null) {
+                throw new StudyCalendarValidationException(
+                        "Subject last name is required if person id is empty");
+            } else if (birthDate == null) {
+                throw new StudyCalendarValidationException(
+                        "Subject birth date is required if person id is empty");
+            }
+        }
+        if (gender == null) {
+            throw new StudyCalendarValidationException(
+                    "Subject gender is required");
+        }
+    }
 
     private static class DatabaseEventOrderComparator implements Comparator<ScheduledActivity> {
         public static final Comparator<? super ScheduledActivity> INSTANCE = new DatabaseEventOrderComparator();
