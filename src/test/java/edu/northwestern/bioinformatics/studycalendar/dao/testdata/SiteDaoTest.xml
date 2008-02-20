@@ -3,6 +3,10 @@
         id="-4"
         name="default"
         assigned_identifier="assignedId"    />
+    <SITES
+            id="-5"
+            name="anotherSite"
+            />
 
     <HOLIDAYS
         id="-1"

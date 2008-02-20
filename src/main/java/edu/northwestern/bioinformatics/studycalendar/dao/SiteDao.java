@@ -30,7 +30,7 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site> implement
     }
 
     public Site getByAssignedIdentifier(final String assignedIdentifier) {
-        List<Site> results = getHibernateTemplate().find("from Site where assignedIdentifier= ?", assignedIdentifier);
+        List<Site> results = getHibernateTemplate().find("from Site where assignedIdentifier= ? or (assignedIdentifier=null and name=?)", new String[]{assignedIdentifier,assignedIdentifier});
         return CollectionUtils.firstElement(results);
     }
 

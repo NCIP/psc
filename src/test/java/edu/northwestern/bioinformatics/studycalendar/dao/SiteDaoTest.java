@@ -1,13 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Holiday;
 import edu.northwestern.bioinformatics.studycalendar.domain.RelativeRecurringHoliday;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarError;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
 
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -21,11 +20,21 @@ public class SiteDaoTest extends DaoTestCase {
         assertEquals("Wrong id", -4, (int) actual.getId());
         assertEquals("Wrong name", "default", actual.getName());
     }
+
     public void testGetByAssignedIdentifier() throws Exception {
-            Site actual = siteDao.getByAssignedIdentifier("assignedId");
-            assertNotNull("Study not found", actual);
-            assertEquals("Wrong assignedIdentifier", "assignedId", actual.getAssignedIdentifier());
-        }
+        Site actual = siteDao.getByAssignedIdentifier("assignedId");
+        assertNotNull("site not found", actual);
+        assertEquals("Wrong assignedIdentifier", "assignedId", actual.getAssignedIdentifier());
+        //check for name also
+        actual = siteDao.getByAssignedIdentifier("default");
+        assertNull("site must not exists because identifier is not null", actual);
+
+        actual = siteDao.getByAssignedIdentifier("anotherSite");
+        assertNotNull("site not found", actual);
+        assertEquals("Wrong assignedIdentifier", "anotherSite", actual.getAssignedIdentifier());
+
+
+    }
 
     public void testDeleteHoliday() throws Exception {
         Site actual = siteDao.getById(-4);
@@ -68,13 +77,13 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testCount() throws Exception {
-        assertEquals("Should be one site, to start", 1, siteDao.getCount());
+        assertEquals("Should be two sites, to start", 2, siteDao.getCount());
 
         Site newSite = new Site();
         newSite.setName("Hampshire");
         siteDao.save(newSite);
         interruptSession();
-        assertEquals("Should be two sites after saving", 2, siteDao.getCount());
+        assertEquals("Should be three sites after saving", 3, siteDao.getCount());
 
         getJdbcTemplate().update("DELETE FROM sites");
         assertEquals("And now there should be none", 0, siteDao.getCount());
