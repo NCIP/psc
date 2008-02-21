@@ -128,6 +128,10 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWhereElementExists() {
         expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
         expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
+
+        expect(element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName())).andReturn(element);
+
+        expect(developmentAmendmentSerializer.readElement(element)).andReturn(developmentAmendment);
         replayMocks();
 
         Study actual = serializer.readElement(element);

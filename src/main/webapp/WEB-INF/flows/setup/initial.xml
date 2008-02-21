@@ -22,7 +22,7 @@
     </view-state>
 
     <action-state id="saveSite">
-        <bean-action bean="siteService" method="createSite">
+        <bean-action bean="siteService" method="createOrUpdateSite">
             <method-arguments>
                 <argument expression="${flowScope.site}"/>
             </method-arguments>

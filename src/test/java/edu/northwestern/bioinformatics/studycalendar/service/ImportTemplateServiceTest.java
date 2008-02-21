@@ -24,6 +24,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private AmendmentService amendmentService;
     private StudyDao studyDao;
     private PlannedActivityDao plannedActivityDao;
+    private StudyService studyService;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -80,7 +81,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testResolveChangeChildrenFromPlanTreeNodeTree() {
-        expectSaveStudy();
+        expectSaveStudyWithDao();
 
         // Amendment 0
         expectResolvePeriod();
@@ -104,6 +105,8 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
 
         expectResolvePeriod();
         expectResolvePlannedActivity("grid1", activity1);
+
+        expectSaveStudyWithService();
 
         replayMocks();
 
@@ -139,8 +142,12 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         amendmentService.amend(study);
     }
 
-    private void expectSaveStudy() {
+    private void expectSaveStudyWithDao() {
         studyDao.save(study);
+    }
+
+    private void expectSaveStudyWithService() {
+        studyService.save(study);
     }
 
     ////// Helper Create Methods
@@ -150,6 +157,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         periodDao = registerDaoMockFor(PeriodDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
+        studyService = registerMockFor(StudyService.class);
         amendmentService = registerMockFor(AmendmentService.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
     }
@@ -159,6 +167,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         service.setActivityDao(activityDao);
         service.setSourceDao(sourceDao);
         service.setStudyDao(studyDao);
+        service.setStudyService(studyService);
         service.setAmendmentService(amendmentService);
         service.setDaoFinder(daoFinder);
         return service;

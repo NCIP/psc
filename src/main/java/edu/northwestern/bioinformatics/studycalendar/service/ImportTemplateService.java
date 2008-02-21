@@ -25,6 +25,7 @@ public class ImportTemplateService {
     private DaoFinder daoFinder;
     private AmendmentService amendmentService;
     private TemplateService templateService;
+    private StudyService studyService;
 
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
@@ -103,6 +104,7 @@ public class ImportTemplateService {
         Amendment development = study.getDevelopmentAmendment();
         Collections.reverse(amendments);
         study.setAmendment(null);
+        study.setDevelopmentAmendment(null);
 
         // StudyDao is being used instead of StudyService because we don't want to cascade to the amendments yet
         studyDao.save(study);
@@ -156,6 +158,7 @@ public class ImportTemplateService {
             }
         }
         study.setDevelopmentAmendment(development);
+        studyService.save(study);
 
     }
 
@@ -193,4 +196,7 @@ public class ImportTemplateService {
         this.templateService = templateService;
     }
 
+    public void setStudyService(StudyService studyService) {
+        this.studyService = studyService;
+    }
 }

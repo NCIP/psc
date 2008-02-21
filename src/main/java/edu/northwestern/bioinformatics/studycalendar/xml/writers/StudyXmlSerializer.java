@@ -43,9 +43,11 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             eStudy.add(eAmendment);
         }
 
-        Amendment developmentAmendment = study.getDevelopmentAmendment();
-        Element developmentAmendmentElement = getDevelopmentAmendmentSerializer(study).createElement(developmentAmendment);
-        eStudy.add(developmentAmendmentElement);
+        if (study.getDevelopmentAmendment() != null) {
+            Amendment developmentAmendment = study.getDevelopmentAmendment();
+            Element developmentAmendmentElement = getDevelopmentAmendmentSerializer(study).createElement(developmentAmendment);
+            eStudy.add(developmentAmendmentElement);
+        }
 
         return eStudy;
     }
@@ -73,12 +75,14 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 Population population = populationXmlSerializer.readElement(ePopulation);
                 study.addPopulation(population);
             }
+        }
 
-            Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
-
+        Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
+        if (developmentAmendmentElement != null) {
             Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
             study.setDevelopmentAmendment(developmentAmendment);
         }
+        
         return study;
     }
 

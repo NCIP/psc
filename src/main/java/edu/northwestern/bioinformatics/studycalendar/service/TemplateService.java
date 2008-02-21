@@ -1,41 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import static java.util.Arrays.asList;
-
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.STUDY_ADMIN;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SUBJECT_COORDINATOR;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.SITE_COORDINATOR;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
+import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import static java.util.Arrays.asList;
 
 /**
  * @author Padmaja Vedula
@@ -317,7 +306,7 @@ public class TemplateService {
     }
 
     private <T extends PlanTreeNode<?>> void findChildren(PlanTreeInnerNode node, Class<T> childClass, Collection<T> target) {
-        if (childClass.isAssignableFrom(node.childClass())) {
+            if (childClass.isAssignableFrom(node.childClass())) {
             target.addAll(node.getChildren());
         } else {
             for (Object o : node.getChildren()) {
