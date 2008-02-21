@@ -148,7 +148,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         service.deleteStudySegments(segments);
         verifyMocks();
 
-        assertTrue("There should be no planned actiities", segments.isEmpty());
+        assertTrue("There should be no study segments", segments.isEmpty());
     }
 
     ////// Helper expect methods
