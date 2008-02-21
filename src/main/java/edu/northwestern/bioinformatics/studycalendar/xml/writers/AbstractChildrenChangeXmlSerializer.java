@@ -4,7 +4,6 @@ import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.dom4j.Element;
@@ -27,7 +26,7 @@ public abstract class AbstractChildrenChangeXmlSerializer extends AbstractChange
         Element child = getElementById(element, childId);
         AbstractPlanTreeNodeXmlSerializer serializer = getPlanTreeNodeSerializerFactory().createXmlSerializer(child);
         PlanTreeNode<?> node = serializer.readElement(child);
-        ((Remove)change).setChild(node);
+        ((ChildrenChange)change).setChild(node);
     }
 
     // Methods to get child from child id
