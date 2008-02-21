@@ -22,6 +22,8 @@ public class ImportTemplateService {
     private StudyService studyService;
     private PlannedActivityDao plannedActivityDao;
     private StudySegmentDao studySegmentDao;
+    private PeriodDao periodDao;
+    private EpochDao epochDao;
 
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
@@ -173,7 +175,9 @@ public class ImportTemplateService {
     protected void deleteEpochs(List<Epoch> epochs) {
         for (Epoch epoch : epochs) {
             deleteStudySegments(epoch.getStudySegments());
+            epochDao.delete(epoch);
         }
+        epochs.clear();
     }
 
     protected void deleteStudySegments(List<StudySegment> segments) {
@@ -184,10 +188,12 @@ public class ImportTemplateService {
         segments.clear();
     }
 
-    protected void deletePeriods(SortedSet<Period> periods) {
+    protected void deletePeriods(Set<Period> periods) {
         for(Period period : periods) {
             deletePlannedActivities(period.getPlannedActivities());
+            periodDao.delete(period);
         }
+        periods.clear();
     }
 
     protected void deletePlannedActivities(List<PlannedActivity> plannedActivities) {
@@ -236,5 +242,13 @@ public class ImportTemplateService {
 
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
+    }
+
+    public void setPeriodDao(PeriodDao periodDao) {
+        this.periodDao = periodDao;
+    }
+
+    public void setEpochDao(EpochDao epochDao) {
+        this.epochDao = epochDao;
     }
 }

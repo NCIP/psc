@@ -1,7 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.springframework.transaction.annotation.Transactional;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Rhett Sutphin
@@ -15,5 +15,9 @@ public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> {
 
     public void evict(Period period) {
         getHibernateTemplate().evict(period);
+    }
+
+    public void delete(Period period) {
+        getHibernateTemplate().delete(period);
     }
 }

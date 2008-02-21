@@ -13,6 +13,8 @@ import static org.easymock.EasyMock.expect;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private PlannedActivity activity0, activity1, activity2, activity3, activity4, activity5;
@@ -29,6 +31,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private PlannedActivityDao plannedActivityDao;
     private StudyService studyService;
     private StudySegmentDao studySegmentDao;
+    private EpochDao epochDao;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -151,6 +154,42 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         assertTrue("There should be no study segments", segments.isEmpty());
     }
 
+    public void testDeletePeriods() {
+        Period period0 = createNamedInstance("Period A", Period.class);
+        Period period1 = createNamedInstance("Period B", Period.class);
+
+        Set<Period> periods = new TreeSet<Period>();
+        periods.add(period0);
+        periods.add(period1);
+
+        periodDao.delete(period0);
+        periodDao.delete(period1);
+        replayMocks();
+
+        service.deletePeriods(periods);
+        verifyMocks();
+
+        assertTrue("There should be no periods", periods.isEmpty());
+    }
+
+    public void testDeleteEpochs() {
+        Epoch epoch0 = createNamedInstance("Epoch A", Epoch.class);
+        Epoch epoch1 = createNamedInstance("Epoch B", Epoch.class);
+
+        List<Epoch> epochs = new ArrayList<Epoch>();
+        epochs.add(epoch0);
+        epochs.add(epoch1);
+
+        epochDao.delete(epoch0);
+        epochDao.delete(epoch1);
+        replayMocks();
+
+        service.deleteEpochs(epochs);
+        verifyMocks();
+
+        assertTrue("There should be no periods", epochs.isEmpty());
+    }
+
     ////// Helper expect methods
     private void expectResolveExistingActivityAndSource(String activityCode, Activity activity, String sourceCode, Source source) {
         expect(activityDao.getByCodeAndSourceName(activityCode, sourceCode)).andReturn(activity);
@@ -191,6 +230,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private void registerMocks() {
         studyDao = registerDaoMockFor(StudyDao.class);
         daoFinder = registerMockFor(DaoFinder.class);
+        epochDao = registerDaoMockFor(EpochDao.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
@@ -203,8 +243,10 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private ImportTemplateService service() {
         ImportTemplateService service = new ImportTemplateService();
         service.setStudyDao(studyDao);
+        service.setEpochDao(epochDao);
         service.setDaoFinder(daoFinder);
         service.setSourceDao(sourceDao);
+        service.setPeriodDao(periodDao);
         service.setActivityDao(activityDao);
         service.setStudyService(studyService);
         service.setStudySegmentDao(studySegmentDao);
