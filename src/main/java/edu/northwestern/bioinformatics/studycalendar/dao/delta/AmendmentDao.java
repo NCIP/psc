@@ -1,24 +1,18 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.hibernate.action.EntityAction;
-import org.hibernate.Session;
-import org.hibernate.HibernateException;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Order;
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.sql.SQLException;
-
-import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
+import java.util.List;
 
 /**
  * @author Nataliya Shurupova
@@ -60,5 +54,9 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
         } else {
             return results.get(0);
         }
+    }
+
+    public void delete(Amendment amendment) {
+        getHibernateTemplate().delete(amendment);
     }
 }

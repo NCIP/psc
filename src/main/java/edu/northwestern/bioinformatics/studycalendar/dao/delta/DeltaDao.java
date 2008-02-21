@@ -1,13 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
-import org.springframework.transaction.annotation.Transactional;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.nwu.bioinformatics.commons.CollectionUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,4 +41,7 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
         return CollectionUtils.firstElement(deltas);
     }
 
+    public void delete(Delta delta) {
+        getHibernateTemplate().delete(delta);
+    }
 }

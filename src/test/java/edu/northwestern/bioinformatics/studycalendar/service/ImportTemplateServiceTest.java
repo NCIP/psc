@@ -1,12 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.expect;
@@ -32,6 +32,9 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private StudyService studyService;
     private StudySegmentDao studySegmentDao;
     private EpochDao epochDao;
+    private ChangeDao changeDao;
+    private DeltaDao deltaDao;
+    private AmendmentDao amendmentDao;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -187,7 +190,49 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         service.deleteEpochs(epochs);
         verifyMocks();
 
-        assertTrue("There should be no periods", epochs.isEmpty());
+        assertTrue("There should be no epochs", epochs.isEmpty());
+    }
+
+    public void testDeleteDeltas() {
+        Epoch epoch = createNamedInstance("Epoch A", Epoch.class);
+        StudySegment segment = createNamedInstance("Segment A", StudySegment.class);
+
+        Change change0 = Add.create(epoch);
+        Change change1 = Remove.create(segment);
+
+        Delta delta0 = Delta.createDeltaFor(new PlannedCalendar(), change0);
+        Delta delta1 = Delta.createDeltaFor(new Epoch(), change1);
+
+        List<Delta<?>> deltas = new ArrayList<Delta<?>>();
+        deltas.add(delta0);
+        deltas.add(delta1);
+
+        deltaDao.delete(delta0);
+        changeDao.delete(change0);
+        epochDao.delete(epoch);
+
+        deltaDao.delete(delta1);
+        changeDao.delete(change1);
+        replayMocks();
+
+        service.deleteDeltas(deltas);
+        verifyMocks();
+
+        assertTrue("There should be no changes in delta0", delta0.getChanges().isEmpty());
+        assertTrue("There should be no changes in delta1", delta1.getChanges().isEmpty());
+        assertTrue("There should be no deltas", deltas.isEmpty());
+    }
+
+    public void testDeleteAmendment() {
+        Amendment amendment = new Amendment();
+
+        amendmentDao.delete(amendment);
+        replayMocks();
+        
+        service.deleteAmendment(amendment);
+        verifyMocks();
+
+
     }
 
     ////// Helper expect methods
@@ -229,12 +274,15 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     ////// Helper Create Methods
     private void registerMocks() {
         studyDao = registerDaoMockFor(StudyDao.class);
+        changeDao = registerDaoMockFor(ChangeDao.class);
         daoFinder = registerMockFor(DaoFinder.class);
         epochDao = registerDaoMockFor(EpochDao.class);
+        deltaDao = registerDaoMockFor(DeltaDao.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         studyService = registerMockFor(StudyService.class);
+        amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
@@ -244,10 +292,13 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         ImportTemplateService service = new ImportTemplateService();
         service.setStudyDao(studyDao);
         service.setEpochDao(epochDao);
+        service.setDeltaDao(deltaDao);
+        service.setChangeDao(changeDao);
         service.setDaoFinder(daoFinder);
         service.setSourceDao(sourceDao);
         service.setPeriodDao(periodDao);
         service.setActivityDao(activityDao);
+        service.setAmendmentDao(amendmentDao);
         service.setStudyService(studyService);
         service.setStudySegmentDao(studySegmentDao);
         service.setAmendmentService(amendmentService);
