@@ -299,24 +299,26 @@ function updateAddedMarker(draggedMarker, dropZone) {
     var activity = draggedMarker.activity ? draggedMarker.activity : rowActivity;
     if (activity == rowActivity) {
         dropZone.select('.marker')[0].update(draggedMarker.innerHTML);
+
+        //FOR IE7 - Have to comment this part, since X is not working after being added to the row once. The Draggables doesn't register clone properly...
         
         // Have to clone the node to avoid the revert animation
-        var draggedMarkerParent = draggedMarker.parentNode
-        draggedMarkerParent.removeChild(draggedMarker);
-        if (draggedMarker.hasClassName('new-marker')) {
-            var clone = $(draggedMarker.cloneNode(true))
-            clone.style.position = ''
-            clone.style.top = ''
-            clone.style.left = ''
-            clone.style.zIndex = ''
-            clone.style.opacity = '0'
-            new Draggable(clone, { revert: true })
-            registerNewMarkerHoverTip(clone)
-            draggedMarkerParent.appendChild(clone);
-            new Effect.Opacity(clone, {
-                duration: 0.8
-            })
-        }
+//        var draggedMarkerParent = draggedMarker.parentNode
+//        draggedMarkerParent.removeChild(draggedMarker);
+//        if (draggedMarker.hasClassName('new-marker')) {
+//            var clone = $(draggedMarker.cloneNode(true))
+//            clone.style.position = ''
+//            clone.style.top = ''
+//            clone.style.left = ''
+//            clone.style.zIndex = ''
+//            clone.style.opacity = '0'
+//            new Draggable(clone, { revert: true })
+//            registerNewMarkerHoverTip(clone)
+//            draggedMarkerParent.appendChild(clone);
+//            new Effect.Opacity(clone, {
+//                duration: 0.8
+//            })
+//        }
     }
 }
 
@@ -528,7 +530,7 @@ function registerHoverTips() {
 
     table#manage-period {
         padding:5px;
-        overflow-x:auto;
+        /*overflow-x:auto;*/
         display:block;
     }
     
@@ -624,8 +626,10 @@ function registerHoverTips() {
          </div>
 
         <form:form>
+
+<div id="newDiv" style="overflow:auto; padding-bottom:5px; position:relative;">
             <c:set var="tableWidth" value="${period.duration.days + 4}"/>
-            <table id="manage-period">
+            <table id="manage-period" >
             <tbody id="input-body">
                 <tr>
                     <th class="indicator-column spacer"></th>
@@ -701,7 +705,7 @@ function registerHoverTips() {
                     </c:forEach>
                 </tbody>
             </table>
-
+</div>
             <br style="clear:both"/>
 
             <div id="activities-input">
