@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
@@ -11,10 +8,7 @@ import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @Transactional
 public class ImportTemplateService {
@@ -26,6 +20,8 @@ public class ImportTemplateService {
     private AmendmentService amendmentService;
     private TemplateService templateService;
     private StudyService studyService;
+    private PlannedActivityDao plannedActivityDao;
+    private StudySegmentDao studySegmentDao;
 
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
@@ -167,7 +163,41 @@ public class ImportTemplateService {
         return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
     }
 
+    // We don't want to add delete-orphaned to the hibernate cascade because
+    // if planned tree node is part of another amendment, we don't want to destroy
+    // that association also.
+    protected void deletePlannedCalendar(PlannedCalendar calendar) {
+        deleteEpochs(calendar.getEpochs());
+    }
 
+    protected void deleteEpochs(List<Epoch> epochs) {
+        for (Epoch epoch : epochs) {
+            deleteStudySegments(epoch.getStudySegments());
+        }
+    }
+
+    protected void deleteStudySegments(List<StudySegment> segments) {
+        for (StudySegment segment : segments) {
+            deletePeriods(segment.getPeriods());
+            studySegmentDao.delete(segment);
+        }
+        segments.clear();
+    }
+
+    protected void deletePeriods(SortedSet<Period> periods) {
+        for(Period period : periods) {
+            deletePlannedActivities(period.getPlannedActivities());
+        }
+    }
+
+    protected void deletePlannedActivities(List<PlannedActivity> plannedActivities) {
+        for (PlannedActivity activity : plannedActivities) {
+            plannedActivityDao.delete(activity);
+        }
+        plannedActivities.clear();
+    }
+
+    ////// Bean Setters
     public void setActivityDao(ActivityDao activityDao) {
         this.activityDao = activityDao;
     }
@@ -198,5 +228,13 @@ public class ImportTemplateService {
 
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    public void setPlannedActivityDao(PlannedActivityDao plannedActivityDao) {
+        this.plannedActivityDao = plannedActivityDao;
+    }
+
+    public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
+        this.studySegmentDao = studySegmentDao;
     }
 }

@@ -11,6 +11,9 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.expect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private PlannedActivity activity0, activity1, activity2, activity3, activity4, activity5;
     private ImportTemplateService service;
@@ -25,6 +28,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private StudyDao studyDao;
     private PlannedActivityDao plannedActivityDao;
     private StudyService studyService;
+    private StudySegmentDao studySegmentDao;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -114,6 +118,39 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         verifyMocks();
     }
 
+    public void testDeletePlannedActivities() {
+        List<PlannedActivity> activities = new ArrayList<PlannedActivity>();
+        activities.add(activity4);
+        activities.add(activity5);
+
+        plannedActivityDao.delete(activity4);
+        plannedActivityDao.delete(activity5);
+        replayMocks();
+
+        service.deletePlannedActivities(activities);
+        verifyMocks();
+
+        assertTrue("There should be no planned actiities", activities.isEmpty());
+    }
+
+    public void testDeleteStudySegments() {
+        StudySegment segment0 = createNamedInstance("Segment A", StudySegment.class);
+        StudySegment segment1 = createNamedInstance("Segment B", StudySegment.class);
+
+        List<StudySegment> segments = new ArrayList<StudySegment>();
+        segments.add(segment0);
+        segments.add(segment1);
+
+        studySegmentDao.delete(segment0);
+        studySegmentDao.delete(segment1);
+        replayMocks();
+
+        service.deleteStudySegments(segments);
+        verifyMocks();
+
+        assertTrue("There should be no planned actiities", segments.isEmpty());
+    }
+
     ////// Helper expect methods
     private void expectResolveExistingActivityAndSource(String activityCode, Activity activity, String sourceCode, Source source) {
         expect(activityDao.getByCodeAndSourceName(activityCode, sourceCode)).andReturn(activity);
@@ -158,18 +195,21 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         sourceDao = registerDaoMockFor(SourceDao.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         studyService = registerMockFor(StudyService.class);
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
     }
 
     private ImportTemplateService service() {
         ImportTemplateService service = new ImportTemplateService();
-        service.setActivityDao(activityDao);
-        service.setSourceDao(sourceDao);
         service.setStudyDao(studyDao);
-        service.setStudyService(studyService);
-        service.setAmendmentService(amendmentService);
         service.setDaoFinder(daoFinder);
+        service.setSourceDao(sourceDao);
+        service.setActivityDao(activityDao);
+        service.setStudyService(studyService);
+        service.setStudySegmentDao(studySegmentDao);
+        service.setAmendmentService(amendmentService);
+        service.setPlannedActivityDao(plannedActivityDao);
         return service;
     }
 
