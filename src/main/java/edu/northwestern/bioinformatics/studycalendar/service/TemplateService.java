@@ -306,7 +306,7 @@ public class TemplateService {
     }
 
     private <T extends PlanTreeNode<?>> void findChildren(PlanTreeInnerNode node, Class<T> childClass, Collection<T> target) {
-            if (childClass.isAssignableFrom(node.childClass())) {
+        if (childClass.isAssignableFrom(node.childClass())) {
             target.addAll(node.getChildren());
         } else {
             for (Object o : node.getChildren()) {

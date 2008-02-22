@@ -21,6 +21,7 @@ import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import static java.util.Collections.singletonList;
@@ -129,9 +130,11 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
         expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
 
+        expect(element.elements(XsdElement.AMENDMENT.xmlName())).andReturn(Arrays.asList(element));
         expect(element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName())).andReturn(element);
 
         expect(developmentAmendmentSerializer.readElement(element)).andReturn(developmentAmendment);
+        expect(amendmentSerializer.readElement(element)).andReturn(amendment);
         replayMocks();
 
         Study actual = serializer.readElement(element);

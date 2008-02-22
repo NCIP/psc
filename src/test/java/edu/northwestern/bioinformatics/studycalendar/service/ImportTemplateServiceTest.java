@@ -194,10 +194,11 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     }
 
     public void testDeleteDeltas() {
-        Epoch epoch = createNamedInstance("Epoch A", Epoch.class);
+        Epoch epoch = setId(99, createNamedInstance("Epoch A", Epoch.class));
         StudySegment segment = createNamedInstance("Segment A", StudySegment.class);
 
         Change change0 = Add.create(epoch);
+        ((Add)change0).setChildId(99);
         Change change1 = Remove.create(segment);
 
         Delta delta0 = Delta.createDeltaFor(new PlannedCalendar(), change0);
@@ -209,6 +210,8 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
 
         deltaDao.delete(delta0);
         changeDao.delete(change0);
+        expect(daoFinder.findDao(Epoch.class)).andReturn((DomainObjectDao) epochDao);
+        expect(epochDao.getById(99)).andReturn(epoch);
         epochDao.delete(epoch);
 
         deltaDao.delete(delta1);
@@ -229,7 +232,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         amendmentDao.delete(amendment);
         replayMocks();
         
-        service.deleteAmendment(amendment);
+        service.deleteAmendment(study, amendment);
         verifyMocks();
 
 

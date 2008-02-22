@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
@@ -7,10 +8,12 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -34,13 +37,37 @@ public class ImportTemplateService {
 
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
-        importTemplate(study);
+
+        // We do this so hibernate doesn't try to save the amendment
+        Amendment cur = study.getAmendment();
+        study.setAmendment(null);
+
+        // Check if development amendment is persisted and if it is, delete it
+        if (study.getDevelopmentAmendment() != null) {
+            String amendmentNaturalKey = study.getDevelopmentAmendment().getNaturalKey();
+            Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
+            if (dev != null) {
+                deleteAmendment(study, study.getDevelopmentAmendment());
+                study.setDevelopmentAmendment(null);
+                studyDao.save(study);
+            }
+        }
+
+        try {
+            stream.reset();
+        } catch (IOException ioe) {
+            throw new StudyCalendarSystemException("Problem importing template");
+        }
+        study = studyXmlSerializer.readDocument(stream);
+        study.setAmendment(cur);
+
+        templatePostProcessing(study);
     }
 
     /**
      * @param study study that needs to be created or imported
      */
-    public void importTemplate(Study study) {
+    public void templatePostProcessing(Study study) {
         resolveExistingActivitiesAndSources(study);
         resolveChangeChildrenFromPlanTreeNodeTree(study);
     }
@@ -54,12 +81,12 @@ public class ImportTemplateService {
      * <li>Update the existing development amendment with any changes in the new one  </li>
      * </p>
      *
-     * @param existingTemplate study which already exists and which needs to merged from new study 
+     * @param existingTemplate study which already exists and which needs to merged from new study
      * @param newTemplate      new study
      */
     public void mergeTemplate(final Study existingTemplate, final Study newTemplate) {
         if (existingTemplate == null) {
-            importTemplate(newTemplate);
+            templatePostProcessing(newTemplate);
         }//FIXME:Saurabh: implement the logic of merging two templates
 
     }
@@ -70,12 +97,22 @@ public class ImportTemplateService {
 
         List<Amendment> reverse = new LinkedList<Amendment>(study.getAmendmentsList());
         Collections.reverse(reverse);
-        reverse.add(study.getDevelopmentAmendment());
+        if (study.getDevelopmentAmendment() != null) {
+            reverse.add(study.getDevelopmentAmendment());
+        }
         for (Amendment amendment : reverse) {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
                     if (change.getAction() == ChangeAction.ADD) {
                         PlanTreeNode<?> child = ((Add) change).getChild();
+                        // Need this if change is already persisted in the database, then it won't have a child
+                        // and we need to find from the child id
+                        if (child == null) {
+                            Class childClass = ((PlanTreeInnerNode) delta.getNode()).childClass();
+                            DomainObjectDao dao = daoFinder.findDao(childClass);
+                            child = (PlanTreeNode<?>) dao.getById(((ChildrenChange)change).getChildId());
+                        }
+                        
                         if (child instanceof PlannedActivity) {
                             all.add((PlannedActivity) child);
                         } else {
@@ -85,7 +122,10 @@ public class ImportTemplateService {
                 }
             }
         }
-
+        Amendment dev = study.getDevelopmentAmendment();
+        Amendment cur = study.getAmendment();
+        study.setAmendment(null);
+        study.setDevelopmentAmendment(null);
         for (PlannedActivity plannedActivity : all) {
             Activity activity = plannedActivity.getActivity();
 
@@ -102,6 +142,8 @@ public class ImportTemplateService {
             sourceDao.save(plannedActivity.getActivity().getSource());
             activityDao.save(plannedActivity.getActivity());
         }
+        study.setAmendment(cur);
+        study.setDevelopmentAmendment(dev);
     }
 
     protected void resolveChangeChildrenFromPlanTreeNodeTree(Study study) {
@@ -115,7 +157,41 @@ public class ImportTemplateService {
         studyDao.save(study);
 
         for (Amendment amendment : amendments) {
-            for (Delta delta : amendment.getDeltas()) {
+            // If amendment already exists, we don't want to amend the study with it twice.
+            if (amendment.getId() == null) {
+                for (Delta delta : amendment.getDeltas()) {
+                    // resolve node
+                    PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
+                    if (deltaNode != null) {
+                        delta.setNode(deltaNode);
+                    } else {
+                        throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
+                    }
+
+                    // resolve child nodes
+                    for (Object oChange : delta.getChanges()) {
+                        if (oChange instanceof ChildrenChange) {
+                            ChildrenChange change = (ChildrenChange) oChange;
+                            PlanTreeNode<?> nodeTemplate = change.getChild();
+
+                            // If node template is not null, element has yet to be persisted
+                            if (nodeTemplate != null) {
+                                PlanTreeNode<?> node = findRealNode(nodeTemplate);
+                                if (node != null) {
+                                    change.setChild(node);
+                                }
+                            }
+                        }
+                    }
+                }
+                study.setDevelopmentAmendment(amendment);
+                amendmentService.amend(study);
+            }
+        }
+
+        // Resolve delta nodes and child nodes for development amendment
+        if (development != null) {
+            for (Delta delta : development.getDeltas()) {
                 // resolve node
                 PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
                 if (deltaNode != null) {
@@ -136,31 +212,6 @@ public class ImportTemplateService {
                     }
                 }
             }
-            study.setDevelopmentAmendment(amendment);
-            amendmentService.amend(study);
-        }
-
-        // Resolve delta nodes and child nodes for development amendment
-        for (Delta delta : development.getDeltas()) {
-            // resolve node
-            PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
-            if (deltaNode != null) {
-                delta.setNode(deltaNode);
-            } else {
-                throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
-            }
-
-            // resolve child nodes
-            for (Object oChange : delta.getChanges()) {
-                if (oChange instanceof ChildrenChange) {
-                    ChildrenChange change = (ChildrenChange) oChange;
-                    PlanTreeNode<?> nodeTemplate = change.getChild();
-                    PlanTreeNode<?> node = findRealNode(nodeTemplate);
-                    if (node != null) {
-                        change.setChild(node);
-                    }
-                }
-            }
         }
         study.setDevelopmentAmendment(development);
         studyService.save(study);
@@ -172,21 +223,27 @@ public class ImportTemplateService {
         return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
     }
 
-    public void deleteAmendment(Amendment amendment) {
+    public void deleteAmendment(Study study, Amendment amendment) {
         amendmentDao.delete(amendment);
         deleteDeltas(amendment.getDeltas());
     }
 
-    protected void deleteDeltas(List<Delta<?>> deltas) {
+    protected void deleteDeltas (List<Delta<?>> deltas) {
         for (Delta delta : deltas) {
             deltaDao.delete(delta);
+
+
             List<Change> changesToRemove = new ArrayList<Change>();
             for (Object oChange : delta.getChanges()) {
                 Change change = (Change) oChange;
                 changesToRemove.add(change);
                 changeDao.delete(change);
                 if (ChangeAction.ADD.equals(change.getAction())) {
-                    PlanTreeNode<?> child = ((ChildrenChange)change).getChild();
+
+                    Class childClass = ((PlanTreeInnerNode) delta.getNode()).childClass();
+                    DomainObjectDao dao = daoFinder.findDao(childClass);
+                    PlanTreeNode<?> child = (PlanTreeNode<?>) dao.getById(((ChildrenChange)change).getChildId());
+
                     if (child instanceof Epoch) {
                         deleteEpoch((Epoch) child);
                     } else if (child instanceof StudySegment) {
