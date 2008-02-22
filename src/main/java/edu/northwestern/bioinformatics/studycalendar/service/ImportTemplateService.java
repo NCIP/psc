@@ -41,8 +41,6 @@ public class ImportTemplateService {
         // We do this so hibernate doesn't try to save the amendment
         study.setAmendment(null);
 
-//        String devKey = study.getDevelopmentAmendment().getNaturalKey();
-
         // Check if development amendment is persisted and if it is, delete it
         if (study.getDevelopmentAmendment() != null) {
             String amendmentNaturalKey = study.getDevelopmentAmendment().getNaturalKey();
@@ -60,7 +58,6 @@ public class ImportTemplateService {
             throw new StudyCalendarSystemException("Problem importing template");
         }
         study = studyXmlSerializer.readDocument(stream);
-//        study.setAmendment(cur);
 
         templatePostProcessing(study);
     }
