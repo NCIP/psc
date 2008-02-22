@@ -12,9 +12,11 @@
     div.label {
         width: 35%;
     }
+
     div.submit {
         text-align: right;
     }
+
     form {
         width: 20em;
     }
@@ -22,12 +24,13 @@
 <style type="text/css">
     #mainHolidaysForm  div {
         float: left;
-        margin-left:0%;
+        margin-left: 0%;
         margin-top: 0%;
         padding: 10px;
     }
+
     #listOfAllHolidays {
-        margin-right:20%;
+        margin-right: 20%;
         margin-top: 0%;
         padding: 10px;
     }
@@ -36,7 +39,7 @@
 
 <script type="text/javascript">
 
-function myCallBackOnFinish(obj){
+function myCallBackOnFinish(obj) {
     new Effect.Appear(obj)
 }
 
@@ -57,53 +60,79 @@ function resetInputValue() {
 
 function displayTheHolidayParameters(txt)
 {
-    if (txt == 'DayOfTheWeek'){
+    if (txt == 'DayOfTheWeek') {
         Effect.Fade('holidayRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('dayOfTheWeek-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('dayOfTheWeek-div')
+        }});
         Effect.Fade('holidayNotRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('dayOfTheWeek-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('dayOfTheWeek-div')
+        }});
         Effect.Fade('relativeRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('dayOfTheWeek-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('dayOfTheWeek-div')
+        }});
     } else if (txt == 'RecurringHoliday') {
         Effect.Fade('dayOfTheWeek-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayRecurring-div')
+        }});
         Effect.Fade('holidayNotRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayRecurring-div')
+        }});
         Effect.Fade('relativeRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayRecurring-div')}});
-    } else if (txt == 'NotRecurringHoliday'){
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayRecurring-div')
+        }});
+    } else if (txt == 'NotRecurringHoliday') {
         Effect.Fade('dayOfTheWeek-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayNotRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayNotRecurring-div')
+        }});
         Effect.Fade('holidayRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayNotRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayNotRecurring-div')
+        }});
         Effect.Fade('relativeRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('holidayNotRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('holidayNotRecurring-div')
+        }});
     } else if (txt == 'RelativeRecurringHoliday') {
         Effect.Fade('dayOfTheWeek-div',
-        {afterFinish: function() {myCallBackOnFinish('relativeRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('relativeRecurring-div')
+        }});
         Effect.Fade('holidayRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('relativeRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('relativeRecurring-div')
+        }});
         Effect.Fade('holidayNotRecurring-div',
-        {afterFinish: function() {myCallBackOnFinish('relativeRecurring-div')}});
+        {afterFinish: function() {
+            myCallBackOnFinish('relativeRecurring-div')
+        }});
     }
     resetInputValue();
 }
 
 function trim(inputString) {
-    if (typeof inputString != "string") { return inputString; }
+    if (typeof inputString != "string") {
+        return inputString;
+    }
     var retValue = inputString;
     var ch = retValue.substring(0, 1);
     while (ch == " ") {
         retValue = retValue.substring(1, retValue.length);
         ch = retValue.substring(0, 1);
     }
-    ch = retValue.substring(retValue.length-1, retValue.length);
+    ch = retValue.substring(retValue.length - 1, retValue.length);
     while (ch == " ") {
-        retValue = retValue.substring(0, retValue.length-1);
-        ch = retValue.substring(retValue.length-1, retValue.length);
+        retValue = retValue.substring(0, retValue.length - 1);
+        ch = retValue.substring(retValue.length - 1, retValue.length);
     }
     while (retValue.indexOf("  ") != -1) {
-        retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ")+1, retValue.length);
+        retValue = retValue.substring(0, retValue.indexOf("  ")) + retValue.substring(retValue.indexOf("  ") + 1, retValue.length);
     }
     return retValue;
 }
@@ -120,34 +149,36 @@ function isCorrectOcurringInput() {
     date = trim(date);
     var description = document.getElementById("holidayDescription").value;
     var isDataCorrect = true;
-    if (isDataCorrect && (date.length < 3 || date.length >5)) {
+    if (isDataCorrect && (date.length < 3 || date.length > 5)) {
         isDataCorrect = false;
         resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
-        resetElement("recurringDateText", "Error enterring the date -<br>"+
+        resetElement("recurringDateText", "Error enterring the date -<br>" +
                                           "Please verify the format is mm/dd", "red");
     } else if (isDataCorrect && (date.length <= 5 && date.length >= 3)) {
         if (date.indexOf("/") < 0) {
             isDataCorrect = false;
             resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
-            resetElement("recurringDateText", "Error enterring the date -<br>"+
-                                              "Please verify the format is mm/dd", "red" );
+            resetElement("recurringDateText", "Error enterring the date -<br>" +
+                                              "Please verify the format is mm/dd", "red");
         } else {
             date = date.split("/");
-            if (isNaN(date[0]*1) || isNaN(date[1]*1)) {
+            if ((isNaN(date[0]) || ((date[0] <= 0 || date[0] > 12) ) ||
+                 isNaN(date[1]) || (date[1] <= 0 || date[1] > 31))
+                    ) {
                 isDataCorrect = false;
                 resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
-                resetElement("recurringDateText", "Error enterring the date -<br>"+
-                                                  "Please verify the format is mm/dd", "red" );
+                resetElement("recurringDateText", "Error enterring the date -<br>" +
+                                                  "Please verify the format is mm/dd", "red");
             }
         }
     }
     if (isDataCorrect && description.length == 0) {
         isDataCorrect = false;
         resetElement("recurringDateText", "Please enter month, day in the format<br>mm/dd", "black");
-        resetElement("recurringDescriptionText", "Error - <br>"+
+        resetElement("recurringDescriptionText", "Error - <br>" +
                                                  "Missing Description field", "red");
     }
-    if(isDataCorrect) {
+    if (isDataCorrect) {
         resetElement("recurringDescriptionText", "Please enter the holiday Description", "black");
         resetElement("recurringDateText", "Please enter month, day in the format<br>mm/dd", "black");
     }
@@ -155,55 +186,61 @@ function isCorrectOcurringInput() {
 }
 
 
-function isCorrectNonOccuringInput(){
+function isCorrectNonOccuringInput() {
     var date = document.getElementById("nonOcurringDate").value
     date = trim(date);
     var description = document.getElementById("nonOcurringDescription").value
     var isDataCorrect = true;
-    if (isDataCorrect &&(date.length < 8 || date.length > 10)) {
+    if (isDataCorrect && (date.length < 8 || date.length > 10)) {
         isDataCorrect = false;
         resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
-        resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
+        resetElement("nonRecurringDateText", "Error enterring the date -<br>" +
                                              "Please verify the format is mm/dd/yyyy", "red");
-    } else if (isDataCorrect && (date.length >= 8 && date.length <=10)){
+    } else if (isDataCorrect && (date.length >= 8 && date.length <= 10)) {
         if (date.indexOf("/") < 0) {
             isDataCorrect = false;
             resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
-            resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
-                                                 "Please verify the format is mm/dd/yyyy", "red" );
+            resetElement("nonRecurringDateText", "Error enterring the date -<br>" +
+                                                 "Please verify the format is mm/dd/yyyy", "red");
         } else {
             date = date.split("/");
-            if(date.length != 3 || ((isNaN(date[0]*1) || isNaN(date[1]*1) || isNaN(date[2]*1)))) {
+            if (date.length != 3 ||
+                (
+                        ((isNaN(date[0]) || (date[0] <= 0 || date[0] > 12) ) ||
+                         (isNaN(date[1]) || (date[1] <= 0 || date[1] > 31) ) ||
+                         (isNaN(date[2]) || (date[2] <= 1900)) )
+                        )
+                    ) {
                 isDataCorrect = false;
                 resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
-                resetElement("nonRecurringDateText", "Error enterring the date -<br>"+
-                                                     "Please verify the format is mm/dd/yyyy", "red" );
+                resetElement("nonRecurringDateText", "Error enterring the date -<br>" +
+                                                     "Please verify the format is mm/dd/yyyy", "red");
             }
         }
     }
     if (isDataCorrect && description.length == 0) {
         isDataCorrect = false;
         resetElement("nonRecurringDateText", "Please enter month, day in the format<br>mm/dd/yyyy", "black");
-        resetElement("nonRecurringDescriptionText", "Error - <br>"+
+        resetElement("nonRecurringDescriptionText", "Error - <br>" +
                                                     "Missing Description field", "red");
     }
-    if(isDataCorrect) {
+    if (isDataCorrect) {
         resetElement("nonRecurringDescriptionText", "Please enter the holiday Description", "black");
-        resetElement("nonRecurringDateText", "Please enter month, day in the format<br>mm/dd", "black");
+        resetElement("nonRecurringDateText", "Please enter month, day in the format<br>mm/dd/yyyy", "black");
     }
     return isDataCorrect
 }
 
 
-function isCorrectRecurringInput(){
+function isCorrectRecurringInput() {
     var description = document.getElementById("recurringDescription").value
     var isDataCorrect = true;
     if (description.length == 0) {
         isDataCorrect = false;
-        resetElement("recurringHolidayText", "Error - <br>"+
+        resetElement("recurringHolidayText", "Error - <br>" +
                                              "Missing Description field", "red");
     }
-    if(isDataCorrect) {
+    if (isDataCorrect) {
         resetElement("recurringHolidayText", "Please enter the holiday Description", "black");
     }
     return isDataCorrect
@@ -269,12 +306,12 @@ Event.observe(window, "load", selectedHoliday)
         <h5 id="nonRecurringDateText">Please enter month, day and year in the format mm/dd/yyyy</h5>
         <form:input path="holidayDate" id="nonOcurringDate" size="25"/>
 
-        <div class="label">
-            <form:label path="holidayDate" id="nonOcurringDate">Start date of first epoch</form:label>
-        </div>
-        <div class="value">
-            <laf:dateInput path="startDate"/>
-        </div>
+        <%--<div class="label">--%>
+            <%--<form:label path="holidayDate" id="nonOcurringDate">Start date of first epoch</form:label>--%>
+        <%--</div>--%>
+        <%--<div class="value">--%>
+            <%--<laf:dateInput path="startDate"/>--%>
+        <%--</div>--%>
 
 
         <h5 id="nonRecurringDescriptionText">Please enter the holiday Description</h5>
