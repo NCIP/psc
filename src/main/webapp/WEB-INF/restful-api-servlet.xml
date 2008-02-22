@@ -82,6 +82,12 @@
         <property name="xmlSerializer" ref="studySiteXmlSerializer"/>
     </bean>
 
+    <bean name="/studies/{study-identifier}/sites/{site-identifier}/approvals"
+          id="amendmentApprovalsResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendmentApprovalsResource">
+        <property name="xmlSerializer" ref="amendmentApprovalXmlSerializer"/>
+    </bean>
+
     <bean name="/activities/{activity-source-name}/{activity-code}"
           id="activityResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ActivityResource"

@@ -49,7 +49,7 @@ public class RegistrationsResourceTest extends AuthorizedResourceTestCase<Regist
         assignmentSerializerStub = new CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment>();
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
-        request.getAttributes().put(UriTemplateParameters.SITE_NAME.attributeName(), SITE_NAME);
+        request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_NAME);
     }
 
     @Override

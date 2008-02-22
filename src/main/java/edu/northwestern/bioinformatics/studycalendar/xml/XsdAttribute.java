@@ -65,7 +65,8 @@ public enum XsdAttribute {
     SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID("planned-activity-id"),
     SCHEDULED_ACTIVITY_STATE_REASON("reason"),
     SCHEDULED_ACTIVITY_STATE_DATE("date"),
-    SCHEDULED_ACTIVITY_STATE_STATE("state");
+    SCHEDULED_ACTIVITY_STATE_STATE("state"),
+    AMENDMENT_APPROVAL_DATE("date") ;
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;
@@ -96,4 +97,5 @@ public enum XsdAttribute {
     public void addTo(Element elt, Date value) {
         elt.addAttribute(attributeName, value == null ? null : formatter.format(value));
     }
+
 }

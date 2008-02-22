@@ -236,6 +236,25 @@
         <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
     </xsd:complexType>
 
+    <xsd:element name="amendment-approvals" type="psc:amendment-approvals"/>
+
+    <xsd:complexType name="amendment-approvals">
+        <xsd:sequence>
+            <xsd:element name="amendment-approval" type="psc:AmendmentApproval" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="amendment-approval" type="psc:AmendmentApproval"/>
+
+    <xsd:complexType name="AmendmentApproval">
+        <xsd:sequence>
+            <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
+            <xsd:element name="amendment" type="psc:Amendment"/>
+        </xsd:sequence>
+        <xsd:attribute name="date" type="xsd:date" use="required"/>
+    </xsd:complexType>
+
+
     <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
 
     <xsd:complexType name="StudySiteLink">

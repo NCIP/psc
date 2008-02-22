@@ -22,4 +22,8 @@ public enum UriTemplateParameters {
     public String extractFrom(Request request) {
         return Reference.decode((String) request.getAttributes().get(attributeName()));
     }
+
+    public boolean checkIfRequestHasUrlParameter(Request request) {
+        return request.getAttributes().get(attributeName()) != null;
+    }
 }

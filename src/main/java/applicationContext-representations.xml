@@ -31,6 +31,11 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
     <bean id="studySubjectAssignmentXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
+    <bean id="amendmentApprovalXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer">
+        <property name="amendmentSerializer" ref="amendmentXmlSerializer"/>
+        <property name="studySiteXmlSerializer" ref="studySiteXmlSerializer"/>
+    </bean>
     <bean id="activitySourceXmlSerializer"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
     <bean id="studySiteXmlSerializer" autowire="byName"

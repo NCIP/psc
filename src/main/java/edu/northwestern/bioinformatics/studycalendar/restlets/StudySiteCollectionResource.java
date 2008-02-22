@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.SITE_NAME;
+import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.SITE_IDENTIFIER;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import org.restlet.Context;
@@ -33,12 +33,23 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     private Site site;
     private StudySite studySite;
 
+    //since site name and site identifier are used interchangably,
+    private String siteNamePrameterInRequest;
+
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setReadable(true);
         study = studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByAssignedIdentifier(SITE_NAME.extractFrom(request));
+        if (SITE_IDENTIFIER.checkIfRequestHasUrlParameter(request)) {
+            siteNamePrameterInRequest = SITE_IDENTIFIER.extractFrom(request);
+        } else if (UriTemplateParameters.SITE_NAME.checkIfRequestHasUrlParameter(request)) {
+            //check with site identifier also
+            siteNamePrameterInRequest = UriTemplateParameters.SITE_NAME.extractFrom(request);
+
+        }
+        site = siteDao.getByAssignedIdentifier(siteNamePrameterInRequest);
+
         if (study != null && site != null) {
             studySite = study.getStudySite(site);
         }
@@ -46,7 +57,10 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
         getVariants().add(new Variant(MediaType.TEXT_XML));
     }
 
-    @Override public boolean allowPost() { return true; }
+    @Override
+    public boolean allowPost() {
+        return true;
+    }
 
     protected StudySite getStudySite() {
         return studySite;
@@ -55,14 +69,14 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     private void verifyStudySiteExists() throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                "No study matching " +  STUDY_IDENTIFIER.extractFrom(getRequest()));
+                    "No study matching " + STUDY_IDENTIFIER.extractFrom(getRequest()));
         } else if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                "No site matching " +  SITE_NAME.extractFrom(getRequest()));
+                    "No site matching " + siteNamePrameterInRequest);
         } else if (studySite == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                "Site " +  SITE_NAME.extractFrom(getRequest()) +
-                " is not participating in " + STUDY_IDENTIFIER.extractFrom(getRequest())
+                    "Site " + siteNamePrameterInRequest +
+                            " is not participating in " + STUDY_IDENTIFIER.extractFrom(getRequest())
             );
         }
     }
@@ -100,8 +114,8 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
                 String target = acceptValue(value);
                 // TODO: the URL construction here seems bogus -- see if there's another way
                 getResponse().redirectSeeOther(
-                    new Reference(
-                        new Reference(getRequest().getRootRef().toString() + '/'), target));
+                        new Reference(
+                                new Reference(getRequest().getRootRef().toString() + '/'), target));
             }
         } else {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
