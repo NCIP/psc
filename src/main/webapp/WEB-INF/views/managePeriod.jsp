@@ -539,7 +539,7 @@ function registerHoverTips() {
     }
 
     .palette {
-        position: relative;
+        /*position: relative;*/
         padding-left: 12em;
     }
 
@@ -685,8 +685,8 @@ function registerHoverTips() {
                                     <form:hidden path="grid[${gridStatus.index}].plannedActivities[${cStatus.index}]"/>
                                     <span class="marker">
                                         <c:if test="${not empty command.grid[gridStatus.index].plannedActivities[cStatus.index]}">
-                                            ${empty command.grid[gridStatus.index].plannedActivities[cStatus.index].population 
-                                                ? 'X' 
+                                            ${empty command.grid[gridStatus.index].plannedActivities[cStatus.index].population
+                                                ? 'X'
                                                 : command.grid[gridStatus.index].plannedActivities[cStatus.index].population.abbreviation }
                                         </c:if>
                                     </span>
