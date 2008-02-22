@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+        "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+
+    <bean id="studyImportExport" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCStudyImportExport">
+        <property name="studyService" ref="studyService"/>
+        <property name="studyXMLReader" ref="studyXMLReader"/>
+        <property name="studyXMLWriter" ref="studyXMLWriter"/>
+    </bean>
+
+    <!--applicationContext = new ClassPathXmlApplicationContext(new String[]{
+    // "classpath:applicationContext.xml",
+    "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
+    "classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
+    "classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
+    "classpath:applicationContext-spring.xml"});
+
+    -->
+
+    <import resource="classpath:applicationContext-dao.xml"></import>
+    <import resource="classpath:applicationContext-api.xml"/>
+    <import resource="classpath:applicationContext-command.xml"></import>
+    <import resource="classpath:applicationContext-db.xml"/>
+    <import resource="classpath:applicationContext-security.xml"/>
+    <import resource="classpath:applicationContext-service.xml"/>
+    <import resource="classpath:applicationContext-spring.xml"/>
+    <import resource="classpath:applicationContext-representations.xml"/>
+</beans>

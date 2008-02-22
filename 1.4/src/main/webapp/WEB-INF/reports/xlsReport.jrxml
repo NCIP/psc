@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE jasperReport
+  PUBLIC "-//JasperReports//DTD Report Design//EN"
+  "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport name="generateReport" >
+	<style name="Arial_Normal_Default" isDefault="true" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica"/>
+	<field name="dateStr" class="java.lang.String"/>
+	<field name="idealDateStr" class="java.lang.String"/>
+	<field name="studyName" class="java.lang.String"/>
+	<field name="siteName" class="java.lang.String"/>
+	<field name="participantName" class="java.lang.String"/>
+	<field name="eventName" class="java.lang.String"/>
+	<field name="currentState" class="java.lang.String"/>
+	<field name="epochName" class="java.lang.String"/>
+	<field name="armName" class="java.lang.String"/>
+<detail>
+	<band height="20">
+		<textField>
+			<reportElement width="70" height="20" x="0" y="0"/>
+			<textFieldExpression><![CDATA[$F{dateStr}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="70" y="0"/>
+			<textFieldExpression><![CDATA[$F{studyName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="140" y="0"/>
+			<textFieldExpression><![CDATA[$F{siteName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="210" y="0"/>
+			<textFieldExpression><![CDATA[$F{participantName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="280" y="0"/>
+			<textFieldExpression><![CDATA[$F{eventName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="350" y="0"/>
+			<textFieldExpression><![CDATA[$F{currentState}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="420" y="0"/>
+			<textFieldExpression><![CDATA[$F{epochName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="490" y="0"/>
+			<textFieldExpression><![CDATA[$F{armName}]]></textFieldExpression>
+		</textField>
+		<textField>
+			<reportElement width="70" height="20" x="560" y="0"/>
+			<textFieldExpression><![CDATA[$F{idealDateStr}]]></textFieldExpression>
+		</textField>
+	</band>
+</detail>
+</jasperReport>

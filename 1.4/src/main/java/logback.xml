@@ -1,0 +1,41 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d [%thread] %logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${catalina.home}/logs/studycalendar.log</file>
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>
+                studycalendar.%d{yyyy-MM-dd}.log.gz
+            </FileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %date{HH:mm:ss.SSS} [%thread] %36logger{36} %-5level: %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <root>
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <logger name="org.hibernate.type">         <level value="trace"/></logger>
+    <logger name="org.apache.commons.digester"><level value="info"/></logger>
+    <logger name="org.springframework">        <level value="info"/></logger>
+    <logger name="org.apache.catalina">        <level value="info"/></logger>
+    <logger name="org.apache.jasper">          <level value="info"/></logger>
+    <logger name="org.acegisecurity.intercept.web.PathBasedFilterInvocationDefinitionMap"><level value="info"/></logger>
+
+</configuration>

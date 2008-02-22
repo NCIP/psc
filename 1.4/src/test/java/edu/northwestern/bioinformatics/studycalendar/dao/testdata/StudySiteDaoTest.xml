@@ -1,0 +1,48 @@
+<dataset>
+    <AMENDMENTS
+        id="-110"
+        amendment_date="2007-01-05"
+        />
+
+    <STUDIES
+        id="-100"
+        assigned_identifier="Study A"
+        amendment_id="-110"
+        />
+
+    <SITES
+        id="-200"
+        name="New Site"
+        />
+
+    <STUDY_SITES
+        id="-300"
+        site_id="-200"
+        study_id="-100"
+        />
+
+    <AMENDMENT_APPROVALS
+        id="-310"
+        study_site_id="-300"
+        amendment_id="-110"
+        approval_date="2007-02-01"
+        />
+
+    <USERS
+        id="-1"
+        name="Joey"
+        csm_user_id="-1"
+        active_flag="0"
+        />
+
+    <USER_ROLES
+        id="-400"
+        user_id="-1"
+        csm_group_name="PARTICIPANT_COORDINATOR"
+        />
+
+    <USER_ROLE_STUDY_SITES
+        user_role_id="-400"
+        study_site_id="-300"
+        />
+</dataset>

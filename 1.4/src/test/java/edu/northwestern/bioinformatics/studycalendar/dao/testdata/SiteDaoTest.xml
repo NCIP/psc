@@ -1,0 +1,22 @@
+<dataset>
+    <SITES
+        id="-4"
+        name="default"
+        assigned_identifier="assignedId"    />
+    
+    <HOLIDAYS
+        id="-1"
+        site_id="-4"
+        discriminator_id="1"
+        day_of_the_week="Monday"
+        description="Closed"
+        />
+    <HOLIDAYS
+        id="-2"
+        site_id="-4"
+        discriminator_id="2"
+        day="25"
+        month="12"
+        description="Xmas"
+        />
+</dataset>
