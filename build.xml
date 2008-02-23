@@ -409,6 +409,16 @@
 
     <!-- ARTIFACT CREATION -->
 
+    <target name="jar.security-plugin-api" depends="webapp">
+        <mkdir dir="dist"/>
+        <property name="security-plugin-api-jarname" value="${application-short-name}-security-plugin-api.jar"/>
+        <jar destfile="dist/${security-plugin-api-jarname}" basedir="${build-dir.webapp}/WEB-INF/classes">
+            <include name="edu/northwestern/bioinformatics/studycalendar/security/plugin/**/*"/>
+            <include name="**/*Exception"/>
+            <include name="**/*Failure"/>
+        </jar>
+    </target>
+
     <target name="war" description="creates a deployable WAR file">
         <mkdir dir="dist"/>
         <property name="war-name" value="${application-short-name}.war"/>
@@ -425,7 +435,7 @@
         </war>
     </target>
 
-    <target name="dist" description="creates the distribution package" depends="war">
+    <target name="dist" description="creates the distribution package" depends="war, jar.security-plugin-api">
         <property name="install.name" value="psc-${version}"/>
         <property name="install.dir" value="dist/${install.name}"/>
         <property name="install-samples.dir" value="${install.dir}/conf-samples"/>
