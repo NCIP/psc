@@ -36,7 +36,7 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
 
     public final void initialize(
         ApplicationContext parent, Configuration configuration
-    ) throws StudyCalendarSystemException {
+    ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
         this.applicationContext = parent;
         this.configuration = configuration;
         validateRequiredConfigurationProperties();
