@@ -7,6 +7,11 @@ import org.springframework.dao.DataAccessException;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 
+/**
+ * Implementation of {@UserDetailsService} for PSC.  An instance of this class is
+ * available as <code>pscUserDetailsService</code> in the application context
+ * available to security plugins.
+ */
 public class PscUserDetailsService implements UserDetailsService {
     private UserService userService;
 
