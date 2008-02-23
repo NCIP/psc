@@ -55,16 +55,14 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
 
     @Override
     protected void initBeforeCreate() {
-        String xml = createContextXml();
-        log.debug("Creating casConfiguration context\n{}", xml);
-        StringXmlApplicationContext configParametersContext
-            = new StringXmlApplicationContext(xml, getApplicationContext());
-        configParametersContext.refresh();
+        ApplicationContext configParametersContext
+            = AuthenticationSystemTools.createApplicationContextWithPropertiesBean(
+                getApplicationContext(), "casConfiguration", createContextProperties());
         casContext = new ClassPathXmlApplicationContext(
             new String[] { "cas-authentication-beans.xml" }, getClass(), configParametersContext);
     }
 
-    private String createContextXml() {
+    private Properties createContextProperties() {
         Properties template = new Properties();
         nullSafeSetProperty(template, "cas.server.trustStore",   getConfiguration().get(TRUST_STORE));
         nullSafeSetProperty(template, "cas.server.url.base",     getConfiguration().get(SERVICE_URL));
@@ -77,16 +75,7 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
             urlJoin(getConfiguration().get(APPLICATION_URL), CAS_FILTER_PATH));
         nullSafeSetProperty(template, "psc.defaultTarget",       DEFAULT_TARGET_PATH);
         nullSafeSetProperty(template, "populatorBeanName", getPopulatorBeanName());
-
-        StringBuilder propString = new StringBuilder();
-        for (Map.Entry<Object, Object> entry : template.entrySet()) {
-            propString.append(String.format("  <prop key=\"%s\">%s</prop>\n", entry.getKey(), entry.getValue()));
-        }
-        return String.format("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<beans xmlns=\"http://www.springframework.org/schema/beans\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "       xsi:schemaLocation=\"" +
-            "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd\"\n" +
-            "       >\n<bean id=\"casConfiguration\" class=\"%s\">\n<property name=\"properties\">\n<props>\n%s</props>\n</property>\n</bean>\n</beans>",
-            PropertiesFactoryBean.class.getName(), propString);
+        return template;
     }
 
     private void nullSafeSetProperty(Properties template, String key, String value) {

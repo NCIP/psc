@@ -15,6 +15,7 @@ public class StringXmlApplicationContext extends AbstractXmlApplicationContext {
         super(parent);
         byte[] bytes = xml.getBytes();
         resource = new Resource[] { new ByteArrayResource(bytes) };
+        refresh();
     }
 
     protected Resource[] getConfigResources() {
