@@ -270,30 +270,38 @@
                             <a href="<c:url value="/pages/cal/template?study=${template.id}"/>" class="primary">
                                 ${template.displayName}
                             </a>
-                            <div style="width:80%;float:right;">
-                                 <c:if test="${empty template.study.studySites}">
-                                     Must <tags:restrictedItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}"> assign </tags:restrictedItem>
-                                     the template to a site. A <b>Study Administrator</b> can do this.
-                                 </c:if>
+
+                             <c:if test="${empty template.study.studySites}">
+                                <div style="width:80%;float:right;">
+                                    <c:set var="canAssignTemplateToStudy" value="false"/>
+                                    Must
+                                    <tags:restrictedItem cssClass="control" url="/pages/cal/assignSite" queryString="id=${template.id}">
+                                        <c:set var="canAssignTemplateToStudy" value="true"/> assign
+                                    </tags:restrictedItem>
+                                    <c:if test="${not canAssignTemplateToStudy}">
+                                        assign
+                                    </c:if>
+                                        the template to a site. A <b>Study Administrator</b> can do this.
                                 </div>
-                                 <c:if test="${not empty template.study.studySites}">
-                                     <c:forEach items="${template.study.studySites}" var="studySite" varStatus="studySiteStatus">
-                                         <c:if test="${not empty studySite.unapprovedAmendments}">
-                                      <div style="width:80%;float:right;">      Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.</div>
-                                         </c:if>
-                                         <c:if test="${empty studySite.unapprovedAmendments}">
-                                             <c:set var="isSubjectCoordinatorAssigned" value="false"/>
-                                             <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
-                                                 <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
-                                                    <c:set var="isSubjectCoordinatorAssigned" value="true"/>
-                                                 </c:if>
-                                             </c:forEach>
-                                             <c:if test="${isSubjectCoordinatorAssigned == false}">
-                                                 <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.</div>
+                             </c:if>
+                             <c:if test="${not empty template.study.studySites}">
+                                 <c:forEach items="${template.study.studySites}" var="studySite" varStatus="studySiteStatus">
+                                     <c:if test="${not empty studySite.unapprovedAmendments}">
+                                  <div style="width:80%;float:right;">      Waiting for approval at site "${studySite.site.name}" - a <b>Site Coordinator</b> can do that.</div>
+                                     </c:if>
+                                     <c:if test="${empty studySite.unapprovedAmendments}">
+                                         <c:set var="isSubjectCoordinatorAssigned" value="false"/>
+                                         <c:forEach items="${studySite.userRoles}" var="userRole" varStatus="userRoleStatus">
+                                             <c:if test="${userRole.role == 'SUBJECT_COORDINATOR'}">
+                                                <c:set var="isSubjectCoordinatorAssigned" value="true"/>
                                              </c:if>
+                                         </c:forEach>
+                                         <c:if test="${isSubjectCoordinatorAssigned == false}">
+                                             <div style="width:80%;float:right;"> Subject Coordinator has to be assigned to the study at the site "${studySite.site.name}" - a <b>Site Coordinator</b> can do this.</div>
                                          </c:if>
-                                     </c:forEach>
-                                 </c:if>
+                                     </c:if>
+                                 </c:forEach>
+                             </c:if>
                          </li>
                     </c:forEach>
                 </ul>
