@@ -7,8 +7,11 @@ import org.springframework.context.ApplicationContext;
 import org.acegisecurity.AuthenticationManager;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarUserException;
 
 import javax.servlet.Filter;
 import java.util.Collection;
@@ -19,6 +22,8 @@ import java.util.Collection;
  * @author Rhett Sutphin
  */
 public abstract class AbstractAuthenticationSystem implements AuthenticationSystem {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private ApplicationContext applicationContext;
     private Configuration configuration;
 
@@ -37,15 +42,22 @@ public abstract class AbstractAuthenticationSystem implements AuthenticationSyst
     public final void initialize(
         ApplicationContext parent, Configuration configuration
     ) throws AuthenticationSystemInitializationFailure, StudyCalendarValidationException {
-        this.applicationContext = parent;
-        this.configuration = configuration;
-        validateRequiredConfigurationProperties();
-        initBeforeCreate();
-        this.authenticationManager = createAuthenticationManager();
-        this.entryPoint = createEntryPoint();
-        this.filter = createFilter();
-        this.logoutFilter = createLogoutFilter();
-        initAfterCreate();
+        try {
+            this.applicationContext = parent;
+            this.configuration = configuration;
+            validateRequiredConfigurationProperties();
+            initBeforeCreate();
+            this.authenticationManager = createAuthenticationManager();
+            this.entryPoint = createEntryPoint();
+            this.filter = createFilter();
+            this.logoutFilter = createLogoutFilter();
+            initAfterCreate();
+        } catch (StudyCalendarUserException scue) {
+            throw scue; // don't wrap properly typed exceptions
+        } catch (RuntimeException re) {
+            log.info("Initialization failed with runtime exception", re);
+            throw new AuthenticationSystemInitializationFailure(re.getMessage(), re);
+        }
     }
 
     /**
