@@ -414,8 +414,9 @@
         <property name="security-plugin-api-jarname" value="${application-short-name}-security-plugin-api.jar"/>
         <jar destfile="dist/${security-plugin-api-jarname}" basedir="${build-dir.webapp}/WEB-INF/classes">
             <include name="edu/northwestern/bioinformatics/studycalendar/security/plugin/**/*"/>
-            <include name="**/*Exception"/>
-            <include name="**/*Failure"/>
+            <include name="edu/northwestern/bioinformatics/studycalendar/tools/spring/**/*"/>
+            <include name="**/*Exception.class"/>
+            <include name="**/*Failure.class"/>
         </jar>
     </target>
 
