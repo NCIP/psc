@@ -4,7 +4,6 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
     <head>
-        <%--<tags:stylesheetLink name="main"/>--%>
         <style type="text/css">
             ul.menu {
                 margin: 0;
@@ -15,9 +14,6 @@
                 list-style-type: none;
                 margin: 0.5em;
             }
-            /*h2 {*/
-                /*margin-top: 2em;*/
-            /*}*/
         </style>
     </head>
     <body>
@@ -29,6 +25,7 @@
                     <tags:restrictedListItem url="/pages/admin/manage/sites">Manage sites</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/manage/listUsers">Manage users</tags:restrictedListItem>
                     <tags:restrictedListItem url="/pages/admin/configure">Configure PSC</tags:restrictedListItem>
+                    <tags:restrictedListItem url="/pages/admin/configureAuthentication">Configure authentication</tags:restrictedListItem>
                 </ul>
             </laf:division>
         </laf:box>
