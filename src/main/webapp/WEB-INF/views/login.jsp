@@ -22,8 +22,8 @@
         /* need for fomatting the login box */
         .box {
             width:400px;
-            /*margin-left:40%;*/
-            /*margin-right:40%;*/
+            margin-left:40%;
+            margin-right:40%;
             
         }
 
