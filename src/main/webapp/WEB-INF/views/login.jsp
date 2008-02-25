@@ -16,14 +16,34 @@
             text-align: center;
         }
         form#login {
-            margin: 1em 2em;
+            margin-left: 5%;
+            margin-right: 5%
         }
         /* need for fomatting the login box */
         .box {
-            width:40%;
-            margin-left:30%;
-            margin-right:30%;
+            width:400px;
+            /*margin-left:40%;*/
+            /*margin-right:40%;*/
             
+        }
+
+        form#login div.label {
+            width:0%;
+            margin-left:0;
+        }
+        .box .content {
+            overflow:hidden;
+        }
+        form#login {
+            width:90%;
+        }
+
+        form#login div.submit {
+            text-align:center;
+            width:100%;
+        }
+        div.row div.value {
+            margin-left:7em;
         }
     </style>
 </head>
