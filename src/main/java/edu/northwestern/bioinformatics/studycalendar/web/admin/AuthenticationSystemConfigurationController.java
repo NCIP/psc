@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,10 @@ public class AuthenticationSystemConfigurationController extends PscAbstractComm
     @Override
     protected Object getCommand(HttpServletRequest request) throws Exception {
         String requestedAuthSystem = request.getParameter("conf[" + AUTHENTICATION_SYSTEM.getKey() + "].value");
+        String custom = request.getParameter("customAuthenticationSystemClass");
+        if (!StringUtils.isBlank(custom)) {
+            requestedAuthSystem = custom;
+        }
         return new AuthenticationSystemConfigurationCommand(
             requestedAuthSystem, authenticationSystemConfiguration, getApplicationContext());
     }
