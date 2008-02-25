@@ -232,7 +232,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         amendmentDao.delete(amendment);
         replayMocks();
         
-        service.deleteAmendment(study, amendment);
+        service.deleteAmendment(amendment);
         verifyMocks();
 
 

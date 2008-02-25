@@ -8,14 +8,19 @@ import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
 import org.springframework.beans.factory.annotation.Required;
+
+import java.io.IOException;
 
 /**
  * Resource representing a study and its planned calendar, including all amendments.
  *
  * @author Rhett Sutphin
  */
-public class TemplateResource extends AbstractStorableDomainObjectResource<Study> {
+public class TemplateResource extends AbstractDomainObjectResource<Study> {
     private StudyDao studyDao;
 
     private ImportTemplateService importTemplateService;
@@ -33,12 +38,22 @@ public class TemplateResource extends AbstractStorableDomainObjectResource<Study
         return studyDao.getByAssignedIdentifier(studyIdent);
     }
 
-    @Override
-    public void store(Study study) {
-        Study existingTemplate = getRequestedObject();
-        importTemplateService.mergeTemplate(existingTemplate, study);
+    @Override public boolean allowPut() { return true; }
 
-
+    public void storeRepresentation(Representation entity) throws ResourceException {
+        Study study;
+        try {
+            study = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
+        } catch (IOException e) {
+            log.warn("PUT failed with IOException", e);
+            throw new ResourceException(e);
+        }
+        getResponse().setEntity(createXmlRepresentation(study));
+        if (getRequestedObject() == null) {
+            getResponse().setStatus(Status.SUCCESS_CREATED);
+        } else {
+            getResponse().setStatus(Status.SUCCESS_OK);
+        }
     }
 
     ////// CONFIGURATION

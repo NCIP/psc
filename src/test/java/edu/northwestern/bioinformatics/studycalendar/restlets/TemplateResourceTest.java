@@ -5,8 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import static edu.northwestern.bioinformatics.studycalendar.restlets.UriTemplateParameters.STUDY_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import static org.easymock.EasyMock.*;
 import static org.easymock.classextension.EasyMock.expect;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
+
+import java.io.InputStream;
 
 /**
  * @author Rhett Sutphin
@@ -59,11 +64,13 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     }
 
     public void testPutExistingXml() throws Exception {
-        Study newStudy = new Study();
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        importTemplateService.mergeTemplate(study, newStudy);
-        expectReadXmlFromRequestAs(newStudy);
-        expectObjectXmlized(newStudy);
+        
+        final InputStream in = registerMockFor(InputStream.class);
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expect(importTemplateService.readAndSaveTemplate(eq(study), (InputStream) notNull())).andReturn(study);
+        expectObjectXmlized(study);
 
         doPut();
 
@@ -73,9 +80,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutNewXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
-        expectReadXmlFromRequestAs(study);
+
+        final InputStream in = registerMockFor(InputStream.class);
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expect(importTemplateService.readAndSaveTemplate((Study) isNull(), (InputStream) notNull())).andReturn(study);
         expectObjectXmlized(study);
-        importTemplateService.mergeTemplate(null, study);
 
         doPut();
 

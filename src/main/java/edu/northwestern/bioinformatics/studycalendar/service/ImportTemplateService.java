@@ -46,7 +46,7 @@ public class ImportTemplateService {
             String amendmentNaturalKey = study.getDevelopmentAmendment().getNaturalKey();
             Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
             if (dev != null) {
-                deleteAmendment(study, study.getDevelopmentAmendment());
+                deleteAmendment(study.getDevelopmentAmendment());
                 study.setDevelopmentAmendment(null);
                 studyDao.save(study);
             }
@@ -62,31 +62,36 @@ public class ImportTemplateService {
         templatePostProcessing(study);
     }
 
+    public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
+
+        if (existingStudy != null) {
+            // We do this so hibernate doesn't try to save the amendment
+            existingStudy.setAmendment(null);
+
+            // Check if development amendment is persisted and if it is, delete it
+            if (existingStudy.getDevelopmentAmendment() != null) {
+                String amendmentNaturalKey = existingStudy.getDevelopmentAmendment().getNaturalKey();
+                Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
+                if (dev != null) {
+                    deleteAmendment(existingStudy.getDevelopmentAmendment());
+                    existingStudy.setDevelopmentAmendment(null);
+                    studyDao.save(existingStudy);
+                }
+            }
+        }
+
+        Study study = studyXmlSerializer.readDocument(stream);
+
+        templatePostProcessing(study);
+        return study;
+    }
+
     /**
      * @param study study that needs to be created or imported
      */
     public void templatePostProcessing(Study study) {
         resolveExistingActivitiesAndSources(study);
         resolveChangeChildrenFromPlanTreeNodeTree(study);
-    }
-
-    /**
-     * Creates or updates the study
-     * <p> Creates a new study if study does not exists, i.e. existingTemplate parameter is null
-     * <p>Or if study already exists, updates the study by merging the new template with the existing one using these rules..
-     * <li>Do not change any existing released amendments </li>
-     * <li>Import any new released amendments (automatically creating activities, etc.)</li>
-     * <li>Update the existing development amendment with any changes in the new one  </li>
-     * </p>
-     *
-     * @param existingTemplate study which already exists and which needs to merged from new study
-     * @param newTemplate      new study
-     */
-    public void mergeTemplate(final Study existingTemplate, final Study newTemplate) {
-        if (existingTemplate == null) {
-            templatePostProcessing(newTemplate);
-        }//FIXME:Saurabh: implement the logic of merging two templates
-
     }
 
     protected void resolveExistingActivitiesAndSources(Study study) {
@@ -222,7 +227,7 @@ public class ImportTemplateService {
         return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
     }
 
-    public void deleteAmendment(Study study, Amendment amendment) {
+    public void deleteAmendment(Amendment amendment) {
         amendmentDao.delete(amendment);
         deleteDeltas(amendment.getDeltas());
     }

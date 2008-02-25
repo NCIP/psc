@@ -52,6 +52,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
           >
         <property name="importTemplateService" ref="importTemplateService"/>
+        <property name="xmlSerializer" ref="studyXmlSerializer"/>
     </bean>
 
     <bean name="/studies/{study-identifier}/sites/{site-name}/subject-assignments"
