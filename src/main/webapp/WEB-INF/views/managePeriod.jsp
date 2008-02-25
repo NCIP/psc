@@ -539,6 +539,7 @@ function registerHoverTips() {
     }
 
     .palette {
+        /*commening the posititon attribute, as it was causing the misplacing of the droppables on IE7*/
         /*position: relative;*/
         padding-left: 12em;
     }
