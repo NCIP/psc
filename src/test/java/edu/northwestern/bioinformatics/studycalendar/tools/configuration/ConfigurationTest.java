@@ -31,7 +31,7 @@ public class ConfigurationTest extends DaoTestCase {
     }
 
     public void testGetBooleanProperty() throws Exception {
-        assertEquals(Boolean.FALSE, configuration.get(SHOW_FULL_EXCEPTIONS));
+        assertEquals(Boolean.FALSE, configuration.get(SHOW_DEBUG_INFORMATION));
     }
 
     public void testGetDefaultWhenUnconfigured() throws Exception {
