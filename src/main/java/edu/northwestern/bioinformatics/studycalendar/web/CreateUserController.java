@@ -13,6 +13,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessC
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.RoleEditor;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.factory.annotation.Required;
@@ -36,6 +37,7 @@ public class CreateUserController extends PscCancellableFormController {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
+    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public CreateUserController() {
         setCommandClass(CreateUserCommand.class);
@@ -57,6 +59,7 @@ public class CreateUserController extends PscCancellableFormController {
         refdata.put("actionText", actionText);
 
         refdata.put("user", command.getUser());
+        refdata.put("usingLocalAuthenticationSystem", authenticationSystemConfiguration.isLocalAuthenticationSystem());
 
         return refdata;
     }
@@ -83,7 +86,7 @@ public class CreateUserController extends PscCancellableFormController {
         Integer editId = ServletRequestUtils.getIntParameter(request, "id");
         User user = (editId != null) ? userDao.getById(editId) : new User();
 
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService);
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
     }
 
     @Override
@@ -112,6 +115,11 @@ public class CreateUserController extends PscCancellableFormController {
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Required
+    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
+        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
     }
 
     private static class Crumb extends DefaultCrumb {

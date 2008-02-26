@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
@@ -31,15 +32,21 @@ public class CreateUserCommand implements Validatable, Serializable {
     private SiteDao siteDao;
     private UserRoleService userRoleService;
     private UserDao userDao;
+    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
-    public CreateUserCommand(User user, SiteDao siteDao, UserService userService, UserDao userDao, UserRoleService userRoleService) {
+    public CreateUserCommand(
+        User user, SiteDao siteDao, UserService userService, UserDao userDao,
+        UserRoleService userRoleService,
+        AuthenticationSystemConfiguration authenticationSystemConfiguration
+    ) {
         this.user = user == null ? new User() : user;
         this.siteDao = siteDao;
         this.userService = userService;
         this.userDao = userDao;
         this.userRoleService = userRoleService;
+        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
         this.passwordModified = false;
-        
+
         buildRolesGrid(this.user.getUserRoles());
     }
 
@@ -75,7 +82,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                     errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
-            if (passwordModified) {
+            if (updatePassword() && authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
                 if (password == null || StringUtils.isBlank(password)){
                     errors.rejectValue("password", "error.user.password.not.specified");
                 } else {
@@ -118,18 +125,35 @@ public class CreateUserCommand implements Validatable, Serializable {
     }
 
     public User apply() throws Exception {
-        if (passwordModified || user.getId() == null) {
-            user.setActiveFlag(userActiveFlag);
-            userService.saveUser(user, password);
+        if (updatePassword()) {
+            user.setActiveFlag(isUserActiveFlag());
+            userService.saveUser(user, getOrCreatePassword());
         } else {
             // must be update only
-            user.setActiveFlag(userActiveFlag);
+            user.setActiveFlag(isUserActiveFlag());
             userDao.save(user);
         }
         assignUserRolesFromRolesGrid();
         return user;
     }
 
+    private boolean updatePassword() {
+        return passwordModified || user.getId() == null;
+    }
+
+    // generate a random password when creating a new user in a regime that doesn't use the internal passwords
+    private String getOrCreatePassword() {
+        if (authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
+            return getPassword();
+        } else {
+            int length = 16 + (int) Math.round(16 * Math.random());
+            StringBuilder generated = new StringBuilder();
+            while (generated.length() < length) {
+                generated.append((char) (' ' + Math.round(('~' - ' ') * Math.random())));
+            }
+            return generated.toString();
+        }
+    }
 
     protected void assignUserRolesFromRolesGrid() throws Exception {
         for(Site site : rolesGrid.keySet()) {

@@ -108,27 +108,29 @@
                     </c:if>
                 </div>
             </div>
-            <div class="row">
-                <div class="label" >
-                    <form:label path="password">Password:</form:label>
-                </div>
-                <div class="value">
-                    <form:password path="password" id="passwordField" disabled="${actionText=='Edit' and not passwordError}"/>
+            <c:if test="${usingLocalAuthenticationSystem}">
+                <div class="row">
+                    <div class="label" >
+                        <form:label path="password">Password:</form:label>
+                    </div>
+                    <div class="value">
+                        <form:password path="password" id="passwordField" disabled="${actionText=='Edit' and not passwordError}"/>
 
-                    <c:if test="${actionText == 'Edit'}">
-                        <span id="changePassword" class="password-edit-link" style="<c:if test="${passwordError}">display:none</c:if>">Change Password</span>
-                        <span id="cancelChangePassword" class="password-edit-link" style="<c:if test="${not passwordError}">display:none</c:if>">Undo Password Changes</span>
-                    </c:if>
+                        <c:if test="${actionText == 'Edit'}">
+                            <span id="changePassword" class="password-edit-link" style="<c:if test="${passwordError}">display:none</c:if>">Change Password</span>
+                            <span id="cancelChangePassword" class="password-edit-link" style="<c:if test="${not passwordError}">display:none</c:if>">Undo Password Changes</span>
+                        </c:if>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="label" >
-                    <form:label path="rePassword">Re-Enter Password:</form:label>
+                <div class="row">
+                    <div class="label" >
+                        <form:label path="rePassword">Re-Enter Password:</form:label>
+                    </div>
+                    <div class="value">
+                        <form:password path="rePassword" id="rePasswordField" disabled="${actionText=='Edit' and not passwordError}"/>
+                    </div>
                 </div>
-                <div class="value">
-                    <form:password path="rePassword" id="rePasswordField" disabled="${actionText=='Edit' and not passwordError}"/>
-                </div>
-            </div>
+            </c:if>
             <div class="row">
                 <div class="label" >
                     <form:label path="userActiveFlag">Enable User:</form:label>

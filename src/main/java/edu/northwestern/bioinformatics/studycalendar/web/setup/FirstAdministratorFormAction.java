@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import java.util.Map;
@@ -22,6 +23,7 @@ public class FirstAdministratorFormAction extends FormAction {
     private UserDao userDao;
     private UserService userService;
     private UserRoleService userRoleService;
+    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public FirstAdministratorFormAction() {
         super(CreateUserCommand.class);
@@ -31,7 +33,9 @@ public class FirstAdministratorFormAction extends FormAction {
     }
 
     protected Object createFormObject(RequestContext context) throws Exception {
-        CreateUserCommand command = new CreateUserCommand(null, siteDao, userService, userDao, userRoleService);
+        CreateUserCommand command = new CreateUserCommand(
+            null, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration
+        );
         command.setUserActiveFlag(true);
         command.setPasswordModified(true);
         // set sys admin role for all sites, just to be safe (there should only be one site at this point)
@@ -61,5 +65,10 @@ public class FirstAdministratorFormAction extends FormAction {
     @Required
     public void setUserRoleService(UserRoleService userRoleService) {
         this.userRoleService = userRoleService;
+    }
+
+    @Required
+    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
+        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
     }
 }

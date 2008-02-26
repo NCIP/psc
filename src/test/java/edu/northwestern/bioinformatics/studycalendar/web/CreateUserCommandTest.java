@@ -14,11 +14,15 @@ import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import static org.easymock.EasyMock.expect;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import static org.easymock.classextension.EasyMock.*;
+import org.easymock.IArgumentMatcher;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 
 public class CreateUserCommandTest extends StudyCalendarTestCase {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     private Study study;
     private Site mayo, nu;
     private StudySite mayoSS, nuSS;
@@ -37,6 +43,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     private UserRoleService userRoleService;
     private UserDao userDao;
     private Errors errors;
+    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     @Override
     protected void setUp() throws Exception {
@@ -52,6 +59,8 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userDao         = registerDaoMockFor(UserDao.class);
         userService     = registerMockFor(UserService.class);
         userRoleService = registerMockFor(UserRoleService.class);
+        authenticationSystemConfiguration = registerMockFor(AuthenticationSystemConfiguration.class);
+        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(true).anyTimes();
 
         errors = new MapBindingResult(new HashMap(), "?");
     }
@@ -187,7 +196,66 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         command.validate(errors);
         verifyMocks();
 
-        assertEquals("Wrong number of errors", 0, errors.getFieldErrorCount());
+        assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 0, errors.getFieldErrorCount());
+    }
+    
+    public void testValidateDoesNotRequirePasswordForNonLocalAuthenticationSystem() throws Exception {
+        reset(authenticationSystemConfiguration);
+        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
+        User newUser = new User();
+        newUser.setName("anything");
+        expect(userDao.getByName(newUser.getName())).andReturn(null);
+        
+        CreateUserCommand command = createCommand(newUser);
+        replayMocks();
+
+        command.validate(errors);
+
+        assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 0, errors.getFieldErrorCount());
+        verifyMocks();
+    }
+
+    public void testRandomPasswordIsGeneratedForNewUserWithNonLocalAuthenticationSystem() throws Exception {
+        // stub calls
+        userRoleService.removeUserRoleAssignment((User) notNull(), (Role) notNull(), (Site) notNull());
+        expectLastCall().anyTimes();
+        userRoleService.removeUserRoleAssignment((User) notNull(), (Role) notNull());
+        expectLastCall().anyTimes();
+        
+        reset(authenticationSystemConfiguration);
+        expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
+        User newUser = new User();
+        expect(userService.saveUser(eq(newUser), randomPassword())).andReturn(newUser);
+
+        CreateUserCommand command = createCommand(newUser);
+        replayMocks();
+
+        command.apply();
+        verifyMocks();
+    }
+
+    private String randomPassword() {
+        reportMatcher(new IArgumentMatcher() {
+            public boolean matches(Object object) {
+                String candidate = (String) object;
+                if (candidate == null) return false;
+                boolean lengthOkay = 16 <= candidate.length() && candidate.length() <= 32;
+                if (!lengthOkay) log.error("Length not in range [16, 32]");
+                boolean charsOkay = true;
+                for (int i = 0; i < candidate.length(); i++) {
+                    boolean thisCharOkay = (' ' <= candidate.charAt(i) && candidate.charAt(i) <= '~');
+                    if (!thisCharOkay) log.error("Character {} ({}) out of range", i, candidate.charAt(i));
+                    charsOkay = charsOkay && thisCharOkay;
+                }
+
+                return lengthOkay && charsOkay;
+            }
+
+            public void appendTo(StringBuffer stringBuffer) {
+                stringBuffer.append("[random password]");
+            }
+        });
+        return null;
     }
 
     private static void assertGlobalError(
@@ -209,7 +277,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     private CreateUserCommand createCommand(User user) {
-        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService);
+        return new CreateUserCommand(user, siteDao, userService, userDao, userRoleService, authenticationSystemConfiguration);
     }
 
     private static class SiteDaoStub extends SiteDao {
