@@ -12,6 +12,11 @@ public class StudySegmentDao extends StudyCalendarMutableDomainObjectDao<StudySe
         return StudySegment.class;
     }
 
+    /**
+     * Deletes the given study segment
+     *
+     * @param  segment the study segment to delete
+     */
     public void delete(StudySegment segment) {
         getHibernateTemplate().delete(segment);
     }
