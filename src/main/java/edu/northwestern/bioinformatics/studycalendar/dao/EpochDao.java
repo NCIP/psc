@@ -13,10 +13,15 @@ public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
     @Override public Class<Epoch> domainClass() { return Epoch.class; }
 
     /**
-    * Initialize and epoch and it's children down to activity for faster performance.
-    *
-    * @param  epoch the epoch to initialize
-    */
+     * Fully readAndSave all the template ("planned") child objects of this epoch.
+     * This is only necessary if the object is going to be passed outside of the scope of
+     * its creating session.  (Otherwise, hibernate dynamic loading works fine.)
+     * <p>
+     * In practice, this only is necessary for objects that are returned from
+     * the public API (if then).
+     * @param epoch
+     * @see edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter
+     */
     public void initialize(Epoch epoch) {
         Hibernate.initialize(epoch);
         Hibernate.initialize(epoch.getStudySegments());

@@ -1,10 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import org.hibernate.Hibernate;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import org.hibernate.Hibernate;
 
 import java.util.Collection;
 
@@ -17,6 +17,16 @@ public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<Sc
         return ScheduledCalendar.class;
     }
 
+    /**
+     * Fully readAndSave all the template ("scheduled") child objects of this calendar.
+     * This is only necessary if the object is going to be passed outside of the scope of
+     * its creating session.  (Otherwise, hibernate dynamic loading works fine.)
+     * <p>
+     * In practice, this only is necessary for objects that are returned from
+     * the public API (if then).
+     * @param scheduledCalendar
+     * @see edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter
+     */
     public void initialize(ScheduledCalendar scheduledCalendar) {
         Hibernate.initialize(scheduledCalendar);
         for (ScheduledStudySegment scheduledStudySegment : scheduledCalendar.getScheduledStudySegments()) {
@@ -30,6 +40,12 @@ public class ScheduledCalendarDao extends StudyCalendarMutableDomainObjectDao<Sc
         }
     }
 
+    /**
+     * Find all the scheduled calendars for a planned study
+     *
+     * @param source the planned study
+     * @return a list of all the scheduled calenadrs found that are on the planned study
+     */
     public Collection<ScheduledCalendar> getAllFor(Study source) {
         return getHibernateTemplate().find(
             "from ScheduledCalendar cal where cal.assignment.studySite.study = ?", source);
