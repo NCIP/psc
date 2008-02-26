@@ -1,22 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import org.apache.commons.beanutils.PropertyUtils;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.BeansException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
 
 /**
  * @author Rhett Sutphin
  */
 public class BreadcrumbContext {
+    private Logger log = LoggerFactory.getLogger(getClass());
+
     private Study study;
     private PlannedCalendar plannedCalendar;
     private Epoch epoch;
@@ -39,8 +42,11 @@ public class BreadcrumbContext {
 
     private TemplateService templateService;
 
+    private BeanWrapper selfWrapper;
+
     public BreadcrumbContext(TemplateService templateService) {
         this.templateService = templateService;
+        selfWrapper = new BeanWrapperImpl(this);
     }
 
     public static BreadcrumbContext create(DomainObject basis, TemplateService templateService) {
@@ -63,6 +69,17 @@ public class BreadcrumbContext {
         }
         return context;
     }
+
+    public Object getProperty(String path) {
+        try {
+            return selfWrapper.getPropertyValue(path);
+        } catch (BeansException beansException) {
+            log.debug("Could not resolve " + path + " in BreadcrumbContext", beansException);
+            return null;
+        }
+    }
+
+    ////// SETTERS
 
     public void setSite(Site site) {
         this.site = site;

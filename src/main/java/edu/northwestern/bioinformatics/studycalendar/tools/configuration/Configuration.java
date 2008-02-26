@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.restlet.util.Template;
 
 import java.util.List;
 import java.util.Map;
@@ -36,10 +37,23 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<String>
         LABVIEWER_BASE_URL = PROPERTIES.add(new ConfigurationProperty.Text("labViewerBaseUrl"));
 
+
+    public static final ConfigurationProperty<Template>
+        PATIENT_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("patientPageUrl"));
+    public static final ConfigurationProperty<String>
+        CTMS_NAME= PROPERTIES.add(new ConfigurationProperty.Text("ctmsName"));
+    public static final ConfigurationProperty<String>
+        BASE_CTMS_URL = PROPERTIES.add(new ConfigurationProperty.Text("ctmsUrl"));
+    
+
     ////// PSC-SPECIFIC LOGIC
 
     public boolean getExternalAppsConfigured() {
-        return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null;
+        return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null || get(PATIENT_PAGE_URL) != null;
+    }
+
+    public boolean getCtmsConfigured() {
+        return get(CTMS_NAME) != null && get(BASE_CTMS_URL) != null;
     }
 
     public ConfigurationProperties getProperties() {

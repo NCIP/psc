@@ -2,6 +2,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@taglib prefix="commons" uri="http://bioinformatics.northwestern.edu/taglibs/commons"%>
+<%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@attribute name="configEntry" type="edu.northwestern.bioinformatics.studycalendar.web.admin.BindableConfigurationEntry" %>
 <%@attribute name="configEntryPath" type="java.lang.String" %>
 <c:choose>
@@ -20,3 +21,4 @@
 </c:choose>
 <p class="description">${configEntry.property.description}</p>
 <c:if test="${not empty configEntry.default}"><p class="description">(Default: ${configEntry.default})</p></c:if>
+<tags:errors path="${configEntryPath}"/>

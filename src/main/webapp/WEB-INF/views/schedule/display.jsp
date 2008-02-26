@@ -189,12 +189,12 @@
             padding: 8px;
         }
 
-        #schedule-switch {
+        #schedule-switch, #outside-links {
             margin: 1em;
             text-align: right
         }
 
-        #schedule-controls {
+        #schedule-controls{
             margin-right: 1em;
             text-align: right;
         }
@@ -322,11 +322,21 @@
             return true;
         }
 
-        Event.observe(window, "load", registerSelectStudySegmentHandlers);
-        Event.observe(window, "load", registerSelectNextStudySegmentHandlers);
-        Event.observe(window, "load", registerDefaultDateSetterHandlers);
-        Event.observe(window, "load", registerHeaderCollapse);
-        Event.observe(window, "load", registerDismissControl);
+        function registerFunctions() {
+            registerSelectStudySegmentHandlers();
+            registerSelectNextStudySegmentHandlers();
+            registerDefaultDateSetterHandlers();
+            registerHeaderCollapse();
+            registerDismissControl();
+        }
+
+//        Event.observe(window, "load", registerSelectStudySegmentHandlers);
+//        Event.observe(window, "load", registerSelectNextStudySegmentHandlers);
+//        Event.observe(window, "load", registerDefaultDateSetterHandlers);
+//        Event.observe(window, "load", registerHeaderCollapse);
+//        Event.observe(window, "load", registerDismissControl);
+        Event.observe(window, "load", registerFunctions);
+    
     </script>
 </head>
 <body>
@@ -399,40 +409,47 @@
         </span>
     </div>
 
-    <c:if test="${configuration.externalAppsConfigured}">
-        <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
-        <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
-        <c:if test="${caaersAvail || labViewerAvail}">
-            View this subject's
-        </c:if>
-        <c:if test="${caaersAvail}">
-            <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">adverse events</a>
-        </c:if>
-        <c:if test="${caaersAvail and labViewerAvail}">or</c:if>
-        <c:if test="${labViewerAvail}">
-            <a class="sso" href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.id}&PatientId=${subject.personId}">lab results</a>
-        </c:if>
+    <div id="outside-links">
+        <c:if test="${configuration.externalAppsConfigured}">
+            <c:set var="caaersAvail" value="${not empty configuration.map.caAERSBaseUrl}"/>
+            <c:set var="labViewerAvail" value="${not empty configuration.map.labViewerBaseUrl}"/>
+            <c:set var="ctmsAvail" value="${not empty configuration.map.patientPageUrl}"/>
+            <c:if test="${caaersAvail || labViewerAvail || ctmsAvail}">
+                View this subject's
+            </c:if>
+            <c:if test="${ctmsAvail}">
+                <a href="<tags:urlFromTemplate property="patientPageUrl" />" class="control">${configuration.map.ctmsName} record</a>
+            </c:if>
+            <c:if test="${caaersAvail}">
+                <a href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}" class="control">adverse events</a>
+            </c:if>
+            <c:if test="${labViewerAvail}">
+                <a href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.id}&PatientId=${subject.personId}" class="control">lab results</a>
+            </c:if>
 
-        <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
-            <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-                <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
-                <div class="content" style="display: none">
-                    <p>
-                        An adverse event was reported for this subject.  Please consider how
-                        this should impact future scheduling.
-                    </p>
-                    <h3>Details</h3>
-                    <p>${aeNote.adverseEvent.description}</p>
-                    <p>
-                        <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
-                        <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                            View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
-                        </c:if>
-                    </p>
+            <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
+                <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
+                    <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+                    <div class="content" style="display: none">
+                        <p>
+                            An adverse event was reported for this subject.  Please consider how
+                            this should impact future scheduling.
+                        </p>
+                        <h3>Details</h3>
+                        <p>${aeNote.adverseEvent.description}</p>
+                        <p>
+                            <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
+                            <c:if test="${not empty configuration.map.caAERSBaseUrl}">
+                                View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                            </c:if>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </c:forEach>
-    </c:if>
+            </c:forEach>
+        </c:if>
+    </div>
+
+    <%--<c:if test="${configuration.}"--%>
 </div>
 
 <c:if test="${assignment.endDateEpoch == null}">
@@ -498,7 +515,7 @@
                         <input type="submit" value="Submit" onclick="ajaxform();" />
                     </laf:division>
                 </div>
-            </div>
+            </div>                                                       
 
         </div>
         </laf:division>

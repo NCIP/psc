@@ -32,9 +32,13 @@ public class BreadcrumbInterceptor extends HandlerInterceptorAdapter {
         if (mv == null) return;
         if (isRedirect(mv)) return;
         CrumbSource src = (CrumbSource) handler;
+        BreadcrumbContext context = createContext(mv.getModel());
         mv.getModel().put(
             "breadcrumbs",
-            breadcrumbCreator.createAnchors(src, createContext(mv.getModel()))
+            breadcrumbCreator.createAnchors(src, context)
+        );
+        mv.getModel().put(
+            "breadcrumbContext", context
         );
     }
 

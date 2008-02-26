@@ -6,8 +6,10 @@ import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscSimpleFormController;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.nwu.bioinformatics.commons.spring.ValidatableValidator;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +24,7 @@ public class ConfigurationController extends PscSimpleFormController {
 
     public ConfigurationController() {
         setCommandClass(ConfigurationCommand.class);
+        setValidator(new ValidatableValidator());
         setFormView("admin/configure");
     }
 

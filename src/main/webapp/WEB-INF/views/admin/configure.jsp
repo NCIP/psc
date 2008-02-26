@@ -11,6 +11,7 @@
 <body>
 <laf:box title="Configure application">
     <form:form>
+        <form:errors path="*"/>
         <c:forEach items="${command.conf}" var="entry" varStatus="status">
             <div class="row ${commons:parity(status.count)}">
                 <div class="label">
