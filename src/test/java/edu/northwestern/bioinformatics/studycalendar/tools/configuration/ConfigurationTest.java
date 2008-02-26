@@ -58,7 +58,7 @@ public class ConfigurationTest extends DaoTestCase {
     public void testMap() throws Exception {
         Map<String, Object> map = configuration.getMap();
         assertEquals(28, map.get("smtpPort"));
-        assertEquals(false, map.get("showFullExceptions"));
+        assertEquals(false, map.get("showDebugInformation"));
         assertEquals("Study Calendar", map.get("deploymentName"));
     }
     
