@@ -22,11 +22,22 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
         return Study.class;
     }
 
+    /**
+     * Finds all the studies available
+     *
+     * @return      a list of all the available studies
+     */
     @SuppressWarnings( { "unchecked" })
     public List<Study> getAll() {
         return getHibernateTemplate().find("from Study");
     }
 
+    /**
+     * Finds the assignments for a particular study
+     *
+     * @param  studyId the study to get the assignments for
+     * @return      a list of the assignments for the study id given
+     */
     @SuppressWarnings( { "unchecked" })
     public List<StudySubjectAssignment> getAssignmentsForStudy(final Integer studyId) {
         return getHibernateTemplate()
@@ -39,12 +50,24 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
         return getByAssignedIdentifier(assignedIdentifier);
     }
 
+    /**
+     * Finds a study based on the assignment identifer given
+     *
+     * @param  assignedIdentifier the assignment identifier for the study to search for
+     * @return      the study that has the given assignment identifier
+     */
     @SuppressWarnings({"unchecked"})
     public Study getByAssignedIdentifier(String assignedIdentifier) {
         List<Study> results = getHibernateTemplate().find("from Study where assignedIdentifier= ?", assignedIdentifier);
         return CollectionUtils.firstElement(results);
     }
 
+    /**
+     * Gets the study id that corresponds to the given assignment identifier
+     *
+     * @param  assignedIdentifier the assignment identifier to search for the study to search for
+     * @return      the study id that corresponds to the study assignment identifier given
+     */
     public String getStudyIdByAssignedIdentifier(final String assignedIdentifier) {
         Object studyId = getHibernateTemplate().execute(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -60,7 +83,11 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
         return null;
     }
 
-
+    /**
+     * Deletes a study
+     *
+     * @param  study the study to be deleted
+     */
     @Transactional(readOnly = false)
     public void delete(Study study) {
         getHibernateTemplate().delete(study);
