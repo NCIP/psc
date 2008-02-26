@@ -13,10 +13,20 @@ public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> {
         return Period.class;
     }
 
+    /**
+    * To manage caching of a period, this method will remove the period specified from hibernate's first level cache
+    *
+    * @param  period the period to remove from the cache
+    */
     public void evict(Period period) {
         getHibernateTemplate().evict(period);
     }
 
+    /**
+    * Deletes a period
+    *
+    * @param  period the period to delete
+    */
     public void delete(Period period) {
         getHibernateTemplate().delete(period);
     }
