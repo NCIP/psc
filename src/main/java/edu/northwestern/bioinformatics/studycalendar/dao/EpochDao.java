@@ -12,6 +12,11 @@ import org.hibernate.Hibernate;
 public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
     @Override public Class<Epoch> domainClass() { return Epoch.class; }
 
+    /**
+    * Initialize and epoch and it's children down to activity for faster performance.
+    *
+    * @param  epoch the epoch to initialize
+    */
     public void initialize(Epoch epoch) {
         Hibernate.initialize(epoch);
         Hibernate.initialize(epoch.getStudySegments());
@@ -29,6 +34,11 @@ public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
         }
     }
 
+    /**
+    * Deletes an epoch
+    *
+    * @param  epoch the epoch to delete
+    */
     public void delete(Epoch epoch) {
         getHibernateTemplate().delete(epoch);
     }

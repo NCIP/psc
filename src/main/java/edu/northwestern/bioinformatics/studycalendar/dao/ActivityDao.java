@@ -68,7 +68,7 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
     }
 
     /**
-    * Deletes and activity
+    * Deletes an activity
     *
     * @param  activity the activity to delete
     */
