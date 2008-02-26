@@ -7,6 +7,7 @@
         <laf:stylesheetLink name="debug"/>
         <laf:stylesheetLink name="common"/>
         <tags:stylesheetLink name="common"/>
+        <laf:javascriptLink name="prototype"/>
         <style type="text/css">
             body {
                 margin: 1em ;
@@ -35,6 +36,15 @@
                 margin-top: 0.5em ;
             }
         </style>
+        <script type="text/javascript">
+            document.observe("dom:loaded", function() {
+                $('show-details').observe('click', function(e) {
+                    Event.stop(e)
+                    $('error-details').show()
+                    $('show-details').hide();
+                })
+            })
+        </script>
     </head>
     <body>
     <c:set var="showDetail" value="${configuration.map.showFullExceptions}"/>
@@ -56,11 +66,13 @@
         </c:otherwise>
     </c:choose>
 
-    <c:if test="${showDetail}">
+    <a href="#" id="show-details">Show details</a>
+
+    <div id="error-details" style="display: none">
         ${stackTrace}
-    
+
         <laf:debugInfo/>
-    </c:if>
+    </div>
 
     </body>
 </html>

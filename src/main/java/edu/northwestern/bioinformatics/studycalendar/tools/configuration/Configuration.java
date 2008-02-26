@@ -29,8 +29,6 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Integer>
         SMTP_PORT = PROPERTIES.add(new ConfigurationProperty.Int("smtpPort"));
     public static final ConfigurationProperty<Boolean>
-        SHOW_FULL_EXCEPTIONS = PROPERTIES.add(new ConfigurationProperty.Bool("showFullExceptions"));
-    public static final ConfigurationProperty<Boolean>
         SHOW_DEBUG_INFORMATION = PROPERTIES.add(new ConfigurationProperty.Bool("showDebugInformation"));
 
     public static final ConfigurationProperty<String>
