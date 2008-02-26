@@ -5,11 +5,13 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
 
+@Transactional
 public class UserRoleService implements Serializable {
     private SiteService siteService;
     private UserRoleDao userRoleDao;
@@ -81,14 +83,7 @@ public class UserRoleService implements Serializable {
         return associatedUsers;
     }
 
-
-    private void removeStudySites(UserRole userRole, Site site) {
-        for (StudySite studySite : userRole.getStudySites()) {
-            if (studySite.getSite().equals(site)) {
-                userRole.removeStudySite(studySite);
-            }
-        }
-    }
+    ////// CONFIGURATION
 
     @Required
     public void setUserDao(UserDao userDao) {
