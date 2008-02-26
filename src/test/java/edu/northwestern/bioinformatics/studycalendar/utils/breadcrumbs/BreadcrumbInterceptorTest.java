@@ -58,7 +58,7 @@ public class BreadcrumbInterceptorTest extends WebTestCase {
         interceptor.postHandle(request, response, handler, mv);
         verifyMocks();
 
-        assertEquals("Wrong number of entries in model after interceptor", 2, mv.getModel().size());
+        assertEquals("Wrong number of entries in model after interceptor", 3, mv.getModel().size());
         assertEquals("Original model entry missing", mv.getModel().get("modelObject"), 17);
         assertSame("breadcrumbs missing", mv.getModel().get("breadcrumbs"), expectedBreadcrumbs);
     }

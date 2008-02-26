@@ -29,18 +29,19 @@ public class ConfigurationCommand implements Validatable {
 
     public void validate(Errors errors) {
         Template patientPageUrl = originalConfiguration.get(PATIENT_PAGE_URL);
-
-        for (String varName : patientPageUrl.getVariableNames()) {
-            boolean matched = false;
-            for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
-                if (knownVar.attributeName().equals(varName)) {
-                    matched = true; break;
+        if (patientPageUrl !=null) {
+            for (String varName : patientPageUrl.getVariableNames()) {
+                boolean matched = false;
+                for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
+                    if (knownVar.attributeName().equals(varName)) {
+                        matched = true; break;
+                    }
                 }
-            }
-            if (!matched) {
-                errors.rejectValue(
-                        "conf[" + PATIENT_PAGE_URL.getKey() + "].value",
-                        "error.configuration.patientPageUrl.invalidVariable", new Object[] { varName }, "Invalid variable");
+                if (!matched) {
+                    errors.rejectValue(
+                            "conf[" + PATIENT_PAGE_URL.getKey() + "].value",
+                            "error.configuration.patientPageUrl.invalidVariable", new Object[] { varName }, "Invalid variable");
+                }
             }
         }
     }
