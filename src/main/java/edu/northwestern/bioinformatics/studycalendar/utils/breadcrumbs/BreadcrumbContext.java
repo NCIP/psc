@@ -134,7 +134,10 @@ public class BreadcrumbContext {
     public void setStudySubjectAssignment(StudySubjectAssignment studySubjectAssignment) {
         if (studySubjectAssignment == null) return;
         setSubject(studySubjectAssignment.getSubject());
-        setPlannedCalendar(studySubjectAssignment.getStudySite().getStudy().getPlannedCalendar());
+        if (studySubjectAssignment.getStudySite() != null) {
+            setPlannedCalendar(studySubjectAssignment.getStudySite().getStudy().getPlannedCalendar());
+            setSite(studySubjectAssignment.getStudySite().getSite());
+        }
         this.studySubjectAssignment = studySubjectAssignment;
     }
 
