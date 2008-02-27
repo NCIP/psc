@@ -221,7 +221,6 @@
 
                 <resource path="approvals">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
                         <html:p>The history of approvals for the amendments of a study at a site.</html:p>
                     </doc>
                     <method name="GET">
