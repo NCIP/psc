@@ -34,7 +34,9 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         Map<String, ConfigAttributeDefinition> sorted = new TreeMap<String, ConfigAttributeDefinition>(new Comparator<String>() {
             public int compare(String o1, String o2) {
-                return o2.length() - o1.length();
+                int lengthDiff = o2.length() - o1.length();
+                if (lengthDiff != 0) return lengthDiff;
+                return o2.compareTo(o1);
             }
         });
         String[] controllerNames = beanFactory.getBeanNamesForType(Controller.class, false, false);

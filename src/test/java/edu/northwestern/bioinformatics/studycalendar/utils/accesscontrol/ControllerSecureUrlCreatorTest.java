@@ -102,6 +102,21 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of groups: " + multiGroup, 2, multiGroup.size());
     }
 
+    public void testMapResolvesSeparatePathsWithSameLength() throws Exception {
+        registerControllerBean("pear", SingleGroupController.class);
+        registerControllerBean("pome", MultiGroupController.class);
+        doProcess();
+
+        PathBasedFilterInvocationDefinitionMap actual = extractActualPathMap();
+        ConfigAttributeDefinition singleGroup = actual.lookupAttributes("/prefix/pear");
+        assertNotNull("Could not resolve pear", singleGroup);
+        assertEquals("Wrong number of groups: " + singleGroup, 1, singleGroup.size());
+
+        ConfigAttributeDefinition multiGroup = actual.lookupAttributes("/prefix/pome");
+        assertNotNull("Could not resolve pome", multiGroup);
+        assertEquals("Wrong number of groups: " + multiGroup, 2, multiGroup.size());
+    }
+
     public ConfigAttributeDefinition lookupConfigAttributeDefinitions(String controllerName) {
         assertNotNull("Secure Url List is null", filterInvocationInterceptor.getObjectDefinitionSource());
         ConfigAttributeDefinition defs = extractActualPathMap()
