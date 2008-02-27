@@ -51,7 +51,6 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         return new RootBeanDefinition(clazz);
     }
 
-
     public void testSingleGroupRegistered() throws Exception {
         registerControllerBean("single", SingleGroupController.class);
         doProcess();
@@ -88,13 +87,32 @@ public class ControllerSecureUrlCreatorTest extends StudyCalendarTestCase {
         assertEquals("Wrong Role", "SITE_COORDINATOR", ((ConfigAttribute)configAttribIter.next()).getAttribute());
     }
 
+    public void testMapResolvesPathsLongestFirst() throws Exception {
+        registerControllerBean("long/plus", SingleGroupController.class);
+        registerControllerBean("long", MultiGroupController.class);
+        registerControllerBean("long/plus/more", NoGroupController.class);
+        doProcess();
+
+        PathBasedFilterInvocationDefinitionMap actual = extractActualPathMap();
+        ConfigAttributeDefinition noGroup = actual.lookupAttributes("/prefix/long/plus/more");
+        assertEquals("Wrong number of groups: " + noGroup, 5, noGroup.size());
+        ConfigAttributeDefinition singleGroup = actual.lookupAttributes("/prefix/long/plus");
+        assertEquals("Wrong number of groups: " + singleGroup, 1, singleGroup.size());
+        ConfigAttributeDefinition multiGroup = actual.lookupAttributes("/prefix/long");
+        assertEquals("Wrong number of groups: " + multiGroup, 2, multiGroup.size());
+    }
+
     public ConfigAttributeDefinition lookupConfigAttributeDefinitions(String controllerName) {
         assertNotNull("Secure Url List is null", filterInvocationInterceptor.getObjectDefinitionSource());
-        ConfigAttributeDefinition defs = ((PathBasedFilterInvocationDefinitionMap)filterInvocationInterceptor
-                .getObjectDefinitionSource())
-                .lookupAttributes((new StringBuilder()).append("/").append(PREFIX).append("/").append(controllerName).toString());
+        ConfigAttributeDefinition defs = extractActualPathMap()
+                .lookupAttributes(new StringBuilder().append('/').append(PREFIX).append('/').append(controllerName).toString());
         assertNotNull("Configuration Attribute Definitions are null", defs);
         return defs;
+    }
+
+    private PathBasedFilterInvocationDefinitionMap extractActualPathMap() {
+        return (PathBasedFilterInvocationDefinitionMap)filterInvocationInterceptor
+                .getObjectDefinitionSource();
     }
 
     public void testPathBasedFilterDefinitionMap() {

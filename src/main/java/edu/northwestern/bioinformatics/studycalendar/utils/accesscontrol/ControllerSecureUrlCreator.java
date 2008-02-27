@@ -16,6 +16,10 @@ import gov.nih.nci.cabig.ctms.tools.spring.ControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.tools.spring.ResolvedControllerReference;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Comparator;
+
 /**
  * @author John Dzak
  */
@@ -23,22 +27,32 @@ public class ControllerSecureUrlCreator implements BeanFactoryPostProcessor, Ord
     private static Logger log = LoggerFactory.getLogger(ControllerSecureUrlCreator.class);
     private FilterSecurityInterceptor filterInvocationInterceptor;
     private ControllerUrlResolver urlResolver;
-    private PathBasedFilterInvocationDefinitionMap pathMap;
 
     // Must occur after BeanNameControllerUrlResolver
     public int getOrder() { return 3; }
 
-
-
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        pathMap = new PathBasedFilterInvocationDefinitionMap();
+        Map<String, ConfigAttributeDefinition> sorted = new TreeMap<String, ConfigAttributeDefinition>(new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return o2.length() - o1.length();
+            }
+        });
         String[] controllerNames = beanFactory.getBeanNamesForType(Controller.class, false, false);
         for (String controllerName : controllerNames) {
             ResolvedControllerReference controller = urlResolver.resolve(controllerName);
             ConfigAttributeDefinition groupNames = getRequiredProtectionGroupNames(controller);
             if (groupNames != null) {
-                pathMap.addSecureUrl(new ApacheAntPattern(controller.getUrl(true)).toString(), groupNames);
+                String url = controller.getUrl(true);
+                if (log.isDebugEnabled()) {
+                    log.debug("Controller {} ({}) requires one of the roles {}",
+                        new Object[] { controller.getControllerClass(), url, groupNames });
+                }
+                sorted.put(new ApacheAntPattern(url).toString(), groupNames);
             }
+        }
+        PathBasedFilterInvocationDefinitionMap pathMap = new PathBasedFilterInvocationDefinitionMap();
+        for (String path : sorted.keySet()) {
+            pathMap.addSecureUrl(path, sorted.get(path));
         }
         filterInvocationInterceptor.setObjectDefinitionSource(pathMap);
     }
