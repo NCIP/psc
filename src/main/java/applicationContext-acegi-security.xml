@@ -85,11 +85,15 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
         <property name="accessDecisionManager">
             <ref local="accessDecisionManager"/>
         </property>
+        <!--
+            objectDefinitionSource is overridden by ControllerSecureUrlCreator
+            (ref'd in spring-servlet.xml). This value stays because Acegi complains if
+            there's no value when the bean is initialized.
+        -->
         <property name="objectDefinitionSource">
             <value>
                 CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
                 PATTERN_TYPE_APACHE_ANT
-
             </value>
         </property>
     </bean>
