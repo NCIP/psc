@@ -6,7 +6,8 @@ import java.util.Map;
 import java.util.HashMap;
 
 public enum GeneratedUriTemplateVariable {
-    ASSIGNMENT_ID("studySubjectAssignment.gridId");
+    STUDY_IDENTIFIER("study.gridId"),
+    ASSIGNMENT_IDENTIFIER("studySubjectAssignment.gridId");
 
     private String resolutionPath;
 
@@ -29,4 +30,4 @@ public enum GeneratedUriTemplateVariable {
         }
         return all;
     }
-}
+}                                                                                                                                        

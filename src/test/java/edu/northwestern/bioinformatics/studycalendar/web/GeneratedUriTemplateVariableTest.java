@@ -27,11 +27,11 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         assignment.setGridId(gridId);
         context.setStudySubjectAssignment(assignment);
 
-        assertEquals("identifier not resolved", gridId, GeneratedUriTemplateVariable.ASSIGNMENT_ID.resolve(context));
+        assertEquals("identifier not resolved", gridId, GeneratedUriTemplateVariable.ASSIGNMENT_IDENTIFIER.resolve(context));
     }
 
     public void testResolveWhenNotResolveable() throws Exception {
-        assertNull(GeneratedUriTemplateVariable.ASSIGNMENT_ID.resolve(context));
+        assertNull(GeneratedUriTemplateVariable.ASSIGNMENT_IDENTIFIER.resolve(context));
     }
     
     public void testCreateAllVariablesMap() throws Exception {
@@ -41,6 +41,6 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         context.setStudySubjectAssignment(assignment);
 
         Map<String, Object> all = GeneratedUriTemplateVariable.getAllTemplateValues(context);
-        assertEquals("Missing value for assignment ident", gridId, all.get("assignment-id"));
+        assertEquals("Missing value for assignment ident", gridId, all.get("assignment-identifier"));
     }
 }

@@ -183,6 +183,11 @@
             #study-info ul li {
                 list-style-type: none;
             }
+            
+            #outside-links {
+                margin: 1em;
+                text-align: right
+            }
         </style>
 
         <c:if test="${not empty developmentRevision}">
@@ -737,6 +742,17 @@
                         </c:if>
                     </c:if>
                 </ul>
+            
+                <div id="outside-links">
+                    <c:if test="${configuration.studyPageUrlConfigured}">
+                        <c:set var="studyPageUrlAvail" value="${not empty configuration.map.studyPageUrl}"/>
+                        <c:if test="${studyPageUrlAvail}">
+                            <a href="<tags:urlFromTemplate property="studyPageUrl" />" class="control">${configuration.map.ctmsName} study record</a>
+                        </c:if>
+
+                    </c:if>
+                </div>
+
         </div>
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">

@@ -44,6 +44,10 @@ public class Configuration extends DatabaseBackedConfiguration {
         CTMS_NAME= PROPERTIES.add(new ConfigurationProperty.Text("ctmsName"));
     public static final ConfigurationProperty<String>
         BASE_CTMS_URL = PROPERTIES.add(new ConfigurationProperty.Text("ctmsUrl"));
+
+
+    public static final ConfigurationProperty<Template>
+        STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
     
 
     ////// PSC-SPECIFIC LOGIC
@@ -54,6 +58,10 @@ public class Configuration extends DatabaseBackedConfiguration {
 
     public boolean getCtmsConfigured() {
         return get(CTMS_NAME) != null && get(BASE_CTMS_URL) != null;
+    }
+
+    public boolean getStudyPageUrlConfigured() {
+        return get(STUDY_PAGE_URL) != null;
     }
 
     public ConfigurationProperties getProperties() {

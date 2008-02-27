@@ -44,5 +44,22 @@ public class ConfigurationCommand implements Validatable {
                 }
             }
         }
+
+        Template studyPageUrl = originalConfiguration.get(STUDY_PAGE_URL);
+        if (studyPageUrl !=null) {
+            for (String varName : studyPageUrl.getVariableNames()) {
+                boolean matched = false;
+                for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
+                    if (knownVar.attributeName().equals(varName)) {
+                        matched = true; break;
+                    }
+                }
+                if (!matched) {
+                    errors.rejectValue(
+                            "conf[" + STUDY_PAGE_URL.getKey() + "].value",
+                            "error.configuration.studyPageUrl.invalidVariable", new Object[] { varName }, "Invalid variable");
+                }
+            }
+        }
     }
 }
