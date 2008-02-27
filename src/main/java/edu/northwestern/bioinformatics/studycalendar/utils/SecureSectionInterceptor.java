@@ -45,9 +45,8 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
             }
         }
 
-
-
         request.setAttribute(prefix("sections"), filtered);
+
         return true;
     }
 
@@ -64,17 +63,6 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
             roles = ac.roles();
         }
         return Arrays.asList(roles);
-    }
-
-
-
-    // remove this and use change parent class prefix function to package access
-    private String prefix(String attr) {
-        if (getAttributePrefix() == null) {
-            return attr;
-        } else {
-            return getAttributePrefix() + attr;
-        }
     }
 
     ////// Bean Setters
