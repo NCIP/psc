@@ -1,0 +1,94 @@
+<security-config>
+       <upt-context-name>
+       		<!-- Context Name for the UPT Application -->
+       		psc_grid_upt
+	</upt-context-name>
+	<application-list>
+	<!-- For every application using the security api an entry should be made here -->
+		<application>
+                        <context-name>
+                                study_calendar
+                </context-name>
+                <authentication>
+                                <lockout-time>
+                                        10000
+                                </lockout-time>
+                                <allowed-login-time>
+                                        30000
+                                </allowed-login-time>
+                                <allowed-attempts>
+                                        2
+                                </allowed-attempts>
+                                <authentication-provider-class>
+                                <!-- Fully qualified class name-->
+                                </authentication-provider-class>
+                        </authentication>
+                        <authorization>
+                            <authorization-provider-class>
+                                <!-- Fully qualified class name-->
+                                </authorization-provider-class>
+                        <hibernate-config-file>
+                                        <!-- Fully qualified file path -->
+                                        /Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/studycal.hibernate.cfg.xml
+                        </hibernate-config-file>
+                </authorization>
+                </application>
+		<application>
+			<context-name>
+				psc_grid_upt
+			</context-name>
+			<authentication>
+				<lockout-time>
+					10000				
+				</lockout-time>
+				<allowed-login-time>
+					30000			
+				</allowed-login-time>
+				<allowed-attempts>
+					10				
+				</allowed-attempts>
+				<authentication-provider-class>
+				<!-- Fully qualified class name-->
+				</authentication-provider-class>
+			</authentication>
+			<authorization>
+				<authorization-provider-class>
+					<!-- Fully qualified class name-->
+				</authorization-provider-class>
+				<hibernate-config-file>
+					<!-- Fully qualified file path -->
+					/Users/joshua/packages/tomcat/for_psc_grid/jakarta-tomcat-5.0.28-upt/conf/studycal_grid.hibernate.cfg.xml
+				</hibernate-config-file>
+			</authorization>
+		</application>
+		<application>
+	   		<context-name>
+	   			psc_grid
+	      	</context-name>
+	      	<authentication>
+				<lockout-time>
+					10000				
+				</lockout-time>
+				<allowed-login-time>
+					30000			
+				</allowed-login-time>
+				<allowed-attempts>
+					2			
+				</allowed-attempts>
+				<authentication-provider-class>
+				<!-- Fully qualified class name-->
+				</authentication-provider-class>
+			</authentication>
+			<authorization>
+			    <authorization-provider-class>
+	      			<!-- Fully qualified class name-->
+gov.nih.nci.cagrid.authorization.impl.CSMGridAuthorizationManager
+				</authorization-provider-class>
+		        <hibernate-config-file>
+					<!-- Fully qualified file path -->
+					/Users/joshua/packages/tomcat/for_psc_grid/jakarta-tomcat-5.0.28-upt/conf/studycal_grid.hibernate.cfg.xml
+		        </hibernate-config-file>
+	      	</authorization>
+	   	</application>
+	</application-list>
+</security-config>

@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://bioinformatics.northwestern.edu/ns/psc"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:psc="http://bioinformatics.northwestern.edu/ns/psc"
+            xmlns="http://bioinformatics.northwestern.edu/ns/psc"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:element name="studies">
+        <xsd:annotation>
+            <xsd:documentation>
+                A collection of study elements.  Generally, none of the elements that may be
+                embedded in a study will occur in the elements nested in studies.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="psc:study"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="study" type="psc:Study" />
+
+    <xsd:complexType name="Study">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
+        </xsd:choice>
+        <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- Elements of the template -->
+
+    <xsd:element name="planned-calendar" type="psc:PlannedCalendar"/>
+
+    <xsd:complexType name="PlannedCalendar">
+        <xsd:sequence>
+            <xsd:element ref="psc:epoch" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="epoch" type="psc:Epoch"/>
+
+    <xsd:complexType name="Epoch">
+        <xsd:sequence>
+            <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="study-segment" type="psc:StudySegment"/>
+
+    <xsd:complexType name="StudySegment">
+        <xsd:sequence>
+            <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="period" type="psc:Period"/>
+
+    <xsd:complexType name="Period">
+        <xsd:sequence>
+            <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="repetitions" type="xsd:integer" use="required"/>
+        <xsd:attribute name="duration-quantity" type="xsd:integer" use="required"/>
+        <xsd:attribute name="duration-unit" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="planned-activity" type="psc:PlannedActivity"/> 
+
+    <xsd:complexType name="PlannedActivity">
+        <xsd:sequence>
+            <xsd:element name="activity" type="psc:Activity"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="details" type="xsd:string"/>
+        <xsd:attribute name="condition" type="xsd:string"/>
+        <xsd:attribute name="population" type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- Elements of amendments (deltas & changes) -->
+    <xsd:element name="development-amendment" type="psc:Amendment"/>
+
+    <xsd:element name="amendment" type="psc:Amendment"/>
+
+    <xsd:complexType name="Amendment">
+        <xsd:sequence>
+            <xsd:element name="planned-calendar-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="epoch-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="study-segment-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="period-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="planned-activity-delta" type="psc:Delta" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="date" type="xsd:date" use="required"/>
+        <xsd:attribute name="mandatory" type="xsd:boolean" default="true"/>
+        <xsd:attribute name="previous-amendment-key" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Delta">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="add" type="psc:Add" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="remove" type="psc:Remove" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="reorder" type="psc:Reorder" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="property-change" type="psc:PropertyChange" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="node-id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Add">
+        <xsd:choice>
+            <xsd:element ref="psc:epoch"/>
+            <xsd:element ref="psc:study-segment"/>
+            <xsd:element ref="psc:period"/>
+            <xsd:element ref="psc:planned-activity"/>
+        </xsd:choice>
+        <xsd:attribute name="index" type="xsd:integer" use="optional"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Remove">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="child-id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Reorder">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="child-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="old-index" type="xsd:integer" use="required"/>
+        <xsd:attribute name="new-index" type="xsd:integer" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="PropertyChange">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="property-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="old-value" type="xsd:string" use="required"/>
+        <xsd:attribute name="new-value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- Elements of global activities -->
+
+    <xsd:element name="sources" type="psc:Sources" />
+
+    <xsd:complexType name="Sources">
+        <xsd:sequence>
+            <xsd:element name="source" type="psc:Source" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="Source">
+        <xsd:sequence>
+            <xsd:element ref="psc:activity" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="activity" type="psc:Activity"/>
+
+    <xsd:complexType name="Activity">
+        <xsd:attribute name="id" type="xsd:string"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="description" type="xsd:string"/>
+        <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
+        <xsd:attribute name="code" type="xsd:string"  use="required"/>
+        <xsd:attribute name="source" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="population" type="psc:Population"/>
+
+    <xsd:complexType name="Population">
+        <xsd:attribute name="abbreviation" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- Elements of Subject Assignments -->
+
+    <xsd:element name="subject-assignments" type="SubjectAssignments"/>
+
+    <xsd:complexType name="SubjectAssignments">
+        <xsd:sequence>
+            <xsd:element name="subject-assignment" type="psc:SubjectAssignment" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="SubjectAssignment">
+        <xsd:sequence>
+            <xsd:element name="subject" type="psc:Subject" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="study-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="start-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="end-date" type="xsd:date"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
+        <xsd:attribute name="current-amendment-key" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="Subject">
+        <xsd:attribute name="first-name" type="xsd:string"/>
+        <xsd:attribute name="last-name" type="xsd:string"/>
+        <xsd:attribute name="birth-date" type="xsd:date"/>
+        <xsd:attribute name="person-id" type="xsd:string"/>
+        <xsd:attribute name="gender" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="male"/>
+                    <xsd:enumeration value="female"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:element name="registration" type="psc:Registration"/>
+
+    <xsd:complexType name="Registration">
+        <xsd:sequence>
+            <xsd:element name="subject" type="psc:Subject"/>
+        </xsd:sequence>
+        <xsd:attribute name="first-study-segment-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="date" type="xsd:date" use="required"/>
+        <xsd:attribute name="subject-coordinator-name" type="xsd:string"/>
+        <xsd:attribute name="desired-assignment-id" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="amendment-approvals" type="psc:amendment-approvals"/>
+
+    <xsd:complexType name="amendment-approvals">
+        <xsd:sequence>
+            <xsd:element name="amendment-approval" type="psc:AmendmentApproval" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="amendment-approval" type="psc:AmendmentApproval"/>
+
+    <xsd:complexType name="AmendmentApproval">
+        <xsd:sequence>
+            <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
+            <xsd:element name="amendment" type="psc:Amendment"/>
+        </xsd:sequence>
+        <xsd:attribute name="date" type="xsd:date" use="required"/>
+    </xsd:complexType>
+
+
+    <xsd:element name="study-site-link" type="psc:StudySiteLink"/>
+
+    <xsd:complexType name="StudySiteLink">
+        <xsd:attribute name="study-name" type="xsd:string" use="required"/>
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>    
+    </xsd:complexType>
+
+    <xsd:element name="sites" type="psc:sites"/>
+    <xsd:element name="site" type="psc:Site"/>
+
+
+    <xsd:complexType name="sites">
+        <xsd:sequence>
+            <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="Site">
+        <xsd:attribute name="assigned-identifier" type="xsd:string" use="optional"/>
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="schedule" type="psc:Schedule"/>
+
+    <xsd:complexType name="Schedule">
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="scheduled-study-segment" type="psc:ScheduledStudySegment"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="assignment-id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ScheduledStudySegment">
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>
+        </xsd:sequence>
+        <xsd:attribute name="start-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ScheduledActivity">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <xsd:element name="current-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="previous-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:choice>
+        <xsd:attribute name="ideal-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="notes" type="xsd:string"/>
+        <xsd:attribute name="details" type="xsd:string"/>
+        <xsd:attribute name="repitition-number" type="xsd:integer"/>
+        <xsd:attribute name="planned-activity-id" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ScheduledActivityState">
+        <xsd:attribute name="state" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="canceled"/>
+                    <xsd:enumeration value="conditional"/>
+                    <xsd:enumeration value="missing"/>
+                    <xsd:enumeration value="not-applicable"/>
+                    <xsd:enumeration value="occurred"/>
+                    <xsd:enumeration value="scheduled"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute name="date" type="xsd:date"/>
+        <xsd:attribute name="reason" type="xsd:string"/>
+    </xsd:complexType>
+
+    <xsd:element name="blackout-dates" type="psc:blackout-dates"/>
+
+    <xsd:complexType name="blackout-dates">
+        <xsd:sequence>
+            <xsd:element name="blackout-date" type="psc:blackout-date" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="blackout-date">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="site_id" type="xsd:integer" use="required"/>
+        <xsd:attribute name="day" type="xsd:integer" use="optional"/>
+        <xsd:attribute name="month" type="xsd:integer" use="optional"/>
+        <xsd:attribute name="year" type="xsd:integer" use="optional"/>
+        <xsd:attribute name="day-of-the-week" type="xsd:string" use="optional"/>
+        <xsd:attribute name="description" type="xsd:string" use="optional"/>
+        <xsd:attribute name="week-number" type="xsd:integer" use="optional"/>
+    </xsd:complexType>
+
+
+</xsd:schema>

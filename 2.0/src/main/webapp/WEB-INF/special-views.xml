@@ -1,0 +1,62 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- Intermediate views for JasperReports -->
+    <bean id="xlsReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
+		<property name="url">
+			<value>/WEB-INF/reports/xlsReport.jrxml</value>
+        </property>
+    </bean>
+    <bean id="pdfReport" class="org.springframework.web.servlet.view.jasperreports.JasperReportsMultiFormatView">
+		<property name="url">
+			<value>/WEB-INF/reports/pdfReport.jrxml</value>
+        </property>
+    </bean>
+    
+    <!-- Redirect views -->
+    <bean id="redirectToRoot" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/</value></property>
+    </bean>
+
+    <bean id="redirectToLogin" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/public/login</value></property>
+    </bean>
+
+    <bean id="redirectToStudyList" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/cal/studyList</value></property>
+    </bean>
+
+    <bean id="redirectToManageSites" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/admin/manage/sites</value></property>
+    </bean>
+
+
+    <bean id="redirectToManageHolidays" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/admin/manage/holidays</value></property>
+    </bean>
+
+    <bean id="redirectToCalendarTemplate" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/cal/template</value></property>
+    </bean>
+
+    <bean id="redirectToManagePeriod" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/cal/managePeriod</value></property>
+    </bean>
+
+    <bean id="redirectToSchedule" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/cal/schedule</value></property>
+    </bean>
+    <bean id="redirectToAdministration" class="org.springframework.web.servlet.view.RedirectView">
+        <property name="contextRelative"><value>true</value></property>
+        <property name="url"><value>/pages/admin</value></property>
+    </bean>
+</beans>
