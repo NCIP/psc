@@ -30,13 +30,15 @@ public class SecureSectionInterceptorTest extends WebTestCase {
     private Task task0;
     private SecureSectionInterceptor interceptor;
     private UserDao userDao;
-    private User siteCoord;
+    private User siteCoord, studyCoordAndAdmin;
     private DefaultListableBeanFactory beanFactory;
+    private Section section0, section1;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         siteCoord = createUser("site coord", Role.SITE_COORDINATOR);
+        studyCoordAndAdmin = createUser("study coord", Role.STUDY_COORDINATOR, Role.STUDY_ADMIN);
         SecurityContextHolderTestHelper.setSecurityContext(siteCoord.getName() , EMPTY);
 
         userDao = registerDaoMockFor(UserDao.class);
@@ -52,11 +54,13 @@ public class SecureSectionInterceptorTest extends WebTestCase {
         Task task1 = new Task();
         task1.setLinkName("subjCoordController");
 
-        Section section0 = new Section();
+        section0 = new Section();
+        section0.setDisplayName("Section 0");
         section0.setTasks(asList(task0));
         section0.setPathMapping("/**");
 
-        Section section1 = new Section();
+        section1 = new Section();
+        section1.setDisplayName("Section 1");
         section1.setTasks(asList(task1));
         section1.setPathMapping("/**");
 
@@ -87,8 +91,21 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         assertEquals("Wrong number of sections", 1, actualSections.size());
 
-        assertEquals("User should have access to section", 1, actualSections.get(0).getTasks().size());
-        assertSame("User should have access to section", task0, actualSections.get(0).getTasks().get(0));
+        assertEquals("User should have access to section 0", section0, actualSections.get(0));
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public void testPreHandleWhenForStudyCoordinatorAndAdmin() throws Exception {
+        SecurityContextHolderTestHelper.setSecurityContext(studyCoordAndAdmin.getName(), EMPTY);
+        expect(userDao.getByName(studyCoordAndAdmin.getName())).andReturn(studyCoordAndAdmin);
+
+        doPreHandle();
+
+        List<Section> actualSections = (List<Section>) request.getAttribute("sections");
+
+        assertEquals("Wrong number of sections", 1, actualSections.size());
+
+        assertEquals("User should have access to section 1 only", section1, actualSections.get(0));
     }
 
     ////// Helper Methods
@@ -113,7 +130,7 @@ public class SecureSectionInterceptorTest extends WebTestCase {
     @AccessControl(roles={Role.SITE_COORDINATOR})
     public static class SiteCoordinatorController extends TestingController {}
 
-    @AccessControl(roles={Role.STUDY_COORDINATOR})
+    @AccessControl(roles={Role.STUDY_COORDINATOR, Role.STUDY_ADMIN})
     public static class SubjectCoordinatorController extends TestingController {}
 
     public static class TestingController implements Controller {

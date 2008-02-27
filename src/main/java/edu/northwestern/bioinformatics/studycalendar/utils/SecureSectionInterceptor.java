@@ -39,7 +39,7 @@ public class SecureSectionInterceptor extends SectionInterceptor implements Bean
             }
 
             for (Role role : allowed) {
-                if (user.hasRole(role)) {
+                if (user.hasRole(role) && !filtered.contains(section)) {
                     filtered.add(section);
                 }
             }
