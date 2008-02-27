@@ -7,7 +7,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.web.WebTestCase;
-import gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver;
 import gov.nih.nci.cabig.ctms.web.chrome.Section;
 import gov.nih.nci.cabig.ctms.web.chrome.Task;
 import static org.apache.commons.lang.StringUtils.EMPTY;
@@ -29,7 +28,6 @@ import java.util.List;
  */
 public class SecureSectionInterceptorTest extends WebTestCase {
     private Task task0;
-    private BeanNameControllerUrlResolver resolver;
     private SecureSectionInterceptor interceptor;
     private UserDao userDao;
     private User siteCoord;
@@ -42,22 +40,17 @@ public class SecureSectionInterceptorTest extends WebTestCase {
         SecurityContextHolderTestHelper.setSecurityContext(siteCoord.getName() , EMPTY);
 
         userDao = registerDaoMockFor(UserDao.class);
-        resolver = new BeanNameControllerUrlResolver();
         beanFactory = new DefaultListableBeanFactory ();
-
 
         interceptor = new SecureSectionInterceptor();
         interceptor.setUserDao(userDao);
-        interceptor.setUrlResolver(resolver);
         interceptor.postProcessBeanFactory(beanFactory);
 
         task0 = new Task();
         task0.setLinkName("siteCoordController");
-        task0.setUrlResolver(resolver);
 
         Task task1 = new Task();
         task1.setLinkName("subjCoordController");
-        task1.setUrlResolver(resolver);
 
         Section section0 = new Section();
         section0.setTasks(asList(task0));
@@ -92,12 +85,10 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
         List<Section> actualSections = (List<Section>) request.getAttribute("sections");
 
-        assertEquals("Wrong number of sections", 2, actualSections.size());
+        assertEquals("Wrong number of sections", 1, actualSections.size());
 
         assertEquals("User should have access to section", 1, actualSections.get(0).getTasks().size());
         assertSame("User should have access to section", task0, actualSections.get(0).getTasks().get(0));
-
-        assertEquals("User should not have access to section", 0, actualSections.get(1).getTasks().size());
     }
 
     ////// Helper Methods
@@ -113,7 +104,6 @@ public class SecureSectionInterceptorTest extends WebTestCase {
 
     private void doPreHandle() throws Exception {
         replayMocks();
-        resolver.postProcessBeanFactory(beanFactory);
         interceptor.postProcessBeanFactory(beanFactory);
         interceptor.preHandle(request, response, null);
         verifyMocks();

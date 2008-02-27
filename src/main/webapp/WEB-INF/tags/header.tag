@@ -17,7 +17,9 @@
         </c:if>
     </jsp:attribute>
     <jsp:attribute name="renderSection">
-        <laf:sectionTab section="${section}" currentSection="${currentSection}"/>
+        <c:if test="${not empty section.tasks}">
+            <laf:sectionTab section="${section}" currentSection="${currentSection}"/>
+        </c:if>
     </jsp:attribute>
     <jsp:attribute name="renderTask">
         <c:choose>

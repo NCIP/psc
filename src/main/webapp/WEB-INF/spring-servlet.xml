@@ -494,7 +494,7 @@
         </property>
     </bean>
 
-    <bean id="sectionInterceptor" class="gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor">
+    <bean id="sectionInterceptor" class="edu.northwestern.bioinformatics.studycalendar.utils.SecureSectionInterceptor" autowire="byName">
         <property name="sections">
             <list>
                 <bean parent="sectionTemplate" >
