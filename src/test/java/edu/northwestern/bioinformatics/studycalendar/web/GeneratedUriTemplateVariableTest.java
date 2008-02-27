@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Breadcrum
 import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateService;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 
 import java.util.Map;
 
@@ -32,6 +33,14 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
 
     public void testResolveWhenNotResolveable() throws Exception {
         assertNull(GeneratedUriTemplateVariable.ASSIGNMENT_IDENTIFIER.resolve(context));
+    }
+
+    public void testResolveStudyIdentifier() throws Exception {
+        Study study = new Study();
+        study.setAssignedIdentifier("ABC 0532");
+        context.setStudy(study);
+        
+        assertEquals("Identifier not resolved", "ABC 0532", GeneratedUriTemplateVariable.STUDY_IDENTIFIER.resolve(context));
     }
     
     public void testCreateAllVariablesMap() throws Exception {

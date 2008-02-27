@@ -9,6 +9,10 @@ import edu.northwestern.bioinformatics.studycalendar.web.GeneratedUriTemplateVar
 import static edu.northwestern.bioinformatics.studycalendar.tools.configuration.Configuration.*;
 
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
+
+import java.util.Collection;
+import java.util.Arrays;
 
 /**
  * @author Rhett Sutphin
@@ -16,7 +20,6 @@ import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 public class ConfigurationCommand implements Validatable {
     private BindableConfiguration conf;
     private Configuration originalConfiguration;
-    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public ConfigurationCommand(Configuration configuration) {
         conf = new BindableConfiguration(configuration);
@@ -28,36 +31,23 @@ public class ConfigurationCommand implements Validatable {
     }
 
     public void validate(Errors errors) {
-        Template patientPageUrl = originalConfiguration.get(PATIENT_PAGE_URL);
-        if (patientPageUrl !=null) {
-            for (String varName : patientPageUrl.getVariableNames()) {
-                boolean matched = false;
-                for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
-                    if (knownVar.attributeName().equals(varName)) {
-                        matched = true; break;
-                    }
-                }
-                if (!matched) {
-                    errors.rejectValue(
-                            "conf[" + PATIENT_PAGE_URL.getKey() + "].value",
-                            "error.configuration.patientPageUrl.invalidVariable", new Object[] { varName }, "Invalid variable");
-                }
-            }
-        }
+        Collection<ConfigurationProperty<Template>> templateProperties = Arrays.asList(PATIENT_PAGE_URL, STUDY_PAGE_URL);
 
-        Template studyPageUrl = originalConfiguration.get(STUDY_PAGE_URL);
-        if (studyPageUrl !=null) {
-            for (String varName : studyPageUrl.getVariableNames()) {
-                boolean matched = false;
-                for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
-                    if (knownVar.attributeName().equals(varName)) {
-                        matched = true; break;
+        for (ConfigurationProperty<Template> templateProperty : templateProperties) {
+            Template value = originalConfiguration.get(templateProperty);
+            if (value !=null) {
+                for (String varName : value.getVariableNames()) {
+                    boolean matched = false;
+                    for (GeneratedUriTemplateVariable knownVar : GeneratedUriTemplateVariable.values()) {
+                        if (knownVar.attributeName().equals(varName)) {
+                            matched = true; break;
+                        }
                     }
-                }
-                if (!matched) {
-                    errors.rejectValue(
-                            "conf[" + STUDY_PAGE_URL.getKey() + "].value",
-                            "error.configuration.studyPageUrl.invalidVariable", new Object[] { varName }, "Invalid variable");
+                    if (!matched) {
+                        errors.rejectValue(
+                                "conf[" + templateProperty.getKey() + "].value",
+                                "error.configuration.uriTemplate.invalidVariable", new Object[] { varName }, "Invalid variable");
+                    }
                 }
             }
         }
