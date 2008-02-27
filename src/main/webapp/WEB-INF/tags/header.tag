@@ -22,13 +22,6 @@
         </c:if>
     </jsp:attribute>
     <jsp:attribute name="renderTask">
-        <c:choose>
-            <c:when test="${currentSection.displayName == 'Dashboard'}">
-                <tags:restrictedTaskItem role="${task.displayName}"><laf:taskLink task="${task}"/></tags:restrictedTaskItem>
-            </c:when>
-            <c:otherwise>
-                <laf:taskLink task="${task}"/>
-            </c:otherwise>
-        </c:choose>
+        <tags:restrictedTaskItem task="${task}"/>
     </jsp:attribute>
 </laf:header>

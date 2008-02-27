@@ -160,25 +160,13 @@
     </bean>
 
     <bean name="/dashboard/studyCoordinator" id="dashboardStudyCoordinatorController" autowire="byName"
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-       <property name="viewName">
-           <value>redirectToStudyList</value>
-       </property>
-    </bean>
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.StudyCoordinatorDashboardController"/>
 
     <bean name="/dashboard/studyAdmin" id="dashboardStudyAdminController" autowire="byName"
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController" >
-       <property name="viewName">
-           <value>redirectToStudyList</value>
-       </property>
-    </bean>
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.StudyAdministratorDashboardController" />
 
     <bean name="/dashboard/systemAdmin" id="dashboardSystemAdminController" autowire="byName"
-          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-       <property name="viewName">
-           <value>redirectToAdministration</value>
-       </property>
-    </bean>
+          class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.SystemAdministratorDashboardController"/>
 
     <bean name="/dashboard/siteCoordinator" id="dashboardSiteCoordinatorController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator.SiteCoordinatorController">

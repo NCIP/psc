@@ -36,10 +36,9 @@ public class SecureOperation extends TagSupport {
         return this.element;
     }
 
+    @Override
     public int doStartTag() throws JspTagException {
         initializeBeans();
-        String userName = SecurityContextHolder.getContext().getAuthentication().getName();
-        if (log.isDebugEnabled()) log.debug("username   ---------          " + userName);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -47,12 +46,12 @@ public class SecureOperation extends TagSupport {
 
         try {
             return isAllowed(authentication, getElement(), elementRoles);
-        } catch (Exception e) {
-            log.error("Exception evaluating SecureOperation startTag", e);
-            throw new JspTagException(e.getMessage() + " (Rethrown exception; see log for details)");
+        } catch (AuthenticationException e) {
+            throw new JspTagException(e);
         }
     }
 
+    @Override
     public int doEndTag() throws JspTagException {
         return EVAL_PAGE;
     }
@@ -81,7 +80,7 @@ public class SecureOperation extends TagSupport {
         }
     }
 
-    protected int isAllowed(Authentication i_authentication, String i_element, ConfigAttributeDefinition elementRoles) throws Exception {
+    protected int isAllowed(Authentication i_authentication, String i_element, ConfigAttributeDefinition elementRoles) {
         boolean allowed = true;
 
         try {
@@ -90,31 +89,28 @@ public class SecureOperation extends TagSupport {
             allowed = false;
         }
         
-        int k = 0;
-        if (!allowed) {
-            k = SKIP_BODY;
-        } else {
+        int k;
+        if (allowed) {
             k = EVAL_BODY_INCLUDE;
+        } else {
+            k = SKIP_BODY;
         }
         return k;
     }
 
     protected ConfigAttributeDefinition getElementRoles(String url) {
-        log.info("Method getElementRoles: Looking up attributes for " + getElement());
         ConfigAttributeDefinition def = definitionMap.lookupAttributes(url);
+        log.debug("Roles for {} are {}", url, def);
 
         if (def == null) {
-            log.warn("Method getElementRoles: No matching paths found for " + getElement());
+            log.warn("No matching roles found for " + getElement());
             def = new ConfigAttributeDefinition();
-        } else if (def != null && def.size() > 1) {
-            log.warn("Method getElementRoles: More than matching paths found for " + getElement());
-        }
+        } 
 
         return def;
     }
 
-
-
+    @Override
     public void release() {
         super.release();
         authorizationDecisionManager = null;

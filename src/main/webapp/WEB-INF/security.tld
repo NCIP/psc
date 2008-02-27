@@ -18,19 +18,5 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
         </attribute>
-
-    </tag>
-
-    <tag>
-        <name>roleSecureOperation</name>
-        <tagclass>edu.northwestern.bioinformatics.studycalendar.web.taglibs.security.RoleSecureOperation</tagclass>
-        <bodycontent>JSP</bodycontent>
-
-        <attribute>
-            <name>element</name>
-            <required>true</required>
-            <rtexprvalue>true</rtexprvalue>
-        </attribute>
-
     </tag>
 </taglib>
