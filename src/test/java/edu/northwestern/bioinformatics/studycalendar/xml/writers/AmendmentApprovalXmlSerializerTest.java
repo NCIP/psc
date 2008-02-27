@@ -1,6 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -14,6 +17,7 @@ import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCal
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
+import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
@@ -39,14 +43,31 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
     private StudySiteXmlSerializer studySiteXmlSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
 
+    private SiteDao siteDao;
+
+    private StudyDao studyDao;
+
+    private AmendmentDao amendmentDao;
+
+    final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
-
+        studyDao = registerMockFor(StudyDao.class);
+        siteDao = registerMockFor(SiteDao.class);
+        amendmentDao = registerDaoMockFor(AmendmentDao.class);
 
         serializer = new AmendmentApprovalXmlSerializer();
         studySiteXmlSerializer = new StudySiteXmlSerializer();
+        studySiteXmlSerializer.setSiteDao(siteDao);
+        studySiteXmlSerializer.setStudyDao(studyDao);
         serializer.setStudySiteXmlSerializer(studySiteXmlSerializer);
+
+
         amendmentSerializer = new AmendmentXmlSerializer();
+        amendmentSerializer.setAmendmentDao(amendmentDao);
         serializer.setAmendmentSerializer(amendmentSerializer);
 
         amendment = new Amendment();
@@ -74,12 +95,33 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         final List contents = actualElement.content();
         assertEquals("Wrong number of content", 2, contents.size());
 
+        assertTrue("content must of type element", contents.get(0) instanceof Element);
+
         assertEquals("Wrong number of attribute", 1, actualElement.attributes().size());
 
         assertNotNull("Wrong date", actualElement.attributeValue("date"));
 
 
     }
+
+    public void testReadElement() {
+        expectStudySiteLookup(amendmentApproval.getStudySite().getStudy(), amendmentApproval.getStudySite().getSite());
+        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(amendmentApproval.getAmendment());
+
+        replayMocks();
+
+
+        final AmendmentApproval expectedAmendmentApproval = serializer.readElement(serializer.createElement(amendmentApproval, true));
+
+        verifyMocks();
+
+        assertEquals(formatter.format(amendmentApproval.getDate()), formatter.format(expectedAmendmentApproval.getDate()));
+        assertEquals(amendmentApproval.getStudySite().getName(), expectedAmendmentApproval.getStudySite().getName());
+        assertEquals(amendmentApproval.getStudySite().getStudy().getName(), expectedAmendmentApproval.getStudySite().getStudy().getName());
+
+
+    }
+
 
     public void testCreateElementForInvalidValues() {
         try {
@@ -90,20 +132,10 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         }
     }
 
-    public void testReadElementNotSupported() {
-
-        try {
-            serializer.readElement(serializer.createElement(amendmentApproval));
-        } catch (UnsupportedOperationException e) {
-
-        }
-
-    }
 
     public void testCreateDocumentString() throws Exception {
 
 
-        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         StringBuffer expected = new StringBuffer();
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append("<amendment-approvals ");
@@ -126,10 +158,15 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
 
 
         String actual = serializer.createDocumentString(amendmentApproval);
-        verifyMocks();
         log.info("actual:" + actual);
         log.info("expected:" + expected.toString());
         assertXMLEqual(expected.toString(), actual);
+    }
+
+    private void expectStudySiteLookup(Study aStudy, Site aSite) {
+        expect(studyDao.getByAssignedIdentifier(aStudy.getAssignedIdentifier())).andReturn(aStudy);
+        expect(siteDao.getByAssignedIdentifier(aSite.getName())).andReturn(aSite);
+
     }
 
 }

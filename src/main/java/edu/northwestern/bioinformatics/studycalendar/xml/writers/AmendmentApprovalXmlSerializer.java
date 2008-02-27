@@ -1,11 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+
+import java.util.Date;
 
 /**
  * @author Saurabh Agrawal
@@ -53,8 +57,35 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
     }
 
     @Override
-    public AmendmentApproval readElement(Element elt) {
-        throw new UnsupportedOperationException("Reading Amendment Approval elements not allowed");
+    public AmendmentApproval readElement(Element element) {
+
+        if (element == null) {
+            throw new StudyCalendarValidationException("element can not be null");
+
+
+        }
+
+        final Element studySiteElement = element.element(XsdElement.STUDY_SITE_LINK.xmlName());
+        final Element amendmentElement = element.element(XsdElement.AMENDMENT.xmlName());
+        StudySite studySite;
+        if (studySiteElement != null && amendmentElement != null) {
+            studySite = studySiteXmlSerializer.readElement(studySiteElement);
+            Amendment amendment = amendmentSerializer.readElement(amendmentElement);
+            Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
+
+            AmendmentApproval amendmentApproval = new AmendmentApproval();
+            amendmentApproval.setStudySite(studySite);
+            amendmentApproval.setAmendment(amendment);
+            amendmentApproval.setDate(date);
+
+            return amendmentApproval;
+
+        } else {
+            throw new StudyCalendarValidationException("study site element  or amendment element can not be null");
+
+        }
+
+
     }
 
 
