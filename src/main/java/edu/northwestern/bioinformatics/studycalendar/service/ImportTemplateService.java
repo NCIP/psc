@@ -111,9 +111,7 @@ public class ImportTemplateService {
                         // Need this if change is already persisted in the database, then it won't have a child
                         // and we need to find from the child id
                         if (child == null) {
-                            Class childClass = ((PlanTreeInnerNode) delta.getNode()).childClass();
-                            DomainObjectDao dao = daoFinder.findDao(childClass);
-                            child = (PlanTreeNode<?>) dao.getById(((ChildrenChange)change).getChildId());
+                            child = findChangeChild(change);
                         }
                         
                         if (child instanceof PlannedActivity) {
@@ -222,9 +220,36 @@ public class ImportTemplateService {
 
     }
 
+    /**
+     * When the study gets de-serialized, references to new PlanTreeNode(s) cannot be found since the whole
+     * template isn't saved until the end. Therefore, after the template is de-serialized, we have to go
+     * and resolve the PlanTreeNode(s) to their correct references.
+     *
+     * e.g. A Template that has two amendments is being imported.  The first amendment adds a new Epoch. The second
+     *      amendment changes the name of that Epoch.  When the second amendment is de-serialized, the Delta node will have
+     *      a template Epoch (an epoch with the same grid id as the actual one) as a place holder for the actual Epoch
+     *      until it is resolved.
+     */
     private PlanTreeNode<?> findRealNode(PlanTreeNode<?> nodeTemplate) {
         GridIdentifiableDao dao = (GridIdentifiableDao) daoFinder.findDao(nodeTemplate.getClass());
         return (PlanTreeNode<?>) dao.getByGridId(nodeTemplate.getGridId());
+    }
+
+    /**
+     * When a change is persisted to the database, when retreived the child element is null.  We must retrieve it
+     * using the child id.
+     */
+    private PlanTreeNode<?> findChangeChild(Change change) {
+        Integer childId = ((ChildrenChange)change).getChildId();
+        Class<? extends PlanTreeNode> childClass = ((PlanTreeInnerNode) change.getDelta().getNode()).childClass();
+
+        DomainObjectDao dao = daoFinder.findDao(childClass);
+        PlanTreeNode<?> child = (PlanTreeNode<?>) dao.getById(childId);
+        if (child == null) {
+            throw new StudyCalendarSystemException("Problem importing template. Child with class %s and id %s could not be found",
+                    childClass.getName(), childId.toString());
+        }
+        return child;
     }
 
     public void deleteAmendment(Amendment amendment) {
@@ -243,10 +268,7 @@ public class ImportTemplateService {
                 changesToRemove.add(change);
                 changeDao.delete(change);
                 if (ChangeAction.ADD.equals(change.getAction())) {
-
-                    Class childClass = ((PlanTreeInnerNode) delta.getNode()).childClass();
-                    DomainObjectDao dao = daoFinder.findDao(childClass);
-                    PlanTreeNode<?> child = (PlanTreeNode<?>) dao.getById(((ChildrenChange)change).getChildId());
+                    PlanTreeNode<?> child = findChangeChild(change);
 
                     if (child instanceof Epoch) {
                         deleteEpoch((Epoch) child);
