@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.globus.wsrf.utils.StringBufferReader;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.XMLConstants;
 import java.io.ByteArrayInputStream;
@@ -23,6 +24,8 @@ import java.rmi.RemoteException;
 /**
  * @author Saurabh Agrawal
  */
+
+@Transactional(readOnly = true)
 public class PSCStudyService implements StudyService {
 
     private static final Log logger = LogFactory.getLog(PSCStudyService.class);
@@ -107,6 +110,7 @@ public class PSCStudyService implements StudyService {
     }
 
 
+@Transactional(readOnly = false)
     public edu.northwestern.bioinformatics.studycalendar.grid.Study createStudy(edu.northwestern.bioinformatics.studycalendar.grid.Study gridStudy)
             throws RemoteException, StudyCreationException {
 

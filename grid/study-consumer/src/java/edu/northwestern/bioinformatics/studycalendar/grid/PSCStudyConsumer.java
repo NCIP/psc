@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.List;
  *
  * @author <a href="mailto:saurabh.agrawal@semanticbits.com>Saurabh Agrawal</a>
  */
+
+@Transactional(readOnly = true)
 public class PSCStudyConsumer implements StudyConsumerI {
 
     private static final Log logger = LogFactory.getLog(PSCStudyConsumer.class);

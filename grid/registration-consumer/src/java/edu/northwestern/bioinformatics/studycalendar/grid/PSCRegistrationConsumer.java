@@ -20,6 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.rmi.RemoteException;
 import java.util.Calendar;
@@ -29,6 +30,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
  */
+@Transactional(readOnly = false)
 public class PSCRegistrationConsumer implements RegistrationConsumer {
 
     private static final Log logger = LogFactory.getLog(PSCRegistrationConsumer.class);
