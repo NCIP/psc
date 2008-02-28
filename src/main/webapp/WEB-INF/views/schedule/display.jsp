@@ -420,11 +420,12 @@
             <c:if test="${ctmsAvail}">
                 <a href="<tags:urlFromTemplate property="patientPageUrl" />" class="control">${configuration.map.ctmsName} record</a>
             </c:if>
+            
             <c:if test="${caaersAvail}">
-                <a href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}" class="control">adverse events</a>
+                <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">adverse events</a>
             </c:if>
             <c:if test="${labViewerAvail}">
-                <a href="${configuration.map.labViewerBaseUrl}/LabSearch?StudyId=${study.id}&PatientId=${subject.personId}" class="control">lab results</a>
+                <a href="<tags:urlFromTemplate property="labViewerBaseUrl" />" class="control">lab results</a>
             </c:if>
 
             <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
@@ -440,7 +441,7 @@
                         <p>
                             <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
                             <c:if test="${not empty configuration.map.caAERSBaseUrl}">
-                                View <a class="sso" href="${configuration.map.caAERSBaseUrl}/pages/ae/list?assignment=${assignment.gridId}">all adverse events</a>
+                                View <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">all adverse events</a>
                             </c:if>
                         </p>
                     </div>

@@ -7,7 +7,8 @@ import java.util.HashMap;
 
 public enum GeneratedUriTemplateVariable {
     STUDY_IDENTIFIER("study.assignedIdentifier"),
-    ASSIGNMENT_IDENTIFIER("studySubjectAssignment.gridId");
+    ASSIGNMENT_IDENTIFIER("studySubjectAssignment.gridId"),
+    SUBJECT_IDENTIFIER("subject.id");
 
     private String resolutionPath;
 

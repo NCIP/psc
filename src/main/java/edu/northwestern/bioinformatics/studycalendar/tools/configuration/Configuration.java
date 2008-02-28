@@ -32,10 +32,10 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Boolean>
         SHOW_DEBUG_INFORMATION = PROPERTIES.add(new ConfigurationProperty.Bool("showDebugInformation"));
 
-    public static final ConfigurationProperty<String>
-        CAAERS_BASE_URL = PROPERTIES.add(new ConfigurationProperty.Text("caAERSBaseUrl"));
-    public static final ConfigurationProperty<String>
-        LABVIEWER_BASE_URL = PROPERTIES.add(new ConfigurationProperty.Text("labViewerBaseUrl"));
+    public static final ConfigurationProperty<Template>
+        CAAERS_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("caAERSBaseUrl"));
+    public static final ConfigurationProperty<Template>
+        LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
 
 
     public static final ConfigurationProperty<Template>

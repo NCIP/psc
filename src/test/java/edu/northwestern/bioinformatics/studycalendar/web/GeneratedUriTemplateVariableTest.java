@@ -6,6 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.service.TestingTemplateServ
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 import java.util.Map;
 
@@ -42,7 +43,15 @@ public class GeneratedUriTemplateVariableTest extends StudyCalendarTestCase {
         
         assertEquals("Identifier not resolved", "ABC 0532", GeneratedUriTemplateVariable.STUDY_IDENTIFIER.resolve(context));
     }
-    
+
+    public void testResolvePatientIdentifier() throws Exception {
+        Subject subject = new Subject();
+        subject.setId(24);
+        context.setSubject(subject);
+
+        assertEquals("Identifier not resolved", 24, GeneratedUriTemplateVariable.SUBJECT_IDENTIFIER.resolve(context));
+    }    
+
     public void testCreateAllVariablesMap() throws Exception {
         String gridId = "Expected";
         StudySubjectAssignment assignment = new StudySubjectAssignment();

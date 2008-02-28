@@ -31,7 +31,7 @@ public class ConfigurationCommand implements Validatable {
     }
 
     public void validate(Errors errors) {
-        Collection<ConfigurationProperty<Template>> templateProperties = Arrays.asList(PATIENT_PAGE_URL, STUDY_PAGE_URL);
+        Collection<ConfigurationProperty<Template>> templateProperties = Arrays.asList(PATIENT_PAGE_URL, STUDY_PAGE_URL, CAAERS_BASE_URL, LABVIEWER_BASE_URL);
 
         for (ConfigurationProperty<Template> templateProperty : templateProperties) {
             Template value = originalConfiguration.get(templateProperty);
