@@ -117,5 +117,8 @@
     <bean id="planTreeNodeXmlSerializerFactory" autowire="byName"
               class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlanTreeNodeXmlSerializerFactory"/>
 
+    <!-- Xml Post Processors -->
+    <bean id="templateXmlPostProcessor" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.TemplateXmlSerializerPostProcessor"/>
 
 </beans>
