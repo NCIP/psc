@@ -158,31 +158,8 @@ public class ImportTemplateService {
         for (Amendment amendment : amendments) {
             // If amendment already exists, we don't want to amend the study with it twice.
             if (amendment.getId() == null) {
-                for (Delta delta : amendment.getDeltas()) {
-                    // resolve node
-                    PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
-                    if (deltaNode != null) {
-                        delta.setNode(deltaNode);
-                    } else {
-                        throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
-                    }
-
-                    // resolve child nodes
-                    for (Object oChange : delta.getChanges()) {
-                        if (oChange instanceof ChildrenChange) {
-                            ChildrenChange change = (ChildrenChange) oChange;
-                            PlanTreeNode<?> nodeTemplate = change.getChild();
-
-                            // If node template is not null, element has yet to be persisted
-                            if (nodeTemplate != null) {
-                                PlanTreeNode<?> node = findRealNode(nodeTemplate);
-                                if (node != null) {
-                                    change.setChild(node);
-                                }
-                            }
-                        }
-                    }
-                }
+                resolveDeltaNodesAndChangeChildren(amendment);
+                
                 study.setDevelopmentAmendment(amendment);
                 study.setAmendment(amendment.getPreviousAmendment());
                 amendmentService.amend(study);
@@ -191,20 +168,32 @@ public class ImportTemplateService {
 
         // Resolve delta nodes and child nodes for development amendment
         if (development != null) {
-            for (Delta delta : development.getDeltas()) {
-                // resolve node
-                PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
-                if (deltaNode != null) {
-                    delta.setNode(deltaNode);
-                } else {
-                    throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
-                }
+            resolveDeltaNodesAndChangeChildren(development);
+        }
+        study.setDevelopmentAmendment(development);
+        studyService.save(study);
 
-                // resolve child nodes
-                for (Object oChange : delta.getChanges()) {
-                    if (oChange instanceof ChildrenChange) {
-                        ChildrenChange change = (ChildrenChange) oChange;
-                        PlanTreeNode<?> nodeTemplate = change.getChild();
+    }
+
+    private void resolveDeltaNodesAndChangeChildren(Amendment amendment) {
+        for (Delta delta : amendment.getDeltas()) {
+            // resolve node
+            PlanTreeNode<?> deltaNode = findRealNode(delta.getNode());
+            if (deltaNode != null) {
+                delta.setNode(deltaNode);
+            } else {
+                throw new IllegalStateException("Delta " + delta.getGridId() + " references unknown node " + delta.getNode().getGridId());
+            }
+
+            // resolve child nodes
+            for (Object oChange : delta.getChanges()) {
+                if (oChange instanceof ChildrenChange) {
+                    ChildrenChange change = (ChildrenChange) oChange;
+                    PlanTreeNode<?> nodeTemplate = change.getChild();
+
+                    // If nodeTemplate is not null, element has yet to be persisted (because we setChild in serializer).
+                    // So since we have a template for the node, we want to find the actual node.
+                    if (nodeTemplate != null) {
                         PlanTreeNode<?> node = findRealNode(nodeTemplate);
                         if (node != null) {
                             change.setChild(node);
@@ -213,9 +202,6 @@ public class ImportTemplateService {
                 }
             }
         }
-        study.setDevelopmentAmendment(development);
-        studyService.save(study);
-
     }
 
     /**
