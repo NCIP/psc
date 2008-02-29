@@ -10,7 +10,7 @@ SC.registerCurrentActivitiesUpdaters = function(href) {
         var handler = function() { SC.updateCurrentActivities(href) }
         $('toDate').observe('change', handler)
         $$('input.activity-type').each(function(input) {
-            input.observe('change', handler)
+            input.observe('click', handler)
         })
 
         var handler1 = function(evt) {
