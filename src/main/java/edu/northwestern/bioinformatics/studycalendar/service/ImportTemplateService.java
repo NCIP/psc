@@ -38,19 +38,7 @@ public class ImportTemplateService {
     public void readAndSaveTemplate(InputStream stream) {
         Study study = studyXmlSerializer.readDocument(stream);
 
-        // We do this so hibernate doesn't try to save the amendment
-        study.setAmendment(null);
-
-        // Check if development amendment is persisted and if it is, delete it
-        if (study.getDevelopmentAmendment() != null) {
-            String amendmentNaturalKey = study.getDevelopmentAmendment().getNaturalKey();
-            Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
-            if (dev != null) {
-                deleteAmendment(study.getDevelopmentAmendment());
-                study.setDevelopmentAmendment(null);
-                studyDao.save(study);
-            }
-        }
+        deleteDevelopmentAmendment(study);
 
         try {
             stream.reset();
@@ -63,27 +51,37 @@ public class ImportTemplateService {
     }
 
     public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
-
         if (existingStudy != null) {
-            // We do this so hibernate doesn't try to save the amendment
-            existingStudy.setAmendment(null);
-
-            // Check if development amendment is persisted and if it is, delete it
-            if (existingStudy.getDevelopmentAmendment() != null) {
-                String amendmentNaturalKey = existingStudy.getDevelopmentAmendment().getNaturalKey();
-                Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
-                if (dev != null) {
-                    deleteAmendment(existingStudy.getDevelopmentAmendment());
-                    existingStudy.setDevelopmentAmendment(null);
-                    studyDao.save(existingStudy);
-                }
-            }
+            deleteDevelopmentAmendment(existingStudy);
         }
 
         Study study = studyXmlSerializer.readDocument(stream);
 
         templatePostProcessing(study);
         return study;
+    }
+
+    /**
+     * This is needed because since the development amendment is changeable, we don't
+     * want to have to merge the changes with a newer version.  So our solution is to delete
+     * it and then de-serialize again.
+     * 
+     * @param existingStudy
+     */
+    private void deleteDevelopmentAmendment(Study existingStudy) {
+        // We do this so hibernate doesn't try to save the amendment
+        existingStudy.setAmendment(null);
+
+        // Check if development amendment is persisted and if it is, delete it
+        if (existingStudy.getDevelopmentAmendment() != null) {
+            String amendmentNaturalKey = existingStudy.getDevelopmentAmendment().getNaturalKey();
+            Amendment dev = amendmentDao.getByNaturalKey(amendmentNaturalKey);
+            if (dev != null) {
+                deleteAmendment(existingStudy.getDevelopmentAmendment());
+                existingStudy.setDevelopmentAmendment(null);
+                studyDao.save(existingStudy);
+            }
+        }
     }
 
     /**
