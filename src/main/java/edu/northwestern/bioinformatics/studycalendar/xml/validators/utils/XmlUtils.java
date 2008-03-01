@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.xml.utils;
+package edu.northwestern.bioinformatics.studycalendar.xml.validators.utils;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
