@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.service;
+package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
@@ -9,7 +9,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.xml.utils.XmlUtils;
 import static org.easymock.EasyMock.expect;
 
 import java.util.ArrayList;
@@ -17,9 +17,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class ImportTemplateServiceTest extends StudyCalendarTestCase {
-    private ImportTemplateService service;
-    private DaoFinder daoFinder;
+public class StudyXmlSerializerPreProcessorTest extends StudyCalendarTestCase {
+    private StudyXmlSerializerPreProcessor processor;
     private PeriodDao periodDao;
     private StudyDao studyDao;
     private PlannedActivityDao plannedActivityDao;
@@ -28,13 +27,14 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
     private ChangeDao changeDao;
     private DeltaDao deltaDao;
     private AmendmentDao amendmentDao;
+    private XmlUtils xmlUtils;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         registerMocks();
 
-        service = service();
+        processor = createProcessor();
     }
 
     public void testDeletePlannedActivities() {
@@ -49,7 +49,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         plannedActivityDao.delete(activity1);
         replayMocks();
 
-        service.deletePlannedActivities(activities);
+        processor.deletePlannedActivities(activities);
         verifyMocks();
 
         assertTrue("There should be no planned activities", activities.isEmpty());
@@ -67,7 +67,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         studySegmentDao.delete(segment1);
         replayMocks();
 
-        service.deleteStudySegments(segments);
+        processor.deleteStudySegments(segments);
         verifyMocks();
 
         assertTrue("There should be no study segments", segments.isEmpty());
@@ -85,7 +85,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         periodDao.delete(period1);
         replayMocks();
 
-        service.deletePeriods(periods);
+        processor.deletePeriods(periods);
         verifyMocks();
 
         assertTrue("There should be no periods", periods.isEmpty());
@@ -103,7 +103,7 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         epochDao.delete(epoch1);
         replayMocks();
 
-        service.deleteEpochs(epochs);
+        processor.deleteEpochs(epochs);
         verifyMocks();
 
         assertTrue("There should be no epochs", epochs.isEmpty());
@@ -126,15 +126,14 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
 
         deltaDao.delete(delta0);
         changeDao.delete(change0);
-        expect(daoFinder.findDao(Epoch.class)).andReturn((DomainObjectDao) epochDao);
-        expect(epochDao.getById(99)).andReturn(epoch);
+        expect(xmlUtils.findChangeChild(change0)).andReturn((PlanTreeNode)epoch);
         epochDao.delete(epoch);
 
         deltaDao.delete(delta1);
         changeDao.delete(change1);
         replayMocks();
 
-        service.deleteDeltas(deltas);
+        processor.deleteDeltas(deltas);
         verifyMocks();
 
         assertTrue("There should be no changes in delta0", delta0.getChanges().isEmpty());
@@ -148,15 +147,15 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         amendmentDao.delete(amendment);
         replayMocks();
 
-        service.deleteAmendment(amendment);
+        processor.deleteAmendment(amendment);
         verifyMocks();
     }
 
     ////// Helper Create Methods
     private void registerMocks() {
+        xmlUtils = registerMockFor(XmlUtils.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         changeDao = registerDaoMockFor(ChangeDao.class);
-        daoFinder = registerMockFor(DaoFinder.class);
         epochDao = registerDaoMockFor(EpochDao.class);
         deltaDao = registerDaoMockFor(DeltaDao.class);
         periodDao = registerDaoMockFor(PeriodDao.class);
@@ -165,13 +164,13 @@ public class ImportTemplateServiceTest extends StudyCalendarTestCase {
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
     }
 
-    private ImportTemplateService service() {
-        ImportTemplateService service = new ImportTemplateService();
+    private StudyXmlSerializerPreProcessor createProcessor() {
+        StudyXmlSerializerPreProcessor service = new StudyXmlSerializerPreProcessor();
+        service.setXmlUtils(xmlUtils);
         service.setStudyDao(studyDao);
         service.setEpochDao(epochDao);
         service.setDeltaDao(deltaDao);
         service.setChangeDao(changeDao);
-        service.setDaoFinder(daoFinder);
         service.setPeriodDao(periodDao);
         service.setAmendmentDao(amendmentDao);
         service.setStudySegmentDao(studySegmentDao);

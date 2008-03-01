@@ -17,7 +17,7 @@ import static org.easymock.EasyMock.expect;
  * @author John Dzak
  */
 public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCase {
-    private TemplateXmlSerializerPostProcessor processor;
+    private StudyXmlSerializerPostProcessor processor;
     private ActivityDao activityDao;
     private AmendmentService amendmentService;
     private DaoFinder daoFinder;
@@ -43,7 +43,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
         amendmentService = registerMockFor(AmendmentService.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
 
-        processor = new TemplateXmlSerializerPostProcessor();
+        processor = new StudyXmlSerializerPostProcessor();
         processor.setStudyDao(studyDao);
         processor.setDaoFinder(daoFinder);
         processor.setSourceDao(sourceDao);
