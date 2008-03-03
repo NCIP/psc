@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="MonitorSample" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="6732a446-c852-4523-962d-88389c48b895"/>
+  <development-amendment name="[Original]" date="2008-03-03" mandatory="true">
+    <planned-calendar-delta id="ac94e9e3-139a-4f9d-ac1d-afc33afcedc1" node-id="6732a446-c852-4523-962d-88389c48b895">
+      <add id="0c3dd5c2-1fe7-466a-9fe5-6c0210caf998" index="0">
+        <epoch id="9a800d55-7a1c-4c0b-8903-b6f41ac85331" name="During treatment">
+          <study-segment id="71783ae9-a7f2-4169-9f49-e77adaa91cf2" name="During treatment">
+            <period id="23d61bed-6abf-46b1-b73e-f96dd5c0c4ac" name="Tests" repetitions="12" start-day="1" duration-quantity="30" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="af5e98ca-09c6-41bd-bb7e-baa4b31cc2c1" index="1">
+        <epoch id="847413c9-215c-43a1-8a02-abe2c1707380" name="Post treatment">
+          <study-segment id="0131842f-80f0-432a-8463-c4fd2c706b1c" name="Short term">
+            <period id="8ca90ed5-e917-47c4-8141-5eca05c008e0" name="Short term" repetitions="4" start-day="1" duration-quantity="90" duration-unit="day"/>
+          </study-segment>
+          <study-segment id="51640fb4-094e-42e8-b221-c85dd1f20167" name="Long term">
+            <period id="95d73cbf-3af7-4d29-817c-2e8a176312b2" name="Long term" repetitions="5" start-day="1" duration-quantity="365" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </development-amendment>
+</study>

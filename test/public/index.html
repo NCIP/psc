@@ -46,80 +46,132 @@
     </style>
 </head>
 <body>
-<laf:box title="Patient Study Calendar Phase II - Public Test Site">
-    <laf:division>
-<!--<h1>Patient Study Calendar - Public Test Site</h1>-->
 
-<h2>Welcome to the public test instance of Patient Study Calendar Phase II.</h2>
-<p>
-    Here you can test PSC 2.0, released 2/27/2008.
-</p>
+<h1>Patient Study Calendar Phase II: Public test site</h1>
 
-<p>
-    Please note:  This is a public instance. You may encounter sample study calendars created by other users.
-    Other users will be able to see data that you enter. Please do not enter any confidential information.
-</p>
+<!-- ><div class="box" id="instructions">   -->
 
-<h2>If you are new to PSC, we recommend that you begin with the following resources:</h2>
+<!-- header -->
+<div class="header">
+    <div class="background-L">
+        <div class="background-R">
+            <h2>Testing suggestions</h2>
+        </div>
+    </div>
+</div>
+<!-- end header -->
 
-<ol>
-	<li><a href="http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/PhaseII/Transition/Training/PSC-ApplicationOverview.ppt?cvsroot=studycalendar">Application Overview (in Power Point format)</a></li>
-	<li><a href="http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/PhaseII/Construction/Iteration4/PSC_End_User_Guide.doc?cvsroot=studycalendar">End User Guide (in Word format)</a></li>
-	<li><a href="insert link to training module here">Training Module (requires Flash)</li>
-</ol>	
+<!-- inner border -->
+<div class="border-T"> <div class="border-L"> <div class="border-R"> <div class="border-B">
+<div class="border-TL"> <div class="border-TR"> <div class="border-BL"> <div class="border-BR">
+<div class="interior">
+<div class="division">
 
-<p class="demo-link">
-    Let the testing begin: <a href="<c:url value="/public/login"/>" target="_blank">Public Test Site - start
-    page</a>
-</p>
+    <div class="content">
 
-<h2>To begin testing PSC:</h2>
+        <p>
+            Thank you for testing the Patient Study Calendar.
+            The software you are about to test is PSC 2.0, released 2/27/2008.
+        </p>
 
-<ol>
-    <li>Login using <kbd>superuser</kbd> as both the username and password.</li>
-    <li>You will have access to all roles and data within PSC.</li>
-    <li>Please send feedback or reports of any problems that you encounter to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
-</ol>
+        <p>
+            Two considerations before you begin:
+        </p>
+        <ol>
+            <li>This is a public instance. You may encounter
+                sample study calendars created by other users.
+                Other users will be able to see data that you
+                enter. Please do not enter any confidential
+                information.
+            </li>
+            <li>With each release, we may delete information
+                from our database in order to prevent the site
+                from getting cluttered with incomplete templates
+                and abandoned calendars.
+            </li>
+        </ol>
 
-<h2>For organizations that are adopting PSC, we are making available a list of activities and some sample templates.</h2>
+    </div>
 
-<h3>To import the activities into your instance of PSC:</h3>
+    <h3>If you are new to PSC, we recommend that you begin with the following resources:</h3>
 
-<ol>
-	<li>Download the XML file <a href="http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/PhaseII/Transition/NU_activities.xml?cvsroot=studycalendar">here.</a></li>
-	<li>While logged in to PSC as a Study Coordinator, create or edit a template and click on a period in order to add activities to it.</li>
-	<li>Click the "Import activities from xml" link.</li>
-	<li>Browse to the XML file that you downloaded in step 1 and click "Import."</li>
-</ol>
-	
-<h3>To import a template into your instance of PSC:</h3>
+    <div class="content">
+        <ol>
+            <li><a href="http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/PhaseII/Transition/Training/PSC-ApplicationOverview.ppt?cvsroot=studycalendar">Application Overview (in Power Point format)</a></li>
+            <li><a href="http://gforge.nci.nih.gov/plugins/scmcvs/cvsweb.php/studycalendar/PhaseII/Construction/Iteration4/PSC_End_User_Guide.doc?cvsroot=studycalendar">End User Guide (in Word format)</a></li>
+            <li><a href="PSC-TrainingModule.htm">Training Module (requires Flash)</a></li>            
+        </ol>
+    </div>
 
-<ol>
-	<li>Download one of the template files listed below.</li>
-	<li>While logged in to PSC as a Study Coordinator, click the "Calendars" tab.</li>
-	<li>Click the "Import an existing template" link.</li>
-	<li>Browse to the XML file that you downloaded in step 1 and click "Import."</li>
-	<li>You may now modify the template to suit your needs, add activities, and release the template for use.</li> 
-</ol>	
+    <h3>To begin testing PSC:</h3>
 
-<h4>Available templates:</h4>
-	
-<ol>
-    <li><a href="link to RegimenSample">Study comparing two treatment regimens</a></li>
-    <li><a href="link to TransplantSample">Study involving a transplant</a></li>
-    <li><a href="link to MonitorSample">Study that watches for certain outcomes during treatment</a></li>
-</ol>	
+    <div class="content">
+        <ol>
+            <li>Login using <kbd>superuser</kbd> as both the username and password.</li>
+		    <li>You will have access to all roles and data within PSC.</li>
+		    <li>Please send feedback or reports of any problems that you encounter to <a href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a></li>
+        </ol>
 
-<p class="demo-link">
-    In case you missed the first one:
-    <a href="<c:url value="/public/login"/>" target="_blank">Public Test Site - start page</a>
-</p>
+        <p class="demo-link">
+            Let the testing begin:
+            <a href="pages/dashboard" target="_blank">Public Test Site - start page</a>
+        </p>
 
-<p>
-    Thank you for your participation. Please send feedback to <a
-    href="mailto:s-whitaker@northwestern.edu">s-whitaker@northwestern.edu</a>.
-</p>
-    </laf:division>
-</laf:box>
+    </div>
+
+
+	<!-- header -->
+	<div class="header">
+	    <div class="background-L">
+	        <div class="background-R">
+	            <h2>For organizations that are adopting PSC, we are making available a list of activities and some sample templates.</h2>
+	        </div>
+	    </div>
+	</div>
+	<!-- end header -->
+
+    <h3>To import the activities into your instance of PSC:</h3>
+
+    <div class="content">
+        <ol>
+			<li>Download the XML file <a href="routine_actionsv2.xml">here.</a></li>
+			<li>While logged in to PSC as a Study Coordinator, create or edit a template and click on a period in order to add activities to it.</li>
+			<li>Click the "Import activities from xml" link.</li>
+			<li>Browse to the XML file that you downloaded in step 1 and click "Import."</li>
+		</ol>
+    </div>
+
+    <h3>To import a template into your instance of PSC:</h3>
+
+    <div class="content">
+		<ol>
+			<li>Download one of the template files listed below.</li>
+			<li>While logged in to PSC as a Study Coordinator, click the "Calendars" tab.</li>
+			<li>Click the "Import an existing template" link.</li>
+			<li>Browse to the XML file that you downloaded in step 1 and click "Import."</li>
+			<li>You may now modify the template to suit your needs, add activities, and release the template for use.</li> 
+		</ol>
+    </div>
+
+    <h4>Available templates:</h4>
+
+    <div class="content">
+		<ol>
+		    <li><a href="RegimenSample.xml">Study comparing two treatment regimens</a></li>
+		    <li><a href="TransplantSample.xml">Study involving a transplant</a></li>
+		    <li><a href="MonitorSample.xml">Study that watches for certain outcomes during treatment</a></li>
+		</ol>
+    </div>
+
+
+</div>
+</div>
+</div> </div> </div> </div>
+</div> </div> </div> </div>
+<!-- end inner border -->
+<!-- ></div> -->
+<!-- end box -->
+
+
 </body>
-</html>
+</html>  

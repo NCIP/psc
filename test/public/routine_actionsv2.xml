@@ -1,0 +1,1048 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sources xmlns="http://bioinformatics.northwestern.edu/ns/psc"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <source name="Northwestern University">
+    <activity name="13-Cis Retinoic Acid" type-id="2" code="1" />
+    <activity name="506U78" type-id="2" code="2" />
+    <activity name="6-Mercaptopurine" type-id="2" code="3" />
+    <activity name="6-thioguanine" type-id="2" code="4" />
+    <activity name="9-Nitro-camptothecin" type-id="2" code="5" />
+    <activity name="ABT-751" type-id="2" code="6" />
+    <activity name="ALVAC" type-id="2" code="7" />
+    <activity name="ALVAC-CEA/B7.1" type-id="2" code="8" />
+    <activity name="AT-101" type-id="2" code="9" />
+    <activity name="Acyclovir" type-id="2" code="10" />
+    <activity name="Adriamycin" type-id="2" code="11" />
+    <activity name="Allopurinol" type-id="2" code="12" />
+    <activity name="Allovectin-7" type-id="2" code="13" />
+    <activity name="Amifostine" type-id="2" code="14" />
+    <activity name="Aminosyn II 7%" type-id="2" code="15" />
+    <activity name="Amonafide" type-id="2" code="16" />
+    <activity name="Amonofide" type-id="2" code="17" />
+    <activity name="Aprepitant" type-id="2" code="18" />
+    <activity name="Arsenic Trioxide" type-id="2" code="19" />
+    <activity name="Ascorbic Acid" type-id="2" code="20" />
+    <activity name="Aspirin" type-id="2" code="21" />
+    <activity name="Atra" type-id="2" code="22" />
+    <activity name="BMS-247550" type-id="2" code="23" />
+    <activity name="Bactrim" type-id="2" code="24" />
+    <activity name="Benadryl" type-id="2" code="25" />
+    <activity name="Bevacizumab" type-id="2" code="26" />
+    <activity name="Biafine" type-id="2" code="27" />
+    <activity name="Bleomycin" type-id="2" code="28" />
+    <activity name="Blinded Drug Kit" type-id="2" code="29" />
+    <activity name="Busulfan" type-id="2" code="30" />
+    <activity name="CAM-9006" type-id="2" code="31" />
+    <activity name="CC-5013" type-id="2" code="32" />
+    <activity name="CCl-779" type-id="2" code="33" />
+    <activity name="CG53135-05" type-id="2" code="34" />
+    <activity name="CI-1042" type-id="2" code="35" />
+    <activity name="CMA 676" type-id="2" code="36" />
+    <activity name="CPT-11" type-id="2" code="37" />
+    <activity name="Calcitriol" type-id="2" code="38" />
+    <activity name="Campath-1H" type-id="2" code="39" />
+    <activity name="Camptosar" type-id="2" code="40" />
+    <activity name="Capecitabine" type-id="2" code="41" />
+    <activity name="Captopril " type-id="2" code="42" />
+    <activity name="Carboplatin" type-id="2" code="43" />
+    <activity name="Carmustine" type-id="2" code="44" />
+    <activity name="Casodex" type-id="2" code="45" />
+    <activity name="Celebrex" type-id="2" code="46" />
+    <activity name="Celecoxib" type-id="2" code="47" />
+    <activity name="Cetuximab" type-id="2" code="48" />
+    <activity name="Ciprofloxacin" type-id="2" code="49" />
+    <activity name="Cisplatin" type-id="2" code="50" />
+    <activity name="Compazine" type-id="2" code="51" />
+    <activity name="Coumadin" type-id="2" code="52" />
+    <activity name="CpG7909" type-id="2" code="53" />
+    <activity name="Cyclophosphamide" type-id="2" code="54" />
+    <activity name="Cyclosporine" type-id="2" code="55" />
+    <activity name="Cytarabine" type-id="2" code="56" />
+    <activity name="DABIL2" type-id="2" code="57" />
+    <activity name="Dacarbazine" type-id="2" code="58" />
+    <activity name="Daunorubicin" type-id="2" code="59" />
+    <activity name="Daunoxome" type-id="2" code="60" />
+    <activity name="Decitabine" type-id="2" code="61" />
+    <activity name="Depsipeptide" type-id="2" code="62" />
+    <activity name="Dexamethasone" type-id="2" code="63" />
+    <activity name="Docetaxel" type-id="2" code="64" />
+    <activity name="Doxil" type-id="2" code="65" />
+    <activity name="Doxorubicin" type-id="2" code="66" />
+    <activity name="Drug Dispensing/ Drug Accountability" type-id="2" code="67" />
+    <activity name="E7389" type-id="2" code="68" />
+    <activity name="E7389 " type-id="2" code="69" />
+    <activity name="EPO-906" type-id="2" code="70" />
+    <activity name="EPO906" type-id="2" code="71" />
+    <activity name="Echinomycin" type-id="2" code="72" />
+    <activity name="Epirubicin" type-id="2" code="73" />
+    <activity name="Epothilone" type-id="2" code="74" />
+    <activity name="Erlotinib" type-id="2" code="75" />
+    <activity name="Erythropoietin" type-id="2" code="76" />
+    <activity name="Estramustine" type-id="2" code="77" />
+    <activity name="Etoposide" type-id="2" code="78" />
+    <activity name="FMdC" type-id="2" code="79" />
+    <activity name="FUDR" type-id="2" code="80" />
+    <activity name="Faslodex" type-id="2" code="81" />
+    <activity name="FavId vaccine" type-id="2" code="82" />
+    <activity name="Filgrasim" type-id="2" code="83" />
+    <activity name="Finasteride" type-id="2" code="84" />
+    <activity name="Flecainide" type-id="2" code="85" />
+    <activity name="Flt3 Ligand" type-id="2" code="86" />
+    <activity name="Fludarabine" type-id="2" code="87" />
+    <activity name="Fludrocortisone" type-id="2" code="88" />
+    <activity name="Flutamide" type-id="2" code="89" />
+    <activity name="Folic Acid" type-id="2" code="90" />
+    <activity name="GM-CSF" type-id="2" code="91" />
+    <activity name="Gemcitabine" type-id="2" code="92" />
+    <activity name="Genasense" type-id="2" code="93" />
+    <activity name="Genistein" type-id="2" code="94" />
+    <activity name="Gleevac" type-id="2" code="95" />
+    <activity name="HRT" type-id="2" code="96" />
+    <activity name="Halotestin" type-id="2" code="97" />
+    <activity name="Herceptin" type-id="2" code="98" />
+    <activity name="HumaxCD4" type-id="2" code="99" />
+    <activity name="Hydrocortisone" type-id="2" code="100" />
+    <activity name="Hydroxyruea" type-id="2" code="101" />
+    <activity name="I-131" type-id="2" code="102" />
+    <activity name="IDEC 114" type-id="2" code="103" />
+    <activity name="IDEC 114-20" type-id="2" code="104" />
+    <activity name="IL-11" type-id="2" code="105" />
+    <activity name="IL-12" type-id="2" code="106" />
+    <activity name="IL-13" type-id="2" code="107" />
+    <activity name="IL-2" type-id="2" code="108" />
+    <activity name="IL-4" type-id="2" code="109" />
+    <activity name="IMOxine" type-id="2" code="110" />
+    <activity name="Id vaccine" type-id="2" code="111" />
+    <activity name="Id-KLH vaccine" type-id="2" code="112" />
+    <activity name="Idarubicin" type-id="2" code="113" />
+    <activity name="Ifosfamide" type-id="2" code="114" />
+    <activity name="Immunol" type-id="2" code="115" />
+    <activity name="Indium" type-id="2" code="116" />
+    <activity name="Interferon" type-id="2" code="117" />
+    <activity name="IntraDose MPI5010" type-id="2" code="118" />
+    <activity name="Intratecal" type-id="2" code="119" />
+    <activity name="Iressa" type-id="2" code="120" />
+    <activity name="Irofulven" type-id="2" code="121" />
+    <activity name="Iron Supplement" type-id="2" code="122" />
+    <activity name="Ketoconazole" type-id="2" code="123" />
+    <activity name="L-778123" type-id="2" code="124" />
+    <activity name="L-Asparaginase" type-id="2" code="125" />
+    <activity name="L-asparaginase" type-id="2" code="126" />
+    <activity name="LY335979" type-id="2" code="127" />
+    <activity name="Leridistim" type-id="2" code="128" />
+    <activity name="Leucovorin" type-id="2" code="129" />
+    <activity name="Levamisole" type-id="2" code="130" />
+    <activity name="Liposomal Daunorubicin" type-id="2" code="131" />
+    <activity name="Lomustine" type-id="2" code="132" />
+    <activity name="Lorazepam" type-id="2" code="133" />
+    <activity name="Lupron" type-id="2" code="134" />
+    <activity name="Marimistat" type-id="2" code="135" />
+    <activity name="Melphalan" type-id="2" code="136" />
+    <activity name="Menogaril" type-id="2" code="137" />
+    <activity name="Merbarone" type-id="2" code="138" />
+    <activity name="Mesna" type-id="2" code="139" />
+    <activity name="Methotrexate" type-id="2" code="140" />
+    <activity name="Methylprednisolone" type-id="2" code="141" />
+    <activity name="Mexiletine" type-id="2" code="142" />
+    <activity name="Misoprostol" type-id="2" code="143" />
+    <activity name="Mitomycin" type-id="2" code="144" />
+    <activity name="Mitoxantrone" type-id="2" code="145" />
+    <activity name="MoAb 17-1A" type-id="2" code="146" />
+    <activity name="Motexafin Gadolinium " type-id="2" code="147" />
+    <activity name="Motexafin Gadolinium (MGd)" type-id="2" code="148" />
+    <activity name="Mycophenolate mofetil" type-id="2" code="149" />
+    <activity name="Mylotarg" type-id="2" code="150" />
+    <activity name="NX211" type-id="2" code="151" />
+    <activity name="Navelbine" type-id="2" code="152" />
+    <activity name="Nitrogen Mustard" type-id="2" code="153" />
+    <activity name="OctreoTher" type-id="2" code="154" />
+    <activity name="Octreotide" type-id="2" code="155" />
+    <activity name="Oltipraz" type-id="2" code="156" />
+    <activity name="Ondansetron" type-id="2" code="157" />
+    <activity name="Oral 5-FU/Eniluracil" type-id="2" code="158" />
+    <activity name="Oral CPT-11" type-id="2" code="159" />
+    <activity name="Oxaliplatin" type-id="2" code="160" />
+    <activity name="Oxandrolone" type-id="2" code="161" />
+    <activity name="PPS" type-id="2" code="162" />
+    <activity name="PROSTVAC-F" type-id="2" code="163" />
+    <activity name="PROSTVAC-V" type-id="2" code="164" />
+    <activity name="PS-341" type-id="2" code="165" />
+    <activity name="Paclitaxel" type-id="2" code="166" />
+    <activity name="Panretin" type-id="2" code="167" />
+    <activity name="Pemetrexed" type-id="2" code="168" />
+    <activity name="Pentostatin" type-id="2" code="169" />
+    <activity name="Peridex" type-id="2" code="170" />
+    <activity name="Perifosine" type-id="2" code="171" />
+    <activity name="Phenytoin" type-id="2" code="172" />
+    <activity name="Piritrexim" type-id="2" code="173" />
+    <activity name="Piroxantrone" type-id="2" code="174" />
+    <activity name="Placebo" type-id="2" code="175" />
+    <activity name="Prednisone" type-id="2" code="176" />
+    <activity name="Procarbazine" type-id="2" code="177" />
+    <activity name="Prochlorperazine" type-id="2" code="178" />
+    <activity name="Proleukin" type-id="2" code="179" />
+    <activity name="Quadramet" type-id="2" code="180" />
+    <activity name="R115777" type-id="2" code="181" />
+    <activity name="RAD001" type-id="2" code="182" />
+    <activity name="RSR13" type-id="2" code="183" />
+    <activity name="Raloxifene" type-id="2" code="184" />
+    <activity name="Ranitidine" type-id="2" code="185" />
+    <activity name="Revamid" type-id="2" code="186" />
+    <activity name="Revimid" type-id="2" code="187" />
+    <activity name="Revimid (CC-5013)" type-id="2" code="188" />
+    <activity name="Ritonavir" type-id="2" code="189" />
+    <activity name="Rituxan" type-id="2" code="190" />
+    <activity name="Rituximab" type-id="2" code="191" />
+    <activity name="S-1" type-id="2" code="192" />
+    <activity name="SAHA" type-id="2" code="193" />
+    <activity name="SSKI" type-id="2" code="194" />
+    <activity name="STI571" type-id="2" code="195" />
+    <activity name="SU101" type-id="2" code="196" />
+    <activity name="SU5416" type-id="2" code="197" />
+    <activity name="SanOrg34006 " type-id="2" code="198" />
+    <activity name="Sandostatin LAR/Placebo" type-id="2" code="199" />
+    <activity name="Serostim" type-id="2" code="200" />
+    <activity name="Solumedrol" type-id="2" code="201" />
+    <activity name="Sucralfate" type-id="2" code="202" />
+    <activity name="Sulfamethoxazole" type-id="2" code="203" />
+    <activity name="Suramin" type-id="2" code="204" />
+    <activity name="Sutent" type-id="2" code="205" />
+    <activity name="TPA" type-id="2" code="206" />
+    <activity name="Tacrolimus" type-id="2" code="207" />
+    <activity name="Tallimustine" type-id="2" code="208" />
+    <activity name="Tamoxifen" type-id="2" code="209" />
+    <activity name="Targretin" type-id="2" code="210" />
+    <activity name="Taxol" type-id="2" code="211" />
+    <activity name="Taxoprexin" type-id="2" code="212" />
+    <activity name="Taxotere" type-id="2" code="213" />
+    <activity name="Temozolomide" type-id="2" code="214" />
+    <activity name="Teniposide" type-id="2" code="215" />
+    <activity name="Thalidamide" type-id="2" code="216" />
+    <activity name="Thiotepa" type-id="2" code="217" />
+    <activity name="Thymitaq" type-id="2" code="218" />
+    <activity name="Tipifarnib" type-id="2" code="219" />
+    <activity name="Tomudex" type-id="2" code="220" />
+    <activity name="Topotecan" type-id="2" code="221" />
+    <activity name="Tretinoin" type-id="2" code="222" />
+    <activity name="Trimetrexate" type-id="2" code="223" />
+    <activity name="Troxatyl" type-id="2" code="224" />
+    <activity name="Vaccine" type-id="2" code="225" />
+    <activity name="Valproic Acid" type-id="2" code="226" />
+    <activity name="Velban" type-id="2" code="227" />
+    <activity name="Vinblastine" type-id="2" code="228" />
+    <activity name="Vincristine" type-id="2" code="229" />
+    <activity name="Vincristine " type-id="2" code="230" />
+    <activity name="Vinflunine" type-id="2" code="231" />
+    <activity name="Vinorelbine" type-id="2" code="232" />
+    <activity name="Vitamin B12" type-id="2" code="233" />
+    <activity name="Vitamin D" type-id="2" code="234" />
+    <activity name="Yttrium" type-id="2" code="235" />
+    <activity name="Zinecard" type-id="2" code="236" />
+    <activity name="Zoladex" type-id="2" code="237" />
+    <activity name="atrasentan" type-id="2" code="238" />
+    <activity name="calcium gluconate" type-id="2" code="239" />
+    <activity name="cetuximab" type-id="2" code="240" />
+    <activity name="furosemide" type-id="2" code="241" />
+    <activity name="hCRF" type-id="2" code="242" />
+    <activity name="huHMFG1" type-id="2" code="243" />
+    <activity name="l-THYROXINE" type-id="2" code="244" />
+    <activity name="niacin" type-id="2" code="245" />
+    <activity name="urokinase" type-id="2" code="246" />
+    <activity name="11-Deoxycortisol (Compound S)" type-id="3" code="247" />
+    <activity name="13-cRA Level" type-id="3" code="248" />
+    <activity name="17 Hydroxyprogesterone" type-id="3" code="249" />
+    <activity name="17 Ketosteroids" type-id="3" code="250" />
+    <activity name="17 OH Corticosteroids" type-id="3" code="251" />
+    <activity name="24 hr urine, creatinine" type-id="3" code="252" />
+    <activity name="24 hr urine, protein electrophoresis" type-id="3" code="253" />
+    <activity name="24 hr urine, total protein" type-id="3" code="254" />
+    <activity name="5 Nucleotidase" type-id="3" code="255" />
+    <activity name="5-HIAA (5-Hydroxy-Indole-Acetic-Acid)" type-id="3" code="256" />
+    <activity name="AABB" type-id="3" code="257" />
+    <activity name="ABO Type" type-id="3" code="258" />
+    <activity name="ACTH Adrenocorticotropic Hormone" type-id="3" code="259" />
+    <activity name="AFP Estriol HCG (Quant)" type-id="3" code="260" />
+    <activity name="AFP Panel (OB)" type-id="3" code="261" />
+    <activity name="ALT (Alanine Aminotransferase, SGPT)" type-id="3" code="262" />
+    <activity name="ANA 8 Panel" type-id="3" code="263" />
+    <activity name="ANA Titer" type-id="3" code="264" />
+    <activity name="ANCA-EIA" type-id="3" code="265" />
+    <activity name="APC Resistance" type-id="3" code="266" />
+    <activity name="AST" type-id="3" code="267" />
+    <activity name="Acetaminophen" type-id="3" code="268" />
+    <activity name="Acetone (Ketones)" type-id="3" code="269" />
+    <activity name="Acetylcholine Receptor Ab" type-id="3" code="270" />
+    <activity name="Acid Fast Bacteria (AFB)" type-id="3" code="271" />
+    <activity name="Acid Phosphatase, Prostatic" type-id="3" code="272" />
+    <activity name="Activated Protein C Resistance" type-id="3" code="273" />
+    <activity name="Adenovirus" type-id="3" code="274" />
+    <activity name="Adult Nutritional Panel" type-id="3" code="275" />
+    <activity name="Albumin" type-id="3" code="276" />
+    <activity name="Alcohol" type-id="3" code="277" />
+    <activity name="Aldolase" type-id="3" code="278" />
+    <activity name="Aldosterone" type-id="3" code="279" />
+    <activity name="Alkaline Phosphatase" type-id="3" code="280" />
+    <activity name="Alpha-1-Antritrypsin" type-id="3" code="281" />
+    <activity name="Alpha-2 Antiplasmin" type-id="3" code="282" />
+    <activity name="Alpha-Fetoprotein" type-id="3" code="283" />
+    <activity name="Aluminum" type-id="3" code="284" />
+    <activity name="Amakacin" type-id="3" code="285" />
+    <activity name="Amaxapine" type-id="3" code="286" />
+    <activity name="Amiodarone" type-id="3" code="287" />
+    <activity name="Amitriptyline" type-id="3" code="288" />
+    <activity name="Ammonia (NH3)" type-id="3" code="289" />
+    <activity name="Amniotic Fluid Scan, Delta O.D." type-id="3" code="290" />
+    <activity name="Amniotic Fluid, L/S Ratio" type-id="3" code="291" />
+    <activity name="Amniotic Fluid, Phosphotidyl Glycerol" type-id="3" code="292" />
+    <activity name="Amoxapine" type-id="3" code="293" />
+    <activity name="Amphetamine" type-id="3" code="294" />
+    <activity name="Amylase" type-id="3" code="295" />
+    <activity name="Anaerobe Culture" type-id="3" code="296" />
+    <activity name="Analyzer" type-id="3" code="297" />
+    <activity name="Angiotensin Converting Enzyme (CSF)" type-id="3" code="298" />
+    <activity name="Anti- Microsomal Antibodies" type-id="3" code="299" />
+    <activity name="Anti-DNA Antibody" type-id="3" code="300" />
+    <activity name="Anti-DNAss Antibody (single stranded)" type-id="3" code="301" />
+    <activity name="Anti-Mitochondrial Antibodies" type-id="3" code="302" />
+    <activity name="Anti-Nuclear Antibody (ANA)" type-id="3" code="303" />
+    <activity name="Anti-Parietal Cell Antibody" type-id="3" code="304" />
+    <activity name="Anti-Phospholipid Antibody" type-id="3" code="305" />
+    <activity name="Anti-SSB" type-id="3" code="306" />
+    <activity name="Anti-Smooth Muscle Antibodies" type-id="3" code="307" />
+    <activity name="Anti-Streptolysin O Titer (ASO)" type-id="3" code="308" />
+    <activity name="Anti-Xa Activity" type-id="3" code="309" />
+    <activity name="Anti-cardiolipin Antibody" type-id="3" code="310" />
+    <activity name="Anti-ds-DNA" type-id="3" code="311" />
+    <activity name="Anti-mitochondrial antibodies" type-id="3" code="312" />
+    <activity name="Antibiotic Level" type-id="3" code="313" />
+    <activity name="Antibody Identification" type-id="3" code="314" />
+    <activity name="Antibody Screen" type-id="3" code="315" />
+    <activity name="Antibody Tiration" type-id="3" code="316" />
+    <activity name="Anticardiolipin antibody" type-id="3" code="317" />
+    <activity name="Antihyroglobulin" type-id="3" code="318" />
+    <activity name="Antimicrobial Agent Susceptibility" type-id="3" code="319" />
+    <activity name="Antimicrobial Susceptibilities" type-id="3" code="320" />
+    <activity name="Antiplasmin" type-id="3" code="321" />
+    <activity name="Antithrombin III Activity" type-id="3" code="322" />
+    <activity name="Apheresis" type-id="3" code="323" />
+    <activity name="Arthropod I.D." type-id="3" code="324" />
+    <activity name="Autoimmune Hemolytic Anemia (AHA)" type-id="3" code="325" />
+    <activity name="Autologous Blood, transfusion orders" type-id="3" code="326" />
+    <activity name="B12" type-id="3" code="327" />
+    <activity name="BCR Gene Rearrangement" type-id="3" code="328" />
+    <activity name="BRCA mutation" type-id="3" code="329" />
+    <activity name="BUN" type-id="3" code="330" />
+    <activity name="Barbituates" type-id="3" code="331" />
+    <activity name="Basic Chemistry Panel" type-id="3" code="332" />
+    <activity name="Benzodiazepine Metabolites" type-id="3" code="333" />
+    <activity name="Beta-2-Microglobulin" type-id="3" code="334" />
+    <activity name="Bicarbonate (CO2)" type-id="3" code="335" />
+    <activity name="Bilirubin, Cord" type-id="3" code="336" />
+    <activity name="Bilirubin, Direct" type-id="3" code="337" />
+    <activity name="Bilirubin, Total" type-id="3" code="338" />
+    <activity name="Bilirubin, indirect" type-id="3" code="339" />
+    <activity name="Biomarkers" type-id="3" code="340" />
+    <activity name="Biopsy, Tissue" type-id="3" code="341" />
+    <activity name="Bladder Irrigation" type-id="3" code="342" />
+    <activity name="Bleeding Time" type-id="3" code="343" />
+    <activity name="Blood Culture" type-id="3" code="344" />
+    <activity name="Blood ParasiteS" type-id="3" code="345" />
+    <activity name="Blood Smear" type-id="3" code="346" />
+    <activity name="Blood Tests" type-id="3" code="347" />
+    <activity name="Blood Type, ABO/Rh" type-id="3" code="348" />
+    <activity name="Body Fluid Culture" type-id="3" code="349" />
+    <activity name="Bone Marrow Biopsy" type-id="3" code="350" />
+    <activity name="Bone Marrow Cultures" type-id="3" code="351" />
+    <activity name="C-MYC Gene Arrangement" type-id="3" code="352" />
+    <activity name="C-Peptide" type-id="3" code="353" />
+    <activity name="C-Reactive Protein" type-id="3" code="354" />
+    <activity name="C. Difficile Culture and Toxin" type-id="3" code="355" />
+    <activity name="CA 125 (Cancer Antigen 125)" type-id="3" code="356" />
+    <activity name="CA125" type-id="3" code="357" />
+    <activity name="CA19-9" type-id="3" code="358" />
+    <activity name="CA27.29" type-id="3" code="359" />
+    <activity name="CBC" type-id="3" code="360" />
+    <activity name="CBC and Manual Differential" type-id="3" code="361" />
+    <activity name="CBC w Diff" type-id="3" code="362" />
+    <activity name="CBC w/Platelet &amp; Diff. TO HOSPITAL" type-id="3" code="363" />
+    <activity name="CBC/Platelet" type-id="3" code="364" />
+    <activity name="CBC/Platelet/Auto Differential" type-id="3" code="365" />
+    <activity name="CBC/Plt/Diff  to HOSPITAL &amp; CLINIC" type-id="3" code="366" />
+    <activity name="CD 4 &amp; CD 8 counts" type-id="3" code="367" />
+    <activity name="CD19" type-id="3" code="368" />
+    <activity name="CD34+ Enumeration" type-id="3" code="369" />
+    <activity name="CD4 Count" type-id="3" code="370" />
+    <activity name="CH50 (Hemolytic Complement Titer)" type-id="3" code="371" />
+    <activity name="CK (Creatine Kinase CPK)" type-id="3" code="372" />
+    <activity name="CMV Antibody" type-id="3" code="373" />
+    <activity name="CMV Culture" type-id="3" code="374" />
+    <activity name="CMV Negative Blood" type-id="3" code="375" />
+    <activity name="CPK" type-id="3" code="376" />
+    <activity name="CSF Culture" type-id="3" code="377" />
+    <activity name="CSF IgG/ Albumin" type-id="3" code="378" />
+    <activity name="CSF-IgG Synthesis" type-id="3" code="379" />
+    <activity name="Calcitonin" type-id="3" code="380" />
+    <activity name="Calcium (Total)" type-id="3" code="381" />
+    <activity name="Calcium, Ionized" type-id="3" code="382" />
+    <activity name="Calculus (Stone) Analysis" type-id="3" code="383" />
+    <activity name="Cannabinoid" type-id="3" code="384" />
+    <activity name="Carbamazepine (Tegretol)" type-id="3" code="385" />
+    <activity name="Carbon Dioxide" type-id="3" code="386" />
+    <activity name="Carcinoembryonic Antigen (CEA)" type-id="3" code="387" />
+    <activity name="Cardiac Enzyme Chemistry Panel" type-id="3" code="388" />
+    <activity name="Catecholamines, Fractionated" type-id="3" code="389" />
+    <activity name="Catheter Tips, IV culture" type-id="3" code="390" />
+    <activity name="Cell Count with Differential" type-id="3" code="391" />
+    <activity name="Cellular immune response" type-id="3" code="392" />
+    <activity name="Ceruloplasmin" type-id="3" code="393" />
+    <activity name="Chlamydia Culture" type-id="3" code="394" />
+    <activity name="Chloride" type-id="3" code="395" />
+    <activity name="Chloride, CSF" type-id="3" code="396" />
+    <activity name="Chlorpromazine" type-id="3" code="397" />
+    <activity name="Cholesterol" type-id="3" code="398" />
+    <activity name="Chromosome Study, Blood" type-id="3" code="399" />
+    <activity name="Cimetidine" type-id="3" code="400" />
+    <activity name="Circulating Anticoagulant" type-id="3" code="401" />
+    <activity name="Clostridium difficile" type-id="3" code="402" />
+    <activity name="Clot Retraction PRP" type-id="3" code="403" />
+    <activity name="Coagulation Panel" type-id="3" code="404" />
+    <activity name="Cocaine" type-id="3" code="405" />
+    <activity name="Cocaine Metabolites" type-id="3" code="406" />
+    <activity name="Codeine" type-id="3" code="407" />
+    <activity name="Cold Agglutinins" type-id="3" code="408" />
+    <activity name="Cold Agglutinins Evaluation" type-id="3" code="409" />
+    <activity name="Complement C3, C4, CH50" type-id="3" code="410" />
+    <activity name="Comprehensive Chemistry Panel" type-id="3" code="411" />
+    <activity name="Comprehensive Chemistry TO HOSPITAL" type-id="3" code="412" />
+    <activity name="Consultation for Stained Material" type-id="3" code="413" />
+    <activity name="Coombs, Direct" type-id="3" code="414" />
+    <activity name="Coombs, Indirect" type-id="3" code="415" />
+    <activity name="Copper" type-id="3" code="416" />
+    <activity name="Cord Blood Evaluation" type-id="3" code="417" />
+    <activity name="Coronary Risk Panel" type-id="3" code="418" />
+    <activity name="Cortisol" type-id="3" code="419" />
+    <activity name="Cotinine Level, Serum" type-id="3" code="420" />
+    <activity name="Coxsakie Virus Ab (B1-6)" type-id="3" code="421" />
+    <activity name="Creatine Kinase" type-id="3" code="422" />
+    <activity name="Creatinine" type-id="3" code="423" />
+    <activity name="Creatinine Clearance" type-id="3" code="424" />
+    <activity name="Crossmatch" type-id="3" code="425" />
+    <activity name="Cryoglobulin Identification" type-id="3" code="426" />
+    <activity name="Cryoglobulin Screen" type-id="3" code="427" />
+    <activity name="Cryoprecipitate" type-id="3" code="428" />
+    <activity name="Cryptoccoccal Antigen Screen" type-id="3" code="429" />
+    <activity name="Cryptoccoccal Antigen Titer" type-id="3" code="430" />
+    <activity name="Cryptosporidium Exam" type-id="3" code="431" />
+    <activity name="Crystal Analysis, Synovial Fluid" type-id="3" code="432" />
+    <activity name="Cyclospora Exam" type-id="3" code="433" />
+    <activity name="Cyclosporin" type-id="3" code="434" />
+    <activity name="Cytogenic Analysis" type-id="3" code="435" />
+    <activity name="Cytogenics" type-id="3" code="436" />
+    <activity name="Cytologic Examination" type-id="3" code="437" />
+    <activity name="Cytology PAP Smear" type-id="3" code="438" />
+    <activity name="Cytomegalovirus DNA Detector" type-id="3" code="439" />
+    <activity name="Cytospin Screen, Urine" type-id="3" code="440" />
+    <activity name="D-Dimer" type-id="3" code="441" />
+    <activity name="D-Xylose" type-id="3" code="442" />
+    <activity name="DIC Panel" type-id="3" code="443" />
+    <activity name="DNA Content Analysis" type-id="3" code="444" />
+    <activity name="DNA Cytokeratin" type-id="3" code="445" />
+    <activity name="DPD/DHU Samples" type-id="3" code="446" />
+    <activity name="Dehydroepiandrosterone (DHEA)" type-id="3" code="447" />
+    <activity name="Delta OD450, Amniotic Fluid Scan" type-id="3" code="448" />
+    <activity name="Desipramine" type-id="3" code="449" />
+    <activity name="Dextromethorphan" type-id="3" code="450" />
+    <activity name="Dialysis Chemistry Panel" type-id="3" code="451" />
+    <activity name="Differential (WBC), Manual" type-id="3" code="452" />
+    <activity name="Digoxin" type-id="3" code="453" />
+    <activity name="Dilantin (Phenytoin)" type-id="3" code="454" />
+    <activity name="Dilantin, Free" type-id="3" code="455" />
+    <activity name="Diphenhydramine" type-id="3" code="456" />
+    <activity name="Directed Donations, Blood" type-id="3" code="457" />
+    <activity name="Doxepin" type-id="3" code="458" />
+    <activity name="Doxylamine" type-id="3" code="459" />
+    <activity name="Drug Screens" type-id="3" code="460" />
+    <activity name="EBV Clonality" type-id="3" code="461" />
+    <activity name="Electrolyte Panel" type-id="3" code="462" />
+    <activity name="Electron Microscopy" type-id="3" code="463" />
+    <activity name="Eosinophil Stain, Urine" type-id="3" code="464" />
+    <activity name="Ephedrine" type-id="3" code="465" />
+    <activity name="Epstein-Barr Virus DNA Detector" type-id="3" code="466" />
+    <activity name="Erthrocyte Sedimentation Rate (ESR)" type-id="3" code="467" />
+    <activity name="Erythopoietin" type-id="3" code="468" />
+    <activity name="Erythromycin" type-id="3" code="469" />
+    <activity name="Estradiol" type-id="3" code="470" />
+    <activity name="Estrogen, Total" type-id="3" code="471" />
+    <activity name="Estrone" type-id="3" code="472" />
+    <activity name="Euglobulin Lysis Time" type-id="3" code="473" />
+    <activity name="Eye Culture" type-id="3" code="474" />
+    <activity name="Eye Culture with Gram Stain" type-id="3" code="475" />
+    <activity name="F.I.S.H" type-id="3" code="476" />
+    <activity name="F.I.S.H." type-id="3" code="477" />
+    <activity name="FErritin" type-id="3" code="478" />
+    <activity name="FK506" type-id="3" code="479" />
+    <activity name="FSH" type-id="3" code="480" />
+    <activity name="FTA: ABS" type-id="3" code="481" />
+    <activity name="FUngal Stain/PAS" type-id="3" code="482" />
+    <activity name="Factor II Assay" type-id="3" code="483" />
+    <activity name="Factor IX Assay" type-id="3" code="484" />
+    <activity name="Factor V Assay" type-id="3" code="485" />
+    <activity name="Factor V Leiden by PCR" type-id="3" code="486" />
+    <activity name="Factor VII Assay" type-id="3" code="487" />
+    <activity name="Factor VIII Assay" type-id="3" code="488" />
+    <activity name="Factor VIII Inhibitor" type-id="3" code="489" />
+    <activity name="Factor X Assay" type-id="3" code="490" />
+    <activity name="Factor XI Assay" type-id="3" code="491" />
+    <activity name="Factor XII Assay" type-id="3" code="492" />
+    <activity name="Factor XIII Assay, Qualitative" type-id="3" code="493" />
+    <activity name="Fecal Leukocytes" type-id="3" code="494" />
+    <activity name="Fetal HGB Stain, Kleihauer-Betka Stain" type-id="3" code="495" />
+    <activity name="Fetal-Maternal Bleed" type-id="3" code="496" />
+    <activity name="Fibrin Degradation Products (FDP)" type-id="3" code="497" />
+    <activity name="Fibrinogen" type-id="3" code="498" />
+    <activity name="Fine Needal Extract" type-id="3" code="499" />
+    <activity name="Fine Needle Aspiration" type-id="3" code="500" />
+    <activity name="Flow Cytometry" type-id="3" code="501" />
+    <activity name="Folate" type-id="3" code="502" />
+    <activity name="Folate, Red Cell" type-id="3" code="503" />
+    <activity name="Folicular Lymphoma Translocation" type-id="3" code="504" />
+    <activity name="Fresh Frozen Plasma" type-id="3" code="505" />
+    <activity name="Frozen Section" type-id="3" code="506" />
+    <activity name="Fungal Culture" type-id="3" code="507" />
+    <activity name="Fungal KOH Prep" type-id="3" code="508" />
+    <activity name="Fungal Serology" type-id="3" code="509" />
+    <activity name="G-6-PD" type-id="3" code="510" />
+    <activity name="GGT" type-id="3" code="511" />
+    <activity name="Gastrin" type-id="3" code="512" />
+    <activity name="Gentamicin" type-id="3" code="513" />
+    <activity name="Glandular Fever Profile" type-id="3" code="514" />
+    <activity name="Globulin" type-id="3" code="515" />
+    <activity name="Glucagon" type-id="3" code="516" />
+    <activity name="Glucose" type-id="3" code="517" />
+    <activity name="Glucose, CSF" type-id="3" code="518" />
+    <activity name="Glucose, Point of Care" type-id="3" code="519" />
+    <activity name="Glycosylated hemoglobin" type-id="3" code="520" />
+    <activity name="Gold top (SST)" type-id="3" code="521" />
+    <activity name="Gonococcal Culture/Swab" type-id="3" code="522" />
+    <activity name="Gram Stain" type-id="3" code="523" />
+    <activity name="Gross Tissue Examination" type-id="3" code="524" />
+    <activity name="Group B Steptococcus" type-id="3" code="525" />
+    <activity name="Growth Hormone" type-id="3" code="526" />
+    <activity name="Guaifensin" type-id="3" code="527" />
+    <activity name="HACA" type-id="3" code="528" />
+    <activity name="HAMA" type-id="3" code="529" />
+    <activity name="HDL-C" type-id="3" code="530" />
+    <activity name="HGD" type-id="3" code="531" />
+    <activity name="HIV P24 Antigen" type-id="3" code="532" />
+    <activity name="HIV RNA, Quantitative" type-id="3" code="533" />
+    <activity name="HIV-1 Antibody" type-id="3" code="534" />
+    <activity name="HLA Matched Platelets" type-id="3" code="535" />
+    <activity name="HLA Typing" type-id="3" code="536" />
+    <activity name="HTLV-1 Antibody, IgG IgE" type-id="3" code="537" />
+    <activity name="HTVL III antibody" type-id="3" code="538" />
+    <activity name="Hams Test" type-id="3" code="539" />
+    <activity name="Haptoglobin" type-id="3" code="540" />
+    <activity name="Heinz Body Prep" type-id="3" code="541" />
+    <activity name="Helicobacter pylori Ab, Serum" type-id="3" code="542" />
+    <activity name="Helicobacter pylori Screen" type-id="3" code="543" />
+    <activity name="Hemochromatosis Panel" type-id="3" code="544" />
+    <activity name="Hemoglobin" type-id="3" code="545" />
+    <activity name="Hemoglobin A1" type-id="3" code="546" />
+    <activity name="Hemoglobin Electrophoresis" type-id="3" code="547" />
+    <activity name="Hemoglobin Hemoatocrit" type-id="3" code="548" />
+    <activity name="Hemoglobin, Urine Free" type-id="3" code="549" />
+    <activity name="Heparin Induced Antiplatelet Antibody" type-id="3" code="550" />
+    <activity name="Hepatic Chemistry Panel" type-id="3" code="551" />
+    <activity name="Hepatitis A &amp; B Panel" type-id="3" code="552" />
+    <activity name="Hepatitis A Antibody, IgG &amp; IgM" type-id="3" code="553" />
+    <activity name="Hepatitis A IgM Antibody" type-id="3" code="554" />
+    <activity name="Hepatitis B Antibody" type-id="3" code="555" />
+    <activity name="Hepatitis B Antigen" type-id="3" code="556" />
+    <activity name="Hepatitis B Core Antibody (Total)" type-id="3" code="557" />
+    <activity name="Hepatitis B Core Antibody IgM" type-id="3" code="558" />
+    <activity name="Hepatitis B Quantitative - Ig level" type-id="3" code="559" />
+    <activity name="Hepatitis B Viral DnA" type-id="3" code="560" />
+    <activity name="Hepatitis Be Antigen and Be Antibody" type-id="3" code="561" />
+    <activity name="Hepatitis C RNA Quantitative" type-id="3" code="562" />
+    <activity name="Hepatitis C Riba II" type-id="3" code="563" />
+    <activity name="Hepatitis C by PCR" type-id="3" code="564" />
+    <activity name="Hepatitis Delta A" type-id="3" code="565" />
+    <activity name="Hepatitis E Virus IgG" type-id="3" code="566" />
+    <activity name="Herpes Culture" type-id="3" code="567" />
+    <activity name="Herpex simplex Antibody (IgG &amp; IgM)" type-id="3" code="568" />
+    <activity name="Heterophile Screening" type-id="3" code="569" />
+    <activity name="Histoplasmosis" type-id="3" code="570" />
+    <activity name="Homocystine" type-id="3" code="571" />
+    <activity name="Humoral immune response" type-id="3" code="572" />
+    <activity name="IL-6" type-id="3" code="573" />
+    <activity name="INR" type-id="3" code="574" />
+    <activity name="Imipramine" type-id="3" code="575" />
+    <activity name="Immulohistochemistry" type-id="3" code="576" />
+    <activity name="Immunofixation Panel" type-id="3" code="577" />
+    <activity name="Immunofluorescence Tissue" type-id="3" code="578" />
+    <activity name="Immunoglobulin IgD" type-id="3" code="579" />
+    <activity name="Immunoglobulin IgE" type-id="3" code="580" />
+    <activity name="Immunoglobuline Gene Rearrangement" type-id="3" code="581" />
+    <activity name="Immunoglobulins, Quantitative" type-id="3" code="582" />
+    <activity name="Immunology panel" type-id="3" code="583" />
+    <activity name="Immunoperoxidase" type-id="3" code="584" />
+    <activity name="Immunophenotyping" type-id="3" code="585" />
+    <activity name="Insulin" type-id="3" code="586" />
+    <activity name="Ionized Calcium" type-id="3" code="587" />
+    <activity name="Iron" type-id="3" code="588" />
+    <activity name="Iron Binding Capacity (IBC, TIBC)" type-id="3" code="589" />
+    <activity name="Irradiatede Blood" type-id="3" code="590" />
+    <activity name="Isospora Exam" type-id="3" code="591" />
+    <activity name="Kappa/Lambda Ratio" type-id="3" code="592" />
+    <activity name="Ketones (Acetone)" type-id="3" code="593" />
+    <activity name="Kleihauer-Betke Stain" type-id="3" code="594" />
+    <activity name="L/S Ratio" type-id="3" code="595" />
+    <activity name="LAP Score" type-id="3" code="596" />
+    <activity name="LDH" type-id="3" code="597" />
+    <activity name="LDH Isoenzymes" type-id="3" code="598" />
+    <activity name="LH" type-id="3" code="599" />
+    <activity name="Lab kit" type-id="3" code="600" />
+    <activity name="Lactose Tolerance" type-id="3" code="601" />
+    <activity name="Latex Antigen Screen" type-id="3" code="602" />
+    <activity name="Lead" type-id="3" code="603" />
+    <activity name="Legionella Culture" type-id="3" code="604" />
+    <activity name="Legionella DFA (stain)" type-id="3" code="605" />
+    <activity name="Leukemia Phenotype" type-id="3" code="606" />
+    <activity name="Leukocyte Alkaline Phosphatase Stain" type-id="3" code="607" />
+    <activity name="Lewis Antigen" type-id="3" code="608" />
+    <activity name="Lidocaine" type-id="3" code="609" />
+    <activity name="Lipase" type-id="3" code="610" />
+    <activity name="Lipid Risk Panel" type-id="3" code="611" />
+    <activity name="Lithium" type-id="3" code="612" />
+    <activity name="Liver Chemistry Panel" type-id="3" code="613" />
+    <activity name="Lupus Activity" type-id="3" code="614" />
+    <activity name="Lupus Anticoagulant" type-id="3" code="615" />
+    <activity name="Lyme Ab" type-id="3" code="616" />
+    <activity name="Magnesium" type-id="3" code="617" />
+    <activity name="Malarial Prep" type-id="3" code="618" />
+    <activity name="Manganese, RBC" type-id="3" code="619" />
+    <activity name="Matanephrines" type-id="3" code="620" />
+    <activity name="Meperidine" type-id="3" code="621" />
+    <activity name="Meprobamate" type-id="3" code="622" />
+    <activity name="Metanephrines (Includes creatinine)" type-id="3" code="623" />
+    <activity name="Methadone" type-id="3" code="624" />
+    <activity name="Methamphetamine" type-id="3" code="625" />
+    <activity name="Methaqualone" type-id="3" code="626" />
+    <activity name="Methotrexate Level" type-id="3" code="627" />
+    <activity name="Microalbumin" type-id="3" code="628" />
+    <activity name="Microfilariae" type-id="3" code="629" />
+    <activity name="Microscopic Exam of Stool: Leukocytes" type-id="3" code="630" />
+    <activity name="Microsporidia Spore Stain" type-id="3" code="631" />
+    <activity name="Mixing Studies, APTT" type-id="3" code="632" />
+    <activity name="Mixing Studies, PT" type-id="3" code="633" />
+    <activity name="Multiorgan Chemistry Panel" type-id="3" code="634" />
+    <activity name="Mumps IgM" type-id="3" code="635" />
+    <activity name="Mumps IgM &amp; IgG" type-id="3" code="636" />
+    <activity name="Mycobacteria, Culture &amp; Smear" type-id="3" code="637" />
+    <activity name="Mycoplasma Pneumonia Antibody" type-id="3" code="638" />
+    <activity name="Myelin Basic Protein" type-id="3" code="639" />
+    <activity name="Myoglobin" type-id="3" code="640" />
+    <activity name="Mysoline" type-id="3" code="641" />
+    <activity name="NAPA" type-id="3" code="642" />
+    <activity name="NMH - Analyzer" type-id="3" code="643" />
+    <activity name="Neuron specific enolase" type-id="3" code="644" />
+    <activity name="Neurotropic Virus Profile" type-id="3" code="645" />
+    <activity name="Neutrophil function studies" type-id="3" code="646" />
+    <activity name="Nortriptyline" type-id="3" code="647" />
+    <activity name="Nose Culture &amp; Gram Stain" type-id="3" code="648" />
+    <activity name="OHCS" type-id="3" code="649" />
+    <activity name="Occult Blood" type-id="3" code="650" />
+    <activity name="Oligoglonal Bands" type-id="3" code="651" />
+    <activity name="Opiates" type-id="3" code="652" />
+    <activity name="Orphenadrine" type-id="3" code="653" />
+    <activity name="Osmolaity" type-id="3" code="654" />
+    <activity name="Osmotic Fragility" type-id="3" code="655" />
+    <activity name="Other Culture" type-id="3" code="656" />
+    <activity name="Ova and Parasite Examination" type-id="3" code="657" />
+    <activity name="Ova and Parasite, Duodenal/Sigmoid" type-id="3" code="658" />
+    <activity name="Oxalate" type-id="3" code="659" />
+    <activity name="PAP" type-id="3" code="660" />
+    <activity name="PCR" type-id="3" code="661" />
+    <activity name="PK (Pharmacokinetic studies)" type-id="3" code="662" />
+    <activity name="PK (Pharmacokinetics)" type-id="3" code="663" />
+    <activity name="PK samples" type-id="3" code="664" />
+    <activity name="PLT function studies" type-id="3" code="665" />
+    <activity name="PSA" type-id="1" code="666" />
+    <activity name="PT/PTT Mixing Studies" type-id="3" code="667" />
+    <activity name="PTH- Intact" type-id="3" code="668" />
+    <activity name="PTT (Partial Thromboplastin Time)" type-id="3" code="669" />
+    <activity name="Pancreatic Polypeptide" type-id="3" code="670" />
+    <activity name="Pap Smear" type-id="3" code="671" />
+    <activity name="Parasites" type-id="3" code="672" />
+    <activity name="Parathyroid Hormone" type-id="3" code="673" />
+    <activity name="Parathyroid Hormone, C-Terminal" type-id="3" code="674" />
+    <activity name="Parvovirus B19" type-id="3" code="675" />
+    <activity name="Pentazocine" type-id="3" code="676" />
+    <activity name="Periodic Acid Schiff Stain" type-id="3" code="677" />
+    <activity name="Phenacetin" type-id="3" code="678" />
+    <activity name="Phencylclidine" type-id="3" code="679" />
+    <activity name="Phenethylamine" type-id="3" code="680" />
+    <activity name="Phenmetrazine" type-id="3" code="681" />
+    <activity name="Phenobarbital" type-id="3" code="682" />
+    <activity name="Phenothiazine Metabolites" type-id="3" code="683" />
+    <activity name="Phenylporpanolamine" type-id="3" code="684" />
+    <activity name="Phenytoid" type-id="3" code="685" />
+    <activity name="Philadelphia Chromosone" type-id="3" code="686" />
+    <activity name="Phosphorus" type-id="3" code="687" />
+    <activity name="Pinworm Preperation" type-id="3" code="688" />
+    <activity name="Plasminogen" type-id="3" code="689" />
+    <activity name="Plasmodia" type-id="3" code="690" />
+    <activity name="Platelet Aggregation" type-id="3" code="691" />
+    <activity name="Platelet Antibody Screen" type-id="3" code="692" />
+    <activity name="Platelet Antibody for ITP" type-id="3" code="693" />
+    <activity name="Platelet Count" type-id="3" code="694" />
+    <activity name="Platelet Crossmatch" type-id="3" code="695" />
+    <activity name="Platelet Retention" type-id="3" code="696" />
+    <activity name="Platelets" type-id="3" code="697" />
+    <activity name="Pneumocystis DFA" type-id="3" code="698" />
+    <activity name="Potassium" type-id="3" code="699" />
+    <activity name="Pre Eclampsia Panel" type-id="3" code="700" />
+    <activity name="Pregnancy Test" type-id="3" code="701" />
+    <activity name="Pregnancy Testing: Quantitative HCG" type-id="3" code="702" />
+    <activity name="Pregnancy Testing: Uring Qualitative" type-id="3" code="703" />
+    <activity name="Pregnanetriol" type-id="3" code="704" />
+    <activity name="Presurgical Hemostatis Panel" type-id="3" code="705" />
+    <activity name="Procainamide" type-id="3" code="706" />
+    <activity name="Procaine" type-id="3" code="707" />
+    <activity name="Progesterone" type-id="3" code="708" />
+    <activity name="Prolactic" type-id="3" code="709" />
+    <activity name="Propoxyphene" type-id="3" code="710" />
+    <activity name="Propranolol" type-id="3" code="711" />
+    <activity name="Protease Inhibitor Trough Level" type-id="3" code="712" />
+    <activity name="Protein C Activity" type-id="3" code="713" />
+    <activity name="Protein C Antigen" type-id="3" code="714" />
+    <activity name="Protein S Activity" type-id="3" code="715" />
+    <activity name="Protein S Antigen, Free" type-id="3" code="716" />
+    <activity name="Protein, CSF" type-id="3" code="717" />
+    <activity name="Protein, Total" type-id="3" code="718" />
+    <activity name="Protein, Urine" type-id="3" code="719" />
+    <activity name="Proteosome Inhibition Assay" type-id="3" code="720" />
+    <activity name="Prothrombin Time (PT)" type-id="3" code="721" />
+    <activity name="Psudoephedrine" type-id="3" code="722" />
+    <activity name="Pyriliamine" type-id="3" code="723" />
+    <activity name="Quantitative Immunoglobulins" type-id="3" code="724" />
+    <activity name="Quantitative T Cell Analysis" type-id="3" code="725" />
+    <activity name="Quantitative T Cell Monitoring Panel" type-id="3" code="726" />
+    <activity name="Quinidine" type-id="3" code="727" />
+    <activity name="RIC Multiorgan Panel" type-id="3" code="728" />
+    <activity name="RPR (Syphillis)" type-id="3" code="729" />
+    <activity name="Red Blood Cells, Packed" type-id="3" code="730" />
+    <activity name="Renal CHemistry Panel" type-id="3" code="731" />
+    <activity name="Renin" type-id="3" code="732" />
+    <activity name="Respiratory Culture &amp; Gram Stain" type-id="3" code="733" />
+    <activity name="Respiratory Syncytial Virus DFA" type-id="3" code="734" />
+    <activity name="Reticulocyte Count" type-id="3" code="735" />
+    <activity name="Rh (D) Typing" type-id="3" code="736" />
+    <activity name="Rh Du Test" type-id="3" code="737" />
+    <activity name="Rh Immune globulin (RhIG)" type-id="3" code="738" />
+    <activity name="Rheumatoid Factor (Quantitative)" type-id="3" code="739" />
+    <activity name="Ristocetin CoFactor" type-id="3" code="740" />
+    <activity name="Rubella Antibody (IgG &amp; IgM)" type-id="3" code="741" />
+    <activity name="Rubeolla Antibody for IgG" type-id="3" code="742" />
+    <activity name="Rubeolla Antibody for IgM" type-id="3" code="743" />
+    <activity name="SGOT" type-id="3" code="744" />
+    <activity name="SGPT" type-id="3" code="745" />
+    <activity name="SS-A Antibodies" type-id="3" code="746" />
+    <activity name="SS-B Antibodies" type-id="3" code="747" />
+    <activity name="Salicylate" type-id="3" code="748" />
+    <activity name="Sedimentation Rate" type-id="3" code="749" />
+    <activity name="Selenium" type-id="3" code="750" />
+    <activity name="Serotonin" type-id="3" code="751" />
+    <activity name="Serum - VEGF" type-id="3" code="752" />
+    <activity name="Serum Activity Level" type-id="3" code="753" />
+    <activity name="Serum B12" type-id="3" code="754" />
+    <activity name="Serum B2-microglobulin" type-id="3" code="755" />
+    <activity name="Serum Immunofixsation" type-id="3" code="756" />
+    <activity name="Serum Marker" type-id="3" code="757" />
+    <activity name="Serum Protein Electrophoresis" type-id="3" code="758" />
+    <activity name="Sex Hormone Binding Globulin" type-id="3" code="759" />
+    <activity name="Sezary CEll Count" type-id="1" code="760" />
+    <activity name="Sickle Cell Screen" type-id="3" code="761" />
+    <activity name="Sjogren's Ab" type-id="3" code="762" />
+    <activity name="Smears/Stains" type-id="3" code="763" />
+    <activity name="Sodium (Na)" type-id="3" code="764" />
+    <activity name="Sodium, Urine" type-id="3" code="765" />
+    <activity name="Somatomedin -C" type-id="3" code="766" />
+    <activity name="Somatostatin" type-id="3" code="767" />
+    <activity name="Special Care Nursery Nutritional Panel" type-id="3" code="768" />
+    <activity name="Special Stains Group I" type-id="3" code="769" />
+    <activity name="Special Stains Group II" type-id="3" code="770" />
+    <activity name="Specific Gravity, Body Fluid" type-id="3" code="771" />
+    <activity name="Spinal Fluid Chloride" type-id="3" code="772" />
+    <activity name="Spinal Fluid Glucose" type-id="3" code="773" />
+    <activity name="Spinal Fluid Protein" type-id="3" code="774" />
+    <activity name="Stone Analysis (Calculus)" type-id="3" code="775" />
+    <activity name="Stool Culture" type-id="3" code="776" />
+    <activity name="Stool Purgation" type-id="3" code="777" />
+    <activity name="Strychnine" type-id="3" code="778" />
+    <activity name="Study Kit" type-id="3" code="779" />
+    <activity name="Sugar Water Test" type-id="3" code="780" />
+    <activity name="Surgical Specimen" type-id="3" code="781" />
+    <activity name="Susceptibility Tube Dilution" type-id="3" code="782" />
+    <activity name="Synergism Study" type-id="3" code="783" />
+    <activity name="T 3 Uptake (Thyroid Uptake)" type-id="3" code="784" />
+    <activity name="T and B cell analysis" type-id="3" code="785" />
+    <activity name="T-cell Analysis, Quantitative" type-id="3" code="786" />
+    <activity name="T-cell Receptor Gene Rearrangement" type-id="3" code="787" />
+    <activity name="T3" type-id="3" code="788" />
+    <activity name="T3 (Triirodothyronine)" type-id="3" code="789" />
+    <activity name="T3, Free" type-id="3" code="790" />
+    <activity name="T3, Reverse" type-id="3" code="791" />
+    <activity name="T4 (Neonatal)" type-id="3" code="792" />
+    <activity name="T4 (Thyroxin)" type-id="3" code="793" />
+    <activity name="T4 Free" type-id="3" code="794" />
+    <activity name="T4 Free Index" type-id="3" code="795" />
+    <activity name="TCR Gene Rearrangement" type-id="3" code="796" />
+    <activity name="TEG" type-id="3" code="797" />
+    <activity name="TIBC" type-id="3" code="798" />
+    <activity name="TORCH Screen" type-id="3" code="799" />
+    <activity name="TSH (Thyroid Stimulation Hormone)" type-id="3" code="800" />
+    <activity name="TSH, Neonatal" type-id="3" code="801" />
+    <activity name="Tacrolimus level" type-id="3" code="802" />
+    <activity name="Tegretol" type-id="3" code="803" />
+    <activity name="Temazepam" type-id="3" code="804" />
+    <activity name="Terpin Hydrate" type-id="3" code="805" />
+    <activity name="Testosterone" type-id="3" code="806" />
+    <activity name="Testosterone, Free" type-id="3" code="807" />
+    <activity name="Tetrahydrocannibinol (THC, Marijuana)" type-id="3" code="808" />
+    <activity name="Theophylline" type-id="3" code="809" />
+    <activity name="Throat Culture" type-id="3" code="810" />
+    <activity name="Throat Group A Streptococcus Screen" type-id="3" code="811" />
+    <activity name="Thrombin Time" type-id="3" code="812" />
+    <activity name="Thromboelastograph (TEG)" type-id="3" code="813" />
+    <activity name="Thyroglobulin" type-id="3" code="814" />
+    <activity name="Thyroid Antibodies" type-id="3" code="815" />
+    <activity name="Thyroid Panel" type-id="3" code="816" />
+    <activity name="Thyroid Stimulation Immunoglolubin" type-id="3" code="817" />
+    <activity name="Tissue Examination" type-id="3" code="818" />
+    <activity name="Tissue/Biopsy Culture &amp; Gram Stain" type-id="3" code="819" />
+    <activity name="Tobramycin" type-id="3" code="820" />
+    <activity name="Toxicology Screen" type-id="3" code="821" />
+    <activity name="Toxoplasma Antibody" type-id="3" code="822" />
+    <activity name="Toxoplasma DNA Detector" type-id="3" code="823" />
+    <activity name="Transferrin" type-id="3" code="824" />
+    <activity name="Transfusion Reaction Culture" type-id="3" code="825" />
+    <activity name="Transfusion Reaction Investigation" type-id="3" code="826" />
+    <activity name="Transfusion of Blood Components" type-id="3" code="827" />
+    <activity name="Trazodon" type-id="3" code="828" />
+    <activity name="Triage, Urine Toxicology Screen" type-id="3" code="829" />
+    <activity name="Triamterene" type-id="3" code="830" />
+    <activity name="Triglycerides" type-id="3" code="831" />
+    <activity name="Trimethobenzamide" type-id="3" code="832" />
+    <activity name="Trimethoprim" type-id="3" code="833" />
+    <activity name="Trimipramine" type-id="3" code="834" />
+    <activity name="Tripelanamine" type-id="3" code="835" />
+    <activity name="Troponin" type-id="3" code="836" />
+    <activity name="Troponin I" type-id="3" code="837" />
+    <activity name="Tube - Leucoprep" type-id="3" code="838" />
+    <activity name="Tube - Special Green" type-id="3" code="839" />
+    <activity name="Tube - Tiger Blue" type-id="3" code="840" />
+    <activity name="Tube - gold" type-id="3" code="841" />
+    <activity name="Tube - red tiger" type-id="3" code="842" />
+    <activity name="Tube-Falcon tube" type-id="3" code="843" />
+    <activity name="Tube: ACD" type-id="3" code="844" />
+    <activity name="Tube: Blue" type-id="3" code="845" />
+    <activity name="Tube: Green" type-id="3" code="846" />
+    <activity name="Tube: Purple" type-id="3" code="847" />
+    <activity name="Tube: Red" type-id="3" code="848" />
+    <activity name="Tube: Yellow" type-id="3" code="849" />
+    <activity name="Tylenol" type-id="3" code="850" />
+    <activity name="Type and Crossmatch" type-id="3" code="851" />
+    <activity name="Type and Screen" type-id="3" code="852" />
+    <activity name="UIFE" type-id="3" code="853" />
+    <activity name="Urea Nitrogen (BUN)" type-id="3" code="854" />
+    <activity name="Urea Nitrogen (Urine)" type-id="3" code="855" />
+    <activity name="Uric Acid" type-id="3" code="856" />
+    <activity name="Uric Acid, Urine" type-id="3" code="857" />
+    <activity name="Urinalysis" type-id="3" code="858" />
+    <activity name="Urine Culture &amp; Cytospin stain" type-id="3" code="859" />
+    <activity name="Urine Culture (females only)" type-id="3" code="860" />
+    <activity name="Urine Free Hemoglobin" type-id="3" code="861" />
+    <activity name="Urine Immunofixation Electrophoresis" type-id="3" code="862" />
+    <activity name="Urine Protein Creatinine (UPC) ratio" type-id="3" code="863" />
+    <activity name="Urine Protein Electrophoresis" type-id="3" code="864" />
+    <activity name="Urine Sample Collection" type-id="3" code="865" />
+    <activity name="Urine Toxicology Screen, Triage" type-id="3" code="866" />
+    <activity name="Urine, 24 hr." type-id="3" code="867" />
+    <activity name="VDRL, CSF" type-id="3" code="868" />
+    <activity name="VMA (vanillylmandelic Acid)" type-id="3" code="869" />
+    <activity name="Valproate" type-id="3" code="870" />
+    <activity name="Vancomycin" type-id="3" code="871" />
+    <activity name="Varicella-Zoster Antibody" type-id="3" code="872" />
+    <activity name="Varicella-Zoster DFA" type-id="3" code="873" />
+    <activity name="Varicella-Zoster Virus DNA Detector" type-id="3" code="874" />
+    <activity name="Vasoactive Intestinal Polypeptide" type-id="3" code="875" />
+    <activity name="Virus Culture" type-id="3" code="876" />
+    <activity name="Viscosity (Serum, Plasma, Whole Blood)" type-id="3" code="877" />
+    <activity name="Vitamin D, 1, 25-Dihydroxy" type-id="3" code="878" />
+    <activity name="Vitamin D, 25-Hydroxy" type-id="3" code="879" />
+    <activity name="Von Willebrand Factor (vWF)" type-id="3" code="880" />
+    <activity name="Von Willebrand's Disease Profile" type-id="3" code="881" />
+    <activity name="Washed Red Blood Cells" type-id="3" code="882" />
+    <activity name="Western Blot" type-id="3" code="883" />
+    <activity name="Worm Identification" type-id="3" code="884" />
+    <activity name="Wound Culture" type-id="3" code="885" />
+    <activity name="Zinc" type-id="3" code="886" />
+    <activity name="anti-TPO antibodies" type-id="3" code="887" />
+    <activity name="chimerism studies" type-id="3" code="888" />
+    <activity name="estadiol" type-id="3" code="889" />
+    <activity name="hemoglobin electrophoresis" type-id="3" code="890" />
+    <activity name="pH" type-id="3" code="891" />
+    <activity name="parathyroid hormone" type-id="3" code="892" />
+    <activity name="serum bone alkaline phosphatase" type-id="3" code="893" />
+    <activity name="serum osteocalcin" type-id="3" code="894" />
+    <activity name="urinary cross-linked N-telopeptides" type-id="3" code="895" />
+    <activity name="urinary deoxypyridoline" type-id="3" code="896" />
+    <activity name="ATG skin test" type-id="5" code="897" />
+    <activity name="Adjuvant Therapy " type-id="5" code="898" />
+    <activity name="Androgen Suppression" type-id="5" code="899" />
+    <activity name="Anticonvulsant levels" type-id="5" code="900" />
+    <activity name="Arm assessment" type-id="5" code="901" />
+    <activity name="BIA" type-id="5" code="902" />
+    <activity name="BIS" type-id="5" code="903" />
+    <activity name="Block FFQ" type-id="5" code="904" />
+    <activity name="Breast exam" type-id="1" code="905" />
+    <activity name="Child-Pugh Score" type-id="5" code="906" />
+    <activity name="Collect used study drug kit" type-id="5" code="907" />
+    <activity name="Compliance Contact" type-id="5" code="908" />
+    <activity name="Concomitant Meds Check" type-id="5" code="909" />
+    <activity name="Cycle Ergometry" type-id="5" code="910" />
+    <activity name="Digital Rectal Exam" type-id="5" code="911" />
+    <activity name="Disease Assessment" type-id="1" code="912" />
+    <activity name="Dispense study drug kit" type-id="5" code="913" />
+    <activity name="Dosing Compliance/Accountability" type-id="5" code="914" />
+    <activity name="Ductal Lavage Results" type-id="5" code="915" />
+    <activity name="Endometrial" type-id="5" code="916" />
+    <activity name="Extended Follow-up" type-id="5" code="917" />
+    <activity name="Extramedullary Involvement" type-id="1" code="918" />
+    <activity name="Eye exam" type-id="5" code="919" />
+    <activity name="Family History" type-id="5" code="920" />
+    <activity name="Food Questionairre" type-id="5" code="921" />
+    <activity name="Health Assessment" type-id="5" code="922" />
+    <activity name="Height Measurement" type-id="5" code="923" />
+    <activity name="History/Physical Exam" type-id="5" code="924" />
+    <activity name="Hydration" type-id="5" code="925" />
+    <activity name="Karnofsky Performance Status" type-id="5" code="926" />
+    <activity name="Medical History" type-id="5" code="927" />
+    <activity name="Monitor drug dose (via phone)" type-id="5" code="928" />
+    <activity name="Myopathy assessment" type-id="5" code="929" />
+    <activity name="Oral Exam" type-id="5" code="930" />
+    <activity name="Order study drug kit via IVRS" type-id="5" code="931" />
+    <activity name="PCR Analysis" type-id="5" code="932" />
+    <activity name="Pain Assessment" type-id="5" code="933" />
+    <activity name="Pathology Submission" type-id="5" code="934" />
+    <activity name="Patient Diary" type-id="5" code="935" />
+    <activity name="Performance Status" type-id="5" code="936" />
+    <activity name="Phone Contact" type-id="5" code="937" />
+    <activity name="Phone contact" type-id="5" code="938" />
+    <activity name="Photographs" type-id="5" code="939" />
+    <activity name="Pill count" type-id="5" code="940" />
+    <activity name="QOL Survey" type-id="5" code="941" />
+    <activity name="Randomization" type-id="5" code="942" />
+    <activity name="Risk assessment" type-id="5" code="943" />
+    <activity name="Saliva Collection" type-id="5" code="944" />
+    <activity name="Subject Stipend" type-id="5" code="945" />
+    <activity name="Surgical Effects" type-id="5" code="946" />
+    <activity name="Symptom Assessment" type-id="5" code="947" />
+    <activity name="Telephone Contact" type-id="5" code="948" />
+    <activity name="Telephone f/u" type-id="5" code="949" />
+    <activity name="Tumor Measurements" type-id="1" code="950" />
+    <activity name="Vaginal Assessment" type-id="5" code="951" />
+    <activity name="Visit" type-id="5" code="952" />
+    <activity name="Vital Signs" type-id="5" code="953" />
+    <activity name="Weight Measurement" type-id="5" code="954" />
+    <activity name="depigmentation assessment" type-id="5" code="955" />
+    <activity name="Adverse Events" type-id="4" code="956" />
+    <activity name="Assess Side Effects/ Adj Treatment" type-id="4" code="957" />
+    <activity name="Assess Treatment-Limiting Toxicities" type-id="4" code="958" />
+    <activity name="Biopsy (other)" type-id="4" code="959" />
+    <activity name="Bone Density" type-id="4" code="960" />
+    <activity name="Bone Marrow Aspirate" type-id="1" code="961" />
+    <activity name="Bone Marrow Biopsy (bilateral)" type-id="1" code="962" />
+    <activity name="Bone Marrow Biopsy (unilateral)" type-id="1" code="963" />
+    <activity name="Bone Marrow Harvest" type-id="4" code="964" />
+    <activity name="Bone Scan" type-id="1" code="965" />
+    <activity name="Bronchoscopy" type-id="4" code="966" />
+    <activity name="C-reactive protein" type-id="4" code="967" />
+    <activity name="CAILS Score" type-id="4" code="968" />
+    <activity name="CT: Abdomen" type-id="1" code="969" />
+    <activity name="CT: Chest" type-id="1" code="970" />
+    <activity name="CT: Other" type-id="1" code="971" />
+    <activity name="CT: Pelvis" type-id="1" code="972" />
+    <activity name="CT: head" type-id="1" code="973" />
+    <activity name="Calculate Body Surface Area Involvement" type-id="4" code="974" />
+    <activity name="Catheter Placement" type-id="4" code="975" />
+    <activity name="Central Line" type-id="4" code="976" />
+    <activity name="Clinical Photography" type-id="4" code="977" />
+    <activity name="Colonoscopy" type-id="4" code="978" />
+    <activity name="Concomitant Medications" type-id="4" code="979" />
+    <activity name="Cystoscopy" type-id="4" code="980" />
+    <activity name="DEXA scan" type-id="1" code="981" />
+    <activity name="DLCO" type-id="4" code="982" />
+    <activity name="DRE" type-id="4" code="983" />
+    <activity name="DXA Scan" type-id="1" code="984" />
+    <activity name="Digital mammogram" type-id="1" code="985" />
+    <activity name="Document Handling and Archiving" type-id="4" code="986" />
+    <activity name="Dosimetry" type-id="4" code="987" />
+    <activity name="Ductal Lavage" type-id="4" code="988" />
+    <activity name="Ductoscopy" type-id="4" code="989" />
+    <activity name="EKG" type-id="4" code="990" />
+    <activity name="EPF/prostate fluid" type-id="4" code="991" />
+    <activity name="EVE-MK reinfusion" type-id="4" code="992" />
+    <activity name="EVE-PBPC reinfusion" type-id="4" code="993" />
+    <activity name="Esophagitis Score" type-id="4" code="994" />
+    <activity name="Fellow/Coordinator Fee" type-id="4" code="995" />
+    <activity name="Flow Cytometry Immunophenotyping" type-id="4" code="996" />
+    <activity name="GI Evaluation" type-id="4" code="997" />
+    <activity name="Gallium Scan" type-id="1" code="998" />
+    <activity name="Gynecologic Evaluation" type-id="4" code="999" />
+    <activity name="History" type-id="4" code="1000" />
+    <activity name="Inclusion/Exclusion" type-id="4" code="1001" />
+    <activity name="Informed Consent/HIPAA" type-id="4" code="1002" />
+    <activity name="Leukemia/Lymphoma Panel" type-id="4" code="1003" />
+    <activity name="Leukophoresis" type-id="4" code="1004" />
+    <activity name="Life Style Survey" type-id="4" code="1005" />
+    <activity name="Lumbar Puncture" type-id="4" code="1006" />
+    <activity name="Lymphangiogram" type-id="1" code="1007" />
+    <activity name="MRI" type-id="1" code="1008" />
+    <activity name="MRI Brain" type-id="1" code="1009" />
+    <activity name="MUGA Scan" type-id="4" code="1010" />
+    <activity name="NG tube" type-id="4" code="1011" />
+    <activity name="NM pK Blood Levels" type-id="4" code="1012" />
+    <activity name="NM pK Blood Levels Stipend" type-id="4" code="1013" />
+    <activity name="Neurological Exam" type-id="4" code="1014" />
+    <activity name="Nuclear imaging" type-id="1" code="1015" />
+    <activity name="Octreotide Scan" type-id="1" code="1016" />
+    <activity name="PBSC Infusion" type-id="4" code="1017" />
+    <activity name="PBSC infusion" type-id="4" code="1018" />
+    <activity name="PET Scan" type-id="1" code="1019" />
+    <activity name="Pandenoscopy" type-id="4" code="1020" />
+    <activity name="Patch Test" type-id="4" code="1021" />
+    <activity name="Pharmcy Drug Accountability" type-id="4" code="1022" />
+    <activity name="Phlebotomy Fee" type-id="4" code="1023" />
+    <activity name="Principal Investigator Fee" type-id="4" code="1024" />
+    <activity name="Proctosigmoidoscopy" type-id="4" code="1025" />
+    <activity name="Pulmonary Function Test" type-id="4" code="1026" />
+    <activity name="Punch Biopsy" type-id="4" code="1027" />
+    <activity name="Record Follow Up Toxicity Data" type-id="4" code="1028" />
+    <activity name="Responsive Assessment" type-id="1" code="1029" />
+    <activity name="SPECT" type-id="4" code="1030" />
+    <activity name="SWAT Score" type-id="4" code="1031" />
+    <activity name="Screen Log Failure Fee" type-id="4" code="1032" />
+    <activity name="Stem Cell Harvest" type-id="4" code="1033" />
+    <activity name="TVUS" type-id="4" code="1034" />
+    <activity name="Toxicity Evaluation" type-id="4" code="1035" />
+    <activity name="Ultrasound" type-id="1" code="1036" />
+    <activity name="X-Ray: Chest" type-id="1" code="1037" />
+    <activity name="X-Ray: Skeletal" type-id="1" code="1038" />
+    <activity name="audiogram" type-id="4" code="1039" />
+    <activity name="colon x-ray" type-id="1" code="1040" />
+    <activity name="surgery" type-id="4" code="1041" />
+  </source>
+</sources>

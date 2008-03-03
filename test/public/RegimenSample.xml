@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="RegimenSample" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="28861601-1c5f-456a-9932-dd55fd9a2943"/>
+  <development-amendment name="[Original]" date="2008-03-03" mandatory="true">
+    <planned-calendar-delta id="ea2628a8-bce0-458e-8aa8-85f90e08cd85" node-id="28861601-1c5f-456a-9932-dd55fd9a2943">
+      <add id="29f66aaa-06b9-4917-99d1-b97373f29928" index="0">
+        <epoch id="88217038-5f36-4b2c-b5f8-5ed697dc2408" name="Screening">
+          <study-segment id="1835ed9b-17d8-460b-a008-9c59a0ef211d" name="Screening">
+            <period id="7c4cae85-e2b5-49ed-be26-65b8d35623b1" name="screening" repetitions="1" start-day="-28" duration-quantity="28" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="954c5761-0036-4b23-b9dd-5d234a539b24" index="1">
+        <epoch id="f8611140-78d1-45e0-bca3-8bb0fdff05a4" name="Treatment">
+          <study-segment id="dd52ad16-157c-43f2-8cb6-cb2f19049d17" name="Regimen A">
+            <period id="2117e862-8f9a-4f86-a3b3-8a8a8c3ad93b" name="Cycle" repetitions="4" start-day="1" duration-quantity="21" duration-unit="day"/>
+          </study-segment>
+          <study-segment id="e513adf4-03ce-4b2b-84f5-b10b39052c04" name="Regimen B">
+            <period id="5ad9e3dc-7077-425e-bdb4-0f3a11775e5d" name="Cycle" repetitions="4" start-day="1" duration-quantity="21" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="c06877ed-14a3-4ec0-8b9a-91df3ab402f7" index="2">
+        <epoch id="c275a2be-a110-4942-b910-bfb901b4eef4" name="Follow up">
+          <study-segment id="fccd67a5-c8dd-4a29-a8b8-a10d7b12faf8" name="Short term">
+            <period id="796efcf9-7126-4d83-a4d6-3afd3d772149" name="Short term" repetitions="4" start-day="1" duration-quantity="90" duration-unit="day"/>
+          </study-segment>
+          <study-segment id="9054ff53-4871-422e-8f9f-28e8c1884243" name="Long term">
+            <period id="3c7f7246-ff84-40bb-937d-8b6bd1436577" name="Long term" repetitions="5" start-day="1" duration-quantity="365" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </development-amendment>
+</study>

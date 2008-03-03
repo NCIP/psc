@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" assigned-identifier="TransplantSample" xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+  <planned-calendar id="a686a0ca-f653-457f-b893-880bb9d3e2ba"/>
+  <development-amendment name="[Original]" date="2008-03-03" mandatory="true">
+    <planned-calendar-delta id="cc2f1af4-9e0d-43f0-8596-b20a01e5b87a" node-id="a686a0ca-f653-457f-b893-880bb9d3e2ba">
+      <add id="85caf84b-94bd-40fe-af42-5fa86a07b2b9" index="0">
+        <epoch id="7ac374b8-5bf1-40f5-8e02-375bbd9d3d7f" name="Transplant">
+          <study-segment id="45a84c3c-8646-4784-a9e9-fe9858b84050" name="Run in">
+            <period id="844b59f6-72e1-4443-9317-26769063e16c" name="Run in" repetitions="1" start-day="-8" duration-quantity="8" duration-unit="day"/>
+          </study-segment>
+          <study-segment id="111f8f6c-3d5e-4bf8-99bf-1b7122ace4d0" name="Transplant">
+            <period id="9922be01-5d8a-4077-8fd4-3236b8fe040b" name="Transplant" repetitions="1" start-day="0" duration-quantity="15" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+      <add id="1fe474ac-ea0b-464e-9623-a7f6e80f5b51" index="1">
+        <epoch id="c81acadd-3724-455c-9240-0565325fedd5" name="Follow up">
+          <study-segment id="0b2d095c-42f6-4d26-b12f-3a03a8168101" name="Short term">
+            <period id="e123d76b-0a89-430b-a0e4-bfe6ef88bd7c" name="Follow up" repetitions="4" start-day="1" duration-quantity="90" duration-unit="day"/>
+          </study-segment>
+          <study-segment id="e2dd2269-abf0-4904-8425-f5bcb5c1f8f1" name="Long term">
+            <period id="62537dc3-ba07-4555-bd5d-4e9d7705e0c1" name="Annual follow up" repetitions="5" start-day="1" duration-quantity="365" duration-unit="day"/>
+          </study-segment>
+        </epoch>
+      </add>
+    </planned-calendar-delta>
+  </development-amendment>
+</study>
