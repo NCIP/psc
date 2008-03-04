@@ -3,7 +3,6 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -114,7 +113,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(developmentAmendmentSerializer.readElement(element)).andReturn(developmentAmendment);
 
         // Need to cast calendar to PlanTreeNode because of EasyMockBug
-        expect(plannedCalendarSerializer.readElement(element)).andReturn((PlanTreeNode) calendar);
+        expect(plannedCalendarSerializer.readElement(element)).andReturn(calendar);
         replayMocks();
 
         Study actual = serializer.readElement(element);

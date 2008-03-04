@@ -13,7 +13,8 @@ public enum UriTemplateParameters {
     ACTIVITY_CODE,
     SITE_IDENTIFIER,
     ASSIGNMENT_IDENTIFIER,
-    BLACKOUT_DATE_IDENTIFIER;
+    BLACKOUT_DATE_IDENTIFIER,
+    AMENDMENT_IDENTIFIER;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();

@@ -28,7 +28,7 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
         Study study = createNamedInstance("Study A", Study.class);
 
         serializer = new PlannedCalendarXmlSerializer(){
-            protected AbstractPlanTreeNodeXmlSerializer getChildSerializer() {
+            protected EpochXmlSerializer getEpochSerializer() {
                 return epochSerializer;
             }
         };
@@ -52,7 +52,7 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
 
-        PlannedCalendar actual = (PlannedCalendar) serializer.readElement(element);
+        PlannedCalendar actual = serializer.readElement(element);
         verifyMocks();
 
         assertEquals("Wrong grid id", "grid0", actual.getGridId());
@@ -64,7 +64,7 @@ public class PlannedCalendarXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(plannedCalendarDao.getByGridId("grid0")).andReturn(plannedCalendar);
         replayMocks();
 
-        PlannedCalendar actual = (PlannedCalendar) serializer.readElement(element);
+        PlannedCalendar actual = serializer.readElement(element);
         verifyMocks();
 
         assertSame("Wrong Planned Calendar", plannedCalendar, actual);
