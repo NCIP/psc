@@ -95,7 +95,6 @@
 
                 <resource path="{amendment-identifier}">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
                         <html:p>
                             A realized template, containing all epochs, study segments, etc., as it
                             existed at a particular amendment.
