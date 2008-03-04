@@ -181,7 +181,7 @@
 
     <servlet>
         <servlet-name>restful-api</servlet-name>
-        <servlet-class>edu.northwestern.bioinformatics.studycalendar.restlets.RestletSpringServlet</servlet-class>
+        <servlet-class>com.noelios.restlet.ext.spring.RestletFrameworkServlet</servlet-class>
         <init-param>
             <param-name>targetRestletBeanName</param-name>
             <param-value>guard</param-value>

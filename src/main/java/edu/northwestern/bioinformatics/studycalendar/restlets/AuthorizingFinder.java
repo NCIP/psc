@@ -10,6 +10,7 @@ import org.restlet.Handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import org.restlet.ext.spring.SpringBeanFinder;
 
 import java.util.Collection;
 

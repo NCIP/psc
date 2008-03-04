@@ -41,11 +41,12 @@ public class PscGuard extends Guard {
     }
 
     @Override
-    public void doHandle(Request request, Response response) {
+    public int doHandle(Request request, Response response) {
         if (doesNotRequireAuthentication(request)) {
             accept(request, response);
+            return CONTINUE;
         } else {
-            super.doHandle(request, response);
+            return super.doHandle(request, response);
         }
     }
 
