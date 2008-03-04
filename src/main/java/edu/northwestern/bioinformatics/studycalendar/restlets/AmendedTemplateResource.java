@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -35,10 +36,16 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Planne
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(request);
 
         Study study = studyDao.getByAssignedIdentifier(studyIdentifier);
-        Study clone = study.transientClone();
+        if (study == null) {
+            throw new StudyCalendarValidationException("Study Not Found");
+        }
 
         Amendment amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
+        if (amendment == null) {
+            throw new StudyCalendarValidationException("Amendment Not Found");
+        }
 
+        Study clone = study.transientClone();
         Study amended = amendmentService.getAmendedStudy(clone, amendment);
 
         return amended.getPlannedCalendar();

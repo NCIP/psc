@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
@@ -65,8 +66,8 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     public void testGet() throws Exception {
-        expectFoundStudy(study);
-        expectFoundAmendment(amendment);
+        expectFoundStudy();
+        expectFoundAmendment();
         expectAmendClonedStudy(amendment);
         expectObjectXmlized(calendar);
 
@@ -75,18 +76,52 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         assertResponseStatus(Status.SUCCESS_OK);
     }
 
+    public void testGetWithNoStudyIdentifier() {
+        request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "");
+        expectStudyNotFound();
+
+        try {
+            doGet();
+            fail("Exception should be thrown");
+        } catch (StudyCalendarValidationException e) {
+            assertEquals("Study Not Found", e.getMessage());
+        }
+    }
+
+    public void testGetWithNoAssignmentIdentifier() {
+        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), "");
+        expectAmendmentNotFound();
+
+        expectFoundStudy();
+
+        try {
+            doGet();
+            fail("Exception should be thrown");
+        } catch (StudyCalendarValidationException e) {
+            assertEquals("Amendment Not Found", e.getMessage());
+        }
+    }
+
     ////// Expect Methods
 
     protected void expectObjectXmlized(PlannedCalendar cal) {
         expect(calSerializer.createDocumentString(cal)).andReturn(MOCK_XML);
     }
 
-    private void expectFoundStudy(Study study) {
+    private void expectFoundStudy() {
         expect(studyDao.getByAssignedIdentifier(SOURCE_NAME)).andReturn(study);
     }
 
-    private void expectFoundAmendment(Amendment amendment) {
+    private void expectFoundAmendment() {
         expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(amendment);
+    }
+
+    private void expectStudyNotFound() {
+        expect(studyDao.getByAssignedIdentifier("")).andReturn(null);
+    }
+
+    private void expectAmendmentNotFound() {
+        expect(amendmentDao.getByNaturalKey("")).andReturn(null);
     }
 
     private void expectAmendClonedStudy(Amendment target) {
