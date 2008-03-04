@@ -107,8 +107,11 @@
             }
             div.studySegment-controls, div.epoch-controls {
                 position: absolute;
-                bottom: 4px;
+                bottom: 2px;
                 right: 2px;
+                /*need the padding to display correctly the buttons in IE7*/
+                padding-top:3px;
+                padding-bottom:3px;
                 text-align: right;
             }
             span.study-controls {
