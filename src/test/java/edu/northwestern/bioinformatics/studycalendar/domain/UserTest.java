@@ -57,4 +57,9 @@ public class UserTest extends StudyCalendarTestCase {
         user.setActiveFlag(true);
         assertTrue(user.isEnabled());
     }
+    
+    public void testUserToStringIsUsername() throws Exception {
+        assertEquals("In order to be used as a Principal, user.toString must match the username",
+            user.getName(), user.toString());
+    }
 }
