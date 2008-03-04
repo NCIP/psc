@@ -37,7 +37,7 @@
 
         <html:p class="main">
             Resources marked <html:em class="pending">Pending</html:em> are planned
-            for release 2.0 of PSC, but are not yet implemented.
+            for a future release of PSC, but are not yet implemented.
         </html:p>
     </doc>
 
