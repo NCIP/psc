@@ -108,6 +108,7 @@
             div.studySegment-controls, div.epoch-controls {
                 position: absolute;
                 bottom: 2px;
+                top:2px;
                 right: 2px;
                 /*need the padding to display correctly the buttons in IE7*/
                 padding-top:3px;
@@ -118,10 +119,18 @@
                 margin-left: 4px;
             }
 
-            .inplaceeditor-form a {
+            .inplaceeditor-form a, form {
                 font-size: 11pt;
                 border: 1px solid #444;
                 padding: 3px;
+            }
+
+            .no-border-form {
+                border: 0px;
+                margin-bottom:3px;
+                width:60%;
+                position:relative;
+
             }
 
             ul#admin-options {

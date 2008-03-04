@@ -878,7 +878,7 @@ Object.extend(Ajax.InPlaceEditor, {
     externalControl: null,                      // id|elt
     externalControlOnly: false,
     fieldPostCreation: 'activate',              // 'activate'|'focus'|false
-    formClassName: 'inplaceeditor-form',
+    formClassName: 'inplaceeditor-form no-border-form',
     formId: null,                               // id|elt
     highlightColor: '#ffff99',
     highlightEndColor: '#ffffff',
