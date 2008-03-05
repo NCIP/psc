@@ -80,12 +80,10 @@ function addToBeginSentence(){
     var renameButton = createRenameControl('study', studyId, "enter", 'study')
     var endOfInfoSentence = " protocol identifier."
 
-    var newValue = SC.inPlaceEdit("study-name", renameButton.href, {
-        externalControl: renameButton,
-        clickToEditText: "Click to rename",
-        onComplete:function() {hideShowReleaseTemplateButton()}
+    Event.observe(renameButton, "click", function(e) {
+        Event.stop(e)
+        SC.inPlaceEditors["study-name"].enterEditMode()
     })
-
     var h1BeginSentence = Builder.node("span", {})
     h1BeginSentence.innerHTML = infoSentence
     var h1EndSentence = Builder.node("span", {})
