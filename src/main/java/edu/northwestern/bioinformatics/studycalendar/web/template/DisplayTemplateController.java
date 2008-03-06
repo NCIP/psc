@@ -16,6 +16,7 @@ import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.Applica
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ public class DisplayTemplateController extends PscAbstractController {
     private DaoFinder daoFinder;
     private UserDao userDao;
     private TemplateService templateService;
+    private String study;
 
     public DisplayTemplateController() {
         setCrumb(new Crumb());
@@ -39,13 +41,14 @@ public class DisplayTemplateController extends PscAbstractController {
 
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int studyId = ServletRequestUtils.getRequiredIntParameter(request, "study");
+        String studyStringIdentifier = ServletRequestUtils.getRequiredStringParameter(request, "study");
         Integer selectedStudySegmentId = ServletRequestUtils.getIntParameter(request, "studySegment");
         Integer selectedAmendmentId = ServletRequestUtils.getIntParameter(request, "amendment");
         Map<String, Object> model = new HashMap<String, Object>();
 
-        Study loaded = studyDao.getById(studyId);
-
+        Study loaded = getStudyByTheIdentifier(studyStringIdentifier);
+        int studyId = loaded.getId();
+        
         Study study = selectAmendmentAndReviseStudy(loaded, selectedAmendmentId, model);
 
         StudySegment studySegment = selectStudySegment(study, selectedStudySegmentId);
@@ -78,6 +81,23 @@ public class DisplayTemplateController extends PscAbstractController {
         List<Epoch> epochs = study.getPlannedCalendar().getEpochs();
         model.put("epochs", epochs);
         return new ModelAndView("template/display", model);
+    }
+
+    public Study getStudyByTheIdentifier(String studyStringIdentifier){
+        Study study;
+        study = studyDao.getByAssignedIdentifier(studyStringIdentifier);
+        if (study == null) {
+            try {
+                study = studyDao.getById(new Integer(studyStringIdentifier));
+            } catch (NumberFormatException e) {
+                log.debug("Can't convert id of the study " + study);
+                study = null;
+            }
+        }
+        if (study == null) {
+            study = studyDao.getByGridId(studyStringIdentifier);
+        }
+        return study;
     }
 
     private Study selectAmendmentAndReviseStudy(Study study, Integer selectedAmendmentId, Map<String, Object> model) {

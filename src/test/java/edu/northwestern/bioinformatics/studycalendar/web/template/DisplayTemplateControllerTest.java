@@ -78,9 +78,6 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         request.setMethod("GET");
         request.addParameter("study", study.getId().toString());
 
-        expect(studyDao.getById(study.getId())).andReturn(study);
-        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(Collections.<StudySubjectAssignment>emptyList()).anyTimes();
-
         subjectCoord = Fixtures.createUser("john", Role.SUBJECT_COORDINATOR);
         SecurityContextHolderTestHelper.setSecurityContext(subjectCoord.getName(), "asdf");
 
@@ -90,7 +87,25 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     }
 
+
+    public void testGetStudyByAssignedIdentifier() throws Exception {
+        request.addParameter("study", study.getName());
+        Map<String, Object> actualModel = getAndReturnModel();
+        assertSame(study, actualModel.get("study"));
+    }
+
+    public void testGetStudyByStudyId() throws Exception {
+        request.addParameter("study", study.getId().toString());
+        Map<String, Object> actualModel = getAndReturnModel();
+        assertSame(study, actualModel.get("study"));
+    }
+
+
     public void testView() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
+        expect(studyDao.getById(study.getId())).andReturn(study);
+        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);        
         replayMocks();
         assertEquals("template/display", controller.handleRequest(request, response).getViewName());
         verifyMocks();
@@ -123,12 +138,15 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     public void testAssignmentsIncludedWhenComplete() throws Exception {
         reset(studyDao);
+        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
-        
+
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
         expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
-
-        Map<String, Object> actualModel = getAndReturnModel();
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+        Map<String, Object> actualModel = (Map<String, Object>) mv.getModel();
         assertSame(expectedAssignments, actualModel.get("assignments"));
     }
 
@@ -194,7 +212,14 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Study amended = study.transientClone();
 
         expect(deltaService.revise(study, dev)).andReturn(amended);
-        Map<String, Object> actualModel = getAndReturnModel();
+        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
+        expect(studyDao.getById(study.getId())).andReturn(study);
+
+        replayMocks();
+        ModelAndView mv = controller.handleRequest(request, response);
+        verifyMocks();
+        Map<String, Object> actualModel = (Map<String, Object>) mv.getModel();
+
         assertSame(amended, actualModel.get("study"));
         assertSame(dev, actualModel.get("amendment"));
         assertSame(dev, actualModel.get("developmentRevision"));
@@ -224,6 +249,10 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
 
     @SuppressWarnings({ "unchecked" })
     private Map<String, Object> getAndReturnModel() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
+        expect(studyDao.getById(study.getId())).andReturn(study);
+        List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
         replayMocks();
         ModelAndView mv = controller.handleRequest(request, response);
         verifyMocks();
