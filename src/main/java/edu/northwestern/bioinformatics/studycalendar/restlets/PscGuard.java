@@ -1,20 +1,27 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.Guard;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.Reference;
-import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.security.plugin.AuthenticationSystem;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.AuthenticationManager;
+import org.restlet.Guard;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
 import java.util.regex.Pattern;
+
+import com.noelios.restlet.authentication.AuthenticationHelper;
+import com.noelios.restlet.Engine;
 
 /**
  * Authentication piece of the API security implementation.  There is a single
@@ -31,10 +38,12 @@ import java.util.regex.Pattern;
 public class PscGuard extends Guard {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    public static final ChallengeScheme PSC_TOKEN
+        = new ChallengeScheme("HTTP_psc_token", "psc_token", "Token-based pluggable authentication for PSC");
     public static final String AUTH_TOKEN_ATTRIBUTE_KEY = "pscAuthenticationToken";
 
     private Pattern except;
-    private AuthenticationManager authenticationManager;
+    private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public PscGuard() {
         super(null, ChallengeScheme.HTTP_BASIC, "PSC");
@@ -46,7 +55,13 @@ public class PscGuard extends Guard {
             accept(request, response);
             return CONTINUE;
         } else {
-            return super.doHandle(request, response);
+            try {
+                return super.doHandle(request, response);
+            } catch (UnimplementedScheme unimplementedScheme) {
+                response.setEntity(unimplementedScheme.getMessage(), MediaType.TEXT_PLAIN);
+                response.setStatus(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+                return STOP;
+            }
         }
     }
 
@@ -56,29 +71,30 @@ public class PscGuard extends Guard {
         return except != null && except.matcher(ref.toString()).matches();
     }
 
-    @Override // largely copied from Guard
+    @Override
+    // Mostly copied from Restlet's AuthenticationUtils.authenticate.
+    // This is sort of a roundabout implementation (since I'm overriding this
+    // method anyway, delegating to an AuthenticationHelper sort of obfuscates
+    // things), but once Restlet supports multiple challenge schemes (isse 457)
+    // it will be easier to upgrade.
     public int authenticate(Request request) {
-        int result = 0;
+        int result = Guard.AUTHENTICATION_MISSING;
 
         // An authentication scheme has been defined,
         // the request must be authenticated
         ChallengeResponse cr = request.getChallengeResponse();
 
         if (cr != null) {
-            if (getScheme().equals(cr.getScheme())) {
-                // The challenge schemes are compatible
-                String identifier = request.getChallengeResponse().getIdentifier();
-                char[] secret = request.getChallengeResponse().getSecret();
+            if (this.supportsScheme(cr.getScheme())) {
+                AuthenticationHelper helper = Engine.getInstance()
+                        .findHelper(cr.getScheme(), false, true);
 
-                // Check the credentials
-                if ((identifier != null) && (secret != null)) {
-                    Authentication auth = authenticate(identifier, new String(secret));
-                    if (auth == null) {
-                        result = -1;
-                    } else {
-                        result = auth.isAuthenticated() ? 1 : -1;
-                        request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
-                    }
+                if (helper != null) {
+                    result = helper.authenticate(cr, request, this);
+                } else {
+                    throw new IllegalArgumentException("Challenge scheme "
+                            + cr.getScheme()
+                            + " not supported by the Restlet engine.");
                 }
             } else {
                 // The challenge schemes are incompatible, we need to
@@ -91,13 +107,38 @@ public class PscGuard extends Guard {
         return result;
     }
 
-    protected Authentication authenticate(String identifier, String secret) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(identifier, secret);
+    public boolean supportsScheme(ChallengeScheme scheme) {
+        return ChallengeScheme.HTTP_BASIC.equals(scheme)
+            || PscGuard.PSC_TOKEN.equals(scheme);
+    }
+
+    @Override
+    public boolean checkSecret(Request request, String identifier, char[] secret) {
+        return authenticate(request, getAuthenticationSystem()
+            .createUsernamePasswordAuthenticationRequest(identifier, new String(secret)));
+    }
+
+    public boolean checkToken(Request request, String credentials) {
+        return authenticate(request, getAuthenticationSystem()
+            .createTokenAuthenticationRequest(credentials));
+    }
+
+    protected boolean authenticate(Request request, Authentication token) {
+        if (token == null) {
+            throw new UnimplementedScheme(request.getChallengeResponse().getScheme());
+        }
+
         try {
-            return authenticationManager.authenticate(token);
+            Authentication auth = getAuthenticationManager().authenticate(token);
+            if (auth == null) {
+                return false;
+            } else {
+                request.getAttributes().put(AUTH_TOKEN_ATTRIBUTE_KEY, auth);
+                return auth.isAuthenticated();
+            }
         } catch (AuthenticationException ae) {
             log.debug("Authentication using injected authentication provider failed", ae);
-            return null;
+            return false;
         }
     }
 
@@ -111,12 +152,24 @@ public class PscGuard extends Guard {
         this.except = except;
     }
 
-    public AuthenticationManager getAuthenticationManager() {
-        return authenticationManager;
+    protected AuthenticationManager getAuthenticationManager() {
+        return getAuthenticationSystem().authenticationManager();
+    }
+
+    protected AuthenticationSystem getAuthenticationSystem() {
+        return authenticationSystemConfiguration.getAuthenticationSystem();
     }
 
     @Required
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+    public void setAuthenticationSystemConfiguration(AuthenticationSystemConfiguration authenticationSystemConfiguration) {
+        this.authenticationSystemConfiguration = authenticationSystemConfiguration;
+    }
+
+    ///// INNER
+
+    private static final class UnimplementedScheme extends StudyCalendarSystemException {
+        public UnimplementedScheme(ChallengeScheme scheme) {
+            super("%s authentication is not supported with the configured authentication system", scheme.getTechnicalName());
+        }
     }
 }

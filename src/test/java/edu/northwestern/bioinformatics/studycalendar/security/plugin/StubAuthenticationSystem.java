@@ -6,6 +6,7 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 
 import javax.servlet.Filter;
@@ -62,5 +63,13 @@ public class StubAuthenticationSystem implements AuthenticationSystem {
 
     public Filter logoutFilter() {
         throw new UnsupportedOperationException("logoutFilter not implemented");
+    }
+
+    public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
+        throw new UnsupportedOperationException("createUsernamePasswordAuthenticationRequest not implemented");
+    }
+
+    public Authentication createTokenAuthenticationRequest(String token) {
+        throw new UnsupportedOperationException("createTokenAuthenticationRequest not implemented");
     }
 }

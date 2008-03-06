@@ -6,6 +6,7 @@ import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.Configuration;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.Authentication;
 import org.springframework.context.ApplicationContext;
 
 import javax.servlet.Filter;
@@ -97,7 +98,26 @@ public interface AuthenticationSystem {
      */
     Filter logoutFilter();
 
-    //////
-    // TODO: custom HTTP authentication methods
-    //////
+    /**
+     * Create an unauthenticated Acegi {@link Authentication} token for the given username
+     * and password.  This token should be authenticable by the {@link AuthenticationManager}
+     * returned by {@link #authenticationManager}.
+     * <p>
+     * If this implementation doesn't support username and password authentication, this method
+     * should return null.
+     *
+     * @see org.acegisecurity.providers.UsernamePasswordAuthenticationToken
+     */
+    Authentication createUsernamePasswordAuthenticationRequest(String username, String password);
+
+    /**
+     * Create an unauthenticated Acegi {@link Authentication} from the given token which can be
+     * serviced by the configured {@link AuthenticationManager}.
+     * This {@link Authentication} will be used to verify tokens passed to the RESTful API
+     * using the <code>psc_token</code> authentication scheme.
+     * <p>
+     * If this authentication system does not support token-based authentication, this method
+     * should return null.
+     */
+    Authentication createTokenAuthenticationRequest(String token);
 }

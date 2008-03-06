@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.acegisecurity.AuthenticationManager;
+import org.acegisecurity.Authentication;
 import org.acegisecurity.providers.AuthenticationProvider;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
 import org.acegisecurity.ui.cas.CasProcessingFilter;
@@ -118,6 +119,15 @@ public class CasAuthenticationSystem extends AbstractAuthenticationSystem {
     @Override
     public Filter logoutFilter() {
         return (Filter) casContext.getBean("casLogoutFilter");
+    }
+
+    public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
+        return null;
+    }
+
+    public Authentication createTokenAuthenticationRequest(String token) {
+        // TODO: CAS should be able to support this in theory
+        return null;
     }
 
     protected String getPopulatorBeanName() {

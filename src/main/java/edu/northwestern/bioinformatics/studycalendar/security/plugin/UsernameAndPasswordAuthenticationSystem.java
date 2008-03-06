@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.security.plugin;
 import org.acegisecurity.ui.webapp.AuthenticationProcessingFilter;
 import org.acegisecurity.ui.webapp.AuthenticationProcessingFilterEntryPoint;
 import org.acegisecurity.ui.AuthenticationEntryPoint;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.providers.UsernamePasswordAuthenticationToken;
 
 import javax.servlet.Filter;
 
@@ -11,7 +13,8 @@ import static edu.northwestern.bioinformatics.studycalendar.tools.spring.SpringB
 /**
  * Base class for all authentication systems that use the local
  * PSC log in page to receive a username and password.  Subclasses will
- * probably only need to implement {@link #authenticationManager()}.
+ * probably only need to implement {@link #authenticationManager()} or
+ * {@link #createAuthenticationManager()}.
  *
  * @author Rhett Sutphin
  */
@@ -32,5 +35,13 @@ public abstract class UsernameAndPasswordAuthenticationSystem extends AbstractAu
         filter.setDefaultTargetUrl(DEFAULT_TARGET_PATH);
         filter.setAuthenticationFailureUrl(LOGIN_ERROR_URL);
         return prepareBean(getApplicationContext(), filter);
+    }
+
+    public Authentication createUsernamePasswordAuthenticationRequest(String username, String password) {
+        return new UsernamePasswordAuthenticationToken(username, password);
+    }
+
+    public Authentication createTokenAuthenticationRequest(String token) {
+        return null;
     }
 }
