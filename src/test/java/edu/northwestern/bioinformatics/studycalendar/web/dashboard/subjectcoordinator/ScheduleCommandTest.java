@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
 import static org.easymock.EasyMock.expect;
+import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 
 public class ScheduleCommandTest extends StudyCalendarTestCase {
@@ -52,18 +53,11 @@ public class ScheduleCommandTest extends StudyCalendarTestCase {
     }
 
     public void testShiftStartDayByNumberOfDays() throws Exception {
-        Date startDate = new Date();
-        Integer numberOfDaysToShift = 3;
-        Calendar rightNow = Calendar.getInstance();
-        rightNow.add(Calendar.DATE, numberOfDaysToShift);
-        Date expectedDate = rightNow.getTime();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = df.format(expectedDate);
-        expectedDate = df.parse(dateString);
+        Date startDate = DateTools.createDate(2005, Calendar.AUGUST, 3);
         replayMocks();
-        Date actualDate = paService.shiftStartDayByNumberOfDays(startDate, numberOfDaysToShift);
+        Date actualDate = paService.shiftStartDayByNumberOfDays(startDate, 3);
         verifyMocks();
-        assertEquals("Expected and Actual Dates are different ", expectedDate, actualDate);
+        assertDayOfDate("Incorrect shift", 2005, Calendar.AUGUST, 6, actualDate);
     }
 
     public void testFormatDateToString() throws Exception {
