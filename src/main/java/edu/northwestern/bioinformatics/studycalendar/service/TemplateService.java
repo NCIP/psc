@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.*;
 import static java.util.Arrays.asList;
@@ -198,8 +199,11 @@ public class TemplateService {
         List<Site> availableSites = new ArrayList<Site>();
         List<Site> assignedSites = new ArrayList<Site>();
         List<ProtectionGroup> allSitePGs = authorizationManager.getSites();
-        for (ProtectionGroup site : allSitePGs) {
-            availableSites.add(DomainObjectTools.loadFromExternalObjectId(site.getProtectionGroupName(), siteDao));
+        for (ProtectionGroup sitePG : allSitePGs) {
+            String pgName = sitePG.getProtectionGroupName();
+            Site site = DomainObjectTools.loadFromExternalObjectId(pgName, siteDao);
+            if (site == null) throw new StudyCalendarSystemException("%s does not map to a PSC site", pgName);
+            availableSites.add(site);
         }
         for (StudySite ss : studyTemplate.getStudySites()) {
             assignedSites.add(ss.getSite());
