@@ -25,7 +25,7 @@ public class StudyServiceIntegratedTest extends DaoTestCase {
     public void testSaveBasicSkeleton() throws Exception {
         int id;
         {
-            Study blank = TemplateSkeletonCreator.BASIC.create();
+            Study blank = TemplateSkeletonCreator.BASIC.create(null);
             service.save(blank);
 
             assertNotNull("Not saved", blank.getId());

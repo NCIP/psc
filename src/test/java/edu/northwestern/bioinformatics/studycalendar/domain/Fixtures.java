@@ -116,7 +116,7 @@ public class Fixtures {
 
     private static Study createApprovedTemplate(TemplateSkeletonCreator skeletonCreator) {
         log.debug("Creating concrete template from skeleton");
-        Study dev = skeletonCreator.create();
+        Study dev = skeletonCreator.create(null);
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
         // This is a partial implementation of DeltaService#amend 
         deltaService.apply(dev, dev.getDevelopmentAmendment());

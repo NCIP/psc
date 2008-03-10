@@ -17,7 +17,8 @@ public interface TemplateSkeletonCreator {
     TemplateSkeletonCreator BLANK = new TemplateSkeletonCreatorImpl.Blank();
     TemplateSkeletonCreator BASIC = new TemplateSkeletonCreatorImpl.Basic();
 
-    Study create();
+//    Study create();
+    Study create(String studyName);
 }
 
  

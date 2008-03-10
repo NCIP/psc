@@ -31,21 +31,32 @@ public class TemplateSkeletonCreatorImpl {
    }
 
    static class Blank implements TemplateSkeletonCreator {
-       public Study create() {
-           String name = "[Unnamed blank study]";
-           Study study = createBase(name);
+       public Study create(String studyName) {
+           String newStudyName;
+            if (studyName == null || studyName.length()==0) {
+                newStudyName = "[Unnamed blank study]";
+            } else {
+                newStudyName = studyName;
+            }
+           Study study = createBase(newStudyName);
            addEpoch(study, 0, Epoch.create("[Unnamed epoch]"));
            return study;
        }
    }
 
-   static class Basic implements TemplateSkeletonCreator {
-       public Study create() {
-           Study study = createBase("[ABC 1234]");
-           addEpoch(study, 0, Epoch.create("Screening"));
-           addEpoch(study, 1, Epoch.create("Treatment", "A", "B", "C"));
-           addEpoch(study, 2, Epoch.create("Follow up"));
-           return study;
-       }
+    static class Basic implements TemplateSkeletonCreator {
+        public Study create(String studyName) {
+        String newStudyName;
+            if (studyName == null || studyName.length()==0) {
+                newStudyName = "[ABC 1234]";
+            } else {
+                newStudyName = studyName;
+            }
+            Study study = createBase(newStudyName);
+            addEpoch(study, 0, Epoch.create("Screening"));
+            addEpoch(study, 1, Epoch.create("Treatment", "A", "B", "C"));
+            addEpoch(study, 2, Epoch.create("Follow up"));
+            return study;
+        }
    }
 }

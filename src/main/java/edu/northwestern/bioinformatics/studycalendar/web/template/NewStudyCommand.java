@@ -17,7 +17,9 @@ public class NewStudyCommand {
     }
 
     public Study create() {
-        Study study = getBase().create();
+        String newStudyName = studyService.getNewStudyName();
+        Study study = getBase().create(newStudyName);
+
         studyService.save(study);
         return study;
     }

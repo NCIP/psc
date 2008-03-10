@@ -109,7 +109,7 @@ public class DefaultPlannedCalendarServiceTest extends StudyCalendarTestCase {
         service.setDefaultTemplateCreator(defaultCreator);
 
         expect(studyDao.getByGridId(parameterStudy.getGridId())).andReturn(null);
-        expect(defaultCreator.create()).andReturn(created);
+        expect(defaultCreator.create(null)).andReturn(created);
         expect(siteDao.getByGridId(parameterStudy.getSites().get(0).getGridId()))
             .andReturn(loadedStudy.getSites().get(0));
         studyDao.save(created);

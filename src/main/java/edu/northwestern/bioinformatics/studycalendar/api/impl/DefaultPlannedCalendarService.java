@@ -43,7 +43,7 @@ public class DefaultPlannedCalendarService implements PlannedCalendarService {
 
         Study registered;
         if (study.getPlannedCalendar() == null) {
-            registered = defaultTemplateCreator.create();
+            registered = defaultTemplateCreator.create(null);
         } else {
             registered = new Study();
             registered.setPlannedCalendar(study.getPlannedCalendar());

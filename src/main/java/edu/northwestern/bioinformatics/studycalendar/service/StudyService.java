@@ -57,7 +57,11 @@ public class StudyService {
 		studyDao.save(study);
 	}
 
-	private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
+    public String getNewStudyName() {
+        return studyDao.getNewStudyName();
+    }
+
+    private ScheduledActivity getNextScheduledActivity(final ScheduledCalendar calendar, final Date startDate) {
 		for (ScheduledStudySegment studySegment : calendar.getScheduledStudySegments()) {
 			if (!studySegment.isComplete()) {
 				Map<Date, List<ScheduledActivity>> eventsByDate = studySegment.getActivitiesByDate();

@@ -20,11 +20,11 @@ import java.util.List;
 public class TemplateSkeletonCreatorTest extends StudyCalendarTestCase {
 
     public void testBlank() throws Exception {
-        assertBlankStudy(TemplateSkeletonCreator.BLANK.create());
+        assertBlankStudy(TemplateSkeletonCreator.BLANK.create(null));
     }
 
     public void testBasic() throws Exception {
-        assertBasicStudy(TemplateSkeletonCreator.BASIC.create());
+        assertBasicStudy(TemplateSkeletonCreator.BASIC.create(null));
     }
     
     public static void assertBlankStudy(Study actual) {

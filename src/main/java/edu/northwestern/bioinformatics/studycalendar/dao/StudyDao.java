@@ -83,6 +83,27 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> {
         return null;
     }
 
+    @SuppressWarnings({"unchecked"})
+    public String getNewStudyName() {
+        String templateName = "[ABC 1000]";
+        List<Study> studies = getHibernateTemplate().find("from Study a where assigned_identifier LIKE '[ABC %' ORDER BY assigned_identifier DESC");
+        if (studies.size() == 0) {
+            return templateName;
+        }
+        Study study = studies.get(0);
+        String studyName = study.getName();
+        String numericPartSupposedly = studyName.substring(studyName.indexOf(" ")+1, studyName.lastIndexOf("]"));
+        int newNumber = 1000;
+        try {
+            newNumber = new Integer(numericPartSupposedly)+1;
+        }catch(NumberFormatException e) {
+            log.debug("Can't convert study's numeric string " + newNumber + " into int");
+        }
+        templateName = "[ABC " + newNumber + "]";
+        return templateName;
+    }
+
+
     /**
      * Deletes a study
      *
