@@ -161,7 +161,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
     }
 
     public void testExceptionIfNoPublishedAmendmentAndNoneSelected() throws Exception {
-        study.setDevelopmentAmendment(new Amendment("dev"));
+        study.setDevelopmentAmendment(null);
         study.setAmendment(null);
 
         try {
@@ -191,7 +191,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Amendment dev = setId(4, new Amendment("dev"));
         study.setDevelopmentAmendment(dev);
         request.setParameter("amendment", "4");
-        Study amended = study.transientClone();
+//        Study amended = study.transientClone();
+        Study amended = study;
 
         expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(study)).anyTimes();
@@ -209,7 +210,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         study.setDevelopmentAmendment(dev);
         study.setAmendment(null);
         request.setParameter("amendment", "4");
-        Study amended = study.transientClone();
+//        Study amended = study.transientClone();
+        Study amended = study;
 
         expect(deltaService.revise(study, dev)).andReturn(amended);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
@@ -230,7 +232,8 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Amendment dev = setId(4, new Amendment("dev"));
         request.addParameter("amendment", "4");
         study.setDevelopmentAmendment(dev);
-        Study amended = study.transientClone();
+//        Study amended = study.transientClone();
+        Study amended = study;
 
         expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(study)).anyTimes();

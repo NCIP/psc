@@ -105,16 +105,16 @@ public class DisplayTemplateController extends PscAbstractController {
         if (selectedAmendmentId == null) {
             amendment = study.getAmendment();
             if (amendment == null) {
-                throw new StudyCalendarSystemException("No default amendment for " + study.getName());
+                amendment = study.getDevelopmentAmendment();
+                if (amendment == null) {
+                    throw new StudyCalendarSystemException("No default amendment for " + study.getName());
+                } else {
+                    model = insertDevelopmentRevisionInsideModel(study, model);
+                }
             }
         } else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
-            study = deltaService.revise(study, study.getDevelopmentAmendment());
             amendment = study.getDevelopmentAmendment();
-            model.put("developmentRevision", study.getDevelopmentAmendment());
-            if (!study.isInInitialDevelopment()) {
-                model.put("revisionChanges",
-                    new RevisionChanges(daoFinder, study.getDevelopmentAmendment(), study));
-            }
+            model = insertDevelopmentRevisionInsideModel(study, model);
         } else if (study.getAmendment() != null && selectedAmendmentId.equals(study.getAmendment().getId())) {
             amendment = study.getAmendment();
         } else {
@@ -133,6 +133,16 @@ public class DisplayTemplateController extends PscAbstractController {
         }
         model.put("amendment", amendment);
         return study;
+    }    
+
+    private Map<String, Object> insertDevelopmentRevisionInsideModel(Study study, Map<String, Object> model) {
+        study = deltaService.revise(study, study.getDevelopmentAmendment());
+        model.put("developmentRevision", study.getDevelopmentAmendment());
+        if (!study.isInInitialDevelopment()) {
+            model.put("revisionChanges",
+            new RevisionChanges(daoFinder, study.getDevelopmentAmendment(), study));
+        }
+        return model;
     }
 
     private StudySegment selectStudySegment(Study study, Integer selectedStudySegmentId) {
