@@ -3,9 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.testing;
 import edu.northwestern.bioinformatics.studycalendar.domain.Named;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlCollectionSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.validators.XMLValidator.TEMPLATE_VALIDATOR_INSTANCE;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
 import org.apache.commons.io.IOUtils;
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -24,6 +27,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
+import java.util.Collections;
 
 public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
     protected final Logger log = LoggerFactory.getLogger(getClass());
@@ -39,7 +44,7 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         String expectedNormalized = StringUtils.normalizeWhitespace(expected);
         String actualNormalized = StringUtils.normalizeWhitespace(actual);
 
-        // XMLUnit interprets witespace between angle brackets as a child node.
+        // XMLUnit interprets whitespace between angle brackets as a child node.
         // There is no way to turn this off, so we have to remove it.
         expectedNormalized = expectedNormalized.replaceAll("> <", "><");
         actualNormalized = actualNormalized.replaceAll("> <", "><");
@@ -54,6 +59,17 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         invokeValidator(TEMPLATE_VALIDATOR_INSTANCE, new ByteArrayInputStream(byteOutput), errors);
 
         assertFalse("Template xml should be error free", errors.hasErrors());
+    }
+
+    public static String createRootElementString(String rootElementName) {
+        return createRootElementString(rootElementName, null, false);
+    }
+
+    public static String createRootElementString(String rootElementName, String attributes, boolean closed) {
+        return String.format("<%s\n  xmlns=\"%s\"\n  %s\n  %s>", rootElementName,
+            AbstractStudyCalendarXmlSerializer.PSC_NS,
+            attributes == null ? "" : attributes,
+            closed ? '/' : "");
     }
 
     public static <R> R parseDocumentString(StudyCalendarXmlSerializer<R> serializer, String doc) {
@@ -74,24 +90,23 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         try {
             return (dateStr != null) ? formatter.parse(dateStr) : null;
         } catch(ParseException pe) {
-            throw new RuntimeException("Problem parsing date from string");
+            throw new RuntimeException("Problem parsing date from string", pe);
         }
     }
 
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public static<T extends AbstractMutableDomainObject> T eqGridId(T in) {
-        EasyMock.reportMatcher(new GridIdMatcher(in));
+    public static<T extends GridIdentifiable> T eqGridId(T in) {
+        EasyMock.reportMatcher(new GridIdMatcher<T>(in));
         return null;
     }
 
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
-    public static class GridIdMatcher<T extends AbstractMutableDomainObject> implements IArgumentMatcher {
+    public static class GridIdMatcher<T extends GridIdentifiable> implements IArgumentMatcher {
         private T expected;
 
         public GridIdMatcher(T expected) {
             this.expected = expected;
         }
 
+        @SuppressWarnings({ "unchecked" })
         public boolean matches(Object o) {
             T actual = (T) o;
             String actualGridId = actual.getGridId();
@@ -105,13 +120,11 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
         }
     }
 
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public static<T extends Named> T eqName(T in) {
-        EasyMock.reportMatcher(new NameMatcher(in));
+        EasyMock.reportMatcher(new NameMatcher<T>(in));
         return null;
     }
 
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
     public static class NameMatcher<T extends Named> implements IArgumentMatcher {
         private T expected;
 
@@ -119,6 +132,7 @@ public abstract class StudyCalendarXmlTestCase extends StudyCalendarTestCase {
             this.expected = expected;
         }
 
+        @SuppressWarnings({ "unchecked" })
         public boolean matches(Object o) {
             T actual = (T) o;
             String actualGridId = actual.getName();

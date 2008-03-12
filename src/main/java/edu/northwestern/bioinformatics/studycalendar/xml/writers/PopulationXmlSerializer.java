@@ -22,7 +22,7 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
 
     public Population readElement(Element element) {
         String abbreviation = element.attributeValue(ABBREVIATION);
-        Population population = populationDao.getByAbbreviation(study, abbreviation);
+        Population population = load(abbreviation);
         if (population == null) {
             population = new Population();
             population.setAbbreviation(abbreviation);
@@ -30,6 +30,14 @@ public class PopulationXmlSerializer extends AbstractStudyCalendarXmlSerializer<
             population.setStudy(study);
         }
         return population;
+    }
+
+    private Population load(String abbreviation) {
+        if (study.getId() == null) {
+            return null;
+        } else {
+            return populationDao.getByAbbreviation(study, abbreviation);
+        }
     }
 
     public void setPopulationDao(PopulationDao populationDao) {

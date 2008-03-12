@@ -24,6 +24,7 @@ public enum XsdAttribute {
 
     ACTIVITY_SOURCE_NAME("name"),
 
+    STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER("assigned-identifier"),
     REGISTRATION_FIRST_STUDY_SEGMENT_ID("first-study-segment-id"),
     REGISTRATION_DATE("date"),
     REGISTRATION_SUBJECT_COORDINATOR_NAME("subject-coordinator-name"),
@@ -66,7 +67,9 @@ public enum XsdAttribute {
     SCHEDULED_ACTIVITY_STATE_REASON("reason"),
     SCHEDULED_ACTIVITY_STATE_DATE("date"),
     SCHEDULED_ACTIVITY_STATE_STATE("state"),
-    AMENDMENT_APPROVAL_DATE("date") ;
+    AMENDMENT_APPROVAL_DATE("date"),
+    PLAN_TREE_NODE_NAME("name")
+    ;
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;
@@ -75,8 +78,12 @@ public enum XsdAttribute {
         this.attributeName = attrname;
     }
 
+    public String xmlName() {
+        return attributeName;
+    }
+
     public String from(Element elt) {
-        return elt.attributeValue(attributeName);
+        return elt.attributeValue(xmlName());
     }
 
     public Date fromDate(Element elt) {
@@ -86,16 +93,16 @@ public enum XsdAttribute {
         try {
             return formatter.parse(dateString);
         } catch(ParseException pe) {
-            throw new StudyCalendarValidationException("Problem parsing date %s", dateString);
+            throw new StudyCalendarValidationException("Problem parsing date %s", pe, dateString);
         }
     }
 
     public void addTo(Element elt, Object value) {
-        elt.addAttribute(attributeName, value == null ? null : value.toString());
+        elt.addAttribute(xmlName(), value == null ? null : value.toString());
     }
 
     public void addTo(Element elt, Date value) {
-        elt.addAttribute(attributeName, value == null ? null : formatter.format(value));
+        elt.addAttribute(xmlName(), value == null ? null : formatter.format(value));
     }
 
 }

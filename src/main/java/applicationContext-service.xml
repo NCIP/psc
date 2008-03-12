@@ -12,6 +12,8 @@
 
     <tx:annotation-driven proxy-target-class="true"/>
 
+    <bean id="nowFactory" class="gov.nih.nci.cabig.ctms.lang.NowFactory"/>
+
     <bean id="subjectService" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.service.SubjectService"/>
     <bean id="siteService" autowire="byName"

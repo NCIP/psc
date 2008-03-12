@@ -4,6 +4,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
 
+import java.util.List;
+
 /**
  * Enum for the names of elements defined in psc.xsd.
  *
@@ -13,28 +15,41 @@ public enum XsdElement {
     ACTIVITY,
     ACTIVITY_SOURCES("sources"),
     ACTIVITY_SOURCE("source"),
-    REGISTRATION,
+
     REGISTRATIONS,
-    SUBJECT_ASSIGNMENTS("subject-assignments"),
-    SUBJECT_ASSIGNMENT("subject-assignment"),
+    REGISTRATION,
+    SUBJECT_ASSIGNMENTS,
+    SUBJECT_ASSIGNMENT,
     SUBJECT,
-    SITE,
+
     SITES,
-    STUDY_SITE_LINK("study-site-link"),
+    SITE,
+    BLACKOUT_DATE,
+    BLACKOUT_DATES,
+
+    STUDY_SITE_LINK,
+    AMENDMENT_APPROVALS,
+    AMENDMENT_APPROVAL,
+
     STUDIES,
     STUDY,
-    DEVELOPMENT_AMENDMENT("development-amendment"),
+    STUDY_SNAPSHOT,
+    DEVELOPMENT_AMENDMENT,
     AMENDMENT,
-    BLACKOUT_DATE("blackout-date"),
-    BLACKOUT_DATES("blackout-dates"),
-    SCHEDULED_CALENDARS("scheduled-calendars"),
-    SCHEDULED_CALENDAR("scheduled-calendar"),
-    SCHEDULED_STUDY_SEGMENT("scheduled-study-segment"),
-    SCHEDULED_ACTIVITY("scheduled-activity"),
-    CURRENT_SCHEDULED_ACTIVITY_STATE("current-scheduled-activity-state"),
-    PREVIOUS_SCHEDULED_ACTIVITY_STATE("previous-scheduled-activity-state"),
-    AMENDMENT_APPROVAL("amendment-approval"),
-    AMENDMENT_APPROVALS("amendment-approvals");
+    PLANNED_CALENDAR,
+    EPOCH,
+    STUDY_SEGMENT,
+    PERIOD,
+    PLANNED_ACTIVITY,
+    POPULATION,
+
+    SCHEDULED_CALENDARS,
+    SCHEDULED_CALENDAR,
+    SCHEDULED_STUDY_SEGMENT,
+    SCHEDULED_ACTIVITY,
+    CURRENT_SCHEDULED_ACTIVITY_STATE,
+    PREVIOUS_SCHEDULED_ACTIVITY_STATE,
+    ;
 
     private String elementName;
 
@@ -43,7 +58,7 @@ public enum XsdElement {
     }
 
     XsdElement(String elementName) {
-        this.elementName = elementName == null ? name().toLowerCase() : elementName;
+        this.elementName = elementName == null ? name().replaceAll("_", "-").toLowerCase() : elementName;
     }
 
     public String xmlName() {
@@ -55,4 +70,12 @@ public enum XsdElement {
         return DocumentHelper.createElement(qNode);
     }
 
+    public Element from(Element parent) {
+        return parent.element(xmlName());
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public List<Element> allFrom(Element parent) {
+        return parent.elements(xmlName());
+    }
 }

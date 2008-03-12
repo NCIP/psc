@@ -51,7 +51,7 @@ public class EpochXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.getName()).andReturn("epoch");
         expect(element.attributeValue("id")).andReturn("grid0");
         expect(epochDao.getByGridId("grid0")).andReturn(null);
-        expect(element.attributeValue("name")).andReturn("Epoch A");
+        expect(element.attributeValue("name")).andReturn("Epoch A").anyTimes();
         expect(element.elements()).andReturn(emptyList());
         replayMocks();
 

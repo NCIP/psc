@@ -297,6 +297,17 @@
                     p.main {
                         line-height: 1.4em;
                     }
+                    table.compare {
+                        border-collapse: collapse;
+                    }
+                    table.compare th.row {
+                        border-width: 0;
+                        text-align: right;
+                    }
+                    table.compare td {
+                        font-size: 1.0em;
+                        border-left: 1px solid #000;
+                    }
                 </style>
             </head>
             <body>

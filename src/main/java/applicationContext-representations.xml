@@ -22,6 +22,8 @@
     <!-- Xml Serializers -->
     <bean id="studyXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
+    <bean id="studySnapshotXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer"/>
 
     <bean id="amendmentXmlSerializer" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer"/>

@@ -23,12 +23,38 @@
     <xsd:element name="study" type="psc:Study" />
 
     <xsd:complexType name="Study">
+        <xsd:annotation>
+            <xsd:documentation>
+                A representation of an entire study, including all amendments.
+                The planned-calendar nested in a study element must include the id attribute.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
             <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
             <xsd:element ref="psc:amendment" minOccurs="0" maxOccurs="unbounded"/>
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:element ref="psc:development-amendment" minOccurs="0" maxOccurs="1"/>
         </xsd:choice>
+        <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="study-snapshot" type="psc:RealizedStudy"/>
+
+    <xsd:complexType name="RealizedStudy">
+        <xsd:annotation>
+            <xsd:documentation>
+                A representation of a study at a particular moment in time -- i.e., all
+                amendments are merged into a single planned calendar tree.
+
+                Any planned-calendar, epoch, study-segment, period, or planned-activity nested
+                in a RealizedStudy-typed element does not need to include the id
+                attribute.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element ref="psc:planned-calendar" minOccurs="0" maxOccurs="1"/>
+            <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
     </xsd:complexType>
 
@@ -40,7 +66,7 @@
         <xsd:sequence>
             <xsd:element ref="psc:epoch" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="epoch" type="psc:Epoch"/>
@@ -50,7 +76,7 @@
             <xsd:element name="study-segment" type="psc:StudySegment" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="study-segment" type="psc:StudySegment"/>
@@ -60,7 +86,7 @@
             <xsd:element name="period" type="psc:Period" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
     </xsd:complexType>
 
     <xsd:element name="period" type="psc:Period"/>
@@ -70,7 +96,7 @@
             <xsd:element name="planned-activity" type="psc:PlannedActivity" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string"/>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
         <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
         <xsd:attribute name="repetitions" type="xsd:integer" use="required"/>
         <xsd:attribute name="duration-quantity" type="xsd:integer" use="required"/>
@@ -83,7 +109,7 @@
         <xsd:sequence>
             <xsd:element name="activity" type="psc:Activity"/>
         </xsd:sequence>
-        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="id" type="xsd:string" use="optional"/>
         <xsd:attribute name="day" type="xsd:integer" use="required"/>
         <xsd:attribute name="details" type="xsd:string"/>
         <xsd:attribute name="condition" type="xsd:string"/>
@@ -121,6 +147,27 @@
     </xsd:complexType>
 
     <xsd:complexType name="Add">
+        <xsd:annotation>
+            <xsd:documentation>
+                Indicates that a particular tree of template elements was added to the
+                study in a particular amendment.  The tree will be rooted at one of the
+                contained elements.  Any child elements that were added at the same time
+                should be nested inside their parents.  i.e., if a study-segment with
+                two periods was added in a particular amendment, the add will look like this:
+
+                <![CDATA[
+                  <psc:add ...>
+                    <psc:study-segment ...>
+                      <psc:period ... />
+                      <psc:period ... />
+                    </psc:study-segment>
+                  </psc:add>
+                ]]>
+
+                Any planned-calendar, epoch, study-segment, period, or planned-activity nested
+                in an Add-typed element must include the id attribute.
+            </xsd:documentation>
+        </xsd:annotation>
         <xsd:choice>
             <xsd:element ref="psc:epoch"/>
             <xsd:element ref="psc:study-segment"/>

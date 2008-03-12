@@ -47,13 +47,73 @@
 
     <resources base="${baseUri}">
         <resource path="studies">
-            <doc>
-                <html:p>All the studies in the system.</html:p>
-            </doc>
             <method name="GET">
+                <doc>
+                    <html:p>List all the studies in the system.</html:p>
+                </doc>
                 <response>
                     <representation href="#studies-xml"/>
                 </response>
+            </method>
+            <method name="POST">
+                <doc>
+                    <html:p>
+                        Creates a new study in the system from the POSTed entity.
+                        The new study will be "in design" -- i.e., the provided calendar
+                        will be set as its development amendment, and it will not have any
+                        released amendments.
+                        If there is already a study with the given assigned identifier,
+                        it will return HTTP 400.
+                    </html:p>
+                    <html:p>
+                        This method/resource is similar to PUT on <html:code>studies/{study-identifier}/template</html:code>.
+                        However, they differ in several crucial ways.
+                    </html:p>
+                    <html:table class="compare">
+                        <html:tr>
+                            <html:th/>
+                            <html:th>POST to <html:code>studies</html:code></html:th>
+                            <html:th>PUT to <html:code>studies/{study-identifier}/template</html:code></html:th>
+                        </html:tr>
+                        <html:tr>
+                            <html:th class="row">Create new study</html:th>
+                            <html:td>Yes</html:td>
+                            <html:td>Yes</html:td>
+                        </html:tr>
+                        <html:tr>
+                            <html:th class="row">Update existing study</html:th>
+                            <html:td>No</html:td>
+                            <html:td>Yes</html:td>
+                        </html:tr>
+                        <html:tr>
+                            <html:th class="row">Define multiple amendments</html:th>
+                            <html:td>No</html:td>
+                            <html:td>Yes</html:td>
+                        </html:tr>
+                        <html:tr>
+                            <html:th class="row">Synchronize templates across PSC instances</html:th>
+                            <html:td>No</html:td>
+                            <html:td>Yes</html:td>
+                        </html:tr>
+                        <html:tr>
+                            <html:th class="row">Create template elements without specifying IDs</html:th>
+                            <html:td>Yes</html:td>
+                            <html:td>No</html:td>
+                        </html:tr>
+                    </html:table>
+                    <html:p>
+                        This method and resource is intended for situations where a collaborating
+                        application (e.g., a CTMS) wants to define one or more template skeletons
+                        and tell PSC to use one of these skeletons at the same time it tells PSC
+                        about the new study.  On the other hand, PUT to 
+                        <html:code>studies/{study-identifier}/template</html:code> allows the
+                        collaborating application to create or update an entire study structure,
+                        including all amendments.
+                    </html:p>
+                </doc>
+                <request>
+                    <representation href="#study-snapshot-xml"/>
+                </request>
             </method>
 
             <resource path="{study-identifier}/template">
@@ -75,10 +135,16 @@
                 </method>
                 <method name="PUT">
                     <doc>
-                        Creates the study if it does not exist, using the entity provided
-                        in the request.  If the study does exist, the development amendment
-                        may be updated using this method, but nothing else.  (Released
-                        amendments will not be modified.)
+                        <html:p>
+                            Creates the study if it does not exist, using the entity provided
+                            in the request.  If the study does exist, the development amendment
+                            may be updated using this method, but nothing else.  (Released
+                            amendments will not be modified.)
+                        </html:p>
+                        <html:p>
+                            This has different semantics from POST to <html:code>studies</html:code>.
+                            See that resource for details.
+                        </html:p>
                     </doc>
                     <request>
                         <representation href="#study-xml"/>
@@ -458,6 +524,7 @@
 
     <representation mediaType="text/xml" id="studies-xml"                  element="psc:studies"/>
     <representation mediaType="text/xml" id="study-xml"                    element="psc:study"/>
+    <representation mediaType="text/xml" id="study-snapshot-xml"           element="psc:study-snapshot"/>
     <representation mediaType="text/xml" id="planned-calendar-xml"         element="psc:planned-calendar"/>
     <representation mediaType="text/xml" id="amendment-xml"                element="psc:amendment"/>
     <representation mediaType="text/xml" id="study-site-link-xml"          element="psc:study-site-link"/>

@@ -33,7 +33,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     private Amendment developmentAmendment; // the next amendment, currently in development and not released
 
     private List<StudySite> studySites = new ArrayList<StudySite>();
-    private Set<Population> populations = new HashSet<Population>();
+    private Set<Population> populations = new LinkedHashSet<Population>();
 
     private boolean memoryOnly = false;
 

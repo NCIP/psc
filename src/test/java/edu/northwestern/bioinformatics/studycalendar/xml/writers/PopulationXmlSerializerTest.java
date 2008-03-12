@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.NAME;
 import static edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer.ABBREVIATION;
 import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
@@ -23,7 +23,7 @@ public class PopulationXmlSerializerTest extends StudyCalendarXmlTestCase {
         element = registerMockFor(Element.class);
         populationDao = registerDaoMockFor(PopulationDao.class);
 
-        study = createNamedInstance("Study A", Study.class);
+        study = setId(4, createNamedInstance("Study A", Study.class));
 
         serializer = new PopulationXmlSerializer();
         serializer.setPopulationDao(populationDao);

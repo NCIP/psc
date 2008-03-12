@@ -19,9 +19,6 @@ import java.util.Collection;
  * @author Saurabh Agrawal
  */
 public abstract class AbstractCollectionResource<D extends DomainObject> extends AbstractPscResource {
-
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
     @Override
     public boolean allowGet() {
         return true;
@@ -51,6 +48,4 @@ public abstract class AbstractCollectionResource<D extends DomainObject> extends
     public abstract Collection<D> getAllObjects();
 
     public abstract StudyCalendarXmlCollectionSerializer<D> getXmlSerializer();
-
-
 }

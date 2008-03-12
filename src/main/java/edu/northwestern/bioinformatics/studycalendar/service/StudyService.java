@@ -9,6 +9,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Required;
@@ -19,21 +21,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
+import gov.nih.nci.cabig.ctms.lang.NowFactory;
+
 @Transactional
 public class StudyService {
 	private ActivityDao activityDao;
-
 	private StudyDao studyDao;
-
 	private DeltaService deltaService;
-
 	private TemplateService templateService;
-
 	private PlannedCalendarDao plannedCalendarDao;
-
     private AmendmentDao  amendmentDao;
-
     private EpochDao epochDao;
+    private NowFactory nowFactory;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
 		List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -168,6 +168,32 @@ public class StudyService {
         }
     }
 
+    /**
+     * Mutates the provided example study into a saveable form and then saves it.
+     * Specifically, it takes the plan tree embodied in the plannedCalendar of the
+     * example study and translates it into a development amendment which, when
+     * released, will have the same structure as the example.
+     *
+     * @param example
+     */
+    public void createInDesignStudyFromExamplePlanTree(Study example) {
+        example.setAmendment(null);
+        Amendment newDev = new Amendment();
+        newDev.setDate(nowFactory.getNow());
+        newDev.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
+
+        PlannedCalendarDelta delta = new PlannedCalendarDelta(example.getPlannedCalendar());
+        List<Epoch> epochs = new ArrayList<Epoch>(example.getPlannedCalendar().getEpochs());
+        example.getPlannedCalendar().getEpochs().clear();
+        for (Epoch epoch : epochs) {
+            Add.create(epoch).mergeInto(delta);
+        }
+        newDev.addDelta(delta);
+
+        example.setDevelopmentAmendment(newDev);
+        save(example);
+    }
+
     // //// CONFIGURATION
 
 	@Required
@@ -203,5 +229,10 @@ public class StudyService {
     @Required
     public void setEpochDao(EpochDao epochDao) {
         this.epochDao = epochDao;
+    }
+
+    @Required
+    public void setNowFactory(NowFactory nowFactory) {
+        this.nowFactory = nowFactory;
     }
 }

@@ -44,7 +44,7 @@
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
           >
         <property name="xmlSerializer" ref="studiesXmlSerializer"/>
-
+        <property name="studySnapshotXmlSerializer" ref="studySnapshotXmlSerializer"/> 
     </bean>
 
     <bean name="/studies/{study-identifier}/template"

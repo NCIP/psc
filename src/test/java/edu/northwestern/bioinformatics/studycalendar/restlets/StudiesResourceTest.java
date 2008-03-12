@@ -31,7 +31,7 @@ public class StudiesResourceTest extends ResourceTestCase<StudiesResource> {
     }
 
     public void testIsReadOnly() throws Exception {
-        assertAllowedMethods("GET");
+        assertAllowedMethods("GET", "POST");
     }
 
     public void testAllRenderedOut() throws Exception {
