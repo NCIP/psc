@@ -9,7 +9,6 @@ import org.restlet.data.Request;
 public enum UriTemplateParameters {
     STUDY_IDENTIFIER,
     ACTIVITY_SOURCE_NAME,
-    SITE_NAME,
     ACTIVITY_CODE,
     SITE_IDENTIFIER,
     ASSIGNMENT_IDENTIFIER,
@@ -21,10 +20,12 @@ public enum UriTemplateParameters {
     }
 
     public String extractFrom(Request request) {
-        return Reference.decode((String) request.getAttributes().get(attributeName()));
+        return hasParameter(request)
+            ? Reference.decode((String) request.getAttributes().get(attributeName()))
+            : null;
     }
 
-    public boolean checkIfRequestHasUrlParameter(Request request) {
+    public boolean hasParameter(Request request) {
         return request.getAttributes().get(attributeName()) != null;
     }
 }

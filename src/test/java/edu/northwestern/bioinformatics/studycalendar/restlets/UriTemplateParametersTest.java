@@ -18,6 +18,10 @@ public class UriTemplateParametersTest extends StudyCalendarTestCase {
 
         assertEquals("Ear", ACTIVITY_SOURCE_NAME.extractFrom(request));
     }
+
+    public void testExtractFromRequestWhenNotPresent() throws Exception {
+        assertNull(SITE_IDENTIFIER.extractFrom(new Request()));
+    }
     
     public void testExtractFromRequestUrlDecodes() throws Exception {
         Request request = new Request();

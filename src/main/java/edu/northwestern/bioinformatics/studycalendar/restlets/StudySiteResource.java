@@ -37,7 +37,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
 
     protected StudySite loadRequestedObject(Request request) {
         study = studyDao.getByAssignedIdentifier(UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request));
-        site = siteDao.getByAssignedIdentifier(UriTemplateParameters.SITE_NAME.extractFrom(request));
+        site = siteDao.getByAssignedIdentifier(UriTemplateParameters.SITE_IDENTIFIER.extractFrom(request));
         if (study == null || site == null) {
             return null;
         } else {
@@ -51,7 +51,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
                     "No study matching " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()));
         } else if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "No site named " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
+                    "No site named " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
         }
     }
 
@@ -65,7 +65,7 @@ public class StudySiteResource extends AbstractRemovableStorableDomainObjectReso
         if (!studySite.getStudySubjectAssignments().isEmpty()) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
                     "There are still subjects assigned to " + UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(getRequest()) +
-                            " at the site " + UriTemplateParameters.SITE_NAME.extractFrom(getRequest()));
+                            " at the site " + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest()));
         }
     }
 

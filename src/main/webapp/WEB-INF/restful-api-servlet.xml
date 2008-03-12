@@ -61,7 +61,7 @@
         <property name="xmlSerializer" ref="plannedCalendarXmlSerializer"/>
     </bean>
 
-    <bean name="/studies/{study-identifier}/sites/{site-name}/subject-assignments"
+    <bean name="/studies/{study-identifier}/sites/{site-identifier}/subject-assignments"
           id="subjectAssignmentResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.RegistrationsResource">
         <property name="xmlSerializer" ref="registrationXmlSerializer"/>
@@ -83,7 +83,7 @@
         <property name="sourceService" ref="sourceService"/>
     </bean>
 
-    <bean name="/studies/{study-identifier}/sites/{site-name}"
+    <bean name="/studies/{study-identifier}/sites/{site-identifier}"
           id="studySiteResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudySiteResource">
         <property name="xmlSerializer" ref="studySiteXmlSerializer"/>

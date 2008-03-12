@@ -88,6 +88,52 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         }
     }
 
+    public void testSaveSubjectWithoutPersonIdWorks() throws Exception {
+        Integer savedId;
+        {
+            Subject subject = new Subject();
+            subject.setFirstName("Jeff");
+            subject.setLastName("Someone");
+            subject.setGender("Male");
+            subject.setDateOfBirth(new Date());
+
+            getDao().save(subject);
+            savedId = subject.getId();
+            assertNotNull("The saved subject id", savedId);
+        }
+
+        interruptSession();
+
+        {
+            Subject loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload subject id " + savedId, loaded);
+            assertEquals("Wrong firstname", "Jeff", loaded.getFirstName());
+            assertEquals("Wrong lastname", "Someone", loaded.getLastName());
+            assertEquals("Wrong gender", "Male", loaded.getGender());
+        }
+    }
+
+    public void testSaveSubjectWithOnlyPersonIdWorks() throws Exception {
+        Integer savedId;
+        {
+            Subject subject = new Subject();
+            subject.setGender("Male");
+            subject.setPersonId("123-45-6789");
+
+            getDao().save(subject);
+            savedId = subject.getId();
+            assertNotNull("The saved subject id", savedId);
+        }
+
+        interruptSession();
+
+        {
+            Subject loaded = getDao().getById(savedId);
+            assertNotNull("Could not reload subject id " + savedId, loaded);
+            assertEquals("Wrong person ID", "123-45-6789", loaded.getPersonId());
+        }
+    }
+
     public void testLoadScheduledCalendar() throws Exception {
         Subject loaded = getDao().getById(-100);
         StudySubjectAssignment assignment = loaded.getAssignments().get(0);

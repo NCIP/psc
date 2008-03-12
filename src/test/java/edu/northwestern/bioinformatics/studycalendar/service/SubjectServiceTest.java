@@ -615,6 +615,19 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         assertSame("Subjects should be the same", subject,  actual);
     }
+    
+    public void testFindSubjectByNameAndDoBWhenNotPresent() throws Exception {
+        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+
+        expect(subjectDao.findSubjectByFirstNameLastNameAndDoB(subject.getFirstName(), subject.getLastName(), subject.getDateOfBirth()))
+            .andReturn(null); // this is the actual behavior of SubjectDao
+        replayMocks();
+
+        Subject actual = service.findSubject(subject);
+        verifyMocks();
+
+        assertNull("Subject should not be found", actual);
+    }
 
     ////// Expect Methods
     private void expectFindSubjectByPersonId(String id, Subject returned) {

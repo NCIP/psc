@@ -107,7 +107,7 @@ public class Subject extends AbstractMutableDomainObject {
         this.gender = gender;
     }
 
-    @Column(name = "person_id", unique = true, nullable = false)
+    @Column(name = "person_id", unique = true)
     public String getPersonId() {
         return personId;
     }

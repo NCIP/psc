@@ -14,8 +14,8 @@ import org.restlet.data.Status;
  */
 public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteResource> {
     private static final String STUDY_IDENT = "ETC";
-    private static final String SITE_NAME = "Northwestern University";
-    private static final String SITE_NAME_ENCODED = "Northwestern%20University";
+    private static final String SITE_IDENTIFIER = "Northwestern University";
+    private static final String SITE_IDENTIFIER_ENCODED = "Northwestern%20University";
 
     private StudyDao studyDao;
     private SiteDao siteDao;
@@ -29,14 +29,14 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
     public void setUp() throws Exception {
         super.setUp();
         study = createBasicTemplate();
-        site = createNamedInstance(SITE_NAME, Site.class);
+        site = createNamedInstance(SITE_IDENTIFIER, Site.class);
 
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
         studySiteDao = registerDaoMockFor(StudySiteDao.class);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENT);
-        request.getAttributes().put(UriTemplateParameters.SITE_NAME.attributeName(), SITE_NAME_ENCODED);
+        request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER_ENCODED);
         request.setResourceRef("studies/ETC/sites/Northwestern University");
     }
 
@@ -188,7 +188,7 @@ public class StudySiteResourceTest extends AuthorizedResourceTestCase<StudySiteR
 
     private void expectResolvedStudyAndSite(Study expectedStudy, Site expectedSite) {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(expectedStudy);
-        expect(siteDao.getByAssignedIdentifier(SITE_NAME)).andReturn(expectedSite);
+        expect(siteDao.getByAssignedIdentifier(SITE_IDENTIFIER)).andReturn(expectedSite);
     }
 
     private void expectRequestHasIgnoredEntity() {

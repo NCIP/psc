@@ -488,13 +488,14 @@ public class SubjectService {
             Subject subject = subjectDao.findSubjectByPersonId(searchCriteria.getPersonId());
             if (subject == null) {
                 return Collections.emptyList();
+            } else {
+                return Collections.singletonList(subject);
             }
-            return Collections.singletonList(subject);
         } else {
             List<Subject> subjects = subjectDao.findSubjectByFirstNameLastNameAndDoB(searchCriteria.getFirstName(), searchCriteria.getLastName(), searchCriteria.getDateOfBirth());
 
-            if (subjects.isEmpty()) {
-                return Collections.EMPTY_LIST;
+            if (subjects == null) {
+                return Collections.emptyList();
             } else {
                 return subjects;
             }

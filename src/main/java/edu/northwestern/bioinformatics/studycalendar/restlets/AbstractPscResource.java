@@ -6,6 +6,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.Resource;
 import org.restlet.Context;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -17,6 +19,8 @@ import java.util.Arrays;
  * @author Rhett Sutphin
  */
 public class AbstractPscResource extends Resource implements AuthorizedResource {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     private static final Collection<Role> NO_AUTH = Collections.emptySet();
 
     private Map<Method, Collection<Role>> roleAuthorizations;

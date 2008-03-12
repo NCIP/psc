@@ -23,8 +23,6 @@ import java.io.IOException;
  * @author Rhett Sutphin
  */
 public abstract class StudySiteCollectionResource<V> extends AbstractPscResource {
-    protected Logger log = LoggerFactory.getLogger(getClass());
-
     private SiteDao siteDao;
     private StudyDao studyDao;
     protected StudyCalendarXmlCollectionSerializer<V> xmlSerializer;
@@ -33,34 +31,24 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
     private Site site;
     private StudySite studySite;
 
-    //since site name and site identifier are used interchangably,
-    private String siteNamePrameterInRequest;
-
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setReadable(true);
         study = studyDao.getByAssignedIdentifier(STUDY_IDENTIFIER.extractFrom(request));
-        if (SITE_IDENTIFIER.checkIfRequestHasUrlParameter(request)) {
-            siteNamePrameterInRequest = SITE_IDENTIFIER.extractFrom(request);
-        } else if (UriTemplateParameters.SITE_NAME.checkIfRequestHasUrlParameter(request)) {
-            //check with site identifier also
-            siteNamePrameterInRequest = UriTemplateParameters.SITE_NAME.extractFrom(request);
-
-        }
-        site = siteDao.getByAssignedIdentifier(siteNamePrameterInRequest);
+        log.debug("Resolved study from {} as {}", STUDY_IDENTIFIER.extractFrom(request), study);
+        site = siteDao.getByAssignedIdentifier(SITE_IDENTIFIER.extractFrom(request));
+        log.debug("Resolved site from {} as {}", SITE_IDENTIFIER.extractFrom(request), site);
 
         if (study != null && site != null) {
             studySite = study.getStudySite(site);
         }
         setAvailable(studySite != null);
+        log.debug("Site {} participating in study", isAvailable() ? "is" : "is not");
         getVariants().add(new Variant(MediaType.TEXT_XML));
     }
 
-    @Override
-    public boolean allowPost() {
-        return true;
-    }
+    @Override public boolean allowPost() { return true; }
 
     protected StudySite getStudySite() {
         return studySite;
@@ -72,10 +60,10 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
                     "No study matching " + STUDY_IDENTIFIER.extractFrom(getRequest()));
         } else if (site == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "No site matching " + siteNamePrameterInRequest);
+                    "No site matching " + SITE_IDENTIFIER.extractFrom(getRequest()));
         } else if (studySite == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
-                    "Site " + siteNamePrameterInRequest +
+                    "Site " + SITE_IDENTIFIER.extractFrom(getRequest()) +
                             " is not participating in " + STUDY_IDENTIFIER.extractFrom(getRequest())
             );
         }
