@@ -1,12 +1,11 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Population;
-import edu.northwestern.bioinformatics.studycalendar.domain.Period;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPopulation;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import org.dom4j.Element;
 
 import java.util.Iterator;
 
@@ -97,6 +96,19 @@ public class StudySnapshotXmlSerializerTest extends StudyCalendarXmlTestCase {
         PlannedActivity second = actualPeriod.getPlannedActivities().get(1);
         assertEquals("Second activity not as expected", 3, (int) second.getDay());
         assertNull("Second activity should not have population", second.getPopulation());
+    }
+
+    public void testCreateElement() {
+        Study study = createNamedInstance("Study A", Study.class);
+        study.addPopulation(createPopulation("DMP", "Disease Measure Population"));
+        study.addPopulation(createPopulation("TP", "Therapy Population"));
+        study.setPlannedCalendar(new PlannedCalendar());
+
+        Element elt = serializer.createElement(study);
+
+        assertEquals("Wrong name", "study-snapshot", elt.getName());
+        assertEquals("Wrong number of populations", 2, elt.elements("population").size());
+        assertEquals("Wrong number of planned calendars", 1, elt.elements("planned-calendar").size());
     }
 
     private Study doParse(String xml, String... formatValues) {

@@ -1,24 +1,35 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.dom4j.Element;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
  */
 public class StudySnapshotXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
     @Override
-    public Element createElement(Study object) {
-        throw new UnsupportedOperationException("This serializer is read-only");
+    public Element createElement(Study study) {
+        Element elt = XsdElement.STUDY_SNAPSHOT.create();
+        XsdAttribute.STUDY_SNAPSHOT_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
+
+        Set<Population> pops = study.getPopulations();
+        PopulationXmlSerializer populationXmlSerializer = createPopulationXmlSerializer(study);
+        for (Population pop : pops) {
+            elt.add(populationXmlSerializer.createElement(pop));
+        }
+
+        elt.add(createPlannedCalendarSerializer(study).createElement(study.getPlannedCalendar()));
+
+        return elt;
     }
 
     @Override

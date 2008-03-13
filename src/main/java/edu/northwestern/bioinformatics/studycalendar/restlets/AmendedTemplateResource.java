@@ -3,11 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -17,7 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 /**
  * @author John Dzak
  */
-public class AmendedTemplateResource extends AbstractDomainObjectResource<PlannedCalendar> {
+public class AmendedTemplateResource extends AbstractDomainObjectResource<Study> {
     private StudyDao studyDao;
     private AmendmentService amendmentService;
     private AmendmentDao amendmentDao;
@@ -25,13 +23,10 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Planne
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-
-        ((PlannedCalendarXmlSerializer) xmlSerializer).setSerializeEpoch(true);
-
         setAllAuthorizedFor(Method.GET);
     }
 
-    protected PlannedCalendar loadRequestedObject(Request request) {
+    protected Study loadRequestedObject(Request request) {
         String studyIdentifier =  UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(request);
 
@@ -46,9 +41,8 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Planne
         }
 
         Study clone = study.transientClone();
-        Study amended = amendmentService.getAmendedStudy(clone, amendment);
 
-        return amended.getPlannedCalendar();
+        return amendmentService.getAmendedStudy(clone, amendment);
     }
 
     ////// Bean Setters
