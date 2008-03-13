@@ -178,7 +178,7 @@
                     <method name="GET">
                         <doc>Retrieve the realized template as it existed for the given amendment.</doc>
                         <response>
-                            <representation href="#planned-calendar-xml"/>
+                            <representation href="#study-snapshot-xml"/>
                         </response>
                     </method>
                 </resource>
