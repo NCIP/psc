@@ -19,6 +19,7 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
     private StudyDao studyDao;
     private AmendmentService amendmentService;
     private AmendmentDao amendmentDao;
+    private final String CURRENT = "current";
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -35,9 +36,14 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
             throw new StudyCalendarValidationException("Study Not Found");
         }
 
-        Amendment amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
-        if (amendment == null) {
-            throw new StudyCalendarValidationException("Amendment Not Found");
+        Amendment amendment;
+        if (CURRENT.equals(amendmentIdentifier)) {
+            amendment = study.getAmendment();
+        } else {
+            amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
+            if (amendment == null) {
+                throw new StudyCalendarValidationException("Amendment Not Found");
+            }
         }
 
         Study clone = study.transientClone();

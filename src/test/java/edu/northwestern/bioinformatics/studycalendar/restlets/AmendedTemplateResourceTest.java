@@ -24,6 +24,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
     private static final String AMENDMENT_KEY = "2007-10-19~Amendment B";
     private static final String AMENDMENT_KEY_ENCODED = "2007-10-19~Amendment%20B";
+    private static final String CURRENT_AMENDMENT_KEY = "current";
 
     private Study study;
     private Amendment amendment;
@@ -46,12 +47,13 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
         calendar = new PlannedCalendar();
 
-        study = createNamedInstance(SOURCE_NAME, Study.class);
-        study.setPlannedCalendar(calendar);
-
         amendment = new Amendment();
         amendment.setName("Amendment B");
         amendment.setDate(createDate(2007, Calendar.OCTOBER, 19));
+
+        study = createNamedInstance(SOURCE_NAME, Study.class);
+        study.setPlannedCalendar(calendar);
+        study.pushAmendment(amendment);
     }
 
     protected AmendedTemplateResource createResource() {
@@ -66,6 +68,18 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     public void testGet() throws Exception {
         expectFoundStudy();
         expectFoundAmendment();
+        expectAmendClonedStudy(amendment);
+        expectObjectXmlized(calendar);
+
+        doGet();
+
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetWithCurrentAmendmentIdentifier() throws Exception {
+        request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), CURRENT_AMENDMENT_KEY);
+
+        expectFoundStudy();
         expectAmendClonedStudy(amendment);
         expectObjectXmlized(calendar);
 
