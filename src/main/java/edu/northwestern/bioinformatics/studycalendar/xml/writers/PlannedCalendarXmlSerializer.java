@@ -42,7 +42,7 @@ public class PlannedCalendarXmlSerializer extends AbstractStudyCalendarXmlSerial
         }
 
         String key = element.attributeValue(ID);
-        PlannedCalendar cal = plannedCalendarDao.getByGridId(key);
+        PlannedCalendar cal = key == null ? null : plannedCalendarDao.getByGridId(key);
         if (cal == null) {
             cal = new PlannedCalendar();
             cal.setGridId(key);
