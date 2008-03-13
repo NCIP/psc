@@ -65,11 +65,12 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
 
     public void testPutExistingXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(study);
-        
+
         final InputStream in = registerMockFor(InputStream.class);
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+        expectReadXmlFromRequestAs(study);
 
-        expect(importTemplateService.readAndSaveTemplate(eq(study), (InputStream) notNull())).andReturn(study);
+        expect(importTemplateService.readAndSaveTemplate(study, null)).andReturn(study);
         expectObjectXmlized(study);
 
         doPut();
@@ -81,10 +82,8 @@ public class TemplateResourceTest extends ResourceTestCase<TemplateResource> {
     public void testPutNewXml() throws Exception {
         expect(studyDao.getByAssignedIdentifier(STUDY_IDENT)).andReturn(null);
 
-        final InputStream in = registerMockFor(InputStream.class);
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        expect(importTemplateService.readAndSaveTemplate((Study) isNull(), (InputStream) notNull())).andReturn(study);
+        expectReadXmlFromRequestAs(study);
+        expect(importTemplateService.readAndSaveTemplate(null, null)).andReturn(study);
         expectObjectXmlized(study);
 
         doPut();

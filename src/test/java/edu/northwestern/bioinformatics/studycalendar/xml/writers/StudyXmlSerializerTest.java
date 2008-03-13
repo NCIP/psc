@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTes
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -105,15 +106,9 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         expect(element.element("planned-calendar")).andReturn(element);
 
-        expect(element.elements("amendment")).andReturn(Collections.singletonList(element));
-        expect(amendmentSerializer.readElement(element)).andReturn(amendment);
-
-        expect(element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName())).andReturn(element);
-
-        expect(developmentAmendmentSerializer.readElement(element)).andReturn(developmentAmendment);
-
         // Need to cast calendar to PlanTreeNode because of EasyMockBug
         expect(plannedCalendarSerializer.readElement(element)).andReturn(calendar);
+        expect(element.getName()).andReturn("study").times(2);
         replayMocks();
 
         Study actual = serializer.readElement(element);
@@ -122,10 +117,43 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
         assertSame("PlannedCalendar should be the same", calendar, actual.getPlannedCalendar());
         assertSame("Populations should be the same", population, actual.getPopulations().iterator().next());
-        assertSame("Amendment should be the same", amendment,  actual.getAmendment());
     }
 
+    public void testReadElementWithInvalidElementName() {
+        expect(element.getName()).andReturn("study-snapshot").times(2);
+        try {
+            replayMocks();
+            serializer.readElement(element);
+            fail("Exception should be thrown");
+            verifyMocks();
+        } catch (StudyCalendarValidationException e) {
+            assertEquals("Element type is other than <study>", e.getMessage());
+        }
+    }
+
+    public void testReadElementWithoutAmendment() {
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setPlannedCalendar(calendar);
+        study.addPopulation(population);
+
+        expect(element.getName()).andReturn("study").times(2);
+        expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
+        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
+        expect(study.getAmendment()).andReturn(null);
+        expect(study.getDevelopmentAmendment()).andReturn(null);
+        try {
+            replayMocks();
+            serializer.readElement(element);
+            fail("Exception should be thrown");
+            verifyMocks();
+        } catch (StudyCalendarValidationException e) {
+            assertEquals("Study must have either amendment or developmentAmendment", e.getMessage());
+        }
+    }
+
+
     public void testReadElementWhereElementExists() {
+        expect(element.getName()).andReturn(null);
         expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
         expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
 

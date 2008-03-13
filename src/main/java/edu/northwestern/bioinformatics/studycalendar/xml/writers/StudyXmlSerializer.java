@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -53,6 +54,9 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     }
 
     public Study readElement(Element element) {
+        if (element.getName()!= null && (! element.getName().equals(STUDY))) {
+            throw new StudyCalendarValidationException("Element type is other than <study>");
+        }
         String key = element.attributeValue(ASSIGNED_IDENTIFIER);
         Study study = studyDao.getByAssignedIdentifier(key);
         if (study == null) {
@@ -70,22 +74,26 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 Population population = populationXmlSerializer.readElement(ePopulation);
                 study.addPopulation(population);
             }
-        }
-        
-        List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
-        for (Element eAmendment : eAmendments) {
-            Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
-            if (!study.getAmendmentsList().contains(amendment)) {
-                study.pushAmendment(amendment);
+        } else {
+            if (study.getAmendment() == null && study.getDevelopmentAmendment() == null) {
+                throw new StudyCalendarValidationException("Study must have either amendment or developmentAmendment");
+            } else {
+                List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
+                for (Element eAmendment : eAmendments) {
+                    Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
+                    if (!study.getAmendmentsList().contains(amendment)) {
+                        study.pushAmendment(amendment);
+                    }
+                }
+
+                Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
+                if (developmentAmendmentElement != null) {
+                    Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
+                    study.setDevelopmentAmendment(developmentAmendment);
+                }
             }
         }
 
-        Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
-        if (developmentAmendmentElement != null) {
-            Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
-            study.setDevelopmentAmendment(developmentAmendment);
-        }
-        
         return study;
     }
 

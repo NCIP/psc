@@ -4,6 +4,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.ImportTemplateService;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.AbstractPlanTreeNodeXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -43,6 +46,13 @@ public class TemplateResource extends AbstractDomainObjectResource<Study> {
     public void storeRepresentation(Representation entity) throws ResourceException {
         Study study;
         try {
+            try {
+                xmlSerializer.readDocument(entity.getStream());
+            } catch(StudyCalendarValidationException e) {
+                log.debug("PUT failed due to the element type is other than <study> or study doesn't have amendments");
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+            }
+
             study = importTemplateService.readAndSaveTemplate(getRequestedObject(), entity.getStream());
         } catch (IOException e) {
             log.warn("PUT failed with IOException", e);
