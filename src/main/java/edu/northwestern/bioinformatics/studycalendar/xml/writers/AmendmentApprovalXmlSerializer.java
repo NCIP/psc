@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
@@ -8,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXm
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.Date;
 
@@ -27,24 +29,19 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
     private StudySiteXmlSerializer studySiteXmlSerializer;
 
     private AmendmentXmlSerializer amendmentSerializer;
+    private AmendmentDao amendmentDao;
+
+
 
     @Override
     public Element createElement(AmendmentApproval amendmentApproval, boolean inCollection) {
-
         if (amendmentApproval == null) {
             throw new StudyCalendarValidationException("amendmentApproval can not be null");
-
         }
-
         final Element amendmentApprovalelement = rootElement().create();
 
-        final Element studySiteElement = studySiteXmlSerializer.createElement(amendmentApproval.getStudySite());
-        amendmentApprovalelement.add(studySiteElement);
-
-        final Element amendmentElement = amendmentSerializer.createElement(amendmentApproval.getAmendment());
-        amendmentApprovalelement.add(amendmentElement);
-
         XsdAttribute.AMENDMENT_APPROVAL_DATE.addTo(amendmentApprovalelement, amendmentApproval.getDate());
+        XsdAttribute.AMENDMENT_APPROVAL_AMENDMENT.addTo(amendmentApprovalelement, amendmentApproval.getAmendment().getNaturalKey());
 
         if (inCollection) {
             return amendmentApprovalelement;
@@ -61,31 +58,30 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
 
         if (element == null) {
             throw new StudyCalendarValidationException("element can not be null");
-
-
         }
 
         final Element studySiteElement = element.element(XsdElement.STUDY_SITE_LINK.xmlName());
-        final Element amendmentElement = element.element(XsdElement.AMENDMENT.xmlName());
+        final String amendmentIdentifier = XsdAttribute.AMENDMENT_APPROVAL_AMENDMENT.from(element);
         StudySite studySite;
-        if (studySiteElement != null && amendmentElement != null) {
-            studySite = studySiteXmlSerializer.readElement(studySiteElement);
-            Amendment amendment = amendmentSerializer.readElement(amendmentElement);
-            Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
 
+        if (amendmentIdentifier!= null) {
+
+            Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
             AmendmentApproval amendmentApproval = new AmendmentApproval();
-            amendmentApproval.setStudySite(studySite);
-            amendmentApproval.setAmendment(amendment);
+
+            if (studySiteElement!=null){
+                studySite = studySiteXmlSerializer.readElement(studySiteElement);
+                amendmentApproval.setStudySite(studySite);
+            }
+            amendmentApproval.setAmendment(amendmentDao.getByNaturalKey(amendmentIdentifier));
             amendmentApproval.setDate(date);
 
             return amendmentApproval;
 
         } else {
-            throw new StudyCalendarValidationException("study site element  or amendment element can not be null");
+            throw new StudyCalendarValidationException("amendment element can not be null");
 
         }
-
-
     }
 
 
@@ -95,5 +91,10 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
 
     public void setStudySiteXmlSerializer(final StudySiteXmlSerializer studySiteXmlSerializer) {
         this.studySiteXmlSerializer = studySiteXmlSerializer;
+    }
+
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
     }
 }

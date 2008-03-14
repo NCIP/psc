@@ -68,6 +68,7 @@ public enum XsdAttribute {
     SCHEDULED_ACTIVITY_STATE_DATE("date"),
     SCHEDULED_ACTIVITY_STATE_STATE("state"),
     AMENDMENT_APPROVAL_DATE("date"),
+    AMENDMENT_APPROVAL_AMENDMENT("amendment"),
     PLAN_TREE_NODE_NAME("name")
     ;
 

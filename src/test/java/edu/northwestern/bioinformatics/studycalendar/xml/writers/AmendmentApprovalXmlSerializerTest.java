@@ -66,8 +66,9 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         serializer.setStudySiteXmlSerializer(studySiteXmlSerializer);
 
 
+
         amendmentSerializer = new AmendmentXmlSerializer();
-        amendmentSerializer.setAmendmentDao(amendmentDao);
+        serializer.setAmendmentDao(amendmentDao);
         serializer.setAmendmentSerializer(amendmentSerializer);
 
         amendment = new Amendment();
@@ -93,33 +94,25 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong element name", XsdElement.AMENDMENT_APPROVAL.xmlName(), actualElement.getName());
 
         final List contents = actualElement.content();
-        assertEquals("Wrong number of content", 2, contents.size());
+        assertEquals("Wrong number of content", 0, contents.size());
 
-        assertTrue("content must of type element", contents.get(0) instanceof Element);
-
-        assertEquals("Wrong number of attribute", 1, actualElement.attributes().size());
+        assertEquals("Wrong number of attribute", 2, actualElement.attributes().size());
 
         assertNotNull("Wrong date", actualElement.attributeValue("date"));
+        assertNotNull("Wrong date", actualElement.attributeValue("amendment"));
 
 
     }
 
     public void testReadElement() {
-        expectStudySiteLookup(amendmentApproval.getStudySite().getStudy(), amendmentApproval.getStudySite().getSite());
         expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(amendmentApproval.getAmendment());
 
         replayMocks();
 
-
         final AmendmentApproval expectedAmendmentApproval = serializer.readElement(serializer.createElement(amendmentApproval, true));
-
         verifyMocks();
 
         assertEquals(formatter.format(amendmentApproval.getDate()), formatter.format(expectedAmendmentApproval.getDate()));
-        assertEquals(amendmentApproval.getStudySite().getName(), expectedAmendmentApproval.getStudySite().getName());
-        assertEquals(amendmentApproval.getStudySite().getStudy().getName(), expectedAmendmentApproval.getStudySite().getStudy().getName());
-
-
     }
 
 
@@ -143,21 +136,12 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
         expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
 
-        expected.append(format("<amendment-approval  date=\"{0}\" >", formatter.format(amendmentApproval.getDate())));
-        expected.append(format("<study-site-link study-name=\"{0}\" site-name=\"{1}\"/>",
-                amendmentApproval.getStudySite().getStudy().getName(),
-                amendmentApproval.getStudySite().getSite().getAssignedIdentifier()));
-
-        expected.append(format("<amendment name=\"{0}\" date=\"{1}\"  mandatory=\"{2}\"/>",
-                amendmentApproval.getAmendment().getName(),
-                formatter.format(amendmentApproval.getAmendment().getDate()), amendmentApproval.getAmendment().isMandatory()));
-
-        expected.append(format("</amendment-approval>"));
+        expected.append(format("<amendment-approval date=\"{0}\" amendment=\"{1}\"/>", formatter.format(amendmentApproval.getDate()), amendmentApproval.getAmendment().getNaturalKey()));
 
         expected.append("</amendment-approvals>");
 
-
         String actual = serializer.createDocumentString(amendmentApproval);
+
         log.info("actual:" + actual);
         log.info("expected:" + expected.toString());
         assertXMLEqual(expected.toString(), actual);
