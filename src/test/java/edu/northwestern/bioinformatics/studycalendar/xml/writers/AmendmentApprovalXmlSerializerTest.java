@@ -63,14 +63,9 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         studySiteXmlSerializer = new StudySiteXmlSerializer();
         studySiteXmlSerializer.setSiteDao(siteDao);
         studySiteXmlSerializer.setStudyDao(studyDao);
-        serializer.setStudySiteXmlSerializer(studySiteXmlSerializer);
-
-
 
         amendmentSerializer = new AmendmentXmlSerializer();
         serializer.setAmendmentDao(amendmentDao);
-        serializer.setAmendmentSerializer(amendmentSerializer);
-
         amendment = new Amendment();
         amendment.setMandatory(true);
         amendment.setName("Amendment 1");
@@ -145,12 +140,6 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         log.info("actual:" + actual);
         log.info("expected:" + expected.toString());
         assertXMLEqual(expected.toString(), actual);
-    }
-
-    private void expectStudySiteLookup(Study aStudy, Site aSite) {
-        expect(studyDao.getByAssignedIdentifier(aStudy.getAssignedIdentifier())).andReturn(aStudy);
-        expect(siteDao.getByAssignedIdentifier(aSite.getName())).andReturn(aSite);
-
     }
 
 }

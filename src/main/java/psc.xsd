@@ -294,9 +294,6 @@
     <xsd:element name="amendment-approval" type="psc:AmendmentApproval"/>
 
     <xsd:complexType name="AmendmentApproval">
-        <xsd:sequence>
-            <xsd:element name="study-site-link" type="psc:StudySiteLink" minOccurs="0"/>
-        </xsd:sequence>
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="amendment" type="xsd:string" use="required"/>
     </xsd:complexType>

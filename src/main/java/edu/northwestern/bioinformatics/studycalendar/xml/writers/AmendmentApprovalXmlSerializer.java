@@ -26,9 +26,6 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
         return XsdElement.AMENDMENT_APPROVALS;
     }
 
-    private StudySiteXmlSerializer studySiteXmlSerializer;
-
-    private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentDao amendmentDao;
 
 
@@ -60,19 +57,12 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
             throw new StudyCalendarValidationException("element can not be null");
         }
 
-        final Element studySiteElement = element.element(XsdElement.STUDY_SITE_LINK.xmlName());
         final String amendmentIdentifier = XsdAttribute.AMENDMENT_APPROVAL_AMENDMENT.from(element);
-        StudySite studySite;
 
         if (amendmentIdentifier!= null) {
 
             Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
             AmendmentApproval amendmentApproval = new AmendmentApproval();
-
-            if (studySiteElement!=null){
-                studySite = studySiteXmlSerializer.readElement(studySiteElement);
-                amendmentApproval.setStudySite(studySite);
-            }
             amendmentApproval.setAmendment(amendmentDao.getByNaturalKey(amendmentIdentifier));
             amendmentApproval.setDate(date);
 
@@ -82,15 +72,6 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
             throw new StudyCalendarValidationException("amendment element can not be null");
 
         }
-    }
-
-
-    public void setAmendmentSerializer(final AmendmentXmlSerializer amendmentSerializer) {
-        this.amendmentSerializer = amendmentSerializer;
-    }
-
-    public void setStudySiteXmlSerializer(final StudySiteXmlSerializer studySiteXmlSerializer) {
-        this.studySiteXmlSerializer = studySiteXmlSerializer;
     }
 
     @Required
