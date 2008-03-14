@@ -34,6 +34,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     private AmendmentService amendmentService;
     private StudySnapshotXmlSerializer studySnapshotXmlSerializer;
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -56,6 +57,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         study.pushAmendment(amendment);
     }
 
+    @Override
     protected AmendedTemplateResource createResource() {
         AmendedTemplateResource resource = new AmendedTemplateResource();
         resource.setStudyDao(studyDao);
@@ -92,12 +94,8 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), "");
         expectStudyNotFound();
 
-        try {
-            doGet();
-            fail("Exception should be thrown");
-        } catch (StudyCalendarValidationException e) {
-            assertEquals("Study Not Found", e.getMessage());
-        }
+        doGet();
+        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testGetWithNoAssignmentIdentifier() {
@@ -106,12 +104,8 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
 
         expectFoundStudy();
 
-        try {
-            doGet();
-            fail("Exception should be thrown");
-        } catch (StudyCalendarValidationException e) {
-            assertEquals("Amendment Not Found", e.getMessage());
-        }
+        doGet();
+        assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     ////// Expect Methods

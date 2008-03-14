@@ -27,13 +27,15 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
         setAllAuthorizedFor(Method.GET);
     }
 
+    @Override
     protected Study loadRequestedObject(Request request) {
         String studyIdentifier =  UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(request);
 
         Study study = studyDao.getByAssignedIdentifier(studyIdentifier);
         if (study == null) {
-            throw new StudyCalendarValidationException("Study Not Found");
+            log.debug("No study matching {}", studyIdentifier);
+            return null;
         }
 
         Amendment amendment;
@@ -41,14 +43,18 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
             amendment = study.getAmendment();
         } else {
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
-            if (amendment == null) {
-                throw new StudyCalendarValidationException("Amendment Not Found");
+            if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getAmendment().hasPreviousAmendment(amendment)) {
+                log.debug("Amendment {} doesn't apply to study {}",
+                    amendmentIdentifier, study.getAssignedIdentifier());
+                return null;
             }
         }
+        if (amendment == null) {
+            log.debug("No released amendment matching {}", amendmentIdentifier);
+            return null;
+        }
 
-        Study clone = study.transientClone();
-
-        return amendmentService.getAmendedStudy(clone, amendment);
+        return amendmentService.getAmendedStudy(study, amendment);
     }
 
     ////// Bean Setters

@@ -21,11 +21,13 @@ import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSeriali
  * @author Rhett Sutphin
  */
 public abstract class AbstractDomainObjectResource<D extends DomainObject> extends AbstractPscResource {
-    protected final Logger log = LoggerFactory.getLogger(getClass());
-
     private D requestedObject;
     protected StudyCalendarXmlSerializer<D> xmlSerializer;
 
+    /**
+     * Load the domain object which corresponds to the requested resource.  If
+     * there isn't one, this method must return null.
+     */
     protected abstract D loadRequestedObject(Request request);
 
     @Override
