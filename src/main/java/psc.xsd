@@ -310,7 +310,7 @@
     <xsd:element name="site" type="psc:Site"/>
 
 
-    <xsd:complexType name="sites">
+    <xsd:complexType name="sites">                                                                              
         <xsd:sequence>
             <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -336,8 +336,10 @@
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>
         </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
         <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="ScheduledActivity">

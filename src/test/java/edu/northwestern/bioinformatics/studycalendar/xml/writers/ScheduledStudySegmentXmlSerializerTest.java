@@ -1,13 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
-import org.easymock.EasyMock;
+import static org.easymock.EasyMock.expect;
 
 import java.util.Calendar;
 
@@ -16,54 +19,74 @@ import java.util.Calendar;
  */
 public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private ScheduledStudySegmentXmlSerializer serializer;
-    private ScheduledStudySegment segment;
+    private ScheduledStudySegment schdSegment;
     private ScheduledActivity activity0, activity1;
     private ScheduledActivityXmlSerializer scheduledActivitySerializer;
+    private StudySegment segment;
+    private StudySegmentDao studySegmentDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
+        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         scheduledActivitySerializer = registerMockFor(ScheduledActivityXmlSerializer.class);
 
         serializer = new ScheduledStudySegmentXmlSerializer();
+        serializer.setStudySegmentDao(studySegmentDao);
         serializer.setScheduledActivityXmlSerializer(scheduledActivitySerializer);
+
+        segment = Fixtures.setGridId("segment-grid0", new StudySegment());
 
         activity0 = new ScheduledActivity();
         activity1 = new ScheduledActivity();
 
-        segment = setGridId("segment-grid0", new ScheduledStudySegment());
-        segment.setStartDate(DateUtils.createDate(2008, Calendar.JANUARY, 1));
-        segment.setStartDay(5);
-        segment.addEvent(activity0);
-        segment.addEvent(activity1);
+        schdSegment = setGridId("schdSegment-grid0", new ScheduledStudySegment());
+        schdSegment.setStartDate(createDate(2008, Calendar.JANUARY, 1));
+        schdSegment.setStartDay(5);
+        schdSegment.setStudySegment(segment);
+        schdSegment.addEvent(activity0);
+        schdSegment.addEvent(activity1);
     }
 
     public void testCreateElement() {
         expectSerializeScheduledActivities();
         replayMocks();
 
-        Element actual = serializer.createElement(segment);
+        Element actual = serializer.createElement(schdSegment);
         verifyMocks();
 
         assertEquals("Wrong element name", "scheduled-study-segment", actual.getName());
-        assertEquals("Wrong id", "segment-grid0", actual.attributeValue("id"));
+        assertEquals("Wrong id", "schdSegment-grid0", actual.attributeValue("id"));
         assertEquals("Wrong start date", "2008-01-01", actual.attributeValue("start-date"));
         assertEquals("Wrong start date", "5", actual.attributeValue("start-day"));
+        assertEquals("Wrong segment id", "segment-grid0", actual.attributeValue("study-segment-id"));
         assertEquals("Wrong scheduled activity element size", 2, actual.elements().size());
     }
 
     public void testReadElement() {
-        try {
-            serializer.readElement(new BaseElement("scheduled-study-segment"));
-            fail("Exception should be thrown, method not implemented");
-        } catch(UnsupportedOperationException success) {
-            assertEquals("Functionality to read a scheduled study segment element does not exist", success.getMessage());
-        }
+        expect(studySegmentDao.getByGridId("segment-grid0")).andReturn(segment);
+        replayMocks();
+
+        ScheduledStudySegment actual = serializer.readElement(createTestElement());
+        verifyMocks();
+
+        assertEquals("Wrong start day", 5, (int) actual.getStartDay());
+        assertSameDay("Wrong start date", createDate(2008, Calendar.JANUARY, 1), actual.getStartDate());
+        assertSame("Wrong study segment", segment, actual.getStudySegment());
     }
 
     ////// Expect methods
     private void expectSerializeScheduledActivities() {
-        EasyMock.expect(scheduledActivitySerializer.createElement(activity0)).andReturn(new BaseElement("scheduled-activity"));
-        EasyMock.expect(scheduledActivitySerializer.createElement(activity1)).andReturn(new BaseElement("scheduled-activity"));
+        expect(scheduledActivitySerializer.createElement(activity0)).andReturn(new BaseElement("scheduled-activity"));
+        expect(scheduledActivitySerializer.createElement(activity1)).andReturn(new BaseElement("scheduled-activity"));
+    }
+
+    ////// Helper methods
+    private Element createTestElement() {
+        Element elt = new BaseElement("scheduled-study-segment");
+        elt.addAttribute("start-day", "5");
+        elt.addAttribute("start-date", "2008-01-01");
+        elt.addAttribute("study-segment-id", "segment-grid0");
+        return elt;
     }
 }

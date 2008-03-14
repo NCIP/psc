@@ -43,6 +43,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         return resource;
     }
 
+    ////// GET tests
     public void testGetXmlForScheduledStudies() throws IOException {
         expectResolvedSubjectAssignment();
         expectSerializeScheduledCalendar();
@@ -52,10 +53,14 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertResponseIsCreatedXml();
     }
 
-    public void testGetAllowedForSubjectCoordinator() {
+    public void testGetAllowedOnlyForSubjectCoordinator() {
         assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
     }
 
+    ////// POST tests
+    public void testPostAllowedOnlyForSubjectCoordinator() {
+        assertRolesAllowedForMethod(Method.POST, Role.SUBJECT_COORDINATOR);
+    }
 
     ////// Expect methods
     private void expectResolvedSubjectAssignment() {
