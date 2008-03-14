@@ -109,11 +109,13 @@ public class DisplayTemplateController extends PscAbstractController {
                 if (amendment == null) {
                     throw new StudyCalendarSystemException("No default amendment for " + study.getName());
                 } else {
+                    study = reviseStudy(study);
                     model = insertDevelopmentRevisionInsideModel(study, model);
                 }
             }
         } else if (study.getDevelopmentAmendment() != null && selectedAmendmentId.equals(study.getDevelopmentAmendment().getId())) {
             amendment = study.getDevelopmentAmendment();
+            study = reviseStudy(study);
             model = insertDevelopmentRevisionInsideModel(study, model);
         } else if (study.getAmendment() != null && selectedAmendmentId.equals(study.getAmendment().getId())) {
             amendment = study.getAmendment();
@@ -133,10 +135,13 @@ public class DisplayTemplateController extends PscAbstractController {
         }
         model.put("amendment", amendment);
         return study;
-    }    
+    }
+
+    private Study reviseStudy(Study study) {
+        return deltaService.revise(study, study.getDevelopmentAmendment());
+    }
 
     private Map<String, Object> insertDevelopmentRevisionInsideModel(Study study, Map<String, Object> model) {
-        study = deltaService.revise(study, study.getDevelopmentAmendment());
         model.put("developmentRevision", study.getDevelopmentAmendment());
         if (!study.isInInitialDevelopment()) {
             model.put("revisionChanges",

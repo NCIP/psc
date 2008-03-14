@@ -105,12 +105,12 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
         expect(studyDao.getById(study.getId())).andReturn(study);
         List<StudySubjectAssignment> expectedAssignments = Arrays.asList(new StudySubjectAssignment(), new StudySubjectAssignment(), new StudySubjectAssignment());
-        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);        
+        expect(studyDao.getAssignmentsForStudy(study.getId())).andReturn(expectedAssignments);
         replayMocks();
         assertEquals("template/display", controller.handleRequest(request, response).getViewName());
         verifyMocks();
     }
-    
+
     public void testNonStudySegmentModel() throws Exception {
         Map<String, Object> actualModel = getAndReturnModel();
         assertSame(study, actualModel.get("study"));
@@ -191,8 +191,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Amendment dev = setId(4, new Amendment("dev"));
         study.setDevelopmentAmendment(dev);
         request.setParameter("amendment", "4");
-//        Study amended = study.transientClone();
-        Study amended = study;
+        Study amended = study.transientClone();
 
         expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(study)).anyTimes();
@@ -204,14 +203,13 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         assertNotNull(actualModel.get("revisionChanges"));
         assertTrue(actualModel.get("revisionChanges") instanceof RevisionChanges);
     }
-    
+
     public void testSelectDevelopmentAmendmentForInitialCreation() throws Exception {
         Amendment dev = setId(4, new Amendment("dev"));
         study.setDevelopmentAmendment(dev);
         study.setAmendment(null);
         request.setParameter("amendment", "4");
-//        Study amended = study.transientClone();
-        Study amended = study;
+        Study amended = study.transientClone();
 
         expect(deltaService.revise(study, dev)).andReturn(amended);
         expect(studyDao.getByAssignedIdentifier(study.getId().toString())).andReturn(null);
@@ -232,8 +230,7 @@ public class DisplayTemplateControllerTest extends ControllerTestCase {
         Amendment dev = setId(4, new Amendment("dev"));
         request.addParameter("amendment", "4");
         study.setDevelopmentAmendment(dev);
-//        Study amended = study.transientClone();
-        Study amended = study;
+        Study amended = study.transientClone();
 
         expect(templateService.filterForVisibility(singletonList(amended), subjectCoord.getUserRole(Role.SUBJECT_COORDINATOR)))
                 .andReturn(singletonList(study)).anyTimes();
