@@ -9,6 +9,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.OrderBy;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -190,6 +191,7 @@ public class StudySite extends AbstractMutableDomainObject implements Named {
 
     @OneToMany(mappedBy = "studySite")
     @Cascade({ CascadeType.ALL })
+    @OrderBy(clause = "approval_date, amendment_id") // amendment_id is used as a proxy for amendment.date
     public List<AmendmentApproval> getAmendmentApprovals() {
         return amendmentApprovals;
     }

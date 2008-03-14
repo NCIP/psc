@@ -98,6 +98,12 @@ public class AmendmentTest extends StudyCalendarTestCase {
         assertEquals("2009-11-06", a0.getNaturalKey());
     }
 
+    public void testNaturalKeyWithBlankName() throws Exception {
+        a0.setDate(DateTools.createDate(2022, Calendar.MARCH, 6));
+        a0.setName(" ");
+        assertEquals("2022-03-06", a0.getNaturalKey());
+    }
+
     public void testDecomposeNaturalKeyWithName() throws Exception {
         Amendment.Key actual = Amendment.decomposeNaturalKey("2003-08-11~fred");
         assertDayOfDate(2003, Calendar.AUGUST,  11, actual.getDate());

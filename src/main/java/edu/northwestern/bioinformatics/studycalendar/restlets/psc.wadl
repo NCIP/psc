@@ -305,6 +305,9 @@
                         <html:p>The history of approvals for the amendments of a study at a site.</html:p>
                     </doc>
                     <method name="GET">
+                        <doc>
+                            Returns the approvals in order by approval date.
+                        </doc>
                         <response>
                             <representation href="#approvals-xml"/>
                         </response>

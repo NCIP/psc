@@ -253,7 +253,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         public String toString() {
             StringBuilder sb = new StringBuilder()
                 .append(createNaturalKeyDateFormat().format(getDate()));
-            if (getName() != null) {
+            if (!StringUtils.isBlank(getName())) {
                 sb.append('~').append(getName());
             }
             return sb.toString();
