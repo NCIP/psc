@@ -8,6 +8,11 @@
             name="anotherSite"
             />
 
+    <SITES
+        id="-6"
+        name="Mayo Clinic"
+        assigned_identifier="Mayo Clinic"/>
+
     <HOLIDAYS
         id="-1"
         site_id="-4"

@@ -33,7 +33,9 @@ public class SiteDaoTest extends DaoTestCase {
         assertNotNull("site not found", actual);
         assertEquals("Wrong assignedIdentifier", "anotherSite", actual.getAssignedIdentifier());
 
-
+        actual = siteDao.getByAssignedIdentifier("Mayo Clinic");
+        assertEquals("Wrong assigned identifier", "Mayo Clinic", actual.getAssignedIdentifier());
+        assertEquals("Wrong name", "Mayo Clinic", actual.getName());
     }
 
     public void testDeleteHoliday() throws Exception {
