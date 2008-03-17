@@ -5,14 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -177,6 +170,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
     }
 
     @Column(name = "amendment_date", nullable = false)
+    @Temporal(TemporalType.DATE)
     public Date getDate() {
         return date;
     }

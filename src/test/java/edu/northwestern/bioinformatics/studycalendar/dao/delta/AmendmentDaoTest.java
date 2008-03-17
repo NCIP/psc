@@ -55,7 +55,7 @@ public class AmendmentDaoTest extends DaoTestCase {
 
     public void testGetAll() throws Exception {
         List<Amendment> all = amendmentDao.getAll();
-        assertEquals(6, all.size());
+        assertEquals(7, all.size());
     }
 
     public void testGetByKeyWithoutNameWhenAmendmentHasNameButUniqueDate() throws Exception {
@@ -74,6 +74,17 @@ public class AmendmentDaoTest extends DaoTestCase {
         Amendment actual = amendmentDao.getByNaturalKey("2008-07-11");
         assertNotNull("Could not find it", actual);
         assertEquals(-221, (int) actual.getId());
+    }
+
+    public void testGetByKeyWithoutNameAmendmentAndDateInATimestampFormat() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-08-13");
+        assertNotNull("Could not find it", actual);
+        assertEquals(-224, (int) actual.getId());
+    }
+
+    public void testGetByKeyWithoutNameAmendmentAndDateInATimestampFormatAndOneDayOff() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-08-14");
+        assertNull("Could not find it", actual);
     }
 
     public void testGetByKeyWithoutNameWhenItIsAmbiguous() throws Exception {

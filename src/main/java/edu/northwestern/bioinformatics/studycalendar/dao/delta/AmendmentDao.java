@@ -35,7 +35,7 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(Amendment.class).add( Restrictions.eq("date", keyParts.getDate()) );
+                Criteria crit = session.createCriteria(Amendment.class).add( Restrictions.like("date", keyParts.getDate()) );
                 if (keyParts.getName() != null) crit.add( Restrictions.eq("name", keyParts.getName()) );
                 crit.addOrder(Order.asc("name"));
                 return crit.list();

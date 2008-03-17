@@ -27,6 +27,13 @@
         previous_amendment="-220"
         mandatory="0"
         />
+    <!-- date in a format of timestamp -->
+    <AMENDMENTS
+        id="-224"
+        amendment_date="2008-08-13 12:12:12"
+        previous_amendment="-221"
+        mandatory="0"
+        />
     <!-- same date, different names -->
     <AMENDMENTS
         id="-222"
