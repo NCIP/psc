@@ -16,6 +16,6 @@ class ChangeActionLookup extends edu.northwestern.bioinformatics.bering.Migratio
 
     void down() {
         execute("ALTER TABLE changes DROP CONSTRAINT fk_change_action")
-        dropTable("change_actions")
+        dropTable("change_actions", primaryKey: false)
     }
 }
