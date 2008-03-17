@@ -11,6 +11,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 /**
  * @author John Dzak
  */
+// TODO: this is not XML-specific (other than the error message) -- it could go in DeltaService
 public class XmlUtils {
     private DaoFinder daoFinder;
 
