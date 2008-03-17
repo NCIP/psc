@@ -176,3 +176,11 @@ Object.extend(Object.extend(Ajax.RevertableAutocompleter.prototype, Ajax.Autocom
 
 }) ;
 
+Ajax.ResetableAutocompleter = Class.create();
+Object.extend(Object.extend(Ajax.ResetableAutocompleter.prototype, Ajax.Autocompleter.prototype), {
+    reset: function() {
+        this.active = false;
+        this.hide();
+        this.element.value = null;
+    }
+}) ;

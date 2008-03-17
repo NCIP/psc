@@ -358,13 +358,12 @@ function resetActivitiesAutocompleter() {
 }
 
 function createAutocompleter() {
-    activitiesAutocompleter = new Ajax.RevertableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/search/fragment/activities"/>',
+    activitiesAutocompleter = new Ajax.ResetableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/search/fragment/activities"/>',
     {
         method: 'get',
         paramName: 'searchText',
         callback: addAdditionalParameters,
-        afterUpdateElement:updateActivity, 
-        revertOnEsc:true
+        afterUpdateElement:updateActivity 
     });
 }
 
