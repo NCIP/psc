@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
@@ -22,6 +23,7 @@ import java.io.IOException;
 public class ScheduledCalendarResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
+    private ScheduledCalendarDao scheduledCalendarDao;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -45,32 +47,34 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
 
 
     public void acceptRepresentation(final Representation entity) throws ResourceException {
-            if (entity.getMediaType() == MediaType.TEXT_XML) {
+        if (entity.getMediaType() == MediaType.TEXT_XML) {
 
-                ScheduledStudySegment segment;
-                try {
-                    segment = scheduledSegmentSerializer.readDocument(entity.getStream());
-                    store(segment);
-                } catch (IOException e) {
-                    log.warn("PUT failed with IOException", e);
-                    throw new ResourceException(e);
-                } catch (StudyCalendarValidationException exp) {
-                    throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
-                }
-
-                getResponse().setEntity(
-                        new StringRepresentation(
-                                scheduledSegmentSerializer.createDocumentString(segment), MediaType.TEXT_XML));
-
-                getResponse().setStatus(Status.SUCCESS_CREATED);
-
-            } else {
-                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+            ScheduledStudySegment segment;
+            try {
+                segment = scheduledSegmentSerializer.readDocument(entity.getStream());
+                store(segment);
+            } catch (IOException e) {
+                log.warn("PUT failed with IOException", e);
+                throw new ResourceException(e);
+            } catch (StudyCalendarValidationException exp) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
+
+            getResponse().setEntity(
+                    new StringRepresentation(
+                            scheduledSegmentSerializer.createDocumentString(segment), MediaType.TEXT_XML));
+
+            getResponse().setStatus(Status.SUCCESS_CREATED);
+
+        } else {
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
         }
+    }
 
     private void store(ScheduledStudySegment segment) {
-        // TODO: add scheduled study segment to schedule per existing tempalte
+        ScheduledCalendar cal = getRequestedObject();
+        cal.addStudySegment(segment);
+        scheduledCalendarDao.save(cal);
     }
 
     ////// Bean setters
@@ -83,5 +87,10 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     @Required
     public void setScheduledStudySegmentXmlSerializer(ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer) {
         this.scheduledSegmentSerializer = scheduledSegmentSerializer;
+    }
+
+    @Required
+    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
+        this.scheduledCalendarDao = scheduledCalendarDao;
     }
 }
