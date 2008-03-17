@@ -79,13 +79,13 @@ public class SiteDaoTest extends DaoTestCase {
     }
 
     public void testCount() throws Exception {
-        assertEquals("Should be two sites, to start", 2, siteDao.getCount());
+        assertEquals("Should be two sites, to start", 3, siteDao.getCount());
 
         Site newSite = new Site();
         newSite.setName("Hampshire");
         siteDao.save(newSite);
         interruptSession();
-        assertEquals("Should be three sites after saving", 3, siteDao.getCount());
+        assertEquals("Should be three sites after saving", 4, siteDao.getCount());
 
         getJdbcTemplate().update("DELETE FROM sites");
         assertEquals("And now there should be none", 0, siteDao.getCount());
