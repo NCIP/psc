@@ -19,7 +19,7 @@ class AddPopulationModel extends edu.northwestern.bioinformatics.bering.Migratio
 
     void down() {
         dropColumn('planned_activities', 'population_id')
-        dropTable("subject_populations")
+        dropTable("subject_populations", primaryKey:false)
         dropTable("populations")
     }
 }

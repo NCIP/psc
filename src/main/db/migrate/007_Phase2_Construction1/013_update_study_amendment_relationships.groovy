@@ -16,7 +16,7 @@ class UpdateStudyAmendmentRelationships extends edu.northwestern.bioinformatics.
 
     void down() {
         renameColumn("amendments", "previous_amendment_id", "previous_amendment")
-        dropColumn("studies", "development_amendment_id")
+        dropColumn("studies", "dev_amendment_id")
         addColumn("amendments", "study_id", "integer")
         dropColumn("studies", "amendment_id")
 

@@ -11,7 +11,7 @@ class RemoveIndexUserRolesAddPrimaryKey extends edu.northwestern.bioinformatics.
     }
 
     void down() {
-         dropTable('user_roles')
+         dropTable('user_roles', primaryKey:false)
 
          createTable('user_roles') { t ->
             t.addColumn('csm_group_name', 'string', nullable: false)
