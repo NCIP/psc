@@ -84,18 +84,6 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         assertEquals("Result not success", 201, response.getStatus().getCode());
     }
 
-    protected void expectReadXmlFromRequestAs(ScheduledStudySegment expectedRead) throws Exception {
-        final InputStream in = registerMockFor(InputStream.class);
-        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
-
-        expect(scheduledSegmentSerializer.readDocument(in)).andReturn(expectedRead);
-    }
-
-    @SuppressWarnings({ "unchecked" })
-    protected void expectObjectXmlized(ScheduledStudySegment schdSegment) {
-        expect(scheduledSegmentSerializer.createDocumentString(schdSegment)).andReturn(MOCK_XML);
-    }
-
     ////// Expect methods
     private void expectResolvedSubjectAssignment() {
         expect(studySubjectAssignmentDao.getByGridId(ASSIGNMENT_IDENTIFIER)).andReturn(assigment);
@@ -110,5 +98,17 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         StudySubjectAssignment assignment = new StudySubjectAssignment();
         assignment.setScheduledCalendar(calendar);
         return assignment;
+    }
+
+    protected void expectReadXmlFromRequestAs(ScheduledStudySegment expectedRead) throws Exception {
+        final InputStream in = registerMockFor(InputStream.class);
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expect(scheduledSegmentSerializer.readDocument(in)).andReturn(expectedRead);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    protected void expectObjectXmlized(ScheduledStudySegment schdSegment) {
+        expect(scheduledSegmentSerializer.createDocumentString(schdSegment)).andReturn(MOCK_XML);
     }
 }
