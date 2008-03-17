@@ -3,6 +3,8 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StaticDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -16,6 +18,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.*;
+import org.easymock.classextension.EasyMock;
 
 /**
  * Note that some tests here are more like integration tests in that they test the full
@@ -26,8 +30,15 @@ import static org.easymock.classextension.EasyMock.expect;
 public class DeltaServiceTest extends StudyCalendarTestCase {
     private Study study;
     private PlannedCalendar calendar;
-    private DeltaService service;
+    private Epoch e1;
+    private Epoch e2;
+    private StudySegment e1a0;
 
+    private DeltaService service;
+    private TemplateService mockTemplateService;
+
+    private DeltaDao deltaDao;
+    private ChangeDao changeDao;
     private EpochDao epochDao;
     private StudySegmentDao studySegmentDao;
 
@@ -37,9 +48,9 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
-        Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
-        Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
-        StudySegment e1a0 = setGridId("E1A0-GRID",
+        e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
+        e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
+        e1a0 = setGridId("E1A0-GRID",
             setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
 
         Amendment a3 = createAmendments("A0", "A1", "A2", "A3");
@@ -49,17 +60,27 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         a2.addDelta(Delta.createDeltaFor(calendar, createAddChange(2, null)));
         a3.addDelta(Delta.createDeltaFor(e1, createAddChange(10, 0)));
 
+        changeDao = registerDaoMockFor(ChangeDao.class);
+        deltaDao = registerDaoMockFor(DeltaDao.class);
         epochDao = registerDaoMockFor(EpochDao.class);
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         expect(epochDao.getById(2)).andReturn(e2).anyTimes();
         expect(studySegmentDao.getById(10)).andReturn(e1a0).anyTimes();
 
+        StaticDaoFinder daoFinder = new StaticDaoFinder(epochDao, studySegmentDao);
         MutatorFactory mutatorFactory = new MutatorFactory();
-        mutatorFactory.setDaoFinder(new StaticDaoFinder(epochDao, studySegmentDao));
+        mutatorFactory.setDaoFinder(daoFinder);
+        TestingTemplateService templateService = new TestingTemplateService();
+        templateService.setDaoFinder(daoFinder);
 
         service = new DeltaService();
         service.setMutatorFactory(mutatorFactory);
-        service.setTemplateService(new TestingTemplateService());
+        service.setTemplateService(templateService);
+        service.setChangeDao(changeDao);
+        service.setDeltaDao(deltaDao);
+        service.setDaoFinder(daoFinder);
+
+        mockTemplateService = registerMockFor(TemplateService.class);
     }
 
     public void testRevise() throws Exception {
@@ -151,5 +172,36 @@ public class DeltaServiceTest extends StudyCalendarTestCase {
         assertSame("Added delta is not for correct node", expectedTarget, added.getNode());
         assertEquals("Wrong number of changes in new delta", 1, added.getChanges().size());
         assertEquals("Wrong change in new delta", expectedChange, added.getChanges().get(0));
+    }
+
+    public void testDeleteDeltaWithRealizedChildInAdd() throws Exception {
+        service.setTemplateService(mockTemplateService);
+
+        Epoch addedEpoch = new Epoch();
+        Delta<?> pcDelta = Delta.createDeltaFor(calendar, Add.create(addedEpoch), Remove.create(e2));
+        mockTemplateService.delete(addedEpoch);
+        deltaDao.delete(pcDelta);
+        changeDao.delete(pcDelta.getChanges().get(0));
+        changeDao.delete(pcDelta.getChanges().get(1));
+
+        replayMocks();
+        service.delete(pcDelta);
+        verifyMocks();
+    }
+
+    public void testDeleteDeltaWithChildIdOnlyInAdd() throws Exception {
+        service.setTemplateService(mockTemplateService);
+
+        Epoch addedEpoch = setId(4, new Epoch());
+        Delta<?> pcDelta = Delta.createDeltaFor(calendar, createAddChange(4, null), Remove.create(e2));
+        expect(epochDao.getById(4)).andReturn(addedEpoch);
+        mockTemplateService.delete(addedEpoch);
+        deltaDao.delete(pcDelta);
+        changeDao.delete(pcDelta.getChanges().get(0));
+        changeDao.delete(pcDelta.getChanges().get(1));
+
+        replayMocks();
+        service.delete(pcDelta);
+        verifyMocks();
     }
 }

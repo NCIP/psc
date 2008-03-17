@@ -6,11 +6,13 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import org.hibernate.Hibernate;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Rhett Sutphin
  */
-public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<PlannedCalendar> {
+@Transactional(readOnly = true)
+public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<PlannedCalendar> implements DeletableDomainObjectDao<PlannedCalendar> {
     @Override
     public Class<PlannedCalendar> domainClass() {
         return PlannedCalendar.class;
@@ -45,5 +47,10 @@ public class PlannedCalendarDao extends StudyCalendarMutableDomainObjectDao<Plan
                 }
             }
         }
+    }
+
+    @Transactional(readOnly = false)
+    public void delete(PlannedCalendar plannedCalendar) {
+        getHibernateTemplate().delete(plannedCalendar);
     }
 }

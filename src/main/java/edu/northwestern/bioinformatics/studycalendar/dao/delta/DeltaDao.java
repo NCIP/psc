@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
@@ -12,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Transactional(readOnly = true)
-public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
+public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> implements DeletableDomainObjectDao<Delta> {
     @SuppressWarnings({ "RawUseOfParameterizedType" })
     @Override
     public Class<Delta> domainClass() {
@@ -41,6 +42,7 @@ public class DeltaDao extends StudyCalendarMutableDomainObjectDao<Delta> {
         return CollectionUtils.firstElement(deltas);
     }
 
+    @Transactional(readOnly = false)
     public void delete(Delta delta) {
         getHibernateTemplate().delete(delta);
     }

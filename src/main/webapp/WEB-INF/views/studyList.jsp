@@ -252,7 +252,7 @@
                                 ${template.displayName}
                             </a>
                             <ul class="controls">
-                                <tags:restrictedListItem cssClass="control" url="/pages/cal/deleteStudy" queryString="id=${template.id}" >
+                                <tags:restrictedListItem cssClass="control" url="/pages/cal/template/deleteDevelopmentAmendment" queryString="study=${template.id}" >
                                     Delete
                                 </tags:restrictedListItem>
                             </ul>

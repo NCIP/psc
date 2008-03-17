@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Jaron Sampson
  */
-public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> {
+public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> implements DeletableDomainObjectDao<Activity> {
     @Override
     public Class<Activity> domainClass() {
         return Activity.class;

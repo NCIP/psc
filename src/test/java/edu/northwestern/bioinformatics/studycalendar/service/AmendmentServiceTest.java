@@ -1,6 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -15,6 +23,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 
 import java.util.List;
@@ -22,6 +31,10 @@ import java.util.Calendar;
 import static java.util.Calendar.*;
 
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
+import org.easymock.classextension.EasyMock;
+import static org.easymock.classextension.EasyMock.*;
+import org.restlet.resource.Resource;
 
 /**
  * @author Rhett Sutphin
@@ -30,10 +43,12 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private AmendmentService service;
     private StudyService studyService;
     private DeltaService mockDeltaService;
+    private TemplateService mockTemplateService;
+    private AmendmentDao amendmentDao;
+    private StudyDao studyDao;
 
     private Study study;
     private Amendment a0, a1, a2, a3;
-    private Site portland;
     private StudySite portlandSS;
     private PlannedCalendar calendar;
 
@@ -41,6 +56,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         studyService = registerMockFor(StudyService.class);
+        amendmentDao = registerDaoMockFor(AmendmentDao.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -58,7 +75,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         a2.addDelta(Delta.createDeltaFor(calendar, Add.create(e2)));
         a3.addDelta(Delta.createDeltaFor(e1, Add.create(e1a0, 0)));
 
-        portland = setId(3, createNamedInstance("Portland", Site.class));
+        Site portland = setId(3, createNamedInstance("Portland", Site.class));
         portlandSS = setId(4, createStudySite(study, portland));
         portlandSS.approveAmendment(a0, DateTools.createDate(2004, JANUARY, 4));
 
@@ -66,7 +83,10 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setStudyService(studyService);
         service.setDeltaService(Fixtures.getTestingDeltaService());
         service.setTemplateService(new TestingTemplateService());
+        service.setAmendmentDao(amendmentDao);
+        service.setStudyDao(studyDao);
 
+        mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
     }
 
@@ -215,6 +235,75 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         mockDeltaService.updateRevision(expectedDevAmendment, epoch, expectedChange);
         replayMocks();
         service.updateDevelopmentAmendment(epoch, expectedChange);
+        verifyMocks();
+    }
+
+    public void testDeleteDevelopmentAmendment() throws Exception {
+        service.setDeltaService(mockDeltaService);
+
+        Amendment dev = new Amendment();
+        Epoch e = Epoch.create("E", "S0");
+        StudySegment s0 = e.getStudySegments().get(0);
+        StudySegment s1 = new StudySegment(), s2 = new StudySegment();
+        Delta<Epoch> delta = Delta.createDeltaFor(
+            e, Remove.create(s0), Add.create(s1), Add.create(s2));
+        dev.addDelta(delta);
+        study.setDevelopmentAmendment(dev);
+
+        mockDeltaService.delete(delta);
+        amendmentDao.delete(dev);
+        studyService.save(study);
+
+        replayMocks();
+        service.deleteDevelopmentAmendment(study);
+
+        assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
+        verifyMocks();
+    }
+    
+    public void testDeleteDevelopmentAmendmentWhenItsTheOnlyThing() throws Exception {
+        service.setDeltaService(mockDeltaService);
+        service.setTemplateService(mockTemplateService);
+
+        Amendment dev = new Amendment();
+        Delta<Epoch> d1 = Delta.createDeltaFor(Epoch.create("E"));
+        Delta<Epoch> d2 = Delta.createDeltaFor(Epoch.create("F"));
+        dev.addDelta(d1);
+        dev.addDelta(d2);
+        study.setAmendment(null);
+        study.setDevelopmentAmendment(dev);
+
+        mockDeltaService.delete(d1);
+        mockDeltaService.delete(d2);
+        mockTemplateService.delete(study.getPlannedCalendar());
+        amendmentDao.delete(dev);
+        studyDao.delete(study);
+
+        replayMocks();
+        service.deleteDevelopmentAmendment(study);
+        verifyMocks();
+    }
+    
+    public void testDeleteDevelopmentAmendmentOnly() throws Exception {
+        service.setDeltaService(mockDeltaService);
+        service.setTemplateService(mockTemplateService);
+
+        Amendment dev = new Amendment();
+        Delta<Epoch> d1 = Delta.createDeltaFor(Epoch.create("E"));
+        Delta<Epoch> d2 = Delta.createDeltaFor(Epoch.create("F"));
+        dev.addDelta(d1);
+        dev.addDelta(d2);
+        study.setAmendment(null);
+        study.setDevelopmentAmendment(dev);
+
+        mockDeltaService.delete(d1);
+        mockDeltaService.delete(d2);
+        amendmentDao.delete(dev);
+        studyService.save(study);
+
+        replayMocks();
+        service.deleteDevelopmentAmendmentOnly(study);
+        assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
         verifyMocks();
     }
 }

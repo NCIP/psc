@@ -6,7 +6,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 /**
  * @author Padmaja Vedula
  */
-public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite> {
+public class StudySiteDao extends StudyCalendarMutableDomainObjectDao<StudySite> implements DeletableDomainObjectDao<StudySite> {
     @Override public Class<StudySite> domainClass() { return StudySite.class; }
 
     /**

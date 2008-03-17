@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
@@ -9,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -24,6 +27,8 @@ public class AmendmentService {
     private StudyService studyService;
     private DeltaService deltaService;
     private TemplateService templateService;
+    private StudyDao studyDao;
+    private AmendmentDao amendmentDao;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -94,7 +99,6 @@ public class AmendmentService {
      * Finds the current development amendment for the study associated with the node
      * and merges in the given change.
      */
-    @Transactional(propagation = Propagation.SUPPORTS)
     public void updateDevelopmentAmendment(PlanTreeNode<?> node, Change change) {
         Study study = templateService.findAncestor(node, PlannedCalendar.class).getStudy();
         if (!study.isInDevelopment()) {
@@ -103,7 +107,48 @@ public class AmendmentService {
         deltaService.updateRevision(study.getDevelopmentAmendment(), node, change);
     }
 
+    /**
+     * Deletes the development amendment for the designated study.  If the
+     * study has no released amendment, it deletes the study and the study's
+     * planned calendar.
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void deleteDevelopmentAmendment(Study study) {
+        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
+        if (study.getAmendment() == null) {
+            templateService.delete(study.getPlannedCalendar());
+            studyDao.delete(study);
+        } else {
+            study.setDevelopmentAmendment(null);
+            studyService.save(study);
+        }
+    }
+
+    /**
+     * Deletes the development amendment for the designated study.  Even if the
+     * study has no released amendment, it does not delete the study and the study's
+     * planned calendar.
+     */
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void deleteDevelopmentAmendmentOnly(Study study) {
+        deleteDevelopmentAmendment(study.getDevelopmentAmendment());
+        study.setDevelopmentAmendment(null);
+        studyService.save(study);
+    }
+
+    private void deleteDevelopmentAmendment(Amendment dev) {
+        for (Delta<?> delta : dev.getDeltas()) {
+            deltaService.delete(delta);
+        }
+        amendmentDao.delete(dev);
+    }
+
     ////// CONFIGURATION
+
+    @Required
+    public void setStudyDao(StudyDao studyDao) {
+        this.studyDao = studyDao;
+    }
 
     @Required
     public void setStudyService(StudyService studyService) {
@@ -120,4 +165,8 @@ public class AmendmentService {
         this.templateService = templateService;
     }
 
+    @Required
+    public void setAmendmentDao(AmendmentDao amendmentDao) {
+        this.amendmentDao = amendmentDao;
+    }
 }

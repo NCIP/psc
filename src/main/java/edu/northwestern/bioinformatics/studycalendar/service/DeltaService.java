@@ -2,21 +2,23 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import edu.northwestern.bioinformatics.studycalendar.service.delta.Mutator;
+import edu.northwestern.bioinformatics.studycalendar.service.delta.MutatorFactory;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.cabig.ctms.dao.MutableDomainObjectDao;
 import gov.nih.nci.cabig.ctms.domain.MutableDomainObject;
@@ -26,10 +28,11 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
 /**
  * Provides methods for calculating deltas and for applying them to PlannedCalendars.
- * Should also provide the methods for applying them to schedules, though I'm not sure
- * about that yet.
+ * Also provides maintenance methods for deltas.
  *
  * @author Rhett Sutphin
  */
@@ -39,6 +42,7 @@ public class DeltaService {
     private MutatorFactory mutatorFactory;
     private DaoFinder daoFinder;
     private DeltaDao deltaDao;
+    private ChangeDao changeDao;
     private TemplateService templateService;
 
     /**
@@ -208,11 +212,46 @@ public class DeltaService {
         ((MutableDomainObjectDao) dao).save(object);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    public void delete(Delta<?> delta) {
+        for (Change change : delta.getChanges()) {
+            if (change.getAction() == ChangeAction.ADD) {
+                PlanTreeNode child = findChangeChild((Add) change);
+                templateService.delete(child);
+            }
+        }
+        for (Change change : new ArrayList<Change>(delta.getChanges())) {
+            delta.removeChange(change);
+            changeDao.delete(change);
+        }
+        deltaDao.delete(delta);
+    }
+
+    public PlanTreeNode findChangeChild(ChildrenChange change) {
+        PlanTreeNode child = change.getChild();
+        if (child == null) {
+            PlanTreeInnerNode parent = (PlanTreeInnerNode) change.getDelta().getNode();
+            child = findDaoAndLoad(change.getChildId(), parent.childClass());
+        }
+        return child;
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private <T extends PlanTreeNode> T findDaoAndLoad(int id, Class<T> klass) {
+        DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(klass);
+        return dao.getById(id);
+    }
+
     ////// CONFIGURATION
 
     @Required
     public void setMutatorFactory(MutatorFactory mutatorFactory) {
         this.mutatorFactory = mutatorFactory;
+    }
+
+    @Required
+    public void setChangeDao(ChangeDao changeDao) {
+        this.changeDao = changeDao;
     }
 
     @Required

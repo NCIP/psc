@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> {
+public class PeriodDao extends StudyCalendarMutableDomainObjectDao<Period> implements DeletableDomainObjectDao<Period> {
     @Override
     public Class<Period> domainClass() {
         return Period.class;

@@ -12,7 +12,8 @@ import java.util.List;
  * @author Rhett Sutphin
  */
 @Transactional(readOnly = true)
-public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site> implements Serializable {
+public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
+    implements Serializable, DeletableDomainObjectDao<Site> {
 
     @Override
     public Class<Site> domainClass() {

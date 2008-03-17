@@ -8,8 +8,8 @@ import java.util.List;
 /**
  * @author Rhett Sutphin
  */
-@Transactional (readOnly=true)
-public class PlannedActivityDao extends StudyCalendarMutableDomainObjectDao<PlannedActivity> {
+@Transactional(readOnly=true)
+public class PlannedActivityDao extends StudyCalendarMutableDomainObjectDao<PlannedActivity> implements DeletableDomainObjectDao<PlannedActivity> {
     @Override
     public Class<PlannedActivity> domainClass() {
         return PlannedActivity.class;

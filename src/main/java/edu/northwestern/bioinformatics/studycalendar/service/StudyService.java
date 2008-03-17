@@ -144,30 +144,6 @@ public class StudyService {
         }
     }
 
-    public void delete(Study study) {
-
-        Amendment amendment = study.getDevelopmentAmendment();
-
-        if (amendment != null) {
-            deltaService.apply(study, amendment);
-            amendment.getDeltas().clear();
-            amendmentDao.save(amendment);
-        }
-
-        PlannedCalendar plannedCalendar = study.getPlannedCalendar();
-
-        List<Epoch> epochList = new ArrayList<Epoch>();
-        if (plannedCalendar != null) {
-            epochList = plannedCalendar.getEpochs();
-        }
-
-        studyDao.delete(study);
-
-        for (Epoch epoch : epochList) {
-            epochDao.delete(epoch);
-        }
-    }
-
     /**
      * Mutates the provided example study into a saveable form and then saves it.
      * Specifically, it takes the plan tree embodied in the plannedCalendar of the

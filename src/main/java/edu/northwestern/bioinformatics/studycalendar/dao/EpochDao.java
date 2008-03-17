@@ -9,7 +9,7 @@ import org.hibernate.Hibernate;
 /**
  * @author Rhett Sutphin
  */
-public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> {
+public class EpochDao extends StudyCalendarMutableDomainObjectDao<Epoch> implements DeletableDomainObjectDao<Epoch> {
     @Override public Class<Epoch> domainClass() { return Epoch.class; }
 
     /**

@@ -6,7 +6,7 @@ import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import java.util.Map;
 import java.util.HashMap;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.classextension.EasyMock.*;
 import junit.framework.AssertionFailedError;
 
 /**
@@ -21,7 +21,11 @@ public class DynamicMockDaoFinder implements DaoFinder {
     }
 
     public <T extends DomainObject> DomainObjectDao<?> expectDaoFor(Class<T> klass) {
-        DomainObjectDao<T> mock = createMock(DomainObjectDao.class);
+        return expectDaoFor(klass, DomainObjectDao.class);
+    }
+
+    public <T extends DomainObject, C extends DomainObjectDao> C expectDaoFor(Class<T> klass, Class<C> mockClass) {
+        C mock = createMock(mockClass);
         expect(mock.domainClass()).andReturn(klass).anyTimes();
         mocks.put(klass, mock);
         return mock;

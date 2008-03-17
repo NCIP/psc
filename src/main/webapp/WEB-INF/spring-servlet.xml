@@ -222,8 +222,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DeletePeriodController">
     </bean>
 
-    <bean name="/cal/deleteStudy" id="deleteStudyController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteStudyController">
+    <bean name="/cal/template/deleteDevelopmentAmendment" id="deleteStudyController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteDevelopmentAmendmentController">
     </bean>
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"

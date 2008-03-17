@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import static org.easymock.EasyMock.expect;
@@ -20,6 +21,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     private StudyXmlSerializerPostProcessor processor;
     private ActivityDao activityDao;
     private AmendmentService amendmentService;
+    private DeltaService deltaService;
     private DaoFinder daoFinder;
     private SourceDao sourceDao;
     private StudyDao studyDao;
@@ -41,6 +43,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
         studyService = registerMockFor(StudyService.class);
         activityDao = registerDaoMockFor(ActivityDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        deltaService = registerMockFor(DeltaService.class);
         plannedActivityDao = registerDaoMockFor(PlannedActivityDao.class);
 
         processor = new StudyXmlSerializerPostProcessor();
@@ -49,6 +52,7 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
         processor.setSourceDao(sourceDao);
         processor.setActivityDao(activityDao);
         processor.setStudyService(studyService);
+        processor.setDeltaService(deltaService);
         processor.setAmendmentService(amendmentService);
 
         source = createNamedInstance("Source A", Source.class);
@@ -178,11 +182,13 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     private Amendment amendment0() {
         Amendment amendment = Fixtures.createAmendments("Amendment 0");
 
-        Add add0 = Add.create(activity0);
+        Add add0 = setId(0, Add.create(activity0));
         Delta delta0 = Delta.createDeltaFor(period, add0);
+        expect(deltaService.findChangeChild(add0)).andStubReturn(activity0);
 
-        Add add1 = Add.create(activity1);
+        Add add1 = setId(1, Add.create(activity1));
         Delta delta1 = Delta.createDeltaFor(period, add1);
+        expect(deltaService.findChangeChild(add1)).andStubReturn(activity1);
 
         amendment.addDelta(delta0);
         amendment.addDelta(delta1);
@@ -193,10 +199,11 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     private Amendment amendment1() {
         Amendment amendment = Fixtures.createAmendments("Amendment 1");
 
-        Add add = Add.create(activity2);
+        Add add = setId(2, Add.create(activity2));
         Delta delta0 = Delta.createDeltaFor(period, add);
+        expect(deltaService.findChangeChild(add)).andStubReturn(activity2);
 
-        Remove remove = Remove.create(activity3);
+        Remove remove = setId(3, Remove.create(activity3));
         Delta delta1 = Delta.createDeltaFor(period, remove);
 
         amendment.addDelta(delta0);
@@ -207,10 +214,11 @@ public class TemplateXmlSerializerPostProcessorTest extends StudyCalendarTestCas
     private Amendment developmentAmendment() {
         Amendment amendment = Fixtures.createAmendments("Development Amendment");
 
-        Add add = Add.create(activity4);
+        Add add = setId(4, Add.create(activity4));
         Delta delta0 = Delta.createDeltaFor(period, add);
+        expect(deltaService.findChangeChild(add)).andStubReturn(activity4);
 
-        Remove remove = Remove.create(activity5);
+        Remove remove = setId(5, Remove.create(activity5));
         Delta delta1 = Delta.createDeltaFor(period, remove);
 
         amendment.addDelta(delta0);

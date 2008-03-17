@@ -123,8 +123,4 @@
 
     <bean id="studyXmlSerializerPostProcessor" autowire="byName"
               class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPostProcessor"/>
-
-    <!--Xml Utilities-->
-    <bean id="xmlUtils" autowire="byName"
-              class="edu.northwestern.bioinformatics.studycalendar.xml.utils.XmlUtils"/>
 </beans>

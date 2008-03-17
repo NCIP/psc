@@ -4,12 +4,24 @@ import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.SourceDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeInnerNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.Source;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChildrenChange;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
-import edu.northwestern.bioinformatics.studycalendar.xml.utils.XmlUtils;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import gov.nih.nci.cabig.ctms.dao.GridIdentifiableDao;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -29,7 +41,7 @@ public class StudyXmlSerializerPostProcessor {
     private AmendmentService amendmentService;
     private StudyService studyService;
     private DaoFinder daoFinder;
-    private XmlUtils xmlUtils;
+    private DeltaService deltaService;
 
     public void process(Study study) {
         resolveExistingActivitiesAndSources(study);
@@ -49,11 +61,10 @@ public class StudyXmlSerializerPostProcessor {
             for (Delta<?> delta : amendment.getDeltas()) {
                 for (Change change : delta.getChanges()) {
                     if (change.getAction() == ChangeAction.ADD) {
-                        PlanTreeNode<?> child = ((Add) change).getChild();
-                        // Need this if change is already persisted in the database, then it won't have a child
-                        // and we need to find from the child id
+                        PlanTreeNode<?> child = deltaService.findChangeChild((Add) change);
                         if (child == null) {
-                            child = xmlUtils.findChangeChild(change);
+                            throw new StudyCalendarSystemException(
+                                "Could not resolve child for %s", change);
                         }
 
                         if (child instanceof PlannedActivity) {
@@ -200,7 +211,7 @@ public class StudyXmlSerializerPostProcessor {
     }
 
     @Required
-    public void setXmlUtils(XmlUtils xmlUtils) {
-        this.xmlUtils = xmlUtils;
+    public void setDeltaService(DeltaService deltaService) {
+        this.deltaService = deltaService;
     }
 }

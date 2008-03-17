@@ -1,11 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
 
 import java.util.List;
 
-public class ChangeDao extends StudyCalendarMutableDomainObjectDao<Change> {
+public class ChangeDao extends StudyCalendarMutableDomainObjectDao<Change> implements DeletableDomainObjectDao<Change> {
     @Override
     public Class<Change> domainClass() {
         return Change.class;

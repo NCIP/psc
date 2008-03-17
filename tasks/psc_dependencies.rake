@@ -19,7 +19,7 @@ end
 ###### DEPS
 
 # Only list versions which appear in more than one artifact here
-CTMS_COMMONS_VERSION = "0.7-SNAPSHOT"
+CTMS_COMMONS_VERSION = "0.9-SNAPSHOT"
 CORE_COMMONS_VERSION = "77"
 SPRING_VERSION = "2.0.7"
 

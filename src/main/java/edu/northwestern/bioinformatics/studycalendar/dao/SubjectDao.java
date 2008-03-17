@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
-public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> {
+public class SubjectDao extends StudyCalendarMutableDomainObjectDao<Subject> implements DeletableDomainObjectDao<Subject> {
     @Override
     public Class<Subject> domainClass() {
         return Subject.class;

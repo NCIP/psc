@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Nataliya Shurupova
  * @author Rhett Sutphin
  */
-public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment> {
+public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment> implements DeletableDomainObjectDao<Amendment> {
     @Override
     public Class<Amendment> domainClass() {
         return Amendment.class;

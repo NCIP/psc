@@ -6,6 +6,13 @@ import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
+import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
@@ -17,6 +24,7 @@ import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
@@ -52,6 +60,7 @@ public class TemplateService {
     public static final String STRING_IS_NULL = "String parameter is null";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private DaoFinder daoFinder;
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -530,6 +539,27 @@ public class TemplateService {
         return false;
     }
 
+    protected <T extends PlanTreeNode<?>> void delete(Collection<T> collection) {
+        for (T t : collection) delete(t);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    public <T extends PlanTreeNode> void delete(T object) {
+        DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
+        if (!(dao instanceof DeletableDomainObjectDao)) {
+            throw new StudyCalendarSystemException(
+                "DAO for %s (%s) does not implement the deletable interface",
+                object.getClass().getSimpleName(), dao.getClass().getName()
+                );
+        }
+        DeletableDomainObjectDao<T> deleter = (DeletableDomainObjectDao) dao;
+        if (object instanceof PlanTreeInnerNode) {
+            PlanTreeInnerNode innerNode = (PlanTreeInnerNode) object;
+            delete(innerNode.getChildren());
+            innerNode.getChildren().clear();
+        }
+        deleter.delete(object);
+    }
 
     ////// CONFIGURATION
 
@@ -557,7 +587,13 @@ public class TemplateService {
         this.authorizationManager = authorizationManager;
     }
 
+    @Required
     public void setUserRoleDao(UserRoleDao userRoleDao) {
         this.userRoleDao = userRoleDao;
+    }
+
+    @Required
+    public void setDaoFinder(DaoFinder daoFinder) {
+        this.daoFinder = daoFinder;
     }
 }
