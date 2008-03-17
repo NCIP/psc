@@ -40,7 +40,12 @@ public class ImportActivitiesService {
                     activity.setSource(existingSource);
                 }
 
-                existingSource.getActivities().addAll(source.getActivities());
+                for (Activity activity : source.getActivities()) {
+                    if (!existingSource.getActivities().contains(activity)) {
+                        existingSource.getActivities().add(activity);
+                    }
+                }
+                
                 source = existingSource;
             }
 

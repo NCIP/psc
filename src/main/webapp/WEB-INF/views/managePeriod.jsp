@@ -232,7 +232,6 @@ function updateAddActivityButton() {
 
 function registerHandlers() {
     $$('.input-row').each(registerRowEventHandlers)
-    Event.observe('add-activity-button', 'click', updateAddActivityButton)
     Event.observe('return-to-template', 'click', function() {
         location.href = '<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
     })
@@ -378,6 +377,7 @@ function addAdditionalParameters(inputField, queryString) {
 function updateActivity(input, li) {
     $('add-activity').name = li.innerHTML;
     $('add-activity').value= li.id;
+    updateAddActivityButton()
 //    $('add-activity-button').focus()
 }
 
@@ -725,7 +725,6 @@ function registerHoverTips() {
 
                 <input type="hidden" id="add-activity"/>
 
-                <input type="button" id="add-activity-button" value="Add to period"/>
                 <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a> <span id="new-activities-link-separator">or</span>
                 <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import activities from xml</a>
              </div>

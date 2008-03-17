@@ -95,6 +95,15 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
     ////// OBJECT METHODS
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Activity activity = (Activity) o;
+
+        return getNaturalKey().equals(activity.getNaturalKey());
+    }
+
     public String toString() {
         return new StringBuilder(getClass().getSimpleName())
                 .append("[id=").append(getId())
