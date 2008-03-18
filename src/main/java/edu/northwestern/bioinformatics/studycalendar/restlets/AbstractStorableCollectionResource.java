@@ -10,7 +10,7 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Extends the AbstractStorableCollectionResource and provide the POST functionality for a collection of objects
@@ -34,12 +34,18 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
         }
     }
 
+    /**
+     * provide POST functionality. Accepts xml representation of single domain object.
+     */
+    @Override
     public void acceptRepresentation(final Representation entity) throws ResourceException {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             validateEntity(entity);
-            Collection<D> read;
+            //Collection<D> read;
+            final D read;
             try {
-                read = getXmlSerializer().readCollectionDocument(entity.getStream());
+                read = (D) getXmlSerializer().readDocument(entity.getStream());
+                // read = getXmlSerializer().readCollectionDocument(entity.getStream());
                 store(read);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
@@ -50,7 +56,9 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
 
             }
 
-            getResponse().setEntity(createXmlRepresentation(read));
+            final ArrayList<D> list = new ArrayList<D>();
+            list.add(read);
+            getResponse().setEntity(createXmlRepresentation(list));
             if (getAllObjects() == null) {
                 getResponse().setStatus(Status.SUCCESS_CREATED);
             } else {
@@ -62,7 +70,7 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
     }
 
 
-    public abstract void store(Collection<D> instances);
+    public abstract void store(D instances);
 
     protected void validateEntity(Representation entity) throws ResourceException {
     }

@@ -45,12 +45,14 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Ho
     }
 
     @Override
-    public void store(final Collection<Holiday> holidays) {
+    public void store(final Holiday holiday) {
         try {
 
-            for (Holiday holiday : holidays) {
-                site.addOrMergeExistingHoliday(holiday);
-            }
+            site.addOrMergeExistingHoliday(holiday);
+
+//            for (Holiday holiday : holidays) {
+//                site.addOrMergeExistingHoliday(holiday);
+//            }
 
 
             siteService.createOrUpdateSite(site);
