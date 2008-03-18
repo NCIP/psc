@@ -27,13 +27,14 @@
             display: none;
         }
 
-        .collapse-icon {
-            font-size: 0.6em;
-        }
-
         .collapsible h2 {
             cursor: pointer;
         }
+
+        .collapsible h2 .collapse-icon {
+            font-size:.8em;
+        }
+
 
         #next-studySegment-form {
             margin-top: 0;
