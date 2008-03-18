@@ -96,7 +96,7 @@ function addToBeginSentence(){
 }
 
 function hideShowReleaseTemplateButton() {
-    if ($('study-name').innerHTML == '[ABC 1234]') {
+    if ($('study-name').innerHTML.startsWith('[ABC ')) {
         $('enterStudyName').show()
         $('errorMessages').hide()
         $('admin-options').hide()
