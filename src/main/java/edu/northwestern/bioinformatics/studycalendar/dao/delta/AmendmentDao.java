@@ -8,12 +8,19 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Hibernate;
+import org.hibernate.type.Type;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Criterion;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
+import java.util.Calendar;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * @author Nataliya Shurupova
@@ -35,7 +42,11 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(Amendment.class).add( Restrictions.like("date", keyParts.getDate()) );
+                Criteria crit = session.createCriteria(Amendment.class)
+                        .add(Restrictions.disjunction()
+                            .add(Restrictions.like("date", keyParts.getDate()))
+                            .add(Restrictions.eq("date", keyParts.getDate()))
+                        );
                 if (keyParts.getName() != null) crit.add( Restrictions.eq("name", keyParts.getName()) );
                 crit.addOrder(Order.asc("name"));
                 return crit.list();
