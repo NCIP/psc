@@ -19,6 +19,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
@@ -423,8 +424,15 @@ public class TemplateService {
                 }
             }
         }
-
+        Collections.sort(pendingTemplates, new AlphabeticallyOrderedComparator());
         return pendingTemplates;
+    }
+
+    private static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
+        public static final Comparator<? super StudyListController.ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
+        public int compare(StudyListController.ReleasedTemplate rt1, StudyListController.ReleasedTemplate rt2) {
+             return rt1.getDisplayName().compareTo(rt2.getDisplayName());
+        }
     }
 
     // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
