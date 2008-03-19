@@ -13,7 +13,10 @@ public enum UriTemplateParameters {
     SITE_IDENTIFIER,
     ASSIGNMENT_IDENTIFIER,
     BLACKOUT_DATE_IDENTIFIER,
-    AMENDMENT_IDENTIFIER;
+    AMENDMENT_IDENTIFIER,
+    YEAR,
+    MONTH,
+    DAY;
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();
@@ -21,8 +24,8 @@ public enum UriTemplateParameters {
 
     public String extractFrom(Request request) {
         return hasParameter(request)
-            ? Reference.decode((String) request.getAttributes().get(attributeName()))
-            : null;
+                ? Reference.decode((String) request.getAttributes().get(attributeName()))
+                : null;
     }
 
     public boolean hasParameter(Request request) {

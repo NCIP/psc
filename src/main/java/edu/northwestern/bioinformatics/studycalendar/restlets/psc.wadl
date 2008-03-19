@@ -364,7 +364,7 @@
                 <resource path="activities/{year}/{month}/{day}">
                     <doc>
                         <html:em class="pending">Pending</html:em>
-                        <html:p>A list of activities for the selected day.</html:p>
+                        <html>A list of activities for the selected day.</html>
                     </doc>
                     <param style="template" name="year"/>
                     <param style="template" name="month"/>

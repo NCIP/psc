@@ -49,7 +49,7 @@ public enum XsdElement {
     SCHEDULED_ACTIVITY,
     CURRENT_SCHEDULED_ACTIVITY_STATE,
     PREVIOUS_SCHEDULED_ACTIVITY_STATE,
-    ;
+    SCHEDULED_ACTIVITIES;
 
     private String elementName;
 

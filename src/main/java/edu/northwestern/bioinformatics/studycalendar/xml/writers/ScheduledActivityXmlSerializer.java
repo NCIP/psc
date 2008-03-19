@@ -1,39 +1,63 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.SCHEDULED_ACTIVITY;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author John Dzak
  */
-public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledActivity> {
+public class ScheduledActivityXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<ScheduledActivity> {
     private CurrentScheduledActivityStateXmlSerializer currentScheduledActivityStateSerializer;
     private PreviousScheduledActivityStateXmlSerializer previousScheduledActivityStateSerializer;
 
+    protected XsdElement collectionRootElement() {
+        return XsdElement.SCHEDULED_ACTIVITIES;
+    }
+
+    protected XsdElement rootElement() {
+        return XsdElement.SCHEDULED_ACTIVITY;
+    }
+
     @Override
-    public Element createElement(ScheduledActivity activity) {
-        Element elt = SCHEDULED_ACTIVITY.create();
-        SCHEDULED_ACTIVITY_ID.addTo(elt, activity.getGridId());
-        SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(elt, activity.getIdealDate());
-        SCHEDULED_ACTIVITY_NOTES.addTo(elt, activity.getNotes());
-        SCHEDULED_ACTIVITY_DETAILS.addTo(elt, activity.getDetails());
-        SCHEDULED_ACTIVITY_REPITITION_NUMBER.addTo(elt, activity.getRepetitionNumber());
-        if (activity.getPlannedActivity() != null) {
-            SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID.addTo(elt, activity.getPlannedActivity().getGridId());
+    public Element createElement(final ScheduledActivity scheduledActivity, final boolean inCollection) {
+
+        if (scheduledActivity == null) {
+            throw new StudyCalendarValidationException("activity can not be null");
+
+        }
+        Element rootElement = rootElement().create();
+        SCHEDULED_ACTIVITY_ID.addTo(rootElement, scheduledActivity.getGridId());
+        SCHEDULED_ACTIVITY_IDEAL_DATE.addTo(rootElement, scheduledActivity.getIdealDate());
+        SCHEDULED_ACTIVITY_NOTES.addTo(rootElement, scheduledActivity.getNotes());
+        SCHEDULED_ACTIVITY_DETAILS.addTo(rootElement, scheduledActivity.getDetails());
+        SCHEDULED_ACTIVITY_REPITITION_NUMBER.addTo(rootElement, scheduledActivity.getRepetitionNumber());
+        if (scheduledActivity.getPlannedActivity() != null) {
+            SCHEDULED_ACTIVITY_PLANNED_ACITIVITY_ID.addTo(rootElement, scheduledActivity.getPlannedActivity().getGridId());
         }
 
-        elt.add(currentScheduledActivityStateSerializer.createElement(activity.getCurrentState()));
+        rootElement.add(currentScheduledActivityStateSerializer.createElement(scheduledActivity.getCurrentState()));
 
-        for (ScheduledActivityState state : activity.getPreviousStates()) {
-            elt.add(previousScheduledActivityStateSerializer.createElement(state));
+        for (ScheduledActivityState state : scheduledActivity.getPreviousStates()) {
+            rootElement.add(previousScheduledActivityStateSerializer.createElement(state));
         }
 
-        return elt;
+
+        if (inCollection) {
+            return rootElement;
+
+        } else {
+            Element root = collectionRootElement().create();
+            root.add(rootElement);
+            return root;
+        }
+
+
     }
 
     @Override

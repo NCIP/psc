@@ -109,6 +109,13 @@
         <property name="xmlSerializer" ref="scheduledCalendarXmlSerializer"/>
     </bean>
 
+    <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}/activities/{year}/{month}/{day}"
+          id="scheduledActivityResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityResource">
+        <property name="scheduledActivityXmlSerializer" ref="scheduledActivityXmlSerializer"/>
+    </bean>
+
+
     <!-- SITE -->
     <bean name="/sites/{site-identifier}"
           id="siteResource" autowire="byName" scope="prototype"

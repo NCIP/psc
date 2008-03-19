@@ -56,10 +56,28 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         expectSerializePreviousScheduledActivityStates();
         expectSerializeCurrentScheduledActivityState();
         replayMocks();
-        
-        Element actual = serializer.createElement(activity);
+
+        Element actual = serializer.createElement(activity, true);
         verifyMocks();
 
+        validateScheduledActivityElement(actual);
+    }
+
+    public void testCreateCollectionElement() {
+        expectSerializePreviousScheduledActivityStates();
+        expectSerializeCurrentScheduledActivityState();
+        replayMocks();
+
+        Element collectionElement = serializer.createElement(activity);
+        verifyMocks();
+
+        assertEquals("Wrong element name", "scheduled-activities", collectionElement.getName());
+        Element actual = collectionElement.element("scheduled-activity");
+
+        validateScheduledActivityElement(actual);
+    }
+
+    private void validateScheduledActivityElement(final Element actual) {
         assertEquals("Wrong element name", "scheduled-activity", actual.getName());
         assertEquals("Wrong id", "activity-grid0", actual.attributeValue("id"));
         assertEquals("Wrong ideal date", "2008-01-15", actual.attributeValue("ideal-date"));
@@ -68,13 +86,14 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
         assertEquals("Wrong repitition number", "3", actual.attributeValue("repitition-number"));
         assertEquals("Wrong planned activity id", "planned-activity-grid0", actual.attributeValue("planned-activity-id"));
         assertNotNull("Scheduled activity state is null", actual.element("current-scheduled-activity-state"));
+
     }
 
     public void testReadElement() {
         try {
             serializer.readElement(new BaseElement("scheduled-activity"));
             fail("Exception should be thrown, method not implemented");
-        } catch(UnsupportedOperationException success) {
+        } catch (UnsupportedOperationException success) {
             assertEquals("Functionality to read a scheduled activity element does not exist", success.getMessage());
         }
     }
