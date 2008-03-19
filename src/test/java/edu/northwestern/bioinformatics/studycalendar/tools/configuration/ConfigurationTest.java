@@ -68,7 +68,7 @@ public class ConfigurationTest extends DaoTestCase {
 
     private <V> void assertStoredValue(final String expected, ConfigurationProperty<V> property) {
         final int[] count = new int[1];
-        getJdbcTemplate().query("SELECT value FROM configuration WHERE key=?",
+        getJdbcTemplate().query("SELECT value FROM configuration WHERE prop=?",
             new Object[] { property.getKey() }, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 assertEquals(expected, rs.getString("value"));

@@ -11,6 +11,7 @@ import java.util.Map;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
+import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationEntry;
 
 /**
  * @author Rhett Sutphin
@@ -66,6 +67,10 @@ public class Configuration extends DatabaseBackedConfiguration {
 
     public ConfigurationProperties getProperties() {
         return PROPERTIES;
+    }
+
+    protected Class<? extends ConfigurationEntry> getConfigurationEntryClass() {
+        return PscConfigurationEntry.class;
     }
 
     @Override
