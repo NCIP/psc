@@ -373,6 +373,8 @@
 
     <xsd:element name="blackout-dates" type="psc:blackout-dates"/>
 
+    <xsd:element name="blackout-date" type="psc:blackout-date"/>
+
     <xsd:complexType name="blackout-dates">
         <xsd:sequence>
             <xsd:element name="blackout-date" type="psc:blackout-date" minOccurs="0" maxOccurs="unbounded"/>
