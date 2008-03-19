@@ -64,7 +64,7 @@ public class ScheduledActivityResourceTest extends ResourceTestCase<ScheduledAct
     public void testGetXmlForAllScheduledActivitiesForASelectedDate() throws Exception {
 
         List<ScheduledActivity> scheduledActivityList = new ArrayList<ScheduledActivity>();
-        Date date = DateUtils.createDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH) - 1, Integer.parseInt(DAY));
+        Date date = DateUtils.createDate(Integer.parseInt(YEAR), Integer.parseInt(MONTH) , Integer.parseInt(DAY));
 
 
         expect(studySubjectAssignmentDao.getByGridId(studySubjectAssignment.getGridId())).andReturn(studySubjectAssignment);

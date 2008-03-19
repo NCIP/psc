@@ -7,11 +7,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitysta
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
 import static org.easymock.EasyMock.expect;
 
+import static java.text.MessageFormat.format;
 import java.util.Calendar;
 
 /**
@@ -76,6 +79,37 @@ public class ScheduledActivityXmlSerializerTest extends StudyCalendarXmlTestCase
 
         validateScheduledActivityElement(actual);
     }
+
+    public void testCreateDocumentString() throws Exception {
+
+        StringBuffer expected = new StringBuffer();
+        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        expected.append("<scheduled-activities");
+        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+
+        expected.append(format("<scheduled-activity  id=\"{0}\" ideal-date=\"2008-01-15\" notes=\"{1}\" day=\"{2}\" details=\"{3}\" planned-activity-id=\"{4}\"/", activity.getGridId(),
+                activity.getNotes(), activity.getDetails(), activity.getPlannedActivity().getGridId()));
+
+        expected.append("<current-scheduled-activity-state xmlns=\"\"");
+        expected.append("<previous-scheduled-activity-state xmlns=\"\"");
+        expected.append("<previous-scheduled-activity-state xmlns=\"\"");
+        expected.append("</scheduled-activity>");
+
+        expected.append("</scheduled-activities>");
+
+        expectSerializePreviousScheduledActivityStates();
+        expectSerializeCurrentScheduledActivityState();
+        replayMocks();
+
+
+        String actual = serializer.createDocumentString(activity);
+        verifyMocks();
+        assertNotNull(actual);
+        log.info("actual:" + actual.toString());
+    }
+
 
     private void validateScheduledActivityElement(final Element actual) {
         assertEquals("Wrong element name", "scheduled-activity", actual.getName());

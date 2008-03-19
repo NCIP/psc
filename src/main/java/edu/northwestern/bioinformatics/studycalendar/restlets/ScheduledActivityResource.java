@@ -52,7 +52,7 @@ public class ScheduledActivityResource extends AbstractCollectionResource<Schedu
 
         //  month starts with 0
         try {
-            date = DateUtils.createDate(Integer.parseInt(year), Integer.parseInt(month) - 1, Integer.parseInt(day));
+            date = DateUtils.createDate(Integer.parseInt(year), Integer.parseInt(month), Integer.parseInt(day));
         } catch (Exception e) {
             log.error("Could not parse the date.");
         }
