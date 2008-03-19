@@ -143,7 +143,7 @@ public class BlackoutDateXmlSerializer extends AbstractStudyCalendarXmlCollectio
         }
 
 
-        throw new StudyCalendarValidationException("No Holday existis with id:" + holidayId + " at the site:" + site.getId());
+        throw new StudyCalendarValidationException("No Holday existis with id:" + holidayId + " at the site:" + site.getAssignedIdentifier());
 
     }
 
