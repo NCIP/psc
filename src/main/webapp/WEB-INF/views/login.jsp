@@ -21,10 +21,9 @@
         }
         /* need for fomatting the login box */
         .box {
+            /*margin:auto sets a login box at the center of the screen for IE7*/
+            margin:auto;
             width:400px;
-            margin-left:40%;
-            margin-right:40%;
-            
         }
 
         form#login div.label {
