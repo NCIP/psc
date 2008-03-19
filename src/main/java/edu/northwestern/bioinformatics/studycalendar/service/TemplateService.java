@@ -428,10 +428,10 @@ public class TemplateService {
         return pendingTemplates;
     }
 
-    private static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
+    public static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
         public static final Comparator<? super StudyListController.ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
         public int compare(StudyListController.ReleasedTemplate rt1, StudyListController.ReleasedTemplate rt2) {
-             return rt1.getDisplayName().compareTo(rt2.getDisplayName());
+             return rt1.getDisplayName().toLowerCase().compareTo(rt2.getDisplayName().toLowerCase());
         }
     }
 
