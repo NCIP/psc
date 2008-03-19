@@ -117,7 +117,7 @@ public class BlackoutDateXmlSerializerTest extends StudyCalendarXmlTestCase {
             serializer.readElement(monthDayHolidayElement);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException e) {
-            assertEquals("No Holday existis with id:" + monthDayHoliday.getId() + " at the site:" + site.getId(),
+            assertEquals("No Holday existis with id:" + monthDayHoliday.getId() + " at the site:" + site.getAssignedIdentifier(),
                     e.getMessage());
         }
     }
