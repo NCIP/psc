@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.MonthDayHoliday;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
@@ -70,9 +71,9 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         expectCreateOrUpdateSite(site);
         doPost();
 
-        assertResponseStatus(Status.SUCCESS_OK);
-        String actualEntityBody = response.getEntity().getText();
-        assertNotNull(actualEntityBody);
+        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/3",
+                response.getLocationRef().getTargetRef().toString());
     }
 
     public void testPostNewXml() throws Exception {
@@ -88,9 +89,9 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
         expectCreateOrUpdateSite(site);
         doPost();
 
-        assertResponseStatus(Status.SUCCESS_OK);
-        String actualEntityBody = response.getEntity().getText();
-//        assertEquals("Wrong text", expectedXml, actualEntityBody);
+        assertResponseStatus(Status.REDIRECTION_SEE_OTHER);
+        assertEquals(ROOT_URI + "/sites/site_id/blackout-dates/null",
+                response.getLocationRef().getTargetRef().toString());
     }
 
     public void testPostInvalidXml() throws Exception {
@@ -105,9 +106,9 @@ public class BlackoutDatesResourceTest extends ResourceTestCase<BlackoutDatesRes
 
         try {
             doPost();
-        } catch (Exception e) {
-            //expecting this
-            fail("No Holday existis with id:" + 4 + " at the site:" + site.getId());
+
+        } catch (StudyCalendarValidationException e) {
+            fail("No Holday existis with id:" + 4 + " at the site:" + site.getAssignedIdentifier());
             assertResponseStatus(Status.CLIENT_ERROR_BAD_REQUEST);
 
         }

@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Required;
 import java.util.Collection;
 
 /**
- *
  * @author Saurabh Agrawal
  */
 public class BlackoutDatesResource extends AbstractStorableCollectionResource<Holiday> {
@@ -45,7 +44,7 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Ho
     }
 
     @Override
-    public void store(final Holiday holiday) {
+    public String store(final Holiday holiday) {
         try {
 
             site.addOrMergeExistingHoliday(holiday);
@@ -56,13 +55,15 @@ public class BlackoutDatesResource extends AbstractStorableCollectionResource<Ho
 
 
             siteService.createOrUpdateSite(site);
-
+            return String.format("sites/%s/blackout-dates/%s",
+                    site.getAssignedIdentifier(),holiday.getId());
         } catch (Exception e) {
             String message = "Can not POST the holiday on the site" + UriTemplateParameters.SITE_IDENTIFIER.extractFrom(getRequest());
             log.error(message, e);
 
         }
 
+        return null;
     }
 
     protected void validateEntity(final Representation entity) throws ResourceException {

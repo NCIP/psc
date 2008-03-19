@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
@@ -10,7 +11,6 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Extends the AbstractStorableCollectionResource and provide the POST functionality for a collection of objects
@@ -39,6 +39,7 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
      */
     @Override
     public void acceptRepresentation(final Representation entity) throws ResourceException {
+
         if (entity.getMediaType() == MediaType.TEXT_XML) {
             validateEntity(entity);
             //Collection<D> read;
@@ -46,31 +47,30 @@ public abstract class AbstractStorableCollectionResource<D extends DomainObject>
             try {
                 read = (D) getXmlSerializer().readDocument(entity.getStream());
                 // read = getXmlSerializer().readCollectionDocument(entity.getStream());
-                store(read);
             } catch (IOException e) {
-                log.warn("PUT failed with IOException", e);
+                log.warn("POST failed with IOException", e);
                 throw new ResourceException(e);
             } catch (StudyCalendarValidationException exp) {
 
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
 
             }
-
-            final ArrayList<D> list = new ArrayList<D>();
-            list.add(read);
-            getResponse().setEntity(createXmlRepresentation(list));
-            if (getAllObjects() == null) {
-                getResponse().setStatus(Status.SUCCESS_CREATED);
+            if (read == null) {
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Could not parse request");
             } else {
-                getResponse().setStatus(Status.SUCCESS_OK);
+                final String target = store(read);
+                getResponse().redirectSeeOther(
+                        new Reference(
+                                new Reference(getRequest().getRootRef().toString() + '/'), target));
             }
+
         } else {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unsupported content type");
         }
     }
 
 
-    public abstract void store(D instances);
+    public abstract String store(D instances);
 
     protected void validateEntity(Representation entity) throws ResourceException {
     }
