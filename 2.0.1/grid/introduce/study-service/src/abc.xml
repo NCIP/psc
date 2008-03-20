@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<ns1:study assigned-identifier="assigned_identifier" id="grid study"
+           xmlns:ns1="http://bioinformatics.northwestern.edu/ns/psc">
+    <ns1:planned-calendar id="planned_calendar"/>
+</ns1:study>
+
+
+<study xmlns="http://bioinformatics.northwestern.edu/ns/psc" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       assigned-identifier="cc" id="96507ff5-06e7-4f45-bfc5-179b888e69f6"
+       xsi:schemaLocation="http://bioinformatics.northwestern.edu/ns/psc
+ http://bioinformatics.northwestern.edu/ns/psc/psc.xsd">
+<planned-calendar id="9a2ec400-ef49-4d7d-9917-5766193c8181"/>
+</study>
+
+
+
+<study assigned-identifier="cc" id="96507ff5-06e7-4f45-bfc5-179b888e69f6">
+<planned-calendar id="9a2ec400-ef49-4d7d-9917-5766193c8181"/>
+</study>
+

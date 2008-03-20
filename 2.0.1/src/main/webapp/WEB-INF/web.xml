@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<web-app version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" >
+
+    <display-name>caBIG Study Calendar Module</display-name>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:applicationContext*.xml
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>beringContextConfigLocation</param-name>
+        <param-value>
+            classpath:applicationContext-spring.xml
+            classpath:applicationContext-db.xml
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>edu.northwestern.bioinformatics.studycalendar.web.CsmStaticConfigurator</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>edu.northwestern.bioinformatics.bering.servlet.SeparateApplicationContextBeringContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>setup-or-not</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.setup.SetupOrNotFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>setup-or-not</filter-name>
+        <url-pattern>/pages/*</url-pattern>
+        <url-pattern>/public/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <filter-class>
+            org.acegisecurity.util.FilterToBeanProxy
+        </filter-class>
+        <init-param>
+            <param-name>targetClass</param-name>
+            <param-value>
+                org.acegisecurity.util.FilterChainProxy
+            </param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Acegi Filter Chain Proxy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <filter>
+        <filter-name>AuditInfoFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuditInfoFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
+        <init-param>
+            <param-name>interceptorBeanName</param-name>
+            <param-value>auditOpenSessionInViewInterceptor</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AuditOpenSessionInViewInterceptorFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.OpenSessionInViewInterceptorFilter</filter-class>
+        <init-param>
+            <param-name>interceptorBeanName</param-name>
+            <param-value>openSessionInViewInterceptor</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>OpenSessionInViewInterceptorFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>BeansInRequestFilter</filter-name>
+        <filter-class>gov.nih.nci.cabig.ctms.web.filters.BeansInRequestFilter</filter-class>
+        <init-param>
+            <param-name>beanNames</param-name>
+            <param-value>configuration, buildInfo</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>BeansInRequestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>UserInRequestFilter</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.UserInRequestFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>UserInRequestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>Sitemesh</filter-name>
+        <filter-class>com.opensymphony.module.sitemesh.filter.PageFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>Sitemesh</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>ExceptionTranslator</filter-name>
+        <filter-class>edu.northwestern.bioinformatics.studycalendar.web.ExceptionTranslationFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>ExceptionTranslator</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>spring</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>spring</servlet-name>
+        <url-pattern>/pages/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>public</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>3</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>public</servlet-name>
+        <url-pattern>/public/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>setup</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>setup</servlet-name>
+        <url-pattern>/setup/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>restful-api</servlet-name>
+        <servlet-class>com.noelios.restlet.ext.spring.RestletFrameworkServlet</servlet-class>
+        <init-param>
+            <param-name>targetRestletBeanName</param-name>
+            <param-value>guard</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>restful-api</servlet-name>
+        <url-pattern>/api/v1/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>ctms-assets</servlet-name>
+        <servlet-class>gov.nih.nci.cabig.ctms.lookandfeel.AssetServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>ctms-assets</servlet-name>
+        <url-pattern>/ctms-laf/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/public/error</location>
+    </error-page>
+
+    <error-page>
+        <error-code>400</error-code>
+        <location>/public/error</location>
+    </error-page>
+
+    <error-page>
+        <error-code>403</error-code>
+        <location>/public/error</location>
+    </error-page>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/public/error</location>
+    </error-page>
+
+</web-app>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">-->
+
+<beans
+    xmlns="http://www.springframework.org/schema/beans"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+    >
+
+    <bean id="activitySourceXmlReader" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
+
+    <bean id="studyXMLReader" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader"/>
+
+    <bean id="studyXMLWriter" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter"/>
+
+    <!-- Xml Serializers -->
+    <bean id="studyXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>
+    <bean id="studySnapshotXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySnapshotXmlSerializer"/>
+
+    <bean id="amendmentXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer"/>
+    <bean id="studiesXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudiesXmlSerializer"/>
+    <bean id="registrationXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RegistrationXmlSerializer"/>
+    <bean id="studySubjectAssignmentXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySubjectAssignmentXmlSerializer"/>
+    <bean id="amendmentApprovalXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentApprovalXmlSerializer">
+    </bean>
+    <bean id="activitySourceXmlSerializer"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
+    <bean id="studySiteXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySiteXmlSerializer"/>
+    <bean id="subjectXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SubjectXmlSerializer"/>
+    <bean id="siteXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.SiteXmlSerializer"/>
+    <bean id="scheduledCalendarXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer"/>
+    <bean id="scheduledStudySegmentXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer"/>
+    <bean id="scheduledActivityXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledActivityXmlSerializer"/>
+    <bean id="currentScheduledActivityStateXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer"/>
+    <bean id="previousScheduledActivityStateXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PreviousScheduledActivityStateXmlSerializer"/>
+
+    <!-- PlanTreeNode Serializers -->
+    <bean id="plannedCalendarXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarXmlSerializer"/>
+
+    <bean id="populationXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PopulationXmlSerializer"/>
+
+    <bean id="epochXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.EpochXmlSerializer"/>
+
+    <bean id="studySegmentXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySegmentXmlSerializer"/>
+
+    <bean id="periodXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PeriodXmlSerializer"/>
+
+    <bean id="plannedActivityXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityXmlSerializer"/>
+
+    <bean id="activityXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivityXmlSerializer"/>
+
+    <!-- Delta Serialiers -->
+    <bean id="plannedCalendarDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedCalendarDeltaXmlSerializer"/>
+
+    <bean id="epochDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.EpochDeltaXmlSerializer"/>
+
+    <bean id="studySegmentDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudySegmentDeltaXmlSerializer"/>
+
+    <bean id="periodDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PeriodDeltaXmlSerializer"/>
+
+    <bean id="plannedActivityDeltaXmlSerializer" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlannedActivityDeltaXmlSerializer"/>
+
+    <!-- Change Serializers -->
+    <bean id="addXmlSerializer" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.AddXmlSerializer"/>
+
+    <bean id="removeXmlSerializer" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.RemoveXmlSerializer"/>
+
+    <bean id="reorderXmlSerializer" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ReorderXmlSerializer"/>
+
+    <bean id="propertyChangeXmlSerializer" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PropertyChangeXmlSerializer"/>
+
+
+    <!-- Xml Serializer Factories -->
+    <bean id="deltaXmlSerializerFactory" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.DeltaXmlSerializerFactory"/>
+
+    <bean id="changeXmlSerializerFactory" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ChangeXmlSerializerFactory"/>
+
+    <bean id="planTreeNodeXmlSerializerFactory" autowire="byName"
+              class="edu.northwestern.bioinformatics.studycalendar.xml.writers.PlanTreeNodeXmlSerializerFactory"/>
+
+
+</beans>
