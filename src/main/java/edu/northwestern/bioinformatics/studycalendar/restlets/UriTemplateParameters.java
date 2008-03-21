@@ -16,7 +16,9 @@ public enum UriTemplateParameters {
     AMENDMENT_IDENTIFIER,
     YEAR,
     MONTH,
-    DAY;
+    DAY,
+    SCHEDULED_ACTIVITY_IDENTIFIER;
+
 
     public String attributeName() {
         return name().replaceAll("_", "-").toLowerCase();

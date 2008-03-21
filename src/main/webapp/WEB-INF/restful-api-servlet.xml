@@ -110,11 +110,17 @@
     </bean>
 
     <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}/activities/{year}/{month}/{day}"
-          id="scheduledActivityResource" autowire="byName" scope="prototype"
-          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityResource">
+          id="scheduledActivitiesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivitiesResource">
         <property name="scheduledActivityXmlSerializer" ref="scheduledActivityXmlSerializer"/>
     </bean>
 
+    <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}/activities/{scheduled-activity-identifier}"
+              id="scheduledActivityResource" autowire="byName" scope="prototype"
+              class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityResource">
+            <property name="scheduledActivityXmlSerializer" ref="scheduledActivityXmlSerializer"/>
+        </bean>
+    
 
     <!-- SITE -->
     <bean name="/sites/{site-identifier}"

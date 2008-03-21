@@ -10,8 +10,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
@@ -45,7 +43,7 @@ public abstract class AbstractCollectionResource<D extends DomainObject> extends
                 getXmlSerializer().createDocumentString(instances), MediaType.TEXT_XML);
     }
 
-    public abstract Collection<D> getAllObjects();
+    public abstract Collection<D> getAllObjects() throws ResourceException;
 
     public abstract StudyCalendarXmlCollectionSerializer<D> getXmlSerializer();
 }

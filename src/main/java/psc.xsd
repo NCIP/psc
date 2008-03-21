@@ -352,6 +352,8 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <xsd:element name="scheduled-activity-state" type="psc:ScheduledActivityState"/>
+
 
     <xsd:complexType name="ScheduledActivity">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
