@@ -182,12 +182,17 @@ public class StudyService {
 		this.studyDao = studyDao;
 	}
 
-	@Required
+    public StudyDao getStudyDao() {
+        return studyDao;
+    }
+
+    @Required
 	public void setDeltaService(final DeltaService deltaService) {
 		this.deltaService = deltaService;
 	}
 
-	@Required
+    
+    @Required
 	public void setTemplateService(final TemplateService templateService) {
 		this.templateService = templateService;
 	}

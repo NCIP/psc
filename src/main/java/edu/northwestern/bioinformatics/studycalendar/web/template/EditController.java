@@ -67,9 +67,10 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
     @SuppressWarnings({ "unchecked" })
     protected ModelAndView handle(EditCommand command, BindException errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if ("POST".equals(request.getMethod())) {
-            command.apply();
+            boolean result = command.apply();
             Map<String, Object> model = command.getModel();
             model.putAll(errors.getModel());
+            model.put("error", result);
             return new ModelAndView(createViewName(command), model);
         } else {
             // All edits are non-idempotent, so...

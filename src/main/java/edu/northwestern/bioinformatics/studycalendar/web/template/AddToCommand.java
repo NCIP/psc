@@ -24,7 +24,7 @@ public class AddToCommand extends EditTemplateCommand {
         return new AddStudySegment();
     }
 
-    private class AddStudySegment implements Mode {
+    private class AddStudySegment extends Mode {
         public String getRelativeViewName() {
             return "addStudySegment";
         }
@@ -42,7 +42,7 @@ public class AddToCommand extends EditTemplateCommand {
         }
     }
 
-    private class AddEpoch implements Mode {
+    private class AddEpoch extends Mode {
         public String getRelativeViewName() {
             return "addEpoch";
         }

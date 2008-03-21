@@ -24,7 +24,7 @@ public class DeleteCommand extends EditTemplateCommand {
         return new DeleteStudySegment();
     }
 
-    private abstract class DeleteMode<T extends PlanTreeNode<? extends PlanTreeInnerNode>> implements Mode {
+    private abstract class DeleteMode<T extends PlanTreeNode<? extends PlanTreeInnerNode>> extends Mode {
         public final void performEdit() {
             if (getObjectParent().getChildren().size() < 2) return;
             updateRevision(getObjectParent(), Remove.create(getObject()));

@@ -79,7 +79,7 @@ public class EditTemplateCommandModalAspectsTest extends EditCommandTestCase {
         @Override protected Mode studySegmentMode()   { return new TestMode("StudySegment");   }
     }
 
-    private static class TestMode implements EditTemplateCommand.Mode {
+    private static class TestMode extends EditTemplateCommand.Mode {
         private String name;
 
         public TestMode(String name) {

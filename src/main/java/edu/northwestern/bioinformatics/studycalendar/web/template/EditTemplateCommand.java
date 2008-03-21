@@ -39,16 +39,25 @@ public abstract class EditTemplateCommand implements EditCommand {
     private Epoch revisedEpoch;
     private StudySegment revisedStudySegment;
 
-    public void apply() {
+    public boolean apply() {
         Study target = getStudy();
         verifyEditable(target);
-        performEdit();
-        studyService.save(target);
-        cleanUpdateRevised();
+        if (validAction()) {
+            performEdit();
+            studyService.save(target);
+            cleanUpdateRevised();
+            return true;
+        }
+        return false;
     }
 
     public void performEdit() {
         getMode().performEdit();
+    }
+
+
+    public boolean validAction() {
+        return getMode().validAction();
     }
 
     private void verifyEditable(Study target) {
@@ -108,10 +117,14 @@ public abstract class EditTemplateCommand implements EditCommand {
         return newMode;
     }
 
-    protected static interface Mode {
-        String getRelativeViewName();
-        Map<String, Object> getModel();
-        void performEdit();
+    protected abstract static class Mode {
+        abstract String getRelativeViewName();
+        abstract Map<String, Object> getModel();
+        abstract void performEdit();
+
+        public boolean validAction() {
+            return true;
+        }
     }
 
     ////// REVISED-TO-CURRENT versions of bound props
@@ -207,6 +220,10 @@ public abstract class EditTemplateCommand implements EditCommand {
     @Required
     public void setStudyService(StudyService studyService) {
         this.studyService = studyService;
+    }
+
+    public StudyService getStudyService() {
+        return studyService;
     }
 
     @Required

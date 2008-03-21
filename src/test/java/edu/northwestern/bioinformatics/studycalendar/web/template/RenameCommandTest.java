@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.delta.DeltaAssertions.*;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -14,13 +16,16 @@ public class RenameCommandTest extends EditCommandTestCase {
     private static final String NEW_NAME = "new name";
     private StudyService studyService;
     private RenameCommand command;
+    private StudyDao studyDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         studyService = registerMockFor(StudyService.class);
+        studyDao = registerDaoMockFor(StudyDao.class);
         command = new RenameCommand();
         command.setStudyService(studyService);
+        expect(studyService.getStudyDao()).andReturn(studyDao).anyTimes();
         command.setDeltaService(getTestingDeltaService());
         command.setValue(NEW_NAME);
 
@@ -30,6 +35,7 @@ public class RenameCommandTest extends EditCommandTestCase {
     }
 
     public void testRenameStudy() throws Exception {
+        expect(studyDao.getByAssignedIdentifier(NEW_NAME)).andReturn(null);
         command.setStudy(study);
 
         doApply();

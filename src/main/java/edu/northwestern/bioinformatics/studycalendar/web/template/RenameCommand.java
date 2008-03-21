@@ -29,7 +29,7 @@ public class RenameCommand extends EditTemplateCommand {
     @Override protected Mode epochMode() { return new RenameEpoch(); }
     @Override protected Mode studySegmentMode()   { return new RenameStudySegment(); }
 
-    private abstract class RenameMode implements Mode {
+    private abstract class RenameMode extends Mode {
         public Map<String, Object> getModel() {
             return null;
         }
@@ -49,6 +49,13 @@ public class RenameCommand extends EditTemplateCommand {
     private class RenameStudy extends RenameMode {
         public void performEdit() {
             getStudy().setName(getValue());
+        }
+
+        public boolean validAction() {
+            if (getStudyService().getStudyDao().getByAssignedIdentifier(getValue())!=null){
+                return false;
+            }
+            return true;
         }
     }
 

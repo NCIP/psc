@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static org.easymock.classextension.EasyMock.expect;
 
 /**
  * @author Rhett Sutphin
@@ -23,6 +24,7 @@ public class EditTemplateCommandTest extends StudyCalendarTestCase {
         studyService = registerMockFor(StudyService.class);
 
         command = registerMockFor(EditTemplateCommand.class,
+            EditTemplateCommand.class.getMethod("validAction"),
             EditTemplateCommand.class.getMethod("performEdit"),
             EditTemplateCommand.class.getMethod("getRelativeViewName")
         );
@@ -36,6 +38,7 @@ public class EditTemplateCommandTest extends StudyCalendarTestCase {
 
     public void testApply() throws Exception {
         command.setStudy(study);
+        expect(command.validAction()).andReturn(true);
         command.performEdit();
         studyService.save(study);
 

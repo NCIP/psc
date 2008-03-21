@@ -15,6 +15,15 @@
         <a href="/studycalendar/pages/cal/studyList">Studies</a> /
         <a href="/studycalendar/pages/cal/template?study=${command.study.id}&amendment=${command.study.developmentAmendment.id}">${command.study.name}</a>
     </jsgen:replaceHtml>
+    <c:choose>
+        <c:when test="${!error}">
+            <jsgen:replaceHtml targetElement="errors"><h5>Template name already exists</h5></jsgen:replaceHtml>
+        </c:when>
+        <c:otherwise>
+            <jsgen:replaceHtml targetElement="errors"></jsgen:replaceHtml>
+        </c:otherwise>
+    </c:choose>
+
 </c:if>
 <templ:updateChanges changes="${revisionChanges}" revision="${developmentRevision}" />
 

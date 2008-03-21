@@ -37,7 +37,7 @@ public class MoveCommand extends EditTemplateCommand {
         return new MoveStudySegment();
     }
 
-    private abstract class MoveMode<T extends PlanTreeNode<?>> implements Mode {
+    private abstract class MoveMode<T extends PlanTreeNode<?>> extends Mode {
         boolean changed = false;
 
         public void performEdit() {

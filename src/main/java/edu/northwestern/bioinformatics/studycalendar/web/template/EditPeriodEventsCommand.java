@@ -60,10 +60,11 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     /**
      * Apply any changes in the grid to the period in the command.
      */
-    public void apply() {
+    public boolean apply() {
         log.debug("inside EditPeriodEventsCommand");
         performEdit();
         setStudy(studyService.saveStudyFor(getPeriod()));
+        return true;
     }
 
     ////// BOUND PROPERTIES

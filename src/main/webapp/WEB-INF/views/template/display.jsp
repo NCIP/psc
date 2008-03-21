@@ -7,6 +7,7 @@
            uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/security" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
     <head>
         <title>Template for ${study.assignedIdentifier}</title>
@@ -627,6 +628,7 @@
     <body>
         <div id="study-info" class="title-card card">
             <div class="header">Study info</div>
+            <div id="errors" style="margin-right:10px; margin-left:0.5em;"></div>
             <h1><span id="study-name">${study.assignedIdentifier}</span></h1>
             <div class="row odd">
                 <div class="label">Amendment</div>

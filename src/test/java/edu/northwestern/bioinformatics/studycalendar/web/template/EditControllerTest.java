@@ -56,7 +56,7 @@ public class EditControllerTest extends ControllerTestCase {
     
     @SuppressWarnings({ "unchecked" })
     public void testHandle() throws Exception {
-        command.apply();
+        expect(command.apply()).andReturn(true);
         expect(command.getModel()).andReturn(new ModelMap("foo", 95));
         expect(command.getRelativeViewName()).andReturn("pony");
 

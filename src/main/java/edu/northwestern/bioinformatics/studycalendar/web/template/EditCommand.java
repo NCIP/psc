@@ -6,7 +6,7 @@ import java.util.Map;
  * @author nshurupova
  */
 public interface EditCommand {
-    void apply();
+    boolean apply();
 
     Map<String, Object> getModel();
 
