@@ -1,6 +1,6 @@
-<beans  xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
         ">
 
@@ -20,21 +20,21 @@
     <bean name="/docs/psc.wadl"
           id="wadlResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlResource"
-          >
+            >
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
     <bean name="/docs"
           id="wadlHtmlResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.WadlHtmlResource"
-          >
+            >
         <property name="freemarkerConfiguration" ref="resourceFreemarkerConfiguration"/>
     </bean>
 
     <bean name="/docs/psc.xsd"
           id="xsdResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.ClasspathResource"
-          >
+            >
         <property name="mimeType" value="text/xml"/>
         <property name="resourcePath" value="psc.xsd"/>
     </bean>
@@ -42,15 +42,15 @@
     <bean name="/studies"
           id="studiesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.StudiesResource"
-          >
+            >
         <property name="xmlSerializer" ref="studiesXmlSerializer"/>
-        <property name="studySnapshotXmlSerializer" ref="studySnapshotXmlSerializer"/> 
+        <property name="studySnapshotXmlSerializer" ref="studySnapshotXmlSerializer"/>
     </bean>
 
     <bean name="/studies/{study-identifier}/template"
           id="templateResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.TemplateResource"
-          >
+            >
         <property name="importTemplateService" ref="importTemplateService"/>
         <property name="xmlSerializer" ref="studyXmlSerializer"/>
     </bean>
@@ -116,11 +116,12 @@
     </bean>
 
     <bean name="/studies/{study-identifier}/schedules/{assignment-identifier}/activities/{scheduled-activity-identifier}"
-              id="scheduledActivityResource" autowire="byName" scope="prototype"
-              class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityResource">
-            <property name="scheduledActivityXmlSerializer" ref="scheduledActivityXmlSerializer"/>
-        </bean>
-    
+          id="scheduledActivityResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.ScheduledActivityResource">
+        <property name="xmlSerializer" ref="scheduledActivityXmlSerializer"/>
+        <property name="currentScheduledActivityStateXmlSerializer" ref="currentScheduledActivityStateXmlSerializer"/>
+    </bean>
+
 
     <!-- SITE -->
     <bean name="/sites/{site-identifier}"
@@ -130,24 +131,24 @@
         <property name="xmlSerializer" ref="siteXmlSerializer"/>
     </bean>
     <bean name="/sites"
-              id="sitesResource" autowire="byName" scope="prototype"
-              class="edu.northwestern.bioinformatics.studycalendar.restlets.SitesResource"
-                >
-            <property name="xmlSerializer" ref="siteXmlSerializer"/>
-        </bean>
+          id="sitesResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.SitesResource"
+            >
+        <property name="xmlSerializer" ref="siteXmlSerializer"/>
+    </bean>
     <bean name="/sites/{site-identifier}/blackout-dates"
           id="blackoutDatesResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDatesResource"
             >
     </bean>
     <bean name="/sites/{site-identifier}/blackout-dates/{blackout-date-identifier}"
-              id="blackoutDateResource" autowire="byName" scope="prototype"
-              class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDateResource"
-                >
-        </bean>
-    
+          id="blackoutDateResource" autowire="byName" scope="prototype"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.BlackoutDateResource"
+            >
+    </bean>
+
     <!-- AUXILIARIES -->
-  
+
     <bean id="resourceFreemarkerConfiguration"
           class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
         <property name="templateLoaderPath">
@@ -161,5 +162,6 @@
     </bean>
 
     <!-- this bean isn't wired to anything, but it self-registers with the restlet engine -->
-    <bean id="pscAuthenticationHelper" class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticationHelper"/>
+    <bean id="pscAuthenticationHelper"
+          class="edu.northwestern.bioinformatics.studycalendar.restlets.PscAuthenticationHelper"/>
 </beans>
