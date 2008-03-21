@@ -28,6 +28,8 @@
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
     </style>
     <decorator:head/>
+
+    <%--<tags:sessionTimeout/>--%>
   </head>
   <body>
 <tags:header/>

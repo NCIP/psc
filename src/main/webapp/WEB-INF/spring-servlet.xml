@@ -473,6 +473,8 @@
     <bean name="/cal/search/fragment/searchStudies" id="searchStudiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
 
+    <bean name="/ping" id="pingController" class="edu.northwestern.bioinformatics.studycalendar.web.PingController"/>
+
     <bean id="sectionTemplate" class="gov.nih.nci.cabig.ctms.web.chrome.Section"
           abstract="true">
         <property name="urlResolver">
