@@ -120,8 +120,10 @@
     border-width: 1px 0;
     margin: 4px 0;
     padding: 3px;
-    /* for IE */
-    height: 15%;
+    /* for IE - we have to specify height to display the hover properly. */
+    /*height:1%;*/
+    min-height:1%;
+    max-height:100%;
 }
 .studySegments li:hover {
     background-color: #ccc !important;
@@ -133,7 +135,7 @@
     background-color: #ddd;
 }
 
-a.control, .inplaceeditor-form a  {
+a.control, .inplaceeditor-form a, form  {
     font-weight: bold;
     text-decoration: none;
 }
