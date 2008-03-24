@@ -379,7 +379,7 @@
                 <resource path="activities/{scheduled-activity-identifier}">
                     <doc>
                         <html:em class="pending">Pending</html:em>
-                        <html:p>A single scheduled activity.</html:p>
+                        <html>A single scheduled activity.</html>
                     </doc>
                     <param style="template" name="scheduled-activity-identifier">
                         <doc>

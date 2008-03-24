@@ -40,7 +40,7 @@ public class CurrentScheduledActivityStateXmlSerializer  extends AbstractSchedul
         } else if (state.equals(CANCELED)) {
             scheduledActivityState = new Canceled();
         } else {
-            return null;
+            return scheduledActivityState;
         }
 
         if (date != null && scheduledActivityState instanceof DatedScheduledActivityState) {
