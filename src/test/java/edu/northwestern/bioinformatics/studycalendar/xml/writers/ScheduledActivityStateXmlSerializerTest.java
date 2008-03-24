@@ -66,9 +66,10 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
 
     public void testReadElement() {
         try {
-            serializer.readElement(new BaseElement("current-scheduled-activity-state"));
+            PreviousScheduledActivityStateXmlSerializer prevStateSerializer = new PreviousScheduledActivityStateXmlSerializer();
+            prevStateSerializer.readElement(new BaseElement("previous-scheduled-activity-state"));
             fail("Exception should be thrown, method not implemented");
-        } catch(UnsupportedOperationException success) {
+        } catch (UnsupportedOperationException success) {
             assertEquals("Functionality to read a scheduled activity state element does not exist", success.getMessage());
         }
     }
@@ -82,17 +83,29 @@ public class ScheduledActivityStateXmlSerializerTest extends StudyCalendarXmlTes
     }
 
     ////// Helper Methods
-    private ScheduledActivityState missed() { return setBaseAttributes(new Missed()); }
+    private ScheduledActivityState missed() {
+        return setBaseAttributes(new Missed());
+    }
 
-    private ScheduledActivityState scheduled() { return setDateAttributes(new Scheduled()); }
+    private ScheduledActivityState scheduled() {
+        return setDateAttributes(new Scheduled());
+    }
 
-    private ScheduledActivityState occurred() { return setDateAttributes(new Occurred()); }
+    private ScheduledActivityState occurred() {
+        return setDateAttributes(new Occurred());
+    }
 
-    private ScheduledActivityState canceled() { return setBaseAttributes(new Canceled()); }
+    private ScheduledActivityState canceled() {
+        return setBaseAttributes(new Canceled());
+    }
 
-    private ScheduledActivityState conditional() { return setDateAttributes(new Conditional()); }
+    private ScheduledActivityState conditional() {
+        return setDateAttributes(new Conditional());
+    }
 
-    private ScheduledActivityState notApplicable() { return setBaseAttributes(new NotApplicable()); }
+    private ScheduledActivityState notApplicable() {
+        return setBaseAttributes(new NotApplicable());
+    }
 
 
     private ScheduledActivityState setDateAttributes(DatedScheduledActivityState state) {

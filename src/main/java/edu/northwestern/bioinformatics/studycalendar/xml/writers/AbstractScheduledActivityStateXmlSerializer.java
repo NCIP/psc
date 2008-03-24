@@ -1,22 +1,20 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import org.apache.commons.lang.StringUtils;
 import org.dom4j.Element;
-
-import java.util.Date;
 
 /**
  * @author John Dzak
  */
 public abstract class AbstractScheduledActivityStateXmlSerializer extends AbstractStudyCalendarXmlSerializer<ScheduledActivityState> {
-    private static final String MISSED = "missed";
-    private static final String SCHEDULED = "scheduled";
-    private static final String OCCURRED = "occurred";
+    protected static final String MISSED = "missed";
+    protected static final String SCHEDULED = "scheduled";
+    protected static final String OCCURRED = "occurred";
     public static final String CANCELED = "canceled";
     public static final String CONDITIONAL = "conditional";
     public static final String NOT_APPLICABLE = "not-applicable";
@@ -47,41 +45,9 @@ public abstract class AbstractScheduledActivityStateXmlSerializer extends Abstra
 
     @Override
     public ScheduledActivityState readElement(Element element) {
-
-        ScheduledActivityState scheduledActivityState = null;
-
-        String state = SCHEDULED_ACTIVITY_STATE_STATE.from(element);
-        String reason = SCHEDULED_ACTIVITY_STATE_REASON.from(element);
-
-        Date date = SCHEDULED_ACTIVITY_STATE_DATE.fromDate(element);
-
-        if (state == null || StringUtils.isEmpty(state)) {
-            return null;
-        } else if (state.equals(CONDITIONAL)) {
-            scheduledActivityState = new Conditional();
-        } else if (state.equals(OCCURRED)) {
-            scheduledActivityState = new Occurred();
-        } else if (state.equals(SCHEDULED)) {
-            scheduledActivityState = new Scheduled();
-        } else if (state.equals(MISSED)) {
-            scheduledActivityState = new Missed();
-        } else if (state.equals(NOT_APPLICABLE)) {
-            scheduledActivityState = new NotApplicable();
-        } else if (state.equals(CANCELED)) {
-            scheduledActivityState = new Canceled();
-        } else {
-            return null;
-        }
-
-        if (date != null && scheduledActivityState instanceof DatedScheduledActivityState) {
-            ((DatedScheduledActivityState) scheduledActivityState).setDate(date);
-        }
-        if (reason != null && StringUtils.isNotEmpty(reason)) {
-            scheduledActivityState.setReason(reason);
-        }
-        return scheduledActivityState;
-
+        throw new UnsupportedOperationException("Functionality to read a scheduled activity state element does not exist");
     }
+
 
     protected abstract XsdElement element();
 }
