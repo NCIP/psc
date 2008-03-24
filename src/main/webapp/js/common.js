@@ -47,31 +47,29 @@ SC.SessionExpiredLogic = Class.create( {
 SC.UserActiveChallenge = Class.create( {
     initialize: function(url) {
         this.url = url
-        this.content =
-            Builder.node('div', {id:'lightbox-content'}, [
-                    Builder.node('form', {method:'post', action:this.url, id:'ping'}, [
-                            Builder.node('h1', 'Your Session is About to Expire'),
-                            Builder.node('p', 'Please confirm that you are still active by clicking the button below.'),
-                            Builder.node('input', {type:'submit', value:'Confirm Active', id:'user-active-button'})
-                            ])
-                    ])
+        this.button = Builder.node('input', {type:'button', value:'Confirm Active', id:'user-active-button'});
+        this.add_submit_listener()
     },
     execute: function() {
-        $('lightbox').update(this.content)
-        this.add_submit_listener()
+        $('lightbox').update(
+                Builder.node('div', {id:'lightbox-content'}, [
+                    Builder.node('h1', 'Your Session is About to Expire'),
+                    Builder.node('p', 'Please confirm that you are still active by clicking the button below.'),
+                    this.button
+                    ]))
 
         LB.Lightbox.activate()
     },
     add_submit_listener: function() {
-        Event.stopObserving('ping', 'submit')
-        Event.observe('ping', 'submit', function(e) {
-            Event.stop(e);
-            SC.asyncSubmit('ping', {
-                onLoaded: function() {
+        Event.observe(this.button, 'click', function(e) {
+            new Ajax.Request(
+                    this.url, {
+                method:'get',
+                onSuccess: function(transport){
                     LB.Lightbox.deactivate()
                 }
             })
-        })
+        }.bindAsEventListener(this))
     }
 })
 
