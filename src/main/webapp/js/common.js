@@ -32,18 +32,14 @@ SC.SessionExpiredLogic = Class.create( {
         this.url = url
         this.content =
             Builder.node('div', {id:'lightbox-content'}, [
-                    Builder.node('form', {method:'post', action:this.url}, [
-                            Builder.node('h1', 'Session Timed Out'),
-                            Builder.node('p', 'Your session has expired.  Please log in again.'),
-                            Builder.node('p', 'Once you\'ve logged in, you may need to retry your last action.'),
-                            Builder.node('p', ['Name:', Builder.node('input', {type:'text', name:'name'})]),
-                            Builder.node('p', ['Password:', Builder.node('input', {type:'password', name:'password'})]),
-                            Builder.node('input', {type:'submit', value:'Log in'})
-                            ])
-                    ])
+                Builder.node('h1', 'Session Timed Out'),
+                Builder.node('p', 'Your session has expired.  To continue, please ', [
+                        Builder.node('a', {href:this.url}, 'log in again.')
+                        ])
+                ])
     },
     execute: function() {
-        $('lightbox').update(this.content.innerHTML)
+        $('lightbox').update(this.content)
         LB.Lightbox.activate()
     }
 })
@@ -53,25 +49,28 @@ SC.UserActiveChallenge = Class.create( {
         this.url = url
         this.content =
             Builder.node('div', {id:'lightbox-content'}, [
-                    Builder.node('form', {method:'post', action:'timeout.html'}, [
+                    Builder.node('form', {method:'post', action:this.url, id:'ping'}, [
                             Builder.node('h1', 'Your Session is About to Expire'),
                             Builder.node('p', 'Please confirm that you are still active by clicking the button below.'),
-                            Builder.node('input', {type:'button', value:'Confirm', id:'user-active-button'})
+                            Builder.node('input', {type:'submit', value:'Confirm Active', id:'user-active-button'})
                             ])
                     ])
     },
     execute: function() {
-        $('lightbox').update(this.content.innerHTML)
-        this.add_button_listener()
+        $('lightbox').update(this.content)
+        this.add_submit_listener()
 
         LB.Lightbox.activate()
     },
-    add_button_listener: function() {
-        Event.observe($('user-active-button'), 'click', function() {
-            new Ajax.Request(encodeURI(this.url), {method: 'get'});
-            LB.Lightbox.deactivate()
-            }.bindAsEventListener(this)
-        )
+    add_submit_listener: function() {
+        Event.observe('ping', 'submit', function(e) {
+            Event.stop(e);
+            SC.asyncSubmit('ping', {
+                onLoaded: function() {
+                    LB.Lightbox.deactivate()
+                }
+            })
+        })
     }
 })
 
@@ -92,14 +91,24 @@ SC.SessionTimer = Class.create(PeriodicalExecuter, {
 
 SC.HttpSessionExpirationManager = Class.create({
     initialize: function(session_warning_in_seconds, session_timeout_in_seconds, session_alive_url, login_url) {
-        this.userChallengeTimer =
-            new SC.SessionTimer(new SC.UserActiveChallenge(session_alive_url), session_warning_in_seconds)
+        this.timers = []
+        
+        if (session_warning_in_seconds > 0) {
+            this.userChallengeTimer =
+               new SC.SessionTimer(new SC.UserActiveChallenge(session_alive_url), session_warning_in_seconds)
 
-        this.httpSessionTimer =
-            new SC.SessionTimer(new SC.SessionExpiredLogic(login_url), session_timeout_in_seconds)
+            this.timers.push(this.userChallengeTimer)
+        }
+
+        if (session_timeout_in_seconds > 0) {
+            this.httpSessionTimer =
+                new SC.SessionTimer(new SC.SessionExpiredLogic(login_url), session_timeout_in_seconds)
+
+            this.timers.push(this.httpSessionTimer)
+        }
 
         Ajax.Responders.register({
-            timers:[this.httpSessionTimer, this.userChallengeTimer],
+            timers:this.timers,
             onComplete: function() {
                 this.timers.each(function(timer) {
                     timer.reset()

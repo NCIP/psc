@@ -29,7 +29,7 @@
     </style>
     <decorator:head/>
 
-    <%--<tags:sessionTimeout/>--%>
+    <tags:sessionTimeout/>
   </head>
   <body>
 <tags:header/>
