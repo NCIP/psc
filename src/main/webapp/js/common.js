@@ -63,6 +63,7 @@ SC.UserActiveChallenge = Class.create( {
         LB.Lightbox.activate()
     },
     add_submit_listener: function() {
+        Event.stopObserving('ping', 'submit')
         Event.observe('ping', 'submit', function(e) {
             Event.stop(e);
             SC.asyncSubmit('ping', {
