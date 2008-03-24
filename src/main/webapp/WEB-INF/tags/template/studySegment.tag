@@ -4,6 +4,7 @@
 <%@attribute name="developmentRevision" type="edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment"%>
 <%@attribute name="visible" type="java.lang.Boolean" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <c:set var="editable" value="${not empty developmentRevision}"/>
 
@@ -42,8 +43,8 @@
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
                     <c:if test="${editable}"><td class="controls"><a class="control" href="<c:url value="/pages/editPeriod?period=${period.id}"/>">Edit</a></td></c:if>
-                    <th class="row">
-                            ${period.name}
+                    <th class="row" style="white-space:nowrap; text-decoration:none;">
+                            ${fn:replace(period.name, " ", "&nbsp;")}
                     </th>
                     <c:forEach items="${period.days}" var="day" varStatus="dStatus">
                         <c:choose>
