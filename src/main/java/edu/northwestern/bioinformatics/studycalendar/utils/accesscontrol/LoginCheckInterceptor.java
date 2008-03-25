@@ -5,15 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-import org.springframework.beans.factory.annotation.Required;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 import java.util.HashMap;
-
-import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import java.util.Map;
 
 /**
  * @author Padmaja Vedula
@@ -21,7 +18,6 @@ import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
  */
 public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
     private static final Logger log = LoggerFactory.getLogger(LoginCheckInterceptor.class);
-    private ControllerTools controllerTools;
 
     public static final String REQUESTED_URL_ATTRIBUTE = LoginCheckInterceptor.class.getName() + ".REQUESTED_URL";
 
@@ -51,10 +47,7 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
             request.getSession().setAttribute(REQUESTED_URL_ATTRIBUTE, getFullPath(request));
 
             Map<String, Object> model = new HashMap<String, Object>();
-            if (controllerTools.isAjaxRequest(request)) {
-                log.debug("Ajax request intercepted");
-                model.put("ajax", " ");
-            }
+
             throw new ModelAndViewDefiningException(new ModelAndView("redirectToLogin", model));
         }
         return true;
@@ -64,10 +57,5 @@ public class LoginCheckInterceptor extends HandlerInterceptorAdapter {
         StringBuffer fullPath = request.getRequestURL();
         if (request.getQueryString() != null) fullPath.append('?').append(request.getQueryString());
         return fullPath.toString();
-    }
-
-    @Required
-    public void setControllerTools(ControllerTools controllerTools) {
-        this.controllerTools = controllerTools;
     }
 }

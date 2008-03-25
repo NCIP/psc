@@ -19,9 +19,11 @@
     </bean>
     
     <bean id="publicHandlerMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
-   
-    <bean name="/login" id="loginController" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.web.LoginController"/>
+
+    <bean name="/login" id="loginController"
+          class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName"><value>login</value></property>
+    </bean>
 
     <!-- Retained to preserve URL compatibility in case anyone bookmarked this page on vera -->
     <bean name="/welcome" id="welcomeController"
