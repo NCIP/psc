@@ -1,19 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import org.restlet.resource.Resource;
-import org.restlet.resource.Variant;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import gov.nih.nci.cabig.ctms.domain.DomainObject;
+import org.restlet.Context;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.MediaType;
-import org.restlet.Context;
-import org.springframework.beans.factory.annotation.Required;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import gov.nih.nci.cabig.ctms.domain.DomainObject;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import org.restlet.resource.Variant;
 
 /**
  * Implements GET for a resource backed by a single domain object.
@@ -61,12 +57,15 @@ public abstract class AbstractDomainObjectResource<D extends DomainObject> exten
 
     protected Representation createXmlRepresentation(D object) {
         return new StringRepresentation(
-            xmlSerializer.createDocumentString(object), MediaType.TEXT_XML);
+                getXmlSerializer().createDocumentString(object), MediaType.TEXT_XML);
     }
 
     ////// CONFIGURATION
 
-    @Required
+    public StudyCalendarXmlSerializer<D> getXmlSerializer() {
+        return xmlSerializer;
+    }
+
     public void setXmlSerializer(StudyCalendarXmlSerializer<D> studyCalendarXmlFactory) {
         this.xmlSerializer = studyCalendarXmlFactory;
     }

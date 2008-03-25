@@ -8,10 +8,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.Calendar;
 
 /**
@@ -20,6 +28,7 @@ import java.util.Calendar;
 public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResource> {
     public static final String SOURCE_NAME = "Mutant Study";
     public static final String SOURCE_NAME_ENCODED = "Mutant%20Study";
+    protected final Logger log = LoggerFactory.getLogger(getClass());
 
     private static final String AMENDMENT_KEY = "2007-10-19~Amendment B";
     private static final String AMENDMENT_KEY_ENCODED = "2007-10-19~Amendment%20B";
@@ -32,6 +41,9 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
     private StudyService studyService;
+    private BeanFactory beanFactory;
+
+    private AmendmentXmlSerializer amendmentXmlSerializer;
 
     @Override
     protected void setUp() throws Exception {
@@ -40,6 +52,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         studyDao = registerDaoMockFor(StudyDao.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        beanFactory = registerMockFor(BeanFactory.class);
 
         studyService = registerMockFor(StudyService.class);
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), SOURCE_NAME_ENCODED);
@@ -59,29 +72,101 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         study.setPlannedCalendar(calendar);
         study.pushAmendment(amendment);
         study.setDevelopmentAmendment(developmentAmendment);
+
+        amendmentXmlSerializer = new AmendmentXmlSerializer();
+        amendmentXmlSerializer.setAmendmentDao(amendmentDao);
+
+
     }
 
 
     @Override
     protected AmendedResource createResource() {
         AmendedResource resource = new AmendedResource();
+
         resource.setStudyDao(studyDao);
         resource.setAmendmentDao(amendmentDao);
         resource.setAmendmentService(amendmentService);
         resource.setXmlSerializer(xmlSerializer);
         resource.setStudyService(studyService);
+        resource.setBeanFactory(beanFactory);
         return resource;
+    }
+
+    public void testPutExistingAmendment() throws Exception {
+        expectFoundStudy();
+        expectFoundAmendment();
+        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey())).andReturn(amendment);
+
+        String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
+                "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";
+
+        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
+
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expectAmendmentXmlSerializer();
+        expectAmendmentXmlSerializer();
+        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        studyService.save(study);
+        doPut();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
+        String actualEntityBody = response.getEntity().getText();
+    }
+
+    public void testPutNewAmendment() throws Exception {
+        study.setDevelopmentAmendment(null);
+        expectFoundStudy();
+        expectFoundAmendment();
+        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey())).andReturn(amendment);
+
+        String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
+                "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";
+
+        final InputStream in = new ByteArrayInputStream(expectedXml.getBytes());
+
+        request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
+
+        expectAmendmentXmlSerializer();
+        expectAmendmentXmlSerializer();
+
+        studyService.save(study);
+        doPut();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertEquals("Result is not right content type", MediaType.TEXT_XML, response.getEntity().getMediaType());
     }
 
     public void testGetAndPutAndDeleteAllowed() throws Exception {
         assertAllowedMethods("PUT", "GET", "DELETE");
     }
 
-    public void testGet() throws Exception {
+    public void testGetForAmendment() throws Exception {
         expectFoundStudy();
         expectFoundAmendment();
-        expectObjectXmlized(amendment);
+        expectAmendmentXmlSerializer();
         doGet();
+
+        String exectedEntityBody = amendmentXmlSerializer.createDocumentString(amendment);
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
+
+        assertResponseStatus(Status.SUCCESS_OK);
+    }
+
+    public void testGetForDevelopmentAmendment() throws Exception {
+        expectFoundStudy();
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(developmentAmendment);
+        expectAmendmentXmlSerializer();
+        doGet();
+        String exectedEntityBody = amendmentXmlSerializer.createDocumentString(developmentAmendment);
+        String actualEntityBody = response.getEntity().getText();
+        log.debug("Expected:\n{}", exectedEntityBody);
+        log.debug("Actual:\n{}", actualEntityBody);
+
+        assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
 
         assertResponseStatus(Status.SUCCESS_OK);
     }
@@ -90,9 +175,14 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), CURRENT_AMENDMENT_KEY);
 
         expectFoundStudy();
-        expectObjectXmlized(study.getAmendment());
+        expectAmendmentXmlSerializer();
 
         doGet();
+
+        String exectedEntityBody = amendmentXmlSerializer.createDocumentString(amendment);
+        String actualEntityBody = response.getEntity().getText();
+        assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
+
 
         assertResponseStatus(Status.SUCCESS_OK);
     }
@@ -149,37 +239,15 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         assertEquals("Result should be 200", Status.SUCCESS_OK, response.getStatus());
     }
 
-    public void testPutExistingAmendment() throws Exception {
-        expectFoundStudy();
-        expectFoundAmendment();
-        expectReadXmlFromRequestAs(amendment);
-        expectObjectXmlized(amendment);
-        amendmentService.deleteDevelopmentAmendmentOnly(study);
-        studyService.save(study);
-        doPut();
-
-        assertEquals("Result not success", 200, response.getStatus().getCode());
-        assertResponseIsCreatedXml();
-    }
-
-    public void testPutNewAmendment() throws Exception {
-        study.setDevelopmentAmendment(null);
-        expectFoundStudy();
-        expectFoundAmendment();
-        expectReadXmlFromRequestAs(amendment);
-        expectObjectXmlized(amendment);
-        studyService.save(study);
-        doPut();
-
-        assertEquals("Result not success", 200, response.getStatus().getCode());
-        assertResponseIsCreatedXml();
-    }
-
     ////// Expect Methods
 
 
     private void expectFoundStudy() {
         expect(studyDao.getByAssignedIdentifier(SOURCE_NAME)).andReturn(study);
+    }
+
+    private void expectAmendmentXmlSerializer() {
+        expect(beanFactory.getBean("amendmentXmlSerializer")).andReturn(amendmentXmlSerializer);
     }
 
     private void expectFoundAmendment() {

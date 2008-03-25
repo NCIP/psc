@@ -8,7 +8,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.CurrentScheduledActivityStateXmlSerializer;
 import org.apache.commons.lang.StringUtils;
 import org.restlet.Context;
@@ -147,10 +146,7 @@ public class ScheduledActivityResource extends AbstractDomainObjectResource<Sche
 
     }
 
-    protected StudyCalendarXmlSerializer<ScheduledActivity> getXmlSerializer() {
-        return xmlSerializer;
-    }
-
+    
 
     @Required
     public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {

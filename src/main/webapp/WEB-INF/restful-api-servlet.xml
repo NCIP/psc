@@ -61,12 +61,11 @@
         <property name="xmlSerializer" ref="studySnapshotXmlSerializer"/>
     </bean>
 
-     <bean name="/studies/{study-identifier}/template/amendments/{amendment-identifier}"
+    <bean name="/studies/{study-identifier}/template/amendments/{amendment-identifier}"
           id="amendedResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.AmendedResource">
-        <property name="xmlSerializer" ref="amendmentXmlSerializer"/>
     </bean>
-    
+
     <bean name="/studies/{study-identifier}/sites/{site-identifier}/subject-assignments"
           id="subjectAssignmentResource" autowire="byName" scope="prototype"
           class="edu.northwestern.bioinformatics.studycalendar.restlets.RegistrationsResource">

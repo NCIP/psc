@@ -25,7 +25,7 @@ public abstract class AbstractStorableDomainObjectResource<D extends DomainObjec
             validateEntity(entity);
             D read;
             try {
-                read = xmlSerializer.readDocument(entity.getStream());
+                read = getXmlSerializer().readDocument(entity.getStream());
                 store(read);
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);

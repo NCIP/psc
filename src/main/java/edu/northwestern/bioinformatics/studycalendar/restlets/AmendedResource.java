@@ -6,6 +6,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -13,18 +15,22 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
  * @author Saurabh Agrawal
  */
-public class AmendedResource extends AbstractRemovableStorableDomainObjectResource<Amendment> {
+public class AmendedResource extends AbstractRemovableStorableDomainObjectResource<Amendment> implements BeanFactoryAware {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private Study study;
     private StudyService studyService;
 
     private AmendmentService amendmentService;
+    private BeanFactory beanFactory;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -54,6 +60,8 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
                         amendmentIdentifier, study.getAssignedIdentifier());
                 return null;
             }
+
+
         }
         if (amendment == null) {
             log.debug("No released  or development amendment matching {}", amendmentIdentifier);
@@ -124,6 +132,30 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
 
     }
 
+    protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
+        AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer) getBeanFactory().getBean("amendmentXmlSerializer");
+        amendmentSerializer.setStudy(study);
+        amendmentSerializer.setDevelopmentAmendment(false);
+        return amendmentSerializer;
+    }
+
+    protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
+        AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer) getBeanFactory().getBean("amendmentXmlSerializer");
+        amendmentSerializer.setStudy(study);
+        amendmentSerializer.setDevelopmentAmendment(true);
+        return amendmentSerializer;
+    }
+
+    @Override
+    public StudyCalendarXmlSerializer<Amendment> getXmlSerializer() {
+        if (getRequestedObject().equals(study.getAmendment())) {
+            return getAmendmentSerializer(study);
+        } else {
+            return getDevelopmentAmendmentSerializer(study);
+        }
+
+    }
+
 
     ////// Bean Setters
     @Required
@@ -146,4 +178,12 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
         this.amendmentDao = amendmentDao;
     }
 
+    // Bean Getter and Setter methods
+    public BeanFactory getBeanFactory() {
+        return beanFactory;
+    }
+
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        this.beanFactory = beanFactory;
+    }
 }
