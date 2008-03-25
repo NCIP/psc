@@ -10,7 +10,7 @@
     <title>Assign subject</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
-        div.label {
+        div.row div.label{
             width: 35%;
         }
         div.submit {
@@ -81,6 +81,9 @@
                     <div class="value">
                         <form:input path="dateOfBirth"/>
                     </div>
+                    <!--for IE7 -> need to set the break, to get a new row be aligned along with others,
+                    since the date is split into two rows and cause the wrong format for the next row-->
+                    <br>
                 </div>
                 <div class="row">
                     <div class="label">
