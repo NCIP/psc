@@ -598,21 +598,26 @@
                 studyManipulationSetup();
             }
 
+            function arrowsHideShowSetup(){
+                showSetup();
+                hideSetup();
+                arrowSetup();
+                showMonthSetup();
+                hideMonthSetup();
+            }
+
             function loadFunctionsForDevelopmentRevision() {
                 generalSetup();
                 createStudyControls();
                 createAddEpochControl();
                 addToBeginSentence();
                 hideShowReleaseTemplateButton();
+                arrowsHideShowSetup();
             }
 
             function loadFunctionsForStudySegment() {
                 generalSetup();
-                showSetup();
-                hideSetup();
-                arrowSetup();
-                showMonthSetup();
-                hideMonthSetup();
+                arrowsHideShowSetup();
             }
 
 
