@@ -201,8 +201,7 @@
 
                 <resource path="amendments/{amendment-identifier}">
                     <doc>
-                        <html:em class="pending">Pending</html:em>
-                        <html:p>A single amendment.</html:p>
+                        <html>A single amendment.</html>
                     </doc>
                     <param style="template" name="amendment-identifier">
                         <doc>

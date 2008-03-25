@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
@@ -21,6 +22,7 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private Study study;
+    private StudyService studyService;
 
     private AmendmentService amendmentService;
 
@@ -111,10 +113,24 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
     @Override
     public void store(final Amendment amendment) {
 
+        if (study.getDevelopmentAmendment() != null) {
+            //first delete the existing development amendment
+            amendmentService.deleteDevelopmentAmendmentOnly(study);
+
+        }
+        study.setDevelopmentAmendment(amendment);
+
+        studyService.save(study);
+
     }
 
 
     ////// Bean Setters
+    @Required
+    public void setStudyService(final StudyService studyService) {
+        this.studyService = studyService;
+    }
+
     @Required
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;

@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Status;
@@ -30,6 +31,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private AmendmentService amendmentService;
+    private StudyService studyService;
 
     @Override
     protected void setUp() throws Exception {
@@ -39,6 +41,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
 
+        studyService = registerMockFor(StudyService.class);
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), SOURCE_NAME_ENCODED);
         request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), AMENDMENT_KEY_ENCODED);
 
@@ -66,6 +69,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         resource.setAmendmentDao(amendmentDao);
         resource.setAmendmentService(amendmentService);
         resource.setXmlSerializer(xmlSerializer);
+        resource.setStudyService(studyService);
         return resource;
     }
 
@@ -145,14 +149,31 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         assertEquals("Result should be 200", Status.SUCCESS_OK, response.getStatus());
     }
 
-//
-//    public void testDeleteExistingSiteWhichIsused() throws Exception {
-//        expectFoundSite(site);
-//        expectSiteUsedByAssignments(site, false);
-//        doDelete();
-//
-//        assertEquals("Result is success", 400, response.getStatus().getCode());
-//    }
+    public void testPutExistingAmendment() throws Exception {
+        expectFoundStudy();
+        expectFoundAmendment();
+        expectReadXmlFromRequestAs(amendment);
+        expectObjectXmlized(amendment);
+        amendmentService.deleteDevelopmentAmendmentOnly(study);
+        studyService.save(study);
+        doPut();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseIsCreatedXml();
+    }
+
+    public void testPutNewAmendment() throws Exception {
+        study.setDevelopmentAmendment(null);
+        expectFoundStudy();
+        expectFoundAmendment();
+        expectReadXmlFromRequestAs(amendment);
+        expectObjectXmlized(amendment);
+        studyService.save(study);
+        doPut();
+
+        assertEquals("Result not success", 200, response.getStatus().getCode());
+        assertResponseIsCreatedXml();
+    }
 
     ////// Expect Methods
 
