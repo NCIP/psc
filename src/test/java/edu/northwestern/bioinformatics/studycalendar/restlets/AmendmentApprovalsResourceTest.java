@@ -2,12 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createBasicTemplate;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Site;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.xml.CapturingStudyCalendarXmlFactoryStub;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.Method;
@@ -25,14 +26,9 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
 
     private Study study;
     private Site site;
-    private StudySite studySite;
 
     private StudyDao studyDao;
     private SiteDao siteDao;
-    private SubjectService subjectService;
-    private CapturingStudyCalendarXmlFactoryStub<StudySubjectAssignment> assignmentSerializerStub;
-    private Amendment amendment;
-    private AmendmentApproval amendmentApproval;
 
     @Override
     public void setUp() throws Exception {
@@ -40,20 +36,18 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         study = createBasicTemplate();
         study.setAssignedIdentifier(STUDY_IDENTIFIER);
         site = createNamedInstance(SITE_IDENTIFIER, Site.class);
-        studySite = createStudySite(study, site);
 
         studyDao = registerDaoMockFor(StudyDao.class);
         siteDao = registerDaoMockFor(SiteDao.class);
 
-        amendment = new Amendment();
+        Amendment amendment = new Amendment();
         amendment.setMandatory(true);
         amendment.setName("Amendment 1");
         amendment.setDate(createDate(2008, Calendar.JANUARY, 2));
         study = createNamedInstance("Cancer Study", Study.class);
         site = createNamedInstance("Northwestern University", Site.class);
         study.setAmendment(amendment);
-        studySite = Fixtures.createStudySite(study, site);
-        //studySite.approveAmendment(amendment, createDate(2008, Calendar.JANUARY, 2));
+        Fixtures.createStudySite(study, site);
 
         request.getAttributes().put(UriTemplateParameters.STUDY_IDENTIFIER.attributeName(), STUDY_IDENTIFIER_ENCODED);
         request.getAttributes().put(UriTemplateParameters.SITE_IDENTIFIER.attributeName(), SITE_IDENTIFIER);
@@ -69,6 +63,7 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         return resource;
     }
 
+    @SuppressWarnings({"unchecked"})
     public void testGetXml() throws Exception {
 
         expectResolvedStudyAndSite(study, site);
@@ -100,8 +95,8 @@ public class AmendmentApprovalsResourceTest extends AuthorizedResourceTestCase<A
         assertResponseStatus(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
-    public void testGetWithAuthorizedRole() {
-        assertRolesAllowedForMethod(Method.GET, Role.SUBJECT_COORDINATOR);
+    public void testGetAuthorizations() {
+        assertAllRolesAllowedForMethod(Method.GET);
     }
 
     ////// POST

@@ -25,4 +25,8 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
             assertTrue(method.toString() + " for " + role.getDisplayName() + " should not be allowed", expected.contains(role));
         }
     }
+
+    protected void assertAllRolesAllowedForMethod(Method method) {
+        assertTrue("All roles should be allowed", getResource().authorizedRoles(method).isEmpty());
+    }
 }
