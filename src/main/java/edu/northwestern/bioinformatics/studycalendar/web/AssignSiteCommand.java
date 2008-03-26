@@ -1,34 +1,45 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
-import java.util.List;
-
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.nwu.bioinformatics.commons.spring.Validatable;
+import org.springframework.validation.Errors;
+
+import java.util.Collections;
+import java.util.List;
 
 
 /**
  * @author Padmaja Vedula
  */
 
-public class AssignSiteCommand {
+public class AssignSiteCommand implements Validatable {
     private Integer studyId;
-    private String assign;
+    private Boolean assign;
     private List<Site> assignedSites;
     private List<Site> availableSites;
-   
-  
+
+    public void validate(Errors errors) {
+        if (getAssign() && getAvailableSites().isEmpty()) {
+            errors.reject("error.please.select.an.available.site");
+        } else if (!getAssign() && getAssignedSites().isEmpty()) {
+            errors.reject("error.please.select.an.assigned.site");
+        }
+    }
+
     ////// BOUND PROPERTIES
 
+    @SuppressWarnings({"unchecked"})
     public List<Site> getAssignedSites() {
-        return assignedSites;
+        return assignedSites != null ? assignedSites : Collections.EMPTY_LIST;
     }
 
     public void setAssignedSites(List<Site> assignedSites) {
         this.assignedSites = assignedSites;
     }
 
-    public List getAvailableSites() {
-        return availableSites;
+    @SuppressWarnings({"unchecked"})
+    public List<Site> getAvailableSites() {
+        return availableSites != null ? availableSites : Collections.EMPTY_LIST;
     }
 
     public void setAvailableSites(List<Site> availableSites) {
@@ -43,11 +54,11 @@ public class AssignSiteCommand {
         this.studyId = studyId;
     }
     
-    public String getAssign() {
-        return assign;
+    public Boolean getAssign() {
+        return assign != null ? assign : Boolean.FALSE;
     }
 
-    public void setAssign(String assign) {
+    public void setAssign(Boolean assign) {
         this.assign = assign;
     }
   
