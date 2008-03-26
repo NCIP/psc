@@ -24,7 +24,7 @@ public class AmendmentApprovalsResource extends StudySiteCollectionResource<Amen
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
-        setAuthorizedFor(Method.GET, Role.SUBJECT_COORDINATOR);
+        setAllAuthorizedFor(Method.GET);
         setAuthorizedFor(Method.POST, Role.SUBJECT_COORDINATOR);
     }
 
