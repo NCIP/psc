@@ -93,6 +93,13 @@ SC.inPlaceEdit = function(element, url, options) {
     );
 }
 
+//Need to ovewrite the function to have the correct grid's cell identification, when scroll is involved in the page (for reference, see bug #393 in track)
+SC.Draggable = Class.create(Draggable, {
+    updateDrag: function($super, event, pointer) {
+        $super(event, pointer);
+        Position.includeScrollOffsets=true;
+    }
+})
 
 
 Ajax.RevertableAutocompleter = Class.create();
