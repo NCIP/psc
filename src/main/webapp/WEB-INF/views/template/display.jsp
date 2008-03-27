@@ -107,15 +107,24 @@
                 font-size: 7.5pt;
             }
             div.studySegment-controls, div.epoch-controls {
-                position: absolute;
                 bottom: 2px;
                 top:2px;
                 right: 2px;
                 /*need the padding to display correctly the buttons in IE7*/
                 padding-top:3px;
                 padding-bottom:3px;
+
+            }
+            div.studySegment-controls {
+                position: absolute;
                 text-align: right;
             }
+
+            div.epoch-controls{
+                position: relative;
+                text-align: left;
+            }
+
             span.study-controls {
                 margin-left: 4px;
             }
