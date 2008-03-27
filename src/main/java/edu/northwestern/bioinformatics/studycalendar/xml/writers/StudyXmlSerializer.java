@@ -100,7 +100,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         if (element.getName()!= null && (! element.getName().equals(STUDY))) {
             throw new StudyCalendarValidationException("Element type is other than <study>");
         } else if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
-            throw new StudyCalendarValidationException("Study element must have at minimum an amendment or development-amendment child element");
+            throw new StudyCalendarValidationException("<study> must have at minimum an <amendment> or <development-amendment> child");
         }
     }
 

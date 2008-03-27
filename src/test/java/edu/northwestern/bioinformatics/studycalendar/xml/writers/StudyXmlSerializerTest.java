@@ -112,7 +112,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
             fail("Exception should be thrown");
             verifyMocks();
         } catch (StudyCalendarValidationException e) {
-            assertEquals("Study element must have at minimum an amendment or development-amendment child element", e.getMessage());
+            assertEquals("<study> must have at minimum an <amendment> or <development-amendment> child", e.getMessage());
         }
     }
 
