@@ -228,6 +228,7 @@ function registerRowEventHandlers(rowElt) {
 function updateAddActivityButton() {
     addActivityRow();
     resetActivitiesAutocompleter();
+    resetActivityType();
 }
 
 function registerHandlers() {
@@ -357,6 +358,10 @@ function resetActivitiesAutocompleter() {
     $('add-activity').value = "";
 }
 
+function resetActivityType() {
+    $('activity-type-filter').options[0].selected=true;
+}
+
 function createAutocompleter() {
     activitiesAutocompleter = new Ajax.ResetableAutocompleter('activities-autocompleter-input', 'activities-autocompleter-div', '<c:url value="/pages/search/fragment/activities"/>',
     {
@@ -405,6 +410,14 @@ function registerHoverTips() {
     registerHoverTip($('delete-drop'), "Drag an activity from the grid to delete it")
 }
 
+function addANewActivityToTheRow() {
+    $('add-activity').name = '${selectedActivity.name}';
+    $('add-activity').value='${selectedActivity.id}';
+    addActivityRow()
+}
+<c:if test="${selectedActivity !=null && !empty selectedActivity}">
+    Event.observe(window, 'load', addANewActivityToTheRow)
+</c:if>
 //Event.observe(window, "dom:loaded", registerHoverTips)
 
 </script>
@@ -716,7 +729,7 @@ function registerHoverTips() {
                 </select>
                 <select id="activity-type-filter">
                     <option value="">All types</option>
-                    <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" <c:if test="${selectedActivity.type.id == activityType.id}">selected="selected"</c:if>>${activityType.name}</option></c:forEach>
+                    <c:forEach items="${activityTypes}" var="activityType"><option value="${activityType.id}" >${activityType.name}</option></c:forEach>
                 </select>
                 <input id="activities-autocompleter-input" type="text" autocomplete="off"/>
                 <div id="activities-autocompleter-div" class="autocomplete"></div>
