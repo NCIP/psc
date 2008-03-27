@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
@@ -7,7 +8,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.AMENDMENT;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.DEVELOPMENT_AMENDMENT;
 import org.dom4j.Element;
 
 import java.util.ArrayList;
@@ -53,19 +55,20 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         return eStudy;
     }
 
+    @SuppressWarnings({"unchecked"})
     public Study readElement(Element element) {
-        if (element.getName()!= null && (! element.getName().equals(STUDY))) {
-            throw new StudyCalendarValidationException("Element type is other than <study>");
-        }
+        validateElement(element);
+
         String key = element.attributeValue(ASSIGNED_IDENTIFIER);
         Study study = studyDao.getByAssignedIdentifier(key);
+ 
         if (study == null) {
             study = new Study();
             study.setAssignedIdentifier(key);
 
 
             Element eCalendar = element.element(PlannedCalendarXmlSerializer.PLANNED_CALENDAR);
-            PlannedCalendar calendar = (PlannedCalendar) getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
+            PlannedCalendar calendar = getPlannedCalendarXmlSerializer(study).readElement(eCalendar);
             study.setPlannedCalendar(calendar);
 
             PopulationXmlSerializer populationXmlSerializer = getPopulationXmlSerializer(study);
@@ -74,27 +77,31 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 Population population = populationXmlSerializer.readElement(ePopulation);
                 study.addPopulation(population);
             }
-        } else {
-            if (study.getAmendment() == null && study.getDevelopmentAmendment() == null) {
-                throw new StudyCalendarValidationException("Study must have either amendment or developmentAmendment");
-            } else {
-                List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
-                for (Element eAmendment : eAmendments) {
-                    Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
-                    if (!study.getAmendmentsList().contains(amendment)) {
-                        study.pushAmendment(amendment);
-                    }
-                }
-
-                Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
-                if (developmentAmendmentElement != null) {
-                    Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
-                    study.setDevelopmentAmendment(developmentAmendment);
-                }
+        }
+        
+        List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
+        for (Element eAmendment : eAmendments) {
+            Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
+            if (!study.getAmendmentsList().contains(amendment)) {
+                study.pushAmendment(amendment);
             }
         }
 
+        Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
+        if (developmentAmendmentElement != null) {
+            Amendment developmentAmendment = getDevelopmentAmendmentSerializer(study).readElement(developmentAmendmentElement);
+            study.setDevelopmentAmendment(developmentAmendment);
+        }
+
         return study;
+    }
+
+    private void validateElement(Element element) {
+        if (element.getName()!= null && (! element.getName().equals(STUDY))) {
+            throw new StudyCalendarValidationException("Element type is other than <study>");
+        } else if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
+            throw new StudyCalendarValidationException("Study element must have at minimum an amendment or development-amendment child element");
+        }
     }
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {

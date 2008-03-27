@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
@@ -9,22 +10,17 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
+import static org.dom4j.DocumentHelper.createElement;
+import static org.dom4j.DocumentHelper.createQName;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
 
-import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
-import static java.util.Collections.singletonList;
 
 public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyXmlSerializer serializer;
@@ -34,7 +30,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private StudyDao studyDao;
     private PopulationXmlSerializer populationSerializer;
     private Population population;
-    private Element eCalendar, ePopulation;
+    private Element ePopulation;
     private PlannedCalendarXmlSerializer plannedCalendarSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentXmlSerializer developmentAmendmentSerializer;
@@ -43,6 +39,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element eAmendment;
     private Element eDevelopmentAmendment;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+    private Element eCalendar;
 
 
     protected void setUp() throws Exception {
@@ -68,50 +65,23 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendment =  createAmendment("Amendment A", createDate(2008, Calendar.JANUARY, 2), true);
         developmentAmendment=createAmendment("Amendment B",createDate(2008, Calendar.FEBRUARY,13),true);
 
-        study = createNamedInstance("Study A", Study.class);
-        study.setPlannedCalendar(calendar);
-        study.addPopulation(population);
-        study.setAmendment(amendment);
-        study.setDevelopmentAmendment(developmentAmendment);
+        study = createStudy();
 
-        QName qCalendar = DocumentHelper.createQName("planned-calendar", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        eCalendar = DocumentHelper.createElement(qCalendar);
-        eCalendar.addAttribute("id", calendar.getGridId());
-
-        QName qPopulation = DocumentHelper.createQName("population", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        ePopulation = DocumentHelper.createElement(qPopulation);
-        ePopulation.addAttribute("abbreviation", population.getAbbreviation());
-        ePopulation.addAttribute("name", population.getName());
-
-        QName qAmendment = DocumentHelper.createQName("amendment", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        eAmendment = DocumentHelper.createElement(qAmendment);
-        eAmendment.addAttribute("name", amendment.getName());
-        eAmendment.addAttribute("date", formatter.format(amendment.getDate()) );
-        eAmendment.addAttribute("mandatory", Boolean.toString(amendment.isMandatory()));
-
-        QName qDevelopmentAmendment = DocumentHelper.createQName(XsdElement.DEVELOPMENT_AMENDMENT.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        eDevelopmentAmendment = DocumentHelper.createElement(qDevelopmentAmendment);
-        eDevelopmentAmendment.addAttribute("name", developmentAmendment.getName());
-        eDevelopmentAmendment.addAttribute("date", formatter.format(developmentAmendment.getDate()));
-        eDevelopmentAmendment.addAttribute("mandatory", Boolean.toString(developmentAmendment.isMandatory()));
-
+        eCalendar = createCalendarElement(calendar);
+        ePopulation = createPopulationElement(population);
+        eAmendment = createAmendmentElement(amendment);
+        eDevelopmentAmendment = createDevelopmentAmendmentElement(developmentAmendment);
     }
 
     public void testReadElementWhereElementIsNew() {
-        expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
-        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(null);
-
-        expect(element.elements("population")).andReturn(singletonList(element));
-        expect(populationSerializer.readElement(element)).andReturn(population);
-
-        expect(element.element("planned-calendar")).andReturn(element);
-
-        // Need to cast calendar to PlanTreeNode because of EasyMockBug
-        expect(plannedCalendarSerializer.readElement(element)).andReturn(calendar);
-        expect(element.getName()).andReturn("study").times(2);
+        expectResolveStudy("Study A", null);
+        expectDeserializePopulation();
+        expectDeserializePlannedCalendar();
+        expectDeserializeAmendments();
+        expectDesearializeDevelopmentAmendment();
         replayMocks();
 
-        Study actual = serializer.readElement(element);
+        Study actual = serializer.readElement(createStudyElement());
         verifyMocks();
 
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
@@ -131,40 +101,28 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         }
     }
 
-    public void testReadElementWithoutAmendment() {
-        Study study = createNamedInstance("Study A", Study.class);
-        study.setPlannedCalendar(calendar);
-        study.addPopulation(population);
+    public void testReadElementWithNoDevelopmentOrReleasedAmendments() {
+        Element eStudy = createStudyElement();
+        eStudy.remove(eAmendment);
+        eStudy.remove(eDevelopmentAmendment);
 
-        expect(element.getName()).andReturn("study").times(2);
-        expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
-        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
-        expect(study.getAmendment()).andReturn(null);
-        expect(study.getDevelopmentAmendment()).andReturn(null);
         try {
             replayMocks();
-            serializer.readElement(element);
+            serializer.readElement(eStudy);
             fail("Exception should be thrown");
             verifyMocks();
         } catch (StudyCalendarValidationException e) {
-            assertEquals("Study must have either amendment or developmentAmendment", e.getMessage());
+            assertEquals("Study element must have at minimum an amendment or development-amendment child element", e.getMessage());
         }
     }
 
-
     public void testReadElementWhereElementExists() {
-        expect(element.getName()).andReturn(null);
-        expect(element.attributeValue("assigned-identifier")).andReturn("Study A");
-        expect(studyDao.getByAssignedIdentifier("Study A")).andReturn(study);
-
-        expect(element.elements(XsdElement.AMENDMENT.xmlName())).andReturn(Arrays.asList(element));
-        expect(element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName())).andReturn(element);
-
-        expect(developmentAmendmentSerializer.readElement(element)).andReturn(developmentAmendment);
-        expect(amendmentSerializer.readElement(element)).andReturn(amendment);
+        expectResolveStudy("Study A", study);
+        expectDeserializeAmendments();
+        expectDesearializeDevelopmentAmendment();
         replayMocks();
 
-        Study actual = serializer.readElement(element);
+        Study actual = serializer.readElement(createStudyElement());
         verifyMocks();
 
         assertSame("Wrong Study", study, actual);
@@ -187,54 +145,87 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     }
 
-    public void testCreateDocument() throws Exception {
-        expectChildrenSerializers();
-        replayMocks();
-
-        Document actual = serializer.createDocument(study);
-        verifyMocks();
-
-        assertEquals("Wrong assigned identifier", "Study A", actual.getRootElement().attribute("assigned-identifier").getValue());
-        assertEquals("Wrong planned calendar grid id", "grid1", actual.getRootElement().element("planned-calendar").attributeValue("id"));
-        assertNotNull("Population element should exist", actual.getRootElement().element("population"));
-        assertNotNull("Amendment element should exist", actual.getRootElement().element("amendment"));
-    }
-
-    public void testCreateDocumentString() throws Exception {
-        StringBuffer expected = new StringBuffer();
-
-        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        expected.append(format("<study assigned-identifier=\"{0}\"", study.getAssignedIdentifier()));
-
-        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
-        expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
-        expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
-
-
-        expected.append(format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
-        expected.append(format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>", eAmendment.attributeValue("name"),
-                       eAmendment.attributeValue("date"), eAmendment.attributeValue("mandatory")));
-        expected.append(format("<population abbreviation=\"{0}\" name=\"{1}\"/>", ePopulation.attributeValue("abbreviation"), ePopulation.attributeValue("name")));
-        expected.append(format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>", eDevelopmentAmendment.attributeValue("name"),
-                       eDevelopmentAmendment.attributeValue("date"), eDevelopmentAmendment.attributeValue("mandatory")));
-
-        expected.append("</study>");
-
-        expectChildrenSerializers();
-        replayMocks();
-
-        String actual = serializer.createDocumentString(study);
-        verifyMocks();
-
-        assertXMLEqual(expected.toString(), actual);
-
-    }
-
+    ////// Expect helper methods
     private void expectChildrenSerializers() {
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
         expect(amendmentSerializer.createElement(amendment)).andReturn(eAmendment);
         expect(developmentAmendmentSerializer.createElement(developmentAmendment)).andReturn(eDevelopmentAmendment);
 
+    }
+
+    private void expectResolveStudy(String name, Study resolved) {
+        expect(studyDao.getByAssignedIdentifier(name)).andReturn(resolved);
+    }
+
+    private void expectDeserializePlannedCalendar() {
+        expect(plannedCalendarSerializer.readElement(eCalendar)).andReturn(calendar);
+    }
+
+    private void expectDeserializePopulation() {
+        expect(populationSerializer.readElement(ePopulation)).andReturn(population);
+    }
+
+    private void expectDesearializeDevelopmentAmendment() {
+        expect(developmentAmendmentSerializer.readElement(eDevelopmentAmendment)).andReturn(developmentAmendment);
+    }
+
+    private void expectDeserializeAmendments() {
+        expect(amendmentSerializer.readElement(eAmendment)).andReturn(amendment);
+    }
+
+    ////// Create element helpers
+    private Element createStudyElement() {
+        QName qStudy = createQName(STUDY.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        Element eStudy = createElement(qStudy);
+        eStudy.addAttribute("assigned-identifier", study.getAssignedIdentifier());
+        eStudy.add(eDevelopmentAmendment);
+        eStudy.add(eAmendment);
+        eStudy.add(ePopulation);
+        eStudy.add(eCalendar);
+        return eStudy;
+    }
+
+    private Element createDevelopmentAmendmentElement(Amendment developmentAmendment) {
+        QName qDevelopmentAmendment = createQName(XsdElement.DEVELOPMENT_AMENDMENT.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        Element elt = createElement(qDevelopmentAmendment);
+        elt.addAttribute("name", developmentAmendment.getName());
+        elt.addAttribute("date", formatter.format(developmentAmendment.getDate()));
+        elt.addAttribute("mandatory", Boolean.toString(developmentAmendment.isMandatory()));
+        return elt;
+    }
+
+    private Element createAmendmentElement(Amendment amendment) {
+        QName qAmendment = createQName("amendment", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        Element elt = createElement(qAmendment);
+        elt.addAttribute("name", amendment.getName());
+        elt.addAttribute("date", formatter.format(amendment.getDate()) );
+        elt.addAttribute("mandatory", Boolean.toString(amendment.isMandatory()));
+        return elt;
+    }
+
+    private Element createPopulationElement(Population population) {
+        QName qPopulation = createQName("population", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        Element elt = createElement(qPopulation);
+        elt.addAttribute("abbreviation", population.getAbbreviation());
+        elt.addAttribute("name", population.getName());
+        return elt;
+    }
+
+    private Element createCalendarElement(PlannedCalendar calendar) {
+        QName qCalendar = createQName("planned-calendar", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
+        Element elt = createElement(qCalendar);
+        elt.addAttribute("id", calendar.getGridId());
+        return elt;
+    }
+
+    ////// Create PSC object helpers
+    private Study createStudy() {
+        Study study = createNamedInstance("Study A", Study.class);
+        study.setPlannedCalendar(calendar);
+        study.addPopulation(population);
+        study.setAmendment(amendment);
+        study.setDevelopmentAmendment(developmentAmendment);
+        return study;
     }
 }
