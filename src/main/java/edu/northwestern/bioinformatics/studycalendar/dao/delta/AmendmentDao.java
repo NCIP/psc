@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarMutableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
@@ -38,7 +40,7 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
     }
 
     @SuppressWarnings({ "unchecked" })
-    public Amendment getByNaturalKey(String key) {
+    public Amendment getByNaturalKey(String key, Study study) {
         final Amendment.Key keyParts = Amendment.decomposeNaturalKey(key);
         List<Amendment> results = getHibernateTemplate().executeFind(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
@@ -53,6 +55,11 @@ public class AmendmentDao extends StudyCalendarMutableDomainObjectDao<Amendment>
                 return crit.list();
             }
         });
+        // filter out amendments for other studies
+        for (Iterator<Amendment> it = results.iterator(); it.hasNext();) {
+            Amendment result = it.next();
+            if (!study.hasAmendment(result)) it.remove();
+        }
         if (results.size() == 0) {
             return null;
         } else if (results.size() > 1) {

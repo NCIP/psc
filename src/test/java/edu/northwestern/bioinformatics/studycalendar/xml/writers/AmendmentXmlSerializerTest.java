@@ -31,6 +31,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private Element eDelta;
     private PlannedCalendarDelta delta;
     private DeltaXmlSerializerFactory deltaSerializerFactory;
+    private Study study;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -64,7 +65,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         eAmendment.addAttribute("mandatory", Boolean.valueOf(amendment1.isMandatory()).toString());
         eAmendment.addAttribute("name", amendment1.getName());
 
-        Study study = createNamedInstance("Study A", Study.class);
+        study = createNamedInstance("Study A", Study.class);
         study.setAmendment(amendment0);
 
         serializer = new AmendmentXmlSerializer() {
@@ -96,7 +97,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     public void testReadElementWithExistingAmendment() {
         expect(element.attributeValue("name")).andReturn("Amendment 1");
         expect(element.attributeValue("date")).andReturn("2007-01-02");
-        expect(amendmentDao.getByNaturalKey("2007-01-02~Amendment 1")).andReturn(amendment1);
+        expect(amendmentDao.getByNaturalKey("2007-01-02~Amendment 1", study)).andReturn(amendment1);
         replayMocks();
         
         Amendment actual = serializer.readElement(element);
@@ -109,7 +110,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("name")).andReturn("Amendment 1");
         expect(element.attributeValue("date")).andReturn("2008-01-02");
         expect(element.attributeValue("mandatory")).andReturn("true");
-        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(null);
+        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1", study)).andReturn(null);
         expect(element.attributeValue("previous-amendment-key")).andReturn("2008-01-01~Amendment 0");
 
         expect(element.elements()).andReturn(Collections.singletonList(eDelta));

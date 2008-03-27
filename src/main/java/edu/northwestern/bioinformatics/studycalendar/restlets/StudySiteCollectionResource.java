@@ -54,6 +54,14 @@ public abstract class StudySiteCollectionResource<V> extends AbstractPscResource
         return studySite;
     }
 
+    protected Study getStudy() {
+        return study;
+    }
+
+    protected Site getSite() {
+        return site;
+    }
+
     private void verifyStudySiteExists() throws ResourceException {
         if (study == null) {
             throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,

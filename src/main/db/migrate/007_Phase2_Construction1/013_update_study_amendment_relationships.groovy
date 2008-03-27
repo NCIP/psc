@@ -9,7 +9,13 @@ class UpdateStudyAmendmentRelationships extends edu.northwestern.bioinformatics.
 
         renameColumn("amendments", "previous_amendment", "previous_amendment_id")
 
-        execute("ALTER TABLE amendments ADD CONSTRAINT fk_amendment_prev FOREIGN KEY (previous_amendment_id) REFERENCES amendments")
+        if (databaseMatches("hsqldb")) {
+            // HSQLDB doesn't correctly order DELETEs when clearing a table with self-references
+            // so we need to cascade this constraint.  Don't want to generally, though.
+            execute("ALTER TABLE amendments ADD CONSTRAINT fk_amendment_prev FOREIGN KEY (previous_amendment_id) REFERENCES amendments ON DELETE CASCADE")
+        } else {
+            execute("ALTER TABLE amendments ADD CONSTRAINT fk_amendment_prev FOREIGN KEY (previous_amendment_id) REFERENCES amendments")
+        }
         execute("ALTER TABLE studies ADD CONSTRAINT fk_study_cur_amendment FOREIGN KEY (amendment_id) REFERENCES amendments")
         execute("ALTER TABLE studies ADD CONSTRAINT fk_study_dev_amendment FOREIGN KEY (dev_amendment_id) REFERENCES amendments")
     }

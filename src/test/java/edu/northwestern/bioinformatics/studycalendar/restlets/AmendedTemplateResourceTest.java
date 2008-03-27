@@ -119,7 +119,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     private void expectFoundAmendment() {
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(amendment);
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(amendment);
     }
 
     private void expectStudyNotFound() {
@@ -127,7 +127,7 @@ public class AmendedTemplateResourceTest extends AuthorizedResourceTestCase<Amen
     }
 
     private void expectAmendmentNotFound() {
-        expect(amendmentDao.getByNaturalKey("")).andReturn(null);
+        expect(amendmentDao.getByNaturalKey("", study)).andReturn(null);
     }
 
     private void expectAmendClonedStudy(Amendment target) {

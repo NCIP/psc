@@ -16,9 +16,12 @@ public abstract class AuthorizedResourceTestCase<R extends Resource & Authorized
 
         Collection<Role> expected = Arrays.asList(roles);
         Collection<Role> actual = getResource().authorizedRoles(method);
+        // if authorizedRoles == null, that means everything is allowed
+        if (actual == null) actual = Arrays.asList(Role.values());
 
         for (Role role : expected) {
-            assertTrue(method.toString() + " for " + role.getDisplayName() + " should be allowed", actual.contains(role));
+            assertTrue(method.toString() + " for " + role.getDisplayName() + " should be allowed",
+                actual.contains(role));
         }
 
         for (Role role : actual) {

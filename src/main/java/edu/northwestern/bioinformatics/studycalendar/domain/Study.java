@@ -134,6 +134,12 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         setAmendment(newAmendment);
     }
 
+    public boolean hasAmendment(Amendment a) {
+        return a.equals(getDevelopmentAmendment())
+            || a.equals(getAmendment())
+            || (getAmendment() != null && getAmendment().hasPreviousAmendment(a));
+    }
+
     @Transient
     public List<Amendment> getAmendmentsList() {
         List<Amendment> amendments = new LinkedList<Amendment>();

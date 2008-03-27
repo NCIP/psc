@@ -96,7 +96,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
     public void testPutExistingAmendment() throws Exception {
         expectFoundStudy();
         expectFoundAmendment();
-        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey())).andReturn(amendment);
+        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey(), study)).andReturn(amendment);
 
         String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
                 "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";
@@ -120,7 +120,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         study.setDevelopmentAmendment(null);
         expectFoundStudy();
         expectFoundAmendment();
-        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey())).andReturn(amendment);
+        expect(amendmentDao.getByNaturalKey(amendment.getNaturalKey(), study)).andReturn(amendment);
 
         String expectedXml = "<amendment xmlns=\"http://bioinformatics.northwestern.edu/ns/psc\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" name=\"Amendment B\" date=\"2007-10-19\" mandatory=\"true\" " +
                 "xsi:schemaLocation=\"http://bioinformatics.northwestern.edu/ns/psc http://bioinformatics.northwestern.edu/ns/psc/psc.xsd\"></amendment>";
@@ -158,7 +158,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
     public void testGetForDevelopmentAmendment() throws Exception {
         expectFoundStudy();
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(developmentAmendment);
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(developmentAmendment);
         expectAmendmentXmlSerializer();
         doGet();
         String exectedEntityBody = amendmentXmlSerializer.createDocumentString(developmentAmendment);
@@ -215,7 +215,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
     public void testDeleteAmendmentWhichIsDoesNotApplyToStudy() throws Exception {
         expectFoundStudy();
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(new Amendment());
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(new Amendment());
         doDelete();
 
         assertEquals("Result should be 404", Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
@@ -232,7 +232,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
     public void testDeleteDevelopmentAmendment() throws Exception {
         expectFoundStudy();
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(developmentAmendment);
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(developmentAmendment);
         amendmentService.deleteDevelopmentAmendmentOnly(study);
         doDelete();
 
@@ -251,7 +251,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
     }
 
     private void expectFoundAmendment() {
-        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY)).andReturn(amendment);
+        expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(amendment);
     }
 
     private void expectStudyNotFound() {
@@ -259,7 +259,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
     }
 
     private void expectAmendmentNotFound() {
-        expect(amendmentDao.getByNaturalKey("")).andReturn(null);
+        expect(amendmentDao.getByNaturalKey("", study)).andReturn(null);
     }
 
 

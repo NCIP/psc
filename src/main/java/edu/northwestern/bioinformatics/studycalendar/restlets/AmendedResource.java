@@ -53,7 +53,7 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
         if (AmendedTemplateResource.CURRENT.equals(amendmentIdentifier)) {
             amendment = study.getAmendment();
         } else {
-            amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
+            amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
             if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getDevelopmentAmendment().hasPreviousAmendment(amendment)
                     && !amendment.equals(study.getDevelopmentAmendment())) {
                 log.debug("Amendment {} doesn't apply to study {}",

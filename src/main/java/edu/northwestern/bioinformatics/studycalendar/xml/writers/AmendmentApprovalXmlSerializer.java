@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlCollectionSerializer;
@@ -17,18 +18,19 @@ import java.util.Date;
  * @author Saurabh Agrawal
  */
 public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlCollectionSerializer<AmendmentApproval> {
+    private Study study;
 
+    private AmendmentDao amendmentDao;
+
+    @Override
     protected XsdElement rootElement() {
         return XsdElement.AMENDMENT_APPROVAL;
     }
 
+    @Override
     protected XsdElement collectionRootElement() {
         return XsdElement.AMENDMENT_APPROVALS;
     }
-
-    private AmendmentDao amendmentDao;
-
-
 
     @Override
     public Element createElement(AmendmentApproval amendmentApproval, boolean inCollection) {
@@ -63,7 +65,7 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
 
             Date date = XsdAttribute.AMENDMENT_APPROVAL_DATE.fromDate(element);
             AmendmentApproval amendmentApproval = new AmendmentApproval();
-            amendmentApproval.setAmendment(amendmentDao.getByNaturalKey(amendmentIdentifier));
+            amendmentApproval.setAmendment(amendmentDao.getByNaturalKey(amendmentIdentifier, study));
             amendmentApproval.setDate(date);
 
             return amendmentApproval;
@@ -77,5 +79,9 @@ public class AmendmentApprovalXmlSerializer extends AbstractStudyCalendarXmlColl
     @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+    public void setStudy(Study study) {
+        this.study = study;
     }
 }

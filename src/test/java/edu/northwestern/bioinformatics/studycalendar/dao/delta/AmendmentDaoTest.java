@@ -2,10 +2,11 @@ package edu.northwestern.bioinformatics.studycalendar.dao.delta;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
+import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.DaoTestCase;
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import static edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 
 import java.util.List;
 import java.util.Calendar;
@@ -14,11 +15,16 @@ import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 public class AmendmentDaoTest extends DaoTestCase {
     private AmendmentDao amendmentDao;
+    private StudyDao studyDao;
+    private Study study20, study21;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         amendmentDao = (AmendmentDao) getApplicationContext().getBean("amendmentDao");
+        studyDao = (StudyDao) getApplicationContext().getBean("studyDao");
+        study20 = studyDao.getById(-20);
+        study21 = studyDao.getById(-21);
     }
 
     public void testGetById() throws Exception {
@@ -55,41 +61,41 @@ public class AmendmentDaoTest extends DaoTestCase {
 
     public void testGetAll() throws Exception {
         List<Amendment> all = amendmentDao.getAll();
-        assertEquals(7, all.size());
+        assertEquals(8, all.size());
     }
 
     public void testGetByKeyWithoutNameWhenAmendmentHasNameButUniqueDate() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2006-02-01");
+        Amendment actual = amendmentDao.getByNaturalKey("2006-02-01", study20);
         assertNotNull("Could not find it", actual);
         assertEquals(-100, (int) actual.getId());
     }
 
     public void testGetByKeyWithoutNameWhenOneHasANameAndOneDoesNot() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2008-05-17");
+        Amendment actual = amendmentDao.getByNaturalKey("2008-05-17", study20);
         assertNotNull("Could not find it", actual);
         assertEquals(-220, (int) actual.getId());
     }
 
     public void testGetByKeyWithoutNameAmendmentDoesNotHaveOne() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2008-07-11");
+        Amendment actual = amendmentDao.getByNaturalKey("2008-07-11", study20);
         assertNotNull("Could not find it", actual);
         assertEquals(-221, (int) actual.getId());
     }
 
     public void testGetByKeyWithoutNameAmendmentAndDateInATimestampFormat() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2008-08-13");
+        Amendment actual = amendmentDao.getByNaturalKey("2008-08-13", study21);
         assertNotNull("Could not find it", actual);
         assertEquals(-224, (int) actual.getId());
     }
 
     public void testGetByKeyWithoutNameAmendmentAndDateInATimestampFormatAndOneDayOff() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2008-08-14");
-        assertNull("Could not find it", actual);
+        Amendment actual = amendmentDao.getByNaturalKey("2008-08-14", study21);
+        assertNull("Should not have found it", actual);
     }
 
     public void testGetByKeyWithoutNameWhenItIsAmbiguous() throws Exception {
         try {
-            amendmentDao.getByNaturalKey("2008-11-23");
+            amendmentDao.getByNaturalKey("2008-11-23", study20);
             fail("Exception not thrown");
         } catch (StudyCalendarValidationException scve) {
             assertEquals("More than one amendment could match 2008-11-23: 2008-11-23~pheasant, 2008-11-23~turkey.  Please be more specific.",
@@ -98,14 +104,21 @@ public class AmendmentDaoTest extends DaoTestCase {
     }
 
     public void testGetByKeyWithName() throws Exception {
-        Amendment actual = amendmentDao.getByNaturalKey("2008-11-23~pheasant");
+        Amendment actual = amendmentDao.getByNaturalKey("2008-11-23~pheasant", study20);
         assertNotNull("Could not find it", actual);
         assertEquals(-222, (int) actual.getId());
     }
 
+    public void testGetByKeyWhenStudyIsOnlyDisambiguatingFactor() throws Exception {
+        Amendment actual = amendmentDao.getByNaturalKey("2008-11-23~turkey", study21);
+        assertNotNull("Could not find it", actual);
+        assertEquals(-225, (int) actual.getId());
+    }
+    
     public void testGetByKeyWorksWithGeneratedKeys() throws Exception {
         for (Amendment original : amendmentDao.getAll()) {
-            Amendment relookedup = amendmentDao.getByNaturalKey(original.getNaturalKey());
+            if (!study20.hasAmendment(original)) continue;
+            Amendment relookedup = amendmentDao.getByNaturalKey(original.getNaturalKey(), study20);
             assertNotNull("Could not find using key " + original.getNaturalKey(), original);
             assertEquals("Mismatch: " + original + " != " + relookedup, original.getId(), relookedup.getId());
         }

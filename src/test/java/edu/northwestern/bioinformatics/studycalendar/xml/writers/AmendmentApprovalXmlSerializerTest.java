@@ -40,12 +40,6 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
     private Study study;
     private StudySite studySite;
     private Date currentDate;
-    private StudySiteXmlSerializer studySiteXmlSerializer;
-    private AmendmentXmlSerializer amendmentSerializer;
-
-    private SiteDao siteDao;
-
-    private StudyDao studyDao;
 
     private AmendmentDao amendmentDao;
 
@@ -55,17 +49,10 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        studyDao = registerMockFor(StudyDao.class);
-        siteDao = registerMockFor(SiteDao.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
 
         serializer = new AmendmentApprovalXmlSerializer();
-        studySiteXmlSerializer = new StudySiteXmlSerializer();
-        studySiteXmlSerializer.setSiteDao(siteDao);
-        studySiteXmlSerializer.setStudyDao(studyDao);
 
-        amendmentSerializer = new AmendmentXmlSerializer();
-        serializer.setAmendmentDao(amendmentDao);
         amendment = new Amendment();
         amendment.setMandatory(true);
         amendment.setName("Amendment 1");
@@ -78,6 +65,8 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
         studySite.approveAmendment(amendment, currentDate);
         amendmentApproval = studySite.getAmendmentApprovals().get(0);
 
+        serializer.setAmendmentDao(amendmentDao);
+        serializer.setStudy(study);
     }
 
     public void testCreateElement() {
@@ -100,7 +89,7 @@ public class AmendmentApprovalXmlSerializerTest extends StudyCalendarXmlTestCase
     }
 
     public void testReadElement() {
-        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1")).andReturn(amendmentApproval.getAmendment());
+        expect(amendmentDao.getByNaturalKey("2008-01-02~Amendment 1", study)).andReturn(amendmentApproval.getAmendment());
 
         replayMocks();
 

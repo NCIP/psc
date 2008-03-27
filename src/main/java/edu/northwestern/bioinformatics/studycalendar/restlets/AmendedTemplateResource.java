@@ -41,7 +41,7 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
         if (CURRENT.equals(amendmentIdentifier)) {
             amendment = study.getAmendment();
         } else {
-            amendment = amendmentDao.getByNaturalKey(amendmentIdentifier);
+            amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
             if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getAmendment().hasPreviousAmendment(amendment)) {
                 log.debug("Amendment {} doesn't apply to study {}",
                     amendmentIdentifier, study.getAssignedIdentifier());

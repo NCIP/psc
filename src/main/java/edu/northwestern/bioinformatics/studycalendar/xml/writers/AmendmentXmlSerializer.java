@@ -56,7 +56,7 @@ public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<A
             throw new StudyCalendarValidationException("Could not parse date \"%s\", should be in format YYYY-MM-DD", element.attributeValue(DATE));
         }
 
-        Amendment amendment = amendmentDao.getByNaturalKey(new Amendment.Key(date, name).toString());
+        Amendment amendment = amendmentDao.getByNaturalKey(new Amendment.Key(date, name).toString(), study);
         if (amendment == null) {
             amendment = new Amendment();
             amendment.setName(name);
