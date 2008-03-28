@@ -3,13 +3,9 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPostProcessor;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializerPreProcessor;
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,15 +24,7 @@ public class ImportTemplateService {
      * @param stream
      */
     public void readAndSaveTemplate(InputStream stream) {
-        Document document;
-        try {
-            SAXReader saxReader = new SAXReader();
-            document = saxReader.read(stream);
-        } catch(DocumentException de) {
-           de.printStackTrace();
-            throw new StudyCalendarSystemException("Could not read the XML for deserialization", de);
-        }
-        String id = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(document.getRootElement());
+        String id = studyXmlSerializer.readAssignedIdentifier(stream);
         Study study = studyDao.getByAssignedIdentifier(id);
         resetStream(stream);
 
@@ -44,7 +32,7 @@ public class ImportTemplateService {
     }
 
     public Study readAndSaveTemplate(Study existingStudy, InputStream stream) {
-        if (existingStudy != null && existingStudy.getId() != null) {
+        if (existingStudy != null) {
             studyPreProcessor.process(existingStudy);
         }
 

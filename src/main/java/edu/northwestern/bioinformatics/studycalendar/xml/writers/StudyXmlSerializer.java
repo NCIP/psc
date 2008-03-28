@@ -11,8 +11,10 @@ import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
+import org.dom4j.Document;
 import org.dom4j.Element;
 
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -115,6 +117,13 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
             if (XsdAttribute.AMENDMENT_PREVIOUS_AMENDMENT_KEY.from(amend) == null) return amend;
         }
         return null;
+    }
+
+    public String readAssignedIdentifier(InputStream in) {
+        Document doc = deserializeDocument(in);
+        Element elt = doc.getRootElement();
+        validateElement(elt);
+        return XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(elt);
     }
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
