@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN"
+        "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans default-lazy-init="true">
+
+    <import resource="classpath:applicationContext-dao.xml"></import>
+    <import resource="classpath:applicationContext-api.xml"/>
+    <import resource="classpath:applicationContext-command.xml"></import>
+    <import resource="classpath:applicationContext-db.xml"/>
+    <import resource="classpath:applicationContext-security.xml"/>
+    <import resource="classpath:applicationContext-service.xml"/>
+    <import resource="classpath:applicationContext-spring.xml"/>
+
+
+    <bean id="registrationConsumer" class="edu.northwestern.bioinformatics.studycalendar.grid.PSCRegistrationConsumer">
+        <property name="auditHistoryRepository" ref="auditHistoryRepository"/>
+        <property name="registrationConsumerGridServiceUrl" ref="registrationConsumerGridServiceUrl"/>
+        <property name="studyService" ref="studyService"/>
+        <property name="subjectDao" ref="subjectDao"/>
+        <property name="subjectService" ref="subjectService"/>
+        <property name="userDao" ref="userDao"/>
+    </bean>
+
+    <bean id="registrationConsumerGridServiceUrl" class="java.lang.String">
+        <constructor-arg value="${grid.registrationconsumer.url}"/>
+    </bean>
+
+</beans>

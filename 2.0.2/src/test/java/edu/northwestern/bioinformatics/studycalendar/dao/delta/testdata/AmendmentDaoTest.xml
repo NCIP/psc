@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE dataset [
+    <!ELEMENT dataset (AMENDMENTS*, STUDIES*, DELTAS*, PLANNED_CALENDARS*) >
+
+    <!ELEMENT AMENDMENTS EMPTY>
+    <!ATTLIST AMENDMENTS
+        id CDATA #REQUIRED
+        grid_id CDATA #IMPLIED
+        previous_amendment_id CDATA #IMPLIED
+        name CDATA #IMPLIED
+        amendment_date CDATA #REQUIRED
+        mandatory CDATA #REQUIRED
+    >
+    <!ELEMENT STUDIES EMPTY>
+    <!ATTLIST STUDIES
+        id CDATA #REQUIRED
+        assigned_identifier CDATA #IMPLIED
+        amendment_id CDATA #IMPLIED
+        dev_amendment_id CDATA #IMPLIED
+        long_title CDATA #IMPLIED
+    >
+    <!ELEMENT DELTAS EMPTY>
+    <!ATTLIST DELTAS
+        id CDATA #REQUIRED
+        node_id CDATA #REQUIRED
+        amendment_id CDATA #REQUIRED
+        grid_id CDATA #IMPLIED
+        node_type CDATA #REQUIRED
+    >
+    <!ELEMENT PLANNED_CALENDARS EMPTY>
+    <!ATTLIST PLANNED_CALENDARS
+        id CDATA #REQUIRED
+        study_id CDATA #REQUIRED
+        grid_id CDATA #IMPLIED
+    >
+]>
+<dataset>
+    <!-- with name and date -->
+    <AMENDMENTS
+        id="-100"
+        name="abc"
+        amendment_date="2006-02-01"
+        mandatory="1"
+        />
+    <!-- same date, one with name & one without -->
+    <AMENDMENTS
+        id="-200"
+        name="def"
+        amendment_date="2008-05-17"
+        previous_amendment_id='-100'
+        mandatory="0"
+        />
+    <AMENDMENTS
+        id="-220"
+        amendment_date="2008-05-17"
+        previous_amendment_id="-200"
+        mandatory="0"
+        />
+    <!-- no name -->
+    <AMENDMENTS
+        id="-221"
+        amendment_date="2008-07-11"
+        previous_amendment_id="-220"
+        mandatory="0"
+        />
+    <!-- same date, different names -->
+    <AMENDMENTS
+        id="-222"
+        amendment_date="2008-11-23"
+        name="pheasant"
+        previous_amendment_id="-221"
+        mandatory="0"
+        />
+    <AMENDMENTS
+        id="-223"
+        name="turkey"
+        amendment_date="2008-11-23"
+        previous_amendment_id="-222"
+        mandatory="0"
+        />
+
+    <!-- date in a format of timestamp -->
+    <AMENDMENTS
+        id="-224"
+        amendment_date="2008-08-13 12:12:12"
+        mandatory="0"
+        />
+    <!-- with the same key as another amendment (-223) from a different study -->
+    <AMENDMENTS
+        id="-225"
+        amendment_date="2008-11-23"
+        name="turkey"
+        previous_amendment_id="-224"
+        mandatory="0"
+        />
+
+    <DELTAS
+        id="-102"
+        node_id="-22"
+        node_type="cal"
+        amendment_id="-100"
+        />
+    <STUDIES
+        id="-20"
+        assigned_identifier="You need it"
+        long_title="You need it"    
+        amendment_id="-223"
+        />
+    <PLANNED_CALENDARS
+        id="-22"
+        study_id="-20"
+        />
+
+    <STUDIES
+        id="-21"
+        assigned_identifier="Duplicator"
+        long_title="You need it"
+        amendment_id="-225"
+        />
+</dataset>

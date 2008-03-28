@@ -1,0 +1,43 @@
+<dataset>
+    <PERIODS
+        id="-300"
+        study_segment_id="2"
+        version="0"
+        start_day="1"
+        name="Drug administration"
+        duration_quantity="1"
+        duration_unit="week"
+        repetitions="1"
+        />
+
+    <ACTIVITIES
+        id="-200"
+        version="0"
+        name="CT"
+        description="Not blank"
+        activity_type_id="3"
+        />
+
+    <STUDIES
+        id="-1"
+        assigned_identifier="ABC 1234"
+        />
+
+    <POPULATIONS
+        id="-45"
+        name="Pop"
+        abbreviation="P"
+        study_id="-1"
+        />
+
+    <PLANNED_ACTIVITIES
+        id="-12"
+        version="0"
+        period_id="-300"
+        activity_id="-200"
+        day="4"
+        condition="At least 37"
+        population_id="-45"
+        />
+
+</dataset>

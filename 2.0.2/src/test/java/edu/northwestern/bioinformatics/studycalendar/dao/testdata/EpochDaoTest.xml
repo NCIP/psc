@@ -1,0 +1,27 @@
+<dataset>
+    <STUDIES id="-2" assigned_identifier="Protocol" long_title="Protocol"/>
+    <PLANNED_CALENDARS id="-2" study_id="-2"/>
+    <EPOCHS
+        id="-1"
+        planned_calendar_id="-2"
+        name="Treatment"
+        />
+    <STUDY_SEGMENTS
+        id="-10"
+        epoch_id="-1"
+        list_index="1"
+        name="B"
+        />
+    <STUDY_SEGMENTS
+        id="-11"
+        epoch_id="-1"
+        list_index="0"
+        name="A"
+        />
+    <STUDY_SEGMENTS
+        id="-12"
+        epoch_id="-1"
+        list_index="2"
+        name="C"
+        />
+</dataset>
