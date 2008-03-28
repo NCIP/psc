@@ -3,6 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import org.dom4j.Element;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class StudiesXmlSerializerTest extends StudyCalendarXmlTestCase {
     private void assertEmbeddedStudyElement(String expectedAssignedIdentifier, Element actual) {
         assertEquals("Wrong element", "study", actual.getName());
         assertEquals("Wrong identifier", expectedAssignedIdentifier,
-            actual.attributeValue(StudyXmlSerializer.ASSIGNED_IDENTIFIER));
+                XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(actual));
         assertEquals("Should have no children", 0, actual.elements().size());
     }
 }

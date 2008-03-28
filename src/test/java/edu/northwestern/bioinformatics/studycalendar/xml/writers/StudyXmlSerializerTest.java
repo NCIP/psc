@@ -10,7 +10,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
-import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.dom4j.DocumentHelper.createElement;
@@ -34,12 +33,14 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedCalendarXmlSerializer plannedCalendarSerializer;
     private AmendmentXmlSerializer amendmentSerializer;
     private AmendmentXmlSerializer developmentAmendmentSerializer;
-    private Amendment amendment;
+    private Amendment firstAmendment;
     private Amendment developmentAmendment;
-    private Element eAmendment;
+    private Element eFirstAmendment;
     private Element eDevelopmentAmendment;
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private Element eCalendar;
+    private Amendment secondAmendment;
+    private Element eSecondAmendment;
 
 
     protected void setUp() throws Exception {
@@ -62,14 +63,21 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
-        amendment =  createAmendment("Amendment A", createDate(2008, Calendar.JANUARY, 2), true);
-        developmentAmendment=createAmendment("Amendment B",createDate(2008, Calendar.FEBRUARY,13),true);
+
+        firstAmendment =  createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);
+
+        secondAmendment = createAmendment("[Second]", createDate(2008, Calendar.JANUARY, 11), true);
+        secondAmendment.setPreviousAmendment(firstAmendment);
+
+        developmentAmendment = createAmendment("[Development]",createDate(2008, Calendar.FEBRUARY,13),true);
+        developmentAmendment.setPreviousAmendment(secondAmendment);
 
         study = createStudy();
 
         eCalendar = createCalendarElement(calendar);
         ePopulation = createPopulationElement(population);
-        eAmendment = createAmendmentElement(amendment);
+        eFirstAmendment = createAmendmentElement(firstAmendment);
+        eSecondAmendment = createAmendmentElement(secondAmendment);
         eDevelopmentAmendment = createDevelopmentAmendmentElement(developmentAmendment);
     }
 
@@ -87,6 +95,9 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong assigned identifier", "Study A", actual.getAssignedIdentifier());
         assertSame("PlannedCalendar should be the same", calendar, actual.getPlannedCalendar());
         assertSame("Populations should be the same", population, actual.getPopulations().iterator().next());
+        assertSame("Wrong first amendment", firstAmendment, actual.getAmendment().getPreviousAmendment());
+        assertSame("Wrong second amendment", secondAmendment, actual.getAmendment());
+        assertSame("Wrong development amendment", developmentAmendment, actual.getDevelopmentAmendment());
     }
 
     public void testReadElementWithInvalidElementName() {
@@ -103,7 +114,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
 
     public void testReadElementWithNoDevelopmentOrReleasedAmendments() {
         Element eStudy = createStudyElement();
-        eStudy.remove(eAmendment);
+        eStudy.remove(eFirstAmendment);
+        eStudy.remove(eSecondAmendment);
         eStudy.remove(eDevelopmentAmendment);
 
         try {
@@ -149,7 +161,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     private void expectChildrenSerializers() {
         expect(populationSerializer.createElement(population)).andReturn(ePopulation);
         expect(plannedCalendarSerializer.createElement(calendar)).andReturn(eCalendar);
-        expect(amendmentSerializer.createElement(amendment)).andReturn(eAmendment);
+        expect(amendmentSerializer.createElement(firstAmendment)).andReturn(eFirstAmendment);
         expect(developmentAmendmentSerializer.createElement(developmentAmendment)).andReturn(eDevelopmentAmendment);
 
     }
@@ -171,52 +183,44 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
     }
 
     private void expectDeserializeAmendments() {
-        expect(amendmentSerializer.readElement(eAmendment)).andReturn(amendment);
+        expect(amendmentSerializer.readElement(eFirstAmendment)).andReturn(firstAmendment);
+        expect(amendmentSerializer.readElement(eSecondAmendment)).andReturn(secondAmendment);
     }
 
-    ////// Create element helpers
+    ////// Element Creation Helpers
     private Element createStudyElement() {
         QName qStudy = createQName(STUDY.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
         Element eStudy = createElement(qStudy);
         eStudy.addAttribute("assigned-identifier", study.getAssignedIdentifier());
-        eStudy.add(eDevelopmentAmendment);
-        eStudy.add(eAmendment);
         eStudy.add(ePopulation);
         eStudy.add(eCalendar);
+
+        // Amendments are added in this order to test unordered deserialization
+        eStudy.add(eSecondAmendment);
+        eStudy.add(eFirstAmendment);
+        eStudy.add(eDevelopmentAmendment);
         return eStudy;
     }
 
     private Element createDevelopmentAmendmentElement(Amendment developmentAmendment) {
-        QName qDevelopmentAmendment = createQName(XsdElement.DEVELOPMENT_AMENDMENT.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        Element elt = createElement(qDevelopmentAmendment);
-        elt.addAttribute("name", developmentAmendment.getName());
-        elt.addAttribute("date", formatter.format(developmentAmendment.getDate()));
-        elt.addAttribute("mandatory", Boolean.toString(developmentAmendment.isMandatory()));
-        return elt;
+        AmendmentXmlSerializer s = new AmendmentXmlSerializer();
+        s.setDevelopmentAmendment(true);
+        return s.createElement(developmentAmendment);
     }
 
     private Element createAmendmentElement(Amendment amendment) {
-        QName qAmendment = createQName("amendment", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        Element elt = createElement(qAmendment);
-        elt.addAttribute("name", amendment.getName());
-        elt.addAttribute("date", formatter.format(amendment.getDate()) );
-        elt.addAttribute("mandatory", Boolean.toString(amendment.isMandatory()));
-        return elt;
+        AmendmentXmlSerializer s = new AmendmentXmlSerializer();
+        return s.createElement(amendment);
     }
 
     private Element createPopulationElement(Population population) {
-        QName qPopulation = createQName("population", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        Element elt = createElement(qPopulation);
-        elt.addAttribute("abbreviation", population.getAbbreviation());
-        elt.addAttribute("name", population.getName());
-        return elt;
+        PopulationXmlSerializer s = new PopulationXmlSerializer();
+        return s.createElement(population);
     }
 
     private Element createCalendarElement(PlannedCalendar calendar) {
-        QName qCalendar = createQName("planned-calendar", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
-        Element elt = createElement(qCalendar);
-        elt.addAttribute("id", calendar.getGridId());
-        return elt;
+        PlannedCalendarXmlSerializer s = new PlannedCalendarXmlSerializer();
+        return s.createElement(calendar);
     }
 
     ////// Create PSC object helpers
@@ -224,7 +228,7 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Study study = createNamedInstance("Study A", Study.class);
         study.setPlannedCalendar(calendar);
         study.addPopulation(population);
-        study.setAmendment(amendment);
+        study.setAmendment(firstAmendment);
         study.setDevelopmentAmendment(developmentAmendment);
         return study;
     }

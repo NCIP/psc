@@ -70,8 +70,11 @@ public enum XsdAttribute {
     SCHEDULED_ACTIVITY_STATE_STATE("state"),
     AMENDMENT_APPROVAL_DATE("date"),
     AMENDMENT_APPROVAL_AMENDMENT("amendment"),
-    PLAN_TREE_NODE_NAME("name")
-    ;
+    AMENDMENT_PREVIOUS_AMENDMENT_KEY("previous-amendment-key"),
+    AMENDMENT_NAME("name"),
+    AMENDMENT_DATE("date"),
+    PLAN_TREE_NODE_NAME("name"),
+    STUDY_ASSIGNED_IDENTIFIER("assigned-identifier");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
     private String attributeName;

@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
+public class  AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
     public static final String DATE = "date";
 
     public static final String MANDATORY = "mandatory";

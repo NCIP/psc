@@ -13,12 +13,6 @@
     <bean id="activitySourceXmlReader" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ActivitySourceXmlSerializer"/>
 
-    <bean id="studyXMLReader" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.readers.StudyXMLReader"/>
-
-    <bean id="studyXMLWriter" autowire="byName"
-          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXMLWriter"/>
-
     <!-- Xml Serializers -->
     <bean id="studyXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.StudyXmlSerializer"/>

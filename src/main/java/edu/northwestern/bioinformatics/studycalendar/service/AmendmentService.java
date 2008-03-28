@@ -3,11 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlanTreeNode;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
@@ -137,10 +133,12 @@ public class AmendmentService {
     }
 
     private void deleteDevelopmentAmendment(Amendment dev) {
-        for (Delta<?> delta : dev.getDeltas()) {
-            deltaService.delete(delta);
+        if (dev != null) {
+            for (Delta<?> delta : dev.getDeltas()) {
+                deltaService.delete(delta);
+            }
+            amendmentDao.delete(dev);
         }
-        amendmentDao.delete(dev);
     }
 
     ////// CONFIGURATION

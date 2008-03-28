@@ -7,59 +7,51 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.AMENDMENT;
-import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.DEVELOPMENT_AMENDMENT;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
 import org.dom4j.Element;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study>{
-    // Elements
-    public static final String STUDY = "study";
-
-    // Attributes
-    public static final String ASSIGNED_IDENTIFIER = "assigned-identifier";
 
     private StudyDao studyDao;
 
     public Element createElement(Study study) {
-        Element eStudy = element(STUDY)
-                .addAttribute(ASSIGNED_IDENTIFIER, study.getAssignedIdentifier());
+        Element elt = XsdElement.STUDY.create();
+        STUDY_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
 
         Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
-        eStudy.add(eCalendar);
+        elt.add(eCalendar);
 
         for (Population population : study.getPopulations()) {
             Element ePopulation = getPopulationXmlSerializer(study).createElement(population);
-            eStudy.add(ePopulation);
+            elt.add(ePopulation);
         }
 
-        //TODO: make independent of order
-        List<Amendment> amendments = new ArrayList<Amendment>(study.getAmendmentsList());
-        Collections.reverse(amendments);
-        for (Amendment amendment : amendments) {
+        for (Amendment amendment : study.getAmendmentsList()) {
             Element eAmendment = getAmendmentSerializer(study).createElement(amendment);
-            eStudy.add(eAmendment);
+            elt.add(eAmendment);
         }
 
         if (study.getDevelopmentAmendment() != null) {
             Amendment developmentAmendment = study.getDevelopmentAmendment();
             Element developmentAmendmentElement = getDevelopmentAmendmentSerializer(study).createElement(developmentAmendment);
-            eStudy.add(developmentAmendmentElement);
+            elt.add(developmentAmendmentElement);
         }
 
-        return eStudy;
+        return elt;
     }
 
     @SuppressWarnings({"unchecked"})
     public Study readElement(Element element) {
         validateElement(element);
 
-        String key = element.attributeValue(ASSIGNED_IDENTIFIER);
+        String key = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(element);
         Study study = studyDao.getByAssignedIdentifier(key);
  
         if (study == null) {
@@ -78,13 +70,16 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
                 study.addPopulation(population);
             }
         }
-        
+
         List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
-        for (Element eAmendment : eAmendments) {
-            Amendment amendment = getAmendmentSerializer(study).readElement(eAmendment);
+
+        Element currAmendment = findOriginalAmendment(eAmendments);
+        while(currAmendment != null) {
+            Amendment amendment = getAmendmentSerializer(study).readElement(currAmendment);
             if (!study.getAmendmentsList().contains(amendment)) {
                 study.pushAmendment(amendment);
             }
+            currAmendment = findNextAmendment(currAmendment, eAmendments);
         }
 
         Element developmentAmendmentElement = element.element(XsdElement.DEVELOPMENT_AMENDMENT.xmlName());
@@ -97,11 +92,29 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     }
 
     private void validateElement(Element element) {
-        if (element.getName()!= null && (! element.getName().equals(STUDY))) {
+        if (element.getName()!= null && (! element.getName().equals(STUDY.xmlName()))) {
             throw new StudyCalendarValidationException("Element type is other than <study>");
         } else if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
             throw new StudyCalendarValidationException("<study> must have at minimum an <amendment> or <development-amendment> child");
         }
+    }
+
+    private Element findNextAmendment(Element currAmendment, List<Element> eAmendments) {
+        String name = XsdAttribute.AMENDMENT_NAME.from(currAmendment);
+        Date date = XsdAttribute.AMENDMENT_DATE.fromDate(currAmendment);
+        String key = new Amendment.Key(date, name).toString();
+        
+        for (Element amend : eAmendments) {
+            if (key.equals(XsdAttribute.AMENDMENT_PREVIOUS_AMENDMENT_KEY.from(amend))) return amend;
+        }
+        return null;
+    }
+
+    private Element findOriginalAmendment(List<Element> eAmendments) {
+        for (Element amend : eAmendments) {
+            if (XsdAttribute.AMENDMENT_PREVIOUS_AMENDMENT_KEY.from(amend) == null) return amend;
+        }
+        return null;
     }
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
