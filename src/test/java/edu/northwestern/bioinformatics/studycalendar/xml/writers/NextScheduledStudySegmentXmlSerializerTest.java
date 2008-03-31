@@ -5,7 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.NextStudySegmentMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextStudySegmentSchedule;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import org.dom4j.Element;
 import org.dom4j.tree.BaseElement;
@@ -16,17 +16,17 @@ import java.util.Calendar;
 /**
  * @author John Dzak
  */
-public class NextStudySegmentScheduleXmlSerializerTest extends StudyCalendarTestCase {
+public class NextScheduledStudySegmentXmlSerializerTest extends StudyCalendarTestCase {
     private StudySegmentDao studySegmentDao;
     private StudySegment segment;
-    private NextStudySegmentScheduleXmlSerializer serializer;
+    private NextScheduledStudySegmentXmlSerializer serializer;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         
-        serializer = new NextStudySegmentScheduleXmlSerializer();
+        serializer = new NextScheduledStudySegmentXmlSerializer();
         serializer.setStudySegmentDao(studySegmentDao);
 
         segment = Fixtures.setGridId("segment-grid0", new StudySegment());
@@ -36,7 +36,7 @@ public class NextStudySegmentScheduleXmlSerializerTest extends StudyCalendarTest
         expect(studySegmentDao.getByGridId("segment-grid0")).andReturn(segment);
         replayMocks();
 
-        NextStudySegmentSchedule actual = serializer.readElement(createTestElement());
+        NextScheduledStudySegment actual = serializer.readElement(createTestElement());
         verifyMocks();
 
         assertEquals("Wrong start day", 5, (int) actual.getStartDay());
@@ -47,7 +47,7 @@ public class NextStudySegmentScheduleXmlSerializerTest extends StudyCalendarTest
 
     ////// Helper methods
     private Element createTestElement() {
-        Element elt = new BaseElement("next-study-segment-schedule");
+        Element elt = new BaseElement("next-scheduled-study-segment");
         elt.addAttribute("start-day", "5");
         elt.addAttribute("start-date", "2008-01-01");
         elt.addAttribute("study-segment-id", "segment-grid0");

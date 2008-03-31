@@ -355,7 +355,7 @@
                         will be scheduled using this method).
                     </doc>
                     <request>
-                        <representation href="#next-study-segment-schedule-xml"/>
+                        <representation href="#next-scheduled-study-segment-xml"/>
                     </request>
                 </method>
 
@@ -551,7 +551,7 @@
     <representation mediaType="text/xml" id="approval-xml"                 element="psc:amendment-approval"/>
     <representation mediaType="text/xml" id="schedule-xml"                 element="psc:schedule"/>
     <representation mediaType="text/xml" id="scheduled-study-segment-xml"  element="psc:scheduled-study-segment"/>
-    <representation mediaType="text/xml" id="next-study-segment-schedule-xml"  element="psc:next-study-segment-schedule"/>
+    <representation mediaType="text/xml" id="next-scheduled-study-segment-xml"  element="psc:next-scheduled-study-segment"/>
     <representation mediaType="text/xml" id="scheduled-activities-xml"     element="psc:scheduled-activities"/>
     <representation mediaType="text/xml" id="scheduled-activity-xml"       element="psc:scheduled-activity"/>
     <representation mediaType="text/xml" id="scheduled-activity-state-xml" element="psc:scheduled-activity-state"/>

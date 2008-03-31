@@ -342,9 +342,9 @@
         <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="next-study-segment-schedule" type="psc:NextStudySegmentSchedule"/>
+    <xsd:element name="next-scheduled-study-segment" type="psc:NextScheduledStudySegment"/>
     
-    <xsd:complexType name="NextStudySegmentSchedule">
+    <xsd:complexType name="NextScheduledStudySegment">
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
         <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
         <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>

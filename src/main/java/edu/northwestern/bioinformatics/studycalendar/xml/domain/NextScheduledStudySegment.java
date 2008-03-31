@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * @author John Dzak
  */
-public class NextStudySegmentSchedule {
+public class NextScheduledStudySegment {
     Date startDate;
     Integer startDay;
     StudySegment studySegment;

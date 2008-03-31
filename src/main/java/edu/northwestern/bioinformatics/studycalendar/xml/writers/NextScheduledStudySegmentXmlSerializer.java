@@ -7,7 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.*;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextStudySegmentSchedule;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -16,25 +16,25 @@ import java.util.Date;
 /**
  * @author John Dzak
  */
-public class NextStudySegmentScheduleXmlSerializer extends AbstractStudyCalendarXmlSerializer<NextStudySegmentSchedule> {
+public class NextScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<NextScheduledStudySegment> {
     private StudySegmentDao studySegmentDao;
     private final String PER_PROTOCOL = "per-protocol";
     private final String IMMEDIATE = "immediate";
 
-    public Element createElement(NextStudySegmentSchedule object) {
+    public Element createElement(NextScheduledStudySegment object) {
         throw new UnsupportedOperationException();
     }
 
-    public NextStudySegmentSchedule readElement(Element elt) {
-        if (!XsdElement.NEXT_STUDY_SEGMENT_SCHEDULE.xmlName().equals(elt.getName())) {
-            throw new StudyCalendarValidationException("The element must be a <next-study-segment-schedule> element");
+    public NextScheduledStudySegment readElement(Element elt) {
+        if (!XsdElement.NEXT_SCHEDULED_STUDY_SEGMENT.xmlName().equals(elt.getName())) {
+            throw new StudyCalendarValidationException("The element must be a <next-scheduled-study-segment> element");
         }
         
         Integer startDay;
         try {
             startDay = Integer.valueOf(NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY.from(elt));
         } catch(NumberFormatException nfe) {
-            throw new StudyCalendarValidationException("The scheduled study segment start date must be an integer value");
+            throw new StudyCalendarValidationException("The next scheduled study segment start day must be an integer value");
         }
 
         Date startDate = NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE.fromDate(elt);
@@ -53,13 +53,13 @@ public class NextStudySegmentScheduleXmlSerializer extends AbstractStudyCalendar
             throw new StudyCalendarValidationException("The next study segment mode must be either 'per-protocol' or 'immediate'");
         }
 
-        NextStudySegmentSchedule schedule = new NextStudySegmentSchedule();
-        schedule.setStartDay(startDay);
-        schedule.setStartDate(startDate);
-        schedule.setStudySegment(segment);
-        schedule.setMode(mode);
+        NextScheduledStudySegment scheduled = new NextScheduledStudySegment();
+        scheduled.setStartDay(startDay);
+        scheduled.setStartDate(startDate);
+        scheduled.setStudySegment(segment);
+        scheduled.setMode(mode);
 
-        return schedule;
+        return scheduled;
     }
 
     @Required

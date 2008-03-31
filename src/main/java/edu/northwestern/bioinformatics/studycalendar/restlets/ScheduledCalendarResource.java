@@ -7,8 +7,8 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
-import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextStudySegmentSchedule;
-import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextStudySegmentScheduleXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextScheduledStudySegmentXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.*;
@@ -25,7 +25,7 @@ import java.io.IOException;
 public class ScheduledCalendarResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledStudySegmentSerializer;
-    private NextStudySegmentScheduleXmlSerializer nextStudySegmentScheduleSerializer;
+    private NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer;
     private SubjectService subjectService;
 
     @Override
@@ -52,9 +52,9 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     public void acceptRepresentation(final Representation entity) throws ResourceException {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
 
-            NextStudySegmentSchedule schedule;
+            NextScheduledStudySegment scheduled;
             try {
-                schedule = nextStudySegmentScheduleSerializer.readDocument(entity.getStream());
+                scheduled = nextScheduledStudySegmentSerializer.readDocument(entity.getStream());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
@@ -62,7 +62,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
 
-            ScheduledStudySegment scheduledSegment = store(schedule);
+            ScheduledStudySegment scheduledSegment = store(scheduled);
 
             getResponse().setEntity(
                     new StringRepresentation(
@@ -75,9 +75,9 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         }
     }
 
-    private ScheduledStudySegment store(NextStudySegmentSchedule schedule) {
+    private ScheduledStudySegment store(NextScheduledStudySegment scheduled) {
         ScheduledCalendar cal = getRequestedObject();
-        return subjectService.scheduleStudySegment(cal.getAssignment(), schedule.getStudySegment(), schedule.getStartDate(), schedule.getMode());
+        return subjectService.scheduleStudySegment(cal.getAssignment(), scheduled.getStudySegment(), scheduled.getStartDate(), scheduled.getMode());
     }
 
     ////// Bean setters
@@ -93,8 +93,8 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     @Required
-    public void setNextStudySegmentScheduleXmlSerializer(NextStudySegmentScheduleXmlSerializer nextStudySegmentScheduleSerializer) {
-        this.nextStudySegmentScheduleSerializer = nextStudySegmentScheduleSerializer;
+    public void setNextScheduledStudySegmentXmlSerializer(NextScheduledStudySegmentXmlSerializer nextScheduledStudySegmentSerializer) {
+        this.nextScheduledStudySegmentSerializer = nextScheduledStudySegmentSerializer;
     }
 
     @Required
