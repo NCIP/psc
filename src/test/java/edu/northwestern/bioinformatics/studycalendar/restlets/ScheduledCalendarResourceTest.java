@@ -1,12 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextStudySegmentSchedule;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextStudySegmentScheduleXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
-import edu.nwu.bioinformatics.commons.DateUtils;
+import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -28,6 +31,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     private ScheduledCalendarXmlSerializer serializer;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
+    private NextStudySegmentScheduleXmlSerializer nextStudySegmentScheduleSerializer;
     private SubjectService subjectService;
 
     protected void setUp() throws Exception {
@@ -37,6 +41,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         subjectService = registerMockFor(SubjectService.class);
         scheduledSegmentSerializer = registerMockFor(ScheduledStudySegmentXmlSerializer.class);
         studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
+        nextStudySegmentScheduleSerializer = registerMockFor(NextStudySegmentScheduleXmlSerializer.class);
 
         calendar = new ScheduledCalendar();
         assigment = setGridId(ASSIGNMENT_IDENTIFIER, createAssignment(calendar));
@@ -51,6 +56,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         resource.setSubjectService(subjectService);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
+        resource.setNextStudySegmentScheduleXmlSerializer(nextStudySegmentScheduleSerializer);
         return resource;
     }
 
@@ -74,13 +80,16 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     }
 
     public void testPostXmlForScheduledSegment() throws Exception {
+        NextStudySegmentSchedule nextSgmtSchd = new NextStudySegmentSchedule();
+        nextSgmtSchd.setStudySegment(createNamedInstance("Screening", StudySegment.class));
+        nextSgmtSchd.setStartDate(createDate(Calendar.JANUARY, 13, 2007));
+        nextSgmtSchd.setMode(NextStudySegmentMode.IMMEDIATE);
+
         ScheduledStudySegment schSegment = new ScheduledStudySegment();
-        schSegment.setStudySegment(Fixtures.createNamedInstance("Screening", StudySegment.class));
-        schSegment.setStartDate(DateUtils.createDate(Calendar.JANUARY, 13, 2007));
 
         expectResolvedSubjectAssignment();
-        expectReadXmlFromRequestAs(schSegment);
-        expect(subjectService.scheduleStudySegment(assigment, schSegment.getStudySegment(), schSegment.getStartDate(), NextStudySegmentMode.PER_PROTOCOL ))
+        expectReadXmlFromRequestAs(nextSgmtSchd);
+        expect(subjectService.scheduleStudySegment(assigment, nextSgmtSchd.getStudySegment(), nextSgmtSchd.getStartDate(), nextSgmtSchd.getMode() ))
                 .andReturn(schSegment);
         expectObjectXmlized(schSegment);
         doPost();
@@ -103,11 +112,11 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         return assignment;
     }
 
-    protected void expectReadXmlFromRequestAs(ScheduledStudySegment expectedRead) throws Exception {
+    protected void expectReadXmlFromRequestAs(NextStudySegmentSchedule expectedRead) throws Exception {
         final InputStream in = registerMockFor(InputStream.class);
         request.setEntity(new InputRepresentation(in, MediaType.TEXT_XML));
 
-        expect(scheduledSegmentSerializer.readDocument(in)).andReturn(expectedRead);
+        expect(nextStudySegmentScheduleSerializer.readDocument(in)).andReturn(expectedRead);
     }
 
     @SuppressWarnings({ "unchecked" })

@@ -332,8 +332,6 @@
         <xsd:attribute name="assignment-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="scheduled-study-segment" type="psc:ScheduledStudySegment"/>
-
     <xsd:complexType name="ScheduledStudySegment">
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>
@@ -342,6 +340,22 @@
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
         <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
         <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <xsd:element name="next-study-segment-schedule" type="psc:NextStudySegmentSchedule"/>
+    
+    <xsd:complexType name="NextStudySegmentSchedule">
+        <xsd:attribute name="start-date" type="xsd:date" use="required"/>
+        <xsd:attribute name="start-day" type="xsd:integer" use="required"/>
+        <xsd:attribute name="study-segment-id" type="xsd:string" use="required"/>
+        <xsd:attribute name="mode" use="required">
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="per-protocol"/>
+                    <xsd:enumeration value="immediately"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:attribute>
     </xsd:complexType>
 
     <xsd:element name="scheduled-activities" type="psc:scheduled-activities"/>

@@ -1,6 +1,5 @@
 package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
@@ -22,20 +21,16 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
     private ScheduledStudySegment schdSegment;
     private ScheduledActivity activity0, activity1;
     private ScheduledActivityXmlSerializer scheduledActivitySerializer;
-    private StudySegment segment;
-    private StudySegmentDao studySegmentDao;
 
     protected void setUp() throws Exception {
         super.setUp();
 
-        studySegmentDao = registerDaoMockFor(StudySegmentDao.class);
         scheduledActivitySerializer = registerMockFor(ScheduledActivityXmlSerializer.class);
 
         serializer = new ScheduledStudySegmentXmlSerializer();
-        serializer.setStudySegmentDao(studySegmentDao);
         serializer.setScheduledActivityXmlSerializer(scheduledActivitySerializer);
 
-        segment = Fixtures.setGridId("segment-grid0", new StudySegment());
+        StudySegment segment = Fixtures.setGridId("segment-grid0", new StudySegment());
 
         activity0 = new ScheduledActivity();
         activity1 = new ScheduledActivity();
@@ -63,30 +58,10 @@ public class ScheduledStudySegmentXmlSerializerTest extends StudyCalendarXmlTest
         assertEquals("Wrong scheduled activity element size", 2, actual.elements().size());
     }
 
-    public void testReadElement() {
-        expect(studySegmentDao.getByGridId("segment-grid0")).andReturn(segment);
-        replayMocks();
-
-        ScheduledStudySegment actual = serializer.readElement(createTestElement());
-        verifyMocks();
-
-        assertEquals("Wrong start day", 5, (int) actual.getStartDay());
-        assertSameDay("Wrong start date", createDate(2008, Calendar.JANUARY, 1), actual.getStartDate());
-        assertSame("Wrong study segment", segment, actual.getStudySegment());
-    }
 
     ////// Expect methods
     private void expectSerializeScheduledActivities() {
         expect(scheduledActivitySerializer.createElement(activity0)).andReturn(new BaseElement("scheduled-activity"));
         expect(scheduledActivitySerializer.createElement(activity1)).andReturn(new BaseElement("scheduled-activity"));
-    }
-
-    ////// Helper methods
-    private Element createTestElement() {
-        Element elt = new BaseElement("scheduled-study-segment");
-        elt.addAttribute("start-day", "5");
-        elt.addAttribute("start-date", "2008-01-01");
-        elt.addAttribute("study-segment-id", "segment-grid0");
-        return elt;
     }
 }

@@ -42,6 +42,8 @@
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer"/>
     <bean id="scheduledStudySegmentXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer"/>
+    <bean id="nextStudySegmentScheduleXmlSerializer" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.xml.writers.NextStudySegmentScheduleXmlSerializer"/>
     <bean id="scheduledActivityXmlSerializer" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledActivityXmlSerializer"/>
     <bean id="currentScheduledActivityStateXmlSerializer" autowire="byName"

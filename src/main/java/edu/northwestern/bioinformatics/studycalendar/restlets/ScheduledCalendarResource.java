@@ -2,8 +2,13 @@ package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.xml.domain.NextStudySegmentSchedule;
+import edu.northwestern.bioinformatics.studycalendar.xml.writers.NextStudySegmentScheduleXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.*;
@@ -19,7 +24,8 @@ import java.io.IOException;
  */
 public class ScheduledCalendarResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
-    private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
+    private ScheduledStudySegmentXmlSerializer scheduledStudySegmentSerializer;
+    private NextStudySegmentScheduleXmlSerializer nextStudySegmentScheduleSerializer;
     private SubjectService subjectService;
 
     @Override
@@ -46,10 +52,9 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     public void acceptRepresentation(final Representation entity) throws ResourceException {
         if (entity.getMediaType() == MediaType.TEXT_XML) {
 
-            ScheduledStudySegment segment;
+            NextStudySegmentSchedule schedule;
             try {
-                segment = scheduledSegmentSerializer.readDocument(entity.getStream());
-                store(segment);
+                schedule = nextStudySegmentScheduleSerializer.readDocument(entity.getStream());
             } catch (IOException e) {
                 log.warn("PUT failed with IOException", e);
                 throw new ResourceException(e);
@@ -57,9 +62,11 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
                 throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, exp.getMessage());
             }
 
+            ScheduledStudySegment scheduledSegment = store(schedule);
+
             getResponse().setEntity(
                     new StringRepresentation(
-                            scheduledSegmentSerializer.createDocumentString(segment), MediaType.TEXT_XML));
+                            scheduledStudySegmentSerializer.createDocumentString(scheduledSegment), MediaType.TEXT_XML));
 
             getResponse().setStatus(Status.SUCCESS_CREATED);
 
@@ -68,9 +75,9 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
         }
     }
 
-    private void store(ScheduledStudySegment segment) {
+    private ScheduledStudySegment store(NextStudySegmentSchedule schedule) {
         ScheduledCalendar cal = getRequestedObject();
-        subjectService.scheduleStudySegment(cal.getAssignment(), segment.getStudySegment(), segment.getStartDate(), NextStudySegmentMode.PER_PROTOCOL);
+        return subjectService.scheduleStudySegment(cal.getAssignment(), schedule.getStudySegment(), schedule.getStartDate(), schedule.getMode());
     }
 
     ////// Bean setters
@@ -82,7 +89,12 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
 
     @Required
     public void setScheduledStudySegmentXmlSerializer(ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer) {
-        this.scheduledSegmentSerializer = scheduledSegmentSerializer;
+        this.scheduledStudySegmentSerializer = scheduledSegmentSerializer;
+    }
+
+    @Required
+    public void setNextStudySegmentScheduleXmlSerializer(NextStudySegmentScheduleXmlSerializer nextStudySegmentScheduleSerializer) {
+        this.nextStudySegmentScheduleSerializer = nextStudySegmentScheduleSerializer;
     }
 
     @Required

@@ -326,7 +326,6 @@
 
             <resource path="{study-identifier}/schedules/{assignment-identifier}">
                 <doc>
-                    <html:em class="pending">Pending</html:em>
                     <html:p>The schedule for a single subject</html:p>
                 </doc>
                 <param style="template" name="study-identifier">
@@ -356,7 +355,7 @@
                         will be scheduled using this method).
                     </doc>
                     <request>
-                        <representation href="#scheduled-study-segment-xml"/>
+                        <representation href="#next-study-segment-schedule-xml"/>
                     </request>
                 </method>
 
@@ -552,6 +551,7 @@
     <representation mediaType="text/xml" id="approval-xml"                 element="psc:amendment-approval"/>
     <representation mediaType="text/xml" id="schedule-xml"                 element="psc:schedule"/>
     <representation mediaType="text/xml" id="scheduled-study-segment-xml"  element="psc:scheduled-study-segment"/>
+    <representation mediaType="text/xml" id="next-study-segment-schedule-xml"  element="psc:next-study-segment-schedule"/>
     <representation mediaType="text/xml" id="scheduled-activities-xml"     element="psc:scheduled-activities"/>
     <representation mediaType="text/xml" id="scheduled-activity-xml"       element="psc:scheduled-activity"/>
     <representation mediaType="text/xml" id="scheduled-activity-state-xml" element="psc:scheduled-activity-state"/>
