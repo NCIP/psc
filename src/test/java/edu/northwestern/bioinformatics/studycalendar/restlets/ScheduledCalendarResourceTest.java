@@ -56,7 +56,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
         resource.setSubjectService(subjectService);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
-        resource.setNextStudySegmentScheduleXmlSerializer(nextScheduledStudySegmentSerializer);
+        resource.setNextScheduledStudySegmentXmlSerializer(nextScheduledStudySegmentSerializer);
         return resource;
     }
 
