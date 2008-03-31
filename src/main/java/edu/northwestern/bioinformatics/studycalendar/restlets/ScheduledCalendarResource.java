@@ -1,12 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.*;
@@ -23,7 +20,7 @@ import java.io.IOException;
 public class ScheduledCalendarResource extends AbstractDomainObjectResource<ScheduledCalendar> {
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
-    private ScheduledCalendarDao scheduledCalendarDao;
+    private SubjectService subjectService;
 
     @Override
     public void init(Context context, Request request, Response response) {
@@ -73,8 +70,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
 
     private void store(ScheduledStudySegment segment) {
         ScheduledCalendar cal = getRequestedObject();
-        cal.addStudySegment(segment);
-        scheduledCalendarDao.save(cal);
+        subjectService.scheduleStudySegment(cal.getAssignment(), segment.getStudySegment(), segment.getStartDate(), NextStudySegmentMode.PER_PROTOCOL);
     }
 
     ////// Bean setters
@@ -90,7 +86,7 @@ public class ScheduledCalendarResource extends AbstractDomainObjectResource<Sche
     }
 
     @Required
-    public void setScheduledCalendarDao(ScheduledCalendarDao scheduledCalendarDao) {
-        this.scheduledCalendarDao = scheduledCalendarDao;
+    public void setSubjectService(SubjectService subjectService) {
+        this.subjectService = subjectService;
     }
 }

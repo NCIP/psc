@@ -332,6 +332,8 @@
         <xsd:attribute name="assignment-id" type="xsd:string" use="required"/>
     </xsd:complexType>
 
+    <xsd:element name="scheduled-study-segment" type="psc:ScheduledStudySegment"/>
+
     <xsd:complexType name="ScheduledStudySegment">
         <xsd:sequence minOccurs="0" maxOccurs="unbounded">
             <xsd:element name="scheduled-activity" type="psc:ScheduledActivity"/>

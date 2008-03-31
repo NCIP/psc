@@ -1,14 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.restlets;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setGridId;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledStudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.ScheduledStudySegmentXmlSerializer;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.EasyMock.expect;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -16,6 +14,7 @@ import org.restlet.resource.InputRepresentation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
 
 /**
  * @author John Dzak
@@ -29,15 +28,15 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     private ScheduledCalendarXmlSerializer serializer;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private ScheduledStudySegmentXmlSerializer scheduledSegmentSerializer;
-    private ScheduledCalendarDao scheduledCalendarDao;
+    private SubjectService subjectService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         serializer = registerMockFor(ScheduledCalendarXmlSerializer.class);
-        scheduledCalendarDao = registerDaoMockFor(ScheduledCalendarDao.class);
-        studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
+        subjectService = registerMockFor(SubjectService.class);
         scheduledSegmentSerializer = registerMockFor(ScheduledStudySegmentXmlSerializer.class);
+        studySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
 
         calendar = new ScheduledCalendar();
         assigment = setGridId(ASSIGNMENT_IDENTIFIER, createAssignment(calendar));
@@ -49,7 +48,7 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
     protected ScheduledCalendarResource createResource() {
         ScheduledCalendarResource resource = new ScheduledCalendarResource();
         resource.setXmlSerializer(serializer);
-        resource.setScheduledCalendarDao(scheduledCalendarDao);
+        resource.setSubjectService(subjectService);
         resource.setStudySubjectAssignmentDao(studySubjectAssignmentDao);
         resource.setScheduledStudySegmentXmlSerializer(scheduledSegmentSerializer);
         return resource;
@@ -76,10 +75,14 @@ public class ScheduledCalendarResourceTest extends AuthorizedResourceTestCase<Sc
 
     public void testPostXmlForScheduledSegment() throws Exception {
         ScheduledStudySegment schSegment = new ScheduledStudySegment();
+        schSegment.setStudySegment(Fixtures.createNamedInstance("Screening", StudySegment.class));
+        schSegment.setStartDate(DateUtils.createDate(Calendar.JANUARY, 13, 2007));
+
         expectResolvedSubjectAssignment();
         expectReadXmlFromRequestAs(schSegment);
+        expect(subjectService.scheduleStudySegment(assigment, schSegment.getStudySegment(), schSegment.getStartDate(), NextStudySegmentMode.PER_PROTOCOL ))
+                .andReturn(schSegment);
         expectObjectXmlized(schSegment);
-        scheduledCalendarDao.save(calendar);
         doPost();
         assertEquals("Result not success", 201, response.getStatus().getCode());
     }

@@ -37,8 +37,6 @@ public class ScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXml
 
     @Override
     public ScheduledStudySegment readElement(Element elt) {
-        ScheduledStudySegment schdSegment = new ScheduledStudySegment();
-
         Integer startDay;
         try {
             startDay = Integer.valueOf(SCHEDULED_STUDY_SEGMENT_START_DAY.from(elt));
@@ -53,6 +51,7 @@ public class ScheduledStudySegmentXmlSerializer extends AbstractStudyCalendarXml
             throw new StudyCalendarValidationException("The study segment specified could not be found");
         }
 
+        ScheduledStudySegment schdSegment = new ScheduledStudySegment();
         schdSegment.setStartDay(startDay);
         schdSegment.setStartDate(startDate);
         schdSegment.setStudySegment(segment);
