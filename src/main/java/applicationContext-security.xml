@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <!--
     This applicationContext contains security-related beans
 -->
 
-<beans>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+        default-lazy-init="true"
+        >
+    <tx:annotation-driven proxy-target-class="true"/>
+
     <bean id="csmContextName" class="java.lang.String">
         <constructor-arg value="study_calendar"/>
     </bean>
@@ -14,97 +22,97 @@
           class="edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager"/>
 
     <bean id="csmAuthorizationDao"
-		class="gov.nih.nci.security.dao.DIAuthorizationDao"
-		init-method="init">
-		<property name="sessionFactory">
-			<bean
-				class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
-				<property name="dataSource" ref="dataSource" />
-				<property name="mappingResources">
-					<list>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/Privilege.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/Application.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/Role.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/dao/hibernate/RolePrivilege.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/dao/hibernate/UserGroup.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/dao/hibernate/ProtectionGroupProtectionElement.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/Group.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/User.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/ProtectionGroup.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/ProtectionElement.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml
-						</value>
-						<value>
-							gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml
-						</value>
-					</list>
-				</property>
-				<property name="hibernateProperties">
-					<bean
-						class="edu.northwestern.bioinformatics.studycalendar.tools.spring.HibernatePropertiesFactoryBean">
-													<!--
-						<property name="dialectName">
+          class="gov.nih.nci.security.dao.DIAuthorizationDao"
+          init-method="init">
+        <property name="sessionFactory">
+            <bean
+                    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+                <property name="dataSource" ref="dataSource"/>
+                <property name="mappingResources">
+                    <list>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/Privilege.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/Application.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/Role.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/dao/hibernate/RolePrivilege.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/dao/hibernate/UserGroup.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/dao/hibernate/ProtectionGroupProtectionElement.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/Group.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/User.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/ProtectionGroup.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/ProtectionElement.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/UserGroupRoleProtectionGroup.hbm.xml
+                        </value>
+                        <value>
+                            gov/nih/nci/security/authorization/domainobjects/UserProtectionElement.hbm.xml
+                        </value>
+                    </list>
+                </property>
+                <property name="hibernateProperties">
+                    <bean
+                            class="edu.northwestern.bioinformatics.studycalendar.tools.spring.HibernatePropertiesFactoryBean">
+                        <!--
+                              <property name="dialectName">
 
-							<value>s[hibernate.dialect]</value>
+                                  <value>s[hibernate.dialect]</value>
 
-						</property>
-							 -->
-						<property name="properties">
-							<props>
-								<!--
-									<prop key="hibernate.show_sql">
-									true
-									</prop>
-									<prop key="hibernate.format_sql">
-									true
-									</prop>
-								-->
-								<prop
-									key="hibernate.connection.release_mode">
-									after_transaction
-								</prop>
+                              </property>
+                                   -->
+                        <property name="properties">
+                            <props>
+                                <!--
+                                            <prop key="hibernate.show_sql">
+                                            true
+                                            </prop>
+                                            <prop key="hibernate.format_sql">
+                                            true
+                                            </prop>
+                                        -->
+                                <prop
+                                        key="hibernate.connection.release_mode">
+                                    after_transaction
+                                </prop>
 
-							</props>
-						</property>
-					</bean>
-				</property>
-			</bean>
-		</property>
-		<property name="applicationContextName"
-			ref="csmContextName" />
-	</bean>
+                            </props>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+        <property name="applicationContextName"
+                  ref="csmContextName"/>
+    </bean>
 
-	<bean id="userProvisioningManager"
-		class="gov.nih.nci.security.provisioning.UserProvisioningManagerImpl">
-		<property name="authorizationDAO" ref="csmAuthorizationDao" />
-	</bean>
+    <bean id="userProvisioningManager"
+          class="gov.nih.nci.security.provisioning.UserProvisioningManagerImpl">
+        <property name="authorizationDAO" ref="csmAuthorizationDao"/>
+    </bean>
 
     <bean id="authorizationSwitch"
-		class="gov.nih.nci.security.acegi.csm.authorization.AuthorizationSwitch"
-		factory-method="getInstance">
-		<property name="on" value="true" />
-	</bean>
+          class="gov.nih.nci.security.acegi.csm.authorization.AuthorizationSwitch"
+          factory-method="getInstance">
+        <property name="on" value="true"/>
+    </bean>
 
     <bean id="authenticationSystemSocket"
           class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemSocket">
@@ -114,7 +122,8 @@
     <bean id="authenticationSystemConfiguration" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration">
         <property name="delegate">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.security.StoredAuthenticationSystemConfiguration" autowire="byName"/>
+            <bean class="edu.northwestern.bioinformatics.studycalendar.security.StoredAuthenticationSystemConfiguration"
+                  autowire="byName"/>
         </property>
     </bean>
 </beans>

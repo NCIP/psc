@@ -1,24 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.security;
 
 
-import gov.nih.nci.cagrid.common.Utils;
 import org.acegisecurity.AuthenticationException;
 import org.acegisecurity.providers.cas.CasAuthoritiesPopulator;
 import org.acegisecurity.userdetails.UserDetails;
 import org.acegisecurity.userdetails.UserDetailsService;
-import org.cagrid.gaards.cds.client.CredentialDelegationServiceClient;
-import org.cagrid.gaards.cds.client.DelegatedCredentialUserClient;
-import org.cagrid.gaards.cds.delegated.stubs.types.DelegatedCredentialReference;
-import org.globus.gsi.GlobusCredential;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
