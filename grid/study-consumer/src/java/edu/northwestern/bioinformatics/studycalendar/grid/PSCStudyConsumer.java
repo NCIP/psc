@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
@@ -53,6 +54,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private AuditHistoryRepository auditHistoryRepository;
 
     private String studyConsumerGridServiceUrl;
+    private AmendmentService amendmentService;
 
 
     public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
@@ -123,34 +125,34 @@ public class PSCStudyConsumer implements StudyConsumerI {
         Study study = studyService.getStudyByAssignedIdentifier(ccIdentifier);
 
         if (study == null) {
-            String message = "Exception while rollback study..no study found with given identifier:"+ccIdentifier;
+            String message = "Exception while rollback study..no study found with given identifier:" + ccIdentifier;
             throw getInvalidStudyException(message);
         }
         //check if study was created by the grid service or not
 
         boolean checkIfEntityWasCreatedByGridService = auditHistoryRepository.checkIfEntityWasCreatedByUrl(study.getClass(), study.getId(), studyConsumerGridServiceUrl);
 
-        if(!checkIfEntityWasCreatedByGridService){
+        if (!checkIfEntityWasCreatedByGridService) {
             logger.debug("Study was not created by the grid service url:" + studyConsumerGridServiceUrl + " so can not rollback this study:" + study.getId());
             return;
         }
-        logger.info("Study (id:"+ study.getId()+") was created by the grid service url:" + studyConsumerGridServiceUrl);
+        logger.info("Study (id:" + study.getId() + ") was created by the grid service url:" + studyConsumerGridServiceUrl);
 
         //check if this study was created one minute before or not
         Calendar calendar = Calendar.getInstance();
 
-        boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime =auditHistoryRepository.
+        boolean checkIfStudyWasCreatedOneMinuteBeforeCurrentTime = auditHistoryRepository.
                 checkIfEntityWasCreatedMinutesBeforeSpecificDate(study.getClass(), study.getId(), calendar, 1);
         try {
             if (checkIfStudyWasCreatedOneMinuteBeforeCurrentTime) {
                 logger.info("Study was created one minute before the current time:" + calendar.getTime().toString() + " so deleting this study:" + study.getId());
-                studyService.delete(study);
+                amendmentService.deleteDevelopmentAmendment(study);
             } else {
                 logger.debug("Study was not created one minute before the current time:" + calendar.getTime().toString() + " so can not rollback this study:" + study.getId());
             }
         }
         catch (Exception expception) {
-            String message = "Exception while rollback study," + expception.getMessage()+expception.getClass();
+            String message = "Exception while rollback study," + expception.getMessage() + expception.getClass();
             expception.printStackTrace();
             throw getInvalidStudyException(message);
         }
@@ -298,5 +300,10 @@ public class PSCStudyConsumer implements StudyConsumerI {
     @Required
     public void setAuditHistoryRepository(AuditHistoryRepository auditHistoryRepository) {
         this.auditHistoryRepository = auditHistoryRepository;
+    }
+
+    @Required
+    public void setAmendmentService(final AmendmentService amendmentService) {
+        this.amendmentService = amendmentService;
     }
 }
