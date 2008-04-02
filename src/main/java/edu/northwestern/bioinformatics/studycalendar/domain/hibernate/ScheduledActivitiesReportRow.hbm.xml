@@ -5,22 +5,22 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="edu.northwestern.bioinformatics.studycalendar.domain.reporting.StudiesReportRow" mutable="false">
+    <class name="edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow" mutable="false">
         <subselect>
             SELECT
-                s.id,
-                s.assigned_identifier
+                sa.id,
+                sa.details
             FROM
-                studies s
+                scheduled_activities sa
         </subselect>
         
-        <synchronize table="study"/>
+        <synchronize table="scheduled_activities"/>
 
         <id name="id" />
 
-        <component name="study">
+        <component name="scheduledActivity">
             <property name="id" column="id" insert="false" update="false"/>
-            <property name="assignedIdentifier" column="assigned_identifier"/>
+            <property name="details" column="details"/>
         </component>
 
     </class>
