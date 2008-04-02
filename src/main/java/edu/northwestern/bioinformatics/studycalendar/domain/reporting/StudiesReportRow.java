@@ -6,7 +6,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
 /**
  * @author John Dzak
  */
-public class StudyReportRow implements DomainObject {
+public class StudiesReportRow implements DomainObject {
     Integer id;
     private Study study;
 
