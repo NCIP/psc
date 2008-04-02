@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="edu.northwestern.bioinformatics.studycalendar.domain.reporting.StudyReportRow" mutable="false">
+        <subselect>
+            SELECT
+                s.id,
+                s.assigned_identifier
+            FROM
+                studies s
+        </subselect>
+        
+        <synchronize table="study"/>
+
+        <id name="id" />
+
+        <component name="study">
+            <property name="id" column="id" insert="false" update="false"/>
+            <property name="assignedIdentifier" column="assigned_identifier"/>
+        </component>
+
+    </class>
+</hibernate-mapping>
