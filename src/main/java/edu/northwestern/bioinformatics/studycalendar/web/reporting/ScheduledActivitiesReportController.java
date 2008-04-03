@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web;
+package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
@@ -21,8 +21,12 @@ import java.util.Map;
 public class ScheduledActivitiesReportController extends AbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
 
+    public ScheduledActivitiesReportController() {
+        setCommandClass(ScheduledActivitiesReportCommand.class);
+    }
+
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        return new ModelAndView("studiesReport", createModel());
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel());
     }
 
     private List<ScheduledActivitiesReportRow> search(Errors errors) {

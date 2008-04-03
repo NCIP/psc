@@ -339,6 +339,9 @@
     </bean>
     -->
 
+    <bean name="/report/scheduledActivitiesReport" id="scheduledActivitiesReportController" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.reporting.ScheduledActivitiesReportController"/>
+    
     <bean name="/cal/scheduleReconsent" id="scheduleReconsent" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.schedule.ScheduleReconsentController">
            <property name="crumb">
@@ -580,6 +583,20 @@
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
                                 <property name="displayName"><value>Configure authentication</value></property>
                                 <property name="linkName"><value>authConfigurationController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="sectionTemplate">
+                    <property name="displayName"><value>Reporting</value></property>
+                    <property name="mainController"><value>scheduledActivitiesReportController</value></property>
+                    <property name="pathMapping"><value>/report/**</value></property>
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Scheduled Activities Report</value></property>
+                                <property name="linkName"><value>scheduledActivitiesReportController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                         </list>
