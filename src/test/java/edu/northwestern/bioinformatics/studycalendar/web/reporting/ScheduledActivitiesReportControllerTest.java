@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;

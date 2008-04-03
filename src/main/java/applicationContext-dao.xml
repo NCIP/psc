@@ -247,5 +247,5 @@
     <bean id="userRoleDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao"/>
     <bean id="sourceDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.SourceDao"/>
     <bean id="changeDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.delta.ChangeDao"/>
-    <bean id="scheduledActivitiesReportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRowDao"/>
+    <bean id="scheduledActivitiesReportRowDao" parent="daoTemplate" class="edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao"/>
 </beans>

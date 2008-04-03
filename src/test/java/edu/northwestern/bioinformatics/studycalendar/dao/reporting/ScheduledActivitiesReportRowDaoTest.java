@@ -1,10 +1,9 @@
-package edu.northwestern.bioinformatics.studycalendar.reporting;
+package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ContextDaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
-import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRowDao;
 
 import java.util.List;
 
