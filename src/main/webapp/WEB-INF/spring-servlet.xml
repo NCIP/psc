@@ -589,7 +589,7 @@
                     </property>
                 </bean>
                 <bean parent="sectionTemplate">
-                    <property name="displayName"><value>Reporting</value></property>
+                    <property name="displayName"><value>Report</value></property>
                     <property name="mainController"><value>scheduledActivitiesReportController</value></property>
                     <property name="pathMapping"><value>/report/**</value></property>
                     <property name="tasks">
