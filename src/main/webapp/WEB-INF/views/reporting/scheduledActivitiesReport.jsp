@@ -40,6 +40,12 @@
                 </div>
             </div>
 
+            <div>
+                <c:forEach items="${results}" var="row">
+                    ${row.id} <br/>
+                </c:forEach>
+            </div>
+
         </form:form>
     </laf:division>
 </laf:box>

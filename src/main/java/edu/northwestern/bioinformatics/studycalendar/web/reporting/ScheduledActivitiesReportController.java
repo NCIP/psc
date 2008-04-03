@@ -11,7 +11,6 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
     }
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel());
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, search(errors)));
     }
 
     private List<ScheduledActivitiesReportRow> search(Errors errors) {
@@ -41,14 +40,15 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         return dao.search();
     }
 
-    protected Map createModel() {
-        Map<String, Object> ref = new HashMap<String, Object>();
-        ref.put("modes", ScheduledActivityMode.values());
-        return ref;
+    protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {
+        Map<String, Object> model = errors.getModel();
+        model.put("modes", ScheduledActivityMode.values());
+        model.put("results", results);
+        return model;
     }
 
     ////// Bean Setters
-    public void ScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao dao) {
+    public void setScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao dao) {
         this.dao = dao;
     }
 }
