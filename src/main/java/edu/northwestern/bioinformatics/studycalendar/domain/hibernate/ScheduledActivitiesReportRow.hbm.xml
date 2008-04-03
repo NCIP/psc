@@ -8,17 +8,36 @@
     <class name="edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow" mutable="false">
         <subselect>
             SELECT
-                sa.id,
-                sa.current_state_date,
-                sa.current_state_reason,
-                sa.current_state_mode_id,
-                sa.ideal_date,
-                sa.details
+                s_actv.id,
+                s_actv.current_state_date,
+                s_actv.current_state_reason,
+                s_actv.current_state_mode_id,
+                s_actv.ideal_date,
+                s_actv.details,
+                s_actv.activity_id,
+                a.name AS activity_name,
+                subj.id AS subject_id,
+                subj.first_name,
+                subj.last_name,
+                subj.person_id,
+                studies.id AS study_id,
+                studies.assigned_identifier AS study_assigned_identifier,
+                sites.id AS site_id,
+                sites.assigned_identifier AS site_assigned_identifier
             FROM
-                scheduled_activities sa
+                scheduled_activities s_actv
+                LEFT JOIN activities a ON a.id = s_actv.activity_id
+                LEFT JOIN scheduled_study_segments s_seg ON s_seg.id = s_actv.scheduled_study_segment_id
+                LEFT JOIN scheduled_calendars s_cal ON s_cal.id = s_seg.scheduled_calendar_id
+                LEFT JOIN subject_assignments assign ON assign.id = s_cal.assignment_id
+                LEFT JOIN subjects subj ON subj.id = assign.subject_id
+                LEFT JOIN study_sites ssites ON ssites.id = assign.study_site_id
+                LEFT JOIN studies ON studies.id = ssites.study_id
+                LEFT JOIN sites ON sites.id = ssites.site_id
         </subselect>
         
         <synchronize table="scheduled_activities"/>
+        <synchronize table="activities"/>
 
         <id name="id" />
 
@@ -31,7 +50,27 @@
             </property>
             <property name="idealDate" column="ideal_date"/>
             <property name="details" column="details"/>
+            <component name="activity">
+                <property name="id" column="activity_id"/>
+                <property name="name" column="activity_name"/>
+            </component>
         </component>
 
+        <component name="subject">
+            <property name="id" column="subject_id"/>
+            <property name="firstName" column="first_name"/>
+            <property name="lastName" column="last_name"/>
+            <property name="personId" column="person_id"/>
+        </component>
+
+        <component name="study">
+            <property name="id" column="study_id"/>
+            <property name="assignedIdentifier" column="study_assigned_identifier"/>
+        </component>
+
+        <component name="site">
+            <property name="id" column="site_id"/>
+            <property name="assignedIdentifier" column="site_assigned_identifier"/>
+        </component>
     </class>
 </hibernate-mapping>

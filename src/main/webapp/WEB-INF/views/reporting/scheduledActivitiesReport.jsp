@@ -13,6 +13,9 @@
             height:8em;
             padding:1em
         }
+        .results th {
+            font-weight:bold
+        }
     </style>
 </head>
 <body>
@@ -41,9 +44,31 @@
             </div>
 
             <div>
-                <c:forEach items="${results}" var="row">
-                    ${row.id} <br/>
-                </c:forEach>
+                <!--TODO: Remove temporary output table, and use some sort of table rendering tag-->
+                <table border="1" class="results">
+                    <tr>
+                        <th>Schd. Act. Id</th>
+                        <th>Activity Name</th>
+                        <th>Activity Status</th>
+                        <th>Subject First Name</th>
+                        <th>Subject Last Name</th>
+                        <th>Subject Patient Id</th>
+                        <th>Study Name</th>
+                        <th>Site Name</th>
+                    </tr>
+                    <c:forEach items="${results}" var="row">
+                        <tr>
+                            <td>${row.id}</td>
+                            <td>${row.scheduledActivity.activity.name}</td>
+                            <td>${row.scheduledActivity.currentState.textSummary}</td>
+                            <td>${row.subject.firstName}</td>
+                            <td>${row.subject.lastName}</td>
+                            <td>${row.subject.personId}</td>
+                            <td>${row.study.assignedIdentifier}</td>
+                            <td>${row.site.assignedIdentifier}</td>
+                        </tr>
+                    </c:forEach>
+                </table>
             </div>
 
         </form:form>
