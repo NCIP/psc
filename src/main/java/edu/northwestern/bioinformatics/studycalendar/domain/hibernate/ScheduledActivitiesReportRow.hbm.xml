@@ -9,6 +9,10 @@
         <subselect>
             SELECT
                 sa.id,
+                sa.current_state_date,
+                sa.current_state_reason,
+                sa.current_state_mode_id,
+                sa.ideal_date,
                 sa.details
             FROM
                 scheduled_activities sa
@@ -20,6 +24,12 @@
 
         <component name="scheduledActivity">
             <property name="id" column="id" insert="false" update="false"/>
+            <property name="currentState" type="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.ScheduledActivityStateType">
+                <column name="current_state_mode_id"/>
+                <column name="current_state_reason"/>
+                <column name="current_state_date"/>
+            </property>
+            <property name="idealDate" column="ideal_date"/>
             <property name="details" column="details"/>
         </component>
 

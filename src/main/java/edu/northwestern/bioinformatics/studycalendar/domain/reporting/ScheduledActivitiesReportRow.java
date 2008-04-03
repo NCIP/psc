@@ -7,7 +7,7 @@ import gov.nih.nci.cabig.ctms.domain.DomainObject;
  * @author John Dzak
  */
 public class ScheduledActivitiesReportRow implements DomainObject {
-    Integer id;
+    private Integer id;
     private ScheduledActivity scheduledActivity;
 
     public Integer getId() {
