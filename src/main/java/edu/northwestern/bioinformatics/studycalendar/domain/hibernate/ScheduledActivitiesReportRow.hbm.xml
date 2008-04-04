@@ -72,9 +72,9 @@
             <property name="id" column="site_id"/>
             <property name="assignedIdentifier" column="site_assigned_identifier"/>
         </component>
-        <filter name="studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :assignedIdentifier"/>
+        <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
     </class>
-    <filter-def name="studyAssignedIdentifier">
-        <filter-param name="assignedIdentifier" type="string"/>
+    <filter-def name="filter_studyAssignedIdentifier">
+        <filter-param name="studyAssignedIdentifier" type="string"/>
     </filter-def>
 </hibernate-mapping>

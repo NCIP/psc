@@ -1,10 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractCommandController;
 
@@ -24,20 +27,30 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         setCommandClass(ScheduledActivitiesReportCommand.class);
     }
 
-    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, search(errors)));
+    protected Object getCommand(HttpServletRequest request) throws Exception {
+        return new ScheduledActivitiesReportCommand(new ScheduledActivitiesReportFilters());
     }
 
-    private List<ScheduledActivitiesReportRow> search(Errors errors) {
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+        super.initBinder(request, binder);
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
+        ScheduledActivitiesReportCommand command = (ScheduledActivitiesReportCommand) oCommand;
+        return new ModelAndView("reporting/scheduledActivitiesReport", createModel(errors, search(errors, command)));
+    }
+
+    private List<ScheduledActivitiesReportRow> search(Errors errors, ScheduledActivitiesReportCommand command) {
         if (errors.hasErrors()) {
             return Collections.emptyList();
         } else {
-            return search();
+            return search(command);
         }
     }
 
-    protected List<ScheduledActivitiesReportRow> search() {
-        return dao.search();
+    protected List<ScheduledActivitiesReportRow> search(ScheduledActivitiesReportCommand command) {
+        return dao.search(command.getFilters());
     }
 
     protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {

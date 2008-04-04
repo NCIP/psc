@@ -42,6 +42,17 @@
                     </select>
                 </div>
             </div>
+            <div class="row">
+                <div class="label" >
+                    <form:label path="filters.studyAssignedIdentifier" >
+                    Study name:
+                    </form:label>
+                </div>
+                <div class="value">
+                    <!--StudyIdentifierName-->
+                    <form:input path="filters.studyAssignedIdentifier"/>
+                </div>
+            </div>
 
             <div>
                 <!--TODO: Remove temporary output table, and use some sort of table rendering tag-->

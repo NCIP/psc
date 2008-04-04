@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ScheduledActivitiesReportRowDaoTest extends ContextDaoTestCase<ScheduledActivitiesReportRowDao> {
     public void testSearch() {
-        List<ScheduledActivitiesReportRow> results = getDao().search();
+        List<ScheduledActivitiesReportRow> results = getDao().search(new ScheduledActivitiesReportFilters());
         assertEquals("Wrong result size", 5, results.size());
 
         ScheduledActivitiesReportRow row = results.get(0);

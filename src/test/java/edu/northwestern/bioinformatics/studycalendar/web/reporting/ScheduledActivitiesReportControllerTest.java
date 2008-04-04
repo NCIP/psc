@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.apache.commons.lang.StringUtils;
@@ -7,6 +8,7 @@ import static org.easymock.EasyMock.expect;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import static java.util.Collections.EMPTY_LIST;
 import java.util.Map;
 
@@ -16,14 +18,22 @@ import java.util.Map;
 public class ScheduledActivitiesReportControllerTest extends ControllerTestCase {
     private ScheduledActivitiesReportController controller;
     private ScheduledActivitiesReportRowDao dao;
+    private ScheduledActivitiesReportCommand command;
+    private ScheduledActivitiesReportFilters filters;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         dao = registerDaoMockFor(ScheduledActivitiesReportRowDao.class);
+        command = registerMockFor(ScheduledActivitiesReportCommand.class);
+        filters = registerMockFor(ScheduledActivitiesReportFilters.class);
 
-        controller = new ScheduledActivitiesReportController();
+        controller = new ScheduledActivitiesReportController() {
+            protected Object getCommand(HttpServletRequest request) throws Exception {
+                return command;
+            }
+        };
         controller.setScheduledActivitiesReportRowDao(dao);
     }
 
@@ -49,6 +59,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     }
 
     private void expectDaoSearch() {
-        expect(dao.search()).andReturn(EMPTY_LIST);
+        expect(command.getFilters()).andReturn(filters);
+        expect(dao.search(filters)).andReturn(EMPTY_LIST);
     }
 }

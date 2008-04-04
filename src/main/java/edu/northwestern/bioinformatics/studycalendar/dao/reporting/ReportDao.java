@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.domain.reporting;
+package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyCalendarDao;
 import gov.nih.nci.cabig.ctms.domain.DomainObject;
@@ -12,13 +12,14 @@ import java.util.List;
 /**
  * @author John Dzak
  */
-public abstract class ReportDao<R extends DomainObject> extends StudyCalendarDao<R> {
+public abstract class ReportDao<F extends ReportFilters, R extends DomainObject> extends StudyCalendarDao<R> {
     @SuppressWarnings("unchecked")
-    public List<R> search() {
+    public List<R> search(final F filters) {
         return getHibernateTemplate().executeFind(new HibernateCallback() {
             @SuppressWarnings("unchecked")
             public Object doInHibernate(Session session) throws HibernateException {
                 Criteria criteria = session.createCriteria(domainClass());
+                filters.apply(session);
                 return (List<R>) criteria.list();
             }
         });
