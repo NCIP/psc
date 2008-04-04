@@ -34,6 +34,8 @@
                 LEFT JOIN study_sites ssites ON ssites.id = assign.study_site_id
                 LEFT JOIN studies ON studies.id = ssites.study_id
                 LEFT JOIN sites ON sites.id = ssites.site_id
+            ORDER BY
+                s_actv.id ASC
         </subselect>
         
         <synchronize table="scheduled_activities"/>
