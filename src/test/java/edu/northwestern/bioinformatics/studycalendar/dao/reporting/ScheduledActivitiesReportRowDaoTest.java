@@ -1,21 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ContextDaoTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 
-import java.util.List;
-
 /**
  * @author John Dzak
  */
-public class ScheduledActivitiesReportRowDaoTest extends ContextDaoTestCase<ScheduledActivitiesReportRowDao> {
-    public void testSearch() {
-        List<ScheduledActivitiesReportRow> results = getDao().search(new ScheduledActivitiesReportFilters());
-        assertEquals("Wrong result size", 5, results.size());
+public class ScheduledActivitiesReportRowDaoTest extends
+        ReportDaoTestCase<ScheduledActivitiesReportFilters, ScheduledActivitiesReportRow, ScheduledActivitiesReportRowDao> {
+    private static final long NEG_16 = -16;
+    private static final long NEG_17 = -17;
 
-        ScheduledActivitiesReportRow row = results.get(0);
+    protected ScheduledActivitiesReportFilters createFilters() {
+        return new ScheduledActivitiesReportFilters();
+    }
+
+    public void testSearchWithStudyFilter_Pos() {
+        filters.setStudyAssignedIdentifier("Foo");
+        ScheduledActivitiesReportRow row = assertSearchWithResults(NEG_17, NEG_16).get(0);
+
         assertNotNull("ID should not be null", row.getId());
 
         ScheduledActivity schd = row.getScheduledActivity();
@@ -33,5 +37,10 @@ public class ScheduledActivitiesReportRowDaoTest extends ContextDaoTestCase<Sche
         assertNotNull("Study should not be null", row.getStudy());
 
         assertNotNull("Site should not be null", row.getSite());
+    }
+
+    public void testSearchWithStudyFilter_Neg() {
+        filters.setStudyAssignedIdentifier("Fla");
+        assertSearchWithResults();
     }
 }
