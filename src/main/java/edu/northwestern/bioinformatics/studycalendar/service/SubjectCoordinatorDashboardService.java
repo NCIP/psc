@@ -73,8 +73,14 @@ public class SubjectCoordinatorDashboardService {
 
         Map <String, Object> subjectAndEvents;
 
-        for (int i =0; i< initialShiftDate; i++) {
-            Date tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
+        for (int i = 0; i< initialShiftDate; i++) {
+            Date tempStartDate;
+            if (i == 0) {
+                //need to get activities for the startDate itself
+                tempStartDate = shiftStartDayByNumberOfDays(startDate, i);
+            } else {
+                tempStartDate = shiftStartDayByNumberOfDays(startDate, 1);
+            }
             subjectAndEvents = new HashMap<String, Object>();
             for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
                 List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
@@ -106,6 +112,7 @@ public class SubjectCoordinatorDashboardService {
             if (subjectAndEvents!= null && subjectAndEvents.size()>0) {
                 mapOfUserAndCalendar.put(keyDate, subjectAndEvents);
             }
+            startDate = tempStartDate;
         }
         return mapOfUserAndCalendar;
     }
