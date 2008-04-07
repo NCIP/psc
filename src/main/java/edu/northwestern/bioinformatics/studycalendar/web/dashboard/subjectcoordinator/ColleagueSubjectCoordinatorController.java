@@ -140,7 +140,7 @@ public class ColleagueSubjectCoordinatorController extends PscSimpleFormControll
         scheduleCommand.setUserDao(userDao);
         scheduleCommand.setScheduledActivityDao(scheduledActivityDao);
         Map<String, Object> model = scheduleCommand.execute(getPAService(), getStudySubjectAssignments(colleagueId));
-        return new ModelAndView("template/ajax/listOfSubjectAndEvents", model);
+        return new ModelAndView("template/ajax/listOfSubjectsAndEvents", model);
     }
 
     protected void initBinder(HttpServletRequest httpServletRequest,
