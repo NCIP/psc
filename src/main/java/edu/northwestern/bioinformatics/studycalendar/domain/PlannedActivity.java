@@ -45,13 +45,27 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     @Transient
     public List<Integer> getDaysInStudySegment() {
-        int dayInStudySegment = getPeriod().getStartDay() + getDay() - 1;
+        int day = getDay();
+        int actualDay = calculateDay(day);
         List<Integer> days = new ArrayList<Integer>();
         while (days.size() < getPeriod().getRepetitions()) {
-            days.add(dayInStudySegment);
-            dayInStudySegment += getPeriod().getDuration().getDays();
+            days.add(actualDay);
+            actualDay += getPeriod().getDuration().getDays();
         }
         return days;
+    }
+
+    public int calculateDay(int day) {
+        int daysInDuration = getPeriod().getDuration().getUnit().inDays();
+        int dayToReturn = 0;
+        if(daysInDuration != 1 && day > 1) {
+            int multiplication = day-1;
+            dayToReturn = daysInDuration * multiplication + getPeriod().getStartDay();
+        } else {
+            //else case is for days, where everything should stay as before. no shifting is needed
+            dayToReturn =  getPeriod().getStartDay() + getDay() - 1;
+        }
+        return dayToReturn;
     }
 
     @Transient

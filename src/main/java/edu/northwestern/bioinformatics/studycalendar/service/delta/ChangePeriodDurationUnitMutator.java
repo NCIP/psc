@@ -9,29 +9,27 @@ import edu.northwestern.bioinformatics.studycalendar.service.ScheduleService;
  * @author Rhett Sutphin
  */
 public class ChangePeriodDurationUnitMutator extends AbstractChangePeriodDurationMutator {
-    private Boolean dayToWeek;
+    private Boolean isThereAChange;
+    private int changeInDays;
 
     public ChangePeriodDurationUnitMutator(PropertyChange change, TemplateService templateService, ScheduleService scheduleService) {
         super(change, templateService, scheduleService);
         Duration.Unit old = Duration.Unit.valueOf(change.getOldValue());
         Duration.Unit nu  = Duration.Unit.valueOf(change.getNewValue());
         if (old == nu) {
-            dayToWeek = null;
-        } else if (old == Duration.Unit.day && nu == Duration.Unit.week) {
-            dayToWeek = true;
-        } else if (old == Duration.Unit.week && nu == Duration.Unit.day) {
-            dayToWeek = false;
-        } else {
+            isThereAChange = null;
+        } else if (old == null || nu == null) {
             log.error("Invalid change {} in revision {}.  Skipping.", change, change.getDelta().getRevision());
-            dayToWeek = null;
+            isThereAChange = null;
+        } else {
+            isThereAChange = true;
+            changeInDays = nu.inDays() - old.inDays();
         }
     }
 
     @Override
     protected int durationChangeInDays() {
-        if (dayToWeek == null) return 0;
-        int durationChange = getChangedPeriod().getDuration().getQuantity() * 6;
-        if (!dayToWeek) durationChange *= -1;
-        return durationChange;
+        if (isThereAChange == null) return 0;
+        return getChangedPeriod().getDuration().getQuantity() * changeInDays;
     }
 }

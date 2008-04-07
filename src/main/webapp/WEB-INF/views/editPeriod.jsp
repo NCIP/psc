@@ -25,8 +25,22 @@
             var duration = calculateDuration()
             var startDay = parseInt($F("period.startDay"))
             var reps = $F("period.repetitions")
-            var totalDays = reps * duration
 
+            var unit = $F("period.duration.unit")
+            var totalDays;
+            var numberOfDaysInUnit;
+            if (unit == "week") {
+                numberOfDaysInUnit = 7;
+            } else if (unit == "fortnight") {
+                numberOfDaysInUnit = 14;
+            } else if (unit == "month") {
+                numberOfDaysInUnit = 28;
+            } else if (unit == "quarter") {
+                numberOfDaysInUnit = 91;
+            } else {
+                numberOfDaysInUnit =1;
+            }
+            totalDays = reps * duration * numberOfDaysInUnit;
             Element.update("summary-days", totalDays + " day" + (totalDays != 1 ? "s" : ""))
             highlightOdd("summary-days")
 
@@ -40,13 +54,13 @@
             if (reps > 1 && duration >= 1) {
                 var sameDay = [startDay]
                 while (sameDay.length < reps) {
-                    sameDay.push(sameDay.last() + duration)
+                    sameDay.push(sameDay.last() + duration * numberOfDaysInUnit)
                 }
                 var eventDays = sameDay.join(", ")
                 if (duration > 1) {
                     eventDays += "; and on days "
                     eventDays += sameDay.map(function(e) {
-                        return e + 1;
+                        return e + numberOfDaysInUnit;
                     }).join(", ")
                     if (duration > 2) {
                         eventDays += "; etc"
@@ -68,10 +82,7 @@
         }
 
         function calculateDuration() {
-            var q = parseInt($F("period.duration.quantity"))
-            var unit = $F("period.duration.unit")
-            if (unit == "week") return q * 7;
-            else return q;
+            return parseInt($F("period.duration.quantity"));
         }
 
         function resetElement(elementId, text, color) {

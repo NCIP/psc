@@ -68,6 +68,58 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertDayRange(5, 7, actual.get(3));
     }
 
+    public void testGetDayRangesForMonth() throws Exception {
+        period.setStartDay(-4);
+        period.setDuration(new Duration(3, Duration.Unit.month));
+        period.setRepetitions(4);
+
+        List<DayRange> actual = period.getDayRanges();
+        assertEquals("Wrong number of ranges", 4, actual.size());
+        assertDayRange(-4, 52, actual.get(0));
+        assertDayRange(80, 136, actual.get(1));
+        assertDayRange(164, 220, actual.get(2));
+        assertDayRange(248, 304, actual.get(3));
+    }
+
+    public void testGetDayRangesForWeek() throws Exception {
+        period.setStartDay(1);
+        period.setDuration(new Duration(3, Duration.Unit.week));
+        period.setRepetitions(4);
+
+        List<DayRange> actual = period.getDayRanges();
+        assertEquals("Wrong number of ranges", 4, actual.size());
+        assertDayRange(1, 15, actual.get(0));
+        assertDayRange(22, 36, actual.get(1));
+        assertDayRange(43, 57, actual.get(2));
+        assertDayRange(64, 78, actual.get(3));
+    }
+
+    public void testGetDayRangesForQuarter() throws Exception {
+        period.setStartDay(-4);
+        period.setDuration(new Duration(2, Duration.Unit.quarter));
+        period.setRepetitions(4);
+
+        List<DayRange> actual = period.getDayRanges();
+        assertEquals("Wrong number of ranges", 4, actual.size());
+        assertDayRange(-4, 87, actual.get(0));
+        assertDayRange(178, 269, actual.get(1));
+        assertDayRange(360, 451, actual.get(2));
+        assertDayRange(542, 633, actual.get(3));
+    }
+
+    public void testGetDayRangesForFortnight() throws Exception {
+        period.setStartDay(2);
+        period.setDuration(new Duration(2, Duration.Unit.fortnight));
+        period.setRepetitions(4);
+
+        List<DayRange> actual = period.getDayRanges();
+        assertEquals("Wrong number of ranges", 4, actual.size());
+        assertDayRange(2, 16, actual.get(0));
+        assertDayRange(30, 44, actual.get(1));
+        assertDayRange(58, 72, actual.get(2));
+        assertDayRange(86, 100, actual.get(3));
+    }
+
     public void testAddPlannedActivityMaintainsBidirectionality() throws Exception {
         PlannedActivity e = createPlannedActivity("Any", 5);
         assertNull(e.getPeriod());

@@ -15,7 +15,7 @@ import javax.persistence.Transient;
 @Embeddable
 public class Duration implements Comparable<Duration>, Cloneable {
     public static enum Unit {
-        day(1), week(7);
+        day(1), week(7), fortnight(14), month(28), quarter(91);
         private int inDays;
 
         private Unit(int inDays) {

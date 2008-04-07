@@ -32,7 +32,7 @@ function addActivityRow() {
     var activity = selectedActivity();
     if ((activity.id == null) || (activity.name == null)) return
     var cells = []
-    var dayCount = ${period.dayRanges[0].days}.length
+    var dayCount = getDayCount();
     var rowCount = $$("#input-body tr").length - 1
     // indicator
     var indicator = SC.activityIndicator('<c:url value="/"/>', 'row-' + rowCount + '-indicator')
@@ -44,7 +44,8 @@ function addActivityRow() {
     cells.push(Builder.node('th', {className: 'activity'}, activity.name), [activityInput]);
 
     // input cells
-    for (var i = 0; i < dayCount; i++) {
+    for (var i = 0; i < dayCount.length; i++) {
+        var value = dayCount[i];
         var name = 'grid[' + rowCount + '].plannedActivities[' + i + ']'
         var input = Builder.node('input', {
             id: name,
@@ -128,7 +129,6 @@ function extractRowAndColumn(gridElementId) {
     var row = extractRow(gridElementId);
     var plannedActivitiesPortion = gridElementId.substring(gridElementId.indexOf("]") + 1);
     var col = plannedActivitiesPortion.substring(plannedActivitiesPortion.indexOf("[") + 1, plannedActivitiesPortion.indexOf("]"));
-
     return [row, col];
 }
 
@@ -136,6 +136,38 @@ function createBasicPostBody(row) {
     var data = { period: '${period.id}' }
     if (row) addParametersForRow(data, row)
     return data
+}
+
+function getDayCount(){
+    var dayCount;
+    //for week, month, fortnight, and quarter, the range is return a specific array of days,
+    //f.e. for week it would be 1, 8, 15. But since on a grid the count starts from 0, we need to decrement actual day by one.
+    if (${period.duration.unit == 'week'}) {
+        dayCount = ${period.dayRanges[0].weeks}
+        for (var i=0; i<dayCount.length; i++) {
+            dayCount[i] = dayCount[i]-1;
+        }
+    } else if (${period.duration.unit == 'month'}) {
+        dayCount = ${period.dayRanges[0].months}
+        for (var i=0; i<dayCount.length; i++) {
+            dayCount[i] = dayCount[i]-1;
+        }
+    } else if (${period.duration.unit == 'fortnight'}) {
+        dayCount = ${period.dayRanges[0].fortnights}
+        for (var i=0; i<dayCount.length; i++) {
+            dayCount[i] = dayCount[i]-1;
+        }
+    } else if (${period.duration.unit == 'quarter'}) {
+        dayCount = ${period.dayRanges[0].quarters}
+        for (var i=0; i<dayCount.length; i++) {
+            dayCount[i] = dayCount[i]-1;
+        }
+    } else if (${period.duration.unit =='day'}) {
+        dayCount = ${period.dayRanges[0].days}
+    }
+
+    return dayCount;
+
 }
 
 function addParametersForRow(data, row) {
@@ -146,12 +178,15 @@ function addParametersForRow(data, row) {
     if (!conditionElement.hasClassName('no-condition')) {
         data.conditionalDetails = conditionElement.value;
     }
-
-    for (var c = 0; c < ${period.duration.days}; c++) {
-        var val = $('grid[' + row + '].plannedActivities[' + c + ']').getAttribute('value')
-        if (val && val != -1) {
-            data['plannedActivities[' + c + ']'] = val;
-        }
+    var dayCount= getDayCount();
+    for (var c = 0; c < dayCount.length; c++) {
+        var val = $('grid[' + row + '].plannedActivities[' + c + ']')
+        if (val != null ) {
+            var varValue = val.getAttribute('value')
+            if (varValue && varValue != -1) {
+                data['plannedActivities[' + c + ']'] = varValue;
+            }
+         }
     }
 }
 
@@ -641,13 +676,33 @@ function addANewActivityToTheRow() {
         <form:form>
 
 <div id="newDiv" style="overflow:auto; padding-bottom:5px; position:relative;">
-            <c:set var="tableWidth" value="${period.duration.days + 4}"/>
+            <%--<c:set var="tableWidth" value="${period.duration.days + 4}"/>--%>
+            <c:set var="range" value="0"/>
+            <c:if test="${period.duration.unit == 'week'}" >
+                <c:set var="range" value="${period.dayRanges[0].weeks}"/>
+            </c:if>
+            <c:if test="${period.duration.unit == 'month'}" >
+                <c:set var="range" value="${period.dayRanges[0].months}"/>
+            </c:if>
+            <c:if test="${period.duration.unit == 'fortnight'}" >
+                <c:set var="range" value="${period.dayRanges[0].fortnights}"/>
+            </c:if>
+            <c:if test="${period.duration.unit == 'quarter'}" >
+                <c:set var="range" value="${period.dayRanges[0].quarters}"/>
+            </c:if>
+            <c:set var="tableWidth" value="${period.duration.quantity}"/>
+            <c:if test="${period.duration.unit =='day'}">
+                <c:set var="range" value="${period.dayRanges[0].days}"/>
+                <c:set var="tableWidth" value="${period.duration.days}"/>
+            </c:if>
+            <c:set var="tableWidth" value="${tableWidth +4}"/>
+
             <table id="manage-period" >
             <tbody id="input-body">
                 <tr>
                     <th class="indicator-column spacer"></th>
                     <th class="activity-column spacer"><!-- Spacer --></th>
-                    <th colspan="${tableWidth - 4}">Days of segment (${commons:pluralize(period.repetitions, "repetition")})</th>
+                    <th colspan="${tableWidth - 4}">Days of segment (${commons:pluralize(period.repetitions, "repetition")} of ${commons:pluralize(period.duration.quantity, period.duration.unit)})</th>
                     <th colspan="2">Notes</th>
                 </tr>
                 <tr id="days-header">
@@ -656,8 +711,10 @@ function addANewActivityToTheRow() {
                     <c:set var="MAX_REPETITION_SIZE" value="4"/>
                     <c:set var="MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED" value="2"/>
                     <c:set var="compressPeriod" value="${period.repetitions gt MAX_REPETITION_SIZE}"/>
-                    <c:forEach items="${period.dayRanges[0].days}" var="d">
+                    <c:set var="counter" value="1"/>
+                    <c:forEach items="${range}" var="d">
                         <th id="day-number" class="day-number">
+                            ${counter} ${fn:substring(period.duration.unit, 0, 1)}  <br>
                             <c:forEach begin="0" end="${period.repetitions - 1}" var="x" varStatus="xStatus">
                                 <c:set var="visibleRow" value="${x lt MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED or not compressPeriod}"/>
                                 <c:set var="showCompressionRow" value="${x eq (MAX_REPETITIONS_DISPLAYED_WHEN_COMPRESSED)}"/>
@@ -672,6 +729,7 @@ function addANewActivityToTheRow() {
 
                                 <c:if test="${not xStatus.last and (visibleRow or showCompressionRow)}"><br/></c:if>
                             </c:forEach>
+                            <c:set var="counter" value="${counter +1}"/>
                         </th>
                     </c:forEach>
                     <th>Details</th>
@@ -693,18 +751,40 @@ function addANewActivityToTheRow() {
                                 ${gridRow.activity.name}
                                 <form:hidden path="grid[${gridStatus.index}].activity"/>
                             </th>
-                            <c:forEach items="${gridRow.plannedActivities}" varStatus="cStatus">
-                                <td class="counter">
-                                    <form:hidden path="grid[${gridStatus.index}].plannedActivities[${cStatus.index}]"/>
-                                    <span class="marker">
-                                        <c:if test="${not empty command.grid[gridStatus.index].plannedActivities[cStatus.index]}">
-                                            ${empty command.grid[gridStatus.index].plannedActivities[cStatus.index].population
-                                                ? 'X'
-                                                : command.grid[gridStatus.index].plannedActivities[cStatus.index].population.abbreviation }
-                                        </c:if>
-                                    </span>
-                                </td>
-                            </c:forEach>
+                            <c:choose>
+                                <c:when test="${period.duration.unit == 'day'}">
+                                    <c:forEach items="${gridRow.plannedActivities}" varStatus="cStatus">
+                                        <td class="counter">
+                                            <form:hidden path="grid[${gridStatus.index}].plannedActivities[${cStatus.index}]"/>
+                                            <span class="marker">
+                                                <c:if test="${not empty command.grid[gridStatus.index].plannedActivities[cStatus.index]}">
+                                                    ${empty command.grid[gridStatus.index].plannedActivities[cStatus.index].population
+                                                        ? 'X'
+                                                        : command.grid[gridStatus.index].plannedActivities[cStatus.index].population.abbreviation }
+                                                </c:if>
+                                            </span>
+                                        </td>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                      <c:set var="count" value="0"/>
+                                      <c:forEach items="${range}" var="rangeVar" varStatus="rangeStatus">
+                                            <td class="counter">
+                                                <form:hidden path="grid[${gridStatus.index}].plannedActivities[${count}]"/>
+                                                <span class="marker">
+                                                    <c:if test="${not empty command.grid[gridStatus.index].plannedActivities[count]}">
+                                                        ${empty command.grid[gridStatus.index].plannedActivities[count].population
+                                                            ? 'X'
+                                                            : command.grid[gridStatus.index].plannedActivities[count].population.abbreviation }
+                                                    </c:if>
+                                                </span>
+                                            </td>
+                                           <c:set var="count" value="${count+1}"/>
+                                        </c:forEach>
+
+                                </c:otherwise>
+
+                            </c:choose>
                             <td>
                                 <form:input path="grid[${gridStatus.index}].details"/>
                             </td>

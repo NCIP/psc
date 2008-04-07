@@ -77,7 +77,8 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
             int rep = ranges.size();
             Integer dayCount = getDuration().getDays();
             int repStartDay = getStartDay() + rep * dayCount;
-            ranges.add(new DefaultDayRange(repStartDay, repStartDay + dayCount - 1));
+            int durationUnit = getDuration().getUnit().inDays();
+            ranges.add(new DefaultDayRange(repStartDay, repStartDay + dayCount - durationUnit));
         }
         return ranges;
     }
