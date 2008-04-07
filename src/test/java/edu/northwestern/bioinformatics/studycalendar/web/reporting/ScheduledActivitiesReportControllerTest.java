@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import org.apache.commons.lang.StringUtils;
 import static org.easymock.EasyMock.expect;
@@ -26,8 +27,8 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         super.setUp();
 
         dao = registerDaoMockFor(ScheduledActivitiesReportRowDao.class);
-        command = registerMockFor(ScheduledActivitiesReportCommand.class);
-        filters = registerMockFor(ScheduledActivitiesReportFilters.class);
+        filters = new ScheduledActivitiesReportFilters();
+        command = new ScheduledActivitiesReportCommand(filters);
 
         controller = new ScheduledActivitiesReportController() {
             protected Object getCommand(HttpServletRequest request) throws Exception {
@@ -50,6 +51,13 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         assertEquals("Wrong view", "reporting/scheduledActivitiesReport", mv.getViewName());
     }
 
+    public void testBindCurrentStateMode() throws Exception {
+        request.setParameter("filters.currentStateMode", "1");
+        expectDaoSearch();
+        ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.currentStateMode");
+        assertEquals("Wrong state", ScheduledActivityMode.SCHEDULED, command.getFilters().getCurrentStateMode());
+    }
+
     ////// Helper Methods
     private ModelAndView handleRequest() throws Exception {
         replayMocks();
@@ -58,8 +66,15 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         return mv;
     }
 
+    @SuppressWarnings({"unchecked"})
     private void expectDaoSearch() {
-        expect(command.getFilters()).andReturn(filters);
         expect(dao.search(filters)).andReturn(EMPTY_LIST);
+    }
+
+    @SuppressWarnings({ "unchecked" })
+    private ScheduledActivitiesReportCommand postAndReturnCommand(String expectNoErrorsForField) throws Exception {
+        Map<String, Object> model = handleRequest().getModel();
+        assertNoBindingErrorsFor(expectNoErrorsForField, model);
+        return (ScheduledActivitiesReportCommand) model.get("command");
     }
 }

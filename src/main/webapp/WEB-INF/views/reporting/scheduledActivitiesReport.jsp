@@ -29,17 +29,15 @@
             </div>
             <div class="row">
                 <div class="label" >
-                    <%--<form:label path="command.filter.activityMode" >--%>
+                    <form:label path="filters.currentStateMode" >
                     Activity Mode:
-                    <%--</form:label>--%>
+                    </form:label>
                 </div>
                 <div class="value">
-                    <select name="filter_modes">
-                        <option value=""></option>
-                        <c:forEach items="${modes}" var="mode">
-                            <option value="${mode.id}">${mode.name}</option>
-                        </c:forEach>
-                    </select>
+                    <form:select path="filters.currentStateMode" >
+                        <form:option value="" label=""/>
+                        <form:options items="${modes}" itemLabel="name" itemValue="id"/>
+                    </form:select>
                 </div>
             </div>
             <div class="row">

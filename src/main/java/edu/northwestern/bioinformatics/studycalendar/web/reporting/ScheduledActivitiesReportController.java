@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -33,6 +34,8 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
 
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
         super.initBinder(request, binder);
+        binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
+            new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
@@ -53,6 +56,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         return dao.search(command.getFilters());
     }
 
+    @SuppressWarnings({"unchecked"})
     protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
