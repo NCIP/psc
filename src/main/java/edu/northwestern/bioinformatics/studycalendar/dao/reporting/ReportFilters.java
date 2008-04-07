@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -127,6 +128,22 @@ public abstract class ReportFilters {
         @Override
         protected String getValueForFilter() {
             return substringParameterize(getValue());
+        }
+    }
+
+    protected class ControlledVocabularyObjectFilterLimit<V extends AbstractControlledVocabularyObject> extends SingleFilterFilterLimit<Integer, V> {
+        public ControlledVocabularyObjectFilterLimit(String filterName) {
+            super(filterName);
+        }
+
+        @Override
+        protected String getParameterName() {
+            return getBaseName() + "_id";
+        }
+
+        @Override
+        protected Integer getValueForFilter() {
+            return getValue().getId();
         }
     }
 }

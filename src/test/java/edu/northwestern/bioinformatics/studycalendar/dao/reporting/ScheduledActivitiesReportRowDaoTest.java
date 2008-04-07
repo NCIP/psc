@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 
 /**
@@ -41,6 +42,21 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithStudyFilter_Neg() {
         filters.setStudyAssignedIdentifier("Fla");
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithScheduledActivityMode_Scheduled() {
+        filters.setCurrentStateMode(ScheduledActivityMode.SCHEDULED);
+        assertSearchWithResults(NEG_16);
+    }
+
+    public void testSearchWithScheduledActivityMode_Canceled() {
+        filters.setCurrentStateMode(ScheduledActivityMode.CANCELED);
+        assertSearchWithResults(NEG_17);
+    }
+
+    public void testSearchWithScheduledActivityMode_Occurred() {
+        filters.setCurrentStateMode(ScheduledActivityMode.OCCURRED);
         assertSearchWithResults();
     }
 }
