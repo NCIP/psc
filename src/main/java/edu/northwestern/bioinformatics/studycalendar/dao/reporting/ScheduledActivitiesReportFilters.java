@@ -7,6 +7,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMod
  */
 public class ScheduledActivitiesReportFilters extends ReportFilters {
     private SubstringFilterLimit studyAssignedIdentifier = new SubstringFilterLimit("studyAssignedIdentifier");
+    private SubstringFilterLimit siteName = new SubstringFilterLimit("siteName");
     private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
             new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
 
@@ -28,5 +29,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public ScheduledActivityMode<?> getCurrentStateMode() {
         return currentStateMode.getValue();
+    }
+
+    public String getSiteName() {
+        return siteName.getValue();
+    }
+
+    public void setSiteName(String value) {
+        siteName.setValue(value);
     }
 }

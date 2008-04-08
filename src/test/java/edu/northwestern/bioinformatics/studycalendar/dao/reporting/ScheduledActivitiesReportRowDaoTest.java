@@ -59,4 +59,14 @@ public class ScheduledActivitiesReportRowDaoTest extends
         filters.setCurrentStateMode(ScheduledActivityMode.OCCURRED);
         assertSearchWithResults();
     }
+    
+    public void testSearchWithSiteFilter_Pos() {
+        filters.setSiteName("DC");
+        assertSearchWithResults(NEG_17, NEG_16);
+    }
+
+    public void testSearchWithSiteFilter_Neg() {
+        filters.setSiteName("Bedrock");
+        assertSearchWithResults();
+    }
 }

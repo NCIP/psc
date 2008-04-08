@@ -23,7 +23,7 @@
                 studies.id AS study_id,
                 studies.assigned_identifier AS study_assigned_identifier,
                 sites.id AS site_id,
-                sites.assigned_identifier AS site_assigned_identifier
+                sites.name AS site_name
             FROM
                 scheduled_activities s_actv
                 LEFT JOIN activities a ON a.id = s_actv.activity_id
@@ -72,13 +72,17 @@
 
         <component name="site">
             <property name="id" column="site_id"/>
-            <property name="assignedIdentifier" column="site_assigned_identifier"/>
+            <property name="name" column="site_name"/>
         </component>
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
-        <filter name="filter_currentStateMode" condition="current_state_mode_id LIKE :currentStateMode_id"/>
+        <filter name="filter_siteName" condition="UPPER(site_name) LIKE :siteName"/>
+        <filter name="filter_currentStateMode" condition="current_state_mode_id = :currentStateMode_id"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
+    </filter-def>
+    <filter-def name="filter_siteName">
+        <filter-param name="siteName" type="string"/>
     </filter-def>
     <filter-def name="filter_currentStateMode">
         <filter-param name="currentStateMode_id" type="integer"/>
