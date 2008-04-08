@@ -45,7 +45,7 @@ public class BatchRescheduleCommand {
     private void changeState(ScheduledActivity event) {
         ScheduledActivityState newState;
         if (getNewMode() == null) {
-            newState = event.getCurrentState();
+            newState = event.getCurrentState().getMode().createStateInstance();
         } else {
             newState = getNewMode().createStateInstance();
         }
