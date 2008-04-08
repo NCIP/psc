@@ -10,13 +10,12 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
 import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractController;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,6 +54,11 @@ public class DisplayTemplateController extends PscAbstractController {
 
         getControllerTools().addHierarchyToModel(studySegment.getEpoch(), model);
         model.put("studySegment", new StudySegmentTemplate(studySegment));
+
+        Boolean canNotViewPopulations = study.isReleased() && selectedAmendmentId==null ;
+        model.put("canNotViewPopulations", canNotViewPopulations);
+
+
 
         if (study.isReleased()) {
             String userName = ApplicationSecurityManager.getUser();
