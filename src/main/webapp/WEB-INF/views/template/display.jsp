@@ -660,7 +660,14 @@
                 <div class="value">
                     <ul id="populations">
                         <c:forEach items="${study.populations}" var="population">
-                            <li><a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">${population.abbreviation}: ${population.name}</a></li>
+                            <li>
+                                <c:if test="${!study.released}">
+                                    <a href="<c:url value="/pages/cal/template/population?study=${study.id}&population=${population.id}"/>">
+                                            ${population.abbreviation}: ${population.name}
+                                    </a>
+                                </c:if>
+                                <c:if test="${study.released}">${population.abbreviation}: ${population.name}</c:if>
+                            </li>
                         </c:forEach>
                         <li class="controls">
                             <c:if test="${study.inInitialDevelopment}">
