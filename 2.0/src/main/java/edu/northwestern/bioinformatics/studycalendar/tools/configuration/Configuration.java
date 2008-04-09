@@ -1,16 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.tools.configuration;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Propagation;
-import org.restlet.util.Template;
-
-import java.util.List;
-import java.util.Map;
-
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperties;
 import gov.nih.nci.cabig.ctms.tools.configuration.ConfigurationProperty;
 import gov.nih.nci.cabig.ctms.tools.configuration.DatabaseBackedConfiguration;
+import org.restlet.util.Template;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Rhett Sutphin
@@ -56,6 +55,7 @@ public class Configuration extends DatabaseBackedConfiguration {
         return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null || get(PATIENT_PAGE_URL) != null;
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean getCtmsConfigured() {
         return get(CTMS_NAME) != null && get(BASE_CTMS_URL) != null;
     }
