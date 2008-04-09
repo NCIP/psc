@@ -47,7 +47,9 @@
                     <div class="value">
                         <c:if test="${fn:length(sites) gt 1}">
                             <form:select path="site">
-                                <form:options items="${sites}"/>
+                                <c:forEach items="${sites}" var="pair">
+                                    <form:option value="${pair.key.id}" label="${pair.value}"/>
+                                </c:forEach>
                             </form:select>
                         </c:if>
                         <c:if test="${fn:length(sites) eq 1}">
