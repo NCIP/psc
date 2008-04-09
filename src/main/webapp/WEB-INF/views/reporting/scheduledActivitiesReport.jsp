@@ -3,6 +3,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <html>
 <head>
     <style type="text/css">
@@ -30,7 +31,7 @@
             <div class="row">
                 <div class="label" >
                     <form:label path="filters.currentStateMode" >
-                    Activity Mode:
+                    Activity Status:
                     </form:label>
                 </div>
                 <div class="value">
@@ -52,33 +53,16 @@
                 </div>
             </div>
 
-            <div>
-                <!--TODO: Remove temporary output table, and use some sort of table rendering tag-->
-                <table border="1" class="results">
-                    <tr>
-                        <th>Schd. Act. Id</th>
-                        <th>Activity Name</th>
-                        <th>Activity Status</th>
-                        <th>Subject First Name</th>
-                        <th>Subject Last Name</th>
-                        <th>Subject Patient Id</th>
-                        <th>Study Name</th>
-                        <th>Site Name</th>
-                    </tr>
-                    <c:forEach items="${results}" var="row">
-                        <tr>
-                            <td>${row.id}</td>
-                            <td>${row.scheduledActivity.activity.name}</td>
-                            <td>${row.scheduledActivity.currentState.textSummary}</td>
-                            <td>${row.subject.firstName}</td>
-                            <td>${row.subject.lastName}</td>
-                            <td>${row.subject.personId}</td>
-                            <td>${row.study.assignedIdentifier}</td>
-                            <td>${row.site.assignedIdentifier}</td>
-                        </tr>
-                    </c:forEach>
-                </table>
-            </div>
+            <display:table name="results">
+                <display:column property="id" title="ID" />
+                <display:column property="scheduledActivity.activity.name" title="Activity Name"/>
+                <display:column property="scheduledActivity.currentState.textSummary" title="Summary"/>
+                <display:column property="subject.firstName" title="First Name"/>
+                <display:column property="subject.lastName" title="Last Name"/>
+                <display:column property="subject.personId" title="Person Id"/>
+                <display:column property="study.assignedIdentifier" title="Study Name"/>
+                <display:column property="site.name" title="Site Name"/>
+            </display:table>
 
         </form:form>
     </laf:division>
