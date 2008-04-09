@@ -55,7 +55,6 @@ public class Configuration extends DatabaseBackedConfiguration {
         return get(CAAERS_BASE_URL) != null || get(LABVIEWER_BASE_URL) != null || get(PATIENT_PAGE_URL) != null;
     }
 
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean getCtmsConfigured() {
         return get(CTMS_NAME) != null && get(BASE_CTMS_URL) != null;
     }
