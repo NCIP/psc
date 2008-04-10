@@ -61,6 +61,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
         model.put("results", results);
+        model.put("resultSize", results.size());
         return model;
     }
 
