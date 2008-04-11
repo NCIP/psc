@@ -26,7 +26,7 @@ public class SiteDao extends StudyCalendarMutableDomainObjectDao<Site>
      * @return      a list of all the available sites
      */
     public List<Site> getAll() {
-        return getHibernateTemplate().find("from Site");
+        return getHibernateTemplate().find("from Site order by name asc ");
     }
 
     /**

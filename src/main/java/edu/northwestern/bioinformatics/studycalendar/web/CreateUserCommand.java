@@ -14,10 +14,7 @@ import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.Errors;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.List;
+import java.util.*;
 import java.io.Serializable;
 
 public class CreateUserCommand implements Validatable, Serializable {
@@ -52,7 +49,7 @@ public class CreateUserCommand implements Validatable, Serializable {
 
     private void buildRolesGrid(Set<UserRole> userRoles) {
         boolean selected;
-        rolesGrid = new HashMap<Site, Map<Role,RoleCell>>();
+        rolesGrid = new LinkedHashMap<Site, Map<Role,RoleCell>>();
         
         for(Site site : siteDao.getAll()) {
             for(Role role : values()) {
@@ -71,6 +68,7 @@ public class CreateUserCommand implements Validatable, Serializable {
                 rolesGrid.get(site).put(role, createRoleCell(selected,role.isSiteSpecific()));
             }
         }
+
     }
 
     public void validate(Errors errors){

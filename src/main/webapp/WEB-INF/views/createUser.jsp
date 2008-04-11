@@ -12,36 +12,123 @@
     <tags:includeScriptaculous/>
 
     <script type="text/javascript">
-        <c:if test="${actionText=='Edit'}">
-        function registerEditPasswordLink() {
-            var aElement = $('changePassword')
-            Event.observe(aElement, "click", function(e) {
-                Event.stop(e)
-                $('passwordField').enable();
-                $('rePasswordField').enable();
-                $('cancelChangePassword').show()
-                $('changePassword').hide();
-                $('passwordModified').value = true;
-            })
+    function highlightSites(color) {
+        var table = document.getElementById("gridSiteRole")
+        var siteHeaders = table.getElementsByTagName("th");
+
+        for (var j = 0; j < siteHeaders.length; j++) {
+
+            if (siteHeaders[j].id.indexOf("siteHeader") >= 0) {
+                siteHeaders[j].style.background = color;
+
+            }
+        }
+    }
+
+    function updateTable() {
+        var greenColor = 'green';
+        var whiteColor = '';
+        var blackColor = '#ccc'
+
+        var table = document.getElementById("gridSiteRole")
+
+        var rows = table.getElementsByTagName("tr");
+        var allRowHighlighted = false;
+        var roleHeaders = rows[0].getElementsByTagName("th");
+        for (var i = 0; i < roleHeaders.length; i++) {
+            roleHeaders[i].style.background = whiteColor;
+
+        }
+        for (var i = 1; i < rows.length; i++) {
+            var row = rows[i];
+
+            var headers = row.getElementsByTagName("th");
+
+            var columns = row.getElementsByTagName("td");
+            var individualRowHighlighted = false;
+            for (var j = 0; j < columns.length; j++) {
+                var box = document.getElementById(columns[j].id + "1");
+                var check = box.checked;
+                if (columns[j].className != null && columns[j].className == 'notSiteSpecific') {
+                    if (check) {
+                        allRowHighlighted = true;
+                        columns[j].style.background = greenColor;
+                        roleHeaders[j + 1].style.background = blackColor;
+
+                    } else {
+
+                        columns[j].style.background = whiteColor;
+                    }
+                } else {
+                    if (check) {
+                        individualRowHighlighted = true;
+                        columns[j].style.background = greenColor;
+                        if (i == 1) {
+                            roleHeaders[j+1].style.background = blackColor;
+                        } else {
+                            roleHeaders[j + 4].style.background = blackColor;
+
+                        }
+                    } else {
+                        columns[j].style.background = whiteColor;
+                    }
+                }
+            }
+            if (individualRowHighlighted) {
+                headers[0].style.background = blackColor;
+            } else {
+                headers[0].style.background = whiteColor;
+            }
+        }
+        if (allRowHighlighted) {
+            highlightSites(blackColor);
         }
 
-        function registerCancelEditPasswordLink() {
-            var aElement = $('cancelChangePassword')
-            Event.observe(aElement, "click", function(e) {
-                Event.stop(e)
-                $('passwordField').clear();
-                $('rePasswordField').clear();
-                $('passwordField').disable();
-                $('rePasswordField').disable();
-                $('cancelChangePassword').hide()
-                $('changePassword').show();
-                $('passwordModified').value = false;
-            })
-        }
+    }
 
-        Event.observe(window, "load", registerEditPasswordLink);
-        Event.observe(window, "load", registerCancelEditPasswordLink);
-        </c:if>
+    function checkUnCheckBox(box) {
+        var checkBoxVar = document.getElementById(box + '1');
+        var checked = checkBoxVar.checked;
+        if (checked) {
+            checkBoxVar.checked = false;
+        } else {
+            checkBoxVar.checked = true;
+        }
+        updateTable()
+    }
+
+    <c:if test="${actionText=='Edit'}">
+    function registerEditPasswordLink() {
+        var aElement = $('changePassword')
+        Event.observe(aElement, "click", function(e) {
+            Event.stop(e)
+            $('passwordField').enable();
+            $('rePasswordField').enable();
+            $('cancelChangePassword').show()
+            $('changePassword').hide();
+            $('passwordModified').value = true;
+        })
+    }
+
+    function registerCancelEditPasswordLink() {
+        var aElement = $('cancelChangePassword')
+        Event.observe(aElement, "click", function(e) {
+            Event.stop(e)
+            $('passwordField').clear();
+            $('rePasswordField').clear();
+            $('passwordField').disable();
+            $('rePasswordField').disable();
+            $('cancelChangePassword').hide()
+            $('changePassword').show();
+            $('passwordModified').value = false;
+        })
+    }
+
+    Event.observe(window, "load", registerEditPasswordLink);
+    Event.observe(window, "load", registerCancelEditPasswordLink);
+    Event.observe(window, "load", updateTable);
+    </c:if>
+
     </script>
     <style type="text/css">
         div.label {
@@ -68,10 +155,6 @@
 
         table.siteRoles td.notSiteSpecific {
             vertical-align: top;
-        }
-
-        table.siteRoles th {
-            background-color:#ccc
         }
 
         .password-edit-link {
@@ -146,27 +229,33 @@
                 </div>
                 <div class="value">
                     <tags:errors path="rolesGrid*"/>
-                    <table class="grid siteRoles">
+                    <table class="grid siteRoles" id="gridSiteRole">
                         <tr>
                             <th></th>
                             <c:forEach items="${roles}" var="role">
-                                <th>${role.displayName}</th>
+                                <th id="roleHeader${site.key.id}">${role.displayName}</th>
                             </c:forEach>
 
                         </tr>
                         <c:forEach items="${command.rolesGrid}" var="site" varStatus="index">
-                            <tr>
-                                <th>${site.key.name}</th>
+                            <tr id="siteRow${site.key.id}">
+                                <th id="siteHeader${site.key.id}">${site.key.name}</th>
 
                                 <c:forEach items="${roles}" var="role">
                                     <c:if test="${not role.siteSpecific && index.first}">
-                                        <td <c:if test="${not role.siteSpecific && index.first}">rowspan="${fn:length(command.rolesGrid)}"</c:if> class="notSiteSpecific">
-                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
+                                        <td id="rolesGrid[${site.key.id}][${role}].selected"
+                                            <c:if test="${not role.siteSpecific && index.first}">rowspan="${fn:length(command.rolesGrid)}"</c:if>
+                                            class="notSiteSpecific" onclick="checkUnCheckBox(
+                                                           'rolesGrid[${site.key.id}][${role}].selected')">
+                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected" onclick="checkUnCheckBox(
+                                                           'rolesGrid[${site.key.id}][${role}].selected')"/>
                                         </td>
                                     </c:if>
                                     <c:if test="${role.siteSpecific}">
-                                        <td>
-                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected"/>
+                                        <td id="rolesGrid[${site.key.id}][${role}].selected" onclick="checkUnCheckBox(
+                                                           'rolesGrid[${site.key.id}][${role}].selected')">
+                                            <form:checkbox path="rolesGrid[${site.key.id}][${role}].selected" onclick="checkUnCheckBox(
+                                                           'rolesGrid[${site.key.id}][${role}].selected')"/>
                                         </td>
                                     </c:if>
                                 </c:forEach>
@@ -174,6 +263,7 @@
                         </c:forEach>
                     </table>
                 </div>
+
             </div>
 
 

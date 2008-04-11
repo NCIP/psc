@@ -112,7 +112,7 @@
 
     <bean name="/cal/managePeriod/remove" id="deleteFromPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
-        <property name="commandBeanName"><value>deleteFromPeriodCommand</value></property>                        
+        <property name="commandBeanName"><value>deleteFromPeriodCommand</value></property>
     </bean>
 
     <bean name="/cal/managePeriod/update" id="updatePeriodController" autowire="byName"
@@ -405,6 +405,11 @@
            class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
         <property name="crumb.parent"><ref local="listUsersController"/></property>
     </bean>
+    <bean name="/admin/manage/editUser" id="editUserController" autowire="byName" lazy-init="true"
+          class="edu.northwestern.bioinformatics.studycalendar.web.CreateUserController">
+        <property name="crumb.parent"><ref local="listUsersController"/>
+        </property>
+    </bean>
 
     <bean name="/admin/manage/listUsers" id="listUsersController" autowire="byName" lazy-init="true"
            class="edu.northwestern.bioinformatics.studycalendar.web.ListUsersController">
@@ -541,7 +546,7 @@
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
                         </list>
-                    </property>                    
+                    </property>
                 </bean>
                 <!-- TODO: reenable when report builder works better
                 <bean parent="sectionTemplate">

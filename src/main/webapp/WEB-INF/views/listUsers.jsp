@@ -52,7 +52,7 @@
             <c:forEach items="${users}" var="user" varStatus="outterCounter">
                 <tr class="<c:if test="${outterCounter.index%2 != 0}">oddrow</c:if>">
                     <td>
-                        <a href="<c:url value="/pages/admin/manage/createUser?id=${user.id}"/>">${user.name}</a></td>
+                        <a href="<c:url value="/pages/admin/manage/editUser?id=${user.id}"/>">${user.name}</a></td>
                     <td>
                         <c:forEach items="${user.userRoles}" var="userRole" varStatus="innerCounter">
                             ${userRole.role.displayName}<c:if test="${not innerCounter.last}">,</c:if>
