@@ -1,40 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
-import edu.northwestern.bioinformatics.studycalendar.dao.DynamicMockDaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Epoch;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.PlannedCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySegment;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.PlannedCalendarDelta;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-
-import java.util.List;
-import java.util.Calendar;
-import static java.util.Calendar.*;
-
 import gov.nih.nci.cabig.ctms.lang.DateTools;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
-import org.easymock.classextension.EasyMock;
-import static org.easymock.classextension.EasyMock.*;
-import org.restlet.resource.Resource;
+
+import static java.util.Calendar.DECEMBER;
+import static java.util.Calendar.JANUARY;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -46,6 +23,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private TemplateService mockTemplateService;
     private AmendmentDao amendmentDao;
     private StudyDao studyDao;
+    private PopulationService populationService;
 
     private Study study;
     private Amendment a0, a1, a2, a3;
@@ -58,13 +36,14 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         studyService = registerMockFor(StudyService.class);
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
+        populationService = registerMockFor(PopulationService.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
         Epoch e1 = setGridId("E1-GRID", setId(1, calendar.getEpochs().get(1)));
         Epoch e2 = setGridId("E2-GRID", setId(2, calendar.getEpochs().get(2)));
         StudySegment e1a0 = setGridId("E1A0-GRID",
-            setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
+                setId(10, calendar.getEpochs().get(1).getStudySegments().get(0)));
 
         a3 = createAmendments("A0", "A1", "A2", "A3");
         a2 = a3.getPreviousAmendment();
@@ -85,6 +64,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setTemplateService(new TestingTemplateService());
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
+        service.setPopulationService(populationService);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -93,7 +73,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     public void testAmend() throws Exception {
         assertEquals("Wrong number of epochs to start with", 3, calendar.getEpochs().size());
         assertEquals("Wrong number of amendments to start with", 3,
-            study.getAmendment().getPreviousAmendmentsCount());
+                study.getAmendment().getPreviousAmendmentsCount());
 
         Amendment inProgress = new Amendment("LTF");
         Epoch newEpoch = setGridId("E-NEW", setId(8, Epoch.create("Long term")));
@@ -108,10 +88,10 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
         assertEquals("Epoch not added", 4, study.getPlannedCalendar().getEpochs().size());
         assertEquals("Epoch not added in the expected location", 8,
-            (int) study.getPlannedCalendar().getEpochs().get(3).getId());
+                (int) study.getPlannedCalendar().getEpochs().get(3).getId());
         assertEquals("Development amendment did not become current", inProgress, study.getAmendment());
         assertEquals("Development amendment did not become current", "A3",
-            study.getAmendment().getPreviousAmendment().getName());
+                study.getAmendment().getPreviousAmendment().getName());
         assertNull("Development amendment not moved to stack (still present as dev)", study.getDevelopmentAmendment());
         assertEquals("Wrong number of amendments on stack", 4, study.getAmendment().getPreviousAmendmentsCount());
     }
@@ -190,13 +170,13 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         Study amended
-            = service.getAmendedStudy(study, study.getAmendment().getPreviousAmendment());
+                = service.getAmendedStudy(study, study.getAmendment().getPreviousAmendment());
         verifyMocks();
 
         assertNotNull(amended);
         assertNotSame(calendar, amended);
         assertEquals("Amended calendar reflects incorrect level", "A2",
-            amended.getAmendment().getName());
+                amended.getAmendment().getName());
 
         List<Epoch> actualEpochs = amended.getPlannedCalendar().getEpochs();
         List<StudySegment> actualE1StudySegments = actualEpochs.get(1).getStudySegments();
@@ -210,7 +190,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
         replayMocks();
         Study amended
-            = service.getAmendedStudy(study, study.getAmendment().getPreviousAmendment().getPreviousAmendment());
+                = service.getAmendedStudy(study, study.getAmendment().getPreviousAmendment().getPreviousAmendment());
         verifyMocks();
 
         assertNotNull(amended);
@@ -219,9 +199,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         List<StudySegment> actualE1StudySegments = amended.getPlannedCalendar().getEpochs().get(1).getStudySegments();
         assertEquals("StudySegment add in A3 not reverted: " + actualE1StudySegments, 2, actualE1StudySegments.size());
         assertEquals("Epoch add in A2 not reverted: " + amended.getPlannedCalendar().getEpochs(), 2,
-            amended.getPlannedCalendar().getEpochs().size());
+                amended.getPlannedCalendar().getEpochs().size());
         assertEquals("Amended calendar reflects incorrect level", "A1",
-            amended.getAmendment().getName());
+                amended.getAmendment().getName());
     }
 
     public void testUpdateDevAmendment() throws Exception {
@@ -246,13 +226,14 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         StudySegment s0 = e.getStudySegments().get(0);
         StudySegment s1 = new StudySegment(), s2 = new StudySegment();
         Delta<Epoch> delta = Delta.createDeltaFor(
-            e, Remove.create(s0), Add.create(s1), Add.create(s2));
+                e, Remove.create(s0), Add.create(s1), Add.create(s2));
         dev.addDelta(delta);
         study.setDevelopmentAmendment(dev);
 
         mockDeltaService.delete(delta);
         amendmentDao.delete(dev);
         studyService.save(study);
+        populationService.delete(study.getPopulations());
 
         replayMocks();
         service.deleteDevelopmentAmendment(study);
@@ -260,7 +241,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         assertNull("Should be no dev amendment left", study.getDevelopmentAmendment());
         verifyMocks();
     }
-    
+
     public void testDeleteDevelopmentAmendmentWhenItsTheOnlyThing() throws Exception {
         service.setDeltaService(mockDeltaService);
         service.setTemplateService(mockTemplateService);
@@ -273,6 +254,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         study.setAmendment(null);
         study.setDevelopmentAmendment(dev);
 
+        populationService.delete(study.getPopulations());
         mockDeltaService.delete(d1);
         mockDeltaService.delete(d2);
         mockTemplateService.delete(study.getPlannedCalendar());
@@ -283,7 +265,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.deleteDevelopmentAmendment(study);
         verifyMocks();
     }
-    
+
     public void testDeleteDevelopmentAmendmentOnly() throws Exception {
         service.setDeltaService(mockDeltaService);
         service.setTemplateService(mockTemplateService);
