@@ -228,12 +228,8 @@
 
     <bean name="/newActivity" id="newActivityController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewActivityController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>New Activity</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
-            </bean>
-        </property>
+        <property name="crumb.parent"><ref local="managePeriodController"/></property>
+
     </bean>
 
     <bean name="/cal/createSubject" id="newSubjectController" autowire="byName"
@@ -462,12 +458,8 @@
 
     <bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"
            class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
-        <property name="crumb">
-            <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>Import Activities</value></property>
-                <property name="parent"><ref local="studyListController"/></property>
-            </bean>
-        </property>
+        <property name="crumb.parent"><ref local="managePeriodController"/></property>
+
     </bean>
 
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
