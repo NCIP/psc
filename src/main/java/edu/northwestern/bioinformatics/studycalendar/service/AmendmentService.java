@@ -25,13 +25,14 @@ public class AmendmentService {
     private TemplateService templateService;
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
+    private PopulationService populationService;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
      * <ul>
-     *   <li>Apply the deltas to the persistent calendar</li>
-     *   <li>Move the development amendment to the study's amendment stack</li>
-     *   <li>Save it all</li>
+     * <li>Apply the deltas to the persistent calendar</li>
+     * <li>Move the development amendment to the study's amendment stack</li>
+     * <li>Save it all</li>
      * </ul>
      */
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
@@ -57,7 +58,7 @@ public class AmendmentService {
                         deltaService.amend(assignment, approval.getAmendment());
                     } else {
                         log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
-                            approval.getAmendment().getDisplayName(), assignment.getId());
+                                approval.getAmendment().getDisplayName(), assignment.getId());
                     }
                 }
             }
@@ -70,8 +71,8 @@ public class AmendmentService {
     public Study getAmendedStudy(Study source, Amendment target) {
         if (!(source.getAmendment().equals(target) || source.getAmendment().hasPreviousAmendment(target))) {
             throw new StudyCalendarSystemException(
-                "Amendment %s (%s) does not apply to the template for %s (%s)",
-                target.getName(), target.getGridId(), source.getName(), source.getGridId());
+                    "Amendment %s (%s) does not apply to the template for %s (%s)",
+                    target.getName(), target.getGridId(), source.getName(), source.getGridId());
         }
 
         Study amended = source.transientClone();
@@ -84,7 +85,7 @@ public class AmendmentService {
         return amended;
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public <T extends PlanTreeNode<?>> T getAmendedNode(T source, Amendment target) {
         Study base = templateService.findStudy(source);
         Study amended = getAmendedStudy(base, target);
@@ -111,6 +112,7 @@ public class AmendmentService {
     @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
     public void deleteDevelopmentAmendment(Study study) {
         deleteDevelopmentAmendment(study.getDevelopmentAmendment());
+        populationService.delete(study.getPopulations());
         if (study.getAmendment() == null) {
             templateService.delete(study.getPlannedCalendar());
             studyDao.delete(study);
@@ -166,5 +168,10 @@ public class AmendmentService {
     @Required
     public void setAmendmentDao(AmendmentDao amendmentDao) {
         this.amendmentDao = amendmentDao;
+    }
+
+    @Required
+    public void setPopulationService(final PopulationService populationService) {
+        this.populationService = populationService;
     }
 }
