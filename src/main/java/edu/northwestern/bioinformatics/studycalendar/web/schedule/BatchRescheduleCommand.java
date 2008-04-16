@@ -1,18 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.DatedScheduledActivityState;
 import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledCalendarDao;
-
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Set;
-
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledCalendar;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * @author Rhett Sutphin
@@ -35,9 +33,13 @@ public class BatchRescheduleCommand {
 
     public void apply() {
         for (ScheduledActivity event : events) {
-            if (getNewMode() == null || (event.isValidNewState(newMode.getClazz()))) {
+            if (getNewMode() == null || (event.isValidNewState(newMode.getClazz()))
+                    || ((newMode.getClazz().getName().equals(Canceled.class.getName())) && event.isValidNewState(NotApplicable.class))) {
+                  //cancel also changes status to NA for 
                 changeState(event);
             }
+
+
         }
         scheduledCalendarDao.save(getScheduledCalendar());
     }
@@ -54,7 +56,12 @@ public class BatchRescheduleCommand {
         if (newState instanceof DatedScheduledActivityState) {
             ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
         }
-        event.changeState(newState);
+
+        if (event.getCurrentState() instanceof Conditional && newState instanceof Canceled) {
+            event.changeState(ScheduledActivityMode.NOT_APPLICABLE.createStateInstance());
+        } else {
+            event.changeState(newState);
+        }
     }
 
     private Date createDate(Date baseDate) {
@@ -66,7 +73,7 @@ public class BatchRescheduleCommand {
             shift = getDateOffset();
         }
         c.setTime(baseDate);
-        if(getNewMode() == null || (ScheduledActivityMode.OCCURRED != getNewMode())) {
+        if (getNewMode() == null || (ScheduledActivityMode.OCCURRED != getNewMode())) {
             if (shift != null) {
                 c.add(Calendar.DATE, shift);
             } else {
@@ -87,7 +94,7 @@ public class BatchRescheduleCommand {
 
     ////// BOUND PROPERTIES
 
-    public ScheduledCalendar getScheduledCalendar(){
+    public ScheduledCalendar getScheduledCalendar() {
         return scheduledCalendar;
     }
 

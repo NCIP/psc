@@ -33,8 +33,8 @@
                                 <option value="-1">Select an action...</option>
                                 <option value="">Move the date</option>
                                 <option value="1">Mark/Keep as scheduled</option>
-                                <option value="2">Mark occurred</option>
-                                <option value="3">Mark canceled</option>
+                                <option value="2">Mark as occurred</option>
+                                <option value="3">Mark as canceled or NA</option>
                                 <option value="6">Mark as missed</option>
                             </select>
                         </label>
