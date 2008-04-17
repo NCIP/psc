@@ -14,52 +14,29 @@
 <script type="text/javascript">
 
 
-addEvent(window, 'load', init, false);
-function init() {
-    var formInputs = document.getElementsByTagName('input');
-    for (var i = 0; i < formInputs.length; i++) {
-        var theInput = formInputs[i];
+function initSearchField() {
 
-        if (theInput.type == 'text' && theInput.className.match(/\bcleardefault\b/)) {
-            /* Add event handlers */
-            addEvent(theInput, 'focus', clearDefaultText, false);
-            addEvent(theInput, 'blur', replaceDefaultText, false);
-
-            /* Save the current value */
-            if (theInput.value != '') {
-                theInput.defaultText = theInput.value;
-                theInput.style.color = 'gray';
-                theInput.style.fontStyle = 'italic';
-
-            }
-            theInput.style.backgroundColor = '#CCE6FF';
+    $$("input[type=text].autocomplete").each(function(theInput)
+    {
+        /* Add event handlers */
+        Event.observe(theInput, 'focus', clearDefaultText);
+        Event.observe(theInput, 'blur', replaceDefaultText);
+        /* Save the current value */
+        if (theInput.value != '') {
+            theInput.defaultText = theInput.value;
+            theInput.className = 'pending-search';
 
         }
 
-
-    }
-
+    });
 }
-function addEvent(element, eventType, lamdaFunction, useCapture) {
-    if (element.addEventListener) {
-        element.addEventListener(eventType, lamdaFunction, useCapture);
-        return true;
-    } else if (element.attachEvent) {
-        var r = element.attachEvent('on' + eventType, lamdaFunction);
-        return r;
-    } else {
-        return false;
-    }
-}
-
 function clearDefaultText(e) {
     var target = window.event ? window.event.srcElement : e ? e.target : null;
     if (!target) return;
 
     if (target.value == target.defaultText) {
         target.value = '';
-        target.style.backgroundColor = '#CCE6FF';
-        target.style.fontStyle = 'normal';
+        target.className = 'search';
 
     }
 
@@ -71,12 +48,8 @@ function replaceDefaultText(e) {
 
     if (target.value == '' && target.defaultText) {
         target.value = target.defaultText;
-        target.style.color = 'gray';
-        target.style.fontStyle = 'italic';
-
-
+        target.className = 'pending-search';
     }
-    target.style.backgroundColor = '#CCE6FF';
 
 }
 
@@ -452,6 +425,7 @@ function initMethods() {
     registerHoverTips();
     registerDraggablesAndDroppables();
     createAutocompleter();
+    initSearchField();
 
 }
 
@@ -577,6 +551,21 @@ th.day-number {
 .input-row .no-condition {
     color: #666;
     font-style: italic;
+}
+
+input.autocomplete {
+    background-color: #CCE6FF
+}
+
+input.pending-search {
+    color: gray;
+    font-style: italic;
+    background-color: #CCE6FF;
+}
+
+input.search {
+    font-style: normal;
+    background-color: #CCE6FF;
 }
 
 table {
@@ -898,7 +887,7 @@ table#manage-period {
             <option value="${activityType.id}">${activityType.name}</option>
         </c:forEach>
     </select>
-    <input id="activities-autocompleter-input" type="text" autocomplete="off" class="cleardefault"
+    <input id="activities-autocompleter-input" type="text" autocomplete="off" class="autocomplete"
            value="Search for activity"/>
 
     <div id="activities-autocompleter-div" class="autocomplete"></div>
