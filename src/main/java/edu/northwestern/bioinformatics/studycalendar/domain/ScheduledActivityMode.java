@@ -1,11 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.*;
+import org.apache.commons.lang.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.ArrayList;
 
 /**
  * Typedef enum representing the discriminator column for subclasses of
@@ -76,5 +77,9 @@ public class ScheduledActivityMode<T extends ScheduledActivityState> extends Abs
 
     public Class<T> getClazz() {
         return clazz;
+    }
+
+    public String getDisplayName() {
+        return StringUtils.capitalize(getName());
     }
 }

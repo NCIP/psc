@@ -38,6 +38,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         assertNotNull("Study should not be null", row.getStudy());
 
         assertNotNull("Site should not be null", row.getSite());
+        assertNotNull("Site coordinator name should not be null", row.getSubjectCoordinatorName());
     }
 
     public void testSearchWithStudyFilter_Neg() {

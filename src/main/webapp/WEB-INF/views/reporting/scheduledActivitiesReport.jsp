@@ -122,12 +122,13 @@
             <br style="clear:both"/>
 
             <display:table name="results" class="query-results">
-                <display:column property="id" title="ID" />
                 <display:column property="scheduledActivity.activity.name" title="Activity Name"/>
-                <display:column property="scheduledActivity.currentState.textSummary" title="Summary"/>
-                <display:column property="subject.firstName" title="First Name"/>
-                <display:column property="subject.lastName" title="Last Name"/>
-                <display:column property="subject.personId" title="Person Id"/>
+                <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"/>
+                <display:column property="scheduledActivity.actualDate" title="Scheduled Date"/>
+                <display:column property="scheduledActivity.actualDate" title="Ideal Date"/>
+                <display:column property="subject.lastFirst" title="Subject Name"/>
+                <display:column property="subject.personId" title="Subject Id"/>
+                <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"/>
                 <display:column property="study.assignedIdentifier" title="Study Name"/>
                 <display:column property="site.name" title="Site Name"/>
             </display:table>

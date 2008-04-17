@@ -15,6 +15,7 @@ public class ScheduledActivitiesReportRow implements DomainObject {
     private Subject subject;
     private Study study;
     private Site site;
+    private String subjectCoordinatorName;
 
     public Integer getId() {
         return id;
@@ -54,5 +55,13 @@ public class ScheduledActivitiesReportRow implements DomainObject {
 
     public void setSite(Site site) {
         this.site = site;
+    }
+
+    public String getSubjectCoordinatorName() {
+        return subjectCoordinatorName;
+    }
+
+    public void setSubjectCoordinatorName(String subjectCoordinatorName) {
+        this.subjectCoordinatorName = subjectCoordinatorName;
     }
 }
