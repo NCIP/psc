@@ -231,6 +231,7 @@
 
         Event.observe(window, "load", createAutocompleter)
         Event.observe(window, "load", disableDivs)
+        Event.observe(window, "load", initSearchField);
 
     </script>
 </head>
@@ -312,7 +313,8 @@
             <h3>Released templates</h3>
             <laf:division>
                 <label for="add-template">Search for study: </label>
-                <input id="studies-autocompleter-input" type="text" autocomplete="off"/>
+                <input id="studies-autocompleter-input" type="text" autocomplete="off" value="Search for studies"
+                               class="autocomplete"/>
                 <div id="studies-autocompleter-div" class="autocomplete"></div>
 
                 <label id="selected-study" style="display:none;"> Selected study: </label>
