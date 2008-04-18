@@ -248,3 +248,43 @@ function registerHeaderCollapse() {
         })
     })
 }
+
+/////  autocompleter search fields
+function initSearchField() {
+
+    $$("input[type=text].autocomplete").each(function(theInput)
+    {
+        /* Add event handlers */
+        Event.observe(theInput, 'focus', clearDefaultText);
+        Event.observe(theInput, 'blur', replaceDefaultText);
+        /* Save the current value */
+        if (theInput.value != '') {
+            theInput.defaultText = theInput.value;
+            theInput.className = 'pending-search';
+
+        }
+
+    });
+}
+function clearDefaultText(e) {
+    var target = window.event ? window.event.srcElement : e ? e.target : null;
+    if (!target) return;
+
+    if (target.value == target.defaultText) {
+        target.value = '';
+        target.className = 'search';
+
+    }
+
+}
+
+function replaceDefaultText(e) {
+    var target = window.event ? window.event.srcElement : e ? e.target : null;
+    if (!target) return;
+
+    if (target.value == '' && target.defaultText) {
+        target.value = target.defaultText;
+        target.className = 'pending-search';
+    }
+
+}

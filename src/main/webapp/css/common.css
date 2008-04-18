@@ -143,3 +143,17 @@ table.grid th {
 #header .background-R {
     background-image: url("../images/header_BG_R.png")
 }
+input.autocomplete {
+    background-color: #CCE6FF
+}
+
+input.pending-search {
+    color: gray;
+    font-style: italic;
+    background-color: #CCE6FF;
+}
+
+input.search {
+    font-style: normal;
+    background-color: #CCE6FF;
+}

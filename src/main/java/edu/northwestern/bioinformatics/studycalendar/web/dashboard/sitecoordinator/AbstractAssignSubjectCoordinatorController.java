@@ -1,27 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.web.dashboard.sitecoordinator;
 
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
-import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
-import edu.northwestern.bioinformatics.studycalendar.domain.*;
+import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.service.SiteService;
+import edu.northwestern.bioinformatics.studycalendar.service.TemplateService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
-
+import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.Crumb;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.CrumbSource;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.mvc.SimpleFormController;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 @AccessControl(roles = {Role.SITE_COORDINATOR})
 public abstract class AbstractAssignSubjectCoordinatorController extends SimpleFormController implements CrumbSource {
@@ -36,11 +35,11 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     private Crumb crumb;
 
     protected Map referenceData(HttpServletRequest request, Object o, Errors errors) throws Exception {
-        Map<String, Object> refdata = new HashMap<String,Object>();
+        Map<String, Object> refdata = new HashMap<String, Object>();
         AbstractAssignSubjectCoordinatorCommand command = (AbstractAssignSubjectCoordinatorCommand) o;
-        refdata.put("studies", command.getAssignableStudies() );
-        refdata.put("sites"  , command.getAssignableSites());
-        refdata.put("users"  , command.getAssignableUsers());
+        refdata.put("studies", command.getAssignableStudies());
+        refdata.put("sites", command.getAssignableSites());
+        refdata.put("users", command.getAssignableUsers());
 
         return refdata;
     }
@@ -58,11 +57,11 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected List<Study> getAssignableStudies(User siteCoordinator) throws Exception {
-        List<Study> studies      = studyDao.getAll();
+        List<Study> studies = studyDao.getAll();
         log.debug("{} studies in system", studies.size());
 
         List<Study> ownedStudies
-            = templateService.filterForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
+                = templateService.filterForVisibility(studies, siteCoordinator.getUserRole(Role.SITE_COORDINATOR));
         log.debug("{} studies visible to {}", ownedStudies.size(), siteCoordinator.getName());
 
         List<Study> assignableStudies = new ArrayList<Study>();
@@ -84,6 +83,9 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
     }
 
     protected List<Site> getAssignableSites(User siteCoordinator, Study study) {
+        if (study == null) {
+            return new ArrayList<Site>();
+        }
         List<Site> sitesForSiteCoord = getAssignableSites(siteCoordinator);
         List<Site> assignableStudySites = new ArrayList<Site>();
         for (Site site : sitesForSiteCoord) {
@@ -91,7 +93,7 @@ public abstract class AbstractAssignSubjectCoordinatorController extends SimpleF
                 assignableStudySites.add(site);
             }
         }
-        log.debug("{} sites found for {} and study {}", new Object[] { assignableStudySites.size(), siteCoordinator.getName(), study.getName() });
+        log.debug("{} sites found for {} and study {}", new Object[]{assignableStudySites.size(), siteCoordinator.getName(), study.getName()});
         Collections.sort(assignableStudySites, new NamedComparator());
         return assignableStudySites;
     }
