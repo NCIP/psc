@@ -1,6 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+
+import java.util.Date;
 
 /**
  * @author John Dzak
@@ -10,6 +13,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private SubstringFilterLimit siteName = new SubstringFilterLimit("siteName");
     private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
             new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
+    private RangeFilterLimit<Date> dateRange = new RangeFilterLimit<Date>("activityDate");
 
     protected String getHibernateFilterPrefix() {
         return "filter_";
@@ -37,5 +41,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public void setSiteName(String value) {
         siteName.setValue(value);
+    }
+
+    public MutableRange<Date> getDateRange() {
+        return dateRange.getValue();
+    }
+
+    public void setDateRange(MutableRange<Date> range) {
+        this.dateRange.setValue(range);
     }
 }

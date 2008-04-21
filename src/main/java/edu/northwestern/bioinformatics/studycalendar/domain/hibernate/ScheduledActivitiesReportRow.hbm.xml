@@ -82,6 +82,8 @@
         <filter name="filter_studyAssignedIdentifier" condition="UPPER(study_assigned_identifier) LIKE :studyAssignedIdentifier"/>
         <filter name="filter_siteName" condition="UPPER(site_name) LIKE :siteName"/>
         <filter name="filter_currentStateMode" condition="current_state_mode_id = :currentStateMode_id"/>
+        <filter name="filter_activityDate_start"   condition="current_state_date &gt;= :start"/>
+        <filter name="filter_activityDate_stop"    condition="current_state_date &lt;= :stop"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
@@ -91,5 +93,11 @@
     </filter-def>
     <filter-def name="filter_currentStateMode">
         <filter-param name="currentStateMode_id" type="integer"/>
+    </filter-def>
+        <filter-def name="filter_activityDate_start">
+        <filter-param name="start" type="date"/>
+    </filter-def>
+    <filter-def name="filter_activityDate_stop">
+        <filter-param name="stop" type="date"/>
     </filter-def>
 </hibernate-mapping>

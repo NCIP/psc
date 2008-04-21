@@ -1,6 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
+import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+import org.hibernate.Filter;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -144,6 +146,42 @@ public abstract class ReportFilters {
         @Override
         protected Integer getValueForFilter() {
             return getValue().getId();
+        }
+    }
+
+     protected class RangeFilterLimit<B extends Comparable<B>> extends FilterLimit<MutableRange<B>> {
+        private String baseName;
+
+        public RangeFilterLimit(String baseName) {
+            setValue(new MutableRange<B>());
+            this.baseName = baseName;
+        }
+
+        @Override
+        public boolean isSet() {
+            return getValue() != null
+                && getValue().hasBound();
+        }
+
+        @Override
+        public void apply(Session session) throws HibernateException {
+            enable(session, getValue().getStart(), "start");
+            enable(session, getValue().getStop(), "stop");
+        }
+
+        protected Filter enable(Session session, B bound, String boundName) {
+            if (bound != null) {
+                return session.enableFilter(qualifyFilterName(baseName) + '_' + boundName)
+                    .setParameter(boundName, bound);
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        public void appendDescription(StringBuilder builder) {
+            builder.append(baseName).append(" in [")
+                .append(getValue().getStart()).append(", ").append(getValue().getStop()).append(']');
         }
     }
 }

@@ -63,17 +63,6 @@
         details="Nice Details!!"
         source_amendment_id="-17"
         />
-    <!--<SCHEDULED_ACTIVITIES-->
-        <!--id="-18"-->
-        <!--scheduled_study_segment_id="-21"-->
-        <!--planned_activity_id="-6"-->
-        <!--current_state_mode_id="3"-->
-        <!--current_state_date="2006-11-07"-->
-        <!--ideal_date="2006-11-08"-->
-        <!--activity_id="-100"-->
-        <!--details="Nice Details!!"-->
-        <!--source_amendment_id="-17"-->
-        <!--/>-->
 
 
     <SCHEDULED_ACTIVITY_STATES

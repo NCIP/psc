@@ -4,6 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+import edu.nwu.bioinformatics.commons.DateUtils;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * @author John Dzak
@@ -68,6 +73,34 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithSiteFilter_Neg() {
         filters.setSiteName("Bedrock");
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithStartDateFilter_Pos() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStart(DateUtils.createDate(2006, Calendar.OCTOBER, 29));
+        filters.setDateRange(range);
+        assertSearchWithResults(NEG_16);
+    }
+
+    public void testSearchWithStartDateFilter_Neg() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
+        filters.setDateRange(range);
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithStopDateFilter_Pos() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStop(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
+        filters.setDateRange(range);
+        assertSearchWithResults(NEG_16);
+    }
+
+    public void testSearchWithStopDateFilter_Neg() {
+        MutableRange<Date> range = new MutableRange<Date>();
+        range.setStop(DateUtils.createDate(2006, Calendar.OCTOBER, 25));
+        filters.setDateRange(range);
         assertSearchWithResults();
     }
 }
