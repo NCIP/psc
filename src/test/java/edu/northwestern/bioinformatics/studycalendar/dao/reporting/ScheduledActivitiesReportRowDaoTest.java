@@ -79,28 +79,28 @@ public class ScheduledActivitiesReportRowDaoTest extends
     public void testSearchWithStartDateFilter_Pos() {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(DateUtils.createDate(2006, Calendar.OCTOBER, 29));
-        filters.setDateRange(range);
+        filters.setActualActivityDate(range);
         assertSearchWithResults(NEG_16);
     }
 
     public void testSearchWithStartDateFilter_Neg() {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStart(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
-        filters.setDateRange(range);
+        filters.setActualActivityDate(range);
         assertSearchWithResults();
     }
 
     public void testSearchWithStopDateFilter_Pos() {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStop(DateUtils.createDate(2006, Calendar.NOVEMBER, 5));
-        filters.setDateRange(range);
+        filters.setActualActivityDate(range);
         assertSearchWithResults(NEG_16);
     }
 
     public void testSearchWithStopDateFilter_Neg() {
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStop(DateUtils.createDate(2006, Calendar.OCTOBER, 25));
-        filters.setDateRange(range);
+        filters.setActualActivityDate(range);
         assertSearchWithResults();
     }
 }

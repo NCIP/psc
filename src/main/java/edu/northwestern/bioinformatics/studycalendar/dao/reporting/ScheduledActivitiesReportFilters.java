@@ -13,7 +13,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private SubstringFilterLimit siteName = new SubstringFilterLimit("siteName");
     private ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>> currentStateMode =
             new ControlledVocabularyObjectFilterLimit<ScheduledActivityMode<?>>("currentStateMode");
-    private RangeFilterLimit<Date> dateRange = new RangeFilterLimit<Date>("activityDate");
+    private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
 
     protected String getHibernateFilterPrefix() {
         return "filter_";
@@ -43,11 +43,11 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
         siteName.setValue(value);
     }
 
-    public MutableRange<Date> getDateRange() {
-        return dateRange.getValue();
+    public MutableRange<Date> getActualActivityDate() {
+        return actualActivityDate.getValue();
     }
 
-    public void setDateRange(MutableRange<Date> range) {
-        this.dateRange.setValue(range);
+    public void setActualActivityDate(MutableRange<Date> range) {
+        this.actualActivityDate.setValue(range);
     }
 }

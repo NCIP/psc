@@ -5,6 +5,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActi
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
+import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +25,7 @@ import java.util.Map;
  */
 public class ScheduledActivitiesReportController extends AbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
+    private ControllerTools controllerTools;
 
     public ScheduledActivitiesReportController() {
         setCommandClass(ScheduledActivitiesReportCommand.class);
@@ -37,6 +40,8 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
             new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(true));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(true));
     }
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -68,5 +73,9 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
     ////// Bean Setters
     public void setScheduledActivitiesReportRowDao(ScheduledActivitiesReportRowDao dao) {
         this.dao = dao;
+    }
+
+    public void setControllerTools(ControllerTools controllerTools) {
+        this.controllerTools = controllerTools;
     }
 }
