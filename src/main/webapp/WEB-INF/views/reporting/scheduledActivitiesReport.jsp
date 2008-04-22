@@ -120,12 +120,24 @@
                 <div class="filterGroup">
                     <span class="filterInput">
                         <form:label path="filters.actualActivityDate" >
-                            Activities within date range:
+                            Activities scheduled within:
                         </form:label>
 
-                        <form:input path="filters.actualActivityDate.start"/>
-                            to
-                        <form:input path="filters.actualActivityDate.stop"/>
+                        <form:input path="filters.actualActivityDate.start" id="actual-date-start" cssClass="date"/>
+
+                        <a href="#" id="actual-date-start-calbutton">
+                            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
+                                 height="16" border="0" align="absmiddle"/>
+                        </a>
+
+                        to
+
+                        <form:input path="filters.actualActivityDate.stop" id="actual-date-stop" cssClass="date"/>
+                        
+                        <a href="#" id="actual-date-stop-calbutton">
+                            <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
+                                 height="16" border="0" align="absmiddle"/>
+                        </a>
 
                     </span>
                 </div>
@@ -137,10 +149,15 @@
                 <display:column property="scheduledActivity.activity.name" title="Activity Name"/>
                 <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"/>
                 <display:column title="Scheduled Date">
-                    <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
+                    <c:if test="${row.scheduledActivity.currentState.mode.name == 'canceled'}">
+                        -
+                    </c:if>
+                    <c:if test="${row.scheduledActivity.currentState.mode.name != 'canceled'}">
+                        <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
+                    </c:if>
                 </display:column>
                 <display:column title="Ideal Date">
-                    <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
+                    <tags:formatDate value="${row.scheduledActivity.idealDate}"/>
                 </display:column>
                 <display:column property="subject.lastFirst" title="Subject Name"/>
                 <display:column property="subject.personId" title="Subject Id"/>
