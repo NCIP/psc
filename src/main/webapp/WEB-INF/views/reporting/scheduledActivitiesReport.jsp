@@ -41,6 +41,7 @@
             margin-right: 14px; /* for arrow image */
             width: 100%;
         }
+
         table.query-results tr.even td.highlighted { background-color: #7bf; }
 
         table.query-results ul {
@@ -73,6 +74,11 @@
             color: #666 ;
             font-weight: bold ;
         }
+
+        th, a { background-repeat: no-repeat; } 
+        table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
+        table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
+        table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
 
     </style>
 </head>
@@ -145,10 +151,10 @@
 
             <br style="clear:both"/>
 
-            <display:table name="results" class="query-results" id="row">
-                <display:column property="scheduledActivity.activity.name" title="Activity Name"/>
-                <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"/>
-                <display:column title="Scheduled Date">
+            <display:table name="results" class="query-results" id="row" requestURI="scheduledActivitiesReport">
+                <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true"/>
+                <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"  sortable="true"/>
+                <display:column title="Scheduled Date"  sortable="true">
                     <c:if test="${row.scheduledActivity.currentState.mode.name == 'canceled'}">
                         -
                     </c:if>
@@ -156,14 +162,14 @@
                         <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
                     </c:if>
                 </display:column>
-                <display:column title="Ideal Date">
+                <display:column title="Ideal Date"  sortable="true">
                     <tags:formatDate value="${row.scheduledActivity.idealDate}"/>
                 </display:column>
-                <display:column property="subject.lastFirst" title="Subject Name"/>
-                <display:column property="subject.personId" title="Subject Id"/>
-                <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"/>
-                <display:column property="study.assignedIdentifier" title="Study Name"/>
-                <display:column property="site.name" title="Site Name"/>
+                <display:column property="subject.lastFirst" title="Subject Name"  sortable="true"/>
+                <display:column property="subject.personId" title="Subject Id"  sortable="true"/>
+                <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"  sortable="true"/>
+                <display:column property="study.assignedIdentifier" title="Study Name" sortable="true"/>
+                <display:column property="site.name" title="Site Name"  sortable="true"/>
             </display:table>
 
         </form:form>
