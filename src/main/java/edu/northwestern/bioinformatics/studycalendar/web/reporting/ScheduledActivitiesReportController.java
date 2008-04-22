@@ -40,8 +40,8 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
             new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(true));
-        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(true));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(false));
+        binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(false));
     }
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {

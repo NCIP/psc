@@ -117,15 +117,31 @@
 
                     </span>
                 </div>
+                <div class="filterGroup">
+                    <span class="filterInput">
+                        <form:label path="filters.actualActivityDate" >
+                            Activities within date range:
+                        </form:label>
+
+                        <form:input path="filters.actualActivityDate.start"/>
+                            to
+                        <form:input path="filters.actualActivityDate.stop"/>
+
+                    </span>
+                </div>
             </div>
 
             <br style="clear:both"/>
 
-            <display:table name="results" class="query-results">
+            <display:table name="results" class="query-results" id="row">
                 <display:column property="scheduledActivity.activity.name" title="Activity Name"/>
                 <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"/>
-                <display:column property="scheduledActivity.actualDate" title="Scheduled Date"/>
-                <display:column property="scheduledActivity.actualDate" title="Ideal Date"/>
+                <display:column title="Scheduled Date">
+                    <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
+                </display:column>
+                <display:column title="Ideal Date">
+                    <tags:formatDate value="${row.scheduledActivity.actualDate}"/>
+                </display:column>
                 <display:column property="subject.lastFirst" title="Subject Name"/>
                 <display:column property="subject.personId" title="Subject Id"/>
                 <display:column property="subjectCoordinatorName" title="Subject Coordinator Name"/>
