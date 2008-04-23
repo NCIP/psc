@@ -122,11 +122,10 @@
                         </form:select>
 
                     </span>
-                </div>
-                <div class="filterGroup">
-                    <span class="filterInput">
+
+                     <span class="filterInput">
                         <form:label path="filters.actualActivityDate" >
-                            Activities scheduled within:
+                            Activities scheduled from:
                         </form:label>
 
                         <form:input path="filters.actualActivityDate.start" id="actual-date-start" cssClass="date"/>
@@ -139,7 +138,7 @@
                         to
 
                         <form:input path="filters.actualActivityDate.stop" id="actual-date-stop" cssClass="date"/>
-                        
+
                         <a href="#" id="actual-date-stop-calbutton">
                             <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
                                  height="16" border="0" align="absmiddle"/>
