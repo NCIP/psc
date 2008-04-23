@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
@@ -37,6 +38,7 @@ public class ScheduledActivitiesReportRowDaoTest extends
         Activity acivity = schd.getActivity();
         assertNotNull("Activity id should not be null", acivity.getId());
         assertNotNull("Activity name should not be null", acivity.getName());
+        assertNotNull("Actiivty type should not be null", acivity.getType());
 
         assertNotNull("Subject should not be null", row.getSubject());
 
@@ -101,6 +103,16 @@ public class ScheduledActivitiesReportRowDaoTest extends
         MutableRange<Date> range = new MutableRange<Date>();
         range.setStop(DateUtils.createDate(2006, Calendar.OCTOBER, 25));
         filters.setActualActivityDate(range);
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithActivityTypeFilter_Pos() {
+        filters.setActivityType(ActivityType.INTERVENTION);
+        assertSearchWithResults(NEG_17, NEG_16);
+    }
+
+    public void testSearchWithActivityTypeFilter_Neg() {
+        filters.setActivityType(ActivityType.DISEASE_MEASURE);
         assertSearchWithResults();
     }
 }

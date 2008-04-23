@@ -16,6 +16,7 @@
                 s_actv.details,
                 s_actv.activity_id,
                 a.name AS activity_name,
+                a.activity_type_id,
                 subj.id AS subject_id,
                 subj.first_name,
                 subj.last_name,
@@ -57,6 +58,9 @@
             <component name="activity">
                 <property name="id" column="activity_id"/>
                 <property name="name" column="activity_name"/>
+                <property name="type" type="activityType">
+                    <column name="activity_type_id"/>
+                </property>
             </component>
         </component>
 
@@ -84,6 +88,7 @@
         <filter name="filter_currentStateMode" condition="current_state_mode_id = :currentStateMode_id"/>
         <filter name="filter_actualActivityDate_start"   condition="current_state_date &gt;= :start"/>
         <filter name="filter_actualActivityDate_stop"    condition="current_state_date &lt;= :stop"/>
+        <filter name="filter_activityType" condition="activity_type_id = :activityType_id"/>
     </class>
     <filter-def name="filter_studyAssignedIdentifier">
         <filter-param name="studyAssignedIdentifier" type="string"/>
@@ -99,5 +104,8 @@
     </filter-def>
     <filter-def name="filter_actualActivityDate_stop">
         <filter-param name="stop" type="date"/>
+    </filter-def>
+    <filter-def name="filter_activityType">
+        <filter-param name="activityType_id" type="integer"/>
     </filter-def>
 </hibernate-mapping>
