@@ -34,6 +34,14 @@ public class ConfigurationTest extends DaoTestCase {
         assertEquals(Boolean.FALSE, configuration.get(SHOW_DEBUG_INFORMATION));
     }
 
+    public void testGetBooleanPropertyForCreatingSubject() throws Exception {
+        assertEquals(Boolean.TRUE, configuration.get(ENABLE_ASSIGNING_SUBJECT));
+    }
+
+    public void testGetBooleanPropertyForCreatingTemplate() throws Exception {
+        assertEquals(Boolean.TRUE, configuration.get(ENABLE_CREATING_TEMPLATE));
+    }
+
     public void testGetDefaultWhenUnconfigured() throws Exception {
         String actual = configuration.get(DEPLOYMENT_NAME);
         assertEquals("Study Calendar", actual);

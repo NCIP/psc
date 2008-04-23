@@ -239,7 +239,9 @@
 <laf:box title="Calendars">
     <laf:division>
         <security:secureOperation element="/pages/cal/newStudy">
-            <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
+            <c:if test="${configuration.map.enableCreatingTemplate}">
+                <p><a href="<c:url value="/pages/cal/newStudy"/>">Create a new template</a></p>
+            </c:if>
             <p><a href="<c:url value="/pages/cal/template/import"/>">Import an existing template</a></p>
         </security:secureOperation>
      </laf:division>
