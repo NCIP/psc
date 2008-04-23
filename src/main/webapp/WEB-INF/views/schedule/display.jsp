@@ -431,14 +431,14 @@
 
             <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">
                 <div id="sae-${aeNote.id}" class="section ae collapsible autoclear">
-                    <h2 id="sae-${aeNote.id}-header">Adverse event on <tags:formatDate value="${aeNote.adverseEvent.detectionDate}"/></h2>
+                    <h2 id="sae-${aeNote.id}-header">${aeNote.title}</h2>
                     <div class="content" style="display: none">
                         <p>
                             An adverse event was reported for this subject.  Please consider how
                             this should impact future scheduling.
                         </p>
                         <h3>Details</h3>
-                        <p>${aeNote.adverseEvent.description}</p>
+                        <p>${aeNote.message}</p>
                         <p>
                             <a class="dismiss-control" href="<c:url value="/pages/cal/schedule/dismissAe?notification=${aeNote.id}"/>">Dismiss</a>
                             <c:if test="${not empty configuration.map.caAERSBaseUrl}">

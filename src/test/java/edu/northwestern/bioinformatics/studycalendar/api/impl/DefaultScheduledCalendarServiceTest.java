@@ -1,18 +1,17 @@
 package edu.northwestern.bioinformatics.studycalendar.api.impl;
 
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
-import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
+import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
+import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import static org.easymock.classextension.EasyMock.expect;
+import static org.easymock.classextension.EasyMock.reset;
 
 import java.util.*;
-
-import static org.easymock.classextension.EasyMock.*;
 
 /**
  * @author Rhett Sutphin
@@ -398,8 +397,8 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
             parameterStudy, parameterSubject, parameterSite, expectedAe);
         verifyMocks();
 
-        assertEquals("Notification not added", 1, expectedAssignment.getAeNotifications().size());
-        assertSame("Notification is for wrong AE", expectedAe, expectedAssignment.getAeNotifications().get(0).getAdverseEvent());
+        assertEquals("Notification not added", 1, expectedAssignment.getNotifications().size());
+       assertEquals("Notification is for wrong AE", expectedAe.getDescription(), expectedAssignment.getNotifications().get(0).getMessage());
     }
 
     public void testRegisterAeByAssignment() throws Exception {
@@ -414,7 +413,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.registerSevereAdverseEvent(parameterAssignment, expectedAe);
         verifyMocks();
 
-        assertEquals("Notification not added", 1, expectedAssignment.getAeNotifications().size());
-        assertSame("Notification is for wrong AE", expectedAe, expectedAssignment.getAeNotifications().get(0).getAdverseEvent());
+        assertEquals("Notification not added", 1, expectedAssignment.getNotifications().size());
+        assertSame("Notification is for wrong AE", expectedAe.getDescription(), expectedAssignment.getNotifications().get(0).getMessage());
     }
 }

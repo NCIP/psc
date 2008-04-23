@@ -1,7 +1,8 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.domain.DomainObjectTools;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
@@ -9,27 +10,8 @@ import org.hibernate.annotations.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.ManyToMany;
-import javax.persistence.JoinTable;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Collections;
-import java.util.Set;
-import java.util.HashSet;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import javax.persistence.*;
+import java.util.*;
 
 
 /**
@@ -37,11 +19,11 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "subject_assignments")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_subject_assignments_id")
-    }
+@Table(name = "subject_assignments")
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_subject_assignments_id")
+                }
 )
 public class StudySubjectAssignment extends AbstractMutableDomainObject {
     private Logger log = LoggerFactory.getLogger(getClass());
@@ -56,22 +38,22 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
 
     private Amendment currentAmendment;
     private ScheduledCalendar scheduledCalendar;
-    private List<AdverseEventNotification> aeNotifications = new LinkedList<AdverseEventNotification>();
+    private List<Notification> notifications = new LinkedList<Notification>();
     private Set<Population> populations = new HashSet<Population>();
 
     ////// LOGIC
 
     @Transient
-    public List<AdverseEventNotification> getCurrentAeNotifications() {
-        List<AdverseEventNotification> aes = new LinkedList<AdverseEventNotification>();
-        for (AdverseEventNotification notification : getAeNotifications()) {
-            if (!notification.isDismissed()) aes.add(notification);
+    public List<Notification> getCurrentAeNotifications() {
+        List<Notification> aeNotifications = new LinkedList<Notification>();
+        for (Notification notification : getNotifications()) {
+            if (!notification.isDismissed()) aeNotifications.add(notification);
         }
-        return aes;
+        return aeNotifications;
     }
 
-    public void addAeNotification(AdverseEventNotification notification) {
-        getAeNotifications().add(notification);
+    public void addAeNotification(Notification notification) {
+        getNotifications().add(notification);
         notification.setAssignment(this);
     }
 
@@ -152,7 +134,7 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         return endDateEpoch;
     }
 
-    @OneToOne (mappedBy = "assignment")
+    @OneToOne(mappedBy = "assignment")
     @Cascade(value = CascadeType.ALL)
     public ScheduledCalendar getScheduledCalendar() {
         return scheduledCalendar;
@@ -167,12 +149,12 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
 
     @OneToMany(mappedBy = "assignment")
     @Cascade(CascadeType.ALL)
-    public List<AdverseEventNotification> getAeNotifications() {
-        return aeNotifications;
+    public List<Notification> getNotifications() {
+        return notifications;
     }
 
-    public void setAeNotifications(List<AdverseEventNotification> aeNotifications) {
-        this.aeNotifications = aeNotifications;
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
     }
 
     @ManyToOne
@@ -199,8 +181,8 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
 
     @ManyToMany
     @JoinTable(name = "subject_populations",
-        joinColumns = @JoinColumn(name = "assignment_id"),
-        inverseJoinColumns = @JoinColumn(name = "population_id")
+            joinColumns = @JoinColumn(name = "assignment_id"),
+            inverseJoinColumns = @JoinColumn(name = "population_id")
     )
     public Set<Population> getPopulations() {
         return populations;

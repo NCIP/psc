@@ -109,8 +109,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     private void registerAeInternal(StudySubjectAssignment assignment, AdverseEvent adverseEvent) {
-        AdverseEventNotification notification = new AdverseEventNotification();
-        notification.setAdverseEvent(adverseEvent);
+        Notification notification = new Notification(adverseEvent);
         assignment.addAeNotification(notification);
 
         subjectDao.save(assignment.getSubject());

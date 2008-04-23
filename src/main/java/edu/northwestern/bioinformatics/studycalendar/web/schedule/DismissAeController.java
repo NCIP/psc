@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.AdverseEventNotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
@@ -17,7 +17,7 @@ import java.util.Map;
  */
 @AccessControl(roles = Role.SUBJECT_COORDINATOR)
 public class DismissAeController extends PscAbstractCommandController<DismissAeCommand> {
-    private AdverseEventNotificationDao notificationDao;
+    private NotificationDao notificationDao;
 
     public DismissAeController() {
         setCommandClass(DismissAeCommand.class);
@@ -44,7 +44,7 @@ public class DismissAeController extends PscAbstractCommandController<DismissAeC
 
     ////// CONFIGURATION
 
-    public void setNotificationDao(AdverseEventNotificationDao notificationDao) {
+    public void setNotificationDao(NotificationDao notificationDao) {
         this.notificationDao = notificationDao;
     }
 }

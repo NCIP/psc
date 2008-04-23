@@ -1,24 +1,21 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-
-import java.util.List;
-import java.util.Collection;
-import java.util.Calendar;
-import static java.util.Calendar.*;
-
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+
+import static java.util.Calendar.AUGUST;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 public class StudySubjectAssignmentTest extends StudyCalendarTestCase {
     private StudySubjectAssignment assignment = new StudySubjectAssignment();
-    
+
     public void testSetCalendarMaintainsBidrectionality() throws Exception {
         ScheduledCalendar calendar = new ScheduledCalendar();
         assignment.setScheduledCalendar(calendar);
@@ -26,17 +23,17 @@ public class StudySubjectAssignmentTest extends StudyCalendarTestCase {
     }
 
     public void testAddAeNotificationMaintainsBidirectionality() throws Exception {
-        AdverseEventNotification notification = new AdverseEventNotification();
+        Notification notification = new Notification();
         assignment.addAeNotification(notification);
         assertSame(assignment, notification.getAssignment());
     }
-    
+
     public void testGetCurrentNotifications() throws Exception {
         addAdverseEventNotification(1);
         addAdverseEventNotification(2);
         addAdverseEventNotification(3);
-        assignment.getAeNotifications().get(1).setDismissed(true);
-        assertEquals(3, assignment.getAeNotifications().size());
+        assignment.getNotifications().get(1).setDismissed(true);
+        assertEquals(3, assignment.getNotifications().size());
 
         Collection<Integer> currentAeIds = DomainObjectTools.collectIds(assignment.getCurrentAeNotifications());
         assertEquals(2, currentAeIds.size());
@@ -68,9 +65,8 @@ public class StudySubjectAssignmentTest extends StudyCalendarTestCase {
     }
 
     private void addAdverseEventNotification(int aeId) {
-        AdverseEventNotification notification = setId(aeId, new AdverseEventNotification());
         AdverseEvent event = setId(aeId, new AdverseEvent());
-        notification.setAdverseEvent(event);
+        Notification notification = setId(aeId, new Notification(event));
         assignment.addAeNotification(notification);
     }
 }

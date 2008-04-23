@@ -1,16 +1,16 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.AdverseEventNotificationDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
+import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 
 /**
  * @author Rhett Sutphin
  */
 public class DismissAeCommand {
-    private AdverseEventNotification notification;
-    private AdverseEventNotificationDao notificationDao;
+    private Notification notification;
+    private NotificationDao notificationDao;
 
-    public DismissAeCommand(AdverseEventNotificationDao notificationDao) {
+    public DismissAeCommand(NotificationDao notificationDao) {
         this.notificationDao = notificationDao;
     }
 
@@ -23,11 +23,11 @@ public class DismissAeCommand {
 
     ////// BOUND PROPERTIES
 
-    public AdverseEventNotification getNotification() {
+    public Notification getNotification() {
         return notification;
     }
 
-    public void setNotification(AdverseEventNotification notification) {
+    public void setNotification(Notification notification) {
         this.notification = notification;
     }
 }

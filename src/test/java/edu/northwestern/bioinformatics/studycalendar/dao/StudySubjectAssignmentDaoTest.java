@@ -1,11 +1,10 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
-import edu.nwu.bioinformatics.commons.DateUtils;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
+import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.nwu.bioinformatics.commons.DateUtils;
+import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
 import java.util.Calendar;
 
@@ -18,9 +17,9 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
 
         assertEquals("Wrong id", -10, (int) assignment.getId());
         CoreTestCase.assertDayOfDate("Wrong start date", 2003, Calendar.FEBRUARY, 1,
-            assignment.getStartDateEpoch());
+                assignment.getStartDateEpoch());
         CoreTestCase.assertDayOfDate("Wrong end date", 2003, Calendar.SEPTEMBER, 1,
-            assignment.getEndDateEpoch());
+                assignment.getEndDateEpoch());
         assertEquals("Wrong subject", -20, (int) assignment.getSubject().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
         assertEquals("Wrong study id", "004-12", assignment.getStudyId());
@@ -38,12 +37,11 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
     public void testAesSaved() throws Exception {
         {
             StudySubjectAssignment assignment = getDao().getById(-10);
-            assertEquals("Should already be one", 1, assignment.getAeNotifications().size());
-            AdverseEventNotification notification = new AdverseEventNotification();
+            assertEquals("Should already be one", 1, assignment.getNotifications().size());
             AdverseEvent event = new AdverseEvent();
             event.setDescription("Big bad");
             event.setDetectionDate(DateUtils.createDate(2006, Calendar.APRIL, 5));
-            notification.setAdverseEvent(event);
+            Notification notification = new Notification(event);
 
             assignment.addAeNotification(notification);
         }
@@ -51,11 +49,11 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         interruptSession();
 
         StudySubjectAssignment reloaded = getDao().getById(-10);
-        assertEquals("Wrong number of notifications", 2, reloaded.getAeNotifications().size());
-        AdverseEventNotification notification = reloaded.getAeNotifications().get(1);
+        assertEquals("Wrong number of notifications", 2, reloaded.getNotifications().size());
+        Notification notification = reloaded.getNotifications().get(1);
         assertNotNull(notification.getId());
         assertFalse(notification.isDismissed());
-        assertEquals("Big bad", notification.getAdverseEvent().getDescription());
-        CoreTestCase.assertDayOfDate(2006, Calendar.APRIL, 5, notification.getAdverseEvent().getDetectionDate());
+        assertEquals("Big bad", notification.getMessage());
+        //CoreTestCase.assertDayOfDate(2006, Calendar.APRIL, 5, notification.getAdverseEvent().getDetectionDate());
     }
 }

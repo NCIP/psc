@@ -1,25 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.dao;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEventNotification;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 
 /**
- * @author Rhett Sutphin
+ * @author Saurabh Agrawal
  */
-public class AdverseEventNotificationDaoTest extends ContextDaoTestCase<AdverseEventNotificationDao> {
+public class NotificationDaoTest extends ContextDaoTestCase<NotificationDao> {
     protected String getTestDataFileName() {
         return "testdata/StudySubjectAssignmentDaoTest.xml";
     }
 
     public void testGet() throws Exception {
-        AdverseEventNotification loaded = getDao().getById(-30);
+        Notification loaded = getDao().getById(-30);
         assertNotNull(loaded);
-        assertEquals("Wrong AE", -29, (int) loaded.getAdverseEvent().getId());
+        assertEquals("Wrong AE", "Apocalyptic",  loaded.getMessage());
         assertTrue("Is dismissed", loaded.isDismissed());
+        
     }
 
     public void testSave() throws Exception {
         {
-            AdverseEventNotification loaded = getDao().getById(-30);
+            Notification loaded = getDao().getById(-30);
             assertTrue(loaded.isDismissed());
             loaded.setDismissed(false);
             getDao().save(loaded);
@@ -27,7 +28,8 @@ public class AdverseEventNotificationDaoTest extends ContextDaoTestCase<AdverseE
 
         interruptSession();
 
-        AdverseEventNotification reloaded = getDao().getById(-30);
+        Notification reloaded = getDao().getById(-30);
         assertFalse(reloaded.isDismissed());
     }
 }
+
