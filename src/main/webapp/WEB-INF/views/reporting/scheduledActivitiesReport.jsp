@@ -146,7 +146,26 @@
 
                     </span>
                 </div>
+
+                <div class="filterGroup">
+                    <span class="filterInput">
+                        <form:label path="filters.activityType" >
+                            Activity type:
+                        </form:label>
+
+                        <form:select path="filters.activityType" >
+                            <form:option value="" label=""/>
+                            <form:options items="${types}" itemLabel="name" itemValue="id"/>
+                        </form:select>
+
+                    </span>
+
+                </div>
+
+
             </div>
+
+
 
             <br style="clear:both"/>
 

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -56,24 +57,27 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     public void testBindCurrentStateMode() throws Exception {
         request.setParameter("filters.currentStateMode", "1");
-        expectDaoSearch();
         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.currentStateMode");
         assertEquals("Wrong state", ScheduledActivityMode.SCHEDULED, command.getFilters().getCurrentStateMode());
     }
 
     public void testBindActualActivityStartDate() throws Exception {
         request.setParameter("filters.actualActivityDate.start", "10/25/2006");
-        expectDaoSearch();
         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.actualActivityDate.start");
         assertEquals("Wrong date", DateUtils.createDate(2006, Calendar.OCTOBER, 25, 0, 0, 0), command.getFilters().getActualActivityDate().getStart());
     }
 
     public void testBindActualActivityStopDate() throws Exception {
         request.setParameter("filters.actualActivityDate.stop", "10/25/2006");
-        expectDaoSearch();
         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.actualActivityDate.stop");
         assertEquals("Wrong date", DateUtils.createDate(2006, Calendar.OCTOBER, 25, 0, 0, 0), command.getFilters().getActualActivityDate().getStop());
     }
+
+    public void testBindActivityType() throws Exception{
+         request.addParameter("filters.activityType", "2");
+         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.activityType");
+         assertEquals("Wrong type", ActivityType.INTERVENTION, command.getFilters().getActivityType());
+     }
 
     ////// Helper Methods
     private ModelAndView handleRequest() throws Exception {
@@ -90,6 +94,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     @SuppressWarnings({ "unchecked" })
     private ScheduledActivitiesReportCommand postAndReturnCommand(String expectNoErrorsForField) throws Exception {
+        expectDaoSearch();
         Map<String, Object> model = handleRequest().getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
         return (ScheduledActivitiesReportCommand) model.get("command");

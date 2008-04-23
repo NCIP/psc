@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
@@ -39,6 +40,8 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         super.initBinder(request, binder);
         binder.registerCustomEditor(ScheduledActivityMode.class, "filters.currentStateMode",
             new ControlledVocabularyEditor(ScheduledActivityMode.class, true));
+        binder.registerCustomEditor(ActivityType.class, "filters.activityType",
+            new ControlledVocabularyEditor(ActivityType.class, true));
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(false));
         binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(false));
@@ -65,6 +68,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
     protected Map createModel(BindException errors, List<ScheduledActivitiesReportRow> results) {
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
+        model.put("types", ActivityType.values());
         model.put("results", results);
         model.put("resultSize", results.size());
         return model;
