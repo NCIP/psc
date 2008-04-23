@@ -11,7 +11,7 @@ class CreateNotificationTables extends edu.northwestern.bioinformatics.bering.Mi
 
         execute("update ae_notifications  set title=(select aes.detection_date from adverse_events aes where aes.id=ae_notifications.adverse_event_id)")
 
-        execute("update  notifications  set title='Serious Adverse Event on ' || title")
+        execute("update  ae_notifications  set title='Serious Adverse Event on ' || title")
 
         execute("update ae_notifications  set action_required='TRUE'")
 
