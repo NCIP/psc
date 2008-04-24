@@ -17,5 +17,6 @@
         <pattern>/*/js/*</pattern>
         <pattern>/**/fragment/*</pattern>
         <pattern>/api/*</pattern>
+        <pattern>/css/*</pattern>
     </excludes>
 </decorators>

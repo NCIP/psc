@@ -9,6 +9,12 @@
 <html>
 <head>
     <tags:stylesheetLink name="report"/>
+    <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
+    <style type="text/css">
+        table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
+        table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
+        table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
+    </style>
 </head>
 <body>
 <laf:box title="Scheduled Activities Report">

@@ -65,6 +65,3 @@ th, td { text-align: left; padding: 1px 3px; }
 }
 
 th, a { background-repeat: no-repeat; }
-table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
-table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
-table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
