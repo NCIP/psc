@@ -159,9 +159,21 @@
                         </form:select>
 
                     </span>
-
                 </div>
 
+                <div class="filterGroup">
+                    <span class="filterInput">
+                        <form:label path="filters.subjectCoordinator" >
+                            Subject coordinator:
+                        </form:label>
+
+                        <form:select path="filters.subjectCoordinator" >
+                            <form:option value="" label=""/>
+                            <form:options items="${coordinators}" itemLabel="displayName" itemValue="id"/>
+                        </form:select>
+
+                    </span>
+                </div>
 
             </div>
 

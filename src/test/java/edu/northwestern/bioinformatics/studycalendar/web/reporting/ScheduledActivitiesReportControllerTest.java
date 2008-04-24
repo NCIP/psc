@@ -1,9 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import org.apache.commons.lang.StringUtils;
@@ -12,6 +15,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Calendar;
 import static java.util.Collections.EMPTY_LIST;
 import java.util.Map;
@@ -24,12 +28,15 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     private ScheduledActivitiesReportRowDao dao;
     private ScheduledActivitiesReportCommand command;
     private ScheduledActivitiesReportFilters filters;
+    private UserDao userDao;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
 
         dao = registerDaoMockFor(ScheduledActivitiesReportRowDao.class);
+        userDao = registerDaoMockFor(UserDao.class);
+
         filters = new ScheduledActivitiesReportFilters();
         command = new ScheduledActivitiesReportCommand(filters);
 
@@ -40,6 +47,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
         };
         controller.setScheduledActivitiesReportRowDao(dao);
         controller.setControllerTools(controllerTools);
+        controller.setUserDao(userDao);
     }
 
     @SuppressWarnings({"unchecked"})
@@ -50,6 +58,7 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     @SuppressWarnings({"unchecked"})
     public void testHandle() throws Exception {
+        expectFindAllSubjectCoordinators();
         expectDaoSearch();
         ModelAndView mv = handleRequest();
         assertEquals("Wrong view", "reporting/scheduledActivitiesReport", mv.getViewName());
@@ -74,10 +83,17 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
     }
 
     public void testBindActivityType() throws Exception{
-         request.addParameter("filters.activityType", "2");
-         ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.activityType");
-         assertEquals("Wrong type", ActivityType.INTERVENTION, command.getFilters().getActivityType());
-     }
+        request.addParameter("filters.activityType", "2");
+        ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.activityType");
+        assertEquals("Wrong type", ActivityType.INTERVENTION, command.getFilters().getActivityType());
+    }
+
+    public void testBindSubjectCoordinator() throws Exception {
+        request.addParameter("filters.subjectCoordinator", "100");
+        expectFindUser(100, setId(100, new User()));
+        ScheduledActivitiesReportCommand command = postAndReturnCommand("command.filters.subjectCoordinator");
+        assertEquals("Wrong user", 100, (int) command.getFilters().getSubjectCoordinator().getId());
+    }
 
     ////// Helper Methods
     private ModelAndView handleRequest() throws Exception {
@@ -94,9 +110,18 @@ public class ScheduledActivitiesReportControllerTest extends ControllerTestCase 
 
     @SuppressWarnings({ "unchecked" })
     private ScheduledActivitiesReportCommand postAndReturnCommand(String expectNoErrorsForField) throws Exception {
+        expectFindAllSubjectCoordinators();
         expectDaoSearch();
         Map<String, Object> model = handleRequest().getModel();
         assertNoBindingErrorsFor(expectNoErrorsForField, model);
         return (ScheduledActivitiesReportCommand) model.get("command");
+    }
+
+    private void expectFindAllSubjectCoordinators() {
+        expect(userDao.getAllSubjectCoordinators()).andReturn(Arrays.asList(new User()));
+    }
+
+    private void expectFindUser(int i, User u) {
+        expect(userDao.getById(i)).andReturn(u);
     }
 }

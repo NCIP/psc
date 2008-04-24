@@ -1,12 +1,15 @@
 package edu.northwestern.bioinformatics.studycalendar.web.reporting;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
+import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
@@ -27,6 +30,7 @@ import java.util.Map;
 public class ScheduledActivitiesReportController extends AbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
     private ControllerTools controllerTools;
+    private UserDao userDao;
 
     public ScheduledActivitiesReportController() {
         setCommandClass(ScheduledActivitiesReportCommand.class);
@@ -45,6 +49,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(Date.class, "filters.actualActivityDate.start", controllerTools.getDateEditor(false));
         binder.registerCustomEditor(Date.class, "filters.actualActivityDate.stop", controllerTools.getDateEditor(false));
+        binder.registerCustomEditor(User.class, "filters.subjectCoordinator", new DaoBasedEditor(userDao));
     }
 
     protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object oCommand, BindException errors) throws Exception {
@@ -69,6 +74,7 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
         Map<String, Object> model = errors.getModel();
         model.put("modes", ScheduledActivityMode.values());
         model.put("types", ActivityType.values());
+        model.put("coordinators", userDao.getAllSubjectCoordinators());
         model.put("results", results);
         model.put("resultSize", results.size());
         return model;
@@ -81,5 +87,9 @@ public class ScheduledActivitiesReportController extends AbstractCommandControll
 
     public void setControllerTools(ControllerTools controllerTools) {
         this.controllerTools = controllerTools;
+    }
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
     }
 }

@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
 
 import java.util.Date;
@@ -17,6 +18,7 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
     private RangeFilterLimit<Date> actualActivityDate = new RangeFilterLimit<Date>("actualActivityDate");
     private ControlledVocabularyObjectFilterLimit<ActivityType> activityType =
             new ControlledVocabularyObjectFilterLimit<ActivityType>("activityType");
+    private DomainObjectFilterLimit<User> subjectCoordinator = new DomainObjectFilterLimit<User>("subjectCoordinator");
 
     protected String getHibernateFilterPrefix() {
         return "filter_";
@@ -60,5 +62,13 @@ public class ScheduledActivitiesReportFilters extends ReportFilters {
 
     public ActivityType getActivityType() {
         return activityType.getValue();
+    }
+
+    public void setSubjectCoordinator(User user) {
+        subjectCoordinator.setValue(user);
+    }
+
+    public User getSubjectCoordinator() {
+        return subjectCoordinator.getValue();
     }
 }

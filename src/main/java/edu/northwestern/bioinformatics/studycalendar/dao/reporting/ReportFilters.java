@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.AbstractControlledVocabularyObject;
 import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
+import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.Filter;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -149,7 +150,23 @@ public abstract class ReportFilters {
         }
     }
 
-     protected class RangeFilterLimit<B extends Comparable<B>> extends FilterLimit<MutableRange<B>> {
+    protected class DomainObjectFilterLimit<V extends AbstractMutableDomainObject> extends SingleFilterFilterLimit<Integer, V> {
+        public DomainObjectFilterLimit(String filterName) {
+            super(filterName);
+        }
+
+        @Override
+        protected String getParameterName() {
+            return getBaseName() + "_id";
+        }
+
+        @Override
+        protected Integer getValueForFilter() {
+            return getValue().getId();
+        }
+    }
+
+    protected class RangeFilterLimit<B extends Comparable<B>> extends FilterLimit<MutableRange<B>> {
         private String baseName;
 
         public RangeFilterLimit(String baseName) {
@@ -160,7 +177,7 @@ public abstract class ReportFilters {
         @Override
         public boolean isSet() {
             return getValue() != null
-                && getValue().hasBound();
+                    && getValue().hasBound();
         }
 
         @Override
@@ -172,7 +189,7 @@ public abstract class ReportFilters {
         protected Filter enable(Session session, B bound, String boundName) {
             if (bound != null) {
                 return session.enableFilter(qualifyFilterName(baseName) + '_' + boundName)
-                    .setParameter(boundName, bound);
+                        .setParameter(boundName, bound);
             } else {
                 return null;
             }
@@ -181,7 +198,7 @@ public abstract class ReportFilters {
         @Override
         public void appendDescription(StringBuilder builder) {
             builder.append(baseName).append(" in [")
-                .append(getValue().getStart()).append(", ").append(getValue().getStop()).append(']');
+                    .append(getValue().getStart()).append(", ").append(getValue().getStop()).append(']');
         }
     }
 }

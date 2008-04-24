@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.dao.reporting;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivity;
-import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
 import edu.northwestern.bioinformatics.studycalendar.utils.MutableRange;
 import edu.nwu.bioinformatics.commons.DateUtils;
@@ -113,6 +110,16 @@ public class ScheduledActivitiesReportRowDaoTest extends
 
     public void testSearchWithActivityTypeFilter_Neg() {
         filters.setActivityType(ActivityType.DISEASE_MEASURE);
+        assertSearchWithResults();
+    }
+
+    public void testSearchWithSubjectCoordinatorFilter_Pos() {
+        filters.setSubjectCoordinator(Fixtures.setId(-200, new User()));
+        assertSearchWithResults(NEG_17, NEG_16);
+    }
+
+    public void testSearchWithSubjectCoordinatorFilter_Neg() {
+        filters.setSubjectCoordinator(Fixtures.setId(-100, new User()));
         assertSearchWithResults();
     }
 }
