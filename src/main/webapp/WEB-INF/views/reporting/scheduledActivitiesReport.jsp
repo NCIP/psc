@@ -123,7 +123,20 @@
 
                     </span>
 
-                     <span class="filterInput">
+                    <span class="filterInput">
+                        <form:label path="filters.activityType" >
+                            Activity type:
+                        </form:label>
+
+                        <form:select path="filters.activityType" >
+                            <form:option value="" label=""/>
+                            <form:options items="${types}" itemLabel="name" itemValue="id"/>
+                        </form:select>
+                    </span>
+                </div>
+
+                <div class="filterGroup">
+                    <span class="filterInput">
                         <form:label path="filters.actualActivityDate" >
                             Activities scheduled from:
                         </form:label>
@@ -143,17 +156,6 @@
                             <img src="<laf:imageUrl name='chrome/b-calendar.gif'/>" alt="Calendar" width="17"
                                  height="16" border="0" align="absmiddle"/>
                         </a>
-                    </span>
-
-                    <span class="filterInput">
-                        <form:label path="filters.activityType" >
-                            Activity type:
-                        </form:label>
-
-                        <form:select path="filters.activityType" >
-                            <form:option value="" label=""/>
-                            <form:options items="${types}" itemLabel="name" itemValue="id"/>
-                        </form:select>
                     </span>
                 </div>
 
