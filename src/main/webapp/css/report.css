@@ -1,0 +1,70 @@
+.search_box {
+    float:right;
+    border: 1px dotted #ccc;
+    width:8em;
+    height:6em;
+    padding:1em;
+}
+
+.search-filters {
+    float:left;
+    width:85%
+}
+
+input.button {
+    display:block;
+    margin: 0.5em 0;
+}
+
+table.query-results    { width: 100%; border: 0; border-spacing: 1px; }
+table.query-results td, table.query-results th { white-space: nowrap }
+table.query-results td { vertical-align: top; padding: 1px; }
+table.query-results th { text-align: center; vertical-align: bottom; padding: 2px; }
+table.query-results th a {
+    display: block;
+    color: white; text-decoration: none;
+}
+table.query-results th.sorted a, table.query-results th.sortable a {
+    background-position: right;
+    padding: 0;
+    margin-right: 14px; /* for arrow image */
+    width: 100%;
+}
+
+table.query-results tr.even td.highlighted { background-color: #7bf; }
+
+table.query-results ul {
+    padding: 0; margin: 0;
+}
+table.query-results li {
+    list-style-type: none;
+}
+table.query-results td.numeric, table.query-results td.date {
+    text-align: right;
+}
+
+table { border: 0px; }
+th { font-weight: bold; color: white; background-color: navy; }
+th, td { text-align: left; padding: 1px 3px; }
+
+.even { background: lightblue; }
+.odd  { background: lavender; }
+
+.filterInput {
+    font-size: 10pt;
+    white-space: nowrap ;
+    padding: 0 0.5em;
+}
+
+.filterGroup {
+    padding: 0.5em 0.5em ;
+    margin: 0.7em 0;
+    background-color: #ddc ;
+    color: #666 ;
+    font-weight: bold ;
+}
+
+th, a { background-repeat: no-repeat; }
+table.query-results th.sortable a { background-image: url(<c:url value="/images/arrow_off.png"/>) }
+table.query-results th.order1 a { background-image: url(<c:url value="/images/arrow_down.png"/>) }
+table.query-results th.order2 a { background-image: url(<c:url value="/images/arrow_up.png"/>) }
