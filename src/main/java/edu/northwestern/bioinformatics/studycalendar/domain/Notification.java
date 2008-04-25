@@ -1,5 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,6 +10,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * @author Saurabh Agrawal
@@ -21,12 +24,13 @@ import javax.persistence.Table;
 )
 public class Notification extends AbstractMutableDomainObject {
 
-    private boolean dismissed;
+    private boolean dismissed = false;
     private String title;
     private String message;
     private boolean actionRequired = true;
 
     private StudySubjectAssignment assignment;
+
 
     public Notification(AdverseEvent adverseEvent) {
         if (adverseEvent != null) {
@@ -38,9 +42,34 @@ public class Notification extends AbstractMutableDomainObject {
         }
     }
 
+    /**
+     * only for Hibernate.
+     * <p/>
+     * <li>If you want to create notifications for Adverse event, use {@link edu.northwestern.bioinformatics.studycalendar.domain.Notification#Notification(AdverseEvent)}</li>
+     * <li>If you want to create notifications for Amendments,
+     * use {@link edu.northwestern.bioinformatics.studycalendar.domain.Notification#Notification(edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval)}</li>
+     * <li>If you want to create notifications for Activity,
+     * use {@link edu.northwestern.bioinformatics.studycalendar.domain.Notification#Notification(ScheduledActivity)}</li>
+     */
     public Notification() {
 
     }
+
+    /**
+     * Create notification message  for reconsents
+     *
+     * @param reconsentEvent
+     */
+    public Notification(final ScheduledActivity reconsentEvent) {
+
+        if (reconsentEvent != null) {
+            title = "Reconsent scheduled for " + FormatTools.formatDate(new Date());
+            message = "/pages/cal/scheduleActivity?event=" + reconsentEvent.getId();
+        }
+
+    }
+
+    
 
     @ManyToOne
     public StudySubjectAssignment getAssignment() {
