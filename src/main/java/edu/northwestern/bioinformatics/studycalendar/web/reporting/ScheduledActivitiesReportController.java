@@ -4,9 +4,11 @@ import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportFilters;
 import edu.northwestern.bioinformatics.studycalendar.dao.reporting.ScheduledActivitiesReportRowDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.ActivityType;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
 import edu.northwestern.bioinformatics.studycalendar.domain.ScheduledActivityMode;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.reporting.ScheduledActivitiesReportRow;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
 import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTools;
 import gov.nih.nci.cabig.ctms.editors.DaoBasedEditor;
@@ -27,6 +29,7 @@ import java.util.Map;
 /**
  * @author John Dzak
  */
+@AccessControl(roles = {Role.STUDY_ADMIN, Role.STUDY_COORDINATOR})
 public class ScheduledActivitiesReportController extends AbstractCommandController {
     private ScheduledActivitiesReportRowDao dao;
     private ControllerTools controllerTools;
