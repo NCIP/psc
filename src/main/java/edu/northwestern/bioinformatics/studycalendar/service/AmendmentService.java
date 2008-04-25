@@ -56,6 +56,9 @@ public class AmendmentService {
                     // TODO: some sort of notification about applied vs. not-applied amendments
                     if (assignment.getCurrentAmendment().equals(approval.getAmendment().getPreviousAmendment())) {
                         deltaService.amend(assignment, approval.getAmendment());
+                        Notification notification=new Notification(approval);
+                        assignment.addNotification(notification);
+
                     } else {
                         log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
                                 approval.getAmendment().getDisplayName(), assignment.getId());

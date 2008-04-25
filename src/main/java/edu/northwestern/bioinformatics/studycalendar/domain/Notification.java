@@ -69,7 +69,23 @@ public class Notification extends AbstractMutableDomainObject {
 
     }
 
-    
+    public Notification(final AmendmentApproval amendmentApproval) {
+        if (amendmentApproval != null && amendmentApproval.getAmendment() != null) {
+
+            Amendment amendment = amendmentApproval.getAmendment();
+            title = "Schedule amended according to " + amendment.getDisplayName();
+
+            StudySite studySite = amendmentApproval.getStudySite();
+
+            if (studySite != null && studySite.getStudy() != null) {
+                message = "/pages/cal/template/amendments?study=" + amendmentApproval.getStudySite().getStudy().getId()
+                        + "#amendment=" + amendment.getId();
+            }
+            //Since the schedule is already amended, no action is required.
+            actionRequired = false;
+        }
+    }
+
 
     @ManyToOne
     public StudySubjectAssignment getAssignment() {
