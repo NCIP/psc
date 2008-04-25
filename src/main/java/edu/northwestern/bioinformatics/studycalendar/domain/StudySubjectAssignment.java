@@ -53,9 +53,9 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
     }
 
     public void addAeNotification(Notification notification) {
-        getNotifications().add(notification);
-        notification.setAssignment(this);
+        addNotification(notification);
     }
+
 
     @Transient
     public List<Amendment> getAvailableUnappliedAmendments() {
@@ -221,5 +221,11 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         result = 29 * result + (startDateEpoch != null ? startDateEpoch.hashCode() : 0);
         result = 29 * result + (currentAmendment != null ? currentAmendment.hashCode() : 0);
         return result;
+    }
+
+    public void addNotification(final Notification notification) {
+        getNotifications().add(notification);
+        notification.setAssignment(this);
+
     }
 }
