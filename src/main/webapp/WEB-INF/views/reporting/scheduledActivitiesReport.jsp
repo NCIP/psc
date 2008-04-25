@@ -19,7 +19,8 @@
 <body>
 <laf:box title="Scheduled Activities Report">
     <laf:division>
-        <form:form method="post">
+        <c:set var="action"><c:url value="/pages/report/scheduledActivitiesReport"/></c:set>
+        <form:form action="${action}"method="post">
             <tags:errors path="*"/>
              <div class="search_box">
                  <input type="submit" value="Search" class="button"/>
