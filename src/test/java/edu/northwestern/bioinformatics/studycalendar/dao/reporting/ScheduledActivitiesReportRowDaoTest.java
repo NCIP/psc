@@ -122,4 +122,8 @@ public class ScheduledActivitiesReportRowDaoTest extends
         filters.setSubjectCoordinator(Fixtures.setId(-100, new User()));
         assertSearchWithResults();
     }
+
+    public void testSearchWithNoFiltersIsEmpty() {
+        assertSearchWithResults();
+    }
 }

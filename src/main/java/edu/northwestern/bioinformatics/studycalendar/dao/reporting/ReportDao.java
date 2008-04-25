@@ -7,6 +7,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -18,9 +19,15 @@ public abstract class ReportDao<F extends ReportFilters, R extends DomainObject>
         return getHibernateTemplate().executeFind(new HibernateCallback() {
             @SuppressWarnings("unchecked")
             public Object doInHibernate(Session session) throws HibernateException {
-                Criteria criteria = session.createCriteria(domainClass());
-                filters.apply(session);
-                return (List<R>) criteria.list();
+                if (filters.isEmpty()) {
+                    logger.debug("No filters selected, skipping search: " + filters);
+                    return Collections.emptyList();
+                } else {
+                    Criteria criteria = session.createCriteria(domainClass());
+                    filters.apply(session);
+                    return (List<R>) criteria.list();
+
+                }
             }
         });
     }

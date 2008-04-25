@@ -115,7 +115,8 @@
             <br style="clear:both"/>
 
             <display:table name="results" class="query-results" id="row" requestURI="scheduledActivitiesReport" export="true">
-                <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true" media="csv, excel"/>
+                <display:setProperty name="basic.msg.empty_list" value="No results.  Please select filters and press the <b>Search</b> button."/>
+                <display:column property="scheduledActivity.activity.name" title="Activity Name" sortable="true"/>
                 <display:column property="scheduledActivity.currentState.mode.displayName" title="Activity Status"  sortable="true"/>
                 <display:column title="Scheduled Date"  sortable="true">
                     <c:if test="${row.scheduledActivity.currentState.mode.name == 'canceled'}">
