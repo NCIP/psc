@@ -1,0 +1,22 @@
+# The JDBC connection parameters for your datasource
+datasource.url=jdbc:postgresql:psc
+datasource.username=
+datasource.password=
+
+## DB-specific config:  uncomment the line for the database you are using
+
+#### PostgreSQL
+# datasource.driver=org.postgresql.Driver
+
+#### HSQLDB
+# datasource.driver=org.hsqldb.jdbcDriver
+
+#### Oracle
+# datasource.driver=oracle.jdbc.OracleDriver
+
+## Uncomment these and set correct values for CCTS SSO authentication
+## (not needed for standalone mode)
+#authenticationMode=webSSO
+#webSSO.server.baseUrl=https://cbvapp-d1017.nci.nih.gov:48443/cas
+#webSSO.server.trustCert=C:\\a\\cacerts
+#webSSO.cas.acegi.security.url=http://localhost:8080/psc/j_acegi_cas_security_check

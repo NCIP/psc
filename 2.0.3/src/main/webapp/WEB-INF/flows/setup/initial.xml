@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.springframework.org/schema/webflow
+                          http://www.springframework.org/schema/webflow/spring-webflow-1.0.xsd">
+    <start-state idref="decide"/>
+
+    <action-state id="decide">
+        <bean-action bean="setupStatus" method="next"/>
+        <transition to="firstSite" on="SITE"/>
+        <transition to="firstAdministrator" on="ADMINISTRATOR"/>
+        <transition to="setupComplete" on="null"/>
+    </action-state>
+
+    <view-state id="firstSite" view="setup/siteForm">
+        <render-actions>
+            <action bean="siteFormAction" method="setupForm"/>
+        </render-actions>
+        <transition on="save" to="saveSite">
+            <action bean="siteFormAction" method="bindAndValidate"/>
+        </transition>
+    </view-state>
+
+    <action-state id="saveSite">
+        <bean-action bean="siteService" method="createOrUpdateSite">
+            <method-arguments>
+                <argument expression="${flowScope.site}"/>
+            </method-arguments>
+        </bean-action>
+        <transition to="decide"/>
+    </action-state>
+
+    <view-state id="firstAdministrator" view="setup/adminForm">
+        <render-actions>
+            <action bean="adminFormAction" method="setupForm"/>
+        </render-actions>
+        <transition on="save" to="saveAdministrator">
+            <action bean="adminFormAction" method="bindAndValidate"/>
+        </transition>
+    </view-state>
+
+    <action-state id="saveAdministrator">
+        <evaluate-action expression="${requestScope.adminCommand.apply()}"/>
+        <transition to="decide"/>
+    </action-state>
+
+    <end-state id="setupComplete" view="setup/complete"/>
+</flow>

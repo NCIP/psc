@@ -1,0 +1,11 @@
+http\://grid.studycalendar.bioinformatics.northwestern.edu/StudyService=edu.northwestern.bioinformatics.studycalendar.grid.stubs
+http\://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/bindings=edu.northwestern.bioinformatics.studycalendar.grid.stubs.bindings
+http\://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/service=edu.northwestern.bioinformatics.studycalendar.grid.stubs.service
+http\://security.introduce.cagrid.nci.nih.gov/ServiceSecurity=gov.nih.nci.cagrid.introduce.security.stubs
+
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata=gov.nih.nci.cagrid.metadata
+http\://grid.studycalendar.bioinformatics.northwestern.edu/StudyService/types=edu.northwestern.bioinformatics.studycalendar.grid.stubs.types
+http\://bioinformatics.northwestern.edu/ns/psc=edu.northwestern.bioinformatics.studycalendar.grid
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security=gov.nih.nci.cagrid.metadata.security
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.service=gov.nih.nci.cagrid.metadata.service
+gme\://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.common=gov.nih.nci.cagrid.metadata.common

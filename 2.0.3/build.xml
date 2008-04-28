@@ -1,0 +1,710 @@
+<project name="caBIG Study Calendar" default="compile">
+
+    <!-- PROPERTIES AND PATHS -->
+    <property name="application-short-name" value="psc"/>
+    <property name="version" value="2.0.3"/>
+    <property name="svn-executable" value="svn"/>
+
+    <property name="src-dir.main"      value="src/main/java"/>
+    <property name="src-dir.bering"    value="src/main/db/migrate"/>
+    <property name="src-dir.unit-test" value="src/test/java"/>
+    <property name="src-dir.web"       value="src/main/webapp"/>
+
+    <property name="build-dir.main"      value="${src-dir.web}/WEB-INF/classes"/>
+    <property name="build-dir.unit-test" value="target/test-classes"/>
+    <property name="build-dir.webapp"    value="target/web"/>
+    <property name="build-dir.csm"       value="${basedir}/${build-dir.unit-test}"/>
+
+    <property name="api-dir" value="target/api"/>
+    <property name="metrics-dir" value="target/metrics"/>
+    <property name="coverage-dir" value="${metrics-dir}/coverage"/>
+
+    <property name="dbunit-dtd-filename" value="target/dbunit-sc.dtd"/>
+    <property name="create-hsqldb.dbname" value="psc"/>
+
+    <property name="csm-security-policy" value="CSM_policy.xml"/>
+
+    <!-- emma needs this -->
+    <path id="cp.compiled-source">
+        <pathelement location="${build-dir.main}"/>
+    </path>
+
+    <path id="cp.jdbc">
+        <fileset dir="db/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.tomcat.common">
+        <fileset dir="tools/tomcat/lib/common">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.tomcat.server">
+        <fileset dir="tools/tomcat/lib/server">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.main">
+        <path refid="cp.compiled-source"/>
+        <path refid="cp.tomcat.common"/>
+        <fileset dir="${src-dir.web}/WEB-INF/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.unit-test">
+        <path refid="cp.main"/>
+        <path refid="cp.jdbc"/>
+        <path refid="cp.tomcat.common"/>
+        <pathelement location="${build-dir.unit-test}"/>
+        <fileset dir="test/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <path id="cp.integrated-test">
+        <path refid="cp.main"/>
+        <path refid="cp.jdbc"/>
+        <path refid="cp.tomcat.common"/>
+        <fileset dir="test/infrastructure/lib">
+            <include name="**/*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- TASK LIBRARIES -->
+
+    <path id="cp.emma">
+        <pathelement location="test/lib/emma.jar"/>
+        <pathelement location="test/lib/emma_ant.jar"/>
+    </path>
+
+    <taskdef resource="emma_ant.properties" classpathref="cp.emma"/>
+
+    <path id="cp.bering">
+        <path refid="cp.jdbc"/>
+        <path refid="cp.main"/>
+    </path>
+
+    <taskdef resource="edu/northwestern/bioinformatics/bering/antlib.xml" classpathref="cp.bering"/>
+
+    <taskdef name="dbunit" classname="org.dbunit.ant.DbUnitTask" classpathref="cp.unit-test"/>
+    <taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask" classpathref="cp.integrated-test"/>
+    <taskdef name="datasource-properties"
+             classname="gov.nih.nci.cabig.ctms.tools.ant.DataSourcePropertiesTask" classpathref="cp.main"/>
+
+    <!-- TARGETS -->
+
+    <target name="init" depends="default-properties">
+        <mkdir dir="${build-dir.main}"/>
+        <mkdir dir="${build-dir.unit-test}"/>
+        <mkdir dir="${metrics-dir}"/>
+
+        <datasource-properties applicationDirectoryName="${application-short-name}"
+                               databaseConfigurationName="${config.database}"/>
+        <echo>All database ops for this build will use ${datasource.url}</echo>
+    </target>
+
+    <target name="default-properties">
+        <property environment="env"/>
+        <property name="test.failfast" value="false"/>
+        <property name="config.database" value="datasource"/>
+        <!-- Note that this will only work on unixish systems -->
+        <exec executable="hostname" outputproperty="hostname" failifexecutionfails="false">
+            <arg value="-s"/>
+        </exec>
+        <!-- This is apparently the thing to do for windows.  Untested. -->
+        <property name="hostname" value="${env.COMPUTERNAME}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="target"/>
+        <delete dir="${build-dir.main}"/>
+        <delete dir="${build-dir.webapp}"/>
+        <delete dir="dist"/>
+    </target>
+
+    <target name="resources" description="Copy resources into classpath" depends="init">
+        <tstamp>
+            <format property="buildtime" pattern="yyyy-MM-dd HH:mm:ss.S" />
+        </tstamp>
+        <copy todir="${build-dir.main}" filtering="true" overwrite="true">
+            <fileset dir="${src-dir.main}">
+                <include name="applicationContext-spring.xml"/>
+                <include name="applicationContext-setup.xml"/>
+            </fileset>
+            <filterset>
+                <filter token="config.database" value="${config.database}"/>
+                <filter token="application-short-name" value="${application-short-name}"/>
+
+                <filter token="buildInfo.versionNumber" value="${version}"/>
+                <filter token="buildInfo.username" value="${user.name}"/>
+                <filter token="buildInfo.hostname" value="${hostname}"/>
+                <filter token="buildInfo.timestamp" value="${buildtime}"/>
+            </filterset>
+        </copy>
+        <copy todir="${build-dir.main}">
+            <fileset dir="${src-dir.main}">
+                <include name="**/*.xml"/>
+                <include name="**/*.xsd"/>
+                <include name="**/*.xsl"/>
+                <include name="**/*.wadl"/>
+                <include name="**/*.properties"/>
+                <include name="**/*.ftl"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${build-dir.main}/db/migrate"/>
+        <copy todir="${build-dir.main}/db/migrate">
+            <fileset dir="${src-dir.bering}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <copy todir="${build-dir.unit-test}">
+            <fileset dir="${src-dir.unit-test}">
+                <include name="**/*.xml"/>
+                <include name="**/*.properties"/>
+            </fileset>
+        </copy>
+        <!-- Create valid CSM configuration for testing -->
+        <copy todir="${build-dir.csm}" filtering="true" overwrite="true">
+            <fileset dir="${basedir}/csm/upt">
+                <include name="*.xml"/>
+            </fileset>
+            <filterset>
+                <filter token="tomcat.security.dir" value="${build-dir.csm}"/>
+                <filter token="datasource.dialect.upt" value=""/>
+                <filter token="datasource.driver" value="${datasource.driver}"/>
+                <filter token="datasource.url" value="${datasource.url}"/>
+                <filter token="datasource.username" value="${datasource.username}"/>
+                <filter token="datasource.password" value="${datasource.password}"/>
+            </filterset>
+        </copy>
+    </target>
+
+    <target name="compile" description="Compile all java source" depends="resources">
+        <javac destdir="${build-dir.main}" classpathref="cp.main"
+               debug="true" source="1.5">
+            <src path="${src-dir.main}"/>
+        </javac>
+        <javac destdir="${build-dir.unit-test}" classpathref="cp.unit-test"
+               debug="true" source="1.5">
+            <src path="${src-dir.unit-test}"/>
+        </javac>
+    </target>
+
+    <target name="selenium" description="Flag webapp deployment to include selenium infrastructure">
+        <property name="include-test-infrastructure" value="*"/>
+    </target>
+
+    <target name="webapp" description="Merge created application into deployment directory" depends="compile, webapp.main, webapp.selenium"/>
+
+    <target name="webapp.main" description="Copy basic webapp only, without recompiling">
+        <copy todir="${build-dir.webapp}">
+            <fileset dir="${src-dir.web}">
+                <include name="**/*"/>
+            </fileset>
+        </copy>
+        <!-- copy in the Oracle driver if it's present -->
+        <copy todir="${build-dir.webapp}/WEB-INF/lib">
+            <fileset dir="db/lib">
+                <include name="ojdbc14.jar"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="webapp.selenium" if="include-test-infrastructure">
+        <antcall target="dbunit-dtd"/> <!-- "depends" doesn't obey the condition -->
+        <property name="test-dir.infrastructure" value="test/infrastructure"/>
+        <copy todir="${build-dir.webapp}/WEB-INF/lib">
+            <fileset dir="${test-dir.infrastructure}/lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </copy>
+        <xmltask source="${src-dir.web}/WEB-INF/web.xml" dest="${build-dir.webapp}/WEB-INF/web.xml"
+                 failwithoutmatch="true">
+            <insert path="//:web-app" file="${test-dir.infrastructure}/conf/web.xml"/>
+        </xmltask>
+        <copy todir="${build-dir.webapp}/WEB-INF">
+            <fileset dir="${test-dir.infrastructure}/conf">
+                <include name="**/*.xml"/>
+                <exclude name="web.xml"/>
+            </fileset>
+        </copy>
+        <copy todir="${build-dir.webapp}/WEB-INF/classes/edu/northwestern/bioinformatics/studycalendar/test/data" overwrite="true" verbose="true">
+            <fileset dir="test/selenium/testdata">
+                <include name="**/*.xml"/>
+            </fileset>
+            <filterset>
+                <filter token="DTD_PATH" value="${basedir}/${dbunit-dtd-filename}"/>
+            </filterset>
+        </copy>
+        <javac destdir="${build-dir.webapp}/WEB-INF/classes" classpathref="cp.integrated-test"
+               debug="true" source="1.5">
+            <src path="test/infrastructure/src"/>
+        </javac>
+    </target>
+
+    <target name="webapp.create-context">
+        <property name="webapp.context.docBase" value="${basedir}/${build-dir.webapp}"/>
+        <echo file="${webapp.context-file}"><![CDATA[
+            <Context path="${webapp.deploy-path}" docBase="${webapp.context.docBase}" debug="9">
+              <Realm className="org.apache.catalina.realm.JAASRealm" appName="study_calendar"
+                        userClassNames="gov.nih.nci.security.authorization.domainobjects.User"
+                        roleClassNames="gov.nih.nci.security.authorization.domainobjects.Role"/>
+            </Context>
+        ]]></echo>
+    </target>
+
+    <target name="api" description="Create javadoc for application code API (i.e. domain objects and DAOs)" depends="init">
+        <mkdir dir="${api-dir}"/>
+        <javadoc destdir="${api-dir}" classpathref="cp.main" source="1.5" use="true">
+            <fileset dir="${src-dir.main}">
+                <include name="**/api/*.java"/>
+                <include name="**/domain/*.java"/>
+                <include name="**/domain/scheduledactivitystate/*.java"/>
+            </fileset>
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+        </javadoc>
+    </target>
+
+    <!-- DATABASE SETUP -->
+
+    <target name="migrate" description="migrate database schema" depends="init">
+        <property name="migrate.version" value=""/>
+        <property name="bering.dialect" value=""/>
+        <migrate classpathRef="cp.bering"
+                 driver="${datasource.driver}"
+                 dialect="${bering.dialect}"
+                 url="${datasource.url}"
+                 userid="${datasource.username}"
+                 password="${datasource.password}"
+                 targetVersion="${migrate.version}"
+                 migrationsDir="${basedir}/src/main/db/migrate"
+            />
+    </target>
+
+    <target name="dbunit-dtd" description="Create DTD for dbunit" depends="init">
+        <dbunit
+            driver="${datasource.driver}"
+            url="${datasource.url}"
+            userid="${datasource.username}"
+            password="${datasource.password}"
+            >
+            <classpath refid="cp.unit-test"/>
+            <export
+                dest="${dbunit-dtd-filename}"
+                format="dtd"/>
+        </dbunit>
+    </target>
+
+    <!-- TEST SETUP & EXECUTION -->
+
+    <target name="test.unit" description="Run unit tests.  Use -Dpattern= to select a subset.">
+        <property name="pattern" value="**/*Test.java"/>
+        <echo>Running tests matching pattern=${pattern}</echo>
+        <antcall target="test.unit.exec"/>
+    </target>
+
+    <target name="test.unit.database-only">
+        <property name="test.unit.database-only" value="indeed"/>
+        <echo>Running database-sensitive tests</echo>
+        <antcall target="test.unit.exec"/>
+    </target>
+
+    <target name="test.unit.exec" depends="compile">
+        <emma enabled="${emma.enabled}">
+<!-- Hibernate (I think because of a Spring classloader issue (TODO: we should check that this is still true))
+     can't find hbm files from another part of the classpath, so we must use fullcopy to the instrumentation dir -->
+            <instr instrpathref="cp.compiled-source" destdir="${out.instrumented.dir}"
+                    metadatafile="${coverage-dir}/metadata.emma" merge="true" mode="fullcopy"/>
+        </emma>
+
+        <mkdir dir="${build-dir.unit-test}/junit"/>
+        <junit printsummary="yes" haltonfailure="${test.failfast}" failureproperty="test.unit.failed" fork="true" forkmode="once" dir="${basedir}">
+            <classpath>
+                <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
+                <pathelement location="${out.instrumented.dir}/classes"/>
+                <path refid="cp.unit-test"/>
+                <path refid="cp.emma"/>
+            </classpath>
+            <jvmarg value="-XX:MaxPermSize=256m"/>
+            <jvmarg value="-Demma.coverage.out.file=${coverage-dir}/coverage.emma"/>
+            <jvmarg value="-Demma.coverage.out.merge=false"/>
+            <jvmarg value="-Dgov.nih.nci.security.configFile=${build-dir.csm}/ApplicationSecurityConfig.xml"/>
+            <jvmarg value="-Djava.awt.headless=true"/>
+            <formatter type="plain" usefile="false"/>
+            <formatter type="xml" usefile="true"/>
+            <batchtest todir="${build-dir.unit-test}/junit">
+                <fileset dir="${src-dir.unit-test}">
+                    <patternset>
+                        <include name="${pattern}" unless="test.unit.database-only"/>
+                        <include name="**/dao/**/*Test.java"      if="test.unit.database-only"/>
+                        <include name="**/*Integrat*Test.java"    if="test.unit.database-only"/>
+                        <include name="**/ConfigurationTest.java" if="test.unit.database-only"/>
+                    </patternset>
+                </fileset>
+            </batchtest>
+        </junit>
+
+        <emma enabled="${emma.enabled}">
+            <merge outfile="${coverage-dir}/session.emma">
+                <fileset dir="${coverage-dir}" includes="*.emma"/>
+            </merge>
+
+            <report sourcepath="${src-dir.main}">
+                <fileset dir="${coverage-dir}">
+                    <include name="session.emma"/>
+                </fileset>
+                <txt outfile="${coverage-dir}/coverage.txt"/>
+                <html outfile="${coverage-dir}/coverage.html"/>
+                <xml outfile="${coverage-dir}/coverage.xml"/>
+            </report>
+        </emma>
+
+        <fail if="test.unit.failed">One or more unit tests failed.  See above or set test.failfast=true.</fail>
+    </target>
+
+    <!-- N.b.: this task must not depend on init (directly or otherwise) or the automated build will break. -->
+    <target name="create-hsqldb" description="Creates the read-only HSQLDB instance for testing">
+        <property name="hsqldb-dir" value="db/hsqldb"/>
+        <property name="create-hsqldb.url" value="jdbc:hsqldb:file:${basedir}/${hsqldb-dir}/${create-hsqldb.dbname}"/>
+        <delete dir="${hsqldb-dir}"/>
+
+        <propertyfile file="${user.home}/.psc/hsqldb-${create-hsqldb.dbname}.properties" comment="Generated by PSC's create-hsqldb task">
+            <entry key="datasource.url"      value="${create-hsqldb.url}"/>
+            <entry key="datasource.username" value="sa"/>
+            <entry key="datasource.password" value=""/>
+            <entry key="datasource.driver"   value="org.hsqldb.jdbcDriver"/>
+        </propertyfile>
+
+        <echo>${create-hsqldb.url}</echo>
+        <mkdir dir="${hsqldb-dir}"/>
+        <ant antfile="${basedir}/build.xml">
+            <property name="datasource.url" value="${create-hsqldb.url}"/>
+            <target name="hsqldb"/>
+            <target name="migrate"/>
+        </ant>
+
+        <sql driver="org.hsqldb.jdbcDriver" url="${create-hsqldb.url}"
+            userid="sa" password="" classpathref="test.cfjava.libs" autocommit="true">
+            <!-- database must be explicitly shutdown in HSQLDB >=1.7.2, so that the lock is
+                released and the tests can reopen it -->
+            SHUTDOWN SCRIPT;
+        </sql>
+
+        <echo>Marking ${create-hsqldb.url} read-only</echo>
+        <echo append="true" file="${hsqldb-dir}/${create-hsqldb.dbname}.properties">hsqldb.files_readonly=true${line.separator}</echo>
+    </target>
+
+    <!-- CODE METRICS TARGETS -->
+
+    <target name="emma" depends="init" description="enables EMMA code coverage recording during the build (i.e. during tests)">
+        <property name="emma.enabled" value="true"/>
+        <!-- EMMA instrumented classes output directory; must only exist if EMMA is enabled -->
+        <property name="out.instrumented.dir" value="${coverage-dir}/instrumented-classes"/>
+        <mkdir dir="${out.instrumented.dir}"/>
+    </target>
+
+    <!-- ARTIFACT CREATION -->
+
+    <target name="jar.security-plugin-api" depends="compile">
+        <mkdir dir="dist"/>
+        <property name="security-plugin-api-jarname" value="${application-short-name}-security-plugin-api.jar"/>
+        <jar destfile="dist/${security-plugin-api-jarname}" basedir="${build-dir.main}">
+            <include name="edu/northwestern/bioinformatics/studycalendar/security/plugin/**/*"/>
+            <include name="edu/northwestern/bioinformatics/studycalendar/tools/spring/**/*"/>
+            <include name="**/*Exception.class"/>
+            <include name="**/*Failure.class"/>
+        </jar>
+    </target>
+
+    <target name="war" description="creates a deployable WAR file">
+        <mkdir dir="dist"/>
+        <property name="war-name" value="${application-short-name}.war"/>
+        <property name="webapp.deploy-path" value="/${application-short-name}"/>
+        <property name="webapp.context-file" value="dist/context.xml"/>
+        <property name="webapp.context.docBase" value="${war-name}"/>
+        <antcall target="webapp.create-context"/>
+        <antcall target="webapp"/>
+        <war basedir="${build-dir.webapp}" destfile="dist/${war-name}" webxml="${build-dir.webapp}/WEB-INF/web.xml">
+            <exclude name="WEB-INF/web.xml"/>
+            <metainf dir="dist">
+                <include name="context.xml"/>
+            </metainf>
+        </war>
+    </target>
+
+    <target name="dist" description="creates the distribution package" depends="war, jar.security-plugin-api">
+        <property name="install.name" value="psc-${version}"/>
+        <property name="install.dir" value="dist/${install.name}"/>
+        <property name="install-samples.dir" value="${install.dir}/conf-samples"/>
+        <mkdir dir="${install-samples.dir}"/>
+        <copy file="dist/${war-name}" tofile="${install.dir}/psc.war" failonerror="true"/>
+        <copy file="db/datasource.properties.example" tofile="${install-samples.dir}/datasource.properties"/>
+        <copy file="csm/csm_jaas.config" tofile="${install-samples.dir}/csm_jaas.config" filtering="true">
+            <filterset>
+                <filter token="datasource.driver" value="REPLACE with your database driver classname (e.g., org.postgresql.Driver)"/>
+                <filter token="datasource.url" value="REPLACE with your database URL (e.g., jdbc:postgresql:psc)"/>
+                <filter token="datasource.username" value="REPLACE with your database username"/>
+                <filter token="datasource.password" value="REPLACE with your database password"/>
+            </filterset>
+        </copy>
+        <exec executable="${svn-executable}" taskname="svn">
+            <arg value="export"/>
+            <arg value="https://svn.bioinformatics.northwestern.edu/studycalendar/documents/PSC_Install_Guide.doc"/>
+            <arg value="${install.dir}/psc_install.doc"/>
+        </exec>
+        <property name="install.zip" value="${install.name}-bin.zip"/>
+        <zip destfile="dist/${install.zip}" basedir="dist">
+            <include name="${install.name}/**/*"/>
+        </zip>
+        <delete dir="${install.dir}"/>
+    </target>
+
+    <!-- AUTOMATED BUILDS -->
+
+    <target name="oracle">
+        <property name="config.database" value="oracle"/>
+    </target>
+    <target name="postgresql">
+        <property name="config.database" value="postgresql"/>
+    </target>
+    <target name="hsqldb">
+        <property name="config.database" value="hsqldb-${create-hsqldb.dbname}"/>
+    </target>
+
+    <target name="autobuild.properties">
+        <!-- overrides properties set in default-properties -->
+        <property name="test.failfast" value="false"/>
+    </target>
+
+    <target name="autobuild.exec" depends="clean, test.unit"/>
+
+    <target name="autobuild.exec.db" depends="migrate, clean, test.unit.database-only"/>
+
+    <target name="autobuild.artifacts">
+        <property name="autobuild.artifacts-dir" value="target/artifacts"/>
+        <mkdir dir="${autobuild.artifacts-dir}/emma"/>
+        <copy todir="${autobuild.artifacts-dir}/emma">
+            <fileset dir="${coverage-dir}">
+                <exclude name="instrumented-classes/**/*"/>
+                <exclude name="instrumented-classes"/>
+                <exclude name="*.emma"/>
+            </fileset>
+        </copy>
+        <symlink link="${autobuild.artifacts-dir}/emma/index.html" resource="coverage.html" failonerror="false"/>
+    </target>
+
+    <target name="autobuild-full" description="Automated build for all unit tests against HSQLDB"
+        depends="autobuild.properties, create-hsqldb, hsqldb, emma, autobuild.exec, autobuild.artifacts"/>
+
+    <target name="autobuild-oracle" description="Automated build for db-only unit tests against Oracle"
+        depends="autobuild.properties, oracle, autobuild.exec.db"/>
+
+    <target name="autobuild-postgresql" description="Automated build for db-only unit tests against PostgreSQL"
+        depends="autobuild.properties, postgresql, autobuild.exec.db"/>
+
+    <target name="autobuild.dist" depends="dist">
+        <property name="autobuild.artifacts-dir" value="target/artifacts"/>
+        <tstamp>
+            <format property="today" pattern="yyyyMMdd-HHmmss" />
+        </tstamp>
+        <copy file="dist/${install.zip}"
+              tofile="${autobuild.artifacts-dir}/${install.name}-${today}-bin.zip"
+              verbose="true"/>
+    </target>
+
+    <target name="autobuild-nightly" description="Automated nightly build for distribution"
+        depends="autobuild.properties, migrate, autobuild.exec, autobuild.dist"/>
+
+    <!-- TOMCAT DEPLOYMENT -->
+
+    <target name="tomcat.init" depends="webapp">
+        <property name="tomcat.config-file" value="tools/tomcat/tomcat.properties"/>
+        <fail message="Tomcat manager not configured (could not read ${tomcat.config-file}).">
+            <condition>
+                <not><available file="${tomcat.config-file}"/></not>
+            </condition>
+        </fail>
+        <property file="${tomcat.config-file}"/>
+
+        <property name="webapp.context-file" value="${basedir}/tools/tomcat/context.xml"/>
+        <property name="webapp.deploy-path" value="${tomcat.deploy-path}"/> <!-- backwards compatibility -->
+
+        <taskdef file="tools/tomcat/tomcatTasks.properties">
+            <classpath>
+                <path refid="cp.tomcat.common"/>
+                <path refid="cp.tomcat.server"/>
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="tomcat.deploy" depends="tomcat.init, webapp.create-context"
+            description="Deploy to local Tomcat install for development">
+        <deploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            config="${webapp.context-file}"
+            path="${webapp.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.undeploy" depends="tomcat.init" description="Remove from local Tomcat install">
+        <undeploy url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${webapp.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.redeploy" depends="tomcat.undeploy, tomcat.deploy"
+            description="Replace application in local Tomcat install (required for some configuration changes)"/>
+
+    <target name="tomcat.reload" depends="tomcat.init" description="Reload running application instance">
+        <reload url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${webapp.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.start" depends="tomcat.init" description="Start previously deployed instance">
+        <start url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${webapp.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.stop" depends="tomcat.init" description="Stop running instance">
+        <stop url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="${webapp.deploy-path}"
+            />
+    </target>
+
+    <target name="tomcat.list" depends="tomcat.init">
+        <list url="${tomcat.manager.url}"
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            />
+    </target>
+
+    <target name="tomcat.security" depends="tomcat.init" description="Automatically copies global (CSM) configuration files to Tomcat.">
+        <fail message="Could not locate Tomcat.  Please set the catalina.home property (tools/tomcat/tomcat.properties is a good place to do this).">
+            <condition>
+                <not><isset property="catalina.home"/></not>
+            </condition>
+        </fail>
+        <property name="catalina.home" value="PLEASE SET catalina.home EXTERNALLY"/>
+        <echo>Configuring CSM and UPT for the Tomcat instance in ${catalina.home}</echo>
+
+        <property name="tomcat.security.dir" value="${catalina.home}/conf/cabig"/>
+        <mkdir dir="${tomcat.security.dir}"/>
+        <copy todir="${tomcat.security.dir}" overwrite="true">
+            <filterset>
+                <filter token="datasource.driver" value="${datasource.driver}"/>
+                <filter token="datasource.url" value="${datasource.url}"/>
+                <filter token="datasource.username" value="${datasource.username}"/>
+                <filter token="datasource.password" value="${datasource.password}"/>
+                <filter token="tomcat.security.dir" value="${tomcat.security.dir}"/>
+            </filterset>
+            <fileset dir="conf/upt">
+                <include name="csm_jaas.config"/>
+            </fileset>
+        </copy>
+
+        <echo taskname="todo">
+===== MANUAL STEPS =====
+========================
+The automatic portion of the security setup is complete.  If you have not
+done so already, please perform the following manual actions.
+
+* In ${catalina.home}/conf/catalina.properties, add two lines:
+  gov.nih.nci.security.configFile=${tomcat.security.dir}/ApplicationSecurityConfig.xml
+  java.security.auth.login.config=${tomcat.security.dir}/csm_jaas.config
+            
+========= END ==========
+===== MANUAL STEPS =====</echo>
+    </target>
+
+    <target name="test.unit.report">
+        <!-- junitreport -->
+        <junitreport todir="${build-dir.unit-test}/junit">
+            <fileset dir="${build-dir.unit-test}/junit">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${build-dir.unit-test}/junit/summary"/>
+            <report format="noframes" todir="${build-dir.unit-test}/junit/summary"/>
+        </junitreport>
+
+        <!-- junitdocreport -->
+        <taskdef name="junitDocReport" classname="edu.duke.cabig.catrip.test.report.ant.JUnitDocReport">
+             <classpath>
+                <!-- the pathelement only included on classpath if out.instrumented.dir defined, i.e. if EMMA is enabled -->
+                <pathelement location="${out.instrumented.dir}/classes"/>
+                <path refid="cp.unit-test"/>
+                <path refid="cp.emma"/>
+            </classpath>
+        </taskdef>
+
+        <echo>Load junit results from ${build-dir.unit-test}/junit</echo>
+        <echo>Load junit tests from ${src-dir.unit-test}</echo>
+        <junitDocReport format="html" useTestType="true" destfile="${build-dir.unit-test}/junit/summary/junitDocReport.html">
+            <junitResults>
+                <fileset dir="${build-dir.unit-test}/junit">
+                    <include name="*.xml"/>
+                </fileset>
+            </junitResults>
+            <junitDocs>
+                <fileset dir="${src-dir.unit-test}">
+                    <include name="**/*Test.java"/>
+                </fileset>
+            </junitDocs>
+        </junitDocReport>
+    </target>
+
+    <!--
+        Current version of spring-beandoc (0.8.1) chokes on <tx:annotation-driven/>,
+        so it is not capable of reading much of the application context.
+        This target generates graphs for the security contexts only.
+        RMS20080204
+        -->
+    <target name="beandoc">
+        <property name="build-dir.beandoc" value="target/beandoc"/>
+        <path id="cp.beandoc">
+            <!--<path refid="cp.main"/>-->
+            <fileset dir="tools/spring-beandoc/lib">
+                <include name="**/*.jar"/>
+            </fileset>
+        </path>
+
+        <taskdef
+            name="beandoc"
+            classname="org.springframework.beandoc.client.AntTask"
+            classpathref="cp.beandoc"/>
+
+        <beandoc outputDir="${build-dir.beandoc}"
+            beandocProps="${basedir}/tools/spring-beandoc/beandoc.properties">
+            <fileset dir="${basedir}/src/main">
+                <include name="java/**/applicationContext*security.xml"/>
+                <!--
+                <include name="java/**/applicationContext*.xml"/>
+                <include name="webapp/**/*-servlet.xml"/>
+                -->
+            </fileset>
+        </beandoc>
+    </target>
+
+    <target name="reports" depends="test.unit.report"/>
+
+    <target name="deploy-xml-schema">
+        <exec executable="scp">
+            <arg file="${src-dir.main}/psc.xsd"/>
+            <arg value="ligand:/usr/local/share/www/www_bioinformatics_northwestern_edu/ns/psc"/>
+        </exec>
+    </target>
+</project>

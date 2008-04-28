@@ -1,0 +1,8 @@
+<dataset>
+    <configuration
+        prop="mailExceptionsTo"
+        value="r-sutphin@northwestern.edu, joe@example.com"/>
+    <configuration
+        prop="smtpPort"
+        value="28"/>
+</dataset>
