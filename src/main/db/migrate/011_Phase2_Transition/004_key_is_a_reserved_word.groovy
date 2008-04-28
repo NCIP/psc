@@ -3,12 +3,22 @@
 // short for property (which is also a reserved word in some systems).
 class KeyIsAReservedWord extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        renameColumn("configuration", "key", "prop")
-        renameColumn("authentication_system_conf", "key", "prop")
+        if (databaseMatches('sqlserver')) {
+            renameColumn("configuration", "key_ms", "prop")
+            renameColumn("authentication_system_conf", "key_ms", "prop")
+        } else {
+            renameColumn("configuration", "key", "prop")
+            renameColumn("authentication_system_conf", "key", "prop")
+        }
     }
 
     void down() {
-        renameColumn("authentication_system_conf", "prop", "key")
-        renameColumn("configuration", "prop", "key")
+        if (databaseMatches('sqlserver')) {
+            renameColumn("authentication_system_conf", "prop", "key_ms")
+            renameColumn("configuration", "prop", "key_ms")
+        } else {
+            renameColumn("authentication_system_conf", "prop", "key")
+            renameColumn("configuration", "prop", "key")
+        }
     }
 }

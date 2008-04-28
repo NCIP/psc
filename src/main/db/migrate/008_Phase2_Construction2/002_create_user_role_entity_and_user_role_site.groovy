@@ -8,7 +8,7 @@ class CreateUserRoleEntityAndUserUserRoleSite extends edu.northwestern.bioinform
             t.addVersionColumn()
             t.addColumn('user_id', 'integer', nullable:false)
             t.addColumn('csm_group_name', 'string', nullable: false)
-            t.addColumn("grid_id", "string", nullable: true)
+            t.addColumn("grid_id", "string", nullable: true, limit: 255)
         }
 
         // create user_role_sites to relate user_roles to site, if there are any

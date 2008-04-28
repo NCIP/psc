@@ -1,10 +1,10 @@
 class AddBigIds extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        addColumn("studies", "big_id", "string")
-        addColumn("sites", "big_id", "string")
-        addColumn("participants", "big_id", "string")
-        addColumn("scheduled_events", "big_id", "string")
-        addColumn("arms", "big_id", "string")
+        addColumn("studies", "big_id", "string", limit: 255)
+        addColumn("sites", "big_id", "string", limit: 255)
+        addColumn("participants", "big_id", "string", limit: 255)
+        addColumn("scheduled_events", "big_id", "string", limit: 255)
+        addColumn("arms", "big_id", "string", limit: 255)
     }
 
     void down() {

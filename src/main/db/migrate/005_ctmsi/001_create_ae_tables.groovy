@@ -4,7 +4,7 @@ class CreateAeTables extends edu.northwestern.bioinformatics.bering.Migration {
             t.addVersionColumn()
             t.addColumn("detection_date", "date")
             t.addColumn("description", "string", nullable: false)
-            t.addColumn("big_id", "string")
+            t.addColumn("big_id", "string", limit: 255)
         }
 
         createTable("ae_notifications") { t ->

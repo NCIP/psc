@@ -6,7 +6,7 @@ class CreateDeltasTable extends edu.northwestern.bioinformatics.bering.Migration
             t.addColumn("change_id", "integer", nullable:false)
             t.addColumn("node_id", "integer", nullable: false)
             t.addColumn("amendment_id", "integer", nullable: false)
-            t.addColumn("grid_id", "string", nullable: true)
+            t.addColumn("grid_id", "string", nullable: true, limit: 255)
         }
     }
 
@@ -14,4 +14,3 @@ class CreateDeltasTable extends edu.northwestern.bioinformatics.bering.Migration
         dropTable("deltas");
     }
 }
-

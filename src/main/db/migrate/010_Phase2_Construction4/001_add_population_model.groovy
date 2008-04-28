@@ -5,7 +5,7 @@ class AddPopulationModel extends edu.northwestern.bioinformatics.bering.Migratio
             t.addColumn('name', 'string', nullable: false)
             t.addColumn('abbreviation', 'string', nullable: false, limit: 5)
             t.addColumn('study_id', 'integer', nullable: false, references: 'studies')
-            t.addColumn('grid_id', 'string')
+            t.addColumn('grid_id', 'string', limit: 255)
         }
 
         createTable('subject_populations') { t ->

@@ -5,7 +5,7 @@ class CreateAmendmentLoginTable extends edu.northwestern.bioinformatics.bering.M
             t.addColumn("study_id", "integer", nullable: false)
             t.addColumn("amendment_number", "integer", nullable: false)
             t.addColumn("amendment_date", "string", nullable: false)
-            t.addColumn("grid_id", "string", nullable: true)
+            t.addColumn("grid_id", "string", nullable: true, limit: 255)
         }
     }
 

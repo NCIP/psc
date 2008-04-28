@@ -1,9 +1,9 @@
 class RenameScheduledEventModesTable extends edu.northwestern.bioinformatics.bering.Migration {
     void up() {
-        execute("ALTER TABLE scheduled_event_modes RENAME TO scheduled_activity_modes")
+        renameTable("scheduled_event_modes", "scheduled_activity_modes", primaryKey: false)
     }
 
     void down() {
-        execute("ALTER TABLE scheduled_activity_modes RENAME TO scheduled_event_modes")
+        renameTable("scheduled_activity_modes", "scheduled_event_modes", primaryKey: false)
     }
 }

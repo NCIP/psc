@@ -18,8 +18,11 @@ public class StandardizeDomainObjects extends edu.northwestern.bioinformatics.be
         }
 
         NEED_GRID_ID.each { table ->
-            addColumn(table, 'grid_id', 'string')
-            execute("UPDATE ${table} SET grid_id='${java.util.UUID.randomUUID().toString()}---conv:' || id")
+            addColumn(table, 'grid_id', 'string', limit: 255)
+            if (databaseMatches('sqlserver'))
+                execute("UPDATE ${table} SET grid_id='${java.util.UUID.randomUUID().toString()}---conv:' + Str(id)")
+            else
+                execute("UPDATE ${table} SET grid_id='${java.util.UUID.randomUUID().toString()}---conv:' || id")
         }
     }
 

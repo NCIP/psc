@@ -2,7 +2,7 @@ class AddAmendmentApprovals extends edu.northwestern.bioinformatics.bering.Migra
     void up() {
         createTable("amendment_approvals") { t ->
             t.addVersionColumn()
-            t.addColumn("grid_id", "string")
+            t.addColumn("grid_id", "string", limit: 255)
             t.addColumn("amendment_id", "integer", nullable: false)
             t.addColumn("study_site_id", "integer", nullable: false)
             t.addColumn("approval_date", "date")
