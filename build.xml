@@ -500,11 +500,11 @@
     <target name="autobuild-full" description="Automated build for all unit tests against HSQLDB"
         depends="autobuild.properties, create-hsqldb, hsqldb, emma, autobuild.exec, autobuild.artifacts"/>
 
-    <target name="autobuild-oracle" description="Automated build for db-only unit tests against Oracle"
-        depends="autobuild.properties, oracle, autobuild.exec.db"/>
+    <target name="autobuild-oracle" description="Automated build for all unit tests against Oracle"
+        depends="autobuild.properties, oracle, autobuild.exec"/>
 
-    <target name="autobuild-postgresql" description="Automated build for db-only unit tests against PostgreSQL"
-        depends="autobuild.properties, postgresql, autobuild.exec.db"/>
+    <target name="autobuild-postgresql" description="Automated build for all unit tests against PostgreSQL"
+        depends="autobuild.properties, postgresql, autobuild.exec"/>
 
     <target name="autobuild.dist" depends="dist">
         <property name="autobuild.artifacts-dir" value="target/artifacts"/>
