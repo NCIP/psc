@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:flow="http://www.springframework.org/schema/webflow-config"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://www.springframework.org/schema/webflow-config
+                           http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.0.xsd">
+
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basename"><value>messages</value></property>
+    </bean>
+
+    <bean id="urlResolver" class="gov.nih.nci.cabig.ctms.tools.spring.BeanNameControllerUrlResolver">
+        <property name="servletName"><value>setup</value></property>
+    </bean>
+
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping" lazy-init="true">
+        <property name="interceptors">
+            <list>
+                <ref bean="sectionInterceptor"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="sectionInterceptor" class="gov.nih.nci.cabig.ctms.web.chrome.SectionInterceptor">
+        <property name="sections">
+            <list>
+                <bean class="gov.nih.nci.cabig.ctms.web.chrome.Section">
+                    <property name="displayName"><value>Setup</value></property>
+                    <property name="mainController"><value>flowController</value></property>
+                    <property name="pathMapping"><value>/**</value></property>
+                    <property name="urlResolver"><ref bean="urlResolver"/></property>
+
+                    <property name="tasks">
+                        <list>
+                            <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
+                                <property name="displayName"><value>Initial setup</value></property>
+                                <property name="linkName"><value>flowController</value></property>
+                                <property name="urlResolver"><ref bean="urlResolver"/></property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="/**/*" id="flowController" class="org.springframework.webflow.executor.mvc.FlowController">
+        <property name="flowExecutor" ref="flowExecutor"/>
+        <property name="argumentHandler">
+            <bean class="org.springframework.webflow.executor.support.RequestPathFlowExecutorArgumentHandler"/>
+        </property>
+        <property name="defaultFlowId" value="initial"/>
+    </bean>
+
+    <flow:executor id="flowExecutor" registry-ref="flowRegistry" repository-type="singlekey"/>
+    
+    <flow:registry id="flowRegistry">
+        <flow:location path="/WEB-INF/flows/setup/initial.xml"/>
+    </flow:registry>
+</beans>
