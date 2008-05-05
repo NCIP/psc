@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
@@ -26,6 +27,7 @@ public class AmendmentService {
     private StudyDao studyDao;
     private AmendmentDao amendmentDao;
     private PopulationService populationService;
+    private StudySubjectAssignmentDao StudySubjectAssignmentDao;
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -56,13 +58,20 @@ public class AmendmentService {
                     // TODO: some sort of notification about applied vs. not-applied amendments
                     if (assignment.getCurrentAmendment().equals(approval.getAmendment().getPreviousAmendment())) {
                         deltaService.amend(assignment, approval.getAmendment());
-                        Notification notification=new Notification(approval);
+                        Notification notification = new Notification(approval);
                         assignment.addNotification(notification);
 
                     } else {
                         log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
                                 approval.getAmendment().getDisplayName(), assignment.getId());
                     }
+                }
+            } else {
+                for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
+                    Notification notification = Notification.createNotificationForNonMandatoryAmendments(assignment, approval.getAmendment());
+                    assignment.addNotification(notification);
+                    StudySubjectAssignmentDao.save(assignment);
+
                 }
             }
         }
@@ -176,5 +185,10 @@ public class AmendmentService {
     @Required
     public void setPopulationService(final PopulationService populationService) {
         this.populationService = populationService;
+    }
+
+    @Required
+    public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
+        StudySubjectAssignmentDao = studySubjectAssignmentDao;
     }
 }

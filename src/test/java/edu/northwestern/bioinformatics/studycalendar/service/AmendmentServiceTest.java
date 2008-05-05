@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
@@ -29,6 +30,9 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private Amendment a0, a1, a2, a3;
     private StudySite portlandSS;
     private PlannedCalendar calendar;
+    private Subject subject;
+    private StudySubjectAssignmentDao StudySubjectAssignmentDao;
+
 
     @Override
     protected void setUp() throws Exception {
@@ -68,6 +72,10 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
+
+        subject = Fixtures.createSubject("first", "last");
+        StudySubjectAssignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
+        service.setStudySubjectAssignmentDao(StudySubjectAssignmentDao);
     }
 
     public void testAmend() throws Exception {
@@ -103,12 +111,28 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         a1.setMandatory(false);
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
 
+
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
-
         assertEquals("Approval not recorded", 2, portlandSS.getAmendmentApprovals().size());
         assertSame(expectedApproval, portlandSS.getAmendmentApprovals().get(1));
+    }
+
+    public void testCreateNotificationsWhenNonMandatoryAmendmentIsApproved() throws Exception {
+        assertEquals("Test setup failure", 1, portlandSS.getAmendmentApprovals().size());
+
+        service.setDeltaService(mockDeltaService);
+        a1.setMandatory(false);
+        AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
+        StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
+        portlandSS.addStudySubjectAssignment(assignment);
+        StudySubjectAssignmentDao.save(assignment);
+        replayMocks();
+        service.approve(portlandSS, expectedApproval);
+        verifyMocks();
+        assertFalse("assignment must have one notification", assignment.getNotifications().isEmpty());
+
     }
 
     public void testApproveMandatoryAmendmentGenerallyAmends() throws Exception {

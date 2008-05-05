@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendment;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createNamedInstance;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.AmendmentApproval;
 import edu.northwestern.bioinformatics.studycalendar.utils.FormatTools;
@@ -25,6 +26,7 @@ public class NotificationTest extends CoreTestCase {
 
     private Amendment amendment;
     private StudySite studySite;
+    private Subject subject;
 
     @Override
     protected void setUp() throws Exception {
@@ -41,9 +43,11 @@ public class NotificationTest extends CoreTestCase {
         amendmentApproval = new AmendmentApproval();
 
 
-        final Study study = new Study();
+        final Study study = createNamedInstance("study", Study.class);
+
         study.setId(3);
         studySite = Fixtures.createStudySite(study, new Site());
+        subject = Fixtures.createSubject("first", "last");
     }
 
     public void testCrateNotificationForAdverseEvent() {
@@ -84,6 +88,25 @@ public class NotificationTest extends CoreTestCase {
         assertFalse("action is not required", notification.isActionRequired());
         assertFalse(notification.isDismissed());
         assertEquals("/pages/cal/template/amendments?study=3#amendment=2", notification.getMessage());
+        assertNull(notification.getAssignment());
+
+    }
+
+    public void testCrateNotificationForNonMandatoryAmendment() {
+        amendmentApproval.setAmendment(amendment);
+        amendmentApproval.setStudySite(studySite);
+
+        StudySubjectAssignment studySubjectAssignment = Fixtures.createAssignment(studySite.getStudy(), studySite.getSite(), subject);
+
+        notification = Notification.createNotificationForNonMandatoryAmendments(studySubjectAssignment, amendment);
+
+        String expectedTitle = "New optional amendment available for first last";
+
+        assertEquals(expectedTitle, notification.getTitle());
+        assertTrue("action is  required", notification.isActionRequired());
+        assertFalse(notification.isDismissed());
+        assertEquals("A new optional amendment (" + amendment.getDisplayName() + ") has been released for study.  " +
+                "Determine whether it is appropriate for first last and if so, apply it", notification.getMessage());
         assertNull(notification.getAssignment());
 
     }
