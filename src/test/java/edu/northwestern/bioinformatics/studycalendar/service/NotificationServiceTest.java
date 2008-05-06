@@ -35,7 +35,8 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
 
         StudySubjectAssignment studySubjectAssignment = new StudySubjectAssignment();
         studySubjectAssignments.add(studySubjectAssignment);
-        org.easymock.EasyMock.expect(studySubjectAssignmentDao.getAllAssignmenetsWhichHaveNoActivityBeyondADate(EasyMock.isA(Date.class))).andReturn(studySubjectAssignments);
+        EasyMock.expect(studySubjectAssignmentDao.getAllAssignmenetsWhichHaveNoActivityBeyondADate(EasyMock.isA(Date.class))).andReturn(studySubjectAssignments);
+        studySubjectAssignmentDao.save(studySubjectAssignment);
         replayMocks();
         notificationService.addNotificationIfNothingIsScheduledForPatient();
         verifyMocks();
