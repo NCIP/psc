@@ -173,4 +173,8 @@ public class Notification extends AbstractMutableDomainObject {
         result = 31 * result + (assignment != null ? assignment.hashCode() : 0);
         return result;
     }
+
+    public static Notification createNotificationForPatient() {
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
 }

@@ -7,11 +7,24 @@ import edu.nwu.bioinformatics.commons.DateUtils;
 import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
  */
 public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubjectAssignmentDao> {
+
+    public void testGetAllAssignmenetsWhichHasNoActivityBeyondADate() throws Exception {
+        Date date = DateUtils.createDate(2008, Calendar.MAY, 8);
+        List<StudySubjectAssignment> assignments = getDao().getAllAssignmenetsWhichHaveNoActivityBeyondADate(date);
+        assertEquals("there must  be 2 assignments which have no activities after 8th May", 2, assignments.size());
+
+        assertEquals("Wrong assignmetn id", Integer.valueOf(-11), assignments.get(0).getId());
+        assertEquals("Wrong assignmetn id", Integer.valueOf(-12), assignments.get(1).getId());
+
+    }
+
     public void testGetById() throws Exception {
         StudySubjectAssignment assignment = getDao().getById(-10);
 
@@ -22,14 +35,14 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
                 assignment.getEndDateEpoch());
         assertEquals("Wrong subject", -20, (int) assignment.getSubject().getId());
         assertEquals("Wrong study site", -15, (int) assignment.getStudySite().getId());
-        assertEquals("Wrong study id", "004-12", assignment.getStudyId());
+        assertEquals("Wrong study id", "-100", assignment.getStudyId());
         assertEquals("Wrong current amendment", -18, (int) assignment.getCurrentAmendment().getId());
         assertEquals("Wrong number of populations", 1, assignment.getPopulations().size());
         assertEquals("Wrong population", -21, (int) assignment.getPopulations().iterator().next().getId());
     }
 
     public void testGetByGridId() throws Exception {
-        StudySubjectAssignment assignment = getDao().getByGridId("NOT-SMALL");
+        StudySubjectAssignment assignment = getDao().getByGridId("NOT-SMALL1");
         assertNotNull(assignment);
         assertEquals("Wrong obj returned", -10, (int) assignment.getId());
     }

@@ -52,4 +52,26 @@
         <property name="plannedActivityDao" ref="plannedActivityDao"></property>
         <property name="sourceDao" ref="sourceDao"></property>
     </bean>
+
+    <!--shceduling-->
+
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="scheduleNotificationJobDetail"/>
+        <!-- run every morning at 6 AM -->
+        <property name="cronExpression" value="0 0 6 * * ?"/>
+    </bean>
+
+    <bean id="scheduleNotificationJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="notificationService"/>
+        <property name="targetMethod" value="addNotificationIfNothingIsScheduledForPatient"/>
+        <property name="concurrent" value="false"/>
+    </bean>
+
+    <bean id="notificationService" class="edu.northwestern.bioinformatics.studycalendar.service.NotificationService">
+        <property name="studySubjectAssignmentDao" ref="studySubjectAssignmentDao"/>
+        <property name="numberOfDays">
+            <value>14</value>
+        </property>
+    </bean>
+
 </beans>
