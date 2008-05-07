@@ -20,8 +20,8 @@ public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubje
         List<StudySubjectAssignment> assignments = getDao().getAllAssignmenetsWhichHaveNoActivityBeyondADate(date);
         assertEquals("there must  be 2 assignments which have no activities after 8th May", 2, assignments.size());
 
-        assertEquals("Wrong assignmetn id", Integer.valueOf(-11), assignments.get(0).getId());
-        assertEquals("Wrong assignmetn id", Integer.valueOf(-12), assignments.get(1).getId());
+        assertTrue("Wrong assignmetn id", Integer.valueOf(-11).equals(assignments.get(0).getId()) || Integer.valueOf(-11).equals(assignments.get(0).getId()));
+        assertTrue("Wrong assignmetn id", Integer.valueOf(-11).equals(assignments.get(1).getId()) || Integer.valueOf(-12).equals(assignments.get(1).getId()));
 
     }
 
