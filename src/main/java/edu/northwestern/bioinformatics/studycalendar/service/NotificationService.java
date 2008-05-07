@@ -43,8 +43,7 @@ public class NotificationService {
         logger.debug("found  " + studySubjectAssignments.size() + " assignments");
 
         for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
-            Notification notification = new Notification();
-            //Notification.createNotificationForPatient();
+            Notification notification = Notification.createNotificationForPatient(Calendar.getInstance().getTime(),numberOfDays);
             studySubjectAssignment.addNotification(notification);
             studySubjectAssignmentDao.save(studySubjectAssignment);
 

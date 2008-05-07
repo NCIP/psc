@@ -110,4 +110,19 @@ public class NotificationTest extends CoreTestCase {
         assertNull(notification.getAssignment());
 
     }
+    public void testCrateNotificationForPatient() {
+
+        notification = Notification.createNotificationForPatient(detectionDate,14);
+
+        String expectedTitle = "No activities scheduled past 2007-09-02";
+
+        assertEquals(expectedTitle, notification.getTitle());
+        assertTrue("action is  required", notification.isActionRequired());
+        assertFalse(notification.isDismissed());
+        assertEquals("This subject has no activities scheduled after 2007-09-02 (14 days from now).  Consider scheduling his or her next segment or, " +
+                "if appropriate, taking him or her off the study.",
+                notification.getMessage());
+        assertNull(notification.getAssignment());
+
+    }
 }

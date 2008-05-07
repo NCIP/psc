@@ -10,7 +10,9 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.text.DateFormat;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -31,6 +33,7 @@ public class Notification extends AbstractMutableDomainObject {
     private boolean actionRequired = true;
 
     private StudySubjectAssignment assignment;
+    private static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 
     public Notification(AdverseEvent adverseEvent) {
@@ -174,7 +177,17 @@ public class Notification extends AbstractMutableDomainObject {
         return result;
     }
 
-    public static Notification createNotificationForPatient() {
-        return null;  //To change body of created methods use File | Settings | File Templates.
+    public static Notification createNotificationForPatient(final Date date, final Integer numberOfDays) {
+        Notification notification = new Notification();
+        notification.setActionRequired(true);
+
+        String dateString = dateFormat.format(date);
+
+        String title = MessageFormat.format("No activities scheduled past {0}", dateString);
+        String message = MessageFormat.format("This subject has no activities scheduled after {0} ({1} days from now).  " +
+                "Consider scheduling his or her next segment or, if appropriate, taking him or her off the study.", dateString, numberOfDays);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        return notification;
     }
 }
