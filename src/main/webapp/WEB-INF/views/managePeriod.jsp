@@ -267,6 +267,27 @@ function registerRowEventHandlers(rowElt) {
             executeUpdateDetails(input)
         })
     })
+
+    $$('.counter').each(function(input) {
+        input.observe("click", function() {
+            var spanElt = input.getElementsByClassName('marker')[0].innerHTML.toString()
+            var inputElt = input.select("input")[0]
+            var spanValue = spanElt.replace(/\s/g, "")
+            if (spanValue.empty()) {
+                executePlannedActivityAdd(inputElt.id, null)
+                input.select(".marker")[0].innerHTML = 'X';
+            }
+        });
+
+        input.observe('mouseover', function(){
+            input.addClassName('hover')
+        });
+
+        input.observe('mouseout', function(){
+            input.removeClassName('hover')
+        });
+    })
+
 }
 
 function updateAddActivityButton() {
@@ -295,6 +316,7 @@ function registerDraggablesAndDroppables() {
                     accept: ['marker', 'new-marker'],
                     hoverclass: 'hover',
                     onDrop: moveMarker })
+                    registerHoverTip(item, "Click the grid cell to add an activity for all subjects")
             }
             );
 
@@ -638,6 +660,10 @@ table#manage-period {
 .palette div#delete-drop.hover {
     background-color: #f99;
     cursor: pointer;
+}
+
+.counter.hover {
+    background-color: #f99;
 }
 
 .palette .tip {
