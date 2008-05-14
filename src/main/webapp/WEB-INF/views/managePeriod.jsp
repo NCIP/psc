@@ -306,7 +306,7 @@ function registerHandlers() {
 function registerDraggablesAndDroppables() {
     $$('.new-marker').each(
             function(item) {
-                new Draggable(item, { revert: true });
+                new SC.Draggable(item, { revert: true });
             }
             );
 
@@ -322,7 +322,7 @@ function registerDraggablesAndDroppables() {
 
     $$('.marker').each(
             function(item) {
-                new Draggable(item, { revert: true });
+                new SC.Draggable(item, { revert: true });
                 item.activity = item.up('tr').select('input[id*=activity]')[0].value;
             }
             );
