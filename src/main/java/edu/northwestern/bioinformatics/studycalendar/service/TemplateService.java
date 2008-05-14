@@ -9,7 +9,6 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
@@ -51,7 +50,6 @@ public class TemplateService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private DaoFinder daoFinder;
-    private UserDao userDao;
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -418,26 +416,6 @@ public class TemplateService {
         return pendingTemplates;
     }
 
-    /**
-     * Search studies by the given search text and returns InDevelopmentTemplates
-     *
-     * @param studySearchText
-     * @return
-     * @throws Exception
-     */
-    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(final String studySearchText) throws Exception {
-        List<Study> studies = studyDao.searchStudiesByStudyName(studySearchText);
-        log.debug("{} studies found total", studies.size());
-        String userName = ApplicationSecurityManager.getUser();
-        User user = userDao.getByName(userName);
-
-        List<StudyListController.DevelopmentTemplate> results = getInDevelopmentTemplates(studies, user);
-        log.debug("{} in development studies found ", studies.size());
-
-        return results;
-
-    }
-
     public static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
         public static final Comparator<? super StudyListController.ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
         public int compare(StudyListController.ReleasedTemplate rt1, StudyListController.ReleasedTemplate rt2) {
@@ -615,9 +593,5 @@ public class TemplateService {
         this.daoFinder = daoFinder;
     }
 
-    @Required
-    public void setUserDao(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
 }

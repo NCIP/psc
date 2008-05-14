@@ -163,12 +163,12 @@
         }
         function updatePeriods(studyId) {
 
-            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentStudy"/>?study=' + studyId
+            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId
             var lastRequest = new Ajax.Request(aElement);
 
         }
         function createAutocompleter() {
-            templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentTemplates"/>',
+            templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
             {
                 method: 'get',
                 paramName: 'searchText',

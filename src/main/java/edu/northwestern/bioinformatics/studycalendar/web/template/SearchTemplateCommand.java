@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 /**
  * @author Saurabh Agrawal
  */
-public class SearchInDevelopmentTemplateCommand {
+public class SearchTemplateCommand {
     private String searchText;
 
     public String getSearchText() {

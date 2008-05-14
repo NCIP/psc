@@ -20,10 +20,10 @@ import java.util.Map;
 /**
  * @author Saurabh Agrawal
  */
-public class SelectInDevelopmentStudyController implements Controller {
+public class SelectStudyController implements Controller {
     private DeltaService deltaService;
     private StudyDao studyDao;
-    private static final Logger log = LoggerFactory.getLogger(SelectInDevelopmentStudyController.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(SelectStudyController.class.getName());
 
     @SuppressWarnings({"unchecked"})
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
