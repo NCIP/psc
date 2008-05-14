@@ -4,7 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.*;
+import static edu.nwu.bioinformatics.commons.testing.CoreTestCase.assertContains;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,6 +34,30 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         assertIsTestStudy100(actual);
     }
 
+    public void testSearchByName() throws Exception {
+        List<Study> studies = getDao().searchStudiesByStudyName("NCi");
+        assertEquals("there must be 2 studies", 2, studies.size());
+        for (Study study : studies) {
+            assertTrue("study must have assigned identifer matching %nci% string", study.getName().toLowerCase().indexOf("nci") >= 0);
+        }
+        Collection<Integer> ids = DomainObjectTools.collectIds(studies);
+        assertContains("Wrong study found", ids, -100);
+        assertContains("Wrong study found", ids, -102);
+
+        //now search with another string such that no study maatches for the given serach string
+        String identifierWhichDoesNotExists = "identifier which does not exists";
+        studies = getDao().searchStudiesByStudyName(identifierWhichDoesNotExists);
+        assertEquals("there must be 3 studies", 3, studies.size());
+        for (Study study : studies) {
+            assertTrue("study must not have assigned identifer matching %nci identifier which does not exists% string", study.getName().toLowerCase().indexOf(identifierWhichDoesNotExists) < 0);
+        }
+        ids = DomainObjectTools.collectIds(studies);
+        assertContains("Wrong study found", ids, -100);
+        assertContains("Wrong study found", ids, -101);
+        assertContains("Wrong study found", ids, -102);
+
+    }
+
     public void testLoadAmendments() throws Exception {
         Study study = getDao().getById(-100);
         assertNotNull("Missing current amendment", study.getAmendment());
@@ -53,10 +77,12 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
 
     public void testGetAll() throws Exception {
         List<Study> actual = getDao().getAll();
-        assertEquals(2, actual.size());
+        assertEquals(3, actual.size());
         Collection<Integer> ids = DomainObjectTools.collectIds(actual);
         assertContains("Wrong study found", ids, -100);
         assertContains("Wrong study found", ids, -101);
+        assertContains("Wrong study found", ids, -102);
+
     }
 
     public void testSaveNewStudy() throws Exception {
@@ -64,7 +90,7 @@ public class StudyDaoTest extends ContextDaoTestCase<StudyDao> {
         {
             Study study = new Study();
             study.setName("New study");
-             study.setLongTitle("New study");
+            study.setLongTitle("New study");
             getDao().save(study);
             savedId = study.getId();
             assertNotNull("The saved study didn't get an id", savedId);

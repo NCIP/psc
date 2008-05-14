@@ -145,6 +145,71 @@
 
            updateSummary();
        })
+
+        //scripts for copy period functionality
+        var templateAutocompleter;
+        function unselectPeriodBox(selectedCheckBox) {
+            $('periods').select('[checkbox[id="periodName"]').each(function(item) {
+                item.selected = true;
+                item.checked = false;
+              });
+            selectedCheckBox.checked = true
+
+        }
+        function updatePeriodsDisplay(input, li) {
+            updatePeriods(li.id)
+            $('template-autocompleter-input-id').value = li.id
+
+        }
+        function updatePeriods(studyId) {
+
+            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentStudy"/>?study=' + studyId
+            var lastRequest = new Ajax.Request(aElement);
+
+        }
+        function createAutocompleter() {
+            templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentTemplates"/>',
+            {
+                method: 'get',
+                paramName: 'searchText',
+                afterUpdateElement:updatePeriodsDisplay,
+                revertOnEsc:true
+            });
+
+        }
+
+        function enableDisableTemplateSearchOptions() {
+
+            /* Add event handlers */
+            Event.observe($("currentTemplate"), 'click', currentTemplateSelected);
+            Event.observe($("anotherTemplate"), 'click', anotherTemplateSelected);
+            Event.observe($("template-autocompleter-input"), 'focus', selectAnotherTemplate);
+            currentTemplateSelected()
+        }
+        function currentTemplateSelected() {
+
+            $("anotherTemplate").checked = false;
+            $("currentTemplate").checked = true;
+            updatePeriods($('studyId').value)
+        }
+        function anotherTemplateSelected() {
+            selectAnotherTemplate()
+            if ($('template-autocompleter-input').value != '') {
+                updatePeriods($('template-autocompleter-input-id').value)
+            }
+
+
+        }
+        function selectAnotherTemplate() {
+            $("currentTemplate").checked = false;
+            $("anotherTemplate").checked = true;
+
+
+        }
+        Event.observe(window, "load", enableDisableTemplateSearchOptions)
+        Event.observe(window, "load", createAutocompleter)
+        Event.observe(window, "load", initSearchField);
+
     </script>
 </head>
 <body>
@@ -215,6 +280,36 @@
                 <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
             </div>
             <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
+            <!---->
+
+            <!--html code for copy period functionality-->
+
+            <c:if test="${period.id == null}">
+                <laf:body title="Copy from another period">
+                    <input type="hidden" value="${studyId}" id="studyId">
+
+                    <div class="row odd">
+                        <input type="radio" checked="true" id="currentTemplate" value="true"/>In this template
+                    </div>
+
+                    <div class="row even">
+                        <input type="radio" id="anotherTemplate" value="false"/>In another template
+                        <div class="row">
+
+                            <input id="template-autocompleter-input" type="text" autocomplete="off" value="Search..." class="autocomplete"/>
+                            <input type="hidden" id="template-autocompleter-input-id" value=""/>
+
+                            <div id="template-autocompleter-div" class="autocomplete"></div>
+                        </div>
+                    </div>
+                    <div class="row" id="periods">
+                        <div class="row" id="selected-epochs">
+                        </div>
+                    </div>
+
+                </laf:body>
+
+            </c:if>
         </form:form>
 
     </laf:division>

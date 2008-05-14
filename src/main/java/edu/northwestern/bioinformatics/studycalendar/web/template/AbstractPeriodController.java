@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public abstract class AbstractPeriodController<C extends PeriodCommand> extends PscSimpleFormController {
     private StudyService studyService;
-    private TemplateService templateService;
+    protected TemplateService templateService;
 
     protected AbstractPeriodController(Class<C> commandClass) {
         setFormView("editPeriod");

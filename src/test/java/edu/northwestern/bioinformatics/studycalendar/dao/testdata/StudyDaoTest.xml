@@ -26,6 +26,16 @@
         long_title="Study # 2"
         />
 
+    <STUDIES
+        id="-102"
+        version="0"
+        long_title="second Study"
+        grid_id="another long-GUID-string"
+        assigned_identifier="another nci study"   
+        amendment_id="-45"
+        dev_amendment_id="-55"
+
+        />
     <SITES id="-40" name="North Pole" />
 
     <STUDY_SITES

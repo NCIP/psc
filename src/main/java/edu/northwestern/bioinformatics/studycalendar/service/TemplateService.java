@@ -2,36 +2,25 @@ package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarSystemException;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySiteDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.UserRoleDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
-import edu.northwestern.bioinformatics.studycalendar.dao.DeletableDomainObjectDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.DeltaDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.StudySite.findStudySite;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.utils.DomainObjectTools;
-import edu.northwestern.bioinformatics.studycalendar.utils.NamedComparator;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.StudyCalendarAuthorizationManager;
 import edu.northwestern.bioinformatics.studycalendar.web.StudyListController;
 import edu.nwu.bioinformatics.commons.StringUtils;
+import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import gov.nih.nci.security.authorization.domainobjects.ProtectionGroup;
 import gov.nih.nci.security.util.ObjectSetUtil;
-import gov.nih.nci.cabig.ctms.dao.DomainObjectDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import java.util.*;
 import static java.util.Arrays.asList;
@@ -62,6 +51,7 @@ public class TemplateService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private DaoFinder daoFinder;
+    private UserDao userDao;
 
     public void assignTemplateToSites(Study studyTemplate, List<Site> sites) throws Exception {
         if (studyTemplate == null) {
@@ -79,7 +69,7 @@ public class TemplateService {
     }
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User assignTemplateToSubjectCoordinator(
-        Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
+            Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
     ) throws Exception {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
@@ -103,7 +93,7 @@ public class TemplateService {
     }
 
     public edu.northwestern.bioinformatics.studycalendar.domain.User removeAssignedTemplateFromSubjectCoordinator(
-        Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
+            Study study, Site site, edu.northwestern.bioinformatics.studycalendar.domain.User user
     ) throws Exception {
         if (study == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
@@ -118,7 +108,7 @@ public class TemplateService {
         StudySite studySite = study.getStudySite(site);
         if (user.hasAssignment(studySite)) {
             throw new StudyCalendarValidationException("%s is still responsible for one or more subjects on %s at %s.  Please reassign those subjects before removing %s from that study and site.",
-                user.getName(), study.getAssignedIdentifier(), site.getName(), user.getName());
+                    user.getName(), study.getAssignedIdentifier(), site.getName(), user.getName());
         }
         if (userRole.getStudySites().contains(studySite)) {
             userRole.removeStudySite(studySite);
@@ -129,7 +119,7 @@ public class TemplateService {
 
         return user;
     }
-    
+
     public void removeTemplateFromSites(Study studyTemplate, List<Site> sites) {
         List<StudySite> studySites = studyTemplate.getStudySites();
         List<StudySite> toRemove = new LinkedList<StudySite>();
@@ -162,19 +152,19 @@ public class TemplateService {
         }
         if (cannotRemove.size() > 0) {
             StringBuilder msg = new StringBuilder("Cannot remove ")
-                .append(StringUtils.pluralize(cannotRemove.size(), "site"))
-                .append(" (");
+                    .append(StringUtils.pluralize(cannotRemove.size(), "site"))
+                    .append(" (");
             for (Iterator<Site> it = cannotRemove.iterator(); it.hasNext();) {
                 Site site = it.next();
                 msg.append(site.getName());
                 if (it.hasNext()) msg.append(", ");
             }
             msg.append(") from study ").append(studyTemplate.getName())
-                .append(" because there are subject(s) assigned");
+                    .append(" because there are subject(s) assigned");
             throw new StudyCalendarValidationException(msg.toString());
         }
     }
-    
+
     public void assignMultipleTemplates(List<Study> studyTemplates, Site site, String userId) throws Exception {
         if (studyTemplates == null) {
             throw new IllegalArgumentException(STUDIES_LIST_IS_NULL);
@@ -200,7 +190,7 @@ public class TemplateService {
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public Map<String, List<Site>> getSiteLists(Study studyTemplate) throws Exception {
         if (studyTemplate == null) {
             throw new IllegalArgumentException(STUDY_IS_NULL);
@@ -275,11 +265,11 @@ public class TemplateService {
             }
         }
     }
-    
+
     @Transactional(propagation = Propagation.SUPPORTS)
     public <P extends PlanTreeNode<?>> P findParent(PlanTreeNode<P> node) {
         if (node.getParent() != null) {
-            return node.getParent();                                                                                                    
+            return node.getParent();
         } else {
             Delta<P> delta = deltaDao.findDeltaWhereAdded(node);
             if (delta != null) {
@@ -295,7 +285,7 @@ public class TemplateService {
         }
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     @Transactional(propagation = Propagation.SUPPORTS)
     public <T extends PlanTreeNode<?>> T findAncestor(PlanTreeNode<?> node, Class<T> klass) {
         boolean moreSpecific = DomainObjectTools.isMoreSpecific(node.getClass(), klass);
@@ -309,7 +299,7 @@ public class TemplateService {
             }
         } else {
             throw new StudyCalendarSystemException("%s is not a descendant of %s",
-                node.getClass().getSimpleName(), klass.getSimpleName());
+                    node.getClass().getSimpleName(), klass.getSimpleName());
         }
     }
 
@@ -332,7 +322,7 @@ public class TemplateService {
     }
 
     // this is PlanTreeNode instead of PlanTreeNode<?> due to a javac bug
-    @SuppressWarnings({ "RawUseOfParameterizedType" })
+    @SuppressWarnings({"RawUseOfParameterizedType"})
     @Transactional(propagation = Propagation.SUPPORTS)
     public Study findStudy(PlanTreeNode node) {
         if (node instanceof PlannedCalendar) return ((PlannedCalendar) node).getStudy();
@@ -362,13 +352,13 @@ public class TemplateService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public boolean isEquivalent(PlanTreeNode<?> node, PlanTreeNode<?> toMatch) {
         return (toMatch == node) ||
-            (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
+                (sameClassIgnoringProxies(toMatch, node) && identifiersMatch(toMatch, node));
     }
 
     // This is not a general solution, but it will work for all PlanTreeNode subclasses
     private boolean sameClassIgnoringProxies(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
         return toMatch.getClass().isAssignableFrom(node.getClass())
-            || node.getClass().isAssignableFrom(toMatch.getClass());
+                || node.getClass().isAssignableFrom(toMatch.getClass());
     }
 
     private boolean identifiersMatch(PlanTreeNode<?> toMatch, PlanTreeNode<?> node) {
@@ -385,16 +375,16 @@ public class TemplateService {
     }
 
     // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+    public List<StudyListController.ReleasedTemplate> getPendingTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
         List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
-            devableStudies,
-            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies
+                devableStudies,
+                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                subjectAssignableStudies
         );
 
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
@@ -406,20 +396,20 @@ public class TemplateService {
 
         List<StudyListController.ReleasedTemplate> pendingTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
 
-        for (StudyListController.ReleasedTemplate releasedTemplate: releasedTemplates) {
+        for (StudyListController.ReleasedTemplate releasedTemplate : releasedTemplates) {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
-            if (sites.size()==0 ) {
+            if (sites.size() == 0) {
                 if (!pendingTemplates.contains(releasedTemplate)) {
-                     pendingTemplates.add(releasedTemplate);
+                    pendingTemplates.add(releasedTemplate);
                 }
             }
             for (Site site : sites) {
                 if (!isStudyAssignedToAnySite(releasedTemplateStudy) ||
-                    !isStudyApprovedBySite(site, releasedTemplateStudy) ||
-                    !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
+                        !isStudyApprovedBySite(site, releasedTemplateStudy) ||
+                        !isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
                     if (!pendingTemplates.contains(releasedTemplate)) {
-                     pendingTemplates.add(releasedTemplate);
+                        pendingTemplates.add(releasedTemplate);
                     }
                 }
             }
@@ -428,15 +418,35 @@ public class TemplateService {
         return pendingTemplates;
     }
 
+    /**
+     * Search studies by the given search text and returns InDevelopmentTemplates
+     *
+     * @param studySearchText
+     * @return
+     * @throws Exception
+     */
+    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(final String studySearchText) throws Exception {
+        List<Study> studies = studyDao.searchStudiesByStudyName(studySearchText);
+        log.debug("{} studies found total", studies.size());
+        String userName = ApplicationSecurityManager.getUser();
+        User user = userDao.getByName(userName);
+
+        List<StudyListController.DevelopmentTemplate> results = getInDevelopmentTemplates(studies, user);
+        log.debug("{} in development studies found ", studies.size());
+
+        return results;
+
+    }
+
     public static class AlphabeticallyOrderedComparator implements Comparator<StudyListController.ReleasedTemplate> {
         public static final Comparator<? super StudyListController.ReleasedTemplate> INSTANCE = new AlphabeticallyOrderedComparator();
         public int compare(StudyListController.ReleasedTemplate rt1, StudyListController.ReleasedTemplate rt2) {
-             return rt1.getDisplayName().toLowerCase().compareTo(rt2.getDisplayName().toLowerCase());
+            return rt1.getDisplayName().toLowerCase().compareTo(rt2.getDisplayName().toLowerCase());
         }
     }
 
     // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+    public List<StudyListController.ReleasedTemplate> getReleasedAndAssignedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -444,9 +454,9 @@ public class TemplateService {
         List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
-            devableStudies,
-            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies
+                devableStudies,
+                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                subjectAssignableStudies
         );
 
         List<StudyListController.ReleasedTemplate> releasedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
@@ -458,13 +468,13 @@ public class TemplateService {
 
         List<StudyListController.ReleasedTemplate> releasedAndAssignedTemplates = new ArrayList<StudyListController.ReleasedTemplate>();
 
-        for (StudyListController.ReleasedTemplate releasedTemplate: releasedTemplates) {
+        for (StudyListController.ReleasedTemplate releasedTemplate : releasedTemplates) {
             Study releasedTemplateStudy = releasedTemplate.getStudy();
             List<Site> sites = releasedTemplateStudy.getSites();
-            for (Site site: sites) {
+            for (Site site : sites) {
                 if (isStudyAssignedToAnySite(releasedTemplateStudy) &&
-                    isStudyApprovedBySite(site, releasedTemplateStudy) &&
-                    isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)){
+                        isStudyApprovedBySite(site, releasedTemplateStudy) &&
+                        isSubjectCoordinatorAssignedToStudy(releasedTemplateStudy)) {
                     if (!releasedAndAssignedTemplates.contains(releasedTemplate)) {
                         releasedAndAssignedTemplates.add(releasedTemplate);
                     }
@@ -477,7 +487,7 @@ public class TemplateService {
     }
 
     // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+    public List<StudyListController.ReleasedTemplate> getReleasedTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -485,9 +495,9 @@ public class TemplateService {
         List<Study> subjectAssignableStudies = filterForVisibility(studies, user.getUserRole(SUBJECT_COORDINATOR));
 
         List<Study> visibleStudies = union(
-            devableStudies,
-            filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
-            subjectAssignableStudies
+                devableStudies,
+                filterForVisibility(studies, user.getUserRole(SITE_COORDINATOR)),
+                subjectAssignableStudies
         );
 
 
@@ -502,7 +512,7 @@ public class TemplateService {
     }
 
     // XXX TODO: it is inappropriate to have a reference to the web layer in the service layer
-    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception{
+    public List<StudyListController.DevelopmentTemplate> getInDevelopmentTemplates(List<Study> studies, edu.northwestern.bioinformatics.studycalendar.domain.User user) throws Exception {
         log.debug("{} studies found total", studies.size());
         List<Study> devableStudies = filterForVisibility(studies, user.getUserRole(STUDY_COORDINATOR));
         devableStudies = union(devableStudies, filterForVisibility(studies, user.getUserRole(STUDY_ADMIN)));
@@ -538,8 +548,8 @@ public class TemplateService {
     private boolean isSubjectCoordinatorAssignedToStudy(Study study) {
         for (StudySite studySite : study.getStudySites()) {
             List<UserRole> userRoles = studySite.getUserRoles();
-            for(UserRole userRole : userRoles) {
-                if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)){
+            for (UserRole userRole : userRoles) {
+                if (userRole.getRole().equals(Role.SUBJECT_COORDINATOR)) {
                     return true;
                 }
             }
@@ -551,14 +561,14 @@ public class TemplateService {
         for (T t : collection) delete(t);
     }
 
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     public <T extends PlanTreeNode> void delete(T object) {
         DomainObjectDao<T> dao = (DomainObjectDao<T>) daoFinder.findDao(object.getClass());
         if (!(dao instanceof DeletableDomainObjectDao)) {
             throw new StudyCalendarSystemException(
-                "DAO for %s (%s) does not implement the deletable interface",
-                object.getClass().getSimpleName(), dao.getClass().getName()
-                );
+                    "DAO for %s (%s) does not implement the deletable interface",
+                    object.getClass().getSimpleName(), dao.getClass().getName()
+            );
         }
         DeletableDomainObjectDao<T> deleter = (DeletableDomainObjectDao) dao;
         if (object instanceof PlanTreeInnerNode) {
@@ -575,7 +585,7 @@ public class TemplateService {
     public void setStudyDao(StudyDao studyDao) {
         this.studyDao = studyDao;
     }
-    
+
     @Required
     public void setSiteDao(SiteDao siteDao) {
         this.siteDao = siteDao;
@@ -604,4 +614,10 @@ public class TemplateService {
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
     }
+
+    @Required
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
 }

@@ -80,6 +80,9 @@
     <bean name="/cal/template/select" id="selectStudySegmentController" autowire="byType"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectStudySegmentController"/>
 
+    <bean name="/cal/template/selectInDevelopmentStudy" id="selectInDevelopmentStudyController" autowire="byType"
+              class="edu.northwestern.bioinformatics.studycalendar.web.template.SelectInDevelopmentStudyController"/>
+
     <bean name="/cal/template/rename" id="renameController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
         <property name="commandBeanName"><value>renameCommand</value></property>
@@ -469,6 +472,8 @@
     <bean name="/cal/search/fragment/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchReleasedTemplatesController"/>
 
+    <bean name="/cal/search/fragment/inDevelopmentTemplates" id="searchInDevelopmentTemplatesController" autowire="byName"
+            class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchInDevelopmentTemplatesController"/>
 
     <bean name="/cal/search/fragment/searchStudies" id="searchStudiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchStudiesController"/>
