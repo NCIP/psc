@@ -149,21 +149,37 @@
         //scripts for copy period functionality
         var templateAutocompleter;
         function unselectPeriodBox(selectedCheckBox) {
-            $('periods').select('[checkbox[id="periodName"]').each(function(item) {
-                item.selected = true;
+            $('periods').select('[checkbox[name="periodName"]').each(function(item) {
                 item.checked = false;
               });
             selectedCheckBox.checked = true
+            $('selectedPeriod').value=selectedCheckBox.id
 
         }
         function updatePeriodsDisplay(input, li) {
-            updatePeriods(li.id)
-            $('template-autocompleter-input-id').value = li.id
+            var id = li.id;
+
+            var isDevelopmentTemplateSelected='false'
+
+            if (id.indexOf('dev') == 0) {
+                isDevelopmentTemplateSelected = 'true'
+                $('isDevelopmentTemplateSelected').value = 'true'
+            }
+            if (id.indexOf('rel') == 0) {
+                isDevelopmentTemplateSelected = 'false'
+                $('isDevelopmentTemplateSelected').value = 'false'
+
+            }
+
+            id = id.substring(3, id.length)
+
+            updatePeriods(id,isDevelopmentTemplateSelected)
+            $('template-autocompleter-input-id').value = id
 
         }
-        function updatePeriods(studyId) {
+        function updatePeriods(studyId,isDevelopmentTemplateSelected) {
 
-            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId
+            var aElement = '<c:url value="/pages/cal/template/selectInDevelopmentAndReleasedStudy"/>?study=' + studyId+"&isDevelopmentTemplateSelected="+isDevelopmentTemplateSelected
             var lastRequest = new Ajax.Request(aElement);
 
         }
@@ -190,11 +206,11 @@
 
             $("anotherTemplate").checked = false;
             $("currentTemplate").checked = true;
-            updatePeriods($('studyId').value)
+            updatePeriods($('studyId').value,'true')
         }
         function anotherTemplateSelected() {
             selectAnotherTemplate()
-            if ($('template-autocompleter-input').value != '') {
+            if ($('template-autocompleter-input-id').value != '') {
                 updatePeriods($('template-autocompleter-input-id').value)
             }
 
@@ -205,6 +221,14 @@
             $("anotherTemplate").checked = true;
 
 
+        }
+        function isUserSelectedAnyPeriod() {
+            var isDataCorrect = true;
+             if($('selectedPeriod').value==''){    isDataCorrect = false;
+                resetElement("periodError",
+                                  "ERROR: Please select one period.", "black");
+            }
+            return isDataCorrect;
         }
         Event.observe(window, "load", enableDisableTemplateSearchOptions)
         Event.observe(window, "load", createAutocompleter)
@@ -298,16 +322,23 @@
 
                             <input id="template-autocompleter-input" type="text" autocomplete="off" value="Search..." class="autocomplete"/>
                             <input type="hidden" id="template-autocompleter-input-id" value=""/>
+                            <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
 
                             <div id="template-autocompleter-div" class="autocomplete"></div>
                         </div>
                     </div>
                     <div class="row" id="periods">
-                        <div class="row" id="selected-epochs">
-                        </div>
-                    </div>
+                        <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
 
-                </laf:body>
+                        <div class="row" id="selected-epochs">
+
+                     </div>
+
+                    </div>
+                     <div class="row">
+                        <input id="copy" type="submit" value="Copy" name="copyPeriod" onclick="return(isUserSelectedAnyPeriod())"/>
+                      </div>
+                  </laf:body>
 
             </c:if>
         </form:form>

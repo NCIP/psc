@@ -79,7 +79,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     ////// BEAN PROPERTIES
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "activity_id")
     public Activity getActivity() {
         return activity;
@@ -130,5 +130,15 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     public void setCondition(String condition) {
         this.condition = condition;
+    }
+
+
+
+    @Override
+    protected PlannedActivity clone() {
+        PlannedActivity clone = (PlannedActivity) super.clone();
+//        clone.setActivity(getActivity());
+//        clone.setPopulation(getPopulation());
+        return clone;
     }
 }

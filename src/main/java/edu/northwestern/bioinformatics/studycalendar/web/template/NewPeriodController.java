@@ -1,18 +1,25 @@
 package edu.northwestern.bioinformatics.studycalendar.web.template;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.PeriodDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
-import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
-import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import org.springframework.web.bind.ServletRequestDataBinder;
+import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
+import edu.northwestern.bioinformatics.studycalendar.service.PlanTreeNodeService;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.BreadcrumbContext;
+import edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
+import java.util.Map;
 
 /**
  * @author Moses Hohman
@@ -23,15 +30,20 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
     private AmendmentService amendmentService;
     private StudySegmentDao studySegmentDao;
 
+    private PlanTreeNodeService planTreeNodeService;
+    private PeriodDao periodDao;
+
     public NewPeriodController() {
         super(NewPeriodCommand.class);
         setCrumb(new Crumb());
+        setSessionForm(true);
     }
 
     @Override
     protected Object formBackingObject(HttpServletRequest request) throws Exception {
         return new NewPeriodCommand(amendmentService);
     }
+
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
@@ -43,20 +55,61 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
         Map<String, Object> refdata = super.referenceData(request, command, errors);
         refdata.put("verb", "add");
         refdata.put("studyId",
-                   templateService.findStudy(((PeriodCommand) command).getStudySegment()).getId());
+                templateService.findStudy(((PeriodCommand) command).getStudySegment()).getId());
 
         getControllerTools().addHierarchyToModel(((PeriodCommand) command).getStudySegment(), refdata);
         return refdata;
     }
+
+    @Override
+    protected boolean isFormChangeRequest(final HttpServletRequest request) {
+        String copyPeriod = request.getParameter("copyPeriod");
+        return copyPeriod != null && copyPeriod.equalsIgnoreCase("Copy");
+
+    }
+
+
+    @Override
+    protected void onFormChange(final HttpServletRequest request, final HttpServletResponse httpServletResponse, final Object command, final BindException e) throws Exception {
+
+        if (request.getParameter("selectedPeriod") != null && !StringUtils.isEmpty(request.getParameter("selectedPeriod"))) {
+
+
+            String isDevelopmentTemplateSelected = ServletRequestUtils.getRequiredStringParameter(request, "isDevelopmentTemplateSelected");
+            int selectedPeriod = ServletRequestUtils.getIntParameter(request, "selectedPeriod");
+
+            Period copiedPeriod = null;
+
+            Period period = periodDao.getById(selectedPeriod);
+
+            if (isDevelopmentTemplateSelected.equalsIgnoreCase("false")) {
+                copiedPeriod = planTreeNodeService.copy(period, false);
+            } else if (isDevelopmentTemplateSelected.equalsIgnoreCase("true")) {
+                //user has selected the releaesd template so dont revise the study
+                copiedPeriod = planTreeNodeService.copy(period, true);
+            }
+            ((NewPeriodCommand) command).setPeriod(copiedPeriod);
+
+        } else {
+            logger.error("User must select atleast one period. ");
+        }
+    }
+
 
     @Required
     public void setStudySegmentDao(StudySegmentDao studySegmentDao) {
         this.studySegmentDao = studySegmentDao;
     }
 
+
     @Required
     public void setAmendmentService(AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
+    }
+
+    @Required
+    public void setPlanTreeNodeService(final PlanTreeNodeService planTreeNodeService) {
+        this.planTreeNodeService = planTreeNodeService;
     }
 
     private static class Crumb extends DefaultCrumb {
@@ -68,4 +121,10 @@ public class NewPeriodController extends AbstractPeriodController<NewPeriodComma
             return Collections.singletonMap("studySegment", context.getStudySegment().getId().toString());
         }
     }
+
+    @Required
+    public void setPeriodDao(final PeriodDao periodDao) {
+        this.periodDao = periodDao;
+    }
+
 }

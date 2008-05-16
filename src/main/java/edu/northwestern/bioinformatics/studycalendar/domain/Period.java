@@ -1,44 +1,30 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
+import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
-
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.List;
+import javax.persistence.*;
 import java.util.ArrayList;
-
-import edu.northwestern.bioinformatics.studycalendar.utils.DefaultDayRange;
-import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
+import java.util.List;
 
 /**
  * @author Moses Hohman
  * @author Rhett Sutphin
  */
 @Entity
-@Table (name = "periods")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_periods_id")
-    }
+@Table(name = "periods")
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_periods_id")
+                }
 )
 public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivity>
-    implements Named, Comparable<Period>
-{
+        implements Named, Comparable<Period> {
     private static final int DEFAULT_REPETITIONS = 1;
     private static final int DEFAULT_START_DAY = 1;
     private static final int DEFAULT_DURATION_QUANTITY = 1;
@@ -58,8 +44,15 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     ////// LOGIC
 
-    @Override public Class<StudySegment> parentClass() { return StudySegment.class; }
-    @Override public Class<PlannedActivity> childClass() { return PlannedActivity.class; }
+    @Override
+    public Class<StudySegment> parentClass() {
+        return StudySegment.class;
+    }
+
+    @Override
+    public Class<PlannedActivity> childClass() {
+        return PlannedActivity.class;
+    }
 
     public void addPlannedActivity(PlannedActivity event) {
         addChild(event);
@@ -68,6 +61,11 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
     @Transient
     public String getDisplayName() {
         return getName() == null ? "[period]" : getName();
+    }
+
+    @Transient
+    public String getDisplayNameWithActivities() {
+        return getDisplayName()+ " ("+getChildren().size()+" activities)";
     }
 
     @Transient
@@ -150,9 +148,9 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
 
     @Embedded
     @AttributeOverrides({
-        @AttributeOverride(name="quantity", column = @Column(name = "duration_quantity")),
-        @AttributeOverride(name="unit", column = @Column(name = "duration_unit"))
-    })
+    @AttributeOverride(name = "quantity", column = @Column(name = "duration_quantity")),
+    @AttributeOverride(name = "unit", column = @Column(name = "duration_unit"))
+            })
     public Duration getDuration() {
         if (duration == null) duration = new Duration();
         return duration;
@@ -171,11 +169,12 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
     }
 
     @OneToMany(mappedBy = "period")
-    @OrderBy // order by ID for testing consistency
+    @OrderBy
+    // order by ID for testing consistency
     // TODO: why isn't this just "ALL"?
-    @Cascade(value = { CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
+    @Cascade(value = {CascadeType.DELETE, CascadeType.LOCK, CascadeType.MERGE,
             CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.REPLICATE,
-            CascadeType.SAVE_UPDATE })
+            CascadeType.SAVE_UPDATE})
     public List<PlannedActivity> getPlannedActivities() {
         return getChildren();
     }
@@ -187,7 +186,7 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
     ////// OBJECT METHODS
 
     @Override
-    protected Period clone() {
+    public Period clone() {
         Period clone = (Period) super.clone();
         clone.setDuration(getDuration().clone());
         return clone;

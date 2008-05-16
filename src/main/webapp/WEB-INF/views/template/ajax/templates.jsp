@@ -4,9 +4,11 @@
 
 <ul>
     <c:forEach items="${inDevelopmentTemplates}" var="inDevelopmentTemplate">
-        <li id="${inDevelopmentTemplate.id}">${inDevelopmentTemplate.displayName}</li>
+        <li id="dev${inDevelopmentTemplate.id}">${inDevelopmentTemplate.displayName}</li>
+
     </c:forEach>
     <c:forEach items="${releasedTemplates}" var="releasedTemplate">
-        <li id="${releasedTemplate.id}">${releasedTemplate.study.name}</li>
+        <li id="rel${releasedTemplate.id}">${releasedTemplate.study.name}</li>
+
     </c:forEach>
 </ul>

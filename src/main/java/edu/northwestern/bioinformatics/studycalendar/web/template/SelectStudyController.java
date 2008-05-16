@@ -29,10 +29,16 @@ public class SelectStudyController implements Controller {
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int id = ServletRequestUtils.getRequiredIntParameter(request, "study");
 
+        String isDevelopmentTemplateSelected = ServletRequestUtils.getRequiredStringParameter(request, "isDevelopmentTemplateSelected");
+
         Study study = studyDao.getById(id);
 
         Study theRevisedStudy = null;
-        if (study.getDevelopmentAmendment() != null) {
+
+        if (isDevelopmentTemplateSelected.equalsIgnoreCase("false")) {
+            //user has selected the releaesd template so dont revise the study
+            theRevisedStudy = study;
+        } else if (isDevelopmentTemplateSelected.equalsIgnoreCase("true") && study.getDevelopmentAmendment() != null) {
             theRevisedStudy = deltaService.revise(study, study.getDevelopmentAmendment());
         } else {
             theRevisedStudy = study;

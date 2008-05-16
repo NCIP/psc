@@ -24,6 +24,10 @@ public class NewPeriodCommand implements PeriodCommand {
         amendmentService.updateDevelopmentAmendment(getStudySegment(), Add.create(getPeriod()));
     }
 
+    public void setPeriod(final Period period) {
+        this.period = period;
+    }
+
     public Period getPeriod() {
         return period;
     }
