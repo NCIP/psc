@@ -168,7 +168,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         expectedCsmUser(lastSiteCoord);
         replayMocks();
         CreateUserCommand command = createCommand(lastSiteCoord);
-        verifyMocks();
+        resetMocks();
         lastSiteCoord.getUserRole(SITE_COORDINATOR).addSite(mayo);
 
         mayoSS.addStudySubjectAssignment(new StudySubjectAssignment());
