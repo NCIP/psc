@@ -514,7 +514,7 @@ public class SubjectService {
         }
     }
 
-    private void validateSubjectAttributes(String personId, String firstName, String lastName, Date birthDate, String gender) {
+    private void validateSubjectAttributes(String personId, String firstName, String lastName, Date birthDate, Gender gender) {
         if (StringUtils.isEmpty(personId)) {
             if (StringUtils.isEmpty(firstName)) {
                 throw new StudyCalendarValidationException(
@@ -527,7 +527,7 @@ public class SubjectService {
                         "Subject birth date is required if person id is empty");
             }
         }
-        if (StringUtils.isEmpty(gender)) {
+        if (gender==null ) {
             throw new StudyCalendarValidationException(
                     "Subject gender is required");
         }

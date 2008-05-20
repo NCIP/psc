@@ -17,4 +17,8 @@
     <typedef class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StringCodedEnumType" name="userRole">
          <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.Role</param>
     </typedef>
+    <typedef class="edu.northwestern.bioinformatics.studycalendar.utils.hibernate.StringCodedEnumType" name="gender">
+            <param name="enumClass">edu.northwestern.bioinformatics.studycalendar.domain.Gender</param>
+       </typedef>
+
 </hibernate-mapping>

@@ -28,7 +28,7 @@ public class Subject extends AbstractMutableDomainObject {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
-    private String gender;
+    private Gender gender;
     private String personId;
     private List<StudySubjectAssignment> assignments = new ArrayList<StudySubjectAssignment>();
     private LoadStatus loadStatus = LoadStatus.COMPLETE;
@@ -98,12 +98,12 @@ public class Subject extends AbstractMutableDomainObject {
         this.dateOfBirth = dateOfBirth;
     }
 
-    // TODO: Create enum for gender
-    public String getGender() {
+    @Type(type = "gender")
+    public Gender getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(Gender gender) {
         this.gender = gender;
     }
 

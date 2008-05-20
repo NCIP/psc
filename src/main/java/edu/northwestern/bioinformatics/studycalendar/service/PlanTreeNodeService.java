@@ -17,7 +17,6 @@ public class PlanTreeNodeService {
     private DeltaService deltaService;
 
     @SuppressWarnings({"unchecked"})
-    //public <T extends PlanTreeNode<?>>
     public <T extends PlanTreeInnerNode<?, ?, ?>> T copy(T source, final boolean isDevelopmentTemplateSelected) {
 
         T revisedSource = null;

@@ -1,12 +1,13 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import static org.easymock.classextension.EasyMock.expectLastCall;
+import static org.easymock.classextension.EasyMock.notNull;
 import org.springframework.web.servlet.ModelAndView;
-import static org.easymock.classextension.EasyMock.*;
 
 import java.util.Map;
-
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 /**
  * @author Padmaja Vedula
@@ -25,7 +26,7 @@ public class NewSubjectControllerTest extends ControllerTestCase {
     public void testReferenceData() throws Exception {
         Map<String, Object> refdata = controller.referenceData(request);
         Map<String, String> genders = (Map<String, String>) refdata.get("genders");
-        assertEquals("Wrong action name", "Male", genders.get("Male"));
+        assertEquals("Wrong action name", "Male", genders.get(Gender.MALE.getCode()));
         assertEquals("Wrong action name", "New", refdata.get("action"));
     }
 

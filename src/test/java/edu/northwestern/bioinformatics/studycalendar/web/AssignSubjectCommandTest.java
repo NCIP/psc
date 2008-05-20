@@ -35,7 +35,7 @@ public class AssignSubjectCommandTest extends StudyCalendarTestCase {
         command.setSubjectService(subjectService);
         command.setSubjectDao(subjectDao);
 
-        subject = createSubject("11", "Fred", "Jones", createDate(2008, 1, 12), "Male");
+        subject = createSubject("11", "Fred", "Jones", createDate(2008, 1, 12),Gender.MALE);
 
         command.setFirstName(subject.getFirstName());
         command.setLastName(subject.getLastName());

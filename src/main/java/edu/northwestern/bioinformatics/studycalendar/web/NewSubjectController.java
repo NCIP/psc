@@ -1,23 +1,22 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.validation.BindException;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.Date;
-import java.util.Map;
 import java.util.HashMap;
-
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
-import edu.northwestern.bioinformatics.studycalendar.dao.SubjectDao;
-import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import java.util.Map;
 
 /**
  * @author Padmaja Vedula
@@ -42,9 +41,9 @@ public class NewSubjectController extends PscSimpleFormController {
     protected Map<String, Object> referenceData(HttpServletRequest httpServletRequest) throws Exception {
         Map<String, Object> refdata = new HashMap<String, Object>();
         //can be probably loaded from a properties file ??
-        Map<String, String> genders = new HashMap<String, String>();
-        genders.put("Female", "Female");
-        genders.put("Male", "Male");
+        Map<String, String> genders = Gender.getGenderMap();
+
+
         refdata.put("genders", genders);
         refdata.put("action", "New");
         refdata.put("studyId", ServletRequestUtils.getIntParameter(httpServletRequest, "id"));

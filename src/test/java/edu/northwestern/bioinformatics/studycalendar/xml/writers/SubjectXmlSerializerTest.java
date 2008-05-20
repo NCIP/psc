@@ -2,6 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.xml.writers;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createSubject;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
@@ -30,7 +31,7 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         serializer = new SubjectXmlSerializer();
         serializer.setSubjectService(subjectService);
 
-        subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+        subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
     }
 
     public void testCreateElement() {
@@ -38,12 +39,12 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
         assertEquals("Wrong subject first name", "john", actual.attributeValue("first-name"));
         assertEquals("Wrong subject last name", "doe", actual.attributeValue("last-name"));
         assertEquals("Wrong subject person id", "1111", actual.attributeValue("person-id"));
-        assertEquals("Wrong subject person id", "Male", actual.attributeValue("gender"));
+        assertEquals("Wrong subject person id", Gender.MALE.getCode(), actual.attributeValue("gender"));
         assertEquals("Wrong subject birth date", "1990-01-15", actual.attributeValue("birth-date"));
     }
 
     public void testReadElement() throws ParseException {
-        Subject searchCriteria = createSubject("1111", null, null, null, "Male");
+        Subject searchCriteria = createSubject("1111", null, null, null, Gender.MALE);
         Element element = createElement(searchCriteria);
 
         expectSubjectFoundFromSearchCriteria(searchCriteria);
@@ -61,7 +62,7 @@ public class SubjectXmlSerializerTest extends StudyCalendarXmlTestCase {
     ////// Helper Methods
     private Element createElement(Subject subj) throws ParseException {
         Element elt = new BaseElement("subject");
-        elt.addAttribute("gender", subj.getGender());
+        elt.addAttribute("gender", subj.getGender().getDisplayName());
         elt.addAttribute("last-name", subj.getLastName());
         elt.addAttribute("person-id", subj.getPersonId());
         elt.addAttribute("first-name", subj.getFirstName());

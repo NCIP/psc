@@ -147,7 +147,7 @@ public class Fixtures {
         return p;
     }
 
-    public static Subject createSubject(String personId, String firstName, String lastName, Date birthDate, String gender) {
+    public static Subject createSubject(String personId, String firstName, String lastName, Date birthDate, Gender gender) {
         Subject subject = createSubject(firstName, lastName);
         subject.setPersonId(personId);
         subject.setDateOfBirth(birthDate);

@@ -1,5 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.web;
 
+import edu.northwestern.bioinformatics.studycalendar.domain.Gender;
 import edu.northwestern.bioinformatics.studycalendar.domain.Subject;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ public class NewSubjectCommand {
 		subject.setFirstName(getFirstName());
 		subject.setLastName(getLastName());
 		subject.setDateOfBirth(getDateOfBirth());
-		subject.setGender(getGender());
+		subject.setGender(Gender.getByCode(getGender()));
 		subject.setPersonId(getPersonId());
         return subject;
     }

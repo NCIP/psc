@@ -68,7 +68,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             Subject subject = new Subject();
             subject.setFirstName("Jeff");
             subject.setLastName("Someone");
-            subject.setGender("Male");
+            subject.setGender(Gender.MALE);
             subject.setDateOfBirth(new Date());
             subject.setPersonId("123-45-6789");
 
@@ -84,7 +84,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             assertNotNull("Could not reload subject id " + savedId, loaded);
             assertEquals("Wrong firstname", "Jeff", loaded.getFirstName());
             assertEquals("Wrong lastname", "Someone", loaded.getLastName());
-            assertEquals("Wrong gender", "Male", loaded.getGender());
+            assertEquals("Wrong gender", Gender.MALE, loaded.getGender());
         }
     }
 
@@ -94,7 +94,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             Subject subject = new Subject();
             subject.setFirstName("Jeff");
             subject.setLastName("Someone");
-            subject.setGender("Male");
+            subject.setGender(Gender.MALE);
             subject.setDateOfBirth(new Date());
 
             getDao().save(subject);
@@ -109,7 +109,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
             assertNotNull("Could not reload subject id " + savedId, loaded);
             assertEquals("Wrong firstname", "Jeff", loaded.getFirstName());
             assertEquals("Wrong lastname", "Someone", loaded.getLastName());
-            assertEquals("Wrong gender", "Male", loaded.getGender());
+            assertEquals("Wrong gender", Gender.MALE, loaded.getGender());
         }
     }
 
@@ -117,7 +117,7 @@ public class SubjectDaoTest extends ContextDaoTestCase<SubjectDao> {
         Integer savedId;
         {
             Subject subject = new Subject();
-            subject.setGender("Male");
+            subject.setGender(Gender.MALE);
             subject.setPersonId("123-45-6789");
 
             getDao().save(subject);

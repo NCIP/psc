@@ -72,7 +72,7 @@ public class AssignSubjectCommand implements Validatable {
 		subject.setFirstName(getFirstName());
 		subject.setLastName(getLastName());
 		subject.setDateOfBirth(getDateOfBirth());
-		subject.setGender(getGender());
+		subject.setGender(Gender.getByCode(getGender()));
 		subject.setPersonId(getPersonId());
         return subject;
     }

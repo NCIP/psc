@@ -582,7 +582,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testFindSubjectWithAllAttributes() {
-        Subject subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+        Subject subject = createSubject("1111", "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
         expectFindSubjectByPersonId("1111", subject);
         replayMocks();
 
@@ -593,7 +593,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReadElementByPersonId() {
-        Subject subject = createSubject("1111", null, null, null, "Male");
+        Subject subject = createSubject("1111", null, null, null, Gender.MALE);
 
         expectFindSubjectByPersonId("1111", subject);
         replayMocks();
@@ -605,7 +605,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
 
     public void testReadElementByFirstNameLastNameAndBirthDate() {
-        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
 
         expectFindSubjectByFirstNameLastNameAndBirthDate("john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), subject);
         replayMocks();
@@ -617,7 +617,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     }
     
     public void testFindSubjectByNameAndDoBWhenNotPresent() throws Exception {
-        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), "Male");
+        Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
 
         expect(subjectDao.findSubjectByFirstNameLastNameAndDoB(subject.getFirstName(), subject.getLastName(), subject.getDateOfBirth()))
             .andReturn(null); // this is the actual behavior of SubjectDao
