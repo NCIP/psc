@@ -173,6 +173,7 @@
             <form:hidden path="user.id"/>
             <form:hidden path="passwordModified"/>
             <tags:errors path="user.*"/>
+            <tags:errors path="emailAddress*"/>
             <tags:errors path="password*"/>
             <c:set var="passwordError" value="false"/>
             <spring:bind path="command.password">
@@ -191,6 +192,20 @@
                     </c:if>
                 </div>
             </div>
+            <div class="row">
+                <div class="label">
+                    <form:label path="emailAddress">Email Address:</form:label>
+                </div>
+                <div class="value">
+                    <c:if test="${actionText=='Create'}">
+                        <form:input path="emailAddress"/>
+                    </c:if>
+                    <c:if test="${actionText=='Edit'}">
+                        ${command.emailAddress}
+                    </c:if>
+                </div>
+            </div>
+
             <c:if test="${usingLocalAuthenticationSystem}">
                 <div class="row">
                     <div class="label" >

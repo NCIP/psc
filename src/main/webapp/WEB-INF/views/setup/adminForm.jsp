@@ -33,6 +33,10 @@
                 <div class="value"><form:input path="user.name" size="40"/></div>
             </div>
             <div class="row">
+                <div class="label"><form:label path="emailAddress">Email address</form:label></div>
+                <div class="value"><form:input path="emailAddress" size="40"/></div>
+            </div>
+           <div class="row">
                 <div class="label"><form:label path="password">Password</form:label></div>
                 <div class="value"><form:password path="password" size="40"/></div>
             </div>

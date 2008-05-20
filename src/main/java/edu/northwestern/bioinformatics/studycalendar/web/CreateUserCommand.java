@@ -3,26 +3,29 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.Site;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
 import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
-import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.service.UserService;
-import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
+import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
+import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.nwu.bioinformatics.commons.spring.Validatable;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.GenericValidator;
 import org.springframework.validation.Errors;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.*;
 
 public class CreateUserCommand implements Validatable, Serializable {
     private String password;
+    private String emailAddress;
+
     private String rePassword;
     private boolean passwordModified;
     private User user;
-    private Map<Site, Map<Role,RoleCell>> rolesGrid;
+    private Map<Site, Map<Role, RoleCell>> rolesGrid;
     private boolean userActiveFlag;
 
     private UserService userService;
@@ -32,9 +35,9 @@ public class CreateUserCommand implements Validatable, Serializable {
     private AuthenticationSystemConfiguration authenticationSystemConfiguration;
 
     public CreateUserCommand(
-        User user, SiteDao siteDao, UserService userService, UserDao userDao,
-        UserRoleService userRoleService,
-        AuthenticationSystemConfiguration authenticationSystemConfiguration
+            User user, SiteDao siteDao, UserService userService, UserDao userDao,
+            UserRoleService userRoleService,
+            AuthenticationSystemConfiguration authenticationSystemConfiguration
     ) {
         this.user = user == null ? new User() : user;
         this.siteDao = siteDao;
@@ -44,18 +47,19 @@ public class CreateUserCommand implements Validatable, Serializable {
         this.authenticationSystemConfiguration = authenticationSystemConfiguration;
         this.passwordModified = false;
 
+        this.emailAddress = this.user.getId() == null ? null : getEmaiAddressFromUser(user, userService);
         buildRolesGrid(this.user.getUserRoles());
     }
 
     private void buildRolesGrid(Set<UserRole> userRoles) {
         boolean selected;
-        rolesGrid = new LinkedHashMap<Site, Map<Role,RoleCell>>();
-        
-        for(Site site : siteDao.getAll()) {
-            for(Role role : values()) {
+        rolesGrid = new LinkedHashMap<Site, Map<Role, RoleCell>>();
+
+        for (Site site : siteDao.getAll()) {
+            for (Role role : values()) {
                 selected = false;
-                for(UserRole userRole : userRoles) {
-                    if (userRole.getRole().equals(role) && (!role.isSiteSpecific() || userRole.getSites().contains(site)) ) {
+                for (UserRole userRole : userRoles) {
+                    if (userRole.getRole().equals(role) && (!role.isSiteSpecific() || userRole.getSites().contains(site))) {
                         selected = true;
                         break;
                     }
@@ -65,23 +69,30 @@ public class CreateUserCommand implements Validatable, Serializable {
                     rolesGrid.put(site, new HashMap<Role, RoleCell>());
                 }
 
-                rolesGrid.get(site).put(role, createRoleCell(selected,role.isSiteSpecific()));
+                rolesGrid.get(site).put(role, createRoleCell(selected, role.isSiteSpecific()));
             }
         }
 
     }
 
-    public void validate(Errors errors){
+    public void validate(Errors errors) {
         if (user != null) {
             if (user.getName() == null || StringUtils.isEmpty(user.getName())) {
                 errors.rejectValue("user.name", "error.user.name.not.specified");
             } else {
-                if (user.getId() == null && userDao.getByName(user.getName()) != null){
+                if (user.getId() == null && userDao.getByName(user.getName()) != null) {
                     errors.rejectValue("user.name", "error.user.name.already.exists");
                 }
             }
+            if (emailAddress == null || StringUtils.isEmpty(emailAddress)) {
+                errors.rejectValue("emailAddress", "error.user.email.not.specified");
+            } else if (!GenericValidator.isEmail(emailAddress)) {
+                errors.rejectValue("emailAddress", "error.user.email.invalid");
+
+            }
+
             if (updatePassword() && authenticationSystemConfiguration.isLocalAuthenticationSystem()) {
-                if (password == null || StringUtils.isBlank(password)){
+                if (password == null || StringUtils.isBlank(password)) {
                     errors.rejectValue("password", "error.user.password.not.specified");
                 } else {
                     if (!password.equals(rePassword)) {
@@ -97,9 +108,9 @@ public class CreateUserCommand implements Validatable, Serializable {
                 if (siteCoords.size() == 1 && siteCoords.contains(getUser())) {
                     if (!getRolesGrid().get(site).get(SITE_COORDINATOR).isSelected()) {
                         errors.rejectValue(gridFieldName(site, SITE_COORDINATOR),
-                            "error.user.last-site-coordinator",
-                            new Object[] { getUser().getName(), site.getName() },
-                            "Last site coordinator");
+                                "error.user.last-site-coordinator",
+                                new Object[]{getUser().getName(), site.getName()},
+                                "Last site coordinator");
                     }
                 }
             }
@@ -107,10 +118,10 @@ public class CreateUserCommand implements Validatable, Serializable {
             if (!getRolesGrid().get(site).get(SUBJECT_COORDINATOR).isSelected()) {
                 if (getUser().hasAssignment(site)) {
                     errors.rejectValue(
-                        gridFieldName(site, SUBJECT_COORDINATOR),
-                        "error.user.subject-coordinator-has-subjects",
-                        new Object[] { getUser().getName(), site.getName() },
-                        "Subject coordinator has subjects"
+                            gridFieldName(site, SUBJECT_COORDINATOR),
+                            "error.user.subject-coordinator-has-subjects",
+                            new Object[]{getUser().getName(), site.getName()},
+                            "Subject coordinator has subjects"
                     );
                 }
             }
@@ -125,9 +136,10 @@ public class CreateUserCommand implements Validatable, Serializable {
     public User apply() throws Exception {
         if (updatePassword()) {
             user.setActiveFlag(isUserActiveFlag());
-            userService.saveUser(user, getOrCreatePassword());
+            userService.saveUser(user, getOrCreatePassword(), getEmailAddress());
         } else {
             // must be update only
+            //make sure user has not updated email address
             user.setActiveFlag(isUserActiveFlag());
             userDao.save(user);
         }
@@ -138,6 +150,12 @@ public class CreateUserCommand implements Validatable, Serializable {
     private boolean updatePassword() {
         return passwordModified || user.getId() == null;
     }
+
+    private String getEmaiAddressFromUser(final User user, final UserService userService) {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = userService.getCsmUserByCsmUserId(user.getId());
+        return csmUser.getEmailId();
+    }
+
 
     // generate a random password when creating a new user in a regime that doesn't use the internal passwords
     private String getOrCreatePassword() {
@@ -154,8 +172,8 @@ public class CreateUserCommand implements Validatable, Serializable {
     }
 
     protected void assignUserRolesFromRolesGrid() throws Exception {
-        for(Site site : rolesGrid.keySet()) {
-            for(Role role : rolesGrid.get(site).keySet()) {
+        for (Site site : rolesGrid.keySet()) {
+            for (Role role : rolesGrid.get(site).keySet()) {
                 if (role.isSiteSpecific()) {
                     if (rolesGrid.get(site).get(role).isSelected()) {
                         userRoleService.assignUserRole(user, role, site);
@@ -167,7 +185,7 @@ public class CreateUserCommand implements Validatable, Serializable {
         }
 
         Set<Role> roleList = rolesGrid.values().iterator().next().keySet();
-        for(Role role : roleList) {
+        for (Role role : roleList) {
             if (!role.isSiteSpecific()) {
                 int selected = 0;
                 int notSelected = 0;
@@ -264,5 +282,13 @@ public class CreateUserCommand implements Validatable, Serializable {
 
     public boolean isUserActiveFlag() {
         return userActiveFlag;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(final String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }

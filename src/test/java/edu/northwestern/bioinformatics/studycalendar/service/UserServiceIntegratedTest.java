@@ -47,7 +47,7 @@ public class UserServiceIntegratedTest extends StudyCalendarDbTestCase {
     public void testUserCreationWorks() throws Exception {
         {
             User user = Fixtures.createUser("joe", Role.STUDY_ADMIN, Role.SITE_COORDINATOR);
-            getUserService().saveUser(user, "alfalfa");
+            getUserService().saveUser(user, "alfalfa", "user@email.com");
         }
 
         User reloaded = getUserDao().getByName("joe");

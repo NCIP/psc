@@ -3,33 +3,22 @@ package edu.northwestern.bioinformatics.studycalendar.web;
 import edu.northwestern.bioinformatics.studycalendar.dao.SiteDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.UserDao;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Role.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.Site;
-import edu.northwestern.bioinformatics.studycalendar.domain.Study;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
-import edu.northwestern.bioinformatics.studycalendar.domain.UserRole;
+import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
 import edu.northwestern.bioinformatics.studycalendar.service.UserRoleService;
 import edu.northwestern.bioinformatics.studycalendar.service.UserService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.security.AuthenticationSystemConfiguration;
-import static org.easymock.classextension.EasyMock.*;
 import org.easymock.IArgumentMatcher;
+import static org.easymock.classextension.EasyMock.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.validation.ObjectError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CreateUserCommandTest extends StudyCalendarTestCase {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -56,8 +45,8 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         nuSS = createStudySite(study, nu);
 
         siteDao = new SiteDaoStub(Arrays.asList(mayo, nu));
-        userDao         = registerDaoMockFor(UserDao.class);
-        userService     = registerMockFor(UserService.class);
+        userDao = registerDaoMockFor(UserDao.class);
+        userService = registerMockFor(UserService.class);
         userRoleService = registerMockFor(UserRoleService.class);
         authenticationSystemConfiguration = registerMockFor(AuthenticationSystemConfiguration.class);
         expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(true).anyTimes();
@@ -67,20 +56,27 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
     public void testBuildRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true, STUDY_ADMIN);
-
+        expectedCsmUser(expectedUser);
+        replayMocks();
         CreateUserCommand command = createCommand(expectedUser);
-
+        verifyMocks();
         Map<Site, Map<Role, CreateUserCommand.RoleCell>> rolesGrid = command.getRolesGrid();
-        assertEquals("Roles grid has wrong number of sites", 2 , rolesGrid.size());
+        assertEquals("Roles grid has wrong number of sites", 2, rolesGrid.size());
         assertEquals("Wrong number checked for site specific Role", values().length, rolesGrid.get(mayo).size());
         assertTrue("Role should be true for all sites", rolesGrid.get(mayo).get(STUDY_ADMIN).isSelected());
         assertTrue("Role should be true for all sites", rolesGrid.get(nu).get(STUDY_ADMIN).isSelected());
         assertFalse("Role should not be true for this site", rolesGrid.get(mayo).get(SUBJECT_COORDINATOR).isSelected());
     }
 
+    private void expectedCsmUser(final User expectedUser) {
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
+        csmUser.setEmailId("user@email.com");
+        expect(userService.getCsmUserByCsmUserId(expectedUser.getId())).andReturn(csmUser);
+    }
+
     public void testInterpretRolesGrid() throws Exception {
         User expectedUser = createUser(-1, "Joe", -1L, true);
-
+        expectedCsmUser(expectedUser);
         List<UserRole> expectedUserRoles = Arrays.asList(
                 createUserRole(expectedUser, STUDY_ADMIN),
                 createUserRole(expectedUser, SUBJECT_COORDINATOR, mayo, nu)
@@ -123,6 +119,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_ADMIN);
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_COORDINATOR);
         userRoleService.removeUserRoleAssignment(expectedUser, SYSTEM_ADMINISTRATOR);
+        expectedCsmUser(expectedUser);
 
         replayMocks();
 
@@ -149,6 +146,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         userRoleService.assignUserRole(expectedUser, STUDY_ADMIN);
         userRoleService.removeUserRoleAssignment(expectedUser, STUDY_COORDINATOR);
         userRoleService.removeUserRoleAssignment(expectedUser, SYSTEM_ADMINISTRATOR);
+        expectedCsmUser(expectedUser);
 
         replayMocks();
 
@@ -167,14 +165,17 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
 
     public void testValidateRejectsRemovalOfLastSiteCoordinatorForSite() throws Exception {
         User lastSiteCoord = setId(3, createUser("jimbo", SITE_COORDINATOR));
-        lastSiteCoord.getUserRole(SITE_COORDINATOR).addSite(mayo);
+        expectedCsmUser(lastSiteCoord);
+        replayMocks();
         CreateUserCommand command = createCommand(lastSiteCoord);
+        verifyMocks();
+        lastSiteCoord.getUserRole(SITE_COORDINATOR).addSite(mayo);
+
         mayoSS.addStudySubjectAssignment(new StudySubjectAssignment());
 
         command.getRolesGrid().get(mayo).get(SITE_COORDINATOR).setSelected(false);
 
         expect(userDao.getSiteCoordinators(mayo)).andReturn(Arrays.asList(lastSiteCoord));
-
         replayMocks();
         command.validate(errors);
         verifyMocks();
@@ -182,31 +183,90 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         assertEquals("Wrong number of errors", 1, errors.getFieldErrorCount());
         FieldError actualError = (FieldError) errors.getFieldErrors().get(0);
         assertFieldError(actualError, "rolesGrid[1][SITE_COORDINATOR].selected",
-            "error.user.last-site-coordinator", "jimbo", "Mayo Clinic");
+                "error.user.last-site-coordinator", "jimbo", "Mayo Clinic");
     }
 
     public void testValidateDoesNotRejectLastSiteCoordinatorForUnusedSite() throws Exception {
         User lastSiteCoord = setId(3, createUser("jimbo", SITE_COORDINATOR));
         lastSiteCoord.getUserRole(SITE_COORDINATOR).addSite(mayo);
-        CreateUserCommand command = createCommand(lastSiteCoord);
-
-        command.getRolesGrid().get(mayo).get(SITE_COORDINATOR).setSelected(false);
+        expectedCsmUser(lastSiteCoord);
 
         replayMocks();
+
+        CreateUserCommand command = createCommand(lastSiteCoord);
+        verifyMocks();
+        command.getRolesGrid().get(mayo).get(SITE_COORDINATOR).setSelected(false);
+
+
         command.validate(errors);
         verifyMocks();
 
         assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 0, errors.getFieldErrorCount());
     }
-    
+
     public void testValidateDoesNotRequirePasswordForNonLocalAuthenticationSystem() throws Exception {
         reset(authenticationSystemConfiguration);
         expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
         User newUser = new User();
         newUser.setName("anything");
-        expect(userDao.getByName(newUser.getName())).andReturn(null);
-        
+
         CreateUserCommand command = createCommand(newUser);
+        command.setEmailAddress("user@email.com");
+
+        expect(userDao.getByName(newUser.getName())).andReturn(null);
+
+        replayMocks();
+
+        command.validate(errors);
+
+        assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 0, errors.getFieldErrorCount());
+        verifyMocks();
+    }
+
+    public void testValidateEmailAddressIsMandatory() throws Exception {
+        User newUser = new User();
+        newUser.setName("anything");
+
+        CreateUserCommand command = createCommand(newUser);
+        command.setPassword("password");
+        command.setRePassword("password");
+        expect(userDao.getByName(newUser.getName())).andReturn(null);
+
+        replayMocks();
+
+        command.validate(errors);
+
+        assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 1, errors.getFieldErrorCount());
+        verifyMocks();
+    }
+
+    public void testValidateEmailAddressforInvalidFormat() throws Exception {
+        User newUser = new User();
+        newUser.setName("anything");
+
+        CreateUserCommand command = createCommand(newUser);
+        command.setPassword("password");
+        command.setRePassword("password");
+        command.setEmailAddress("invalid email address");
+        expect(userDao.getByName(newUser.getName())).andReturn(null);
+
+        replayMocks();
+
+        command.validate(errors);
+
+        assertEquals("Wrong number of errors: " + errors.getFieldErrors(), 1, errors.getFieldErrorCount());
+        verifyMocks();
+    }
+
+    public void testValidateEmailAddressforValidFormat() throws Exception {
+        User newUser = new User();
+        newUser.setName("anything");
+        CreateUserCommand command = createCommand(newUser);
+        command.setPassword("password");
+        command.setRePassword("password");
+        command.setEmailAddress("valid@email.com");
+        expect(userDao.getByName(newUser.getName())).andReturn(null);
+
         replayMocks();
 
         command.validate(errors);
@@ -221,11 +281,11 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         expectLastCall().anyTimes();
         userRoleService.removeUserRoleAssignment((User) notNull(), (Role) notNull());
         expectLastCall().anyTimes();
-        
+
         reset(authenticationSystemConfiguration);
         expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
         User newUser = new User();
-        expect(userService.saveUser(eq(newUser), randomPassword())).andReturn(newUser);
+        expect(userService.saveUser(eq(newUser), randomPassword(), null)).andReturn(newUser);
 
         CreateUserCommand command = createCommand(newUser);
         replayMocks();
@@ -259,7 +319,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     private static void assertGlobalError(
-        ObjectError actual, String expectedCode, Object... expectedArgs
+            ObjectError actual, String expectedCode, Object... expectedArgs
     ) {
         assertEquals("Wrong code", expectedCode, actual.getCode());
         assertEquals("Wrong number of args", expectedArgs.length, actual.getArguments().length);
@@ -270,7 +330,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     }
 
     private static void assertFieldError(
-        FieldError error, String expectedField, String expectedCode, Object... expectedArgs
+            FieldError error, String expectedField, String expectedCode, Object... expectedArgs
     ) {
         assertEquals("Wrong field", expectedField, error.getField());
         assertGlobalError(error, expectedCode, expectedArgs);

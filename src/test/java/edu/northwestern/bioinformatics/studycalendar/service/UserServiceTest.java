@@ -69,7 +69,7 @@ public class UserServiceTest extends StudyCalendarTestCase {
         userDao.save(expectedUser);
         replayMocks();
 
-        User actual = service.saveUser(expectedUser, "flan");
+        User actual = service.saveUser(expectedUser, "flan", null);
         verifyMocks();
 
         assertSame("Input user not returned", expectedUser, actual);
