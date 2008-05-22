@@ -215,13 +215,14 @@ public class PSCStudyConsumer implements StudyConsumerI {
                 }
                 studySites.add(studySite);
             }
+        }
             if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
                 String message = "No sites is associated to this study" + study.getLongTitle();
                 throw getStudyCreationException(message);
 
             }
             study.setStudySites(studySites);
-        }
+
     }
 
     /**
