@@ -168,6 +168,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         expectedCsmUser(lastSiteCoord);
         replayMocks();
         CreateUserCommand command = createCommand(lastSiteCoord);
+        verifyMocks();
         resetMocks();
         lastSiteCoord.getUserRole(SITE_COORDINATOR).addSite(mayo);
 
@@ -285,7 +286,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
         reset(authenticationSystemConfiguration);
         expect(authenticationSystemConfiguration.isLocalAuthenticationSystem()).andReturn(false);
         User newUser = new User();
-        expect(userService.saveUser(eq(newUser), randomPassword(), null)).andReturn(newUser);
+        expect(userService.saveUser(eq(newUser), randomPassword(), (String) eq(null))).andReturn(newUser);
 
         CreateUserCommand command = createCommand(newUser);
         replayMocks();
