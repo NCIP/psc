@@ -63,7 +63,7 @@ public class EventsRescheduleCommand {
     }
 
     private void changeState(ScheduledActivity event) {
-        ScheduledActivityState newState = event.getCurrentState();
+        ScheduledActivityState newState = event.getCurrentState().getMode().createStateInstance();
         newState.setReason(createReason());
         if (newState instanceof DatedScheduledActivityState) {
             ((DatedScheduledActivityState) newState).setDate(createDate(event.getActualDate()));
