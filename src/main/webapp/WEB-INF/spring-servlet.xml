@@ -216,12 +216,12 @@
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
-    <bean name="/editPeriod" id="editPeriodController" autowire="byName"
+    <bean name="/cal/editPeriod" id="editPeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.EditPeriodController">
         <property name="crumb.parent"><ref local="displayTemplateController"/></property>
     </bean>
 
-    <bean name="/deletePeriod" id="deletePeriodController" autowire="byName"
+    <bean name="/cal/deletePeriod" id="deletePeriodController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.DeletePeriodController">
     </bean>
 

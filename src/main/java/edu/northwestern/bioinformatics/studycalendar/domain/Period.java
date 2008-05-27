@@ -114,6 +114,9 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         int repCompare = ComparisonUtils.nullSafeCompare(getRepetitions(), other.getRepetitions());
         if (repCompare != 0) return -1 * repCompare;
 
+        int idCompare = ComparisonUtils.nullSafeCompare(getId(), other.getId());
+        if (idCompare != 0) return -1 * idCompare;
+
         return ComparisonUtils.nullSafeCompare(getName(), other.getName());
     }
 
@@ -191,4 +194,6 @@ public class Period extends PlanTreeOrderedInnerNode<StudySegment, PlannedActivi
         clone.setDuration(getDuration().clone());
         return clone;
     }
+
+    
 }

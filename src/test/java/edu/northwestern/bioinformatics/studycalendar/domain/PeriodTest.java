@@ -1,6 +1,7 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPeriod;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createPlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.utils.DayRange;
 
@@ -42,7 +43,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.setDuration(new Duration(2, Duration.Unit.week));
         assertDayRange(1, 28, period.getTotalDayRange());
     }
-    
+
     public void testDayRangeWithNegativeStart() throws Exception {
         period.setStartDay(-7);
         period.setDuration(new Duration(4, Duration.Unit.day));
@@ -54,7 +55,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         period.setRepetitions(3);
         assertDayRange(-7, 4, period.getTotalDayRange());
     }
-    
+
     public void testGetDayRanges() throws Exception {
         period.setStartDay(-4);
         period.setDuration(new Duration(3, Duration.Unit.day));
@@ -63,7 +64,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         List<DayRange> actual = period.getDayRanges();
         assertEquals("Wrong number of ranges", 4, actual.size());
         assertDayRange(-4, -2, actual.get(0));
-        assertDayRange(-1,  1, actual.get(1));
+        assertDayRange(-1, 1, actual.get(1));
         assertDayRange(2, 4, actual.get(2));
         assertDayRange(5, 7, actual.get(3));
     }
@@ -152,7 +153,7 @@ public class PeriodTest extends StudyCalendarTestCase {
 
     public void testSortDescendingByRepetitionsThird() throws Exception {
         Period p1 = createPeriod("DC1", 1, 21, 1);
-        Period p2 = createPeriod("DC2", 1,  7, 3);
+        Period p2 = createPeriod("DC2", 1, 7, 3);
         assertNegative(p2.compareTo(p1));
         assertPositive(p1.compareTo(p2));
     }
@@ -174,7 +175,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(2));
         assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(9));
     }
-    
+
     public void testIsFirstDayOfRepNonOnePeriodStart() throws Exception {
         Period p1 = createPeriod("B", 4, 5, 5);
         assertTrue(p1.isFirstDayOfRepetition(4));
@@ -197,7 +198,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(2));
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(9));
     }
-    
+
     public void testIsLastDayOfRepNonOnePeriodStart() throws Exception {
         Period p1 = createPeriod("B", 4, 5, 5);
         assertTrue(p1.isLastDayOfRepetition(8));
@@ -209,7 +210,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(5));
         assertFalse("Second day considered last day", p1.isLastDayOfRepetition(10));
     }
-    
+
     public void testIsFirstDayOfRepWithNegDays() throws Exception {
         Period p1 = createPeriod("A", -6, 5, 2);
         assertTrue(p1.isFirstDayOfRepetition(-6));
@@ -217,7 +218,7 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertFalse("Out of range considered first day", p1.isFirstDayOfRepetition(5));
         assertFalse("Second day considered first day", p1.isFirstDayOfRepetition(-5));
     }
-    
+
     public void testIsLastDayOfRepWithNegDays() throws Exception {
         Period p1 = createPeriod("A", -6, 5, 2);
         assertTrue(p1.isLastDayOfRepetition(-2));
@@ -234,5 +235,15 @@ public class PeriodTest extends StudyCalendarTestCase {
         assertEquals("Update wrote through from clone to original", 17, (int) p1.getDuration().getQuantity());
         assertEquals("Update of clone didn't take", 42, (int) p1c.getDuration().getQuantity());
         assertNotSame(p1.getDuration(), p1c.getDuration());
+    }
+
+    public void testCompareTo() {
+
+        period = createPeriod("name", 3, Duration.Unit.day, 15, 3);
+        Period anotherPeriod = createPeriod("name", 3, Duration.Unit.day, 15, 3);
+        assertTrue("both periods are not equal", anotherPeriod.compareTo(period) == 0);
+        period.setId(1);
+        assertTrue("both periods are equal", anotherPeriod.compareTo(period) > 0);
+
     }
 }

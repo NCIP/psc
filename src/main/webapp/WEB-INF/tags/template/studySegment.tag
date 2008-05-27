@@ -42,7 +42,7 @@
             </tr>
             <c:forEach items="${month.periods}" var="period" varStatus="pStatus">
                 <tr class="<c:if test="${pStatus.last}">last</c:if> <c:if test="${period.resume}">resume</c:if>">
-                    <c:if test="${editable}"><td class="controls"><a class="control" href="<c:url value="/pages/editPeriod?period=${period.id}"/>">Edit</a></td></c:if>
+                    <c:if test="${editable}"><td class="controls"><a class="control" href="<c:url value="/pages/cal/editPeriod?period=${period.id}"/>">Edit</a></td></c:if>
                     <th class="row" style="white-space:nowrap; text-decoration:none;">
                             ${fn:replace(period.name, " ", "&nbsp;")}
                     </th>
