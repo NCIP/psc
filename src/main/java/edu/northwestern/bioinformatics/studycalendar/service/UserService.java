@@ -11,6 +11,8 @@ import gov.nih.nci.security.UserProvisioningManager;
 import gov.nih.nci.security.exceptions.CSObjectNotFoundException;
 import gov.nih.nci.security.exceptions.CSTransactionException;
 import org.hibernate.Hibernate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,8 @@ public class UserService implements Serializable {
     private UserDao userDao;
     private UserProvisioningManager userProvisioningManager;
     public static final String STUDY_CALENDAR_APPLICATION_ID = "2";
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
 
     public User saveUser(User user, String password, final String emailAddress) {
         if (user == null)
@@ -100,6 +104,18 @@ public class UserService implements Serializable {
         return assignableUsers;
     }
 
+    public String getEmailAddresssForUser(final User user) {
+
+        gov.nih.nci.security.authorization.domainobjects.User csmUser = null;
+        try {
+            csmUser = userProvisioningManager.getUserById(user.getCsmUserId().toString());
+        } catch (CSObjectNotFoundException e) {
+            log.error("No csm user found for given csm user id:" + user.getCsmUserId());
+        }
+        return csmUser != null ? csmUser.getEmailId() : null;
+
+    }
+
     /**
      * Returns the user, fully initialized.
      * @param username
@@ -124,13 +140,5 @@ public class UserService implements Serializable {
         this.userProvisioningManager = userProvisioningManager;
     }
 
-    public gov.nih.nci.security.authorization.domainobjects.User getCsmUserByCsmUserId(final Integer csmUserId) {
-        gov.nih.nci.security.authorization.domainobjects.User csmUser = null;
-        try {
-            csmUser = userProvisioningManager.getUserById(csmUserId.toString());
-        } catch (CSObjectNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return csmUser;
-    }
+
 }

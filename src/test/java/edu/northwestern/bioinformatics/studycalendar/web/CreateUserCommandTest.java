@@ -71,7 +71,7 @@ public class CreateUserCommandTest extends StudyCalendarTestCase {
     private void expectedCsmUser(final User expectedUser) {
         gov.nih.nci.security.authorization.domainobjects.User csmUser = new gov.nih.nci.security.authorization.domainobjects.User();
         csmUser.setEmailId("user@email.com");
-        expect(userService.getCsmUserByCsmUserId(expectedUser.getId())).andReturn(csmUser);
+        expect(userService.getEmailAddresssForUser(expectedUser)).andReturn(csmUser.getEmailId());
     }
 
     public void testInterpretRolesGrid() throws Exception {

@@ -47,7 +47,7 @@ public class CreateUserCommand implements Validatable, Serializable {
         this.authenticationSystemConfiguration = authenticationSystemConfiguration;
         this.passwordModified = false;
 
-        this.emailAddress = this.user.getId() == null ? null : getEmaiAddressFromUser(user, userService);
+        this.emailAddress = this.user.getId() == null ? null : userService.getEmailAddresssForUser(user);
         buildRolesGrid(this.user.getUserRoles());
     }
 
@@ -151,10 +151,7 @@ public class CreateUserCommand implements Validatable, Serializable {
         return passwordModified || user.getId() == null;
     }
 
-    private String getEmaiAddressFromUser(final User user, final UserService userService) {
-        gov.nih.nci.security.authorization.domainobjects.User csmUser = userService.getCsmUserByCsmUserId(user.getId());
-        return csmUser.getEmailId();
-    }
+
 
 
     // generate a random password when creating a new user in a regime that doesn't use the internal passwords
