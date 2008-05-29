@@ -15,6 +15,7 @@ import edu.nwu.bioinformatics.commons.testing.CoreTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.isA;import static org.easymock.EasyMock.eq;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,16 +35,19 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
     private User user;
 
     private StudySegment studySegment;
+    private  NotificationService notificationService;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         subjectDao = registerDaoMockFor(SubjectDao.class);
         amendmentService = registerMockFor(AmendmentService.class);
+        notificationService=registerMockFor(NotificationService.class);
 
         service = new SubjectService();
         service.setSubjectDao(subjectDao);
         service.setAmendmentService(amendmentService);
+        service.setNotificationService(notificationService);
 
         Epoch epoch = Epoch.create("Epoch", "A", "B", "C");
         studySegment = epoch.getStudySegments().get(0);
@@ -98,6 +102,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         subjectDao.save(subjectExpectedSave);
         expectLastCall().times(2);
+        notificationService.notifyUsersForNewScheduleNotifications(user,expectedAssignment);
         replayMocks();
 
         StudySubjectAssignment actualAssignment = service.assignSubject(subjectIn, studySite, expectedStudySegment, startDate, user);
@@ -132,6 +137,9 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         subjectDao.save(subject);
         expectLastCall().times(2);
+
+        User user=null;
+        notificationService.notifyUsersForNewScheduleNotifications(eq(user),isA(StudySubjectAssignment.class));
 
         replayMocks();
         StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null);
