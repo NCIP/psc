@@ -1,9 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
-import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.EpochDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.PlannedCalendarDao;
-import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.dao.delta.AmendmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
@@ -28,10 +25,13 @@ public class StudyService {
     private AmendmentDao amendmentDao;
     private EpochDao epochDao;
     private NowFactory nowFactory;
+    private ScheduledActivityDao scheduledActivityDao;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
         Activity reconsent = activityDao.getByName("Reconsent");
+
+
         for (StudySubjectAssignment assignment : subjectAssignments) {
             if (!assignment.isExpired()) {
                 ScheduledActivity upcomingScheduledActivity = getNextScheduledActivity(assignment
@@ -45,14 +45,17 @@ public class StudyService {
                     reconsentEvent.setActivity(reconsent);
                     reconsentEvent.setSourceAmendment(study.getAmendment());
                     upcomingScheduledActivity.getScheduledStudySegment().addEvent(reconsentEvent);
+                    scheduledActivityDao.save(reconsentEvent);
 
                     Notification notification = new Notification(reconsentEvent);
                     assignment.addNotification(notification);
-
                 }
             }
+
         }
         studyDao.save(study);
+
+
     }
 
     public String getNewStudyName() {
@@ -213,5 +216,9 @@ public class StudyService {
     @Required
     public void setNowFactory(NowFactory nowFactory) {
         this.nowFactory = nowFactory;
+    }
+
+    public void setScheduledActivityDao(final ScheduledActivityDao scheduledActivityDao) {
+        this.scheduledActivityDao = scheduledActivityDao;
     }
 }
