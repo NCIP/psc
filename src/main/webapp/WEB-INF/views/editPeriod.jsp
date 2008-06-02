@@ -127,10 +127,14 @@
         function isCorrectInput() {
             var isDataCorrect = true;
             isDataCorrect = isCorrectStartDay();
-            if(!isDataCorrect) { return isDataCorrect; }
+            if(!isDataCorrect) {
+                return ;
+            }
             isDataCorrect = isCorrectDuration();
-            if(!isDataCorrect) { return isDataCorrect; }
-            return isCorrectRepetitions();
+            if(!isDataCorrect) { return ; }
+            isDataCorrect= isCorrectRepetitions();
+             submitForm(isDataCorrect)
+
         }
 
         Element.observe(window, "load", function() {
@@ -207,7 +211,13 @@
                 resetElement("periodError",
                                   "ERROR: Please select one period.", "black");
             }
-            return isDataCorrect;
+              submitForm(isDataCorrect)
+        }
+        function submitForm(isDataCorrect){
+            var periodForm = $('period-form');
+            if (isDataCorrect) {
+                periodForm.submit();
+            }
         }
         Event.observe(window, "load", currentTemplateSelected)
         Event.observe(window, "load", createAutocompleter)
@@ -219,7 +229,7 @@
 <laf:box title="${commons:capitalize(verb)} Period">
     <laf:division>
         <%--<h2>${commons:capitalize(verb)} Period</h2>--%>
-        <form:form method="post" id="period-form">
+        <form:form method="post" id="period-form" >
             <h5 id="periodError"></h5>
             <div class="row odd">
                 <div class="label">
@@ -280,7 +290,7 @@
                 </div>
             </div>
             <div class="even row submit">
-                <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
+                <input id="submitButoon" type="button" value="Submit" onclick="javascript:isCorrectInput()" />
             </div>
             <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
             <!---->
@@ -309,7 +319,7 @@
                         </div>
 
                      <div class="row">
-                        <input id="copy" type="submit" value="Copy" name="copyPeriod" onclick="return(isUserSelectedAnyPeriod())"/>
+                        <input id="copy" type="button" value="Copy" name="copyPeriod" onclick="javascript:isUserSelectedAnyPeriod()"/>
                       </div>
                   </laf:body>
 
