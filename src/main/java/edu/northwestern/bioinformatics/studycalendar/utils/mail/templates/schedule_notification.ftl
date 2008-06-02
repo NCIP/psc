@@ -1,9 +1,9 @@
 [#ftl]
-A new schedule has been created on study: ${studySubjectAssignment.studySite.study.name} at site: ${studySubjectAssignment.studySite.site.name}.
+${notification.title}
 
-Folllowing are the subject details -
+${notification.message}
 
-${studySubjectAssignment.subject}
+actionRequired:  ${notification.actionRequired?string("Yes", "No")}
 
 
 

@@ -1,11 +1,14 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.NotificationDao;
+import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.setId;
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.web.ControllerTestCase;
 import static org.easymock.classextension.EasyMock.expect;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Date;
 
 /**
  * @author Rhett Sutphin
@@ -24,7 +27,12 @@ public class DismissAeControllerTest extends ControllerTestCase {
     }
 
     public void testBindNotification() throws Exception {
-        Notification expectedAEN = setId(17, new Notification());
+        AdverseEvent ae = new AdverseEvent();
+        ae.setDescription("Grade 4 adverse event");
+        ae.setDetectionDate(new Date());
+
+
+        Notification expectedAEN = setId(17, new Notification(ae));
         expect(notificationDao.getById(17)).andReturn(expectedAEN);
         notificationDao.save(expectedAEN);
         request.addParameter("notification", "17");

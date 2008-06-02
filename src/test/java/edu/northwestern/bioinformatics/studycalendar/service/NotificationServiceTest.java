@@ -1,11 +1,9 @@
 package edu.northwestern.bioinformatics.studycalendar.service;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentDao;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
-import edu.northwestern.bioinformatics.studycalendar.domain.Role;
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.SecurityContextHolderTestHelper;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.easymock.classextension.EasyMock;
@@ -45,6 +43,8 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         notificationService.setMailSender(mailSender);
         notificationService.setUserService(userService);
 
+        SecurityContextHolderTestHelper.setSecurityContext("user", "password");
+
 
     }
 
@@ -55,6 +55,7 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
         studySubjectAssignments.add(studySubjectAssignment);
         EasyMock.expect(studySubjectAssignmentDao.getAllAssignmenetsWhichHaveNoActivityBeyondADate(EasyMock.isA(Date.class))).andReturn(studySubjectAssignments);
         studySubjectAssignmentDao.save(studySubjectAssignment);
+        
         replayMocks();
         notificationService.addNotificationIfNothingIsScheduledForPatient();
         verifyMocks();
@@ -63,16 +64,19 @@ public class NotificationServiceTest extends StudyCalendarTestCase {
 
     public void testNotifyUsersForNewScheduleNotifications() {
 
-        StudySubjectAssignment studySubjectAssignment = new StudySubjectAssignment();
 
         User user = Fixtures.createUser("first name", Role.SUBJECT_COORDINATOR);
         String emailAddress = "user@email.com";
         EasyMock.expect(userService.getEmailAddresssForUser(user)).andReturn(emailAddress);
         ScheduleNotificationMailMessage notificationMailMessage = new ScheduleNotificationMailMessage();
-        EasyMock.expect(mailMessageFactory.createScheduleNotificationMailMessage(emailAddress, studySubjectAssignment)).andReturn(notificationMailMessage);
+        AdverseEvent ae = new AdverseEvent();
+        Notification notification = new Notification(ae);
+        EasyMock.expect(mailMessageFactory.createScheduleNotificationMailMessage(emailAddress, notification)).andReturn(notificationMailMessage);
         mailSender.send(notificationMailMessage);
+        EasyMock.expect(userService.getUserByName("user")).andReturn(user);
+
         replayMocks();
-        notificationService.notifyUsersForNewScheduleNotifications(user, studySubjectAssignment);
+        notificationService.notifyUsersForNewScheduleNotifications(notification);
 
         verifyMocks();
     }

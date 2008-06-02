@@ -26,6 +26,7 @@ public class StudyService {
     private EpochDao epochDao;
     private NowFactory nowFactory;
     private ScheduledActivityDao scheduledActivityDao;
+    private NotificationService notificationService;
 
     public void scheduleReconsent(final Study study, final Date startDate, final String details) throws Exception {
         List<StudySubjectAssignment> subjectAssignments = studyDao.getAssignmentsForStudy(study.getId());
@@ -48,7 +49,11 @@ public class StudyService {
                     scheduledActivityDao.save(reconsentEvent);
 
                     Notification notification = new Notification(reconsentEvent);
+                    //FIXME:SAURABH this will send same email message multiple times to same subject coordinator.
+                    // Update the logic here once the email message content is finalized. 
                     assignment.addNotification(notification);
+                    notificationService.notifyUsersForNewScheduleNotifications(notification);
+                    
                 }
             }
 
@@ -220,5 +225,10 @@ public class StudyService {
 
     public void setScheduledActivityDao(final ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
+    }
+
+    @Required
+    public void setNotificationService(final NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 }

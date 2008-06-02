@@ -9,6 +9,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
@@ -35,6 +36,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     StaticNowFactory staticNowFactory;
     private DeltaService deltaService;
     private ScheduledActivityDao scheduledActivityDao;
+    private NotificationService notificationService;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -43,7 +45,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         deltaService = deltaService = registerMockFor(DeltaService.class);
         scheduledActivityDao=registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerMockFor(ActivityDao.class);
-
+        notificationService=registerMockFor(NotificationService.class);
         staticNowFactory = new StaticNowFactory();
         staticNowFactory.setNowTimestamp(NOW);
 
@@ -53,6 +55,7 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.setDeltaService(deltaService);
         service.setNowFactory(staticNowFactory);
         service.setScheduledActivityDao(scheduledActivityDao);
+        service.setNotificationService(notificationService);
 
         study = setId(1 , new Study());
 
@@ -89,6 +92,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         studyDao.save(study);
         scheduledActivityDao.save(isA(ScheduledActivity.class));
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
@@ -124,6 +129,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         expect(activityDao.getByName("Reconsent")).andReturn(reconsent);
         scheduledActivityDao.save(isA(ScheduledActivity.class));
         studyDao.save(study);
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+        
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();

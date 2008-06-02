@@ -35,8 +35,7 @@ public class SubjectService {
     private SubjectDao subjectDao;
     private SiteService siteService;
     private AmendmentService amendmentService;
-    private NotificationService notificationService;
-
+  
     public StudySubjectAssignment assignSubject(Subject subject, StudySite study, StudySegment studySegmentOfFirstEpoch, Date startDate, User subjectCoordinator) {
         return this.assignSubject(subject, study, studySegmentOfFirstEpoch, startDate, null, subjectCoordinator);
     }
@@ -58,8 +57,6 @@ public class SubjectService {
         subject.addAssignment(spa);
         scheduleStudySegment(spa, studySegmentOfFirstEpoch, startDate, NextStudySegmentMode.PER_PROTOCOL);
         subjectDao.save(subject);
-        //#421 Send e-mail to subject coordinators for new schedule notifications
-        notificationService.notifyUsersForNewScheduleNotifications(subjectCoordinator,spa);
         return spa;
     }
 
@@ -446,10 +443,7 @@ public class SubjectService {
         this.amendmentService = amendmentService;
     }
 
-    @Required
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
+
 
     @SuppressWarnings("unchecked")
     public Subject findSubjectByPersonId(final String mrn) {

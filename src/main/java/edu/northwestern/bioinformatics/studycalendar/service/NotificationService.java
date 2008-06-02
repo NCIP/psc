@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.dao.StudySubjectAssignmentD
 import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
 import edu.northwestern.bioinformatics.studycalendar.domain.User;
+import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.MailMessageFactory;
 import edu.northwestern.bioinformatics.studycalendar.utils.mail.ScheduleNotificationMailMessage;
 import org.apache.commons.logging.Log;
@@ -55,27 +56,35 @@ public class NotificationService {
 
         for (StudySubjectAssignment studySubjectAssignment : studySubjectAssignments) {
             Notification notification = Notification.createNotificationForPatient(Calendar.getInstance().getTime(), numberOfDays);
-            studySubjectAssignment.addNotification(notification);
+            notification.setAssignment(studySubjectAssignment);
+            //do not send the email
+            studySubjectAssignment.getNotifications().add(notification);
             studySubjectAssignmentDao.save(studySubjectAssignment);
 
         }
 
     }
 
-    public void notifyUsersForNewScheduleNotifications(final User user, final StudySubjectAssignment studySubjectAssignment) {
+    public void notifyUsersForNewScheduleNotifications(final Notification notification) {
         //first find the email address of subject coordinators
+        String userName = ApplicationSecurityManager.getUser();
+        User user = userService.getUserByName(userName);
+
         String toAddress = userService.getEmailAddresssForUser(user);
-        ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, studySubjectAssignment);
+        ScheduleNotificationMailMessage mailMessage = mailMessageFactory.createScheduleNotificationMailMessage(toAddress, notification);
         if (mailMessage != null) {
             try {
                 mailSender.send(mailMessage);
                 logger.debug("sending new schedule notification to:" + toAddress);
             } catch (MailException e) {
                 logger.error("Can not send new schedule notification to:" + toAddress + " exception message:" + e.getMessage());
+            } catch (Exception e) {
+                logger.error("Can not send new schedule notification to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
             }
         }
 
     }
+
 
     @Required
     public void setUserService(final UserService userService) {
@@ -102,4 +111,6 @@ public class NotificationService {
     public void setMailMessageFactory(final MailMessageFactory mailMessageFactory) {
         this.mailMessageFactory = mailMessageFactory;
     }
+
+
 }

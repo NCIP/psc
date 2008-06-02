@@ -9,6 +9,7 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
+import static org.easymock.EasyMock.isA;
 
 import static java.util.Calendar.DECEMBER;
 import static java.util.Calendar.JANUARY;
@@ -32,6 +33,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
     private PlannedCalendar calendar;
     private Subject subject;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
+    private NotificationService notificationService;
 
 
     @Override
@@ -41,6 +43,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         amendmentDao = registerDaoMockFor(AmendmentDao.class);
         studyDao = registerDaoMockFor(StudyDao.class);
         populationService = registerMockFor(PopulationService.class);
+        notificationService=registerMockFor(NotificationService.class);
 
         study = setGridId("STUDY-GRID", setId(300, createBasicTemplate()));
         calendar = setGridId("CAL-GRID", setId(400, study.getPlannedCalendar()));
@@ -69,6 +72,7 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         service.setAmendmentDao(amendmentDao);
         service.setStudyDao(studyDao);
         service.setPopulationService(populationService);
+        service.setNotificationService(notificationService);
 
         mockTemplateService = registerMockFor(TemplateService.class);
         mockDeltaService = registerMockFor(DeltaService.class);
@@ -128,6 +132,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         StudySubjectAssignment assignment = Fixtures.createAssignment(study, portlandSS.getSite(), subject);
         portlandSS.addStudySubjectAssignment(assignment);
         StudySubjectAssignmentDao.save(assignment);
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+              
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();
@@ -145,7 +151,8 @@ public class AmendmentServiceTest extends StudyCalendarTestCase {
         AmendmentApproval expectedApproval = AmendmentApproval.create(a1, DateTools.createDate(2004, DECEMBER, 1));
 
         mockDeltaService.amend(assignment, a1);
-
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+              
         replayMocks();
         service.approve(portlandSS, expectedApproval);
         verifyMocks();

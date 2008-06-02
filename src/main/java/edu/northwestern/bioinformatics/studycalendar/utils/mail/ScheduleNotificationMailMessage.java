@@ -1,6 +1,6 @@
 package edu.northwestern.bioinformatics.studycalendar.utils.mail;
 
-import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
+import edu.northwestern.bioinformatics.studycalendar.domain.Notification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,8 @@ import java.util.Map;
 public class ScheduleNotificationMailMessage extends StudyCalendarMailMessage {
     private static final String DISPLAY_NULL = "[null]";
 
-    private StudySubjectAssignment studySubjectAssignment;
+
+    private Notification notification;
 
     @Override
     protected void onInitialization() {
@@ -26,26 +27,20 @@ public class ScheduleNotificationMailMessage extends StudyCalendarMailMessage {
     protected Map<String, Object> createTemplateContext() {
         validate();
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put("studySubjectAssignment", studySubjectAssignment);
+        context.put("notification", notification);
         return context;
     }
 
 
     private void validate() {
-        if (studySubjectAssignment == null) {
-            throw new NullPointerException("studySubjectAssignment must be set");
+        if (notification == null) {
+            throw new NullPointerException("notification must be set");
         }
     }
 
-    public StudySubjectAssignment getStudySubjectAssignment() {
-        return studySubjectAssignment;
+
+    public void setNotification(final Notification notification) {
+        this.notification = notification;
     }
-
-    public void setStudySubjectAssignment(final StudySubjectAssignment studySubjectAssignment) {
-        this.studySubjectAssignment = studySubjectAssignment;
-    }
-
-   
-
 }
 

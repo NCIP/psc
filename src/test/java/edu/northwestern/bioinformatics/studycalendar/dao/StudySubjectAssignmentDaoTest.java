@@ -15,6 +15,12 @@ import java.util.List;
  */
 public class StudySubjectAssignmentDaoTest extends ContextDaoTestCase<StudySubjectAssignmentDao> {
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+
+    }
+
     public void testGetAllAssignmenetsWhichHasNoActivityBeyondADate() throws Exception {
         Date date = DateUtils.createDate(2008, Calendar.MAY, 8);
         List<StudySubjectAssignment> assignments = getDao().getAllAssignmenetsWhichHaveNoActivityBeyondADate(date);

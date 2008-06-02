@@ -228,4 +228,6 @@ public class StudySubjectAssignment extends AbstractMutableDomainObject {
         notification.setAssignment(this);
 
     }
+
+    
 }
