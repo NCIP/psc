@@ -75,11 +75,11 @@ public class NotificationService {
         if (mailMessage != null) {
             try {
                 mailSender.send(mailMessage);
-                logger.debug("sending new schedule notification to:" + toAddress);
+                logger.debug("sending notification to:" + toAddress);
             } catch (MailException e) {
-                logger.error("Can not send new schedule notification to:" + toAddress + " exception message:" + e.getMessage());
+                logger.error("Can not send notification email to:" + toAddress + " exception message:" + e.getMessage());
             } catch (Exception e) {
-                logger.error("Can not send new schedule notification to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
+                logger.error("Can not send notification email to:" + toAddress + "exception: " + e.toString() + " exception message:" + e.getMessage());
             }
         }
 
