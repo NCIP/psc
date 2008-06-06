@@ -15,6 +15,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * @author Rhett Sutphin
@@ -64,6 +65,11 @@ public class EditPeriodController extends AbstractPeriodController<EditPeriodCom
         public String getName(BreadcrumbContext context) {
             return new StringBuilder("Edit ").append(context.getPeriod().getDisplayName())
                 .toString();
+        }
+
+        @Override
+        public Map<String, String> getParameters(BreadcrumbContext context) {
+           return Collections.singletonMap("period", context.getPeriod().getId().toString());
         }
     }
 

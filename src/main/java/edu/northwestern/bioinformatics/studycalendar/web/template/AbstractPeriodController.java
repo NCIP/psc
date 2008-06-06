@@ -19,7 +19,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  */
 public abstract class AbstractPeriodController<C extends PeriodCommand> extends PscSimpleFormController {
-    private StudyService studyService;
+    protected StudyService studyService;
     protected TemplateService templateService;
 
     protected AbstractPeriodController(Class<C> commandClass) {

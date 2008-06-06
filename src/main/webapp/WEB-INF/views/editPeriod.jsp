@@ -127,10 +127,14 @@
         function isCorrectInput() {
             var isDataCorrect = true;
             isDataCorrect = isCorrectStartDay();
-            if(!isDataCorrect) { return isDataCorrect; }
+            if(!isDataCorrect) {
+                return ;
+            }
             isDataCorrect = isCorrectDuration();
-            if(!isDataCorrect) { return isDataCorrect; }
-            return isCorrectRepetitions();
+            if(!isDataCorrect) { return ; }
+            isDataCorrect= isCorrectRepetitions();
+             submitForm(isDataCorrect)
+
         }
 
         Element.observe(window, "load", function() {
@@ -184,43 +188,22 @@
 
         }
         function createAutocompleter() {
-            templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
-            {
-                method: 'get',
-                paramName: 'searchText',
-                afterUpdateElement:updatePeriodsDisplay,
-                revertOnEsc:true
-            });
+            if ($('copy') != null) {
 
-        }
-
-        function enableDisableTemplateSearchOptions() {
-
-            /* Add event handlers */
-            Event.observe($("currentTemplate"), 'click', currentTemplateSelected);
-            Event.observe($("anotherTemplate"), 'click', anotherTemplateSelected);
-            Event.observe($("template-autocompleter-input"), 'focus', selectAnotherTemplate);
-            currentTemplateSelected()
-        }
-        function currentTemplateSelected() {
-
-            $("anotherTemplate").checked = false;
-            $("currentTemplate").checked = true;
-            updatePeriods($('studyId').value,'true')
-        }
-        function anotherTemplateSelected() {
-            selectAnotherTemplate()
-            if ($('template-autocompleter-input-id').value != '') {
-                updatePeriods($('template-autocompleter-input-id').value)
+                templateAutocompleter = new Ajax.ResetableAutocompleter('template-autocompleter-input', 'template-autocompleter-div', '<c:url value="/pages/cal/search/fragment/inDevelopmentAndReleasedTemplates"/>',
+                {
+                    method: 'get',
+                    paramName: 'searchText',
+                    afterUpdateElement:updatePeriodsDisplay,
+                    revertOnEsc:true
+                });
             }
-
-
         }
-        function selectAnotherTemplate() {
-            $("currentTemplate").checked = false;
-            $("anotherTemplate").checked = true;
 
-
+        function currentTemplateSelected() {
+            if ($('copy') != null) {
+                updatePeriods($('template-autocompleter-input-id').value, 'true')
+            }
         }
         function isUserSelectedAnyPeriod() {
             var isDataCorrect = true;
@@ -228,9 +211,15 @@
                 resetElement("periodError",
                                   "ERROR: Please select one period.", "black");
             }
-            return isDataCorrect;
+              submitForm(isDataCorrect)
         }
-        Event.observe(window, "load", enableDisableTemplateSearchOptions)
+        function submitForm(isDataCorrect){
+            var periodForm = $('period-form');
+            if (isDataCorrect) {
+                periodForm.submit();
+            }
+        }
+        Event.observe(window, "load", currentTemplateSelected)
         Event.observe(window, "load", createAutocompleter)
         Event.observe(window, "load", initSearchField);
 
@@ -240,7 +229,7 @@
 <laf:box title="${commons:capitalize(verb)} Period">
     <laf:division>
         <%--<h2>${commons:capitalize(verb)} Period</h2>--%>
-        <form:form method="post" id="period-form">
+        <form:form method="post" id="period-form" >
             <h5 id="periodError"></h5>
             <div class="row odd">
                 <div class="label">
@@ -301,7 +290,7 @@
                 </div>
             </div>
             <div class="even row submit">
-                <input id="submit" type="submit" value="Submit" onclick="return(isCorrectInput())" />
+                <input id="submitButoon" type="button" value="Submit" onclick="javascript:isCorrectInput()" />
             </div>
             <!--<div class="even row submit"><input id="submit" type="submit" value="Submit"/></div>    -->
             <!---->
@@ -310,33 +299,27 @@
 
             <c:if test="${period.id == null}">
                 <laf:body title="Copy from another period">
-                    <input type="hidden" value="${studyId}" id="studyId">
 
-                    <div class="row odd">
-                        <input type="radio" checked="true" id="currentTemplate" value="true"/>In this template
-                    </div>
-
-                    <div class="row even">
-                        <input type="radio" id="anotherTemplate" value="false"/>In another template
                         <div class="row">
 
-                            <input id="template-autocompleter-input" type="text" autocomplete="off" value="Search..." class="autocomplete"/>
-                            <input type="hidden" id="template-autocompleter-input-id" value=""/>
+                            <input id="template-autocompleter-input" type="text" autocomplete="off" value="${selectedStudy}" class="search"/>
+                            <input type="hidden" id="template-autocompleter-input-id" value="${studyId}"/>
                             <input type="hidden" id="isDevelopmentTemplateSelected" name="isDevelopmentTemplateSelected" value="true"/>
 
                             <div id="template-autocompleter-div" class="autocomplete"></div>
-                        </div>
-                    </div>
-                    <div class="row" id="periods">
+                        <div class="row" id="periods">
                         <input type="hidden" id="selectedPeriod" name="selectedPeriod" value=""/>
 
                         <div class="row" id="selected-epochs">
 
                      </div>
 
+
                     </div>
+                        </div>
+
                      <div class="row">
-                        <input id="copy" type="submit" value="Copy" name="copyPeriod" onclick="return(isUserSelectedAnyPeriod())"/>
+                        <input id="copy" type="button" value="Copy" name="copyPeriod" onclick="javascript:isUserSelectedAnyPeriod()"/>
                       </div>
                   </laf:body>
 

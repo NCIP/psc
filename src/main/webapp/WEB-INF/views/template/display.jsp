@@ -205,7 +205,7 @@
             #study-info ul li {
                 list-style-type: none;
             }
-            
+
             #outside-links {
                 margin: 1em;
                 text-align: right
@@ -488,7 +488,7 @@
 			function hideSetup(){
                 if (init == null) {
                     initialize_arrows();
-                }                
+                }
                 registerHideHandler()
 			}
 
@@ -593,7 +593,7 @@
                 formdata = formdata + "period=" + periodId + "&";
                 formdata = formdata+ "studySegment=" + ${studySegment.base.id} + "&";
 
-                href = '<c:url value="/pages/deletePeriod"/>?period=' + periodId + "&studySegment=" + ${studySegment.base.id}
+                href = '<c:url value="/pages/cal/deletePeriod"/>?period=' + periodId + "&studySegment=" + ${studySegment.base.id}
                 var lastRequest = new Ajax.Request(href,
                 {
                     postBody: formdata
@@ -779,7 +779,7 @@
                         </c:if>
                     </c:if>
                 </ul>
-            
+
                 <div id="outside-links">
                     <c:if test="${configuration.studyPageUrlConfigured}">
                         <c:set var="studyPageUrlAvail" value="${not empty configuration.map.studyPageUrl}"/>
@@ -794,7 +794,7 @@
         <div id="epochs" class="section">
             <laf:box title="Epochs and study segments">
                 <p class="controls" id="addEpoch"/>
-              
+
                 <laf:division>
                     <tags:epochsAndStudySegments id="epochs-container" plannedCalendar="${plannedCalendar}" selectedStudySegment="${studySegment.base}"/>
                 </laf:division>
