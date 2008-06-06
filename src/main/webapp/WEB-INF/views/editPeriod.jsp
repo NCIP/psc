@@ -211,6 +211,7 @@
                 resetElement("periodError",
                                   "ERROR: Please select one period.", "black");
             }
+            $('copyPeriod').value='Copy'
               submitForm(isDataCorrect)
         }
         function submitForm(isDataCorrect){
@@ -320,6 +321,8 @@
 
                      <div class="row">
                         <input id="copy" type="button" value="Copy" name="copyPeriod" onclick="javascript:isUserSelectedAnyPeriod()"/>
+                         <input type="hidden" id="copyPeriod" name="copyPeriod" value=""/>
+
                       </div>
                   </laf:body>
 
