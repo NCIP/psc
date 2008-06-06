@@ -21,7 +21,7 @@ import java.util.Date;
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
  */
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class PSCAdverseEventConsumer implements AdverseEventConsumer {
 
     private static final Log logger = LogFactory.getLog(PSCAdverseEventConsumer.class);

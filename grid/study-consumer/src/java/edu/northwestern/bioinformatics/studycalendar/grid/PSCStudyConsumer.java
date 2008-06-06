@@ -35,7 +35,7 @@ import java.util.List;
  * @author <a href="mailto:saurabh.agrawal@semanticbits.com>Saurabh Agrawal</a>
  */
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class PSCStudyConsumer implements StudyConsumerI {
 
     private static final Log logger = LogFactory.getLog(PSCStudyConsumer.class);
@@ -161,16 +161,18 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private void populateEpochsAndArms(final gov.nih.nci.ccts.grid.Study studyDto, final Study study) {
         EpochType[] epochTypes = studyDto.getEpoch();
 
-        for (int i = 0; i < epochTypes.length; i++) {
-            EpochType epochType = epochTypes[i];
-            if (epochType instanceof NonTreatmentEpochType) {
-                TemplateSkeletonCreatorImpl.addEpoch(study, i, Epoch.create(epochType.getName()));
-            } else if (epochType instanceof TreatmentEpochType) {
-                TemplateSkeletonCreatorImpl.addEpoch(study, i,
-                        createEpochForTreatmentEpochType((TreatmentEpochType) epochType));
+        if (epochTypes != null) {
+            for (int i = 0; i < epochTypes.length; i++) {
+                EpochType epochType = epochTypes[i];
+                if (epochType instanceof NonTreatmentEpochType) {
+                    TemplateSkeletonCreatorImpl.addEpoch(study, i, Epoch.create(epochType.getName()));
+                } else if (epochType instanceof TreatmentEpochType) {
+                    TemplateSkeletonCreatorImpl.addEpoch(study, i,
+                            createEpochForTreatmentEpochType((TreatmentEpochType) epochType));
+
+                }
 
             }
-
         }
 
     }
@@ -179,11 +181,15 @@ public class PSCStudyConsumer implements StudyConsumerI {
         Epoch epoch = null;
 
         ArmType[] armTypes = treatmentEpochType.getArm();
-        List<String> armNames = new ArrayList<String>();
-        for (ArmType armType : armTypes) {
-            armNames.add(armType.getName());
+        if (armTypes != null) {
+
+            List<String> armNames = new ArrayList<String>();
+            for (ArmType armType : armTypes) {
+                armNames.add(armType.getName());
+            }
+            epoch = Epoch.create(treatmentEpochType.getName(), armNames.toArray(new String[0]));
+
         }
-        epoch = Epoch.create(treatmentEpochType.getName(), armNames.toArray(new String[0]));
         return epoch;
     }
 
@@ -198,22 +204,25 @@ public class PSCStudyConsumer implements StudyConsumerI {
             throws StudyCreationException, InvalidStudyException {
 
         List<StudySite> studySites = new ArrayList<StudySite>();
-        for (StudyOrganizationType studyOrganizationType : studyOrganizationTypes) {
-            StudySite studySite = null;
-            if (studyOrganizationType instanceof StudySiteType) {
-                studySite = new StudySite();
-                studySite.setSite(fetchSite(studyOrganizationType.getHealthcareSite(0).getNciInstituteCode()));
-                studySite.setStudy(study);
-                studySite.setGridId(studyOrganizationType.getGridId());
+        if (studyOrganizationTypes != null) {
+            for (StudyOrganizationType studyOrganizationType : studyOrganizationTypes) {
+                StudySite studySite = null;
+                if (studyOrganizationType instanceof StudySiteType) {
+                    studySite = new StudySite();
+                    studySite.setSite(fetchSite(studyOrganizationType.getHealthcareSite(0).getNciInstituteCode()));
+                    studySite.setStudy(study);
+                    studySite.setGridId(studyOrganizationType.getGridId());
+                }
+                studySites.add(studySite);
             }
-            studySites.add(studySite);
         }
-        if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
-            String message = "No sites is associated to this study" + study.getLongTitle();
-            throw getStudyCreationException(message);
+            if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
+                String message = "No sites is associated to this study" + study.getLongTitle();
+                throw getStudyCreationException(message);
 
-        }
-        study.setStudySites(studySites);
+            }
+            study.setStudySites(studySites);
+
     }
 
     /**
@@ -243,11 +252,13 @@ public class PSCStudyConsumer implements StudyConsumerI {
      */
     String findCoordinatingCenterIdentifier(final gov.nih.nci.ccts.grid.Study studyDto) throws InvalidStudyException {
         String ccIdentifier = null;
-        for (IdentifierType identifierType : studyDto.getIdentifier()) {
-            if (identifierType instanceof OrganizationAssignedIdentifierType
-                    && StringUtils.equals(identifierType.getType(), COORDINATING_CENTER_IDENTIFIER_TYPE)) {
-                ccIdentifier = identifierType.getValue();
-                break;
+        if (studyDto.getIdentifier() != null) {
+            for (IdentifierType identifierType : studyDto.getIdentifier()) {
+                if (identifierType instanceof OrganizationAssignedIdentifierType
+                        && StringUtils.equals(identifierType.getType(), COORDINATING_CENTER_IDENTIFIER_TYPE)) {
+                    ccIdentifier = identifierType.getValue();
+                    break;
+                }
             }
         }
 
