@@ -87,17 +87,19 @@
             /*font-size:0.6em;*/
         }
 
- 
+
     </style>
     <script type="text/javascript">
         Event.observe(window, "load", registerHeaderCollapse);
-    </script>    
+    </script>
 </head>
 <body>
     <div class="main">
         <h1>Welcome, ${userName.name}</h1>
     </div>
     <dash:pastDueActivities activities="${pastDueActivities}"/>
+    <dash:notifications notifications="${notifications}" />
+
     <dash:currentActivities activityTypes="${activityTypes}" numberOfDays="7"/>
     <laf:box title="Available studies">
         <ul class="menu">
