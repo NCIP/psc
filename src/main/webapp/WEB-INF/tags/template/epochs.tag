@@ -9,8 +9,9 @@
             <label>${studySegment.name}</label>
         </div>
         <c:forEach items="${studySegment.periods}" var="period">
-            <div class="row even"><label>${period.displayNameWithActivities}</label>
+            <div class="row even">
                 <input type="checkbox" id="${period.id}" name="periodName" value="false" onclick="unselectPeriodBox(this)">
+                <label>${period.displayNameWithActivities}</label>
 
             </div>
         </c:forEach>
