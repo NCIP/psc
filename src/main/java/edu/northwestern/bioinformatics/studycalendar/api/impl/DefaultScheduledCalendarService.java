@@ -4,6 +4,7 @@ import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarServic
 import edu.northwestern.bioinformatics.studycalendar.dao.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.ScheduledActivityState;
+import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
 import gov.nih.nci.cabig.ctms.domain.GridIdentifiable;
@@ -28,9 +29,10 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private ScheduledActivityDao scheduledActivityDao;
     private StudySubjectAssignmentDao studySubjectAssignmentDao;
     private UserDao userDao;
+    private NotificationService notificationService;
 
     public ScheduledCalendar assignSubject(
-        Study study, Subject subject, Site site, StudySegment firstStudySegment, Date startDate,String assignmentGridId
+            Study study, Subject subject, Site site, StudySegment firstStudySegment, Date startDate, String assignmentGridId
     ) {
         ParameterLoader loader = new ParameterLoader(study, site, firstStudySegment);
 
@@ -40,11 +42,11 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
             loadedSubject = subject;
         } else {
             StudySubjectAssignment assignment = subjectDao.getAssignment(
-                loadedSubject, loader.getStudy(), loader.getSite());
+                    loadedSubject, loader.getStudy(), loader.getSite());
             if (assignment != null) {
                 throw new IllegalArgumentException(
-                    "Subject already assigned to this study.  " +
-                    "Use scheduleNextStudySegment to change to the next studySegment.");
+                        "Subject already assigned to this study.  " +
+                                "Use scheduleNextStudySegment to change to the next studySegment.");
             }
         }
 
@@ -54,7 +56,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         String userName = ApplicationSecurityManager.getUser();
         User user = userDao.getByName(userName);
         StudySubjectAssignment newAssignment = subjectService.assignSubject(
-            loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user);
+                loadedSubject, join, loader.getStudySegment(), startDate, assignmentGridId, user);
         return newAssignment.getScheduledCalendar();
     }
 
@@ -72,7 +74,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     public Collection<ScheduledActivity> getScheduledActivities(
-        Study study, Subject subject, Site site, Date startDate, Date endDate
+            Study study, Subject subject, Site site, Date startDate, Date endDate
     ) {
         ParameterLoader loader = new ParameterLoader(study, subject, site);
         ScheduledCalendar calendar = loader.findAssignment().getScheduledCalendar();
@@ -88,7 +90,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     }
 
     public void scheduleNextStudySegment(
-        Study study, Subject subject, Site site, StudySegment nextStudySegment, NextStudySegmentMode mode, Date startDate
+            Study study, Subject subject, Site site, StudySegment nextStudySegment, NextStudySegmentMode mode, Date startDate
     ) {
         ParameterLoader loader = new ParameterLoader(study, subject, site, nextStudySegment);
         subjectService.scheduleStudySegment(loader.findAssignment(), loader.getStudySegment(), startDate, mode);
@@ -102,8 +104,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         }
         registerAeInternal(assignment, adverseEvent);
     }
-    
-    public void registerSevereAdverseEvent(StudySubjectAssignment assignment, AdverseEvent adverseEvent){
+
+    public void registerSevereAdverseEvent(StudySubjectAssignment assignment, AdverseEvent adverseEvent) {
         StudySubjectAssignment loadedAssignment = load(assignment, studySubjectAssignmentDao);
         registerAeInternal(loadedAssignment, adverseEvent);
     }
@@ -111,8 +113,8 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private void registerAeInternal(StudySubjectAssignment assignment, AdverseEvent adverseEvent) {
         Notification notification = new Notification(adverseEvent);
         assignment.addAeNotification(notification);
-
         subjectDao.save(assignment.getSubject());
+        notificationService.notifyUsersForNewScheduleNotifications(notification);
     }
 
     ////// CONFIGURATION
@@ -151,15 +153,20 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     public void setScheduledActivityDao(ScheduledActivityDao scheduledActivityDao) {
         this.scheduledActivityDao = scheduledActivityDao;
     }
-    
+
     @Required
-    public void setStudySubjectAssignmentDao (StudySubjectAssignmentDao studySubjectAssignmentDao) {
+    public void setStudySubjectAssignmentDao(StudySubjectAssignmentDao studySubjectAssignmentDao) {
         this.studySubjectAssignmentDao = studySubjectAssignmentDao;
     }
 
     @Required
     public void setUserDao(UserDao userDao) {
         this.userDao = userDao;
+    }
+
+    @Required
+    public void setNotificationService(final NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 
     //////
@@ -173,7 +180,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
         T loaded = dao.getByGridId(parameter);
         if (required && loaded == null) {
             throw new IllegalArgumentException("No " + parameter.getClass().getSimpleName().toLowerCase() +
-                " with gridId " + parameter.getGridId());
+                    " with gridId " + parameter.getGridId());
         }
         return loaded;
     }
@@ -181,7 +188,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
     private void checkForGridId(GridIdentifiable gridIdentifiable) {
         if (!gridIdentifiable.hasGridId()) {
             throw new IllegalArgumentException(
-                "No gridId on " + gridIdentifiable.getClass().getSimpleName().toLowerCase() + " parameter");
+                    "No gridId on " + gridIdentifiable.getClass().getSimpleName().toLowerCase() + " parameter");
         }
     }
 
@@ -246,7 +253,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                 }
             }
             throw new IllegalArgumentException("Site " + this.getSite().getGridId()
-                + " not associated with study " + this.getStudy().getGridId());
+                    + " not associated with study " + this.getStudy().getGridId());
         }
 
         public void validateStudySegmentInStudy() {
@@ -256,7 +263,7 @@ public class DefaultScheduledCalendarService implements ScheduledCalendarService
                 }
             }
             throw new IllegalArgumentException("StudySegment " + getStudySegment().getGridId()
-                + " not part of template for study " + getStudy().getGridId());
+                    + " not part of template for study " + getStudy().getGridId());
         }
 
         public StudySubjectAssignment findAssignment() {

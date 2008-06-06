@@ -6,10 +6,12 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Canceled;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Scheduled;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
+import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import static org.easymock.classextension.EasyMock.expect;
 import static org.easymock.classextension.EasyMock.reset;
+import static org.easymock.EasyMock.isA;
 
 import java.util.*;
 
@@ -49,6 +51,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
     private StudySegment loadedStudySegment;
     private ScheduledActivity loadedEvent;
     private User user;
+    private NotificationService notificationService;
 
     @Override
     protected void setUp() throws Exception {
@@ -62,6 +65,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         scheduledActivityDao = registerDaoMockFor(ScheduledActivityDao.class);
         assignmentDao = registerDaoMockFor(StudySubjectAssignmentDao.class);
         userDao = registerDaoMockFor(UserDao.class);
+        notificationService=registerMockFor(NotificationService.class);
 
         service = new DefaultScheduledCalendarService();
         service.setSubjectDao(subjectDao);
@@ -73,6 +77,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         service.setScheduledActivityDao(scheduledActivityDao);
         service.setStudySubjectAssignmentDao (assignmentDao);
         service.setUserDao(userDao);
+        service.setNotificationService(notificationService);
 
         parameterStudy = setGridId(STUDY_BIG_ID, new Study());
         parameterSite = setGridId(SITE_BIG_ID, new Site());
@@ -95,7 +100,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         UserRole userRole = new UserRole();
         userRole.setRole(Role.SUBJECT_COORDINATOR);
         userRoles.add(userRole);
-        
+
         user.setUserRoles(userRoles);
 
         expect(studyDao.getByGridId(parameterStudy)).andReturn(loadedStudy).times(0, 1);
@@ -391,7 +396,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         expect(subjectDao.getAssignment(loadedSubject, loadedStudy, loadedSite))
             .andReturn(expectedAssignment);
         subjectDao.save(loadedSubject);
-
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
         replayMocks();
         service.registerSevereAdverseEvent(
             parameterStudy, parameterSubject, parameterSite, expectedAe);
@@ -408,6 +413,7 @@ public class DefaultScheduledCalendarServiceTest extends StudyCalendarTestCase {
         AdverseEvent expectedAe = new AdverseEvent();
 
         subjectDao.save(loadedSubject);
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
 
         replayMocks();
         service.registerSevereAdverseEvent(parameterAssignment, expectedAe);

@@ -28,6 +28,8 @@ public class AmendmentService {
     private AmendmentDao amendmentDao;
     private PopulationService populationService;
     private StudySubjectAssignmentDao StudySubjectAssignmentDao;
+    private NotificationService notificationService;
+
 
     /**
      * Commit the changes in the developmentAmendment for the given study.  This means:
@@ -60,6 +62,8 @@ public class AmendmentService {
                         deltaService.amend(assignment, approval.getAmendment());
                         Notification notification = new Notification(approval);
                         assignment.addNotification(notification);
+                        notificationService.notifyUsersForNewScheduleNotifications(notification);
+
 
                     } else {
                         log.info("Will not apply mandatory amendment {} to assignment {} as it has unapplied non-mandatory amendments intervening",
@@ -70,6 +74,7 @@ public class AmendmentService {
                 for (StudySubjectAssignment assignment : studySite.getStudySubjectAssignments()) {
                     Notification notification = Notification.createNotificationForNonMandatoryAmendments(assignment, approval.getAmendment());
                     assignment.addNotification(notification);
+                    notificationService.notifyUsersForNewScheduleNotifications(notification);
                     StudySubjectAssignmentDao.save(assignment);
 
                 }
@@ -190,5 +195,10 @@ public class AmendmentService {
     @Required
     public void setStudySubjectAssignmentDao(final StudySubjectAssignmentDao studySubjectAssignmentDao) {
         StudySubjectAssignmentDao = studySubjectAssignmentDao;
+    }
+
+    @Required
+    public void setNotificationService(final NotificationService notificationService) {
+        this.notificationService = notificationService;
     }
 }

@@ -55,7 +55,7 @@ public class Notification extends AbstractMutableDomainObject {
      * <li>If you want to create notifications for Activity,
      * use {@link edu.northwestern.bioinformatics.studycalendar.domain.Notification#Notification(ScheduledActivity)}</li>
      */
-    public Notification() {
+    protected Notification() {
 
     }
 

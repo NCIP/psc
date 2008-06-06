@@ -1,31 +1,28 @@
 package edu.northwestern.bioinformatics.studycalendar.web.schedule;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.ActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.ScheduledActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.ChangeAction;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Change;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.domain.delta.Revision;
+import edu.northwestern.bioinformatics.studycalendar.domain.delta.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.scheduledactivitystate.Occurred;
 import edu.northwestern.bioinformatics.studycalendar.service.DeltaService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.service.NotificationService;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 import gov.nih.nci.cabig.ctms.lang.StaticNowFactory;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.isA;
 import org.easymock.classextension.EasyMock;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-import java.sql.Timestamp;
 
 public class StudyServiceTest extends StudyCalendarTestCase {
     private static final Timestamp NOW = DateTools.createTimestamp(2001, Calendar.FEBRUARY, 4);
@@ -38,14 +35,17 @@ public class StudyServiceTest extends StudyCalendarTestCase {
     ScheduledCalendar calendar;
     StaticNowFactory staticNowFactory;
     private DeltaService deltaService;
+    private ScheduledActivityDao scheduledActivityDao;
+    private NotificationService notificationService;
 
     protected void setUp() throws Exception {
         super.setUp();
 
         studyDao = registerMockFor(StudyDao.class);
         deltaService = deltaService = registerMockFor(DeltaService.class);
+        scheduledActivityDao=registerDaoMockFor(ScheduledActivityDao.class);
         activityDao = registerMockFor(ActivityDao.class);
-
+        notificationService=registerMockFor(NotificationService.class);
         staticNowFactory = new StaticNowFactory();
         staticNowFactory.setNowTimestamp(NOW);
 
@@ -54,6 +54,8 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         service.setActivityDao(activityDao);
         service.setDeltaService(deltaService);
         service.setNowFactory(staticNowFactory);
+        service.setScheduledActivityDao(scheduledActivityDao);
+        service.setNotificationService(notificationService);
 
         study = setId(1 , new Study());
 
@@ -89,12 +91,15 @@ public class StudyServiceTest extends StudyCalendarTestCase {
         expect(activityDao.getByName("Reconsent")).andReturn(reconsent);
 
         studyDao.save(study);
+        scheduledActivityDao.save(isA(ScheduledActivity.class));
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();
 
         List<ScheduledActivity> list = studySegment0.getActivitiesByDate().get(DateTools.createTimestamp(2005, Calendar.JULY, 4));
-        
+
         assertEquals("Wrong number of events on July 4th", 2, list.size());
         assertEquals("Reconsent Details should be destails", "Reconsent Details", list.get(1).getDetails());
         assertEquals("Reconsent should be activity name", "Reconsent", list.get(1).getActivity().getName());
@@ -122,8 +127,10 @@ public class StudyServiceTest extends StudyCalendarTestCase {
 
         Activity reconsent = setId(1, createNamedInstance("Reconsent", Activity.class));
         expect(activityDao.getByName("Reconsent")).andReturn(reconsent);
-
+        scheduledActivityDao.save(isA(ScheduledActivity.class));
         studyDao.save(study);
+        notificationService.notifyUsersForNewScheduleNotifications(isA(Notification.class));
+
         replayMocks();
         service.scheduleReconsent(study, staticNowFactory.getNow(), "Reconsent Details");
         verifyMocks();

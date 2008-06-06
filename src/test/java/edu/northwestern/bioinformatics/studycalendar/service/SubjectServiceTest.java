@@ -133,6 +133,8 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         subjectDao.save(subject);
         expectLastCall().times(2);
 
+        User user=null;
+
         replayMocks();
         StudySubjectAssignment actual = service.assignSubject(subject, ss, seg, DateTools.createDate(2006, JANUARY, 11), null);
         verifyMocks();
@@ -215,7 +217,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         assertSame("Source amendment not set on SEs", expectedAmendment, events.get(7).getSourceAmendment());
     }
-    
+
     public void testScheduleFirstStudySegmentWithNegativeDays() throws Exception {
         studySegment.getPeriods().first().setStartDay(-7);
         // this will shift the days for events in the first period:
@@ -228,7 +230,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         StudySite studySite = new StudySite();
         studySite.setSite(new Site());
-        assignment.setStudySite(studySite);        
+        assignment.setStudySite(studySite);
 
         Amendment expectedAmendment = new Amendment();
         assignment.setCurrentAmendment(expectedAmendment);
@@ -286,7 +288,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         StudySite studySite = new StudySite();
         studySite.setSite(new Site());
-        assignment.setStudySite(studySite);        
+        assignment.setStudySite(studySite);
 
         replayMocks();
         ScheduledStudySegment returnedStudySegment = service.scheduleStudySegment(
@@ -403,7 +405,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
         java.sql.Timestamp timestampTo = new java.sql.Timestamp(dateAfterReset.getTime());
         long oneDay = 1 * 24 * 60 * 60 * 1000;
         timestampTo.setTime(timestampTo.getTime() - oneDay);
-        assertEquals("dates are not equals", df.format(timestampTo), df.format(dateBeforeReset));        
+        assertEquals("dates are not equals", df.format(timestampTo), df.format(dateBeforeReset));
         assertEquals("descriptions are not equals", event.getCurrentState().getReason(),
                 SubjectService.RESCHEDULED + description);
     }
@@ -615,7 +617,7 @@ public class SubjectServiceTest extends StudyCalendarTestCase {
 
         assertSame("Subjects should be the same", subject,  actual);
     }
-    
+
     public void testFindSubjectByNameAndDoBWhenNotPresent() throws Exception {
         Subject subject = createSubject(null, "john", "doe", createDate(1990, Calendar.JANUARY, 15, 0, 0, 0), Gender.MALE);
 
