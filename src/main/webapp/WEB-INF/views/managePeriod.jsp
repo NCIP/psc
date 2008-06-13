@@ -65,7 +65,7 @@ function addActivityRow() {
         name: detailsName,
         type: 'text'
     });
-    cells.push(Builder.node('td', {}, [detailsInput]))
+    cells.push(Builder.node('td', {className: "input-row"}, [detailsInput]))
 
     // conditionalDetails
     var conditionDetailsName = 'grid[' + rowCount + '].conditionalDetails'
@@ -76,18 +76,72 @@ function addActivityRow() {
         className: 'no-condition',
         value: 'Click to add condition'
     });
-    cells.push(Builder.node('td', {}, [conditionDetailsInput]))
+    cells.push(Builder.node('td', {className: "input-row"}, [conditionDetailsInput]))
+
+
+    var tableToHoldLables = Builder.node('table', {className:"tableHolder"})
+    var tdHolderForSpan = Builder.node('td', {className:"labelHolder"})
+
+    var labelName = 'grid[' + rowCount + '].label'
+    var labelInput = Builder.node('span', {
+        id: labelName,
+        className: 'label'
+    });
+
+    tdHolderForSpan.appendChild(labelInput)
+
+    var autocompleterName = 'grid[' + rowCount + '].labelsAutocompleter'
+    var autocompleterInput = Builder.node('input', {
+        id: autocompleterName,
+        type: 'text',
+        className: 'pending-search',
+        value: 'Search for label'
+    });
+
+
+    var autocompleterDivName = 'grid[' + rowCount + '].labels-autocompleter-div'
+    var autocompleterDivInput = Builder.node('div', {
+        id: autocompleterDivName,
+        className: 'autocomplete',
+        style: 'width:0px'
+    });
+
+    var inputHiddenName = 'grid[' + rowCount + '].add-label'
+    var inputHidden = Builder.node('input', {
+        id: inputHiddenName,
+        type: 'hidden'
+    })
+
+    var addButtonName = 'grid[' + rowCount + '].addLabel'
+    var inputAddButton = Builder.node('input', {
+        id: addButtonName,
+        type: 'button',
+        name: addButtonName,
+        value: 'Add'
+    })
+
+    var tdHolderForAutocompleter = Builder.node('td', {className:"addLabelHolder"}, [labelInput, autocompleterInput, autocompleterDivInput, inputHidden, inputAddButton])
+    tableToHoldLables.appendChild(tdHolderForSpan)
+    tableToHoldLables.appendChild(tdHolderForAutocompleter)
+
+    var cell = Builder.node('td', {className: 'label-row'}, [tableToHoldLables])
+
+    cells.push(cell)
 
     var rowId = 'activity' + activity.id;
-    var row = Builder.node('tr', {className: 'input-row', id:rowId}, cells);
+    var row = Builder.node('tr', {id:rowId}, cells);
 
     row.style.display = 'none';
     $('input-body').appendChild(row)
     registerRowEventHandlers(row)
+
+
     registerDraggablesAndDroppables()
     showEmptyMessage()
 
     SC.slideAndShow(rowId)
+
+    createLabelAutocompleter(cell)
 }
 
 function showEmptyMessage() {
@@ -147,36 +201,36 @@ function getDayCount() {
     //for week, month, fortnight, and quarter, the range is return a specific array of days,
     //f.e. for week it would be 1, 8, 15. But since on a grid the count starts from 0, we need to decrement actual day by one.
     if (${period.duration.unit == 'week'}) {
-        dayCount =
-    ${period.dayRanges[0].weeks}
+        dayCount = ${period.dayRanges[0].weeks}
         for (var i = 0; i < dayCount.length; i++) {
             dayCount[i] = dayCount[i] - 1;
         }
     } else if (${period.duration.unit == 'month'}) {
-        dayCount =
-    ${period.dayRanges[0].months}
+        dayCount =  ${period.dayRanges[0].months}
         for (var i = 0; i < dayCount.length; i++) {
             dayCount[i] = dayCount[i] - 1;
         }
     } else if (${period.duration.unit == 'fortnight'}) {
-        dayCount =
-    ${period.dayRanges[0].fortnights}
+        dayCount = ${period.dayRanges[0].fortnights}
         for (var i = 0; i < dayCount.length; i++) {
             dayCount[i] = dayCount[i] - 1;
         }
     } else if (${period.duration.unit == 'quarter'}) {
-        dayCount =
-    ${period.dayRanges[0].quarters}
+        dayCount = ${period.dayRanges[0].quarters}
         for (var i = 0; i < dayCount.length; i++) {
             dayCount[i] = dayCount[i] - 1;
         }
     } else if (${period.duration.unit =='day'}) {
-        dayCount =
-    ${period.dayRanges[0].days}
+        dayCount = ${period.dayRanges[0].days}
     }
 
     return dayCount;
 
+}
+
+function getRepetitionNumber() {
+    var repetitions = ${period.repetitions}
+    return repetitions
 }
 
 function addParametersForRow(data, row) {
@@ -255,6 +309,28 @@ function executeManagePeriodPost(href, data, row) {
     });
 }
 
+function executeManageLabels (row) {
+    var rc = extractRowAndColumn(row.id)
+    var data = createBasicPostBody(rc[0])
+
+    var dayCount = getDayCount();
+    for (var c = 0; c < dayCount.length; c++) {
+        var val = $('grid[' + rc[0] + '].plannedActivities[' + c + ']')
+        if (val != null) {
+            var varValue = val.getAttribute('value')
+            if (varValue && varValue != -1) {
+                data['plannedActivities[' + c + ']'] = varValue;
+            }
+        }
+    }
+    var autocompleterPortion = $('grid[' + rc[0] + '].labelsAutocompleter').value
+    var href = '<c:url value="/pages/cal/managePeriod/addLabel"/>'
+    data.label = autocompleterPortion
+    data.columnNumber = rc[1]
+    executeManagePeriodPost(href, data, rc[0])
+    $('grid[' + rc[0] + '].labelsAutocompleter').value ="Search for label"
+}
+
 function registerRowEventHandlers(rowElt) {
     var elt = $(rowElt).select('input[name*=conditionalDetails]');
     elt.each(function(input) {
@@ -265,6 +341,19 @@ function registerRowEventHandlers(rowElt) {
     rowElt.select('input[name*=details]').each(function(input) {
         input.observe('change', function(evt) {
             executeUpdateDetails(input)
+        })
+    })
+
+    $(rowElt).select('input[name*=addLabel]').each(function(input){
+        input.observe('click', function() {
+            executeManageLabels(input)
+        })
+    })
+
+//setting the value to nothing, once it's clicked
+    $(rowElt).select('input[id*=labelsAutocompleter]').each(function(input){
+        input.observe('click', function() {
+            input.value=""
         })
     })
 
@@ -298,6 +387,8 @@ function updateAddActivityButton() {
 
 function registerHandlers() {
     $$('.input-row').each(registerRowEventHandlers)
+    $$('.label-row').each(registerRowEventHandlers)
+    $$('.label-row').each(createLabelAutocompleter)
     Event.observe('return-to-template', 'click', function() {
         location.href = '<c:url value="/pages/cal/template?studySegment=${studySegment.id}&study=${study.id}&amendment=${study.developmentAmendment.id}"/>'
     })
@@ -316,6 +407,7 @@ function registerDraggablesAndDroppables() {
                     accept: ['marker', 'new-marker'],
                     hoverclass: 'hover',
                     onDrop: moveMarker })
+
                     registerHoverTip(item, "Click the grid cell to add an activity for all subjects")
             }
             );
@@ -452,6 +544,32 @@ function updateActivity(input, li) {
 //    $('add-activity-button').focus()
 }
 
+var labelAutocompleter;
+
+function resetLabelAutocompleter() {
+    labelAutocompleter.reset();
+}
+
+function createLabelAutocompleter(rowElt) {
+    var inputElement = $(rowElt).select('input[id*=labelsAutocompleter]')[0].id
+    var divElement = $(rowElt).select('div[id*=labels-autocompleter-div]')[0].id
+    labelAutocompleter = new Ajax.ResetableAutocompleter(inputElement, divElement, '<c:url value="/pages/search/fragment/labels"/>',
+    {
+        method: 'get',
+        paramName: 'searchText',
+        afterUpdateElement:updateLabel
+    });
+}
+
+function addAdditionalLabelParameters(inputField, queryString) {
+    return queryString;
+}
+
+function updateLabel(input, li) {
+    $('.label-row').select('input[id*=labelsAutocompleter]')[0].value =""
+}
+
+
 function clearHoverTip() {
     $('palette-tip').innerHTML = '&nbsp;'
 }
@@ -484,9 +602,334 @@ function addANewActivityToTheRow() {
     $('add-activity').value = '${selectedActivity.id}';
     addActivityRow()
 }
+
+function processArrayWithDelimeters(arrayOfDays, delimeter) {
+    var arrayTemp = arrayOfDays.split(delimeter)
+    var array =[]
+    var count =0;
+    for (var i = 0; i < arrayTemp.length; i++ ){
+        if (arrayTemp[i]!=null && arrayTemp[i]!="") {
+            array[count] = arrayTemp[i]
+            count++
+        }
+    }
+    return array
+}
+
+
+function registerDayHandlers(rowElt) {
+    $(rowElt).select('input[name*=input]').each(function(input){
+        input.observe('click', function() {
+            if (input.className.toString().indexOf("unchecked") >= 0) {
+                input.removeClassName('unchecked')
+                input.addClassName('checked')
+            } else if (input.className.toString().indexOf("unchecked") < 0){
+                input.removeClassName('checked')
+                input.addClassName('unchecked')
+            }
+
+        })
+
+        input.observe('mouseover', function(){
+            input.addClassName('hover')
+            input.background='red'
+        });
+
+        input.observe('mouseout', function(){
+            input.removeClassName('hover')
+            input.background='red'
+        });
+    })
+}
+
+
+function executeGetRepetitionNumber(arrayOfIndices, labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex, plannedActivityDaysArray, url) {
+    var resultBack ="0";
+    var href = '<c:url value="/pages/search/fragment/mapOfRepetitions"/>'
+    var data =""
+    data = data+"arrayOfPlannedActivityIndices"+"="+arrayOfIndices +"&";
+    data = data+"labelName"+"="+labelName+"&" ;
+    data = data+"labelId"+"="+labelId;
+    href= href+"?"+data
+    var lastRequest = new Ajax.Request(href,
+    {
+        method: 'get',
+        onComplete: function(t) {
+            createTheLightBox(t.responseText, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfIndices, url)
+        }
+    });
+}
+
+
+function executeSelectAll(grid) {
+    for (var k=0; k<grid.length; k++) {
+        $(grid[k]).select('input[name*=input]').each(function(input){
+            if (input.className.toString().indexOf("unchecked") >= 0) {
+                input.removeClassName('unchecked')
+                input.addClassName('checked')
+            }
+        })
+    }
+}
+
+function executeSelectNone(grid) {
+    for (var k=0; k<grid.length; k++) {
+        $(grid[k]).select('input[name*=input]').each(function(input){
+            if (input.className.toString().indexOf("checked") >= 0) {
+                input.removeClassName('checked')
+                input.addClassName('unchecked')
+            }
+        })
+    }
+}
+
+function executeSelectColumns(grid, arrayOfDays, columnStartPosition) {
+    executeSelectNone(grid)
+//   NS comment Todo - why such complicated if?
+    if ( (columnStartPosition==1 && arrayOfDays.length >= 1) || (columnStartPosition ==0 && arrayOfDays.length >1))  {
+        for (var i = columnStartPosition; i<=arrayOfDays.length; i=i+2){
+            for (var k=0; k<grid.length; k++) {
+                $(grid[k]).select('td[name*=.column('+i+').td]').each(function(input){
+                    var inputTag = $(input).select('input[name*=input]')[0]
+                    if (inputTag.className.toString().indexOf("checked") >= 0) {
+                        inputTag.removeClassName('unchecked')
+                        inputTag.addClassName('checked')
+                    }
+                })
+            }
+        }
+    }
+}
+
+function executeSelectRows(grid, arrayOfDays, rowStartPosition) {
+    executeSelectNone(grid)
+    for (var i=rowStartPosition; i<grid.length; i=i+2) {
+        $(grid[i]).select('input[name*=input]').each(function(input){
+            if (input.className.toString().indexOf("checked") >= 0) {
+                input.removeClassName('unchecked')
+                input.addClassName('checked')
+            }
+        })
+    }
+}
+
+
+function executeAddLabels (grid, arrayOfDays, labelName, labelId, arrayOfActivityIndices) {
+    var data=''
+    var days = ''
+    var repetitions = ''
+    for (var i =0; i < arrayOfDays.length; i++) {
+        days = days+arrayOfDays[i]+';'
+        var repNew =''
+        for (var k=0; k<grid.length; k++) {
+            $(grid[k]).select('td[name*=.column('+(i+1)+').td]').each(function(input){
+                var inputTag = $(input).select('input[name*=input]')[0]
+                if (inputTag.className.toString().indexOf("unchecked")< 0) {
+                    repNew = repNew + (k+1) +','
+                }
+            })
+        }
+        if(repNew.length>0){
+            repNew=repNew.substring(0, repNew.length-1)
+        }
+        if (repNew.length==0) {
+            repNew="-"
+        }
+        repetitions=repetitions+repNew+";"
+    }
+    data = data+"days="+ days+"&"
+    data = data+"repetitions="+repetitions+"&"
+    data = data+"arrayOfPlannedActivityIndices="+arrayOfActivityIndices+"&"
+    data = data+"labelName="+ labelName+"&"
+    data = data+"labelId="+labelId+"&"
+    var href = '<c:url value="/pages/cal/managePeriod/addLabelWithRepetitions"/>'
+    new Ajax.Request(href, {
+        postBody: data,
+        onComplete: function() {
+            LB.Lightbox.deactivate()
+        }
+    });
+}
+
+
+function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId,
+                           periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfIndices, url) {
+
+    repetitions = repetitions.replace(/\s/g, "")
+    repetitions = processArrayWithDelimeters(repetitions, ",]")
+
+    var arrayOfDays = processArrayWithDelimeters(plannedActivityDaysArray, ",")
+   
+    var rows = [];
+        // input cells
+    for (var j=0; j < getRepetitionNumber(); j++) {
+        var cells = []
+        for (var i = 0; i < arrayOfDays.length; i++) {
+            var value = arrayOfDays[i];
+            var name = 'grid[' + j + '].column(' + (i+1) + ').td'
+            var column = Builder.node('td', {id: name, className: 'dayInput', name: name, value: value, text:value});
+
+            var activityId = arrayOfIndices[i]
+
+            var inputName = 'grid[' + j + '].day[' + i + '].activityId['+ activityId+'].input'
+            var day = arrayOfDays[i]*1
+            var dayNumber = (day + j*periodDurationDays)
+
+            var repetitionsPerThisSpecificActivity = processArrayWithDelimeters(repetitions[i].substring(1, repetitions[i].length), ",")
+            var columnClassName
+            if (repetitionsPerThisSpecificActivity.length != 0) {
+                for (var repNum=0; repNum< repetitionsPerThisSpecificActivity.length; repNum++){
+                    //we are saving repetitions from 1, while grid starts from 0 - that's why we substract 1 to have proper aligning
+                    if (repetitionsPerThisSpecificActivity[repNum]-1 == j) {
+                        columnClassName = 'dayInput checked'
+                        break
+                    } else {
+                        columnClassName = 'dayInput unchecked'
+                    }
+                }
+            } else {
+                columnClassName='dayInput unchecked'
+            }
+            var input = Builder.node('input', {id: inputName, className: columnClassName, name: inputName, size: '5px', value: dayNumber, text: dayNumber})
+
+            column.appendChild(input)
+            cells.push(column)
+        }
+        var rowName = 'grid[' + j + '].row(' + (j+1) + ').tr'
+        var row = Builder.node("tr", {className: rowName}, [cells])
+        rows.push(row)
+    }
+
+    this.url = url
+    this.content =
+        Builder.node('div', {id:'lightbox-content'}, [
+            Builder.node('p', 'Label Modification Page'),
+            Builder.node('div', {className:'ligtboxInfoHolder'}, [
+                Builder.node('h2', 'Period: ${period.name}'),
+                Builder.node('h2', 'Activity: ' + activityName),
+                Builder.node('h2', 'Details: ' + gridRowDetails),
+                Builder.node('h2', 'Condition: ' + gridRowConditionalDetails),
+                Builder.node('h2', 'Apply Label: ' + labelName),
+                Builder.node('h2', 'Repetitions : ' + getRepetitionNumber())
+            ])
+    ])
+
+
+    var divElt = Builder.node('div', {className:'labelRecordsHolder'}, [])
+    var table = Builder.node('table', {}, [])
+    for (var k=0; k<rows.length; k++) {
+        table.appendChild(rows[k])
+        registerDayHandlers(rows[k])
+    }
+
+    divElt.appendChild(table)
+
+//    this.content.insert('<div style="width:200px;overflow:auto;"><table><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr></div>');
+    this.content.appendChild(divElt)
+
+    //div for buttons all, none, even, odd
+    var divElt2 = Builder.node('div', {align: 'left'}, [])
+    var selectAllButton = Builder.node('a', {id: 'selectAll', title: 'selectAll', href: '#', align: 'left'})
+    selectAllButton.innerHTML='All'
+    selectAllButton.observe('click', function() {
+        executeSelectAll(rows)
+    })
+
+    var selectNoneButton = Builder.node('a',  {id: 'selectNone', title: 'selectNone', href: '#', align: 'left'})
+    selectNoneButton.innerHTML='None'
+    selectNoneButton.observe('click', function(){
+        executeSelectNone(rows)
+    })
+
+    var selectEvenColumnsButton = Builder.node('a',  {id: 'selectEvenColumns', title: 'selectEvenColumns', href: '#', align: 'left'})
+    selectEvenColumnsButton.innerHTML='Even Columns'
+    selectEvenColumnsButton.observe('click', function() {
+        executeSelectColumns(rows, arrayOfDays, 0)
+    })
+
+    var selectOddColumnsButton = Builder.node('a',  {id: 'selectOddColumns', title: 'selectOddColumns', href: '#', align: 'left'})
+    selectOddColumnsButton.innerHTML='Odd Columns'
+    selectOddColumnsButton.observe('click', function() {
+        executeSelectColumns(rows, arrayOfDays, 1)
+    })
+
+    var selectEvenRowsButton = Builder.node('a',  {id: 'selectEvenRows', title: 'selectEvenRows', href: '#', align: 'left' })
+    selectEvenRowsButton.innerHTML='Even Rows'
+    selectEvenRowsButton.observe('click', function() {
+        executeSelectRows(rows, arrayOfDays, 1)
+    })
+
+    var selectOddRowsButton = Builder.node('a',  {id: 'selectOddRows', title: 'selectOddRows', href: '#', align: 'left' })
+    selectOddRowsButton.innerHTML='Odd Rows'
+    selectOddRowsButton.observe('click', function() {
+        executeSelectRows(rows, arrayOfDays, 0)
+    })
+
+var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', align:'left'}, [])
+
+    var holderTr = Builder.node('tr')
+
+    var divHolderTdOne = Builder.node('td', {})
+    var divHolderTdTwo = Builder.node('td', {})
+    holderTr.appendChild(divHolderTdOne)
+    holderTr.appendChild(divHolderTdTwo)
+    divHolderTdOne.appendChild(divElt)
+
+
+    divHolderTdTwo.appendChild(Builder.node("p", {verticalAlign: 'top'}, "Select action: "))
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectAllButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectNoneButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectEvenColumnsButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectOddColumnsButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectEvenRowsButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(selectOddRowsButton)
+    divHolderTdTwo.appendChild(Builder.node("br"))
+    divHolderTdTwo.appendChild(Builder.node("br"))
+
+    divHolder.appendChild(holderTr);
+
+    this.content.appendChild(divHolder)
+
+    //div for buttons all, none, even, odd
+    var divElt3 = Builder.node('div', {align: 'center', className: 'lightBoxExitDiv'}, [])
+    var saveButton = Builder.node('input',  {id: 'save', className:'saveButtonOnLightbox', type: 'button', value: 'Save'},[])
+    saveButton.observe('click', function() {
+        //TODO - need to have a progress icon while we are saving the labels
+        executeAddLabels(rows, arrayOfDays, labelName, labelId, arrayOfIndices)
+    })
+
+
+    var exitButton = Builder.node('input', {id:'exit', className:'exitButtonOnLightbox' ,type:'button', value:'Exit'} , [])
+    exitButton.observe('click', function() {
+            LB.Lightbox.deactivate()
+    })
+    
+    divElt3.appendChild(saveButton)
+    divElt3.appendChild(exitButton)
+    this.content.appendChild(divElt3)
+
+    $('lightbox').update(this.content)
+    LB.Lightbox.activate()
+
+
+}
+
+ var LabelDisplayLogic = Class.create( {
+    initialize: function(activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfActivityIndices, url) {
+        var arrayOfIndices = processArrayWithDelimeters(arrayOfActivityIndices, ",")
+        var resultOfRepetitions = executeGetRepetitionNumber(arrayOfIndices, labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex, plannedActivityDaysArray, url)
+    }
+})
+
 <c:if test="${selectedActivity !=null && !empty selectedActivity}">
-Event.observe(window, 'load', addANewActivityToTheRow)
-        </c:if>
+    Event.observe(window, 'load', addANewActivityToTheRow)
+</c:if>
     //Event.observe(window, "dom:loaded", registerHoverTips)
 
 </script>
@@ -495,6 +938,34 @@ Event.observe(window, 'load', addANewActivityToTheRow)
 #no-activities-message td {
     text-align: left;
     padding-left: 2em;
+}
+
+
+.save {
+    vertical-align:bottom;
+}
+
+.lightBoxExitDiv {
+    margin-top:25em;
+}
+
+.saveButtonOnLightbox{
+    margin-right: 1em;
+}
+
+.exitButtonOnLightbox{
+    margin-left: 1em;
+}
+
+
+.ligtboxInfoHolder {
+    margin-bottom:1em;
+}
+
+.labelRecordsHolder {
+    width:200px;
+    overflow:auto;
+    border:solid 1px black;
 }
 
 th.activity {
@@ -518,12 +989,50 @@ th.day-number {
     cursor: move;
 }
 
-.input-row td input {
+.input-row input {
     border-width: 0;
     border-bottom: 1px dotted #666;
     text-align: center;
     padding: 2px;
     background-color: transparent;
+}
+
+.buttonsHolder {
+    width:100%;
+    text-align:left;
+    background-color:transparent;
+    border:0px;
+}
+
+.buttonsHolder td {
+    width: 50%;
+    text-align:left;
+    border:0px;
+    vertical-align:top;
+}
+
+.tableHolder{
+    width:380px;
+    overflow:scroll;
+    border:0px;
+}
+
+.labelHolder {
+    /*height:25px;*/
+    width:150px;
+    overflow:scroll;
+    border:0px;
+
+}
+
+.addLabelHolder{
+    border:0px;
+}
+
+.label-row input {
+    border-width: 1px;
+    text-align: center;
+    padding: 2px;
 }
 
 .input-row td input[disabled] {
@@ -534,6 +1043,13 @@ th.day-number {
 .input-row .no-condition {
     color: #666;
     font-style: italic;
+}
+
+.label-row .label {
+    color: #666;
+    font-style: italic;
+    text-align:left;
+    border:1px;
 }
 
 table {
@@ -662,6 +1178,18 @@ table#manage-period {
     cursor: pointer;
 }
 
+.dayInput.unchecked.hover{
+    background-color: #f99;
+}
+
+.dayInput.checked {
+    background-color: aquamarine;
+}
+
+.dayInput.unchecked {
+    background-color: white;
+}
+
 .counter.hover {
     background-color: #f99;
 }
@@ -669,6 +1197,25 @@ table#manage-period {
 .palette .tip {
     clear: both;
 }
+
+#lightbox {
+    background-color: gray;
+    border: 2px outset black;
+    height: auto;
+}
+
+#lightbox h2 {
+    background-color: white;
+    color: black;
+    padding: 0.2em 0.2em;
+    text-align:left;
+}
+
+#lightbox-content {
+    margin: 1em 2em;
+    text-align: center;
+}
+
 </style>
 </head>
 <body>
@@ -715,9 +1262,10 @@ table#manage-period {
 
 <form:form>
 
-<div id="newDiv" style="overflow:auto; padding-bottom:5px; position:relative;">
+<div id="newDiv" style="overflow:auto;  padding-bottom:5px; position:relative;">
     <%--<c:set var="tableWidth" value="${period.duration.days + 4}"/>--%>
 <c:set var="range" value="0"/>
+    ${period.dayRanges[0].weeks}
 <c:if test="${period.duration.unit == 'week'}">
     <c:set var="range" value="${period.dayRanges[0].weeks}"/>
 </c:if>
@@ -745,7 +1293,7 @@ table#manage-period {
     <th colspan="${tableWidth - 4}">Days of segment (${commons:pluralize(period.repetitions, "repetition")}
         of ${commons:pluralize(period.duration.quantity, period.duration.unit)})
     </th>
-    <th colspan="2">Notes</th>
+    <th colspan="3">Notes</th>
 </tr>
 <tr id="days-header">
     <th class="indicator-column spacer"></th>
@@ -777,16 +1325,17 @@ table#manage-period {
     </c:forEach>
     <th>Details</th>
     <th>Condition</th>
+    <th>Label</th>
 </tr>
 
 <tr id="no-activities-message" style="display: none">
     <th class="indicator-column spacer"></th>
     <th class="activity-column spacer"><!-- Spacer --></th>
     <td colspan="${tableWidth - 4}">This period does not have any activities yet</td>
-    <th colspan="2" class="spacer"></th>
+    <th colspan="3" class="spacer"></th>
 </tr>
 <c:forEach items="${command.grid}" var="gridRow" varStatus="gridStatus">
-    <tr class="input-row">
+    <tr>
         <td class="indicator-column">
             <tags:activityIndicator id="row-${gridStatus.index}-indicator"/>
         </td>
@@ -828,15 +1377,50 @@ table#manage-period {
             </c:otherwise>
 
         </c:choose>
-        <td>
+        <td class="input-row">
             <form:input path="grid[${gridStatus.index}].details"/>
         </td>
-        <td>
+        <td class="input-row">
             <input name="grid[${gridStatus.index}].conditionalDetails"
                    id="grid[${gridStatus.index}].conditionalDetails"
                    class="${empty gridRow.conditionalDetails ? 'no-condition' : ''}"
                    value="${empty gridRow.conditionalDetails ? 'Click to add condition' : gridRow.conditionalDetails}"
                     />
+        </td>
+        <c:set var="arrayOfRepetitionNumbers" value=""/>
+        <td class="label-row">
+            <table class="tableHolder">
+                <td class="labelHolder">
+                    <span id="grid[${gridStatus.index}].label" class="label" >
+                            <c:forEach items="${gridRow.labels}" var="plannedActivityLabel" varStatus="plannedActivityLabelStatus">
+                                <c:set var="arrayOfDays" value=""/>
+                                <c:set var="arrayOfActivityIndices" value=""/>
+                                <c:set var="repetitionNumbers" value=""/>
+
+                                <c:forEach items="${gridRow.plannedActivities}" var="activity" varStatus="activityIndex">
+                                    <c:set var="arrayOfDays" value="${arrayOfDays},${activity.day}" />
+                                    <c:set var="arrayOfActivityIndices" value="${arrayOfActivityIndices},${activity.id}" />
+                                </c:forEach>
+
+                                <a onclick="new LabelDisplayLogic('${gridRow.activity.name}', '${gridRow.details}',
+                                    '${gridRow.conditionalDetails}', '${plannedActivityLabel.label.name}', '${plannedActivityLabel.label.id}', '${period.duration.days}', '${gridStatus.index}', '${arrayOfDays}', '${arrayOfActivityIndices}',
+                                    '<c:url value=""/>')" href="#"> ${plannedActivityLabel.label.name} </a>
+                                ,
+                            </c:forEach>
+                    </span>
+                </td>
+                <td class="addLabelHolder">
+                <input id="grid[${gridStatus.index}].labelsAutocompleter" type="text" class="autocomplete"
+                    value="Search for label"/>
+
+                <div id="grid[${gridStatus.index}].labels-autocompleter-div" class="autocomplete" style="width:0px"></div>
+
+
+                <input type="hidden" id="grid[${gridStatus.index}].add-label"/>
+
+                <input type="button" id="grid[${gridStatus.index}].addLabel" name="grid[${gridStatus.index}].addLabel" value="Add"/>
+                </td>
+            </table>
         </td>
     </tr>
 </c:forEach>

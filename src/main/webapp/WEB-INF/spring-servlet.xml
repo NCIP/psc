@@ -129,6 +129,15 @@
     </bean>
 
 
+    <bean name="/cal/managePeriod/addLabel" id="manageLabelController" autowire="byName"
+          class="edu.northwestern.bioinformatics.studycalendar.web.template.EditController">
+        <property name="commandBeanName"><value>addLabelCommand</value></property>
+    </bean>
+
+
+    <bean name="/cal/managePeriod/addLabelWithRepetitions" id="addLabelWithRepetitionsController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddLabelWithRepetitionsController"/>
+
 
     <bean name="/cal/template/edit.js" id="editJsController"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.ParameterizableViewController">
@@ -467,6 +476,13 @@
 
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>
+
+
+    <bean name="/search/fragment/labels" id="searchLabelsController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchLabelsController"/>
+
+    <bean name="/search/fragment/mapOfRepetitions" id="searchRepetitionsController" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchRepetitionsController"/>
 
 
     <bean name="/cal/search/fragment/releasedTemplates" id="searchReleasedTemplatesController" autowire="byName"

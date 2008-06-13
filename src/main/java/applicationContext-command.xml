@@ -26,6 +26,8 @@
         class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteFromPeriodCommand"/>
     <bean id="updatePeriodCommand" autowire="byName" scope="prototype"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.UpdatePeriodCommand"/>
+    <bean id="addLabelCommand" autowire="byName" scope="prototype"
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddLabelCommand"/>
     <bean id="moveEventCommand" autowire="byName" scope="prototype"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.MovePlannedActivityCommand"/>
 

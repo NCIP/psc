@@ -1,15 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.*;
 import org.apache.commons.lang.StringUtils;
 
+import javax.persistence.*;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
-import javax.persistence.FetchType;
-import javax.persistence.Transient;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -30,6 +27,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     private Integer day;
     private String details;
     private String condition;
+    private List<PlannedActivityLabel> plannedActivityLabels;
 
     ////// LOGIC
 
@@ -87,7 +85,7 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
 
     public void setActivity(Activity activity) {
         this.activity = activity;
-    }
+    }                                                                                            
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "period_id")
@@ -102,6 +100,21 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     @ManyToOne
     public Population getPopulation() {
         return population;
+    }
+
+    @OneToMany(mappedBy = "plannedActivity")
+    @OrderBy // order by ID for testing consistency
+    // TODO: why isn't this just "ALL"?
+    @Cascade(value = { org.hibernate.annotations.CascadeType.DELETE, org.hibernate.annotations.CascadeType.LOCK, org.hibernate.annotations.CascadeType.MERGE,
+            org.hibernate.annotations.CascadeType.PERSIST, org.hibernate.annotations.CascadeType.REFRESH, org.hibernate.annotations.CascadeType.REMOVE, org.hibernate.annotations.CascadeType.REPLICATE,
+            org.hibernate.annotations.CascadeType.SAVE_UPDATE })
+    public List<PlannedActivityLabel> getPlannedActivityLabels() {
+        return plannedActivityLabels;
+    }
+
+
+    public void setPlannedActivityLabels(List<PlannedActivityLabel> plannedActivityLabels){
+        this.plannedActivityLabels = plannedActivityLabels;
     }
 
     public void setPopulation(Population population) {

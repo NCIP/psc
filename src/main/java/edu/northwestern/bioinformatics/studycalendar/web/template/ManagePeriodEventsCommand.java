@@ -3,19 +3,20 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
+import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
 import edu.northwestern.bioinformatics.studycalendar.utils.ExpandingList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Rhett Sutphin
  */
 public class ManagePeriodEventsCommand {
+    protected final Logger log = LoggerFactory.getLogger(getClass());
+
     private Period period;
 
     private List<GridRow> grid;
@@ -49,9 +50,54 @@ public class ManagePeriodEventsCommand {
             }
             bins.get(binKey).addPlannedActivity(event);
         }
+
+        //filtering labels by label name per grid
+        Collection<GridRow> rows = bins.values();
+        for (GridRow row: rows) {
+            List<PlannedActivityLabel> labels = new ArrayList<PlannedActivityLabel>();
+            List<PlannedActivity> events= row.getPlannedActivities();
+            if (!events.isEmpty()){
+                for(PlannedActivity event: events){
+                    if (event!=null) {
+                        List<PlannedActivityLabel> labelsPerEvent = event.getPlannedActivityLabels();
+                        if (labelsPerEvent!=null){
+                            for (PlannedActivityLabel aLabelsPerEvent : labelsPerEvent) {
+                                labels.add(aLabelsPerEvent);
+                            }
+                        }
+                    }
+                }
+            }
+            List<PlannedActivityLabel> labelsAfterFiltering = filteringListOfLabels(labels);
+            row.setLabels(labelsAfterFiltering);
+        }
+
+
         return new ExpandingList<GridRow>(
             new GridFiller(dayCount),
             new LinkedList<GridRow>(bins.values()));
+    }
+
+    private List<PlannedActivityLabel> filteringListOfLabels(List<PlannedActivityLabel> labelsToFilter) {
+        List<PlannedActivityLabel> result = new ArrayList<PlannedActivityLabel>();
+        for (int i=0; i< labelsToFilter.size(); i++){
+            PlannedActivityLabel pal = labelsToFilter.get(i);
+            if (result.size() ==0) {
+                result.add(pal);
+            }
+            boolean found = false;
+            for (int j = 0; j< result.size(); j++) {
+                PlannedActivityLabel pal2 = result.get(j);
+                if(pal.getLabel().getName().equals(pal2.getLabel().getName())){
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                result.add(pal);
+            }
+        }
+        return result;
     }
 
     public List<GridRow> getGrid() {
@@ -84,13 +130,15 @@ public class ManagePeriodEventsCommand {
 
         private String conditionalDetails;
 
+        private List<PlannedActivityLabel> labels;
+
         public GridRow(int length) {
             plannedActivities = new ArrayList<PlannedActivity>(length);
             while (plannedActivities.size() < length) {
                 plannedActivities.add(null);
             }
         }
-        
+
         public GridRow(Activity activity, String details, int length, String conditionalDetails) {
             this(length);
             setActivity(activity);
@@ -129,6 +177,15 @@ public class ManagePeriodEventsCommand {
 
         public void setPlannedActivities(List<PlannedActivity> plannedActivities) {
             this.plannedActivities = plannedActivities;
+        }
+
+
+        public List<PlannedActivityLabel> getLabels() {
+            return labels;
+        }
+
+        public void setLabels(List<PlannedActivityLabel> labels) {
+            this.labels = labels;
         }
 
         public String getDetails() {

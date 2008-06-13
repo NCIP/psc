@@ -2,9 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.LabelDao;
+import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityLabelDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Activity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Period;
 import edu.northwestern.bioinformatics.studycalendar.domain.Study;
+import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
@@ -36,6 +39,10 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
     private String conditionalDetails;
     private int rowNumber;
     private int columnNumber;
+
+    protected LabelDao labelDao;
+    protected PlannedActivityLabelDao plannedActivityLabelDao;
+    private String label;
 
     public Map<String, Object> getModel() {
         Map<String, Object> model = getLocalModel();
@@ -75,6 +82,14 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public List<Integer> getPlannedActivities() {
@@ -149,5 +164,23 @@ public abstract class EditPeriodEventsCommand implements EditCommand {
 
     public void setDaoFinder(DaoFinder daoFinder) {
         this.daoFinder = daoFinder;
+    }
+
+
+    public LabelDao getLabelDao() {
+        return labelDao;
+    }
+
+    public void setLabelDao(LabelDao labelDao) {
+        this.labelDao = labelDao;
+    }
+
+
+    public PlannedActivityLabelDao getPlannedActivityLabelDao() {
+        return plannedActivityLabelDao;
+    }
+
+    public void setPlannedActivityLabelDao(PlannedActivityLabelDao plannedActivityLabelDao) {
+        this.plannedActivityLabelDao = plannedActivityLabelDao;
     }
 }

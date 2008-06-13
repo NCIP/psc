@@ -100,7 +100,6 @@ public class ManagePeriodEventsController extends PscAbstractCommandController<M
         refdata.put("developmentRevision", amendment);
         refdata.put("revisionChanges", new RevisionChanges(daoFinder, amendment, study, command.getPeriod()));
         getControllerTools().addHierarchyToModel(command.getPeriod(), refdata);
-        System.out.println("");
 
         return refdata;
     }

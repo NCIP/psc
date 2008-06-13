@@ -7,7 +7,9 @@ import edu.northwestern.bioinformatics.studycalendar.dao.PopulationDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudyDao;
 import edu.northwestern.bioinformatics.studycalendar.dao.StudySegmentDao;
 import edu.northwestern.bioinformatics.studycalendar.domain.Role;
+import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.AccessControl;
+import edu.northwestern.bioinformatics.studycalendar.utils.editors.ControlledVocabularyEditor;
 import edu.northwestern.bioinformatics.studycalendar.web.PscAbstractCommandController;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -61,6 +63,7 @@ public class EditController extends PscAbstractCommandController<EditCommand> {
         binder.registerCustomEditor(String.class, "details", new StringTrimmerEditor(true));
         binder.registerCustomEditor(String.class, "conditionalDetails", new StringTrimmerEditor(true));
         binder.registerCustomEditor(Integer.class, new CustomNumberEditor(Integer.class, false));
+        binder.registerCustomEditor(String.class, "label", new StringTrimmerEditor(true));
     }
 
     @Override
