@@ -135,6 +135,7 @@ public class SubjectCoordinatorDashboardService {
             List<ScheduledActivity> events = new ArrayList<ScheduledActivity>();
 
             Map<Object, Integer> key = new HashMap<Object, Integer>();
+            Map<Object, Object> value = new HashMap<Object, Object>();
 
             ScheduledCalendar calendar = studySubjectAssignment.getScheduledCalendar();
 
@@ -149,7 +150,9 @@ public class SubjectCoordinatorDashboardService {
             }
             if (events.size()>0) {
                 key.put(subject, events.size());
-                subjectAndOverDueEvents.put(key, studySubjectAssignment);
+                value.put(studySubjectAssignment, events.get(0));
+//                subjectAndOverDueEvents.put(key, studySubjectAssignment);
+                subjectAndOverDueEvents.put(key, value);
             }
         }
         return subjectAndOverDueEvents;
