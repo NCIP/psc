@@ -33,12 +33,9 @@ public class AddLabelWithRepetitionsController extends PscAbstractController {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Map<String, Object> model =  new HashMap<String, Object>();
-
         String days = ServletRequestUtils.getRequiredStringParameter(request, "days");
         String repetitions = ServletRequestUtils.getRequiredStringParameter(request, "repetitions");
         String plannedActivityIndices = ServletRequestUtils.getRequiredStringParameter(request, "arrayOfPlannedActivityIndices");
-        String labelName = ServletRequestUtils.getStringParameter(request, "labelName");
         Integer labelId = ServletRequestUtils.getIntParameter(request, "labelId");
 
         //have to delete labels completely and reenter with a new repetitions

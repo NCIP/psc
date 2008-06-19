@@ -29,7 +29,9 @@ public class AddLabelCommand extends EditPeriodEventsCommand {
         List<Integer> activityIds = getPlannedActivities();
         List<PlannedActivity> plannedActivities = new ArrayList<PlannedActivity>();
         for(Integer id : activityIds) {
-            plannedActivities.add(plannedActivityDao.getById(id));
+            if (id!=null) {
+                plannedActivities.add(plannedActivityDao.getById(id));
+            }
         }
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("rowNumber", getRowNumber());

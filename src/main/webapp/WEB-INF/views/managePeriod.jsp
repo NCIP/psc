@@ -643,19 +643,48 @@ function registerDayHandlers(rowElt) {
 }
 
 
-function executeGetRepetitionNumber(arrayOfIndices, labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex, plannedActivityDaysArray, url) {
+function myDayCount() {
+    var dayCountArray = getDayCount();
+    for (var c = 0; c< dayCountArray.length; c++) {
+        if (${period.duration.unit =='day'}) {
+            dayCountArray[c] = (dayCountArray[c])
+        } else {
+            dayCountArray[c] = (dayCountArray[c]+1)
+        }
+    }
+    return dayCountArray;
+}
+
+function executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex) {
     var resultBack ="0";
     var href = '<c:url value="/pages/search/fragment/mapOfRepetitions"/>'
     var data =""
+
+    var arrayOfIndices ="";
+    var plannedActivityDaysArray ="";
+
+    for (var c = 0; c < myDayCount().length; c++) {
+        var val = $('grid[' + gridRowIndex + '].plannedActivities[' + c + ']')
+        if (val != null) {
+            var varValue = val.getAttribute('value')
+            if (varValue != null&& varValue.length>0) {
+                arrayOfIndices = arrayOfIndices + varValue+","
+                plannedActivityDaysArray = plannedActivityDaysArray + (c+1)+","
+            } else {
+                arrayOfIndices=arrayOfIndices+","
+                plannedActivityDaysArray = plannedActivityDaysArray + ","
+            }
+        }
+    }
+
     data = data+"arrayOfPlannedActivityIndices"+"="+arrayOfIndices +"&";
-    data = data+"labelName"+"="+labelName+"&" ;
     data = data+"labelId"+"="+labelId;
     href= href+"?"+data
     var lastRequest = new Ajax.Request(href,
     {
         method: 'get',
         onComplete: function(t) {
-            createTheLightBox(t.responseText, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfIndices, url)
+            createTheLightBox(t.responseText, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, plannedActivityDaysArray, arrayOfIndices)
         }
     });
 }
@@ -701,7 +730,7 @@ function executeSelectColumns(grid, arrayOfDays, columnStartPosition) {
     }
 }
 
-function executeSelectRows(grid, arrayOfDays, rowStartPosition) {
+function executeSelectRows(grid, rowStartPosition) {
     executeSelectNone(grid)
     for (var i=rowStartPosition; i<grid.length; i=i+2) {
         $(grid[i]).select('input[name*=input]').each(function(input){
@@ -714,12 +743,12 @@ function executeSelectRows(grid, arrayOfDays, rowStartPosition) {
 }
 
 
-function executeAddLabels (grid, arrayOfDays, labelName, labelId, arrayOfActivityIndices) {
+function executeAddLabels (grid, arrayOfDays, labelId, arrayOfActivityIndices) {
     var data=''
-    var days = ''
     var repetitions = ''
+    arrayOfDays = processArrayWithDelimeters(arrayOfDays, ",")
+    arrayOfActivityIndices = processArrayWithDelimeters(arrayOfActivityIndices, ",")
     for (var i =0; i < arrayOfDays.length; i++) {
-        days = days+arrayOfDays[i]+';'
         var repNew =''
         for (var k=0; k<grid.length; k++) {
             $(grid[k]).select('td[name*=.column('+(i+1)+').td]').each(function(input){
@@ -737,10 +766,9 @@ function executeAddLabels (grid, arrayOfDays, labelName, labelId, arrayOfActivit
         }
         repetitions=repetitions+repNew+";"
     }
-    data = data+"days="+ days+"&"
+    data = data+"days="+ arrayOfDays+"&"
     data = data+"repetitions="+repetitions+"&"
     data = data+"arrayOfPlannedActivityIndices="+arrayOfActivityIndices+"&"
-    data = data+"labelName="+ labelName+"&"
     data = data+"labelId="+labelId+"&"
     var href = '<c:url value="/pages/cal/managePeriod/addLabelWithRepetitions"/>'
     new Ajax.Request(href, {
@@ -753,13 +781,11 @@ function executeAddLabels (grid, arrayOfDays, labelName, labelId, arrayOfActivit
 
 
 function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId,
-                           periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfIndices, url) {
-
+                           periodDurationDays, plannedActivityDaysArray, arrayOfIndices) {
     repetitions = repetitions.replace(/\s/g, "")
     repetitions = processArrayWithDelimeters(repetitions, ",]")
 
     var arrayOfDays = processArrayWithDelimeters(plannedActivityDaysArray, ",")
-   
     var rows = [];
         // input cells
     for (var j=0; j < getRepetitionNumber(); j++) {
@@ -770,11 +796,10 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
             var column = Builder.node('td', {id: name, className: 'dayInput', name: name, value: value, text:value});
 
             var activityId = arrayOfIndices[i]
-
             var inputName = 'grid[' + j + '].day[' + i + '].activityId['+ activityId+'].input'
-            var day = arrayOfDays[i]*1
-            var dayNumber = (day + j*periodDurationDays)
 
+            // getDayCount()[value*1]) returns the column number that has selected repetitions - but it starts from 1, we need to adjust it to meet the 0th column, so we decrement it by 1.
+            var dayNumber = (myDayCount()[value*1-1] + j*periodDurationDays)
             var repetitionsPerThisSpecificActivity = processArrayWithDelimeters(repetitions[i].substring(1, repetitions[i].length), ",")
             var columnClassName
             if (repetitionsPerThisSpecificActivity.length != 0) {
@@ -800,7 +825,7 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
         rows.push(row)
     }
 
-    this.url = url
+    this.url =""
     this.content =
         Builder.node('div', {id:'lightbox-content'}, [
             Builder.node('p', 'Label Modification Page'),
@@ -844,25 +869,25 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
     var selectEvenColumnsButton = Builder.node('a',  {id: 'selectEvenColumns', title: 'selectEvenColumns', href: '#', align: 'left'})
     selectEvenColumnsButton.innerHTML='Even Columns'
     selectEvenColumnsButton.observe('click', function() {
-        executeSelectColumns(rows, arrayOfDays, 0)
+        executeSelectColumns(rows, plannedActivityDaysArray, 0)
     })
 
     var selectOddColumnsButton = Builder.node('a',  {id: 'selectOddColumns', title: 'selectOddColumns', href: '#', align: 'left'})
     selectOddColumnsButton.innerHTML='Odd Columns'
     selectOddColumnsButton.observe('click', function() {
-        executeSelectColumns(rows, arrayOfDays, 1)
+        executeSelectColumns(rows, plannedActivityDaysArray, 1)
     })
 
     var selectEvenRowsButton = Builder.node('a',  {id: 'selectEvenRows', title: 'selectEvenRows', href: '#', align: 'left' })
     selectEvenRowsButton.innerHTML='Even Rows'
     selectEvenRowsButton.observe('click', function() {
-        executeSelectRows(rows, arrayOfDays, 1)
+        executeSelectRows(rows, 1)
     })
 
     var selectOddRowsButton = Builder.node('a',  {id: 'selectOddRows', title: 'selectOddRows', href: '#', align: 'left' })
     selectOddRowsButton.innerHTML='Odd Rows'
     selectOddRowsButton.observe('click', function() {
-        executeSelectRows(rows, arrayOfDays, 0)
+        executeSelectRows(rows, 0)
     })
 
 var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', align:'left'}, [])
@@ -901,7 +926,7 @@ var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', ali
     var saveButton = Builder.node('input',  {id: 'save', className:'saveButtonOnLightbox', type: 'button', value: 'Save'},[])
     saveButton.observe('click', function() {
         //TODO - need to have a progress icon while we are saving the labels
-        executeAddLabels(rows, arrayOfDays, labelName, labelId, arrayOfIndices)
+        executeAddLabels(rows, plannedActivityDaysArray, labelId, arrayOfIndices)
     })
 
 
@@ -909,7 +934,7 @@ var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', ali
     exitButton.observe('click', function() {
             LB.Lightbox.deactivate()
     })
-    
+
     divElt3.appendChild(saveButton)
     divElt3.appendChild(exitButton)
     this.content.appendChild(divElt3)
@@ -921,9 +946,8 @@ var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', ali
 }
 
  var LabelDisplayLogic = Class.create( {
-    initialize: function(activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex, plannedActivityDaysArray, arrayOfActivityIndices, url) {
-        var arrayOfIndices = processArrayWithDelimeters(arrayOfActivityIndices, ",")
-        var resultOfRepetitions = executeGetRepetitionNumber(arrayOfIndices, labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex, plannedActivityDaysArray, url)
+    initialize: function(activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex) {
+        var resultOfRepetitions = executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex)
     }
 })
 
@@ -1393,18 +1417,8 @@ table#manage-period {
                 <td class="labelHolder">
                     <span id="grid[${gridStatus.index}].label" class="label" >
                             <c:forEach items="${gridRow.labels}" var="plannedActivityLabel" varStatus="plannedActivityLabelStatus">
-                                <c:set var="arrayOfDays" value=""/>
-                                <c:set var="arrayOfActivityIndices" value=""/>
-                                <c:set var="repetitionNumbers" value=""/>
-
-                                <c:forEach items="${gridRow.plannedActivities}" var="activity" varStatus="activityIndex">
-                                    <c:set var="arrayOfDays" value="${arrayOfDays},${activity.day}" />
-                                    <c:set var="arrayOfActivityIndices" value="${arrayOfActivityIndices},${activity.id}" />
-                                </c:forEach>
-
                                 <a onclick="new LabelDisplayLogic('${gridRow.activity.name}', '${gridRow.details}',
-                                    '${gridRow.conditionalDetails}', '${plannedActivityLabel.label.name}', '${plannedActivityLabel.label.id}', '${period.duration.days}', '${gridStatus.index}', '${arrayOfDays}', '${arrayOfActivityIndices}',
-                                    '<c:url value=""/>')" href="#"> ${plannedActivityLabel.label.name} </a>
+                                    '${gridRow.conditionalDetails}', '${plannedActivityLabel.label.name}', '${plannedActivityLabel.label.id}', '${period.duration.days}', '${gridStatus.index}')" href="#"> ${plannedActivityLabel.label.name} </a>
                                 ,
                             </c:forEach>
                     </span>

@@ -28,14 +28,15 @@ public class SearchRepetitionsController extends PscAbstractController {
             String arrayOfIndices = ServletRequestUtils.getRequiredStringParameter(request, "arrayOfPlannedActivityIndices");
             String labelName = ServletRequestUtils.getStringParameter(request, "labelName");
             Integer labelId = ServletRequestUtils.getIntParameter(request, "labelId");
-
             Integer[] arrayOfPAIds = getArrayFromPlannedActivityString(arrayOfIndices);
             List<Integer[]> listOfRepetitionsPerPA = new ArrayList<Integer[]>();
 
-            for (int i = 0; i < arrayOfPAIds.length; i++) {
-                List<Object> repetitionList = plannedActivityLabelDao.getRepetitionsByPlannedActivityIdAndLabelId(arrayOfPAIds[i], labelId);
-                Integer[] array = repetitionList.toArray(new Integer[]{});
-                listOfRepetitionsPerPA.add(array);
+            for (Integer arrayOfPAId : arrayOfPAIds) {
+                if (arrayOfPAId != null) {
+                    List<Object> repetitionList = plannedActivityLabelDao.getRepetitionsByPlannedActivityIdAndLabelId(arrayOfPAId, labelId);
+                    Integer[] array = repetitionList.toArray(new Integer[]{});
+                    listOfRepetitionsPerPA.add(array);
+                }
             }
             model.put("repetitions", listOfRepetitionsPerPA);
             
@@ -59,8 +60,12 @@ public class SearchRepetitionsController extends PscAbstractController {
         String[] parsedArray = plannedActivity.split(",");
         Integer[] result = new Integer[parsedArray.length];
         for (int i=0; i< parsedArray.length; i++) {
-            Integer something = new Integer(parsedArray[i]);
-            result[i] = something;
+            if (parsedArray[i]!=null && parsedArray[i].length()>0) {
+                Integer something = new Integer(parsedArray[i]);
+                result[i] = something;
+            } else {
+                result[i] = null;
+            }
         }
         return result;
     }
