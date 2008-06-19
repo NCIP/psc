@@ -1289,7 +1289,6 @@ table#manage-period {
 <div id="newDiv" style="overflow:auto;  padding-bottom:5px; position:relative;">
     <%--<c:set var="tableWidth" value="${period.duration.days + 4}"/>--%>
 <c:set var="range" value="0"/>
-    ${period.dayRanges[0].weeks}
 <c:if test="${period.duration.unit == 'week'}">
     <c:set var="range" value="${period.dayRanges[0].weeks}"/>
 </c:if>
