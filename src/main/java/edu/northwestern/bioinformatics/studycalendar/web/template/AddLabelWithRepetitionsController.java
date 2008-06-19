@@ -42,7 +42,7 @@ public class AddLabelWithRepetitionsController extends PscAbstractController {
         plannedActivityLabelDao.deleteByLabelId(labelId);
 
 
-        Integer[] arrayOfDays = getArrayFromString(days, ";");
+        Integer[] arrayOfDays = getArrayFromString(days, ",");
         Integer[] arrayOfPlannedActivityIndices = getArrayFromString(plannedActivityIndices, ",");
         String[] arrayOfRepetitions = repetitions.split(";");
 
