@@ -559,6 +559,7 @@ function createLabelAutocompleter(rowElt) {
         paramName: 'searchText',
         afterUpdateElement:updateLabel
     });
+//    resetLabelAutocompleter();
 }
 
 function addAdditionalLabelParameters(inputField, queryString) {
@@ -655,7 +656,7 @@ function myDayCount() {
     return dayCountArray;
 }
 
-function executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex) {
+function executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, gridRowIndex) {
     var resultBack ="0";
     var href = '<c:url value="/pages/search/fragment/mapOfRepetitions"/>'
     var data =""
@@ -684,7 +685,7 @@ function executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDet
     {
         method: 'get',
         onComplete: function(t) {
-            createTheLightBox(t.responseText, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, plannedActivityDaysArray, arrayOfIndices)
+            createTheLightBox(t.responseText, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, plannedActivityDaysArray, arrayOfIndices)
         }
     });
 }
@@ -781,8 +782,9 @@ function executeAddLabels (grid, arrayOfDays, labelId, arrayOfActivityIndices) {
 
 
 function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId,
-                           periodDurationDays, plannedActivityDaysArray, arrayOfIndices) {
+                           plannedActivityDaysArray, arrayOfIndices) {
     repetitions = repetitions.replace(/\s/g, "")
+    var periodDurationDays = ${period.duration.days}
     repetitions = processArrayWithDelimeters(repetitions, ",]")
 
     var arrayOfDays = processArrayWithDelimeters(plannedActivityDaysArray, ",")
@@ -825,7 +827,6 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
         rows.push(row)
     }
 
-    this.url =""
     this.content =
         Builder.node('div', {id:'lightbox-content'}, [
             Builder.node('p', 'Label Modification Page'),
@@ -849,7 +850,6 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
 
     divElt.appendChild(table)
 
-//    this.content.insert('<div style="width:200px;overflow:auto;"><table><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr><tr><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td><td>123</td><td>456</td><td>789</td></tr></div>');
     this.content.appendChild(divElt)
 
     //div for buttons all, none, even, odd
@@ -946,8 +946,8 @@ var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', ali
 }
 
  var LabelDisplayLogic = Class.create( {
-    initialize: function(activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, periodDurationDays, gridRowIndex) {
-        var resultOfRepetitions = executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, periodDurationDays, gridRowIndex)
+    initialize: function(activityName, gridRowDetails, gridRowConditionalDetails, labelName, labelId, gridRowIndex) {
+        var resultOfRepetitions = executeGetRepetitionNumber(labelName, labelId, activityName, gridRowDetails, gridRowConditionalDetails, gridRowIndex)
     }
 })
 
@@ -1417,7 +1417,7 @@ table#manage-period {
                     <span id="grid[${gridStatus.index}].label" class="label" >
                             <c:forEach items="${gridRow.labels}" var="plannedActivityLabel" varStatus="plannedActivityLabelStatus">
                                 <a onclick="new LabelDisplayLogic('${gridRow.activity.name}', '${gridRow.details}',
-                                    '${gridRow.conditionalDetails}', '${plannedActivityLabel.label.name}', '${plannedActivityLabel.label.id}', '${period.duration.days}', '${gridStatus.index}')" href="#"> ${plannedActivityLabel.label.name} </a>
+                                    '${gridRow.conditionalDetails}', '${plannedActivityLabel.label.name}', '${plannedActivityLabel.label.id}', '${gridStatus.index}')" href="#"> ${plannedActivityLabel.label.name} </a>
                                 ,
                             </c:forEach>
                     </span>
