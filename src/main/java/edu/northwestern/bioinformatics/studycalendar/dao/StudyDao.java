@@ -5,10 +5,14 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignme
 import edu.nwu.bioinformatics.commons.CollectionUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -87,7 +91,8 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
     @SuppressWarnings({"unchecked"})
     public String getNewStudyName() {
         String templateName = "[ABC 1000]";
-        List<Study> studies = getHibernateTemplate().find("from Study a where assigned_identifier LIKE '[ABC %' ORDER BY assigned_identifier DESC");
+        List<Study> studies = getHibernateTemplate().find("from Study a where assigned_identifier LIKE '[ABC %]' ORDER BY assigned_identifier DESC");
+        Collections.sort(studies, new StudyTemporaryNameComparator());
         if (studies.size() == 0) {
             return templateName;
         }
@@ -131,5 +136,43 @@ public class StudyDao extends StudyCalendarMutableDomainObjectDao<Study> impleme
             return getAll();
         }
         return studies;
+    }
+
+    private static class StudyTemporaryNameComparator implements Comparator<Study> {
+        private final Logger logger = LoggerFactory.getLogger(getClass());
+
+        /**
+         * Compares the study name. Compares only  studies having name matches with [ABC *] .
+         *
+         * @param study
+         * @param anotherStudy
+         * @return
+         */
+        public int compare(final Study study, final Study anotherStudy) {
+            // String numericPartSupposedly = "";
+            String name = study.getName();
+            String anotherStudyName = anotherStudy.getName();
+            if (name.indexOf("ABC") <= 0 || anotherStudyName.indexOf("ABC") <= 0) {
+                return 1;
+            } else if (name.indexOf("]") <= 0 || anotherStudyName.indexOf("]") <= 0) {
+                return 1;
+            }
+            if (name.indexOf("[") < 0 || anotherStudyName.indexOf("[") < 0) {
+                return 1;
+            }
+
+            try {
+                String numericPartSupposedly = name.substring(name.indexOf(" ") + 1, name.lastIndexOf("]"));
+                String anotherNumericPartSupposedly = anotherStudyName.substring(anotherStudyName.indexOf(" ") + 1, anotherStudyName.lastIndexOf("]"));
+                Integer number = new Integer(numericPartSupposedly);
+                Integer anotherNumber = new Integer(anotherNumericPartSupposedly);
+                return anotherNumber.compareTo(number);
+
+            } catch (NumberFormatException e) {
+                logger.debug("error while comparing two stduies. first study name:" + study.getName() + " another study name:" + anotherStudy.getName());
+            }
+
+            return 1;
+        }
     }
 }
