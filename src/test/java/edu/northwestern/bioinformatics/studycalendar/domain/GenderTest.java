@@ -31,6 +31,7 @@ public class GenderTest extends CoreTestCase {
         assertSame(Gender.FEMALE, Gender.getByCode("Female"));
         assertSame(Gender.NOT_REPORTED, Gender.getByCode("Not Reported"));
         assertSame(Gender.UNKNOWN, Gender.getByCode("Unknown"));
+        assertNull(Gender.getByCode("test"));
     }
 
     public void testGetGenderMap() {

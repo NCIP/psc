@@ -307,7 +307,11 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
         Subject subject = new Subject();
         subject.setGridId(participantType.getGridId());
 
-        subject.setGender(participantType.getAdministrativeGenderCode());
+       if (Gender.getByCode(participantType.getAdministrativeGenderCode()) != null) {
+            subject.setGender(Gender.getByCode(participantType.getAdministrativeGenderCode()));
+        } else {
+            subject.setGender(Gender.MALE);
+        }
         subject.setDateOfBirth(participantType.getBirthDate());
         subject.setFirstName(participantType.getFirstName());
         subject.setLastName(participantType.getLastName());
