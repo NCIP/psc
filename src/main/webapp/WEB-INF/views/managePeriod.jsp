@@ -713,6 +713,32 @@ function executeSelectNone(grid) {
     }
 }
 
+function selectTheColumn(columnNumber, grid, elt) {
+    elt.observe('click', function() {
+        executeSelectNone(grid)
+        for (var k=0; k<grid.length; k++) {
+            $(grid[k]).select('td[name*=.column('+(columnNumber+1)*1+').td]').each(function(input){
+                var inputTag = $(input).select('input[name*=input]')[0]
+                if (inputTag.className.toString().indexOf("checked") >= 0) {
+                    inputTag.removeClassName('unchecked')
+                    inputTag.addClassName('checked')
+                }
+            })
+        }
+    })
+}
+
+function executeSelectRow(rowNumber, grid, elt){
+    elt.observe('click', function() {
+        $(grid[rowNumber+1]).select('input[name*=input]').each(function(input){
+            if (input.className.toString().indexOf("checked") >= 0) {
+                input.removeClassName('unchecked')
+                input.addClassName('checked')
+            }
+        })
+    })
+}
+
 function executeSelectColumns(grid, arrayOfDays, columnStartPosition) {
     executeSelectNone(grid)
 //   NS comment Todo - why such complicated if?
@@ -790,8 +816,40 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
     var arrayOfDays = processArrayWithDelimeters(plannedActivityDaysArray, ",")
     var rows = [];
         // input cells
+    var allCells=[]
+
+    var emptyColumn = Builder.node('td', {id: 'alldayInput', className: 'allDayInput', name: 'allDayInput'});
+    var emptyButton = Builder.node('a',  {id: 'emptyButton', href: '#', align: 'left' })
+    emptyButton.innerHTML=''
+    emptyColumn.appendChild(emptyButton)
+    allCells.push(emptyColumn)
+
+    var allRowName = 'allRow'
+    for (var i=0; i< arrayOfDays.length; i++) {
+        var index = (i+1)*1;
+        var name = 'grid[' + i + '].column(' + index + ').all.td'
+        var allColumn = Builder.node('td', {id: name, className: 'allDayInput', name: name});
+        var inputName1 = 'grid[' + index + '].all'
+        var allButton = Builder.node('a',  {id: inputName1, href: '#', align: 'left' })
+        allButton.innerHTML='All'
+        allColumn.appendChild(allButton)
+        allCells.push(allColumn)
+    }
+
+
+    var rowAll = Builder.node("tr", {className: allRowName}, [allCells])
+    rows.push(rowAll)
+
     for (var j=0; j < getRepetitionNumber(); j++) {
         var cells = []
+        var allRowName1= 'allRow['+j+']'
+        var allRow = Builder.node('td', {id: allRowName1, className: allRowName1});
+        var allButton = Builder.node('a',  {id: 'all', href: '#', align: 'left' })
+        allButton.innerHTML='All'
+        allRow.appendChild(allButton)
+        cells.push(allRow)
+        
+
         for (var i = 0; i < arrayOfDays.length; i++) {
             var value = arrayOfDays[i];
             var name = 'grid[' + j + '].column(' + (i+1) + ').td'
@@ -849,7 +907,6 @@ function createTheLightBox(repetitions, activityName, gridRowDetails, gridRowCon
     }
 
     divElt.appendChild(table)
-
     this.content.appendChild(divElt)
 
     //div for buttons all, none, even, odd
@@ -942,6 +999,17 @@ var divHolder = Builder.node('table', {className: 'buttonsHolder', cols:'2', ali
     $('lightbox').update(this.content)
     LB.Lightbox.activate()
 
+    //these two for loops for "all"-buttons for rows and columns
+    for (var i=0; i< arrayOfDays.length; i++) {
+        var elt = $(rowAll).childNodes[i+1];
+        selectTheColumn(i, rows, elt)
+    }    
+
+    for (var i=0; i< getRepetitionNumber(); i++) {
+        var name = 'allRow['+i+']'
+        var elt = $(name).childNodes[0]
+        executeSelectRow(i, rows, elt)
+    }
 
 }
 
