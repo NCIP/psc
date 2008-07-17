@@ -1,0 +1,110 @@
+<project name="psc-wsrf">
+
+    <property environment="env"/>
+
+    <property name="war.dir" value="psc-wsrf"/>
+
+    <property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
+
+    <property name="psc-wsrf" value="psc-wsrf"/>
+
+
+    <target name="get-grid-war" 
+            description="creates a deployable WAR file of all PSC grid services">
+        <mkdir dir="${war.dir}"/>
+
+
+        <copy todir="${war.dir}" overwrite="true">
+            <fileset dir="${env.CATALINA_HOME}/webapps/wsrf/">
+            </fileset>
+        </copy>
+
+        <!--
+        make sure to delete cog-jglobus jar if it get copied
+        <!-->
+
+        <delete file="${war.dir}/WEB-INF/lib/cog-jglobus.jar"/>
+
+        <property name="war-name" value="${psc-wsrf}.war"/>
+        <mkdir dir="dist"/>
+
+        <war basedir="${war.dir}" destfile="dist/${war-name}" webxml="${war.dir}/WEB-INF/web.xml">
+            <exclude name="WEB-INF/web.xml"/>
+            <metainf dir="dist">
+                <include name="context.xml"/>
+            </metainf>
+
+        </war>
+
+    </target>
+
+
+    <target name="get-study-consumer">
+
+        <subant buildpath="study-consumer" antfile="build.xml"
+                target="get-study-consumer"
+                inheritAll="false">
+
+        </subant>
+
+        <subant buildpath="study-consumer" antfile="build.xml"
+                target="update-wsdd"
+                inheritAll="false">
+
+        </subant>
+
+    </target>
+
+    <target name="get-ae">
+
+        <subant buildpath="adverse-event-consumer" antfile="build.xml"
+                target="get-ae"
+                inheritAll="false">
+
+        </subant>
+
+    </target>
+
+
+    <target name="get-registration-consumer">
+
+        <subant buildpath="registration-consumer" antfile="build.xml"
+                target="get-registration-consumer"
+                inheritAll="false">
+
+        </subant>
+
+        <subant buildpath="registration-consumer" antfile="build.xml"
+                target="update-wsdd"
+                inheritAll="false">
+
+        </subant>
+
+
+    </target>
+
+    <target name="clean">
+        <delete dir="${war.dir}"/>
+        <delete dir="dist"/>
+
+        <subant buildpath="registration-consumer" antfile="build.xml"
+                target="clean"
+                inheritAll="false">
+        </subant>
+
+        <subant buildpath="adverse-event-consumer" antfile="build.xml"
+                target="clean"
+                inheritAll="false">
+
+        </subant>
+
+
+        <subant buildpath="study-consumer" antfile="build.xml"
+                target="clean"
+                inheritAll="false">
+
+        </subant>
+    </target>
+
+
+</project>

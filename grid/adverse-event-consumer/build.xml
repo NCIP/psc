@@ -1,6 +1,6 @@
 <project name="adverse-event-consumer">
 
-	<property environment="env"/>
+	<property environment="env" />
 
 	<property name="src.dir" value="src/java"/>
 	<property name="build.dir" value="build/classes"/>
@@ -12,13 +12,13 @@
 	<property name="test.lib.dir" value="test/${lib.dir}"/>
 	<property name="test.report.dir" value="test/report"/>
 	<property name="jar.name" value="psc-adverse-event-consumer.jar"/>
-	
-	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
-	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>	
 
-      
-	
-	
+	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
+	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>
+
+
+
+
     <target name="get-jars">
 
         <mkdir dir="ext/lib"/>
@@ -32,13 +32,13 @@
                 <include name="csmapi.jar"/>
             </fileset>
             -->
-            
+
             <fileset dir="../../src/main/webapp/WEB-INF/lib">
                 <include name="*.jar"/>
               </fileset>
         </copy>
     </target>
-	
+
 	<target name="checkGlobus" depends="setGlobus">
 		<condition property="globus.not.found">
 			<or>
@@ -79,7 +79,7 @@
 			</fileset>
 
 			<pathelement location="${build.dir}"/>
-			
+
 		</path>
 
 		<path id="test.run.cp">
@@ -100,17 +100,83 @@
 		</copy>
 	</target>
 
-	<target name="compileTests" depends="compile">
+    <target name="get-ae" depends="get-jars,checkCaaers,checkGlobus,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
+
+        <mkdir dir="ext/lib"/>
+
+        <!--<subant buildpath="${env.GLOBUS_LOCATION}" antfile="share/globus_wsrf_common/tomcat/tomcat.xml"-->
+                <!--target="deployTomcat"-->
+                <!--inheritAll="false">-->
+            <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
+
+        <!--</subant>-->
+
+        <!--<ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="ivy-build.xml"-->
+             <!--target="publish-local" inheritAll="false"/>-->
+
+        <ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="build.xml"
+                     target="deployTomcat" inheritAll="false"/>
+
+
+        <copy todir="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib" overwrite="true">
+
+            <fileset dir="ext/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="">
+                <include name="${jar.name}"/>
+            </fileset>
+
+        </copy>
+    </target>
+
+    <target name="checkCaaers" depends="setCaaers">
+        <condition property="caaers.not.found">
+            <or>
+                <not>
+                    <isset property="ext.caaers.dir"/>
+                </not>
+                <equals arg1="${ext.caaers.dir}" arg2=""/>
+            </or>
+        </condition>
+        <fail message="caaers installation is not set in either CAAERS_HOME or ext.caaers.dir"
+              if="caaers.not.found"/>
+        <echo message="Caaers: ${ext.caaers.dir}"/>
+    </target>
+
+    <target name="setGridServiceDeployDir" if="env.CATALINA_HOME">
+        <property name="catalina.home.dir" value="${env.CATALINA_HOME}"/>
+    </target>
+
+    <target name="checkGridServiceDeployDir" depends="setGridServiceDeployDir">
+        <condition property="catalina.not.found">
+            <or>
+                <not>
+                    <isset property="catalina.home.dir"/>
+                </not>
+                <equals arg1="${catalina.home.dir}" arg2=""/>
+            </or>
+        </condition>
+        <fail message="tomcat installation is not set in either CATALINA_HOME or catalina.home.dir"
+              if="catalina.not.found"/>
+        <echo message="Catalina: ${catalina.home.dir}"/>
+    </target>
+
+    <target name="setCaaers" if="env.CAAERS_HOME">
+        <property name="ext.caaers.dir" value="${env.CAAERS_HOME}"/>
+    </target>
+
+    <target name="compileTests" depends="compile">
 		<mkdir dir="${test.build.dir}"/>
 		<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="true">
 			<classpath refid="test.compile.cp"/>
 		</javac>
 	</target>
-	
+
 	<target name="jar" depends="compile">
 		<jar basedir="${build.dir}" destfile="${jar.name}"/>
 	</target>
-	
+
 	<target name="deploy" depends="jar">
 		<copy todir="${deploy.lib.dir}" overwrite="true">
 			<fileset dir=".">
@@ -123,7 +189,7 @@
 				<include name="*.jar"/>
 			</fileset>
 		</copy>
-		
+
 		<copy todir="${deploy.etc.ext.dir}" overwrite="true">
 			<fileset dir="etc">
 				<include name="*"/>
@@ -138,10 +204,10 @@
 		<!-- antcall target="insertTestData"/ -->
 
 		<junit printsummary="yes" showoutput="true">
-			
+
 			<jvmarg value="-Dgov.nih.nci.security.configFile=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/ApplicationSecurityConfig.xml"/>
 			<jvmarg value="-Djava.security.auth.login.config=/Users/joshua/packages/tomcat/for_psc/apache-tomcat-5.5.20/conf/cabig/csm_jaas.config"/>
-			
+
 			<classpath refid="test.run.cp"/>
 			<formatter type="xml"/>
 			<batchtest fork="yes" todir="${test.report.dir}">
@@ -199,11 +265,10 @@
 	</target>
 
 	<target name="clean">
-		
+
 		<delete dir="build"/>
 		<delete file="${jar.name}"/>
 		<delete dir="test/build"/>
-		
-	</target>
 
+	</target>
 </project>
