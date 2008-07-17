@@ -1,6 +1,6 @@
 <project name="adverse-event-consumer">
 
-	<property environment="env"/>
+	<property environment="env" />
 
 	<property name="src.dir" value="src/java"/>
 	<property name="build.dir" value="build/classes"/>
@@ -16,7 +16,7 @@
 	<property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
 	<property name="deploy.etc.ext.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/etc/cagrid_AdverseEventConsumer"/>	
 
-      
+
 	
 	
     <target name="get-jars">
@@ -100,7 +100,73 @@
 		</copy>
 	</target>
 
-	<target name="compileTests" depends="compile">
+    <target name="get-ae" depends="get-jars,checkCaaers,checkGlobus,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
+
+        <mkdir dir="ext/lib"/>
+
+        <!--<subant buildpath="${env.GLOBUS_LOCATION}" antfile="share/globus_wsrf_common/tomcat/tomcat.xml"-->
+                <!--target="deployTomcat"-->
+                <!--inheritAll="false">-->
+            <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
+
+        <!--</subant>-->
+
+        <!--<ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="ivy-build.xml"-->
+             <!--target="publish-local" inheritAll="false"/>-->
+
+        <ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="build.xml"
+                     target="deployTomcat" inheritAll="false"/>
+
+
+        <copy todir="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib" overwrite="true">
+
+            <fileset dir="ext/lib">
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="">
+                <include name="${jar.name}"/>
+            </fileset>
+
+        </copy>
+    </target>
+
+    <target name="checkCaaers" depends="setCaaers">
+        <condition property="caaers.not.found">
+            <or>
+                <not>
+                    <isset property="ext.caaers.dir"/>
+                </not>
+                <equals arg1="${ext.caaers.dir}" arg2=""/>
+            </or>
+        </condition>
+        <fail message="caaers installation is not set in either CAAERS_HOME or ext.caaers.dir"
+              if="caaers.not.found"/>
+        <echo message="Caaers: ${ext.caaers.dir}"/>
+    </target>
+
+    <target name="setGridServiceDeployDir" if="env.CATALINA_HOME">
+        <property name="catalina.home.dir" value="${env.CATALINA_HOME}"/>
+    </target>
+
+    <target name="checkGridServiceDeployDir" depends="setGridServiceDeployDir">
+        <condition property="catalina.not.found">
+            <or>
+                <not>
+                    <isset property="catalina.home.dir"/>
+                </not>
+                <equals arg1="${catalina.home.dir}" arg2=""/>
+            </or>
+        </condition>
+        <fail message="tomcat installation is not set in either CATALINA_HOME or catalina.home.dir"
+              if="catalina.not.found"/>
+        <echo message="Catalina: ${catalina.home.dir}"/>
+    </target>
+
+    <target name="setCaaers" if="env.CAAERS_HOME">
+        <property name="ext.caaers.dir" value="${env.CAAERS_HOME}"/>
+    </target>
+
+    <target name="compileTests" depends="compile">
 		<mkdir dir="${test.build.dir}"/>
 		<javac srcdir="${test.src.dir}" destdir="${test.build.dir}" debug="true">
 			<classpath refid="test.compile.cp"/>
@@ -205,5 +271,4 @@
 		<delete dir="test/build"/>
 		
 	</target>
-
 </project>

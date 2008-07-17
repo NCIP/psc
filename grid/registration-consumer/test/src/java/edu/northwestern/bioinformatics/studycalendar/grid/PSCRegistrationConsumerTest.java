@@ -40,7 +40,6 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     private String serviceUrl;
 
-    private ApplicationContext ctx;
 
     private SubjectDao subjectDao;
 
@@ -68,7 +67,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
         applicationContext=new ClassPathXmlApplicationContext(new String[]{
                         // "classpath:applicationContext.xml",
-                        "classpath:applicationContext--grid.xml"});
+                        "classpath:applicationContext-grid.xml"});
         registrationConsumer= (PSCRegistrationConsumer) applicationContext.getBean("registrationConsumer");
 
 
@@ -80,7 +79,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 //                "http://10.10.10.2:9012/wsrf/services/cagrid/RegistrationConsumer");
 ////
         serviceUrl = System.getProperty("psc.test.serviceUrl",
-                "http://localhost:8080/wsrf/services/cagrid/RegistrationConsumer");
+                "https://localhost:8443/psc-wsrf/services/cagrid/RegistrationConsumer");
 //        serviceUrl = System.getProperty("psc.test.serviceUrl",
 //                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/RegistrationConsumer");
 
@@ -94,7 +93,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 //        String usr = System.getProperty("psc.test.db.usr", "psc");
 //        String pwd = System.getProperty("psc.test.db.pwd", "psc");
 
-        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc");
+        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc_test");
         //String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://10.10.10.2:5432/psc");
         String usr = System.getProperty("psc.test.db.usr", "psc");
         String pwd = System.getProperty("psc.test.db.pwd", "psc");
@@ -105,19 +104,14 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
         System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_USERNAME, usr);
         System.setProperty(PropertiesBasedJdbcDatabaseTester.DBUNIT_PASSWORD, pwd);
 
-        ctx = new ClassPathXmlApplicationContext(new String[]{
-                // "classpath:applicationContext.xml",
-                "classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
-                "classpath:applicationContext-dao.xml", "classpath:applicationContext-security.xml",
-                "classpath:applicationContext-service.xml", "classpath:applicationContext-db.xml",
-                "classpath:applicationContext-spring.xml"});
 
-        subjectDao = (SubjectDao) ctx.getBean("subjectDao");
-        studyDao = (StudyDao) ctx.getBean("studyDao");
-        siteDao = (SiteDao) ctx.getBean("siteDao");
-        studySubjectAssignmentDao = (StudySubjectAssignmentDao) ctx.getBean("studySubjectAssignmentDao");
-        studySiteDao = (StudySiteDao) ctx.getBean("studySiteDao");
-        studyService = (StudyService) ctx.getBean("studyService");
+
+        subjectDao = (SubjectDao) applicationContext.getBean("subjectDao");
+        studyDao = (StudyDao) applicationContext.getBean("studyDao");
+        siteDao = (SiteDao) applicationContext.getBean("siteDao");
+        studySubjectAssignmentDao = (StudySubjectAssignmentDao) applicationContext.getBean("studySubjectAssignmentDao");
+        studySiteDao = (StudySiteDao) applicationContext.getBean("studySiteDao");
+        studyService = (StudyService) applicationContext.getBean("studyService");
     }
 
     public PSCRegistrationConsumerTest() {
@@ -322,9 +316,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
            */
         //  suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
         //  suite.addTest(new PSCRegistrationConsumerTest("testRollbackRegistrationLocal"));
-        suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
+       // suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
         //suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
-//        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+      suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
         //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationRemote"));
         return suite;
     }
