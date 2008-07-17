@@ -781,7 +781,7 @@ function executeAddLabels (grid, arrayOfDays, labelId, arrayOfActivityIndices) {
             $(grid[k]).select('td[name*=.column('+(i+1)+').td]').each(function(input){
                 var inputTag = $(input).select('input[name*=input]')[0]
                 if (inputTag.className.toString().indexOf("unchecked")< 0) {
-                    repNew = repNew + (k+1) +','
+                    repNew = repNew + (k) +','
                 }
             })
         }
