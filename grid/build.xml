@@ -1,12 +1,12 @@
-<project name="psc-wsrf">
+<project name="wsrf-psc">
 
     <property environment="env"/>
 
-    <property name="war.dir" value="psc-wsrf"/>
+    <property name="war.dir" value="wsrf-psc"/>
 
     <property name="deploy.lib.dir" value="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib"/>
 
-    <property name="psc-wsrf" value="psc-wsrf"/>
+    <property name="wsrf-psc" value="wsrf-psc"/>
 
 
     <target name="get-grid-war" depends="get-ae,get-registration-consumer,get-study-consumer"
@@ -25,7 +25,7 @@
         <delete file="${war.dir}/WEB-INF/lib/cog-jglobus.jar"/>
 
 
-        <property name="war-name" value="${psc-wsrf}.war"/>
+        <property name="war-name" value="${wsrf-psc}.war"/>
         <mkdir dir="dist"/>
 
         <war basedir="${war.dir}" destfile="dist/${war-name}" webxml="${war.dir}/WEB-INF/web.xml">

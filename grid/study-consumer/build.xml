@@ -209,7 +209,7 @@
 
     <!--targets for deploying grid services-->
 
-    <target name="get-study-consumer" depends="get-jars,checkC3PR,checkGlobus,checkGridServiceDeployDir"
+    <target name="get-study-consumer" depends="jar,checkC3PR,checkGlobus,checkGridServiceDeployDir"
             description="create study consumer wsrf ">
 
 

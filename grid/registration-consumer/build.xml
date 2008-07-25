@@ -205,7 +205,7 @@
 
     <!--targets for deploying grid services-->
 
-    <target name="get-registration-consumer" depends="get-jars,checkC3PR,checkGlobus,checkGridServiceDeployDir"
+    <target name="get-registration-consumer" depends="jar,checkC3PR,checkGridServiceDeployDir"
             description="crate registration consumer wsrf ">
 
 
