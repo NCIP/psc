@@ -3,18 +3,21 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import aenotification.AENotificationType;
 import edu.northwestern.bioinformatics.studycalendar.api.ScheduledCalendarService;
 import edu.northwestern.bioinformatics.studycalendar.domain.AdverseEvent;
 import edu.northwestern.bioinformatics.studycalendar.domain.StudySubjectAssignment;
-import gov.nih.nci.cabig.ctms.grid.ae.beans.AENotificationType;
-import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumer;
+import gov.nih.nci.cabig.ctms.grid.ae.common.AdverseEventConsumerI;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.InvalidRegistration;
 import gov.nih.nci.cabig.ctms.grid.ae.stubs.types.RegistrationFailed;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oasis.wsrf.properties.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
@@ -22,24 +25,15 @@ import java.util.Date;
  */
 
 @Transactional(readOnly = false)
-public class PSCAdverseEventConsumer implements AdverseEventConsumer {
+public class PSCAdverseEventConsumer implements AdverseEventConsumerI {
 
     private static final Log logger = LogFactory.getLog(PSCAdverseEventConsumer.class);
 
     private ScheduledCalendarService scheduledCalendarService;
 
 
-    public PSCAdverseEventConsumer() {
-//		ctx = new ClassPathXmlApplicationContext(new String[] {
-//				// "classpath:applicationContext.xml",
-//				"classpath:applicationContext-api.xml", "classpath:applicationContext-command.xml",
-//				"classpath:applicationContext-dao.xml", "classpath:applicationContext-db.xml",
-//				"classpath:applicationContext-security.xml", "classpath:applicationContext-service.xml",
-//				"classpath:applicationContext-spring.xml" });
 
-    }
-
-    public void register(final AENotificationType aeNotification) throws InvalidRegistration, RegistrationFailed {
+    public void register(final AENotificationType aeNotification) throws java.rmi.RemoteException, InvalidRegistration, RegistrationFailed {
 
         // TODO: Change fault implementation to accept a reason message.
         String gridId = aeNotification.getRegistrationGridId();
@@ -77,5 +71,17 @@ public class PSCAdverseEventConsumer implements AdverseEventConsumer {
     @Required
     public void setScheduledCalendarService(final ScheduledCalendarService scheduledCalendarService) {
         this.scheduledCalendarService = scheduledCalendarService;
+    }
+
+    public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(final GetMultipleResourceProperties_Element getMultipleResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public GetResourcePropertyResponse getResourceProperty(final QName qName) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public QueryResourcePropertiesResponse queryResourceProperties(final QueryResourceProperties_Element queryResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
