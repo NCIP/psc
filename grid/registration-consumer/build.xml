@@ -204,8 +204,11 @@
 	</target>
 
     <!--targets for deploying grid services-->
+    <target name="get-registration-consumer" depends="get-registration-consumer-jar,update-wsdd"
+               description="create registration consumer wsrf and update the server-config.wsdd">
+        </target>
 
-    <target name="get-registration-consumer" depends="jar,checkC3PR,checkGridServiceDeployDir"
+    <target name="get-registration-consumer-jar" depends="jar,checkCCTS,checkGridServiceDeployDir"
             description="crate registration consumer wsrf ">
 
 
@@ -215,9 +218,11 @@
             <!--<property name="tomcat.dir" value="${env.CATALINA_HOME}"></property>-->
 
         <!--</subant>-->
-
-        <ant dir="${env.C3PR_HOME}/antfiles" antfile="ivy-master-build.xml"
-             target="deploySkeletonRegistrationGridService" inheritAll="false"/>
+        <ant dir="${env.CCTS_HOME}/RegistrationConsumerGridService" antfile="ivy-build.xml"
+                     target="publish-local" inheritAll="false"/>
+        
+        <ant dir="${env.CCTS_HOME}/RegistrationConsumerGridService" antfile="build.xml"
+             target="deployTomcat" inheritAll="false"/>
 
 
         <copy todir="${env.CATALINA_HOME}/webapps/wsrf/WEB-INF/lib" overwrite="true">
@@ -232,18 +237,18 @@
         </copy>
     </target>
 
-    <target name="checkC3PR" depends="setC3PR">
-        <condition property="c3pr.not.found">
+    <target name="checkCCTS" depends="setCCTS">
+        <condition property="ccts.not.found">
             <or>
                 <not>
-                    <isset property="ext.c3pr.dir"/>
+                    <isset property="ext.ccts.dir"/>
                 </not>
-                <equals arg1="${ext.c3pr.dir}" arg2=""/>
+                <equals arg1="${ext.ccts.dir}" arg2=""/>
             </or>
         </condition>
-        <fail message="c3pr installation is not set in either C3PR_HOME or ext.c3pr.dir"
-              if="c3pr.not.found"/>
-        <echo message="C3PR: ${ext.c3pr.dir}"/>
+        <fail message="ccts installation is not set in either CCTS_HOME or ext.ccts.dir"
+              if="ccts.not.found"/>
+        <echo message="CCTS: ${ext.ccts.dir}"/>
     </target>
 
     <target name="setGridServiceDeployDir" if="env.CATALINA_HOME">
@@ -264,8 +269,8 @@
         <echo message="Catalina: ${catalina.home.dir}"/>
     </target>
 
-    <target name="setC3PR" if="env.C3PR_HOME">
-        <property name="ext.c3pr.dir" value="${env.C3PR_HOME}"/>
+    <target name="setCCTS" if="env.CCTS_HOME">
+        <property name="ext.ccts.dir" value="${env.CCTS_HOME}"/>
     </target>
 
     <path id="xml-task-dir">

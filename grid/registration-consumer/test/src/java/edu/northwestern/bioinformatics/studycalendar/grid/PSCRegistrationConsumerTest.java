@@ -22,7 +22,6 @@ import org.dbunit.DBTestCase;
 import org.dbunit.PropertiesBasedJdbcDatabaseTester;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
-import org.dbunit.operation.DatabaseOperation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -75,11 +74,11 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
                 "gov/nih/nci/ccts/grid/client/client-config.wsdd");
         regFile = System.getProperty("psc.test.sampleRegistrationFile",
                 "grid/registration-consumer/test/resources/SampleRegistrationMessage.xml");
-//        serviceUrl = System.getProperty("psc.test.serviceUrl",
-//                "http://10.10.10.2:9012/wsrf/services/cagrid/RegistrationConsumer");
-////
         serviceUrl = System.getProperty("psc.test.serviceUrl",
-                "https://localhost:8443/psc-wsrf/services/cagrid/RegistrationConsumer");
+                "https://cbvapp-d1017.nci.nih.gov:28443/wsrf-caaers/services/cagrid/RegistrationConsumer");
+//
+//        serviceUrl = System.getProperty("psc.test.serviceUrl",
+//                "https://localhost:8443/psc-wsrf/services/cagrid/RegistrationConsumer");
 //        serviceUrl = System.getProperty("psc.test.serviceUrl",
 //                "http://cbvapp-d1017.nci.nih.gov:18080/psc-wsrf/services/cagrid/RegistrationConsumer");
 
@@ -138,15 +137,7 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
 
     }
 
-    @Override
-    protected DatabaseOperation getSetUpOperation() throws Exception {
-        return DatabaseOperation.CLEAN_INSERT;
-    }
 
-    @Override
-    protected DatabaseOperation getTearDownOperation() throws Exception {
-        return DatabaseOperation.NONE;
-    }
 
     public void testCreateRegistrationLocal() throws Exception {
         Registration registration = getRegistration();
@@ -316,9 +307,9 @@ public class PSCRegistrationConsumerTest extends DBTestCase {
            */
         //  suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationLocal"));
         //  suite.addTest(new PSCRegistrationConsumerTest("testRollbackRegistrationLocal"));
-       // suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
-        //suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
-      suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+       //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationLocal"));
+        suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
+      //suite.addTest(new PSCRegistrationConsumerTest("testCreateRegistrationRemote"));
         //suite.addTest(new PSCRegistrationConsumerTest("testCommitRegistrationRemote"));
         return suite;
     }

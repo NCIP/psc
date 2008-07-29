@@ -1,105 +1,72 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<registration xmlns="gme://ccts.cabig/1.0/gov.nih.nci.cabig.ccts.domain"
-        gridId="sampleRegistration">
-	<studySite gridId="26eea1eb-e603-4cce-9b41-0edaa23b79c7">
-		<healthcareSite gridId="WF GRID ID">
-			<nciInstituteCode>SITE_01</nciInstituteCode>
-		</healthcareSite>
-		<irbApprovalDate>2007-10-01T00:00:00.000-04:00</irbApprovalDate>
-		<roleCode>Affiliate Site</roleCode>
-		<startDate>2007-10-01T00:00:00.000-04:00</startDate>
-	</studySite>
-    <scheduledEpoch
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:type="ScheduledTreatmentEpochType">
-            <startDate>2007-10-01</startDate>
-            <epoch gridId="3ad38cfd-bfbe-4af2-9783-c69169f8f241"
-                xsi:type="TreatmentEpochType">
-                <name>Drug Treatment</name>
+<registration xmlns="gme://ccts.cabig/1.0/gov.nih.nci.cabig.ccts.domain" gridId="e9bc4318-2fdb-4ca4-b90d-ed70464ea1bb">
+    <studySite gridId="ac6e009c-a0dd-4c3d-a187-b14a28d661dc">
+        <healthcareSite gridId="b301ac91-eb64-44cf-8c0b-b819ccba5098">
+            <nciInstituteCode>SITE_01</nciInstituteCode>
+        </healthcareSite>
+        <irbApprovalDate>2008-07-09</irbApprovalDate>
+        <roleCode>Affiliate Site</roleCode>
+        <startDate>2008-07-09</startDate>
+    </studySite>
+    <studyRef gridId="f3551f50-9812-4e12-bc48-47ad1a49ed71">
+        <shortTitleText>Test C3D study Dec 4th</shortTitleText>
+        <longTitleText>Test C3D study Dec 4th</longTitleText>
+        <identifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="04_C_0121"
+                    xsi:type="OrganizationAssignedIdentifierType">
+            <type>Coordinating Center Identifier</type>
+            <value>04_C_0121</value>
+            <primaryIndicator>true</primaryIndicator>
+            <healthcareSite>
+                <nciInstituteCode>CALGB</nciInstituteCode>
+            </healthcareSite>
+        </identifier>
+        <identifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="04_C_0121"
+                    xsi:type="OrganizationAssignedIdentifierType">
+            <type>Protocol Authority Identifier</type>
+            <value>04_C_0121</value>
+            <primaryIndicator>false</primaryIndicator>
+            <healthcareSite>
+                <nciInstituteCode>CALGB</nciInstituteCode>
+            </healthcareSite>
+        </identifier>
+    </studyRef>
+    <participant gridId="148067b2-1664-4c75-84fb-bfe34ddbfef1">
+        <gridId>148067b2-1664-4c75-84fb-bfe34ddbfef1</gridId>
+        <firstName>Adam</firstName>
+        <lastName>Gill</lastName>
+        <address/>
+        <administrativeGenderCode>Male</administrativeGenderCode>
+        <birthDate>1970-01-02</birthDate>
+        <ethnicGroupCode>Unknown</ethnicGroupCode>
+        <raceCode>Not_Reported</raceCode>
+        <identifier xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" type="123451234"
+                    xsi:type="OrganizationAssignedIdentifierType">
+            <type>MRN</type>
+            <value>123451234</value>
+            <primaryIndicator>true</primaryIndicator>
+            <healthcareSite>
+                <nciInstituteCode>NC010</nciInstituteCode>
+            </healthcareSite>
+        </identifier>
+    </participant>
+    <startDate>2008-07-23</startDate>
+    <informedConsentFormSignedDate>2008-01-01</informedConsentFormSignedDate>
+    <informedConsentVersion>1.0</informedConsentVersion>
+    <regDataEntryStatus>COMPLETE</regDataEntryStatus>
+    <regWorkflowStatus>REGISTERED</regWorkflowStatus>
+    <scheduledEpoch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" gridId="eaa36229-2a4e-45dd-9554-8198df05634e"
+                    xsi:type="ScheduledTreatmentEpochType">
+        <startDate>2008-07-23</startDate>
+        <epoch gridId="c8720b21-5369-4110-82f7-32039e37d756" xsi:type="TreatmentEpochType">
+            <name>Treatment 1</name>
+            <descriptionText></descriptionText>
+        </epoch>
+        <scheduledArm>
+            <arm gridId="5b852da8-10f7-4766-a2a9-4eaf3eae4993">
+                <name>Arm A</name>
                 <descriptionText></descriptionText>
-            </epoch>
-            <scheduledArm>
-                <arm gridId="de3a0ef0-1f02-4da6-afdc-cc9042cdb594">
-                    <name>Arm A</name>
-                    <targetAccrualNumber>300</targetAccrualNumber>
-                </arm>
-            </scheduledArm>
-            <eligibilityIndicator>true</eligibilityIndicator>
-        </scheduledEpoch>
-
-
-    <studyRef gridId="db762d64-e213-4bf9-9f9b-bccd36be56e2">
-		<shortTitleText>Combination Chemotherapy NHL</shortTitleText>
-		<longTitleText>Infusional Chemotherapy in Previously Untreated Patients With Intermediate Or Aggressive Non-Hodgkin's Lymphoma: A Study of Dose-Intense Therapy With Cytokines.</longTitleText>
-		<identifier
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			type="CDR000007829" xsi:type="OrganizationAssignedIdentifierType">
-			<type>Coordinating Center Identifier</type>
-			<value>04_C_0121</value>
-			<primaryIndicator>true</primaryIndicator>
-			<healthcareSite gridId="WF GRID ID">
-				<nciInstituteCode>duke healthcare nci</nciInstituteCode>
-			</healthcareSite>
-		</identifier>
-		<identifier
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
-			<type>Protocol Authority Identifier</type>
-			<value>NCT00018980</value>
-			<primaryIndicator>false</primaryIndicator>
-			<healthcareSite>
-				<nciInstituteCode>NCCTG</nciInstituteCode>
-			</healthcareSite>
-		</identifier>
-	</studyRef>
-	<participant
-		xmlns:ns1="gme://ccts.cabig/1.0/gov.nih.nci.cabig.ccts.domain"
-		ns1:gridId="50113a1a-4c3e-4418-8c37-7383cba1aaf8">
-		<ns1:gridId>50113a1a-4c3e-4418-8c37-7383cba1aaf8</ns1:gridId>
-		<ns1:firstName>Saurabh</ns1:firstName>
-		<ns1:lastName>e</ns1:lastName>
-		<ns1:address />
-		<ns1:administrativeGenderCode>Male</ns1:administrativeGenderCode>
-		<ns1:birthDate>1971-01-01</ns1:birthDate>
-		<ns1:ethnicGroupCode>Hispanic or Latino</ns1:ethnicGroupCode>
-		<ns1:raceCode>Asian</ns1:raceCode>
-		<identifier
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			type="CDR000007829" xsi:type="OrganizationAssignedIdentifierType">
-			<type>MRN</type>
-			<value>mrn6</value>
-			<primaryIndicator>true</primaryIndicator>
-			<healthcareSite gridId="WF GRID ID">
-				<nciInstituteCode>NCI001</nciInstituteCode>
-			</healthcareSite>
-		</identifier>
-		<identifier
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
-			<type>CC</type>
-			<value>NCT00018980</value>
-			<primaryIndicator>false</primaryIndicator>
-			<healthcareSite>
-				<nciInstituteCode>NCI</nciInstituteCode>
-			</healthcareSite>
-		</identifier>
-
-	</participant>
-	<startDate>2007-10-01</startDate>
-	<informedConsentFormSignedDate>2007-10-09</informedConsentFormSignedDate>
-	<informedConsentVersion>1.0</informedConsentVersion>
-	<regDataEntryStatus>COMPLETE</regDataEntryStatus>
-	<regWorkflowStatus>REGISTERED</regWorkflowStatus>
-	<scheduledEpoch
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:type="ScheduledTreatmentEpochType">
-		<startDate>2007-10-01</startDate>
-		<epoch gridId="3ad38cfd-bfbe-4af2-9783-c69169f8f241"
-			xsi:type="TreatmentEpochType">
-			<name>Drug Treatment</name>
-			<descriptionText></descriptionText>
-		</epoch>
-		<eligibilityIndicator>true</eligibilityIndicator>
-	</scheduledEpoch>
-	<stratumGroup>3:between 20 and 45 - &lt;120</stratumGroup>
+            </arm>
+        </scheduledArm>
+        <eligibilityIndicator>true</eligibilityIndicator>
+    </scheduledEpoch>
+    <stratumGroup>2:2 - A</stratumGroup>
 </registration>

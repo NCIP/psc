@@ -16,7 +16,7 @@
     <targetAccrualNumber>123</targetAccrualNumber>
     <identifier
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			type="NCT00018980" xsi:type="OrganizationAssignedIdentifierType">
+			type="NCT00018980" xsi:type="OOrganizationAssignedIdentifierType">
         <type>Coordinating Center Identifier</type>
         <value>value15</value>
         <primaryIndicator>true</primaryIndicator>

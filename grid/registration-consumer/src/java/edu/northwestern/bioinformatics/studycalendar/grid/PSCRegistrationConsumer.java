@@ -11,17 +11,19 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.SubjectService;
 import edu.northwestern.bioinformatics.studycalendar.utils.accesscontrol.ApplicationSecurityManager;
+import gov.nih.nci.cabig.ccts.domain.*;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
-import gov.nih.nci.ccts.grid.*;
-import gov.nih.nci.ccts.grid.common.RegistrationConsumer;
+import gov.nih.nci.ccts.grid.common.RegistrationConsumerI;
 import gov.nih.nci.ccts.grid.stubs.types.InvalidRegistrationException;
 import gov.nih.nci.ccts.grid.stubs.types.RegistrationConsumptionException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oasis.wsrf.properties.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
@@ -31,7 +33,7 @@ import java.util.List;
  * @author <a href="mailto:joshua.phillips@semanticbits.com>Joshua Phillips</a>
  */
 @Transactional(readOnly = false)
-public class PSCRegistrationConsumer implements RegistrationConsumer {
+public class PSCRegistrationConsumer implements RegistrationConsumerI {
 
     private static final Log logger = LogFactory.getLog(PSCRegistrationConsumer.class);
 
@@ -355,5 +357,18 @@ public class PSCRegistrationConsumer implements RegistrationConsumer {
     @Required
     public void setRegistrationConsumerGridServiceUrl(String registrationConsumerGridServiceUrl) {
         this.registrationConsumerGridServiceUrl = registrationConsumerGridServiceUrl;
+    }
+
+
+    public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(final GetMultipleResourceProperties_Element getMultipleResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public GetResourcePropertyResponse getResourceProperty(final QName qName) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public QueryResourcePropertiesResponse queryResourceProperties(final QueryResourceProperties_Element queryResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
