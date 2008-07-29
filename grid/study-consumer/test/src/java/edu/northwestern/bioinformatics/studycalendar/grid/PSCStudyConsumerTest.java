@@ -3,11 +3,11 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import gov.nih.nci.cabig.ccts.domain.Study;
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import gov.nih.nci.ccts.grid.Study;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
 import gov.nih.nci.ccts.grid.client.StudyConsumerClient;
+import gov.nih.nci.ccts.grid.stubs.types.InvalidStudyException;
+import gov.nih.nci.ccts.grid.stubs.types.StudyCreationException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
