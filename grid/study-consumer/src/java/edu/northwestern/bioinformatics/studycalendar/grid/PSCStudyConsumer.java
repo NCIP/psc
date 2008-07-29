@@ -12,18 +12,20 @@ import edu.northwestern.bioinformatics.studycalendar.domain.StudySite;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.service.TemplateSkeletonCreatorImpl;
+import gov.nih.nci.cabig.ccts.domain.*;
 import gov.nih.nci.cabig.ctms.audit.dao.AuditHistoryRepository;
-import gov.nih.nci.ccts.grid.*;
 import gov.nih.nci.ccts.grid.common.StudyConsumerI;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.InvalidStudyException;
-import gov.nih.nci.ccts.grid.studyconsumer.stubs.types.StudyCreationException;
+import gov.nih.nci.ccts.grid.stubs.types.InvalidStudyException;
+import gov.nih.nci.ccts.grid.stubs.types.StudyCreationException;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.oasis.wsrf.properties.*;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -57,7 +59,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
     private AmendmentService amendmentService;
 
 
-    public void createStudy(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException,
+    public void createStudy(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException,
             StudyCreationException {
         if (studyDto == null) {
             String message = "No Study message was found";
@@ -77,7 +79,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
         study.setGridId(studyDto.getGridId());
         study.setLongTitle(studyDto.getLongTitleText());
 
-        StudyOrganizationType[] studyOrganizationTypes = studyDto.getStudyOrganization();
+        gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes = studyDto.getStudyOrganization();
         populateStudySite(study, studyOrganizationTypes);
 
         // now add epochs and arms to the planned calendar of study
@@ -91,11 +93,11 @@ public class PSCStudyConsumer implements StudyConsumerI {
     /**
      * does nothing as we are already  commiting Study message by default.
      *
-     * @param studyDto
+     * @param study
      * @throws RemoteException
      * @throws InvalidStudyException
      */
-    public void commit(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException {
+    public void commit(final gov.nih.nci.cabig.ccts.domain.Study study) throws RemoteException, InvalidStudyException {
 //        if (studyDto == null) {
 //            throw new InvalidStudyException();
 //        }
@@ -115,7 +117,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
 //        }
     }
 
-    public void rollback(final gov.nih.nci.ccts.grid.Study studyDto) throws RemoteException, InvalidStudyException {
+    public void rollback(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws RemoteException, InvalidStudyException {
         if (studyDto == null) {
             String message = "No Study message was found";
             throw getInvalidStudyException(message);
@@ -158,7 +160,19 @@ public class PSCStudyConsumer implements StudyConsumerI {
         }
     }
 
-    private void populateEpochsAndArms(final gov.nih.nci.ccts.grid.Study studyDto, final Study study) {
+    public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(final GetMultipleResourceProperties_Element getMultipleResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public GetResourcePropertyResponse getResourceProperty(final QName qName) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public QueryResourcePropertiesResponse queryResourceProperties(final QueryResourceProperties_Element queryResourceProperties_element) throws RemoteException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    private void populateEpochsAndArms(final gov.nih.nci.cabig.ccts.domain.Study studyDto, final Study study) {
         EpochType[] epochTypes = studyDto.getEpoch();
 
         if (epochTypes != null) {
@@ -200,7 +214,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @param studyOrganizationTypes
      * @throws InvalidStudyException
      */
-    private void populateStudySite(final Study study, final StudyOrganizationType[] studyOrganizationTypes)
+    private void populateStudySite(final Study study, final gov.nih.nci.cabig.ccts.domain.StudyOrganizationType[] studyOrganizationTypes)
             throws StudyCreationException, InvalidStudyException {
 
         List<StudySite> studySites = new ArrayList<StudySite>();
@@ -216,12 +230,12 @@ public class PSCStudyConsumer implements StudyConsumerI {
                 studySites.add(studySite);
             }
         }
-            if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
-                String message = "No sites is associated to this study" + study.getLongTitle();
-                throw getStudyCreationException(message);
+        if (studySites.size() == 0 || ArrayUtils.isEmpty(studyOrganizationTypes)) {
+            String message = "No sites is associated to this study" + study.getLongTitle();
+            throw getStudyCreationException(message);
 
-            }
-            study.setStudySites(studySites);
+        }
+        study.setStudySites(studySites);
 
     }
 
@@ -250,7 +264,7 @@ public class PSCStudyConsumer implements StudyConsumerI {
      * @return
      * @throws InvalidStudyException
      */
-    String findCoordinatingCenterIdentifier(final gov.nih.nci.ccts.grid.Study studyDto) throws InvalidStudyException {
+    String findCoordinatingCenterIdentifier(final gov.nih.nci.cabig.ccts.domain.Study studyDto) throws InvalidStudyException {
         String ccIdentifier = null;
         if (studyDto.getIdentifier() != null) {
             for (IdentifierType identifierType : studyDto.getIdentifier()) {
@@ -317,4 +331,6 @@ public class PSCStudyConsumer implements StudyConsumerI {
     public void setAmendmentService(final AmendmentService amendmentService) {
         this.amendmentService = amendmentService;
     }
+
+
 }

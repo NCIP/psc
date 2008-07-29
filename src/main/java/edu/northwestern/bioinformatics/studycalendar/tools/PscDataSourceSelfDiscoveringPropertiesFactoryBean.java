@@ -18,11 +18,11 @@ public class PscDataSourceSelfDiscoveringPropertiesFactoryBean extends DataSourc
     //grid service related configuration
     private static final String GRID_REGISTRATION_CONSUMER_URL = "grid.registrationconsumer.url";
 
-    private static final String GRID_REGISTRATION_CONSUMER_VALUE = "/psc-wsrf/services/cagrid/RegistrationConsumer";
+    private static final String GRID_REGISTRATION_CONSUMER_VALUE = "/wsrf-psc/services/cagrid/RegistrationConsumer";
 
     private static final String GRID_STUDY_CONSUMER_URL = "grid.studyconsumer.url";
 
-    private static final String GRID_STUDY_CONSUMER_VALUE = "/psc-wsrf/services/cagrid/StudyConsumer";
+    private static final String GRID_STUDY_CONSUMER_VALUE = "/wsrf-psc/services/cagrid/StudyConsumer";
 
     //grid.registrationconsumer.url=/wsrf/services/cagrid/RegistrationConsumer
     private static final String[] WEBSSO_PROPERTIES = {

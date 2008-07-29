@@ -3,9 +3,11 @@
  */
 package edu.northwestern.bioinformatics.studycalendar.grid;
 
+import gov.nih.nci.cabig.ccts.domain.Study;
 import gov.nih.nci.cabig.ctms.audit.DataAuditInfo;
-import gov.nih.nci.ccts.grid.Study;
 import gov.nih.nci.ccts.grid.client.StudyConsumerClient;
+import gov.nih.nci.ccts.grid.stubs.types.InvalidStudyException;
+import gov.nih.nci.ccts.grid.stubs.types.StudyCreationException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
@@ -71,7 +73,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
 //        String usr = System.getProperty("psc.test.db.usr", "pscdev");
 //        String pwd = System.getProperty("psc.test.db.pwd", "devpsc1234");
 
-        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc");
+        String url = System.getProperty("psc.test.db.url", "jdbc:postgresql:psc-test");
 //        //  String url = System.getProperty("psc.test.db.url", "jdbc:postgresql://10.10.10.2:5432/psc");
         String usr = System.getProperty("psc.test.db.usr", "psc");
         String pwd = System.getProperty("psc.test.db.pwd", "psc");
@@ -135,7 +137,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
         DataAuditInfo.setLocal(null);
     }
 
-    public void testCommitStudyLocal() {
+    public void testCommitStudyLocal() throws Exception {
         try {
             PSCStudyConsumer studyClient = new PSCStudyConsumer();
 
@@ -155,7 +157,7 @@ public class PSCStudyConsumerTest extends DBTestCase {
 
     }
 
-    public void testRollbackStudyLocal() {
+    public void testRollbackStudyLocal() throws StudyCreationException, InvalidStudyException {
         try {
             PSCStudyConsumer studyClient = new PSCStudyConsumer();
             Study study = populateStudyDTO();
@@ -260,5 +262,5 @@ public class PSCStudyConsumerTest extends DBTestCase {
         return new FlatXmlDataSet(new FileInputStream(testFile));
     }
 
-    
+
 }
