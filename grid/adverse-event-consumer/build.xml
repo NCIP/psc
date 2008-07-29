@@ -100,7 +100,7 @@
 		</copy>
 	</target>
 
-    <target name="get-ae" depends="get-jars,checkCaaers,checkGlobus,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
+    <target name="get-ae" depends="jar,checkCaaers,checkGridServiceDeployDir" description="crate adverse event consumer wsrf ">
 
         <mkdir dir="ext/lib"/>
 
@@ -114,7 +114,7 @@
         <!--<ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="ivy-build.xml"-->
              <!--target="publish-local" inheritAll="false"/>-->
 
-        <ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService" antfile="build.xml"
+        <ant dir="${env.CAAERS_HOME}/grid/introduce/AdverseEventConsumerService1.2" antfile="build.xml"
                      target="deployTomcat" inheritAll="false"/>
 
 
@@ -129,6 +129,8 @@
 
         </copy>
     </target>
+
+
 
     <target name="checkCaaers" depends="setCaaers">
         <condition property="caaers.not.found">
