@@ -17,10 +17,10 @@ import java.util.*;
  */
 @Entity
 @Table(name = "studies")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_studies_id")
-    }
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_studies_id")
+                }
 )
 @Where(clause = "load_status > 0")
 public class Study extends AbstractMutableDomainObject implements Named, TransientCloneable<Study>, Cloneable, NaturallyKeyed {
@@ -84,7 +84,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
         return getAmendment().getPreviousAmendment() != null;
     }
 
-    public void addStudySite(StudySite studySite){
+    public void addStudySite(StudySite studySite) {
         getStudySites().add(studySite);
         studySite.setStudy(this);
     }
@@ -136,8 +136,8 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     public boolean hasAmendment(Amendment a) {
         return a.equals(getDevelopmentAmendment())
-            || a.equals(getAmendment())
-            || (getAmendment() != null && getAmendment().hasPreviousAmendment(a));
+                || a.equals(getAmendment())
+                || (getAmendment() != null && getAmendment().hasPreviousAmendment(a));
     }
 
     @Transient
@@ -160,6 +160,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     /**
      * The identifier given to the study by the organization in charge of it
+     *
      * @return
      */
     public String getAssignedIdentifier() {
@@ -171,7 +172,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     }
 
     @OneToOne(mappedBy = "study")
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public PlannedCalendar getPlannedCalendar() {
         return plannedCalendar;
     }
@@ -188,7 +189,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     }
 
     @OneToMany(mappedBy = "study", fetch = FetchType.EAGER)
-    @Cascade(value = { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade(value = {CascadeType.ALL, CascadeType.DELETE_ORPHAN})
     public List<StudySite> getStudySites() {
         return studySites;
     }
@@ -231,6 +232,7 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     /**
      * Added for hibernate only..
      * This method will not change the load status...The load status will always be {LoadStatus.COMPLETE}.
+     *
      * @param loadStatus
      */
     public void setLoadStatus(LoadStatus loadStatus) {
@@ -265,9 +267,23 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
     @Override
     public String toString() {
         StringBuffer sb = new StringBuffer(getClass().getSimpleName())
-            .append("[id=").append(getId())
-            .append("; assignedIdentifier=").append(getName());
+                .append("[id=").append(getId())
+                .append("; assignedIdentifier=").append(getName());
         if (isMemoryOnly()) sb.append("; transient copy");
         return sb.append(']').toString();
+    }
+
+    @Transient
+    public Date getLastModifiedDate() {
+        Date lastModifiedDate;
+        if (isReleased()) {
+            lastModifiedDate = getAmendment().getLastModifiedDate();
+
+        } else {
+            lastModifiedDate = getDevelopmentAmendment().getLastModifiedDate();
+        }
+
+
+        return lastModifiedDate;
     }
 }

@@ -53,7 +53,7 @@ public class StudyService {
                     // Update the logic here once the email message content is finalized. 
                     assignment.addNotification(notification);
                     notificationService.notifyUsersForNewScheduleNotifications(notification);
-                    
+
                 }
             }
 
@@ -94,6 +94,7 @@ public class StudyService {
             }
         }
         if (study.getDevelopmentAmendment() != null) {
+            study.getDevelopmentAmendment().setUpdatedDate(new Date());
             deltaService.saveRevision(study.getDevelopmentAmendment());
         }
     }
@@ -106,7 +107,7 @@ public class StudyService {
 
     public Study getStudyByAssignedIdentifier(final String assignedIdentifier) {
 
-        Study study = studyDao.getStudyByAssignedIdentifier(assignedIdentifier);
+        Study study = studyDao.getByAssignedIdentifier(assignedIdentifier);
         if (study == null) {
             return null;
         }

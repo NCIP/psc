@@ -75,6 +75,8 @@ public enum XsdAttribute {
     AMENDMENT_DATE("date"),
     PLAN_TREE_NODE_NAME("name"),
     STUDY_ASSIGNED_IDENTIFIER("assigned-identifier"),
+    LAST_MODIFIED_DATE("last-modified-date"),
+
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE("start-date"),
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY("start-day"),
     NEXT_STUDY_SEGMENT_SCHEDULE_STUDY_SEGMENT_ID("study-segment-id"),

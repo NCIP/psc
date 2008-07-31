@@ -2,7 +2,7 @@ package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
 import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.createAmendments;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
-import edu.northwestern.bioinformatics.studycalendar.domain.Fixtures;
+import edu.nwu.bioinformatics.commons.DateUtils;
 import gov.nih.nci.cabig.ctms.lang.DateTools;
 
 import java.util.Calendar;
@@ -24,7 +24,7 @@ public class AmendmentTest extends StudyCalendarTestCase {
 
         b2 = createAmendments("B0", "B1", "B2");
     }
-    
+
     public void testIsPreviousAmendment() throws Exception {
         assertFalse(a3.hasPreviousAmendment(a3));
         assertTrue(a3.hasPreviousAmendment(a2));
@@ -43,7 +43,7 @@ public class AmendmentTest extends StudyCalendarTestCase {
 
         assertFalse(a2.hasPreviousAmendment(b2));
     }
-    
+
     public void testCount() throws Exception {
         assertEquals(3, a3.getPreviousAmendmentsCount());
         assertEquals(2, a2.getPreviousAmendmentsCount());
@@ -67,7 +67,7 @@ public class AmendmentTest extends StudyCalendarTestCase {
         a3.setDate(DateTools.createDate(2005, Calendar.MARCH, 6));
         assertEquals("03/06/2005 (A3)", a3.getDisplayName());
     }
-    
+
     public void testDisplayNameForOriginalAmendment() throws Exception {
         a0.setName(Amendment.INITIAL_TEMPLATE_AMENDMENT_NAME);
         assertEquals("Initial template", a0.getDisplayName());
@@ -106,13 +106,28 @@ public class AmendmentTest extends StudyCalendarTestCase {
 
     public void testDecomposeNaturalKeyWithName() throws Exception {
         Amendment.Key actual = Amendment.decomposeNaturalKey("2003-08-11~fred");
-        assertDayOfDate(2003, Calendar.AUGUST,  11, actual.getDate());
+        assertDayOfDate(2003, Calendar.AUGUST, 11, actual.getDate());
         assertEquals("Wrong name", "fred", actual.getName());
     }
-    
+
     public void testDecomposeNaturalKeyWithoutName() throws Exception {
         Amendment.Key actual = Amendment.decomposeNaturalKey("2001-01-12");
-        assertDayOfDate(2001, Calendar.JANUARY,  12, actual.getDate());
+        assertDayOfDate(2001, Calendar.JANUARY, 12, actual.getDate());
         assertNull("Wrong name", actual.getName());
+    }
+
+    public void testLastModifiedDate() throws Exception {
+        a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a3.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+
+
+        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 20), a3.getLastModifiedDate());
+
+        a3.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
+        a3.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+
+
+        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 21), a3.getLastModifiedDate());
+
     }
 }

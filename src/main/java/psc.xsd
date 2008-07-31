@@ -36,6 +36,8 @@
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="last-modified-date" type="xsd:date" use="optional"/>
+
     </xsd:complexType>
 
     <xsd:element name="study-snapshot" type="psc:RealizedStudy"/>
@@ -56,6 +58,8 @@
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
+        <xsd:attribute name="last-modified-date" type="xsd:date" use="optional" />
+
     </xsd:complexType>
 
     <!-- Elements of the template -->
@@ -103,7 +107,7 @@
         <xsd:attribute name="duration-unit" type="xsd:string" use="required"/>
     </xsd:complexType>
 
-    <xsd:element name="planned-activity" type="psc:PlannedActivity"/> 
+    <xsd:element name="planned-activity" type="psc:PlannedActivity"/>
 
     <xsd:complexType name="PlannedActivity">
         <xsd:sequence>
@@ -303,14 +307,14 @@
 
     <xsd:complexType name="StudySiteLink">
         <xsd:attribute name="study-name" type="xsd:string" use="required"/>
-        <xsd:attribute name="site-name" type="xsd:string" use="required"/>    
+        <xsd:attribute name="site-name" type="xsd:string" use="required"/>
     </xsd:complexType>
 
     <xsd:element name="sites" type="psc:sites"/>
     <xsd:element name="site" type="psc:Site"/>
 
 
-    <xsd:complexType name="sites">                                                                              
+    <xsd:complexType name="sites">
         <xsd:sequence>
             <xsd:element name="site" type="psc:Site" maxOccurs="unbounded"/>
         </xsd:sequence>
@@ -343,7 +347,7 @@
     </xsd:complexType>
 
     <xsd:element name="next-scheduled-study-segment" type="psc:NextScheduledStudySegment"/>
-    
+
     <xsd:complexType name="NextScheduledStudySegment">
         <xsd:attribute name="start-date" type="xsd:date" use="required"/>
         <xsd:attribute name="start-day" type="xsd:integer" use="required"/>

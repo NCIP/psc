@@ -1,10 +1,12 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
-import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
+import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import edu.nwu.bioinformatics.commons.DateUtils;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Calendar;
 
 /**
  * @author Rhett Sutphin
@@ -14,9 +16,9 @@ public class StudyTest extends StudyCalendarTestCase {
 
     public void testGetSites() throws Exception {
         List<Site> expectedSites = Arrays.asList(
-            Fixtures.createNamedInstance("Site 1", Site.class),
-            Fixtures.createNamedInstance("Site 3", Site.class),
-            Fixtures.createNamedInstance("Site 2", Site.class)
+                Fixtures.createNamedInstance("Site 1", Site.class),
+                Fixtures.createNamedInstance("Site 3", Site.class),
+                Fixtures.createNamedInstance("Site 2", Site.class)
         );
         for (Site site : expectedSites) {
             Fixtures.createStudySite(study, site);
@@ -51,7 +53,7 @@ public class StudyTest extends StudyCalendarTestCase {
         assertEquals("Amendments not in order", "B", actual.get(1).getName());
         assertEquals("Amendments not in order", "A", actual.get(2).getName());
     }
-    
+
     public void testAmendmentsListIsImmutableView() throws Exception {
         study.pushAmendment(new Amendment("A"));
         study.pushAmendment(new Amendment("B"));
@@ -65,7 +67,7 @@ public class StudyTest extends StudyCalendarTestCase {
             // good
         }
     }
-    
+
     public void testGetSitesWithNone() throws Exception {
         assertNotNull(study.getSites());
         assertEquals(0, study.getSites().size());
@@ -129,7 +131,7 @@ public class StudyTest extends StudyCalendarTestCase {
         Study clone = study.clone();
         assertNotSame("Clone is same", study, clone);
     }
-    
+
     public void testClone() throws Exception {
         study.setPlannedCalendar(new PlannedCalendar());
         Study clone = study.clone();
@@ -149,4 +151,31 @@ public class StudyTest extends StudyCalendarTestCase {
         assertEquals("Cloned planned calendar does not refer to study clone", clone, clone.getPlannedCalendar().getStudy());
         assertTrue("Cloned calendar not transient", clone.getPlannedCalendar().isMemoryOnly());
     }
+
+    public void testLastModifiedDate() throws Exception {
+        assertNull(study.getAmendment());
+        Amendment a = new Amendment();
+        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+
+        study.pushAmendment(a);
+        assertSame(a, study.getAmendment());
+        Amendment b = new Amendment();
+        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
+        b.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
+
+        study.pushAmendment(b);
+
+        Amendment c = new Amendment();
+        c.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 20));
+        c.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 24));
+
+        study.pushAmendment(c);
+
+
+        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 24), study.getLastModifiedDate());
+
+
+    }
+
 }

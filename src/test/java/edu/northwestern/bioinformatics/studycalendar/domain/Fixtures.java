@@ -27,6 +27,7 @@ import java.util.Date;
 public class Fixtures {
     private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     private static final DeltaService deltaService = new DeltaService();
+
     static {
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
         deltaService.setTemplateService(new TestingTemplateService());
@@ -93,7 +94,7 @@ public class Fixtures {
         return event;
     }
 
-    public static PlannedActivity createPlannedActivity(String activityName, int day, String details,String condition) {
+    public static PlannedActivity createPlannedActivity(String activityName, int day, String details, String condition) {
         PlannedActivity event = createPlannedActivity(activityName, day, details);
         event.setCondition(condition);
         return event;
@@ -173,7 +174,7 @@ public class Fixtures {
     }
 
     public static ScheduledActivity createScheduledActivity(
-        String activityName, int year, int month, int day, ScheduledActivityState state
+            String activityName, int year, int month, int day, ScheduledActivityState state
     ) {
         ScheduledActivity event = createScheduledActivity(activityName, year, month, day);
         event.changeState(state);
@@ -258,7 +259,7 @@ public class Fixtures {
         return userRole;
     }
 
-    public static ProtectionGroup createProtectionGroup(Long aId, String aName){
+    public static ProtectionGroup createProtectionGroup(Long aId, String aName) {
         ProtectionGroup myProtectionGroup = new ProtectionGroup();
         myProtectionGroup.setProtectionGroupName(aName);
         myProtectionGroup.setProtectionGroupId(aId);
@@ -285,10 +286,11 @@ public class Fixtures {
     }
 
     public static Amendment createAmendment(String name, Date date, boolean mandatory) {
-        Amendment amendment =  new Amendment();
+        Amendment amendment = new Amendment();
         amendment.setMandatory(mandatory);
         amendment.setName(name);
         amendment.setDate(date);
+        amendment.setUpdatedDate(date);
         return amendment;
     }
 
@@ -338,10 +340,11 @@ public class Fixtures {
     }
 
     // static class
-    private Fixtures() { }
+    private Fixtures() {
+    }
 
     public static Source createSource(final String name) {
-        Source source=new Source();
+        Source source = new Source();
         source.setName(name);
         return source;
     }

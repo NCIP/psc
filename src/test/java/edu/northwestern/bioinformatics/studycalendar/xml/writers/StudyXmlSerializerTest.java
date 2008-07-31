@@ -10,6 +10,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTestCase;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.STUDY;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
 import static org.dom4j.DocumentHelper.createElement;
@@ -18,6 +19,7 @@ import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
 
+import static java.text.MessageFormat.format;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -51,25 +53,36 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         amendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
         populationSerializer = registerMockFor(PopulationXmlSerializer.class);
         plannedCalendarSerializer = registerMockFor(PlannedCalendarXmlSerializer.class);
-        developmentAmendmentSerializer=registerMockFor(AmendmentXmlSerializer.class);
+        developmentAmendmentSerializer = registerMockFor(AmendmentXmlSerializer.class);
 
         serializer = new StudyXmlSerializer() {
-            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {return plannedCalendarSerializer;}
-            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {return populationSerializer;}
-            protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {return amendmentSerializer;}
-            protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {return developmentAmendmentSerializer; }
+            protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {
+                return plannedCalendarSerializer;
+            }
+
+            protected PopulationXmlSerializer getPopulationXmlSerializer(Study study) {
+                return populationSerializer;
+            }
+
+            public AmendmentXmlSerializer getAmendmentSerializer(Study study) {
+                return amendmentSerializer;
+            }
+
+            protected AmendmentXmlSerializer getDevelopmentAmendmentSerializer(Study study) {
+                return developmentAmendmentSerializer;
+            }
         };
         serializer.setStudyDao(studyDao);
 
         calendar = setGridId("grid1", new PlannedCalendar());
         population = createPopulation("MP", "My Population");
 
-        firstAmendment =  createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);
+        firstAmendment = createAmendment("[First]", createDate(2008, Calendar.JANUARY, 2), true);
 
         secondAmendment = createAmendment("[Second]", createDate(2008, Calendar.JANUARY, 11), true);
         secondAmendment.setPreviousAmendment(firstAmendment);
 
-        developmentAmendment = createAmendment("[Development]",createDate(2008, Calendar.FEBRUARY,13),true);
+        developmentAmendment = createAmendment("[Development]", createDate(2008, Calendar.FEBRUARY, 13), true);
         developmentAmendment.setPreviousAmendment(secondAmendment);
 
         study = createStudy();
@@ -147,14 +160,48 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element actual = serializer.createElement(study);
         verifyMocks();
 
-        assertEquals("Wrong attribute size", 1, actual.attributeCount());
+        assertEquals("Wrong attribute size", 2, actual.attributeCount());
         assertEquals("Wrong assigned identifier", "Study A", actual.attribute("assigned-identifier").getValue());
+        assertEquals("Wrong last modified date", "2008-01-02", actual.attribute("last-modified-date").getValue());
+
         assertEquals("Should have planned calendar child and population child nodes and development-amendment", 4, actual.nodeCount());
         assertNotNull("Planned calendar should exist", actual.element("planned-calendar"));
         assertNotNull("Population should exist", actual.element("population"));
         assertNotNull("Amendment should exist", actual.element("amendment"));
         assertNotNull("Development Amendment should exist", actual.element("development-amendment"));
 
+    }
+
+    public void testCreateDocumentString() throws Exception {
+
+        StringBuffer expected = new StringBuffer();
+        expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        expected.append("<study ");
+        expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
+        expected.append(format("       {0}:{1}=\"{2}\"", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
+        expected.append(format("       {0}=\"{1}\"", "assigned-identifier", "Study A"));
+        expected.append(format("       {0}=\"{1}\"", "last-modified-date", "2008-01-02"));
+        expected.append(format("       {0}:{1}=\"{2} {3}\">", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
+                
+        expected.append(format("<planned-calendar id=\"{0}\"/>", calendar.getGridId()));
+        expected.append(format("<population abbreviation=\"{0}\" name=\"{1}\" />", population.getAbbreviation(), population.getName()));
+        expected.append(format("<amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\"/>", firstAmendment.getName()
+                , formatter.format(firstAmendment.getDate()), String.valueOf(firstAmendment.isMandatory())));
+        expected.append(format("<development-amendment name=\"{0}\" date=\"{1}\" mandatory=\"{2}\" previous-amendment-key=\"{3}\"/>", developmentAmendment.getName(),
+                formatter.format(developmentAmendment.getDate()), String.valueOf(developmentAmendment.isMandatory()), developmentAmendment.getPreviousAmendment().getNaturalKey()));
+
+        expected.append("</study>");
+
+        expectChildrenSerializers();
+
+        replayMocks();
+
+        String actual = serializer.createDocumentString(study);
+        log.debug("actual:"+actual);
+        log.debug("expected:"+expected);
+        verifyMocks();
+
+        assertXMLEqual(expected.toString(), actual);
     }
 
     ////// Expect helper methods
@@ -192,6 +239,8 @@ public class StudyXmlSerializerTest extends StudyCalendarXmlTestCase {
         QName qStudy = createQName(STUDY.xmlName(), AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
         Element eStudy = createElement(qStudy);
         eStudy.addAttribute("assigned-identifier", study.getAssignedIdentifier());
+        eStudy.addAttribute("last-modified-date", formatter.format(study.getLastModifiedDate()));
+
         eStudy.add(ePopulation);
         eStudy.add(eCalendar);
 

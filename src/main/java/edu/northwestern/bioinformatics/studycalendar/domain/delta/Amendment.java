@@ -1,27 +1,26 @@
 package edu.northwestern.bioinformatics.studycalendar.domain.delta;
 
+import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
+import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.formatDate;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Date;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
-
-import static edu.northwestern.bioinformatics.studycalendar.utils.FormatTools.*;
-import edu.northwestern.bioinformatics.studycalendar.domain.NaturallyKeyed;
-import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * An amendment is a revision containing all the {@link Delta}s needed to
  * revert a calendar to its previous state.  The stored {@link edu.northwestern.bioinformatics.studycalendar.domain.Study}
  * always reflects the latest approved amendment.
- * <p>
+ * <p/>
  * For example, if you have a calendar C with amendments A0, A1, A2, and A3,
  * the calendar loaded from the database will reflect amendment A3.  If you want
  * to see the calendar as it existed at A1, you need to do a reverse merge from 3 to 2
@@ -34,10 +33,10 @@ import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationExce
  */
 @Entity
 @Table(name = "amendments")
-@GenericGenerator(name="id-generator", strategy = "native",
-    parameters = {
-        @Parameter(name="sequence", value="seq_amendments_id")
-    }
+@GenericGenerator(name = "id-generator", strategy = "native",
+        parameters = {
+        @Parameter(name = "sequence", value = "seq_amendments_id")
+                }
 )
 public class Amendment extends AbstractMutableDomainObject implements Revision, NaturallyKeyed {
     public static final String INITIAL_TEMPLATE_AMENDMENT_NAME = "[Original]";
@@ -47,6 +46,8 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
     private String name;
     private List<Delta<?>> deltas;
     private boolean mandatory;
+    private Date releasedDate;
+    private Date updatedDate;
 
     public Amendment() {
         this(null);
@@ -115,12 +116,13 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
      * Returns true IFF the candidate is the previous amendment of this
      * one or the previous of any of its previous amendments.  In other words, is the candidate
      * part of the history that terminates in this amendment?
+     *
      * @param candidate
      * @return
      */
     public boolean hasPreviousAmendment(Amendment candidate) {
         return this.getPreviousAmendment() != null
-            && (this.getPreviousAmendment().equals(candidate)
+                && (this.getPreviousAmendment().equals(candidate)
                 || this.getPreviousAmendment().hasPreviousAmendment(candidate));
     }
 
@@ -142,7 +144,8 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
 
     @OneToMany
     @JoinColumn(name = "amendment_id", nullable = false)
-    @OrderBy // order by ID for testing consistency
+    @OrderBy
+    // order by ID for testing consistency
     public List<Delta<?>> getDeltas() {
         return deltas;
     }
@@ -190,12 +193,12 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
     ////// OBJECT METHODS
 
     @Override
-    public String toString(){
+    public String toString() {
         return new StringBuffer(getClass().getSimpleName())
-            .append("[date=").append(getDate())
-            .append("; name=").append(getName())
-            .append("; prev=").append(getPreviousAmendment() == null ? null : getPreviousAmendment().getDisplayName())
-            .append(']').toString();
+                .append("[date=").append(getDate())
+                .append("; name=").append(getName())
+                .append("; prev=").append(getPreviousAmendment() == null ? null : getPreviousAmendment().getDisplayName())
+                .append(']').toString();
     }
 
     public static final class Key {
@@ -222,7 +225,7 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
                 date = createNaturalKeyDateFormat().parse(dateStr);
             } catch (ParseException e) {
                 throw new StudyCalendarValidationException(
-                    "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
+                        "Date is not correct format for amendment key (should be yyyy-MM-dd): %s", e, dateStr);
             }
             return new Key(date, name);
         }
@@ -246,11 +249,40 @@ public class Amendment extends AbstractMutableDomainObject implements Revision, 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder()
-                .append(createNaturalKeyDateFormat().format(getDate()));
+                    .append(createNaturalKeyDateFormat().format(getDate()));
             if (!StringUtils.isBlank(getName())) {
                 sb.append('~').append(getName());
             }
             return sb.toString();
+        }
+    }
+
+    public Date getReleasedDate() {
+        return releasedDate;
+    }
+
+    public void setReleasedDate(final Date releasedDate) {
+        this.releasedDate = releasedDate;
+    }
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(final Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    @Transient
+    public Date getLastModifiedDate() {
+
+        if (this.getReleasedDate() == null) {
+            return this.getUpdatedDate();
+        }
+        if (this.getUpdatedDate() != null && this.getUpdatedDate().compareTo(this.getReleasedDate()) > 0) {
+            return this.getUpdatedDate();
+        } else {
+            return this.getReleasedDate();
         }
     }
 }

@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+
 /**
  * @author Rhett Sutphin
  */
@@ -45,6 +47,7 @@ public class AmendmentService {
         if (dev == null) {
             throw new StudyCalendarSystemException("%s has no development amendment", source);
         }
+        dev.setReleasedDate(new Date());
         deltaService.apply(source, dev);
         source.pushAmendment(dev);
         source.setDevelopmentAmendment(null);

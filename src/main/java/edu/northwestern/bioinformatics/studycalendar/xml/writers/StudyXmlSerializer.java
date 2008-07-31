@@ -8,6 +8,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
+import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.LAST_MODIFIED_DATE;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute.STUDY_ASSIGNED_IDENTIFIER;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
 import static edu.northwestern.bioinformatics.studycalendar.xml.XsdElement.*;
@@ -18,13 +19,14 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
-public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study>{
+public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study> {
 
     private StudyDao studyDao;
 
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
         STUDY_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
+        LAST_MODIFIED_DATE.addTo(elt, study.getLastModifiedDate());
 
         Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
@@ -55,7 +57,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
 
         String key = XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(element);
         Study study = studyDao.getByAssignedIdentifier(key);
- 
+
         if (study == null) {
             study = new Study();
             study.setAssignedIdentifier(key);
@@ -76,7 +78,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         List<Element> eAmendments = element.elements(XsdElement.AMENDMENT.xmlName());
 
         Element currAmendment = findOriginalAmendment(eAmendments);
-        while(currAmendment != null) {
+        while (currAmendment != null) {
             Amendment amendment = getAmendmentSerializer(study).readElement(currAmendment);
             if (!study.getAmendmentsList().contains(amendment)) {
                 study.pushAmendment(amendment);
@@ -94,9 +96,10 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     }
 
     private void validateElement(Element element) {
-        if (element.getName()!= null && (! element.getName().equals(STUDY.xmlName()))) {
+        if (element.getName() != null && (!element.getName().equals(STUDY.xmlName()))) {
             throw new StudyCalendarValidationException("Element type is other than <study>");
-        } else if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
+        } else
+        if (element.elements(AMENDMENT.xmlName()).isEmpty() && element.element(DEVELOPMENT_AMENDMENT.xmlName()) == null) {
             throw new StudyCalendarValidationException("<study> must have at minimum an <amendment> or <development-amendment> child");
         }
     }
@@ -105,7 +108,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         String name = XsdAttribute.AMENDMENT_NAME.from(currAmendment);
         Date date = XsdAttribute.AMENDMENT_DATE.fromDate(currAmendment);
         String key = new Amendment.Key(date, name).toString();
-        
+
         for (Element amend : eAmendments) {
             if (key.equals(XsdAttribute.AMENDMENT_PREVIOUS_AMENDMENT_KEY.from(amend))) return amend;
         }
@@ -139,7 +142,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     }
 
     protected AmendmentXmlSerializer getAmendmentSerializer(Study study) {
-        AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer ) getBeanFactory().getBean("amendmentXmlSerializer");
+        AmendmentXmlSerializer amendmentSerializer = (AmendmentXmlSerializer) getBeanFactory().getBean("amendmentXmlSerializer");
         amendmentSerializer.setStudy(study);
         amendmentSerializer.setDevelopmentAmendment(false);
         return amendmentSerializer;
