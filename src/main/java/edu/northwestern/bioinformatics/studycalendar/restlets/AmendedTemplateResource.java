@@ -9,7 +9,12 @@ import org.restlet.Context;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.factory.annotation.Required;
+
+import java.util.Date;
 
 /**
  * @author John Dzak
@@ -27,8 +32,19 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
     }
 
     @Override
+    public Representation represent(Variant variant) throws ResourceException {
+
+        Representation representation = super.represent(variant);
+        Date modifiedDate = getRequestedObject().getLastModifiedDate();
+        representation.setModificationDate(modifiedDate);
+        return representation;
+
+
+    }
+
+    @Override
     protected Study loadRequestedObject(Request request) {
-        String studyIdentifier =  UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
+        String studyIdentifier = UriTemplateParameters.STUDY_IDENTIFIER.extractFrom(request);
         String amendmentIdentifier = UriTemplateParameters.AMENDMENT_IDENTIFIER.extractFrom(request);
 
         Study study = studyDao.getByAssignedIdentifier(studyIdentifier);
@@ -44,7 +60,7 @@ public class AmendedTemplateResource extends AbstractDomainObjectResource<Study>
             amendment = amendmentDao.getByNaturalKey(amendmentIdentifier, study);
             if (amendment != null && !amendment.equals(study.getAmendment()) && !study.getAmendment().hasPreviousAmendment(amendment)) {
                 log.debug("Amendment {} doesn't apply to study {}",
-                    amendmentIdentifier, study.getAssignedIdentifier());
+                        amendmentIdentifier, study.getAssignedIdentifier());
                 return null;
             }
         }

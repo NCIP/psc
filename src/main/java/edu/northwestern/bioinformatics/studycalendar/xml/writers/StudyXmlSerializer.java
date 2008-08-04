@@ -26,7 +26,7 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
     public Element createElement(Study study) {
         Element elt = XsdElement.STUDY.create();
         STUDY_ASSIGNED_IDENTIFIER.addTo(elt, study.getAssignedIdentifier());
-        LAST_MODIFIED_DATE.addTo(elt, study.getLastModifiedDate());
+        LAST_MODIFIED_DATE.addToDateTime(elt, study.getLastModifiedDate());
 
         Element eCalendar = getPlannedCalendarXmlSerializer(study).createElement(study.getPlannedCalendar());
 
@@ -127,6 +127,12 @@ public class StudyXmlSerializer extends AbstractStudyCalendarXmlSerializer<Study
         Element elt = doc.getRootElement();
         validateElement(elt);
         return XsdAttribute.STUDY_ASSIGNED_IDENTIFIER.from(elt);
+    }
+
+    public Date readLastModifiedDate(InputStream in) {
+        Document doc = deserializeDocument(in);
+        Element elt = doc.getRootElement();
+        return XsdAttribute.LAST_MODIFIED_DATE.fromDateTime(elt);
     }
 
     protected PlannedCalendarXmlSerializer getPlannedCalendarXmlSerializer(Study study) {

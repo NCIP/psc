@@ -6,15 +6,18 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Delta;
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
+import edu.northwestern.bioinformatics.studycalendar.xml.XsdAttribute;
 import edu.northwestern.bioinformatics.studycalendar.xml.XsdElement;
+import org.dom4j.Document;
 import org.dom4j.Element;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class  AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
+public class AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<Amendment> {
     public static final String DATE = "date";
 
     public static final String MANDATORY = "mandatory";
@@ -27,6 +30,7 @@ public class  AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
+
     public Element createElement(Amendment amendment) {
         Element element = null;
         if (!isDevelopmentAmendment) {
@@ -37,6 +41,8 @@ public class  AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<
         element.addAttribute(NAME, amendment.getName());
         element.addAttribute(DATE, formatter.format(amendment.getDate()));
         element.addAttribute(MANDATORY, Boolean.toString(amendment.isMandatory()));
+        XsdAttribute.RELEASED_DATE.addToDateTime(element, amendment.getReleasedDate());
+        XsdAttribute.UPDATED_DATE.addToDateTime(element, amendment.getUpdatedDate());
 
         if (amendment.getPreviousAmendment() != null) {
             element.addAttribute(PREVIOUS_AMENDMENT_KEY, amendment.getPreviousAmendment().getNaturalKey());
@@ -122,5 +128,12 @@ public class  AmendmentXmlSerializer extends AbstractStudyCalendarXmlSerializer<
 
     public void setDevelopmentAmendment(final boolean developmentAmendment) {
         isDevelopmentAmendment = developmentAmendment;
+    }
+
+    public Date readLastModifiedDate(final InputStream in) {
+        Document doc = deserializeDocument(in);
+        Element elt = doc.getRootElement();
+        return XsdAttribute.UPDATED_DATE.fromDateTime(elt);
+
     }
 }

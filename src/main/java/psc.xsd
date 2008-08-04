@@ -9,7 +9,7 @@
     <xsd:element name="studies">
         <xsd:annotation>
             <xsd:documentation>
-                A collection of study elements.  Generally, none of the elements that may be
+                A collection of study elements. Generally, none of the elements that may be
                 embedded in a study will occur in the elements nested in studies.
             </xsd:documentation>
         </xsd:annotation>
@@ -20,7 +20,7 @@
         </xsd:complexType>
     </xsd:element>
 
-    <xsd:element name="study" type="psc:Study" />
+    <xsd:element name="study" type="psc:Study"/>
 
     <xsd:complexType name="Study">
         <xsd:annotation>
@@ -36,7 +36,7 @@
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:choice>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
-        <xsd:attribute name="last-modified-date" type="xsd:date" use="optional"/>
+        <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
 
     </xsd:complexType>
 
@@ -58,7 +58,7 @@
             <xsd:element ref="psc:population" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="assigned-identifier" type="xsd:string" use="required"/>
-        <xsd:attribute name="last-modified-date" type="xsd:date" use="optional" />
+        <xsd:attribute name="last-modified-date" type="xsd:dateTime" use="optional"/>
 
     </xsd:complexType>
 
@@ -137,6 +137,9 @@
         <xsd:attribute name="date" type="xsd:date" use="required"/>
         <xsd:attribute name="mandatory" type="xsd:boolean" default="true"/>
         <xsd:attribute name="previous-amendment-key" type="xsd:string"/>
+        <xsd:attribute name="released-date" type="xsd:dateTime" use="optional"/>
+        <xsd:attribute name="updated-date" type="xsd:dateTime" use="optional"/>
+
     </xsd:complexType>
 
     <xsd:complexType name="Delta">
@@ -154,9 +157,9 @@
         <xsd:annotation>
             <xsd:documentation>
                 Indicates that a particular tree of template elements was added to the
-                study in a particular amendment.  The tree will be rooted at one of the
-                contained elements.  Any child elements that were added at the same time
-                should be nested inside their parents.  i.e., if a study-segment with
+                study in a particular amendment. The tree will be rooted at one of the
+                contained elements. Any child elements that were added at the same time
+                should be nested inside their parents. i.e., if a study-segment with
                 two periods was added in a particular amendment, the add will look like this:
 
                 <![CDATA[
@@ -203,7 +206,7 @@
 
     <!-- Elements of global activities -->
 
-    <xsd:element name="sources" type="psc:Sources" />
+    <xsd:element name="sources" type="psc:Sources"/>
 
     <xsd:complexType name="Sources">
         <xsd:sequence>
@@ -226,7 +229,7 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
         <xsd:attribute name="description" type="xsd:string"/>
         <xsd:attribute name="type-id" type="xsd:integer" use="required"/>
-        <xsd:attribute name="code" type="xsd:string"  use="required"/>
+        <xsd:attribute name="code" type="xsd:string" use="required"/>
         <xsd:attribute name="source" type="xsd:string"/>
     </xsd:complexType>
 
@@ -377,10 +380,12 @@
 
     <xsd:complexType name="ScheduledActivity">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            <xsd:element name="current-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="previous-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="current-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="1"
+                         maxOccurs="1"/>
+            <xsd:element name="previous-scheduled-activity-state" type="psc:ScheduledActivityState" minOccurs="0"
+                         maxOccurs="unbounded"/>
         </xsd:choice>
-        <xsd:attribute name="id" type="xsd:string" />
+        <xsd:attribute name="id" type="xsd:string"/>
         <xsd:attribute name="ideal-date" type="xsd:date" use="required"/>
         <xsd:attribute name="notes" type="xsd:string"/>
         <xsd:attribute name="details" type="xsd:string"/>

@@ -76,6 +76,8 @@ public enum XsdAttribute {
     PLAN_TREE_NODE_NAME("name"),
     STUDY_ASSIGNED_IDENTIFIER("assigned-identifier"),
     LAST_MODIFIED_DATE("last-modified-date"),
+    RELEASED_DATE("released-date"),
+    UPDATED_DATE("updated-date"),
 
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DATE("start-date"),
     NEXT_STUDY_SEGMENT_SCHEDULE_START_DAY("start-day"),
@@ -83,6 +85,9 @@ public enum XsdAttribute {
     NEXT_STUDY_SEGMENT_SCHEDULE_MODE("mode");
 
     private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
+
     private String attributeName;
 
     private XsdAttribute(String attrname) {
@@ -99,17 +104,42 @@ public enum XsdAttribute {
 
     public Date fromDate(Element elt) {
         String dateString = from(elt);
-        if (dateString == null) { return null; }
+        if (dateString == null) {
+            return null;
+        }
 
         try {
             return formatter.parse(dateString);
-        } catch(ParseException pe) {
+        } catch (ParseException pe) {
+            throw new StudyCalendarValidationException("Problem parsing date %s", pe, dateString);
+        }
+    }
+
+    /**
+     * Parse element in to date time format as in ISO8601-style
+     *
+     * @param elt
+     * @return
+     */
+    public Date fromDateTime(Element elt) {
+        String dateString = from(elt);
+        if (dateString == null) {
+            return null;
+        }
+
+        try {
+            return dateTimeFormat.parse(dateString);
+        } catch (ParseException pe) {
             throw new StudyCalendarValidationException("Problem parsing date %s", pe, dateString);
         }
     }
 
     public void addTo(Element elt, Object value) {
         elt.addAttribute(xmlName(), value == null ? null : value.toString());
+    }
+
+    public void addToDateTime(Element elt, Date value) {
+        elt.addAttribute(xmlName(), value == null ? null : dateTimeFormat.format(value));
     }
 
     public void addTo(Element elt, Date value) {

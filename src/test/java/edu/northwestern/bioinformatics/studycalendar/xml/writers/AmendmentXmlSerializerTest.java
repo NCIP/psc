@@ -11,14 +11,17 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarXmlTes
 import edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer;
 import static edu.northwestern.bioinformatics.studycalendar.xml.AbstractStudyCalendarXmlSerializer.*;
 import static edu.nwu.bioinformatics.commons.DateUtils.createDate;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import static org.easymock.EasyMock.expect;
 
 import static java.text.MessageFormat.format;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 
 public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private AmendmentDao amendmentDao;
@@ -32,6 +35,8 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
     private PlannedCalendarDelta delta;
     private DeltaXmlSerializerFactory deltaSerializerFactory;
     private Study study;
+    private SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.S'Z'");
+
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -48,11 +53,13 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         delta = setGridId("grid1", new PlannedCalendarDelta());
         delta.setNode(setGridId("grid2", new PlannedCalendar()));
 
-        amendment1 =  new Amendment();
+        amendment1 = new Amendment();
         amendment1.setMandatory(true);
         amendment1.setName("Amendment 1");
         amendment1.setPreviousAmendment(amendment0);
         amendment1.setDate(createDate(2008, Calendar.JANUARY, 2));
+        amendment1.setReleasedDate(createDate(2008, Calendar.JANUARY, 3));
+        amendment1.setUpdatedDate(createDate(2008, Calendar.JANUARY, 4));
         amendment1.addDelta(delta);
 
         QName qDelta = DocumentHelper.createQName("planned-calendar-delta", AbstractStudyCalendarXmlSerializer.DEFAULT_NAMESPACE);
@@ -86,9 +93,12 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         Element actual = serializer.createElement(amendment1);
         verifyMocks();
 
-        assertEquals("Wrong attribute size", 4, actual.attributeCount());
+        assertEquals("Wrong attribute size", 6, actual.attributeCount());
         assertEquals("Wrong name", "Amendment 1", actual.attributeValue("name"));
         assertEquals("Wrong date", "2008-01-02", actual.attributeValue("date"));
+        assertEquals("Wrong released date", dateTimeFormat.format(amendment1.getReleasedDate()), actual.attributeValue("released-date"));
+        assertEquals("Wrong updated date", dateTimeFormat.format(amendment1.getUpdatedDate()), actual.attributeValue("updated-date"));
+
         assertEquals("Wrong mandatory value", "true", actual.attributeValue("mandatory"));
         assertEquals("Wrong previous amdendment id", "2008-01-01~Amendment 0", actual.attributeValue("previous-amendment-key"));
         assertEquals("Should be more than one element", 1, actual.elements("planned-calendar-delta").size());
@@ -99,7 +109,7 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expect(element.attributeValue("date")).andReturn("2007-01-02");
         expect(amendmentDao.getByNaturalKey("2007-01-02~Amendment 1", study)).andReturn(amendment1);
         replayMocks();
-        
+
         Amendment actual = serializer.readElement(element);
         verifyMocks();
 
@@ -132,6 +142,9 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         expected.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         expected.append(format("<amendment name=\"{0}\" date=\"2008-01-02\"", amendment1.getName()));
         expected.append(format("           mandatory=\"true\" previous-amendment-key=\"{0}\"", amendment1.getPreviousAmendment().getNaturalKey()));
+        expected.append(format("            released-date=\"{0}\"", dateTimeFormat.format(amendment1.getReleasedDate())));
+        expected.append(format("            updated-date=\"{0}\"", dateTimeFormat.format(amendment1.getUpdatedDate())));
+
         expected.append(format("       {0}=\"{1}\"", SCHEMA_NAMESPACE_ATTRIBUTE, PSC_NS));
         expected.append(format("       {0}:{1}=\"{2} {3}\"", SCHEMA_NAMESPACE_ATTRIBUTE, SCHEMA_LOCATION_ATTRIBUTE, PSC_NS, AbstractStudyCalendarXmlSerializer.SCHEMA_LOCATION));
         expected.append(format("       {0}:{1}=\"{2}\">", SCHEMA_NAMESPACE_ATTRIBUTE, XML_SCHEMA_ATTRIBUTE, XSI_NS));
@@ -146,5 +159,20 @@ public class AmendmentXmlSerializerTest extends StudyCalendarXmlTestCase {
         verifyMocks();
 
         assertXMLEqual(expected.toString(), actual);
+    }
+
+    public void testReadLastModifiedDate() throws Exception {
+
+
+        expect(deltaSerializerFactory.createXmlSerializer(delta)).andReturn(deltaSerializer);
+        expect(deltaSerializer.createElement(delta)).andReturn(eDelta);
+        replayMocks();
+
+        String actual = serializer.createDocumentString(amendment1);
+        verifyMocks();
+
+        Date lastModifiedDate = serializer.readLastModifiedDate(IOUtils.toInputStream(actual));
+
+        assertEquals(amendment1.getUpdatedDate(), lastModifiedDate);
     }
 }

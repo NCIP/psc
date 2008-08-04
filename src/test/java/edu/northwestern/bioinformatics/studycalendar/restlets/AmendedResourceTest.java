@@ -147,6 +147,7 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         expectFoundStudy();
         expectFoundAmendment();
         expectAmendmentXmlSerializer();
+        expectAmendmentXmlSerializer();
         doGet();
 
         String exectedEntityBody = amendmentXmlSerializer.createDocumentString(amendment);
@@ -154,12 +155,16 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
 
         assertResponseStatus(Status.SUCCESS_OK);
+        assertNotNull("modification date can not be null",response.getEntity().getModificationDate());
+      
     }
 
     public void testGetForDevelopmentAmendment() throws Exception {
         expectFoundStudy();
         expect(amendmentDao.getByNaturalKey(AMENDMENT_KEY, study)).andReturn(developmentAmendment);
         expectAmendmentXmlSerializer();
+        expectAmendmentXmlSerializer();
+
         doGet();
         String exectedEntityBody = amendmentXmlSerializer.createDocumentString(developmentAmendment);
         String actualEntityBody = response.getEntity().getText();
@@ -169,12 +174,15 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
 
         assertResponseStatus(Status.SUCCESS_OK);
+        assertNotNull(response.getEntity().getModificationDate());
+
     }
 
     public void testGetWithCurrentAmendmentIdentifier() throws Exception {
         request.getAttributes().put(UriTemplateParameters.AMENDMENT_IDENTIFIER.attributeName(), CURRENT_AMENDMENT_KEY);
 
         expectFoundStudy();
+        expectAmendmentXmlSerializer();
         expectAmendmentXmlSerializer();
 
         doGet();
@@ -185,6 +193,8 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
 
         assertResponseStatus(Status.SUCCESS_OK);
+        assertNotNull(response.getEntity().getModificationDate());
+
     }
 
     public void testGetWithNoStudyIdentifier() {
@@ -193,6 +203,8 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
 
         doGet();
         assertEquals("Result should be 404", Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+        assertNull(response.getEntity());
+
     }
 
     public void testGetWithNoAssignmentIdentifier() {

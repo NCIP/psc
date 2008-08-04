@@ -6,7 +6,6 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Study;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Amendment;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
-import edu.northwestern.bioinformatics.studycalendar.xml.StudyCalendarXmlSerializer;
 import edu.northwestern.bioinformatics.studycalendar.xml.writers.AmendmentXmlSerializer;
 import org.restlet.Context;
 import org.restlet.data.Method;
@@ -15,10 +14,14 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Required;
+
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author Saurabh Agrawal
@@ -36,6 +39,24 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
         setAllAuthorizedFor(Method.GET);
+    }
+
+    @Override
+    public Representation represent(Variant variant) throws ResourceException {
+
+        Representation representation = super.represent(variant);
+
+        AmendmentXmlSerializer studyXmlSerializer = getXmlSerializer();
+        try {
+            Date modifiedDate = studyXmlSerializer.readLastModifiedDate(representation.getStream());
+            representation.setModificationDate(modifiedDate);
+        } catch (IOException e) {
+            log.warn("Study  does not have any modification date. Representation : " + representation);
+
+        }
+
+
+        return representation;
     }
 
     @Override
@@ -147,7 +168,7 @@ public class AmendedResource extends AbstractRemovableStorableDomainObjectResour
     }
 
     @Override
-    public StudyCalendarXmlSerializer<Amendment> getXmlSerializer() {
+    public AmendmentXmlSerializer getXmlSerializer() {
         if (getRequestedObject().equals(study.getAmendment())) {
             return getAmendmentSerializer(study);
         } else {
