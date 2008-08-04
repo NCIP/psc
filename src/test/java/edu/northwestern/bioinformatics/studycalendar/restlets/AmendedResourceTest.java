@@ -63,10 +63,12 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         amendment = new Amendment();
         amendment.setName("Amendment B");
         amendment.setDate(createDate(2007, Calendar.OCTOBER, 19));
+        amendment.setUpdatedDate(createDate(2007, Calendar.OCTOBER, 19));
 
         developmentAmendment = new Amendment();
         developmentAmendment.setName("Amendment C");
         developmentAmendment.setDate(createDate(2007, Calendar.OCTOBER, 18));
+        developmentAmendment.setUpdatedDate(createDate(2007, Calendar.OCTOBER, 18));
 
         study = createNamedInstance(SOURCE_NAME, Study.class);
         study.setPlannedCalendar(calendar);
@@ -155,8 +157,8 @@ public class AmendedResourceTest extends AuthorizedResourceTestCase<AmendedResou
         assertEquals("Wrong text", exectedEntityBody, actualEntityBody);
 
         assertResponseStatus(Status.SUCCESS_OK);
-        assertNotNull("modification date can not be null",response.getEntity().getModificationDate());
-      
+        assertNotNull("modification date can not be null", response.getEntity().getModificationDate());
+
     }
 
     public void testGetForDevelopmentAmendment() throws Exception {
