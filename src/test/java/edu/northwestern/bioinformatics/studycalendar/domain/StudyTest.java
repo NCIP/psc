@@ -5,8 +5,8 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
 import edu.nwu.bioinformatics.commons.DateUtils;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * @author Rhett Sutphin
@@ -174,6 +174,40 @@ public class StudyTest extends StudyCalendarTestCase {
 
 
         assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 24), study.getLastModifiedDate());
+
+
+    }
+
+    public void testLastModifiedDateWhenStudyIsAmended() throws Exception {
+        assertNull(study.getAmendment());
+        Amendment a = new Amendment();
+        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+
+        study.pushAmendment(a);
+        assertSame(a, study.getAmendment());
+        Amendment b = new Amendment();
+        b.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 21));
+        b.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 23));
+
+        study.setDevelopmentAmendment(b);
+
+
+        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 23), study.getLastModifiedDate());
+
+
+    }
+
+    public void testLastModifiedDateForNewlyCreatedStudy() throws Exception {
+        assertNull(study.getAmendment());
+        Amendment a = new Amendment();
+        a.setReleasedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 19));
+        a.setUpdatedDate(DateUtils.createDate(2007, Calendar.OCTOBER, 18));
+
+        study.setDevelopmentAmendment(a);
+        assertSame(a, study.getDevelopmentAmendment());
+
+        assertEquals(DateUtils.createDate(2007, Calendar.OCTOBER, 19), study.getLastModifiedDate());
 
 
     }

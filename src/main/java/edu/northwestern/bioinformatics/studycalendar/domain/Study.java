@@ -275,15 +275,31 @@ public class Study extends AbstractMutableDomainObject implements Named, Transie
 
     @Transient
     public Date getLastModifiedDate() {
-        Date lastModifiedDate;
-        if (isReleased()) {
-            lastModifiedDate = getAmendment().getLastModifiedDate();
+        Date lastModifiedDate = null;
+        List<Amendment> amendmentList = new ArrayList<Amendment>();
 
-        } else {
-            lastModifiedDate = getDevelopmentAmendment().getLastModifiedDate();
+        if (isReleased()) {
+            amendmentList.add(getAmendment());
+        }
+        if (isInDevelopment()) {
+
+            amendmentList.add(getDevelopmentAmendment());
+        }
+
+        for (Amendment amendment : amendmentList) {
+
+            if (lastModifiedDate == null) {
+                lastModifiedDate = amendment.getLastModifiedDate();
+            } else
+            if (amendment.getLastModifiedDate() != null && amendment.getLastModifiedDate().compareTo(lastModifiedDate) > 0) {
+                lastModifiedDate = amendment.getLastModifiedDate();
+
+            }
         }
 
 
         return lastModifiedDate;
     }
+
+
 }
