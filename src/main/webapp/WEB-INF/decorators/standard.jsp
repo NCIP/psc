@@ -20,6 +20,7 @@
     <laf:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
+    <laf:javascriptLink name="ccts-hotlinks"/>
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
