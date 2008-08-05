@@ -8,7 +8,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>caBIG Study Calendar Module - Initial setup - <decorator:title/></title>
+    <title>PSC - Initial setup - <decorator:title/></title>
     <laf:stylesheetLink name="debug"/>
     <laf:stylesheetLink name="common"/>
     <laf:stylesheetLink name="calendar-blue"/>

@@ -3,7 +3,7 @@
 
 <html>
 <head>
-    <!--<title>Account login</title>-->
+    <title>Account login</title>
     <style type="text/css">
         div#body {
             width: 24em;

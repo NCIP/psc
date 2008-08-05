@@ -3,10 +3,9 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@taglib prefix="commons" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions" %>
-<c:set var="title">Change populations for ${subject.fullName} on ${study.assignedIdentifier}</c:set>
 <html>
 <head>
-    <title>${title}</title>
+    <title>Change populations</title>
     <style type="text/css">
         #population-checkboxes li {
             list-style-type: none
@@ -14,6 +13,7 @@
     </style>
 </head>
 <body>
+<c:set var="title">Change populations for ${subject.fullName} on ${study.assignedIdentifier}</c:set>
 <laf:box title="${title}">
     <laf:division>
         <p>

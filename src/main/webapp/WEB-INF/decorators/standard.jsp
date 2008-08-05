@@ -8,7 +8,8 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
   <head>
-    <title>caBIG Study Calendar Module - <decorator:title/></title>
+    <c:set var="specificTitle"><decorator:title/></c:set>
+    <title><tags:pageTitle pageSpecificTitle="${specificTitle}"/></title>
     <laf:stylesheetLink name="debug"/>
     <laf:stylesheetLink name="common"/>
     <laf:stylesheetLink name="fields"/>
@@ -20,6 +21,7 @@
     <laf:javascriptLink name="prototype"/>
     <laf:javascriptLink name="common"/>
     <laf:javascriptLink name="calendar"/>
+    <laf:javascriptLink name="ccts-hotlinks"/>
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
@@ -45,7 +47,6 @@
     </div>
 </laf:footer>
 
-<tags:ssoForm/>
 <tags:errorConsole/>
 <c:if test="${configuration.map.showDebugInformation}">
     <laf:debugInfo/>

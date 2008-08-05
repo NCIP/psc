@@ -7,7 +7,7 @@
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
 
-    <!--<title>Schedule Reconsent</title>-->
+    <title>Schedule Reconsent</title>
     <style type="text/css">
         div.label {
             width: 25%;

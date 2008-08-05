@@ -2,10 +2,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<c:set var="title">Approve amendments for ${study.assignedIdentifier}</c:set>
 <html>
 <head>
-    <title>${title}</title>
+    <title>Approve amendments</title>
     <style type="text/css">
         #approvals .approval {
             text-align: right;
@@ -75,6 +74,7 @@
     </script>
 </head>
 <body>
+<c:set var="title">Approve amendments for ${study.assignedIdentifier}</c:set>
 <laf:box title="${title}">
     <laf:division>
         <p>

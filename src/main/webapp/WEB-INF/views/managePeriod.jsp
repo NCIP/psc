@@ -8,7 +8,7 @@
 <%@taglib prefix="templ" tagdir="/WEB-INF/tags/template" %>
 <html>
 <head>
-<title>Set up ${period.displayName} of ${studySegment.qualifiedName} in ${study.name}</title>
+<title>Set up ${period.displayName} of ${studySegment.qualifiedName}</title>
 <tags:includeScriptaculous/>
 <tags:stylesheetLink name="main"/>
 <script type="text/javascript">

@@ -10,7 +10,7 @@
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <html>
     <head>
-        <title>Template for ${study.assignedIdentifier}</title>
+        <title>Template</title>
         <tags:stylesheetLink name="main"/>
         <tags:includeScriptaculous/>
         <tags:javascriptLink name="main"/>
