@@ -419,14 +419,13 @@
                 View this subject's
             </c:if>
             <c:if test="${ctmsAvail}">
-                <a href="<tags:urlFromTemplate property="patientPageUrl" />" class="control">${configuration.map.ctmsName} record</a>
+                <tags:externalLink appShortName="ctms" urlTemplateProperty="patientPageUrl" cssClass="control">${configuration.map.ctmsName} record</tags:externalLink>
             </c:if>
-            
             <c:if test="${caaersAvail}">
-                <a href="<tags:urlFromTemplate property="caAERSBaseUrl" />" class="control">adverse events</a>
+                <tags:externalLink appShortName="caaers" urlTemplateProperty="caAERSBaseUrl" cssClass="control">adverse events</tags:externalLink>
             </c:if>
             <c:if test="${labViewerAvail}">
-                <a href="<tags:urlFromTemplate property="labViewerBaseUrl" />" class="control">lab results</a>
+                <tags:externalLink appShortName="labviewer" urlTemplateProperty="labViewerUrl" cssClass="control">lab results</tags:externalLink>
             </c:if>
 
             <c:forEach items="${assignment.currentAeNotifications}" var="aeNote">

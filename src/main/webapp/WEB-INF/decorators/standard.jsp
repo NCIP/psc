@@ -45,7 +45,6 @@
     </div>
 </laf:footer>
 
-<tags:ssoForm/>
 <tags:errorConsole/>
 <c:if test="${configuration.map.showDebugInformation}">
     <laf:debugInfo/>

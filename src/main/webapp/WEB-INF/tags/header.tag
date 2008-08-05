@@ -12,7 +12,8 @@
             <c:set var="ctmsName" value="${configuration.map.ctmsName}"/>
             <c:set var="ctmsUrl" value="${configuration.map.ctmsUrl}"/>
             <c:if test="${not empty ctmsUrl}">
-                return to <a href="<c:url value="${ctmsUrl}"/>">${ctmsName}</a> |
+                return to <tags:externalLink url="${ctmsUrl}" appShortName="ctms">${ctmsName}</tags:externalLink> |
+                <%--return to <a href="<c:url value="${ctmsUrl}"/>">${ctmsName}</a> |--%>
             </c:if>
         </c:if>
     </jsp:attribute>

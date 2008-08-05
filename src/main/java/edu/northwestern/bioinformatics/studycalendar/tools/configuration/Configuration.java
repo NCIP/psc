@@ -37,18 +37,21 @@ public class Configuration extends DatabaseBackedConfiguration {
     public static final ConfigurationProperty<Template>
             LABVIEWER_BASE_URL = PROPERTIES.add(new TemplateConfigurationProperty("labViewerBaseUrl"));
 
-
     public static final ConfigurationProperty<Template>
             PATIENT_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("patientPageUrl"));
     public static final ConfigurationProperty<String>
             CTMS_NAME = PROPERTIES.add(new ConfigurationProperty.Text("ctmsName"));
     public static final ConfigurationProperty<String>
             BASE_CTMS_URL = PROPERTIES.add(new ConfigurationProperty.Text("ctmsUrl"));
-
-
     public static final ConfigurationProperty<Template>
             STUDY_PAGE_URL = PROPERTIES.add(new TemplateConfigurationProperty("studyPageUrl"));
 
+    // use target?
+    public static final ConfigurationProperty<Boolean>
+        APP_LINKS_IN_ANOTHER_WINDOW = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInAnotherWindow"));
+    // use target=_blank vs. target=appname
+    public static final ConfigurationProperty<Boolean>
+        APP_LINKS_IN_NEW_WINDOWS = PROPERTIES.add(new ConfigurationProperty.Bool("applicationLinksInNewWindows"));
 
     public static final ConfigurationProperty<Boolean>
             ENABLE_ASSIGNING_SUBJECT = PROPERTIES.add(new ConfigurationProperty.Bool("enableAssigningSubject"));
