@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <%--<title>${action} Subject</title>--%>
+    <title>${action} Subject</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         div.label {

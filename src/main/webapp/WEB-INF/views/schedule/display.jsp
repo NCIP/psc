@@ -7,7 +7,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <title>Subject Schedule for ${subject.fullName} on ${plannedCalendar.name}</title>
+    <title>Subject Schedule</title>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>

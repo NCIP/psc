@@ -2,7 +2,7 @@
 <%@taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <html>
 <head>
-    <title>View amendments for ${study.name}</title>
+    <title>View amendments</title>
     <tags:includeScriptaculous/>
     <script type="text/javascript">
         var INITIAL_AMENDMENT_ID = "amendment-${amendment.id}"

@@ -2,7 +2,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
-    <title>Existing Studies</title>
+    <title>Access denied</title>
 </head>
 <body>
 <h1>Access Denied for this user.</h1>

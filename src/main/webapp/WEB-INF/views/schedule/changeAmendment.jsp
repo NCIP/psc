@@ -5,7 +5,7 @@
 <c:set var="title">Change amendment for ${subject.fullName} on ${study.assignedIdentifier}</c:set>
 <html>
 <head>
-    <title>${title}</title>
+    <title>Change amendment</title>
     <style type="text/css">
         #approvals .approval {
             text-align: right;

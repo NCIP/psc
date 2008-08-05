@@ -5,7 +5,7 @@
 <html>
 
 <head>
-    <title>Add an amendment for ${study.assignedIdentifier}</title>
+    <title>Add an amendment</title>
     <tags:stylesheetLink name="main"/>
     <tags:javascriptLink name="main"/>
     <style type="text/css">

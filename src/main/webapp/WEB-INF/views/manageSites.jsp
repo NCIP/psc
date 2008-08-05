@@ -7,7 +7,7 @@
 
 <html>
 <head>
-    <!--<title>Manage sites</title>-->
+    <title>Manage sites</title>
     <tags:includeScriptaculous/>
     <style type="text/css">
         form {

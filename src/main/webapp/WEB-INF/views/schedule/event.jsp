@@ -6,7 +6,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <html>
 <head>
-    <%--<title>Edit event for ${subject.fullName}</title>--%>
+    <title>Edit activity</title>
     <style type="text/css">
         #states li.previous {
             display: none;
@@ -54,7 +54,7 @@
             margin-left: 12em;
         }
     </style>
-    < tags:javascriptLink name="scheduled-activity"/>
+    <tags:javascriptLink name="scheduled-activity"/>
     <script type="text/javascript">
         function registerStateHistoryControl() {
             Event.observe("show-history-control", "click", function(e) {
@@ -73,7 +73,6 @@
     </script>
 </head>
 <body>
-<%--<h1>Edit event for ${subject.fullName}</h1>--%>
 <laf:box title="Edit activity for ${subject.fullName}">
     <laf:division>
         <form:form>
