@@ -78,5 +78,6 @@
         <property name="mailMessageFactory" ref="mailMessageFactory"/>
         <property name="userService" ref="userService"/>
     </bean>
-
+    <bean id="activityService" autowire="byName"
+        class="edu.northwestern.bioinformatics.studycalendar.service.ActivityService"/>
 </beans>

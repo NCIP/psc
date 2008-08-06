@@ -55,6 +55,18 @@ public class ActivityDao extends StudyCalendarMutableDomainObjectDao<Activity> i
         return activities.get(0);
     }
 
+
+    /**
+    * Finds the activities by source id.
+    *
+    * @param  sourceId the source id for the activity we want to find
+    * @return      the activity found that corresponds to the source id parameters
+    */
+    public List<Activity> getBySourceId(Integer sourceId) {
+        List<Activity> activities = getHibernateTemplate().find("from Activity where source_id = ?", sourceId);
+        return activities;
+    }
+
     /**
     * Finds the activity doing a LIKE search with some search text for activity name or activity code.
     *
