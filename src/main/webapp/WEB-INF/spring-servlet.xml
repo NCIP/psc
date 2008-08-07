@@ -172,9 +172,9 @@
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.DeleteController">
     </bean>
 
-   <bean name="/activities/import" id="importActivitiesToSourceController" autowire="byName"
-           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ImportActivitiesToSourceController">
-    </bean>    
+   <!--<bean name="/activities/import" id="importActivitiesToSourceController" autowire="byName"-->
+           <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ImportActivitiesToSourceController">-->
+    <!--</bean>    -->
 
     <!--<bean name="/activity/reconcileActivity" id="reconcileActivitiesController" autowire="byName"-->
             <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileActivitiesController">-->
