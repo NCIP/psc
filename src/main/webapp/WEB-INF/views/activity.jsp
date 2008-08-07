@@ -112,6 +112,10 @@
             $(inputCode).type ='visible'
             $(labelCode).hide();
 
+            var inputDescription = 'InputDescription'+activityId
+            var labelDescription = 'Description'+activityId
+            $(inputDescription).type ='visible'
+            $(labelDescription).hide();
 
             var divType ='DivType'+activityId
             var labelType = 'Type'+activityId
@@ -134,13 +138,17 @@
             var divType ='DivType'+activityId
             var selectType = 'SourceTypes'+activityId
             var labelType = 'Type'+activityId
-            
+            var labelDescription = "Description"+activityId
+            var inputDescription = "InputDescription"+activityId
+            var sourceId = $('sources').options[$('sources').selectedIndex].value
 
             var data = ''
-            data = data+"activityId"+"="+activityId+"&";
-            data = data+"activityName"+"="+$(inputName).value+"&";
-            data = data+"activityCode"+"="+$(inputCode).value+"&";
-            data = data+"activityType"+"="+$(selectType).options[$(selectType).selectedIndex].value+"&";
+            data = data+"activityId="+activityId+"&";
+            data = data+"activityName="+$(inputName).value+"&";
+            data = data+"activityCode="+$(inputCode).value+"&";
+            data = data+"activityDescription="+$(inputDescription).value+"&";
+            data = data+"activityType="+$(selectType).options[$(selectType).selectedIndex].value+"&";
+            data = data+"sourceId"+"="+sourceId+"&";
             var href = '<c:url value="/pages/activities/saveActivity"/>'
             href= href+"?"+data
             var saveRequest = new Ajax.Request(href,
@@ -154,6 +162,10 @@
                     $(labelCode).innerHTML = $(inputCode).value
                     $(inputCode).type ='hidden'
                     $(labelCode).show()
+
+                    $(labelDescription).innerHTML = $(inputDescription).value
+                    $(inputDescription).type ='hidden'
+                    $(labelDescription).show()
 
                     $(labelType).innerHTML = $(selectType).options[$(selectType).selectedIndex].innerHTML
                     $(labelType).show();

@@ -53,11 +53,12 @@ public class ActivityController extends PscAbstractController {
                 model.put("activitiesPerSource", activities);
                 model.put("enableDeletes", enableDelete);
                 model.put("activityTypes", ActivityType.values());
+            }
+            if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
                 model.put("displayCreateNewActivity", Boolean.TRUE);
             } else {
                 model.put("displayCreateNewActivity", Boolean.FALSE);
             }
-
 
             return new ModelAndView("template/ajax/activityTableUpdate", model);
         } else {

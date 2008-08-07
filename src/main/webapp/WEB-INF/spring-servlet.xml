@@ -165,7 +165,7 @@
     </bean>
 
     <bean name="/activities/saveActivity" id="sourceControllerSave" autowire="byName"
-            class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
+            class="edu.northwestern.bioinformatics.studycalendar.web.activity.EditActivityController">
     </bean>
 
     <bean name="/activities/deleteActivity" id="sourceControllerDelete" autowire="byName"
