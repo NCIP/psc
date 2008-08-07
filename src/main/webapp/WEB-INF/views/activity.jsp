@@ -10,7 +10,7 @@
 <%@taglib prefix="commons1" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
 
 <html>
-<title>Calendars</title>
+<title>Activities</title>
 <head>
     <tags:includeScriptaculous/>
     <tags:stylesheetLink name="main"/>
@@ -78,7 +78,7 @@
         function executeAddSource(input) {
             var data = ''
             data = data+"source"+"="+$('addSource').value+"&";
-            var href = '<c:url value="/pages/activity/addSource"/>'
+            var href = '<c:url value="/pages/activities/addSource"/>'
             console.log("=== data " + data)
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
@@ -92,7 +92,7 @@
             var input = $('sources').options[$('sources').selectedIndex].value
             var data = ''
             data = data+"sourceId"+"="+input+"&";
-            var href = '<c:url value="/pages/activity/getActivityBySource"/>'
+            var href = '<c:url value="/pages/activities/getActivityBySource"/>'
             href= href+"?"+data
             var lastRequest = new Ajax.Request(href,
             {
@@ -141,7 +141,7 @@
             data = data+"activityName"+"="+$(inputName).value+"&";
             data = data+"activityCode"+"="+$(inputCode).value+"&";
             data = data+"activityType"+"="+$(selectType).options[$(selectType).selectedIndex].value+"&";
-            var href = '<c:url value="/pages/activity/saveActivity"/>'
+            var href = '<c:url value="/pages/activities/saveActivity"/>'
             href= href+"?"+data
             var saveRequest = new Ajax.Request(href,
             {
@@ -198,7 +198,7 @@
             var activityDescription = $('addActivityDescription').value
             var activitySource= $('sources').options[$('sources').selectedIndex].value
 
-            var href = '<c:url value="/pages/activity/addNewActivity"/>'
+            var href = '<c:url value="/pages/activities/addNewActivity"/>'
 
             var data="";
             data= data+"activityName="+activityName+"&"
@@ -220,7 +220,7 @@
             var inputCode = 'InputCode'+activityId
             var selectType = 'SourceTypes'+activityId
 
-            var href = '<c:url value="/pages/activity/deleteActivity"/>'
+            var href = '<c:url value="/pages/activities/deleteActivity"/>'
             var data = "";
 
             data = data+"activityId"+"="+activityId+"&";
@@ -234,6 +234,21 @@
             return true;
         }
 
+        function importActivities() {
+            var activitySource= $('sources').options[$('sources').selectedIndex].value
+            var href = '<c:url value="/pages/activities/import"/>'
+            var data = "";
+
+            data = data+"sourceId"+"="+activitySource+"&";
+            console.log("===== data " + data)
+            href= href+"?"+data
+//            var deleteRequest = new Ajax.Request(href,
+//            {
+//                method: 'post'
+//            });
+            return href;
+
+        }
 
 
         Event.observe(window, "load", initMethods)
@@ -242,7 +257,7 @@
     </script>
 </head>
 <body>
-    <laf:box title="Activity Report">
+    <laf:box title="Activities">
         <laf:division>
         <%-- this is needed to be uncomment for reconcileActivity --%>
         <%--<c:url value="/pages/activity/reconcileActivity" var="formAction"/>--%>
@@ -260,7 +275,7 @@
                 <label id="add-new-source">Create new source:</label>
                 <input id="addSource" type="text" class="addSource" value=""/>
                 <input type="button" id="addSourceButton" name="addSourceButton" value="Add"/>
-                <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import
+                <a id="importActivitiesLink" href="#" onclick="importActivities()">Import
                     activities from xml</a>
 
                  

@@ -147,30 +147,34 @@
     <bean name="/cal/newStudy" id="newStudyController" autowire="byName"
           class="edu.northwestern.bioinformatics.studycalendar.web.template.NewStudyController"/>
 
-    <bean name="/activity" id="activityController" autowire="byName"
+    <bean name="/activities" id="activityController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
         <property name="crumb">
             <bean class="edu.northwestern.bioinformatics.studycalendar.utils.breadcrumbs.DefaultCrumb">
-                <property name="name"><value>Activity</value></property>
+                <property name="name"><value>Activities</value></property>
             </bean>
         </property>
     </bean>
 
-    <bean name="/activity/addSource" id="addSourceController" autowire="byName"
+    <bean name="/activities/addSource" id="addSourceController" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddSourceController">
     </bean>
 
-    <bean name="/activity/getActivityBySource" id="sourceControllerGetActivities" autowire="byName"
+    <bean name="/activities/getActivityBySource" id="sourceControllerGetActivities" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
     </bean>
 
-    <bean name="/activity/saveActivity" id="sourceControllerSave" autowire="byName"
+    <bean name="/activities/saveActivity" id="sourceControllerSave" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.ActivityController">
     </bean>
 
-    <bean name="/activity/deleteActivity" id="sourceControllerDelete" autowire="byName"
+    <bean name="/activities/deleteActivity" id="sourceControllerDelete" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.DeleteController">
     </bean>
+
+   <bean name="/activities/import" id="importActivitiesToSourceController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.activity.ImportActivitiesToSourceController">
+    </bean>    
 
     <!--<bean name="/activity/reconcileActivity" id="reconcileActivitiesController" autowire="byName"-->
             <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileActivitiesController">-->
@@ -186,7 +190,7 @@
             <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileController">-->
     <!--</bean>-->
 
-    <bean name="/activity/addNewActivity" id="addNewActivityController" autowire="byName"
+    <bean name="/activities/addNewActivity" id="addNewActivityController" autowire="byName"
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.AddActivityController">
     </bean>
 
@@ -606,13 +610,13 @@
                 </bean>
 
                 <bean parent="sectionTemplate" >
-                    <property name="displayName"><value>Activity</value></property>
+                    <property name="displayName"><value>Activities</value></property>
                     <property name="mainController"><value>activityController</value></property>
-                    <property name="pathMapping"><value>/activity/**</value></property>
+                    <property name="pathMapping"><value>/activities/**</value></property>
                     <property name="tasks">
                         <list>
                             <bean class="gov.nih.nci.cabig.ctms.web.chrome.Task">
-                                <property name="displayName"><value>Actiity</value></property>
+                                <property name="displayName"><value>Activities</value></property>
                                 <property name="linkName"><value>activityController</value></property>
                                 <property name="urlResolver"><ref bean="urlResolver"/></property>
                             </bean>
