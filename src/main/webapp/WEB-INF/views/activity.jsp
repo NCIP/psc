@@ -5,6 +5,7 @@
 <%@ taglib prefix="laf" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/laf" %>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@taglib prefix="jsgen" uri="http://bioinformatics.northwestern.edu/taglibs/studycalendar/jsgenerator"%>
 
 
 <%@taglib prefix="commons1" uri="http://gforge.nci.nih.gov/projects/ctmscommons/taglibs/functions"%>
@@ -279,7 +280,12 @@
                 <select id="sources" name="sources" onchange="loadActivities()">
                     <option value="select">Select... </option>
                     <c:forEach items="${sources}" var="source">
-                        <option class="source" id="source" value="${source.id}">${source.name}</option>
+                        <c:if test="${sourceId == source.id}">
+                            <option class="source" selected="true" id="source" value="${source.id}">${source.name}</option>
+                        </c:if>
+                        <c:if test="${sourceId != source.id}">
+                            <option class="source" id="source" value="${source.id}">${source.name}</option>
+                        </c:if>
                     </c:forEach>
                     <option value="selectAll">All sources</option>
                 </select>
@@ -299,7 +305,10 @@
             </div>
             <div id="newActivity" style="margin-bottom:10px;"></div>
             <div id="myTable">
+                <tags:activitiesTable/>
+                <script><tags:addNewActivityRow/></script>
             </div>
+
 
         <%--</form:form>--%>
 

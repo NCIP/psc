@@ -32,39 +32,52 @@ public class ActivityController extends PscAbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Map<String, Object> model = new HashMap<String, Object>();
-
         if ("POST".equals(request.getMethod())) {
             String sourceId = ServletRequestUtils.getRequiredStringParameter(request, "sourceId");
             if (!sourceId.equals("select")) {
-                List<Activity> activities;
-                if (sourceId.equals("selectAll")) {
-                    activities = activityDao.getAll();
-                } else {
-                    activities = activityDao.getBySourceId(new Integer(sourceId));
-                }
-                Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
-                for (Activity a : activities) {
-                    if (plannedActivityDao.getPlannedActivitiesForAcivity(a.getId()).size()>0) {
-                        enableDelete.put(a.getId(), false);
-                    } else {
-                        enableDelete.put(a.getId(), true);
-                    }
-                }
-                model.put("activitiesPerSource", activities);
-                model.put("enableDeletes", enableDelete);
-                model.put("activityTypes", ActivityType.values());
+                model = processRequest(model, sourceId);
             }
-            if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
-                model.put("displayCreateNewActivity", Boolean.TRUE);
-            } else {
-                model.put("displayCreateNewActivity", Boolean.FALSE);
-            }
-
             return new ModelAndView("template/ajax/activityTableUpdate", model);
         } else {
-            model.put("sources", sourceDao.getAll());
+            if (request.getParameterMap().isEmpty()) {
+                model.put("sources", sourceDao.getAll());
+            } else {
+                String sourceId = ServletRequestUtils.getRequiredStringParameter(request, "sourceId");
+                model = processRequest(model, sourceId);
+                model.put("sourceId", new Integer(sourceId));
+                model.put("sources", sourceDao.getAll());
+            }
+
             return new ModelAndView("activity", model);
         }
+    }
+
+    private Map<String, Object> processRequest( Map<String, Object> model, String sourceId) throws Exception{
+        List<Activity> activities;
+
+        if (sourceId.equals("selectAll")) {
+            activities = activityDao.getAll();
+        } else {
+            activities = activityDao.getBySourceId(new Integer(sourceId));
+        }
+        Map<Integer, Boolean> enableDelete = new HashMap<Integer, Boolean>();
+        for (Activity a : activities) {
+            if (plannedActivityDao.getPlannedActivitiesForAcivity(a.getId()).size()>0) {
+                enableDelete.put(a.getId(), false);
+            } else {
+                enableDelete.put(a.getId(), true);
+            }
+        }
+        model.put("activitiesPerSource", activities);
+        model.put("enableDeletes", enableDelete);
+        model.put("activityTypes", ActivityType.values());
+         if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
+            model.put("displayCreateNewActivity", Boolean.TRUE);
+        } else {
+            model.put("displayCreateNewActivity", Boolean.FALSE);
+        }
+
+        return model;
     }
 
 
