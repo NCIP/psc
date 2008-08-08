@@ -6,7 +6,7 @@
 
 <c:choose>
     <c:when test="${not empty error}">
-        <jsgen:replaceHtml targetElement="errors"><h3>${error}</h3></jsgen:replaceHtml>
+        <jsgen:replaceHtml targetElement="errors"><h4>${error}</h4></jsgen:replaceHtml>
     </c:when>
     <c:otherwise>
         <jsgen:replaceHtml targetElement="errors"></jsgen:replaceHtml>
@@ -107,7 +107,10 @@
         </tr>
 
     </jsgen:insertHtml>
+</c:if>
 
+<c:if test="${! displayCreateNewActivity}">
+    <jsgen:replaceHtml targetElement="errors"><h4>Please select one of the sources to be able to create a new activity</h4></jsgen:replaceHtml>
 </c:if>
 
 
