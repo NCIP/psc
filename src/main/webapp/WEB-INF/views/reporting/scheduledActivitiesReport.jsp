@@ -7,6 +7,7 @@
 <%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <html>
+<title>Report</title>
 <head>
     <tags:stylesheetLink name="report"/>
     <%--<tags:stylesheetLink name="report" dynamic="true"/>--%>
