@@ -13,8 +13,8 @@
     </decorator>
 
     <excludes>
-        <pattern>/*/image/*</pattern>
-        <pattern>/*/js/*</pattern>
+        <pattern>/*/image/**/*</pattern>
+        <pattern>/js/**/*</pattern>
         <pattern>/**/fragment/*</pattern>
         <pattern>/api/*</pattern>
         <pattern>/css/*</pattern>

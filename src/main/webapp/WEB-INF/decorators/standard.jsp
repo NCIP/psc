@@ -25,6 +25,14 @@
     <tags:javascriptLink name="lightbox"/>
     <tags:javascriptLink name="error-console"/>
     <tags:javascriptLink name="common"/>
+    <c:choose>
+      <c:when test="${configuration.map.showDebugInformation}">
+        <tags:javascriptLink name="firebug/firebug"/>
+      </c:when>
+      <c:otherwise>
+        <tags:javascriptLink name="firebugx"/>
+      </c:otherwise>
+    </c:choose>
 
     <style type="text/css" xml:space="preserve">
         body { behavior: url('<c:url value="/css/csshover.htc"/>') }
