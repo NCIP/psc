@@ -63,7 +63,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-
     <filter>
         <filter-name>AuditInfoFilter</filter-name>
         <filter-class>edu.northwestern.bioinformatics.studycalendar.web.AuditInfoFilter</filter-class>
@@ -226,6 +225,20 @@
     <servlet-mapping>
         <servlet-name>ctms-assets</servlet-name>
         <url-pattern>/ctms-laf/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>sass</servlet-name>
+        <servlet-class>edu.northwestern.bioinformatics.johaml.servlet.SassServlet</servlet-class>
+        <init-param>
+            <param-name>TemplatePath</param-name>
+            <param-value>/</param-value> <!-- load from webapp public root -->
+        </init-param>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>sass</servlet-name>
+        <url-pattern>*.sass</url-pattern>
     </servlet-mapping>
 
     <welcome-file-list>

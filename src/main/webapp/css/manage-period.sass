@@ -1,0 +1,252 @@
+!activities_width = 10em
+!days_width = 40em
+!notes_width = 19em
+!border_color = #ccc
+!contrast_color = #444
+
+body
+  :font
+    :family sans-serif
+    :size 90%
+
+.section
+  :width= !activities_width + !days_width + !notes_width
+  :position relative
+  table
+    :table-layout fixed
+    :border-spacing 0px
+    :position absolute
+    :border = 0px solid !border_color
+    :padding 0
+#heading-section
+  :height 6em
+  :border-bottom = 1px solid !border_color
+#data-section
+  height: 18em
+  tr.unused
+    .notes-edit
+      :display none
+    .notes-content
+      :visibility hidden
+    :background-color= !border_color + 22
+    :color #666
+  tr.used
+    .unused-message
+      :display none
+  tr.new-row
+    :background-color #ffc
+  tr.hover
+    :background-color #cfc
+#footer-section
+  :height 4em
+  :overflow visible
+
+.column
+  :height 100%
+  :position absolute
+  :overflow hidden
+  :border= 0 solid !border_color
+  td, th
+    :height 2em
+    :border = 1px solid !border_color
+    :border-width 0px 1px 1px 0px
+    :padding 3px
+  tr.activity-type
+    td, th
+      :height 1em
+      :border-color= !contrast_color
+      .text
+        :font-size 0.7em
+.activities
+  :width = !activities_width
+  table
+    :width = !activities_width
+  td, th
+    :position relative
+    :text-align right
+    :overflow hidden
+    :white-space nowrap
+    :text-overflow ellipsis
+    :width 100%
+    :padding-left 1em
+  .row-number
+    :position absolute
+    :left 0px
+    :color= !border_color
+#activities-heading
+tr.activity-type
+  td, th
+    :background-color= !contrast_color
+    :color #ccc
+    :overflow hidden
+    :font-weight normal
+    :white-space nowrap
+    &.hover
+      :background-color= !contrast_color
+.days
+  :left = !activities_width
+  :width = !days_width
+  td
+    :white-space nowrap
+    :text-align center
+    :width 4em
+#days-heading
+  table
+    :bottom 0px
+  td
+    :border-bottom-width 0px
+  .cycle-number
+    :padding 2px
+  .odd
+    :background-color #666
+    :color #fff
+#days
+  :overflow auto
+  tr.activity td:hover
+    :background-color #393
+  td.marker
+    :font-size 1.2em
+.notes
+  :left = !activities_width + !days_width
+  :width = !notes_width
+#notes-heading
+#notes
+  :position relative
+  table
+    :width 100%
+  td
+    :border-width 0 0 1px 1px
+    :width auto
+a.notes-edit
+  float: right
+  background: #00c
+  color: white
+  padding: 2px
+  text-decoration: none
+  z-index: 20000
+  &:hover
+    :background= !border_color
+.notes-content
+  :margin-right 3em
+  :overflow hidden
+  :white-space nowrap
+  :text-overflow ellipsis
+#notes-preview
+  :background-color #fff
+  :border= 2px solid !border_color
+  :display block
+  :position absolute
+  :left 1em
+  :top 1em
+  :bottom 1em
+  :right 3em
+  :z-index 100
+  :font-size 1em
+  :overflow auto
+  h2
+    :background-color= !border_color
+    :color= !contrast_color
+    :margin 0
+    :padding 5px 2px
+    :font-size 1.2em
+  dl
+    :padding 0.5em 1em
+    :margin 0
+    :overflow auto
+    :display block
+  .none
+    :font-style italic
+  dt
+    :margin-bottom 0.2em
+    :border-bottom= 1px solid !border_color
+  dd
+    :margin-bottom 0.5em
+    :margin-left 0.5em
+#notes-heading ul
+  :position absolute
+  :bottom 0
+  :padding 0
+  :margin 0 0 0 2em
+  li
+    :list-style-type none
+    :float left
+    :border= 1px solid !border_color
+    :border-bottom-width 0
+    :margin 0 3px
+    &.selected
+      :background-color= !border_color
+      a
+        :color= !contrast_color
+    a
+      :text-decoration none
+      :display block
+      :padding 2px
+      :color #000
+      &:hover
+        :background-color= !contrast_color
+        :color #fff
+#source-section
+  :height 6em
+  :width = !activities_width + !days_width
+  :position relative
+#populations
+  :position absolute
+  :left 0
+  :padding 0
+  :margin-left= !activities_width
+  :height 5.5em
+  :width= !days_width - 5em
+  :overflow auto
+  table
+    :table-layout fixed
+    :border-width 0
+    :border-spacing 1em 0
+    :border-collapse collapse
+    :height 4em
+    :position static
+  td
+    :width 4em
+    :height 4em
+.population
+  :width 4em
+  :height 4em
+  :border= 1px solid !contrast_color
+  h2
+    :font
+      :size 75%
+      :weight normal
+    :background= !contrast_color
+    :color #fff
+    :margin 0
+    :padding 0
+    :white-space nowrap
+    :overflow hidden
+  .marker
+    :font-size 1.5em
+    :padding 0.5em 0
+#remove-target
+  :position absolute
+  :right 0
+  :border-color #900
+  h2
+    :background-color #900
+  .marker
+    :color #900
+.marker
+  :cursor pointer
+  :text-align center
+.marker.moving
+  :cursor move
+  :width 3em
+  :background-color #bbb
+  :padding 0.3em
+.heading .trailer, .trailer td
+  :border-color #fff
+
+#message
+  :padding 0.5em
+  &.error
+    :color #900
+  &.info
+    :color #000
+
