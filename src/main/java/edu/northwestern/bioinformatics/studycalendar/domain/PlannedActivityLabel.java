@@ -15,15 +15,11 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
     }
 )
 public class PlannedActivityLabel extends AbstractMutableDomainObject {
-
     private PlannedActivity plannedActivity;
     private Integer repetitionNumber;
     private Label label;
 
-
     ////// BEAN PROPERTIES
-
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "planned_activity_id")
