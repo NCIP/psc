@@ -3,12 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
 import edu.northwestern.bioinformatics.studycalendar.StudyCalendarValidationException;
-import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPlannedActivityCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class MovePlannedActivityCommand extends EditPeriodEventsCommand {
+public class MovePlannedActivityCommand extends EditPlannedActivityCommand {
     private PlannedActivity movedPlannedActivity = null;
 
     private Integer moveFrom;

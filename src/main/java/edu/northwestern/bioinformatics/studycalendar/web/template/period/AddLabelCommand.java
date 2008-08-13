@@ -3,7 +3,7 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
-import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPlannedActivityCommand;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public class AddLabelCommand extends EditPeriodEventsCommand {
+public class AddLabelCommand extends EditPlannedActivityCommand {
 
     Label label;
 

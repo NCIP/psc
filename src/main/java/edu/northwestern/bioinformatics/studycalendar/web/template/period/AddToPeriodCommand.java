@@ -3,13 +3,13 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Population;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
-import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPlannedActivityCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 
 
-public class AddToPeriodCommand extends EditPeriodEventsCommand {
+public class AddToPeriodCommand extends EditPlannedActivityCommand {
     private PlannedActivity addedActivity;
     private Population population;
 

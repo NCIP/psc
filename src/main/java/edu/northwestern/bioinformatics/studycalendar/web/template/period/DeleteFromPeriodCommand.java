@@ -2,12 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Remove;
-import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPlannedActivityCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeleteFromPeriodCommand extends EditPeriodEventsCommand {
+public class DeleteFromPeriodCommand extends EditPlannedActivityCommand {
     @Override
     protected void performEdit() {
         Integer id = getPlannedActivities().get(getColumnNumber());

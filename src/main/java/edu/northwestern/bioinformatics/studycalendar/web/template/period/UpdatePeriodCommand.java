@@ -2,12 +2,12 @@ package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.PropertyChange;
-import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPlannedActivityCommand;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class UpdatePeriodCommand extends EditPeriodEventsCommand {
+public class UpdatePeriodCommand extends EditPlannedActivityCommand {
     @Override
     protected void performEdit() {
         updateDetails();
