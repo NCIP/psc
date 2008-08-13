@@ -37,6 +37,7 @@ import java.util.Map;
 /**
  * @author Rhett Sutphin
  */
+@Deprecated // will be replaced with period.ManagePeriodActivities* when all behaviors are ported
 @AccessControl(roles = Role.STUDY_COORDINATOR)
 public class ManagePeriodEventsController extends PscAbstractCommandController<ManagePeriodEventsCommand> {
     private PeriodDao periodDao;

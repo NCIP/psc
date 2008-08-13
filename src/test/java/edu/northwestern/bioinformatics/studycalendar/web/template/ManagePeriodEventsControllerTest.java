@@ -31,6 +31,7 @@ import java.util.Map;
  * @author Rhett Sutphin
  * @author Jaron Sampson
  */
+@Deprecated // will be replaced with period.ManagePeriodActivities* when all behaviors are ported
 public class ManagePeriodEventsControllerTest extends ControllerTestCase {
     private ManagePeriodEventsController controller = new ManagePeriodEventsController();
     private PeriodDao periodDao;

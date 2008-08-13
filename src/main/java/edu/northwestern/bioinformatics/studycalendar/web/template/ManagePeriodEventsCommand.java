@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Rhett Sutphin
  */
+@Deprecated // will be replaced with period.ManagePeriodActivities* when all behaviors are ported
 public class ManagePeriodEventsCommand {
     protected final Logger log = LoggerFactory.getLogger(getClass());
 

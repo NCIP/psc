@@ -21,6 +21,7 @@ import java.util.List;
  * @author Rhett Sutphin
  * @author Jaron Sampson
  */
+@Deprecated // will be replaced with period.ManagePeriodActivities* when all behaviors are ported
 public class ManagePeriodEventsCommandTest extends StudyCalendarTestCase {
     private ManagePeriodEventsCommand command;
     private Period period;
