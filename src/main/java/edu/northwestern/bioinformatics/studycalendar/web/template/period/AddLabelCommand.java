@@ -1,8 +1,9 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivity;
 import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.domain.PlannedActivityLabel;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.EditPeriodEventsCommand;
 
 import java.util.Map;
 import java.util.HashMap;

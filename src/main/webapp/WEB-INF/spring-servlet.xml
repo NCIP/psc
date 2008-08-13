@@ -136,7 +136,7 @@
 
 
     <bean name="/cal/managePeriod/addLabelWithRepetitions" id="addLabelWithRepetitionsController" autowire="byName"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddLabelWithRepetitionsController"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.AddLabelWithRepetitionsController"/>
 
 
     <bean name="/cal/template/edit.js" id="editJsController"

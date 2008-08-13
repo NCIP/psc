@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.dao.DaoFinder;
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
@@ -11,6 +11,7 @@ import edu.northwestern.bioinformatics.studycalendar.domain.Label;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
 import edu.northwestern.bioinformatics.studycalendar.web.delta.RevisionChanges;
+import edu.northwestern.bioinformatics.studycalendar.web.template.EditCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

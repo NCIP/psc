@@ -21,14 +21,14 @@
 
 
     <bean id="addToPeriodCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddToPeriodCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.AddToPeriodCommand"/>
     <bean id="deleteFromPeriodCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.DeleteFromPeriodCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.DeleteFromPeriodCommand"/>
     <bean id="updatePeriodCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.UpdatePeriodCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.UpdatePeriodCommand"/>
     <bean id="addLabelCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.AddLabelCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.AddLabelCommand"/>
     <bean id="moveEventCommand" autowire="byName" scope="prototype"
-        class="edu.northwestern.bioinformatics.studycalendar.web.template.MovePlannedActivityCommand"/>
+        class="edu.northwestern.bioinformatics.studycalendar.web.template.period.MovePlannedActivityCommand"/>
 
 </beans>

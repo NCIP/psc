@@ -1,4 +1,4 @@
-package edu.northwestern.bioinformatics.studycalendar.web.template;
+package edu.northwestern.bioinformatics.studycalendar.web.template.period;
 
 import edu.northwestern.bioinformatics.studycalendar.domain.*;
 import edu.northwestern.bioinformatics.studycalendar.domain.delta.Add;
@@ -7,6 +7,8 @@ import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.crea
 import edu.northwestern.bioinformatics.studycalendar.dao.PlannedActivityDao;
 import edu.northwestern.bioinformatics.studycalendar.service.AmendmentService;
 import edu.northwestern.bioinformatics.studycalendar.service.StudyService;
+import edu.northwestern.bioinformatics.studycalendar.web.template.period.DeleteFromPeriodCommand;
+import edu.northwestern.bioinformatics.studycalendar.web.template.EditCommandTestCase;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.same;
 import org.easymock.IArgumentMatcher;
