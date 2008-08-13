@@ -3,10 +3,12 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.apache.commons.collections.comparators.NullComparator;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import java.util.Comparator;
 
 /**
  * @author Rhett Sutphin
@@ -17,10 +19,14 @@ import javax.persistence.Transient;
         @Parameter(name="sequence", value="seq_populations_id")
     }
 )
-public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed {
+public class Population extends AbstractMutableDomainObject implements Named, NaturallyKeyed, Comparable<Population> {
     private Study study;
     private String name;
     private String abbreviation;
+
+    @SuppressWarnings({ "unchecked" })
+    private static Comparator<String> NAME_COMPARATOR =
+        new NullComparator(String.CASE_INSENSITIVE_ORDER);
 
     ////// LOGIC
 
@@ -56,6 +62,9 @@ public class Population extends AbstractMutableDomainObject implements Named, Na
         this.abbreviation = abbreviation;
     }
 
+    public int compareTo(Population o) {
+        return NAME_COMPARATOR.compare(this.getName(), o.getName());
+    }
 
     @Override
     public String toString() {
