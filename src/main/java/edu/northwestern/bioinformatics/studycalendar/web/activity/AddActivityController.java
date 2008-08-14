@@ -65,6 +65,7 @@ public class AddActivityController extends PscAbstractCommandController<NewActiv
         model.put("enableDeletes", enableDelete);
         model.put("activitiesPerSource", activities);
         model.put("activityTypes", ActivityType.values());
+        model.put("displayCreateNewActivity", Boolean.TRUE);
         return new ModelAndView("template/ajax/activityTableUpdate", model);
 
     }
