@@ -14,7 +14,7 @@ public class LabelTest extends StudyCalendarTestCase {
         assertNegative(l2.compareTo(l1));
     }
     
-    public void testLabelsAreByCaseIfOtherwiseIdentical() throws Exception {
+    public void testLabelsAreSortedByCaseIfOtherwiseIdentical() throws Exception {
         Label l1 = Fixtures.createNamedInstance("Foo", Label.class);
         Label l2 = Fixtures.createNamedInstance("foo", Label.class);
 
