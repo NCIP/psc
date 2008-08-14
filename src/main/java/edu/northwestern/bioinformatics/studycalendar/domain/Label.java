@@ -14,7 +14,7 @@ import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
         @Parameter(name = "sequence", value = "seq_labels_id")
     }
 )
-public class Label extends AbstractMutableDomainObject implements Named {
+public class Label extends AbstractMutableDomainObject implements Named, Comparable<Label> {
     private String name;
 
     public String getName() {
@@ -23,6 +23,15 @@ public class Label extends AbstractMutableDomainObject implements Named {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int compareTo(Label o) {
+        int nameDiff = String.CASE_INSENSITIVE_ORDER.compare(this.getName(), o.getName());
+        if (nameDiff != 0) {
+            return nameDiff;
+        } else {
+            return this.getName().compareTo(o.getName());
+        }
     }
 
     @Override

@@ -6,6 +6,22 @@ import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCa
  * @author Rhett Sutphin
  */
 public class LabelTest extends StudyCalendarTestCase {
+    public void testLabelsAreSortedCaseInsensitively() throws Exception {
+        Label l1 = Fixtures.createNamedInstance("Foo", Label.class);
+        Label l2 = Fixtures.createNamedInstance("bar", Label.class);
+
+        assertPositive(l1.compareTo(l2));
+        assertNegative(l2.compareTo(l1));
+    }
+    
+    public void testLabelsAreByCaseIfOtherwiseIdentical() throws Exception {
+        Label l1 = Fixtures.createNamedInstance("Foo", Label.class);
+        Label l2 = Fixtures.createNamedInstance("foo", Label.class);
+
+        assertNegative(l1.compareTo(l2));
+        assertPositive(l2.compareTo(l1));
+    }
+
     public void testLabelsAreEqualWithSameName() throws Exception {
         Label l1 = Fixtures.createNamedInstance("foo", Label.class);
         Label l2 = Fixtures.createNamedInstance("foo", Label.class);
