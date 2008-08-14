@@ -49,7 +49,7 @@ public class ImportActivitiesServiceTest extends StudyCalendarTestCase {
 
     public void testRead() throws Exception {
         InputStream target = registerMockFor(InputStream.class);
-        expect(serializer.readCollectionDocument(target)).andReturn(sources);
+        expect(serializer.readCollectionOrSingleDocument(target)).andReturn(sources);
         replayMocks();
         service.readData(target);
         verifyMocks();

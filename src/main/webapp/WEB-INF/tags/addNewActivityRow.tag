@@ -23,7 +23,7 @@
                 <input id="addActivityDescription" type="text" class="addActivityDescription" value=""/>
             </td>
             <td>
-                <label id="Source${row.id}">${row.source.name}</label>
+                <label id="Source0">${source.name}</label>
             </td>
 
             <td>

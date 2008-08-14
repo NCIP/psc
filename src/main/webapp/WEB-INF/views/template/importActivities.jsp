@@ -45,7 +45,7 @@
                     <input type="submit" id="submit-button" value="Import"/>
                 </div>
             </div>
-            <form:hidden path="returnToPeriodId"/>
+            <%--<form:hidden path="returnToPeriodId"/>--%>
         </form:form>
     </laf:division>
 </laf:box>

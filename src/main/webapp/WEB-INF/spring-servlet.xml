@@ -172,9 +172,11 @@
             class="edu.northwestern.bioinformatics.studycalendar.web.activity.DeleteController">
     </bean>
 
-   <!--<bean name="/activities/import" id="importActivitiesToSourceController" autowire="byName"-->
-           <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ImportActivitiesToSourceController">-->
-    <!--</bean>    -->
+
+
+    <bean name="/activities/importActivities" id="importActivitiesController" autowire="byName"
+           class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
+    </bean>    
 
     <!--<bean name="/activity/reconcileActivity" id="reconcileActivitiesController" autowire="byName"-->
             <!--class="edu.northwestern.bioinformatics.studycalendar.web.activity.ReconcileActivitiesController">-->
@@ -515,11 +517,11 @@
          <property name="crumb.parent"><ref local="displayScheduleController"/></property>
     </bean>
 
-    <bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"
-           class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">
-        <property name="crumb.parent"><ref local="managePeriodController"/></property>
+    <!--<bean name="/cal/import/activities" id="importActivitiesController" autowire="byName"-->
+           <!--class="edu.northwestern.bioinformatics.studycalendar.web.template.ImportActivitiesController">-->
+        <!--<property name="crumb.parent"><ref local="managePeriodController"/></property>-->
 
-    </bean>
+    <!--</bean>-->
 
     <bean name="/search/fragment/activities" id="searchActivitiesController" autowire="byName"
         class="edu.northwestern.bioinformatics.studycalendar.web.template.SearchActivitiesController"/>

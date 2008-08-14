@@ -23,7 +23,7 @@ public class ImportActivitiesService {
     }
 
     protected Collection<Source> readData(InputStream dataFile) throws Exception{
-        return xmlSerializer.readCollectionDocument(dataFile);
+        return xmlSerializer.readCollectionOrSingleDocument(dataFile);
     }
 
     protected List<Source> replaceCollidingSources(Collection<Source> sources) throws Exception {

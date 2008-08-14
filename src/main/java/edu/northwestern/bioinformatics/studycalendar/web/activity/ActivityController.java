@@ -12,13 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Jul 18, 2008
- * Time: 2:34:29 PM
- * To change this template use File | Settings | File Templates.
- */
+
 @AccessControl(roles = Role.STUDY_ADMIN)
 
 public class ActivityController extends PscAbstractController {
@@ -71,7 +65,7 @@ public class ActivityController extends PscAbstractController {
         model.put("activitiesPerSource", activities);
         model.put("enableDeletes", enableDelete);
         model.put("activityTypes", ActivityType.values());
-         if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
+        if (! (sourceId.equals("select") || sourceId.equals("selectAll"))) {
             model.put("displayCreateNewActivity", Boolean.TRUE);
         } else {
             model.put("displayCreateNewActivity", Boolean.FALSE);

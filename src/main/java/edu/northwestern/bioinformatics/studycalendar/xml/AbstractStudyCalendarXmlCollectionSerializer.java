@@ -7,6 +7,7 @@ import org.dom4j.Element;
 import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.InputStream;
 
 /**
@@ -62,6 +63,21 @@ public abstract class AbstractStudyCalendarXmlCollectionSerializer<R>
         Element collectionRoot = deserializeDocument(in).getRootElement();
         return readCollectionElement(collectionRoot);
     }
+
+    public Collection<R> readCollectionOrSingleDocument(InputStream in) {
+        Document document = deserializeDocument(in);
+        if (document.getRootElement().getName().equals(collectionRootElement().xmlName())) {
+            return readCollectionDocument(document);
+        } else {
+            return Collections.singleton(readDocument(document));
+        }
+    }
+
+    public Collection<R> readCollectionDocument(Document document) {
+        Element collectionRoot = document.getRootElement();
+        return readCollectionElement(collectionRoot);
+    }
+
 
     /**
      * This default implementation discards the collection element and passes every

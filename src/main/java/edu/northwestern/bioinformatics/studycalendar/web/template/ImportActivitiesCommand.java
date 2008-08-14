@@ -17,14 +17,13 @@ public class ImportActivitiesCommand implements Validatable {
 
     private ImportActivitiesService service;
     private MultipartFile activitiesFile;
-    private Integer returnToPeriodId;
+//    private Integer sourceId;
 
     public void apply() throws Exception {
         service.loadAndSave(activitiesFile.getInputStream());
     }
 
     public void validate(Errors errors) {
-
         if (activitiesFile.isEmpty()) {
             errors.reject("error.activities.file.not.specified");
             return;
@@ -52,11 +51,11 @@ public class ImportActivitiesCommand implements Validatable {
         this.service = service;
     }
 
-    public Integer getReturnToPeriodId() {
-        return returnToPeriodId;
-    }
-
-    public void setReturnToPeriodId(Integer returnToPeriodId) {
-        this.returnToPeriodId = returnToPeriodId;
-    }
+//    public Integer getSourceId() {
+//        return sourceId;
+//    }
+//
+//    public void setSourceId(Integer sourceId) {
+//        this.sourceId = sourceId;
+//    }
 }

@@ -247,22 +247,6 @@
             return true;
         }
 
-        function importActivities() {
-            var activitySource= $('sources').options[$('sources').selectedIndex].value
-            var href = '<c:url value="/pages/activities/import"/>'
-            var data = "";
-
-            data = data+"sourceId"+"="+activitySource+"&";
-            console.log("===== data " + data)
-            href= href+"?"+data
-//            var deleteRequest = new Ajax.Request(href,
-//            {
-//                method: 'post'
-//            });
-            return href;
-
-        }
-
 
         Event.observe(window, "load", initMethods)
 
@@ -293,8 +277,7 @@
                 <label id="add-new-source">Create new source:</label>
                 <input id="addSource" type="text" class="addSource" value=""/>
                 <input type="button" id="addSourceButton" name="addSourceButton" value="Add"/>
-                <a id="importActivitiesLink" href="#" onclick="importActivities()">Import
-                    activities from xml</a>
+                <a id="importActivitiesLink" href="<c:url value="/pages/activities/importActivities"/>" >Import activities from xml</a>
 
                  
             </div>

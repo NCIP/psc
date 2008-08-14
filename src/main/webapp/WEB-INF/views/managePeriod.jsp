@@ -1491,10 +1491,9 @@ table#manage-period {
                     </span>
                 </td>
                 <td class="addLabelHolder">
-                <input id="grid[${gridStatus.index}].labelsAutocompleter" type="text" class="autocomplete"
-                    value="Search for label"/>
+                <input id="grid[${gridStatus.index}].labelsAutocompleter" type="text" autocomplete="off" class="autocomplete" value="Search for label"/>
 
-                <div id="grid[${gridStatus.index}].labels-autocompleter-div" class="autocomplete" style="width:0px"></div>
+                <div id="grid[${gridStatus.index}].labels-autocompleter-div" class="autocomplete"></div>
 
 
                 <input type="hidden" id="grid[${gridStatus.index}].add-label"/>
@@ -1532,10 +1531,7 @@ table#manage-period {
 
     <input type="hidden" id="add-activity"/>
 
-    <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new
-        activity</a> <span id="new-activities-link-separator">or</span>
-    <a id="importActivitiesLink" href="<c:url value="/pages/cal/import/activities?returnToPeriodId=${period.id}"/>">Import
-        activities from xml</a>
+    <a id="newActivityLink" href="<c:url value="/pages/newActivity?returnToPeriodId=${period.id}"/>">Create new activity</a>
 </div>
 
 <input id="return-to-template" type="button" value="Return to template"/>
