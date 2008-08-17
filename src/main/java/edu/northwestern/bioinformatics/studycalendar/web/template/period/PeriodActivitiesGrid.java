@@ -21,8 +21,10 @@ import java.util.TreeSet;
 public class PeriodActivitiesGrid {
     private Period period;
     private Integer cycleLength;
-    private Map<ActivityType, Collection<PeriodActivitiesGridRow>> rowGroups;
     private Collection<Activity> allActivities;
+
+    private Map<ActivityType, Collection<PeriodActivitiesGridRow>> rowGroups;
+    private int[] columnDayNumbers;
 
     public PeriodActivitiesGrid(Period period, Integer cycleLength, Collection<Activity> activities) {
         this.period = period;
@@ -30,6 +32,7 @@ public class PeriodActivitiesGrid {
         this.allActivities = activities;
 
         this.rowGroups = createRowGroups();
+        this.columnDayNumbers = createColumnDayNumbers();
     }
 
     /**
@@ -66,6 +69,23 @@ public class PeriodActivitiesGrid {
             dayHeadings[d][rowIndex] = DayNumber.createCycleDayNumber(
                 dayOffset + d * period.getDuration().getUnit().inDays() + period.getStartDay(), cycleLength);
         }
+    }
+
+    /**
+     * The day numbers that each column in the grid corresponds to.  This is the day value
+     * that should be associated with a planned activity added to each column.
+     * @return
+     */
+    public int[] getColumnDayNumbers() {
+        return columnDayNumbers;
+    }
+
+    private int[] createColumnDayNumbers() {
+        int[] dayNumbers = new int[getColumnCount()];
+        for (int i = 0; i < dayNumbers.length; i++) {
+            dayNumbers[i] = 1 + i * period.getDuration().getUnit().inDays();
+        }
+        return dayNumbers;
     }
 
     public int getColumnCount() {

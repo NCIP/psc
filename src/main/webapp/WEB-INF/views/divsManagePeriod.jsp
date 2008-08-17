@@ -187,14 +187,14 @@
                     </tr>
                     <c:forEach items="${typeAndRows.value}" var="row">
                         <tr class="activity">
-                            <c:forEach items="${row.plannedActivities}" var="pa">
-                                <td class="cell">
+                            <c:forEach items="${row.plannedActivities}" var="pa" varStatus="cell">
+                                <td class="cell day-${grid.columnDayNumbers[cell.index]}">
                                     <c:choose>
                                         <c:when test="${empty pa}">
                                             &nbsp;
                                         </c:when>
                                         <c:otherwise>
-                                            <div class="marker">
+                                            <div class="marker planned-activity-${pa.id}">
                                                 ${empty pa.population ? '&times;' : pa.population.abbreviation}
                                             </div>
                                         </c:otherwise>

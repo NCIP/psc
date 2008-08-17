@@ -136,6 +136,37 @@ public class PeriodActivitiesGridTest extends StudyCalendarTestCase {
         assertEquals(DEFAULT_DURATION_QUANTITY, getGrid().getColumnCount());
     }
 
+    public void testColumnDayNumbersForDays() throws Exception {
+        int[] expected = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 };
+        int[] actual = getGrid().getColumnDayNumbers();
+        assertEquals("Wrong number of columns", DEFAULT_DURATION_QUANTITY, actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals("Mismatch at index " + i, expected[i], actual[i]);
+        }
+    }
+
+    public void testColumnDayNumbersForFortnights() throws Exception {
+        int[] expected = new int[] { 1, 15, 29, 43, 57, 71, 85, 99, 113, 127, 141, 155, 169, 183 };
+        period.getDuration().setUnit(Duration.Unit.fortnight);
+        int[] actual = getGrid().getColumnDayNumbers();
+        assertEquals("Wrong number of columns", DEFAULT_DURATION_QUANTITY, actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals("Mismatch at index " + i, expected[i], actual[i]);
+        }
+    }
+
+    public void testColumnDayNumbersWithNonOneStartDayStillStartAtOne() throws Exception {
+        period.setStartDay(5);
+        period.getDuration().setQuantity(4);
+
+        int[] expected = new int[] { 1, 2, 3, 4 };
+        int[] actual = getGrid().getColumnDayNumbers();
+        assertEquals("Wrong number of columns", 4, actual.length);
+        for (int i = 0; i < expected.length; i++) {
+            assertEquals("Mismatch at index " + i, expected[i], actual[i]);
+        }
+    }
+
     ////// ROWS TESTS
 
     public void testGridIncludesRowsForPlannedActivities() throws Exception {
