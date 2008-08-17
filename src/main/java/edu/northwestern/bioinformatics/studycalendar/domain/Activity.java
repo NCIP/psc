@@ -2,12 +2,18 @@ package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.nwu.bioinformatics.commons.ComparisonUtils;
 import gov.nih.nci.cabig.ctms.domain.AbstractMutableDomainObject;
+import gov.nih.nci.cabig.ctms.lang.ComparisonTools;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
 import org.springframework.beans.BeanUtils;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.List;
 
 /**
@@ -17,9 +23,9 @@ import java.util.List;
 @Entity
 @Table(name = "activities")
 @GenericGenerator(name = "id-generator", strategy = "native",
-        parameters = {
+    parameters = {
         @Parameter(name = "sequence", value = "seq_activities_id")
-                }
+    }
 )
 public class Activity extends AbstractMutableDomainObject implements Comparable<Activity>, Named, NaturallyKeyed {
     private String name;
@@ -101,7 +107,15 @@ public class Activity extends AbstractMutableDomainObject implements Comparable<
 
         Activity activity = (Activity) o;
 
-        return getNaturalKey().equals(activity.getNaturalKey());
+        return ComparisonTools.nullSafeEquals(getSource(), activity.getSource())
+            && ComparisonTools.nullSafeEquals(getNaturalKey(), activity.getNaturalKey());
+    }
+
+    public int hashCode() {
+        int result;
+        result = (getSource() != null ? getSource().hashCode() : 0);
+        result = 31 * result + (getNaturalKey() != null ? getNaturalKey().hashCode() : 0);
+        return result;
     }
 
     public String toString() {

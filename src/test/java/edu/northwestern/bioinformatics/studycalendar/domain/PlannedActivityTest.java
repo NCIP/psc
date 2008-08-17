@@ -1,72 +1,61 @@
 package edu.northwestern.bioinformatics.studycalendar.domain;
 
 import edu.northwestern.bioinformatics.studycalendar.testing.StudyCalendarTestCase;
+import static edu.northwestern.bioinformatics.studycalendar.domain.Fixtures.*;
 
-/**
- * Created by IntelliJ IDEA.
- * User: nshurupova
- * Date: Nov 9, 2007
- * Time: 1:44:41 PM
- * To change this template use File | Settings | File Templates.
- */
+import java.util.List;
+
 public class PlannedActivityTest extends StudyCalendarTestCase {
-    private PlannedActivity e0, e1;
-    private Activity activity0, activity1;
+    private PlannedActivity pa0, pa1;
 
     protected void setUp() throws Exception {
         super.setUp();
-        activity0 = new Activity();
-        activity0.setType(ActivityType.PROCEDURE);
-        activity1 = new Activity();
-        activity1.setType(ActivityType.INTERVENTION);
+        Activity activity0 = createActivity("0", ActivityType.PROCEDURE);
+        Activity activity1 = createActivity("1", ActivityType.INTERVENTION);
 
-        e0 = new PlannedActivity();
-        e0.setDay(1);
-        e0.setActivity(activity0);
-        e1 = new PlannedActivity();
-        e1.setDay(2);
-        e1.setActivity(activity1);
+        pa0 = createPlannedActivity(activity0, 1);
+        pa1 = createPlannedActivity(activity1, 2);
     }
 
     public void testNaturalOrderByDayFirst() throws Exception {
-        assertNegative(e0.compareTo(e1));
-        assertPositive(e1.compareTo(e0));
+        assertNegative(pa0.compareTo(pa1));
+        assertPositive(pa1.compareTo(pa0));
     }
 
     public void testNaturalOrderConsidersActivity() throws Exception {
-        e0.setDay(e1.getDay());
-        assertPositive(e0.compareTo(e1));
-        assertNegative(e1.compareTo(e0));
+        pa0.setDay(pa1.getDay());
+        assertPositive(pa0.compareTo(pa1));
+        assertNegative(pa1.compareTo(pa0));
     }
 
     public void testDaysInStudySegmentSimple() throws Exception {
         changePeriod(1, 7, 1);
-        assertDaysInStudySegment(e0, 1);
-        assertDaysInStudySegment(e1, 2);
+        assertDaysInStudySegment(pa0, 1);
+        assertDaysInStudySegment(pa1, 2);
     }
 
     private void changePeriod(int startDay, int dayCount, int repetitions) {
-        Period p0 = Fixtures.createPeriod("P0", startDay, dayCount, repetitions);
-        p0.addPlannedActivity(e0);
-        p0.addPlannedActivity(e1);
+        Period p0 = createPeriod("P0", startDay, dayCount, repetitions);
+        p0.addPlannedActivity(pa0);
+        p0.addPlannedActivity(pa1);
     }
 
     public void testDaysInStudySegmentOffset() throws Exception {
         changePeriod(17, 7, 1);
-        assertDaysInStudySegment(e0, 17);
-        assertDaysInStudySegment(e1, 18);
+        assertDaysInStudySegment(pa0, 17);
+        assertDaysInStudySegment(pa1, 18);
     }
 
     public void testDaysInStudySegmentWithRepetitions() throws Exception {
         changePeriod(8, 4, 3);
-        assertDaysInStudySegment(e0, 8, 12, 16);
-        assertDaysInStudySegment(e1, 9, 13, 17);
+        assertDaysInStudySegment(pa0, 8, 12, 16);
+        assertDaysInStudySegment(pa1, 9, 13, 17);
     }
 
     public void testDayInStudySegmentNegative() throws Exception {
         changePeriod(-21, 7, 2);
-        assertDaysInStudySegment(e0, -21, -14);
-        assertDaysInStudySegment(e1, -20, -13);
+        assertDaysInStudySegment(pa0, -21, -14);
+        assertDaysInStudySegment(pa1, -20, -13);
     }
 
     private void assertDaysInStudySegment(PlannedActivity e, int... expectedDays) {
@@ -79,19 +68,49 @@ public class PlannedActivityTest extends StudyCalendarTestCase {
     }
 
     public void testCloneDoesNotDeepCloneActivity() throws Exception {
-        PlannedActivity clone = (PlannedActivity) e0.clone();
-        assertSame("Activity is not same object", e0.getActivity(), clone.getActivity());
+        PlannedActivity clone = pa0.clone();
+        assertSame("Activity is not same object", pa0.getActivity(), clone.getActivity());
     }
 
     public void testScheduledModeWhenConditional() throws Exception {
-        e0.setCondition("Only if you roll 2, 4, or 5");
-        assertEquals(ScheduledActivityMode.CONDITIONAL, e0.getInitialScheduledMode());
+        pa0.setCondition("Only if you roll 2, 4, or 5");
+        assertEquals(ScheduledActivityMode.CONDITIONAL, pa0.getInitialScheduledMode());
     }
 
     public void testScheduledModeWhenNotConditional() throws Exception {
-        e0.setCondition(" ");
-        e1.setCondition(null);
-        assertEquals(ScheduledActivityMode.SCHEDULED, e0.getInitialScheduledMode());
-        assertEquals(ScheduledActivityMode.SCHEDULED, e1.getInitialScheduledMode());
+        pa0.setCondition(" ");
+        pa1.setCondition(null);
+        assertEquals(ScheduledActivityMode.SCHEDULED, pa0.getInitialScheduledMode());
+        assertEquals(ScheduledActivityMode.SCHEDULED, pa1.getInitialScheduledMode());
+    }
+
+    public void testAddFirstPlannedActivityLabel() throws Exception {
+        PlannedActivityLabel expected = new PlannedActivityLabel();
+        pa0.addPlannedActivityLabel(expected);
+        assertEquals("Wrong number of labels", 1, pa0.getPlannedActivityLabels().size());
+        assertSame("Wrong label added", expected, pa0.getPlannedActivityLabels().get(0));
+        assertSame("Reverse relationship not preserved", pa0, expected.getPlannedActivity());
+    }
+
+    public void testGetLabelsForNoPlannedActivityLabels() throws Exception {
+        assertEquals(0, pa0.getLabels().size());
+    }
+
+    public void testGetLabels() throws Exception {
+        labelPlannedActivity(pa0, "foo");
+        labelPlannedActivity(pa0, "bar");
+        List<Label> actual = pa0.getLabels();
+        assertEquals("Wrong number of labels returned", 2, actual.size());
+        assertEquals("Wrong first label", "foo", actual.get(0).getName());
+        assertEquals("Wrong second label", "bar", actual.get(1).getName());
+    }
+
+    public void testGetLabelsText() throws Exception {
+        labelPlannedActivity(pa0, "foo");
+        labelPlannedActivity(pa0, "bar");
+        List<String> actual = pa0.getLabelNames();
+        assertEquals("Wrong number of labels returned", 2, actual.size());
+        assertEquals("Wrong first label", "foo", actual.get(0));
+        assertEquals("Wrong second label", "bar", actual.get(1));
     }
 }

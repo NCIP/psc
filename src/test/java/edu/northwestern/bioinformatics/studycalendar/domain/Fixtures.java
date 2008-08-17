@@ -27,6 +27,8 @@ import java.util.Date;
 public class Fixtures {
     private static final Logger log = LoggerFactory.getLogger(Fixtures.class);
     private static final DeltaService deltaService = new DeltaService();
+    public static final ActivityType DEFAULT_ACTIVITY_TYPE = ActivityType.LAB_TEST;
+    public static final Source DEFAULT_ACTIVITY_SOURCE = createNamedInstance("Fixtures Source", Source.class);
 
     static {
         deltaService.setMutatorFactory(new MemoryOnlyMutatorFactory());
@@ -79,13 +81,16 @@ public class Fixtures {
         return p;
     }
 
-    public static PlannedActivity createPlannedActivity(String activityName, int day) {
+    public static PlannedActivity createPlannedActivity(Activity activity, int day) {
         PlannedActivity event = new PlannedActivity();
-        Activity activity = createNamedInstance(activityName, Activity.class);
-        activity.setType(ActivityType.LAB_TEST);
         event.setActivity(activity);
         event.setDay(day);
         return event;
+    }
+
+    public static PlannedActivity createPlannedActivity(String activityName, int day) {
+        Activity activity = createActivity(activityName);
+        return createPlannedActivity(activity, day);
     }
 
     public static PlannedActivity createPlannedActivity(String activityName, int day, String details) {
@@ -98,6 +103,14 @@ public class Fixtures {
         PlannedActivity event = createPlannedActivity(activityName, day, details);
         event.setCondition(condition);
         return event;
+    }
+
+    public static void labelPlannedActivity(PlannedActivity pa, String... labels) {
+        for (String label : labels) {
+            PlannedActivityLabel paLabel = new PlannedActivityLabel();
+            paLabel.setLabel(createNamedInstance(label, Label.class));
+            pa.addPlannedActivityLabel(paLabel);
+        }
     }
 
     public static Study createSingleEpochStudy(String studyName, String epochName, String... studySegmentNames) {
@@ -203,13 +216,16 @@ public class Fixtures {
     }
 
     public static Activity createActivity(String name) {
-        Activity activity = createNamedInstance(name, Activity.class);
-        activity.setType(ActivityType.LAB_TEST);
-        return activity;
+        return createActivity(name, DEFAULT_ACTIVITY_TYPE);
+    }
+
+    public static Activity createActivity(String name, ActivityType type) {
+        return createActivity(name, name, DEFAULT_ACTIVITY_SOURCE, type);
     }
 
     public static Activity createActivity(String name, String code, Source source, ActivityType type) {
-        Activity activity = createActivity(name);
+        Activity activity = createNamedInstance(name, Activity.class);
+        activity.setId(name.hashCode());
         activity.setCode(code);
         activity.setType(type);
         if (source != null) {
@@ -223,7 +239,6 @@ public class Fixtures {
         activity.setDescription(description);
         return activity;
     }
-
 
     public static void addEvents(ScheduledStudySegment scheduledStudySegment, ScheduledActivity... events) {
         for (ScheduledActivity event : events) {

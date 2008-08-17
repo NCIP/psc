@@ -29,6 +29,10 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
     private String condition;
     private List<PlannedActivityLabel> plannedActivityLabels;
 
+    public PlannedActivity() {
+        plannedActivityLabels = new ArrayList<PlannedActivityLabel>();
+    }
+
     ////// LOGIC
 
     @Override public Class<Period> parentClass() { return Period.class; }
@@ -41,6 +45,11 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return getActivity().compareTo(other.getActivity());
     }
 
+    public void addPlannedActivityLabel(PlannedActivityLabel paLabel) {
+        paLabel.setPlannedActivity(this);
+        getPlannedActivityLabels().add(paLabel);
+    }
+    
     @Transient
     public List<Integer> getDaysInStudySegment() {
         int day = getDay();
@@ -73,6 +82,22 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         } else {
             return ScheduledActivityMode.CONDITIONAL;
         }
+    }
+
+    public List<Label> getLabels() {
+        List<Label> labels = new ArrayList<Label>(getPlannedActivityLabels().size());
+        for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
+            labels.add(paLabel.getLabel());
+        }
+        return labels;
+    }
+
+    public List<String> getLabelNames() {
+        List<String> labels = new ArrayList<String>(getPlannedActivityLabels().size());
+        for (PlannedActivityLabel paLabel : getPlannedActivityLabels()) {
+            labels.add(paLabel.getLabel().getName());
+        }
+        return labels;
     }
 
     ////// BEAN PROPERTIES
@@ -112,7 +137,6 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         return plannedActivityLabels;
     }
 
-
     public void setPlannedActivityLabels(List<PlannedActivityLabel> plannedActivityLabels){
         this.plannedActivityLabels = plannedActivityLabels;
     }
@@ -145,13 +169,20 @@ public class PlannedActivity extends PlanTreeNode<Period> implements Comparable<
         this.condition = condition;
     }
 
-
+    ////// OBJECT METHODS
 
     @Override
-    protected PlannedActivity clone() {
-        PlannedActivity clone = (PlannedActivity) super.clone();
-//        clone.setActivity(getActivity());
-//        clone.setPopulation(getPopulation());
-        return clone;
+    public PlannedActivity clone() {
+        return (PlannedActivity) super.clone();
+    }
+
+    @Override
+    public String toString() {
+        return new StringBuilder(getClass().getSimpleName()).
+            append("[id=").append(getId()).
+            append("; activity=").append(getActivity()).
+            append("; day=").append(getDay()).
+            append("; population=").append(getPopulation() == null ? "<none>" : getPopulation().getAbbreviation()).
+            append(']').toString();
     }
 }
