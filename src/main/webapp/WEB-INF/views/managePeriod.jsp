@@ -1329,6 +1329,9 @@ table#manage-period {
     This period has ${period.duration.days} days and repeats ${commons:pluralize(period.repetitions, "time")}.
     It begins on day ${period.startDay} of ${studySegment.qualifiedName}.
 </p>
+<p>
+    <a href="<c:url value="/pages/cal/newManagePeriod?period=${period.id}"/>">View this period on the new manage periods page</a>.
+</p>
 
 <div class="palette autoclear">
     <div class="well card" id="add-marker-area">
